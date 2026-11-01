@@ -90,3 +90,80 @@ LOINC labels. Exact system/code and standard-label matching preserves custom
 qualified labels. Recorded codes, values, units, dates, ranges, flags and trends
 are unchanged. The existing results presentation paints those supplied captions;
 explicit info payloads retain their own labels.
+### Ambulatory metadata
+
+`UiNode.valueSet options allowCustom children` supplies typed `{code, label}`
+choices around an ordinary field. It does not change that field's Value,
+validation, permissions, human-only flag, provenance or confirmation. The
+browser displays labels and dispatches the selected code. If custom codes are
+allowed, typing shows an explicit `Use code` option; typing alone is not an
+entry. Existing closed formulary and dose-unit controls retain their semantics.
+
+`UiNode.chartReferences references children` supplies published reference samples
+around an ordinary growth info/presentation. Each reference carries measure,
+unit, percentile, source, population and points in tenths of a month/hundredths
+of the stated unit. Patient rows remain complete and separate. WHO 2006 covers
+0–24 months; CDC 2000 covers 24–240 months. Lean selects an explicit US Core
+birth-sex code, known measurement units and applicable ages. Unknown or
+conflicting population data supplies no curve. Curves do not cross population,
+source or unit boundaries; the browser calculates geometry only.
+
+Both wrappers are transparent to semantic presence and preserve every ordinary
+child control/info node. Row-placement, button-audit and ARIA traversals recurse
+through them. No D-rule, clinical requirement or theorem statement is changed.
+### Per-observation laboratory data
+
+`Display.labResults : List LabResultRow` adds each recorded result's code, human name, raw value, unit, time, reference text, flag and status. `labs`/`labResults`/`resultTrend` use these complete rows when available; older Display JSON defaults this list to empty and retains the legacy aggregate fallback. Existing clinical Facts extraction and its legacy lab aggregates are unchanged. Components retain their own values/units and the report's time/status. Clinical test codes disambiguate otherwise identical names only when needed; resource IDs and component IDs never become clinical rows.
+
+Quantity comparators and signed, qualitative, integer, boolean, range, ratio, date/time, period and sampled values remain text as appropriate. Source interpretations take precedence. Inferred display flags require an uncensored quantity with a clear normal interval and compatible units; age/population-qualified or ambiguous intervals remain explicit text. The existing demo intervals are used for display only with their known matching unit. React does not calculate flags or convert units. Every report/component survives, including duplicate records; a separate cardinality theorem checks this.
+
+Typed nursing flowsheets show ordinary recorded values compactly and retain nonfinal/corrected status inline. Explicit payload rows are still preserved verbatim. Callers scope observations to the intended flowsheet; the example uses vitals and I&O, while lab history stays in Results. The visual fixtures now use RN, NP, surgeon and physician roles as appropriate and keep the selected ED banner tied to that patient's encounter.
+
+### Overview workspace
+
+A shown component may include the dot-delimited hint `layout.overview` in its tag, for example `layout.overview.present.trackBoard` or `layout.overview.layout.columns`. Lean then omits only its automatic read-only chart-side summaries. Explicit source side panels and controls, the patient banner, clinical alerts and required review supplements remain present under the same D1–D6 statements. This lets department boards, schedules and In Basket use the available workspace without a browser-owned visibility rule. An unshown component cannot activate the hint. Existing programs keep their current layout until they opt in.
+
+Chart tick spacing and coordinate scaling are drawing operations. Numeric axis labels must remain distinct, a single dated result retains its full recorded date/time, and growth age ticks select actual supplied measurement ages. Every original value and published reference point remains in the accompanying tables.
+
+### Nursing observation categories and components
+
+`ObservationRow.categories` adds source category codes; missing categories on older JSON rows default to an empty list, while malformed supplied categories fail decoding. Display retains every valid observation and component. The default nursing `flowsheet` separates laboratory-only observations into the existing Results collection; explicitly vital-sign observations and legacy/uncategorized rows remain included. Explicit info payloads still supply their full rows verbatim. Whole-chart input now exercises this collection choice in the fixture.
+
+Assessment components retain their own names, values and units plus parent time, status and category. Censored quantities and missing-result explanations remain text. A blood-pressure pair requires an unambiguous LOINC-coded systolic and diastolic component with compatible recorded units; array order supplies no meaning. All components also remain explicit rows. Existing clinical Facts extraction is unchanged.
+
+Normal note cards omit absent optional import-metadata fields, rather than adding empty Source date or Unknown Shift days. Every supplied metadata value remains visible. A single untitled plain-text attachment shows its complete body without an invented attachment heading; multiple or titled attachments retain their boundaries and titles. Time-series geometry orders points by their supplied coordinate, while the accompanying tables retain source row order.
+
+### Constrained panels
+
+The painter may reflow dense tables into complete labeled records based on the widget's available width, including when a patient summary shares a desktop window. Wide ED/MAR grids remain grids. All columns, values and original row controls remain present in their original semantic table; no clinical fact or control is hidden. Screenshot review covers 1024, 1280 and 1440px and checks that status words do not split between lines.
+
+Numeric strings outside the browser's finite plotting range remain complete table text, without a fabricated point. Axis geometry also remains finite for large representable source values. The independent ARIA projection expects images only for representable plotted series; source-value coverage remains unchanged.
+
+Growth measurements use the existing tenths-of-kg/cm display precision. Gram weights are converted to kg; the shared ambulatory height reader accepts explicitly recorded cm, m or inches and declines unknown units. The latest timestamp supplies each day's plotted weight/height regardless of FHIR array order. Original Observation values and units remain in their complete display projections. A missing/invalid birth or measurement date produces `Not recorded` for plotted age while retaining the measurement row; a valid newborn age remains zero. Clinical Facts and dosing calculations are unchanged.
+
+### Current visit documentation
+
+A source info component tagged `layout.document` selects the semantic info display `document` outside the side rail. Its rows retain `Section`, exact `Text`, and source-computed `Entry status` cells; any additional supplied cells remain visible. The painter uses one read-only document region with a keyboard-scrollable body. It never edits, confirms or signs the note. Document/status info does not claim tabular row-action slots; controls targeting those layouts retain their ordinary inline fallback. W1/W5 use this for the current captured visit documentation, separately from historical Chart Review notes. Missing documentation and pending confirmation stay explicit in Lean.
+
+### Public prefill source captions
+
+`UiScreen.fieldSources` is an optional list of `[component ID, public caption]` pairs supplied by Lean. It accompanies sourced, shown fields without replacing their exact `UiNode.field.provenance`, pending-confirmation flag, human-only flag, value, unit or control ID. The stock painter uses the supplied caption as visible source text and the field's accessible description. It does not interpret `record:` or `linked:` keys. Linked captions read the source element's public spec label; record captions identify the declared source and the chart snapshot date. An unknown record key stays a generic chart-record source rather than acquiring an invented clinical meaning.
+
+Older semantic JSON without this optional metadata retains its original raw provenance caption. The legacy native HTML renderer and its exact provenance contract are unchanged. This metadata adds no control, receipt, capture or confirmation.
+
+### Integrated ambulatory and perioperative metadata
+
+The shared painter uses one code-picker path for `valueSet` wrappers and the
+compatible `UiScreen.fieldChoices` department favorites. A field-specific
+favorite list takes precedence when present; the ordinary wrapper remains the
+fallback. Both keep raw entry codes, manual selection, filtering without entry,
+explicit confirmation and the existing field event. Surgical display-code hints
+remain available. Public per-field `fieldSources` captions take precedence over
+older provenance-key `sourceLabels`; exact field provenance is retained.
+
+FHIR supporting views share one `scheduleTasks` ID. An explicit pre-op context
+uses the surgical case rows; an ambulatory context uses the appointment view.
+When no encounter setting is available, a real dated surgical request can supply
+the case queue. Other supporting payloads and their version bindings coexist.
+Per-observation laboratory rows use the same conservative source-label aliases
+as aggregate summaries, retaining their complete values, units and metadata.

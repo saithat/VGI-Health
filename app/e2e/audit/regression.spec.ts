@@ -15,7 +15,12 @@ test("fast app regression: report gate and dashboard control effects", async ({
     }[];
   } = JSON.parse(
     readFileSync(
-      resolve(process.env.EHR_AUDIT_DIR ?? "../docs/audits", "buttons.json"),
+      resolve(
+        process.env.EHR_AUDIT_DIR ??
+          process.env.AUDIT_REPORT_DIR ??
+          "../docs/audits",
+        "buttons.json",
+      ),
       "utf8",
     ),
   );

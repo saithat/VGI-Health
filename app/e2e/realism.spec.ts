@@ -45,7 +45,7 @@ test("shared shell and browser visual review", async ({ page }) => {
       .click();
     if (process.env.REALISM_SHOTS !== "before") {
       const navigator = page.getByRole("navigation", {
-        name: "Clinical workflows",
+        name: "Clinical navigation",
       });
       await expect(
         navigator.locator("button[data-comp-id]").first(),
@@ -79,10 +79,9 @@ test("shared shell and browser visual review", async ({ page }) => {
       "/ehr?mode=replay&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
     );
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
-    const notes = page.getByRole("list", { name: "Notes", exact: true });
-    await expect(notes.getByRole("listitem").first()).toBeVisible();
-    await expect(notes).toContainText("Progress note");
-    await notes.getByRole("listitem").first().scrollIntoViewIfNeeded();
+    const note = page.locator('[data-info-id="encounterNotes"] li').first();
+    await expect(note).toBeVisible();
+    await note.scrollIntoViewIfNeeded();
     await page.mouse.move(1, 1);
     await page.screenshot({
       path: `${folder}/chart-notes.png`,

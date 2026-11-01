@@ -141,6 +141,18 @@
   background: var(--clinical-sidebar);
   border-right: 1px solid var(--clinical-border);
 }
+.clinical-app .clinical-shell[data-pinned="true"] > .clinical-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.clinical-app .clinical-shell[data-pinned="true"] > .clinical-navbar {
+  position: sticky;
+  top: var(--clinical-header-height);
+  height: calc(100dvh - var(--clinical-header-height));
+  min-height: 0;
+  overflow-y: auto;
+}
 .nav-eyebrow {
   padding: 4px 8px;
   font-weight: 600;
@@ -166,6 +178,26 @@
   list-style: none;
   padding: 0;
   margin: 0;
+}
+.clinical-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.clinical-nav-link:hover {
+  background: #dceaf6;
+}
+.clinical-nav-link:focus-visible {
+  outline: 2px solid #24618c;
+  outline-offset: 1px;
 }
 .workflow-links li {
   display: flex;
@@ -331,7 +363,7 @@
   gap: 8px;
   display: flex;
   flex-flow: row wrap;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 .clinical-section-body > * {
   min-width: 0;
@@ -858,33 +890,6 @@
   width: 15%;
 }
 
-@media (min-width: 701px) {
-  .clinical-app {
-    height: 100dvh;
-    min-height: 0;
-    overflow: hidden;
-  }
-  .clinical-shell {
-    height: 100%;
-    grid-template-rows: auto minmax(0, 1fr);
-  }
-  .clinical-shell.without-nav {
-    grid-template-rows: auto auto minmax(0, 1fr);
-  }
-  .clinical-app .clinical-navbar {
-    position: static;
-    height: 100%;
-    min-height: 0;
-    max-height: none;
-    overflow-y: auto;
-  }
-  .clinical-shell > main {
-    min-height: 0;
-    height: 100%;
-    overflow: auto;
-    overscroll-behavior: contain;
-  }
-}
 /* A program without semantic navigator entries has one storyboard column. */
 .clinical-shell.without-nav {
   grid-template-columns: minmax(0, 1fr);
@@ -992,3 +997,53 @@
   min-width: 28px;
   padding: 2px 5px;
 }
+
+/* Receipt feedback is a semantic status supplied by Lean beside its action. */
+.clinical-review-status {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: start;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid var(--clinical-green-ink);
+  border-radius: 4px;
+  color: var(--clinical-green-ink);
+  background: var(--clinical-green-tint);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.clinical-section-body > .clinical-review-status {
+  flex: 0 1 auto;
+  align-self: center;
+}
+
+/* A read-only document keeps the complete entered text in a keyboard-scrollable pane. */
+.clinical-info.info-document {
+  border: 1px solid var(--clinical-border);
+  border-radius: 3px;
+  padding: 0;
+  background: white;
+}
+.info-document > .clinical-info-label {
+  margin: 0;
+  padding: 8px 10px;
+  background: var(--clinical-section);
+  border-bottom: 1px solid var(--clinical-border);
+  font-size: 14px;
+}
+.clinical-document-body {
+  max-height: 360px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.clinical-document-body:focus-visible {
+  outline: 2px solid var(--clinical-primary);
+  outline-offset: -2px;
+}
+.clinical-document-section { padding: 10px 12px; }
+.clinical-document-section + .clinical-document-section { border-top: 1px solid var(--clinical-border); }
+.clinical-document-section h4 { margin: 0 0 6px; font-size: 14px; font-weight: 650; }
+.clinical-document-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.clinical-document-detail { margin-top: 6px; font-size: 12px; color: var(--clinical-muted); }

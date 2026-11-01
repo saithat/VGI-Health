@@ -1,6 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 
+const shotDirectory =
+  process.env.SURG_REALISM_SHOT_DIR ?? "shots/realism/surg/after";
+
 function control(page: Page, comp: string, event = "click") {
   return page.locator(`[data-comp-id="${comp}"][data-event="${event}"]`);
 }
@@ -120,9 +123,9 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   });
   expect(optionContrast).toBeGreaterThanOrEqual(4.5);
   if (desktop) {
-    await mkdir("shots/realism/surg/after", { recursive: true });
+    await mkdir(shotDirectory, { recursive: true });
     await page.screenshot({
-      path: "shots/realism/surg/after/w6OpNote-code-search.png",
+      path: `${shotDirectory}/w6OpNote-code-search.png`,
       animations: "disabled",
     });
   }
@@ -149,7 +152,7 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   await expect(postoperativeDiagnosis).toHaveValue("R10.84");
   if (desktop)
     await page.screenshot({
-      path: "shots/realism/surg/after/w6OpNote-code-selected.png",
+      path: `${shotDirectory}/w6OpNote-code-selected.png`,
       animations: "disabled",
     });
   const findings = control(page, "w6OpNote.opFindings", "enter");

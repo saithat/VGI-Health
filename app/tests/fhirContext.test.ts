@@ -140,6 +140,9 @@ describe("version-bound FHIR display context", () => {
     expect(
       payload?.rows.map((r) => r.fields.find(([k]) => k === "component")?.[1]),
     ).toEqual(["Potassium", "Creatinine", "Hemoglobin"]);
+    expect(
+      payload?.rows.map((r) => r.fields.find(([k]) => k === "testId")?.[1]),
+    ).toEqual(["Panel", "Panel", "Hemoglobin"]);
     const next = structuredClone(bundle);
     const lab = next.entry?.[2]?.resource;
     if (lab) lab.meta = { versionId: "new-version" };
@@ -157,5 +160,52 @@ describe("version-bound FHIR display context", () => {
     expect(() => reviewSources(bundle, "curesReport")).toThrow(
       "No versioned source",
     );
+  });
+  it("binds fill-history reviews to dispensing records and explicit empty-chart review", () => {
+    const chart: Bundle = {
+      ...bundle,
+      entry: [
+        ...(bundle.entry ?? []),
+        {
+          resource: {
+            resourceType: "MedicationStatement",
+            id: "reported-use",
+            status: "active",
+            medicationCodeableConcept: { text: "Lisinopril" },
+            subject: { reference: "Patient/server-id" },
+          },
+        },
+        {
+          resource: {
+            resourceType: "MedicationDispense",
+            id: "dispensed",
+            status: "completed",
+            medicationCodeableConcept: { text: "Lisinopril" },
+            subject: { reference: "Patient/server-id" },
+          },
+        },
+      ],
+    };
+    expect(
+      reviewSources(chart, "adherence").map((r) => r.resourceType),
+    ).toEqual(["MedicationDispense"]);
+    expect(
+      reviewSources(bundle, "adherence").map((r) => r.resourceType),
+    ).toEqual(["Patient"]);
+  });
+  it("uses the chart's medical-record identifier rather than a resource or cohort ID", () => {
+    const chart = structuredClone(bundle);
+    const patient = chart.entry?.[0]?.resource;
+    if (patient?.resourceType !== "Patient")
+      throw new Error("Missing test patient");
+    patient.identifier = [
+      { value: "internal-cohort-uuid" },
+      { type: { coding: [{ code: "MR" }] }, value: "12345678" },
+    ];
+    expect(
+      fhirDisplayContext(chart, "server-id").infoPayloads.find(
+        (p) => p.info === "careIdentity",
+      )?.fields,
+    ).toContainEqual(["mrn", "12345678"]);
   });
 });

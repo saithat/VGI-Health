@@ -370,6 +370,18 @@ structure LabRow where
   trend : List TrendPoint
   deriving DecidableEq, Repr, Inhabited
 
+/-- One recorded laboratory result with its own value, unit and report metadata. -/
+structure LabResultRow where
+  code : String
+  name : String
+  value : String
+  unit : String
+  date : String
+  refRange : String
+  flag : String
+  status : String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- One Condition. -/
 structure ProblemRow where
   id : String
@@ -507,6 +519,8 @@ structure ObservationRow where
   unit : String
   time : String
   status : String
+  /-- Source categories select the clinical collection; older rows have none. -/
+  categories : List String := []
   deriving DecidableEq, Repr, Inhabited
 
 /-- A supplied practitioner name. Its logical identity is transport metadata. -/
@@ -535,6 +549,9 @@ structure Display where
   encounters : List EncRow
   procedures : List ProcRow
   growth : List GrowthPoint
+  /-- Explicit US Core birth-sex coding for published growth references.
+  Administrative gender alone does not select a reference population. -/
+  growthReferenceSex? : Option String := none
   notes : List NoteRow := []
   history : List HistoryRow := []
   schedule : List ScheduleRow := []
@@ -546,6 +563,8 @@ structure Display where
   labFlags : List (String × String) := []
   /-- Optional practitioner identities; the header requires a unique user match. -/
   clinicians? : Option (List ClinicianRow) := none
+  /-- Full per-observation results, including qualitative values and components. -/
+  labResults : List LabResultRow := []
   deriving DecidableEq, Repr, Inhabited
 
 /-- An empty display (no records). -/
@@ -564,10 +583,31 @@ inductive UiPresentationKind
   | folderList | messages | results | trend | growth | notes
   deriving DecidableEq, Repr, Inhabited
 
+/-- A displayed term and the exact code sent by its ordinary field. -/
+structure UiCodeChoice where
+  code : String
+  label : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Published growth-curve samples, separate from patient measurements.
+Points use tenths of a month and hundredths of the stated unit. -/
+structure UiChartReference where
+  measure : String
+  unit : String
+  percentile : String
+  source : String
+  population : String
+  points : List (Nat × Nat)
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Semantic EHR nodes. Only the selected tab body is emitted. -/
 inductive UiNode
   /-- A layout hint around ordinary semantic nodes; never a visibility filter. -/
   | presentation (kind : UiPresentationKind) (children : List UiNode)
+  /-- Choices decorate the original field; they do not enter or validate it. -/
+  | valueSet (options : List UiCodeChoice) (allowCustom : Bool) (children : List UiNode)
+  /-- Reference curves decorate an unchanged complete clinical info child. -/
+  | chartReferences (references : List UiChartReference) (children : List UiNode)
   /-- Place existing controls with a source info row; unmatched controls stay inline. -/
   | rowAction (target : CompId) (row : Nat) (children : List UiNode)
   | section (id : String) (title : String) (children : List UiNode)
@@ -594,6 +634,10 @@ structure UiCodeChoices where
 
 /-- A semantic screen. The banner is the first and sole banner landmark. -/
 structure UiScreen where
+  /-- Stable view identity for scroll/focus lifecycle; never a visible label. -/
+  screen? : Option ScreenId := none
+  /-- Public source captions for fields whose exact provenance remains in their node. -/
+  fieldSources? : Option (List (CompId × String)) := none
   banner : List (String × String)
   /-- Signed-in clinical role, supplied by the same Lean user as permissions. -/
   viewer? : Option String := none

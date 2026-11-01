@@ -16,6 +16,28 @@ const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
     z.strictObject({
+      valueSet: z.strictObject({
+        options: z.array(z.strictObject({ code: label, label })),
+        allowCustom: z.boolean(),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
+      chartReferences: z.strictObject({
+        references: z.array(
+          z.strictObject({
+            measure: label,
+            unit: label,
+            percentile: label,
+            source: label,
+            population: label,
+            points: z.array(z.tuple([nat, nat])),
+          }),
+        ),
+        children: z.array(uiNodeSchema),
+      }),
+    }),
+    z.strictObject({
       rowAction: z.strictObject({
         target: label,
         row: nat,
@@ -113,6 +135,8 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
         ]),
       )
       .optional(),
+    screen: label.optional(),
+    fieldSources: z.array(pair).optional(),
     title: label,
     workspace: z.array(uiNodeSchema),
     side: z.array(uiNodeSchema),
@@ -120,6 +144,8 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
   })
   .transform(
     ({
+      screen: screenId,
+      fieldSources,
       viewer,
       activeNav,
       sourceLabels,
@@ -128,6 +154,8 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
       ...screen
     }) => ({
       ...screen,
+      ...(screenId === undefined ? {} : { screen: screenId }),
+      ...(fieldSources === undefined ? {} : { fieldSources }),
       ...(viewer === undefined ? {} : { viewer }),
       ...(activeNav === undefined ? {} : { activeNav }),
       ...(sourceLabels === undefined ? {} : { sourceLabels }),

@@ -1978,6 +1978,20 @@ export interface LabRow {
 }
 
 /**
+ * One recorded laboratory result with its own value, unit and report metadata.
+ */
+export interface LabResultRow {
+  code: string;
+  name: string;
+  value: string;
+  unit: string;
+  date: string;
+  refRange: string;
+  flag: string;
+  status: string;
+}
+
+/**
  * One Condition.
  */
 export interface ProblemRow {
@@ -2150,6 +2164,10 @@ export interface ObservationRow {
   unit: string;
   time: string;
   status: string;
+  /**
+   * Source categories select the clinical collection; older rows have none.
+   */
+  categories: string[];
 }
 
 /**
@@ -2194,6 +2212,11 @@ export interface Display {
   encounters: EncRow[];
   procedures: ProcRow[];
   growth: GrowthPoint[];
+  /**
+   * Explicit US Core birth-sex coding for published growth references.
+   * Administrative gender alone does not select a reference population.
+   */
+  growthReferenceSex?: string;
   notes: NoteRow[];
   history: HistoryRow[];
   schedule: ScheduleRow[];
@@ -2209,6 +2232,10 @@ export interface Display {
    * Optional practitioner identities; the header requires a unique user match.
    */
   clinicians?: ClinicianRow[];
+  /**
+   * Full per-observation results, including qualitative values and components.
+   */
+  labResults: LabResultRow[];
 }
 
 /**
@@ -2232,11 +2259,36 @@ export type UiPresentationKind =
 export const UiPresentationKindValues = ["table", "schedule", "trackBoard", "orSchedule", "worklist", "timeGrid", "flowsheet", "folderList", "messages", "results", "trend", "growth", "notes"] as const;
 
 /**
+ * A displayed term and the exact code sent by its ordinary field.
+ */
+export interface UiCodeChoice {
+  code: string;
+  label: string;
+}
+
+/**
+ * Published growth-curve samples, separate from patient measurements.
+ * Points use tenths of a month and hundredths of the stated unit.
+ */
+export interface UiChartReference {
+  measure: string;
+  unit: string;
+  percentile: string;
+  source: string;
+  population: string;
+  points: [number, number][];
+}
+
+/**
  * Semantic EHR nodes. Only the selected tab body is emitted.
  */
 export type UiNode =
   /** A layout hint around ordinary semantic nodes; never a visibility filter. */
   | { presentation: { kind: UiPresentationKind; children: UiNode[] } }
+  /** Choices decorate the original field; they do not enter or validate it. */
+  | { valueSet: { options: UiCodeChoice[]; allowCustom: boolean; children: UiNode[] } }
+  /** Reference curves decorate an unchanged complete clinical info child. */
+  | { chartReferences: { references: UiChartReference[]; children: UiNode[] } }
   /** Place existing controls with a source info row; unmatched controls stay inline. */
   | { rowAction: { target: CompId; row: number; children: UiNode[] } }
   | { section: { id: string; title: string; children: UiNode[] } }
@@ -2262,6 +2314,14 @@ export interface UiCodeChoices {
  * A semantic screen. The banner is the first and sole banner landmark.
  */
 export interface UiScreen {
+  /**
+   * Stable view identity for scroll/focus lifecycle; never a visible label.
+   */
+  screen?: ScreenId;
+  /**
+   * Public source captions for fields whose exact provenance remains in their node.
+   */
+  fieldSources?: [CompId, string][];
   banner: [string, string][];
   /**
    * Signed-in clinical role, supplied by the same Lean user as permissions.
@@ -2359,6 +2419,33 @@ export interface LabPoint {
   hundredths?: number;
   range?: [number, number];
   flagged: boolean;
+}
+
+/**
+ * A typed appointment row; opening its encounter remains an ordinary UI goto.
+ */
+export interface AmbulatoryScheduleRow {
+  time: string;
+  patient: string;
+  ageSex: string;
+  visitType: string;
+  status: string;
+  complaint: string;
+  provider: string;
+  location: string;
+}
+
+/**
+ * A typed message row, preserving the Task's actual status and received time.
+ */
+export interface AmbulatoryMessageRow {
+  received: string;
+  patient: string;
+  subject: string;
+  sender: string;
+  priority: string;
+  status: string;
+  folder: string;
 }
 
 /**

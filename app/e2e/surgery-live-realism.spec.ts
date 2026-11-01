@@ -162,6 +162,7 @@ test("normal surgical clinic keeps technical save controls out of the patient wo
   await expect(notice).not.toContainText(
     /\/medplum\/fhir\/|markReviewed|[0-9a-f]{8}-[0-9a-f]{4}-/i,
   );
+  await page.getByRole("tab", { name: "Results", exact: true }).click();
   await expect(
     page.locator('[data-info-id="labResults"]').first(),
   ).toContainText("eGFR (MDRD)");

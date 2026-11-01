@@ -232,6 +232,8 @@ function Chart({
   viewer: string;
 }) {
   const { ui } = useSyncExternalStore(session.subscribe, session.getSnapshot);
+  const inspecting =
+    new URLSearchParams(window.location.search).get("inspect") === "1";
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [panel, setPanel] = useState(false);
@@ -239,9 +241,8 @@ function Chart({
   const [resourceOpen, setResourceOpen] = useState(false);
   const [savedResource, setSavedResource] = useState<Resource>();
   const [resourceError, setResourceError] = useState("");
-  const inspect =
-    new URLSearchParams(window.location.search).get("inspect") === "1";
   function viewResource(link: string) {
+    if (!inspecting) return;
     setResourceOpen(true);
     setSavedResource(undefined);
     setResourceError("");
@@ -254,7 +255,7 @@ function Chart({
       <div
         aria-busy={pending}
         ref={(el) => {
-          if (el) el.inert = pending || panel || resourceOpen;
+          if (el) el.inert = pending || panel || (inspecting && resourceOpen);
         }}
       >
         {ui ? (
@@ -273,11 +274,15 @@ function Chart({
                   if (result) {
                     setLinks(result.links);
                     notifications.show({
-                      title: "Chart updated",
-                      message: (
+                      title: inspecting
+                        ? "Medplum"
+                        : result.refreshRequired
+                          ? "Chart refresh needed"
+                          : "Saved",
+                      message: inspecting ? (
                         <>
                           {result.message}
-                          {inspect && (
+                          {inspecting && (
                             <ul>
                               {result.links.map((link, index) => (
                                 <li key={link}>
@@ -294,8 +299,12 @@ function Chart({
                             </ul>
                           )}
                         </>
+                      ) : result.refreshRequired ? (
+                        "Your changes have been saved. Return to the worklist and reopen the chart before continuing."
+                      ) : (
+                        `${result.message}. Your changes have been saved.`
                       ),
-                      color: "green",
+                      color: result.refreshRequired ? "orange" : "green",
                       autoClose: 12000,
                     });
                   }
@@ -312,13 +321,24 @@ function Chart({
         )}
       </div>
       <div className="live-controls">
+        {!inspecting && (
+          <Button
+            size="xs"
+            variant="default"
+            loading={pending}
+            title={pending ? "Saving encounter changes" : undefined}
+            onClick={() => setPanel(true)}
+          >
+            Encounter options
+          </Button>
+        )}
         <Button
           size="xs"
           loading={pending}
           title={pending ? "Saving encounter changes" : undefined}
-          onClick={inspect ? () => setPanel(true) : onClose}
+          onClick={inspecting ? () => setPanel(true) : onClose}
         >
-          {inspect ? "Live encounter" : "Close chart"}
+          {inspecting ? "Live encounter" : "Close chart"}
         </Button>
       </div>
       <Drawer
@@ -326,8 +346,12 @@ function Chart({
         zIndex={1100}
         opened={panel}
         onClose={() => setPanel(false)}
-        title="Live Medplum encounter"
-        closeButtonProps={{ "aria-label": "Close live encounter" }}
+        title={inspecting ? "Live Medplum encounter" : "Encounter options"}
+        closeButtonProps={{
+          "aria-label": inspecting
+            ? "Close live encounter"
+            : "Close encounter options",
+        }}
       >
         <Stack>
           <Text>
@@ -336,14 +360,14 @@ function Chart({
           </Text>
           {error && (
             <Alert role="alert" color="red">
-              {error}
+              {inspecting ? error : "Unable to save this change."}
               <p>
                 Your inputs are retained. Close this panel, correct the issue,
                 and retry the action.
               </p>
             </Alert>
           )}
-          {inspect && links.length > 0 && (
+          {inspecting && links.length > 0 && (
             <div role="status">
               <p>Saved resources</p>
               <ul>
@@ -363,14 +387,14 @@ function Chart({
             </div>
           )}
           <Button variant="default" onClick={onClose}>
-            Back to worklist / refresh chart
+            Return to worklist
           </Button>
-          {inspect && <a href="/dashboard">Demo / replay dashboard</a>}
+          {inspecting && <a href="/dashboard">Demo / replay dashboard</a>}
         </Stack>
       </Drawer>
       <Modal
         transitionProps={{ duration: 0 }}
-        opened={resourceOpen}
+        opened={inspecting && resourceOpen}
         onClose={() => setResourceOpen(false)}
         title="Saved Medplum resource"
         size="xl"
@@ -406,7 +430,7 @@ function SelectEncounter({
   selection: Selection;
   user: LiveUser;
   onOpen: (context: LiveContext) => void;
-  onRefresh: () => Promise<void>;
+  onRefresh: (created: Encounter) => Promise<void>;
   pending: boolean;
 }) {
   const { patient, encounters, tasks, medications, beds } = selection;
@@ -477,12 +501,12 @@ function SelectEncounter({
           </select>
         </label>
         <label>
-          In-basket / refill Task{" "}
+          In Basket / refill request{" "}
           <select
             value={taskId}
             onChange={(e) => setTask(e.currentTarget.value)}
           >
-            <option value="">No Task selected</option>
+            <option value="">No request selected</option>
             {tasks
               .filter((t) => t.status !== "completed")
               .map((t) => (
@@ -1000,7 +1024,7 @@ function Home({
           selection={selection}
           user={user}
           pending={pending}
-          onRefresh={() => select(selection.patient.id ?? "")}
+          onRefresh={(created) => select(selection.patient.id ?? "", created)}
           onOpen={(context) => {
             setPending(true);
             setError("");

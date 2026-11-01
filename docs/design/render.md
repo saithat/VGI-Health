@@ -103,8 +103,9 @@ UiScreen. The old PageNode API remains available for existing integrations.
 Use `lean/generated/ehr-types.ts`; the JSON encoding is Lean's derived encoding.
 
 UiScreen owns one banner landmark (name, human-readable DOB, MRN keys), real goto-button nav,
-a workspace beginning with a workflow stepper, a clinical side column, and an
-optional modal. JSON key order has no layout meaning: the painter must place the
+a workspace with an optional progress strip, a clinical side column, and an
+optional modal. Clinical activity tags suppress the progress strip in favor of
+their existing section navigation. JSON key order has no layout meaning: the painter must place the
 banner first. Missing identifiers remain empty; the renderer never invents them.
 
 The interpreter resolves visibility, collapsed ancestors, selected tabs, flags,
@@ -120,8 +121,13 @@ It never changes interpreter state, guard outcomes, or original component IDs.
 The supplement/default summaries use empty comp IDs; program side controls retain their real IDs. Hidden-id
 T10 applies to nonempty component IDs. D3 covers workspace, side, navigation, and modal.
 D4 filters passive/unknown modal IDs even in externally supplied malformed states.
-D6 copies raw provenance/human-only/pending flags exactly; the painter may label
-the provenance but must not infer or modify it. Pending fields get a confirm button.
+D6 copies raw provenance/human-only/pending flags exactly. Optional
+`UiScreen.fieldSources` pairs each shown sourced field's component ID with its
+Lean-produced public source caption. The painter displays that caption verbatim
+and attaches it as the field's accessible description; it does not interpret the
+machine provenance key. The original field provenance remains intact. Older
+JSON without this metadata retains its original caption. Pending fields keep
+their existing confirm button. No capture, confirmation, receipt or D-rule is added.
 
 Button roles `confirm` and `ack` select their named events. `toggle` uses the
 existing Event.click for group headers; `primary`, `secondary`, `nav`, and `macro`
@@ -135,15 +141,16 @@ and semantic T10/T11. `UiTests.lean` has satisfiable Tiny/FHIR instances, a miss
 review program, round trips, and axiom reports. The proof comparator checks these
 statements independently of the solution. D5 belongs to the checker: decidable
 `NavSane spec prog` in NavRules checks the workflow-wide overview labels, group sizes, and orphans.
-That overview diagnostic is not a certificate of the new interactive shell nav.
-Its expanded P1 report still fails the 12-entry limit; no entries
-are truncated. The content/checker integration request is tracked separately.
+The interactive shell navigator uses real goto components; overview coverage
+and interactive button semantics are checked separately. Neither view truncates
+its source entries to meet a size limit.
 
 Field kind strings preserve `identity`, `scan`, and `cosign`. Formulary inputs
 carry `code:<name>|<name>...`, taken directly from Lean's formulary; other coded
 inputs use `code`. This keeps the original entry semantics and choices without
-requiring React to reconstruct domain data. The clinical banner includes allergy
-records/reactions/status and code status from Facts.record's `codeStatus` value,
+requiring React to reconstruct domain data. The clinical banner summarizes
+allergy substances/status; complete reactions remain in allergy lists and
+required reviews. It includes code status from Facts.record's `codeStatus` value,
 or explicit `Not recorded` if unavailable. It never assumes full code.
 
 The program's banner is represented once in the shell. Navigator groups tagged
@@ -168,3 +175,19 @@ are transparent to clinical presence; the original complete info and action
 nodes remain the proof target. A source group tagged `layout.columns` emits
 semantic columns. Browser-only filters, synthetic actions and inferred clinical
 statuses are not part of this drawing contract.
+
+`valueSet` supplies typed code/label choices around an unchanged field. The
+browser sends the chosen code, with the same human/provenance/confirmation
+metadata; unlisted codes require explicit selection when allowed. An explicit
+confirm button remains the single confirmation affordance through transparent
+wrappers. Search text alone does not create captured evidence.
+
+`chartReferences` supplies read-only published curves around the complete growth
+info. WHO 2006 and CDC 2000 samples are generated from their published tables,
+with source hashes in `GrowthStandards.lean`. Lean selects only an explicit
+recorded birth-sex population and applicable supplied measures/ages. Missing or
+conflicting coding does not fall back to administrative gender. Unknown height
+units are not assumed to be centimeters. The painter scales the supplied points;
+it never estimates a patient's percentile or selects a reference population.
+
+The optional `UiScreen.screen` identifies a Lean destination for painter scroll lifecycle only. It is never a visible label. `layout.clinicalActivity` on a shown source component suppresses the read-only progress strip, leaving clinical navigation and all controls intact. Desktop sticky patient context is a geometry-only painter behavior; no clinical selection, permissions, or source values are inferred.

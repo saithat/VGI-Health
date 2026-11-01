@@ -6,7 +6,7 @@ rather than a duplicate navigation predicate. Exported JSON is checked separatel
 by --run below. These are executable checks, not a checker certificate. -/
 namespace Ehr.Canonical
 
-#guard canonicalV1.screens.length == (if Specs.ruleProfile == .full then 47 else 45)
+#guard canonicalV1.screens.length == (if Specs.ruleProfile == .full then 48 else 46)
 #guard Blueprint.relocations.length == 87
 #guard personaRoles.all fun (id, role) =>
   decide (Render.NavSane Specs.V1.specV1 (forPersona Specs.V1.specV1 canonicalV1 id role))

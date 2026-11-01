@@ -22,7 +22,8 @@ def program (kind : UiPresentationKind) (info title : String) : Program :=
     id := "presentation-example", start := "example", screens :=
       [{ id := "example", title, workflow := "W1", components :=
         [{ id := "banner", kind := .banner, tag := "banner" },
-         { id := "records", kind := .table info, label := title, tag := "present." ++ kind.tag }] }] }
+         { id := "records", kind := .table info, label := title,
+           tag := (if [.schedule, .trackBoard, .orSchedule, .messages].contains kind then "layout.overview." else "") ++ "present." ++ kind.tag }] }] }
 
 /-- A normal source group supplies both panes of an In Basket screen. -/
 def inBasketProgram : Program :=
@@ -30,7 +31,7 @@ def inBasketProgram : Program :=
     id := "in-basket-example", start := "example", screens :=
       [{ id := "example", title := "In Basket", workflow := "W2", components :=
         [{ id := "banner", kind := .banner, tag := "banner" },
-         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.columns" },
+         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.overview.layout.columns" },
          { id := "folders", parent? := some "basket", kind := .panel "inBasketFolders", label := "My Messages", tag := "present.folderList" },
          { id := "messages", parent? := some "basket", kind := .table "inBasketMessages", label := "Results • In Basket", tag := "present.messages" }] }] }
 
@@ -57,6 +58,8 @@ mutual
 /-- Strip only layout wrappers for the same-record before view. -/
 def unstyled : UiNode → List UiNode
   | .presentation _ children => unstyledList children
+  | .valueSet _ _ children => unstyledList children
+  | .chartReferences _ children => unstyledList children
   | .rowAction _ _ children => unstyledList children
   | .section id title children => [.section id title (unstyledList children)]
   | .columns children => [.columns (unstyledList children)]
@@ -86,7 +89,7 @@ def main (args : List String) : IO Unit := do
       let rt := Fhir.resourceType r
       let subject := Fhir.str (Fhir.field r "subject") "reference"
       if rt == "Encounter" then
-        if kind == .trackBoard then Fhir.str (Fhir.field r "class") "code" == "EMER"
+        if kind == .trackBoard then Fhir.str (Fhir.field r "class") "code" == "EMER" && subject == "Patient/" ++ selected
         else Fhir.str r "id" == "inpatient" && selected == "p1"
       else if rt == "Appointment" then kind == .schedule
       else subject == "" || subject == "Patient/" ++ selected
@@ -105,7 +108,12 @@ def main (args : List String) : IO Unit := do
         bindings := bindings ++ [{ key := info, artifact := "example-" ++ info, version := 1 }]
     let facts := { facts with infoPayloads? := some payloads, artifactBindings? := some bindings, record := ("codeStatus", "Full code") :: facts.record }
     let prog := program kind info title
-    let user : User := { id := "visual-review", role := .physician }
+    let role : Role := match kind with
+      | .worklist | .timeGrid | .flowsheet => .rn
+      | .growth => .np
+      | .orSchedule | .notes => .surgeon
+      | _ => .physician
+    let user : User := { id := "visual-review", role }
     let state := init Examples.Tiny.spec prog facts user
     let input : RenderInput := { spec := Examples.Tiny.spec, program := prog, facts, display, user, state }
     inputs := inputs ++ [(kind.tag, input)]
@@ -118,7 +126,8 @@ def main (args : List String) : IO Unit := do
     let screen := runRenderUi input
     IO.FS.writeFile (out / "inBasket.json") (toJson screen).pretty
     IO.FS.writeFile (out / "inBasket-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
-    let input := { base with program := rowActionsProgram, state := init base.spec rowActionsProgram base.facts base.user }
+    let user := { base.user with role := .rn }
+    let input := { base with program := rowActionsProgram, user, state := init base.spec rowActionsProgram base.facts user }
     inputs := inputs ++ [("rowActions", input)]
     let screen := runRenderUi input
     for (control, target) in [("open-mar", "mar-detail"), ("open-pain", "pain-detail"), ("open-vitals", "vitals-detail")] do
@@ -128,5 +137,19 @@ def main (args : List String) : IO Unit := do
       unless back.screen == "example" do throw (IO.userError s!"Return failed: {control}")
     IO.FS.writeFile (out / "rowActions.json") (toJson screen).pretty
     IO.FS.writeFile (out / "rowActions-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
+  if let some (_, base) := inputs.find? (fun (name, _) => name == "growth") then
+    let bundle ← IO.ofExcept (Json.parse (← IO.FS.readFile "Ehr/Render/TestData/growth-units.json"))
+    let (facts, display) ← IO.ofExcept (Fhir.parseBundle { today := "2026-11-01" } bundle)
+    let facts := { facts with
+      record := ("codeStatus", "Full code") :: facts.record
+      infoPayloads? := base.facts.infoPayloads?
+      artifactBindings? := base.facts.artifactBindings? }
+    let input := { base with facts, display, state := init base.spec base.program facts base.user }
+    inputs := inputs ++ [("growthUnits", input)]
+    IO.FS.writeFile (out / "growthUnits.json") (toJson (runRenderUi input)).pretty
+    -- This is a true pre-fix semantic snapshot, with its original incorrect readings.
+    let before : UiScreen ← IO.ofExcept (fromJson? (← IO.ofExcept
+      (Json.parse (← IO.FS.readFile "Ehr/Render/TestData/growth-units-before-ui.json"))))
+    IO.FS.writeFile (out / "growthUnits-before.json") (toJson before).pretty
   IO.FS.writeFile (out / "api-inputs.jsonl") ("\n".intercalate (inputs.map encodeJson) ++ "\n")
   IO.println s!"Exported {inputs.length} structured examples and before views to {out}"

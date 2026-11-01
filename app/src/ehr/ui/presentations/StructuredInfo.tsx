@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { UiPresentationKind } from "../../../../../lean/generated/ehr-types";
 import type { NodeOf, Pair } from "../types";
 import { DisplayValue } from "../display";
+import { formatMedicationDirections } from "../clinical-display";
 import { ClinicalChart } from "./charts";
 import { MarGrid } from "./MarGrid";
 import "./presentations.css";
@@ -12,7 +13,8 @@ export type RowActions = ReadonlyMap<number, ReactNode>;
 /** Color decorates source text. It never determines a clinical value. */
 export function suppliedTone(value: string): string | undefined {
   const word = (value.split(/[·\n]/)[0] ?? "").trim().toLowerCase();
-  if (/^(overdue|critical|hh|ll|abnormal|a)$/.test(word)) return "red";
+  if (/^(overdue|critical|urgent|stat|hh|ll|abnormal|a)$/.test(word))
+    return "red";
   if (/^(low|l)$/.test(word)) return "blue";
   if (/^(high|h)$/.test(word)) return "amber";
   if (/^(given|complete|completed|signed|done)$/.test(word)) return "green";
@@ -23,7 +25,7 @@ export function suppliedTone(value: string): string | undefined {
   )
     return "amber";
   if (/^(refused|declined)$/.test(word)) return "violet";
-  if (/^(due|scheduled|pending|booked|ordered|unread)$/.test(word))
+  if (/^(due|scheduled|pending|booked|ordered|requested|unread)$/.test(word))
     return "blue";
   if (
     /^(future|stopped|discontinued|cancelled|canceled|unknown|not given|not-done)$/.test(
@@ -61,10 +63,12 @@ export function RecordTable({
   const columns = [
     ...new Set(node.rows.flatMap((row) => row.map(([key]) => key))),
   ];
+  if (columns.length === 0) columns.push("Record");
   return (
     <div className="presentation-table-wrap">
       <table
-        className={`presentation-table table-${kind}`}
+        className={`presentation-table table-${kind}${actions?.size ? " with-row-actions" : ""}`}
+        data-columns={columns.length}
         aria-label={node.label}
       >
         <thead>
@@ -102,8 +106,20 @@ export function RecordTable({
                       {values.length ? (
                         values.map((value, n) => (
                           <span className="presentation-cell-value" key={n}>
-                            {isStatus(key, kind) ? (
+                            {key === "Text" ? (
+                              value
+                            ) : isStatus(key, kind) ? (
                               <SuppliedStatus value={value} />
+                            ) : node.infoId === "currentMeds" &&
+                              key === "Instructions" ? (
+                              <span title={value} aria-label={value}>
+                                {formatMedicationDirections(
+                                  row.find(
+                                    ([name]) => name === "Medication",
+                                  )?.[1] ?? "",
+                                  value,
+                                ) || "—"}
+                              </span>
                             ) : (
                               <DisplayValue value={value || "—"} />
                             )}
@@ -217,7 +233,9 @@ function NoteCards({ node }: { node: Info }) {
               >
                 <dt>{key}</dt>
                 <dd>
-                  {key === "Status" ? (
+                  {key === "Text" ? (
+                    value
+                  ) : key === "Status" ? (
                     <SuppliedStatus value={value} />
                   ) : (
                     <DisplayValue value={value || "—"} />

@@ -40,7 +40,7 @@ for (const name of ["Aaron", "Terrance"]) {
     expect(result.status).toBe("works");
     await expect(page.locator('[data-info-id="searchResults"]')).toBeVisible();
     await expect(
-      page.getByRole("dialog", { name: "Live Medplum encounter" }),
+      page.getByRole("dialog", { name: "Encounter options" }),
     ).not.toBeVisible();
     await page.evaluate(
       (id) => window.__buttonAuditSession?.restore(id),

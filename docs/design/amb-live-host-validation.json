@@ -1,0 +1,115 @@
+{
+  "sourceRevisionAtValidation": "9040afc6f8d961be0870199fc1f8b372b4da9b27",
+  "sourceDirtyAtValidation": true,
+  "scope": "Connected host cleanup; Lean programs, specs, interpreter and semantic UI unchanged from M10. Subsequent uncommitted prefill-caption work is excluded.",
+  "leanSourceHash": "a9e7c8edc6aada39984e3b8033f3480b5b5fe582489c528da50d4d197ea48f47",
+  "nativeBinarySha256": "a9a7fc4adedce61f3ba4a36f979a58181215c68bcbc0ab84c10bfe91c759a81d",
+  "appBuild": {
+    "schemaVersion": 1,
+    "appSha256": "1e38ef69b579c37aa5fde9e450e5b729496e5b55b1546081bfc0f4a46e3b91b4"
+  },
+  "beforeHostSource": "9040afc:app/src/LiveApp.tsx",
+  "beforeScope": "Exact old host component rebuilt with the current M12 transport; before tests explicitly select the newly created encounter.",
+  "beforeAppBuild": {
+    "schemaVersion": 1,
+    "appSha256": "979de3f410d4b7c32c3d55643f448ed936eaee0ca5b26b03a8838672edd532de"
+  },
+  "appTests": 240,
+  "agentTests": 84,
+  "liveTransactionTests": 6,
+  "beforeBrowserTests": 2,
+  "afterHostAndSearchBrowserTests": 5,
+  "appBuildLintAndAgentTypecheckLint": true,
+  "canonicalControlReport": "docs/design/amb-live-button-audit-baseline.json",
+  "deployedControlReport": "docs/design/amb-live-button-audit-deployed.json",
+  "nativeCoreValidation": "docs/design/amb-realism-validation.json at 9040afc; unchanged Lean source in this host-only commit",
+  "newEncounterSelectedByServerReturnedId": true,
+  "inspectionModeWritebackJsonVerified": true,
+  "testClock": "Before/after use distinct review minutes to exercise real new receipts rather than idempotent same-minute repeats. No captured state or review receipt is fabricated.",
+  "screenshots": [
+    {
+      "path": "app/shots/realism/amb/after-P1-live-inspection-options.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9b78b695740ab1198b95cf2be32f04c952c3bcb762384255f67beea10826c67c"
+    },
+    {
+      "path": "app/shots/realism/amb/after-P1-live-inspection-save.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "f6a8b594b5f9e6c24369ae9730561e13b758c93a1ea733f7c4a153f95af4444d"
+    },
+    {
+      "path": "app/shots/realism/amb/after-P1-live-options.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "36362861a0df98dcc4cad9d677226a337e512b82931b322b7eb59122d069c01c"
+    },
+    {
+      "path": "app/shots/realism/amb/after-P1-live-save.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "07e02dcec031f608dc781588610379dfa6f42aca097285a0ded55ceb2bcb9f34"
+    },
+    {
+      "path": "app/shots/realism/amb/after-P1-live-selection.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2366fe47f77c771c57a7513cde997cb786f42d2c0a93c4b350aff78dd0f07906"
+    },
+    {
+      "path": "app/shots/realism/amb/after-P4-live-options.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e40f55a30fa23eb0627d94a05c08ab3f0c6413555324b182bfaa3b5f89a16f64"
+    },
+    {
+      "path": "app/shots/realism/amb/after-P4-live-save.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "70c5184ffcd48656db5cf4a376569110bdc96bad8e11d97f0032341f7f851ffb"
+    },
+    {
+      "path": "app/shots/realism/amb/after-P4-live-selection.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "bff842112c42f337f3a940c6d7cffb8c7e0a048c035b503d5d44d46ad6b7e448"
+    },
+    {
+      "path": "app/shots/realism/amb/before-P1-live-options.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "3d65ca84fb776cc2febdc6a9cf98b0789f4473c7c952e8b65dd61302f39786c8"
+    },
+    {
+      "path": "app/shots/realism/amb/before-P1-live-save.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c9ae52d0d3d829bff841cbc08ff2838f2b655ae1b28a52f48790db19f4cf406f"
+    },
+    {
+      "path": "app/shots/realism/amb/before-P1-live-selection.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "73e6a82b6e96729b10bc875659e3e13e5b9b2c75a55d1bacd93fdafc804675a3"
+    },
+    {
+      "path": "app/shots/realism/amb/before-P4-live-options.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b48182f6d8b4ca0f5ca7ff0b4239111aec54f480300bd6e4f50abc71286ff054"
+    },
+    {
+      "path": "app/shots/realism/amb/before-P4-live-save.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e1116f6dabb14ddfecb214cb4dfd0df324af6dab85102a24683d9ec5c11344f9"
+    },
+    {
+      "path": "app/shots/realism/amb/before-P4-live-selection.png",
+      "width": 1440,
+      "height": 900,
+      "sha256": "b3155ac4de87e5fce65536ca3620a3bdd5f4d3e11fce1c250c6e56e1083e7918"
+    }
+  ]
+}

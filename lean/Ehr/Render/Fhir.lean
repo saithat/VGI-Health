@@ -1,6 +1,7 @@
 import Lean.Data.Json
 import Ehr.Render.Json
 import Ehr.Formulary
+import Ehr.Core.Basics
 
 /-!
 # FHIR bundle → facts and display
@@ -219,6 +220,17 @@ def sexOf (p : Json) : String :=
   | "female" => "F"
   | "male" => "M"
   | _ => "U"
+
+/-- Growth references require explicit birth-sex coding, not administrative
+gender. Missing, unknown or conflicting source values remain unavailable. -/
+def growthReferenceSex (p : Json) : Option String :=
+  let codes := ((arr p "extension").filter fun extension =>
+    str extension "url" == "http://hl7.org/fhir/us/core/StructureDefinition/us-core-birthsex").map
+      (str · "valueCode") |>.eraseDups
+  match codes with
+  | ["M"] => some "M"
+  | ["F"] => some "F"
+  | _ => none
 
 /-- Stable identity shared by fixture and Medplum Patient records. This is
 also the wristband payload: the Synthea identifier search token when present,
@@ -460,12 +472,6 @@ def obsValue (r : Json) : String × String × Option Nat :=
       let cc := field r "valueCodeableConcept"
       if cc != .null then (ccText cc, "", none) else (str r "valueString", "", none)
 
-/-- The display row of a vital sign. -/
-def vitalRow (r : Json) : VitalRow :=
-  let (v, u, h) := obsValue r
-  { id := str r "id", code := firstCode (field r "code"), name := ccText (field r "code")
-    value := v, unit := u, date := obsWhen r, hundredths? := h }
-
 /-! ## Labs -/
 
 /-- Demo reference ranges (×100) by LOINC code: low, high, text. Not clinical advice. -/
@@ -688,6 +694,8 @@ def noteRow (r : Json) : NoteRow :=
     title := let title := str r "description"
       if title != "" then title else knownText (str (attachments.headD .null) "title")
     text := if attachments.isEmpty then "Note body unavailable (no attachments)"
+      else if attachments.length == 1 && str (attachments.headD .null) "title" == "" then
+        noteAttachmentText (attachments.headD .null)
       else "\n\n".intercalate (attachments.zipIdx.map fun (a, i) =>
         "Attachment " ++ toString (i + 1) ++
         (if str a "title" == "" then "" else ": " ++ str a "title") ++ "\n" ++ noteAttachmentText a)
@@ -758,16 +766,30 @@ def historyVersionOf (rs : List Json) : Nat := listVersion (rs.filter isHistoryR
 
 /-! ## Growth -/
 
+/-- Normalize an explicitly supplied height unit for a centimeter growth axis.
+Unknown units stay unavailable; an unlabelled number is never assumed to be cm. -/
+def heightCmTenths (quantity : Json) : Option Nat :=
+  let code := str quantity "code"
+  let unit := (if code == "" then str quantity "unit" else code).toLower
+  match unit with
+  | "cm" => qtyScaled quantity 1
+  | "m" => qtyScaled quantity 3
+  | "[in_i]" | "in" => (qtyScaled quantity 3).map (fun n => n * 254 / 10000)
+  | _ => none
+
 /-- Growth points: body weights (kg) and heights (cm), joined by day, oldest
-first. -/
+first. Each day uses the latest recorded reading, independent of bundle order. -/
 def growthPoints (dob : String) (rs : List Json) : List GrowthPoint :=
+  let rs := oldestFirst obsWhen (rs.filter fun r => isBodyWeight r ||
+    (isObservation r && hasCode (field r "code") bodyHeightCode))
   let ws := (rs.filter isBodyWeight).filterMap fun r =>
     match weightReading r with
     | some (w, .kg) => some (dayOf (obsWhen r), w)
     | some (w, .lb) => some (dayOf (obsWhen r), w * 4536 / 10000)
+    | some (w, .g) => some (dayOf (obsWhen r), w / 1000)
     | _ => none
   let hs := (rs.filter fun r => isObservation r && hasCode (field r "code") bodyHeightCode).filterMap
-    fun r => (qtyScaled (field r "valueQuantity") 1).map (dayOf (obsWhen r), ·)
+    fun r => (heightCmTenths (field r "valueQuantity")).map (dayOf (obsWhen r), ·)
   let days := oldestFirst id ((ws.map (·.1) ++ hs.map (·.1)).eraseDups)
   days.map fun d =>
     { date := d, ageMonths := ageMonths dob d
@@ -819,31 +841,13 @@ def coverageOf (rs : List Json) : String :=
     | some e => str (field (first e "insurance") "coverage") "display"
     | none => ""
 
-/-- The banner fields. -/
-def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
-  let enc := (latestEncounter rs).getD .null
-  let encProvider := str (field (first enc "participant") "individual") "display"
-  let gp := str (first p "generalPractitioner") "display"
-  { name := displayName p
-    mrn := mrnOf p
-    dob := str p "birthDate"
-    ageYears := ageYears (str p "birthDate") today
-    sex := sexOf p
-    language := ccText (field (first p "communication") "language")
-    pcp := if gp != "" then gp else encProvider
-    coverage := coverageOf rs
-    encounterClass := str (field enc "class") "code"
-    attending := encProvider
-    location := (encRow enc).location
-    weight? := bannerWeightOf today rs }
-
-/-! ## Structured display projections -/
-
 /-- Resolve a reference against the supplied bundle, without guessing a patient. -/
 def referenced? (rs : List Json) (ref : Json) : Option Json :=
   let key := str ref "reference"
   if key == "" then none else rs.find? fun r =>
-    str r "id" != "" && (str r "id" == key || key == resourceType r ++ "/" ++ str r "id")
+    let raw := str r "id"
+    let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
+    !id.isEmpty && (key == raw || key == resourceType r ++ "/" ++ id || key == "urn:uuid:" ++ id)
 
 /-- Human-readable reference text. Internal FHIR references are never displayed. -/
 def humanRef (rs : List Json) (ref : Json) : String :=
@@ -853,6 +857,26 @@ def humanRef (rs : List Json) (ref : Json) : String :=
     | none => ""
     | some r => if resourceType r == "Patient" then displayName r
       else if resourceType r == "Practitioner" then practitionerName r else str r "name"
+
+/-- The banner fields. -/
+def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
+  let enc := (latestEncounter rs).getD .null
+  let encProvider := humanRef rs (field (first enc "participant") "individual")
+  let gp := humanRef rs (first p "generalPractitioner")
+  { name := displayName p
+    mrn := mrnOf p
+    dob := str p "birthDate"
+    ageYears := ageYears (str p "birthDate") today
+    sex := sexOf p
+    language := ccText (field (first p "communication") "language")
+    pcp := gp
+    coverage := coverageOf rs
+    encounterClass := str (field enc "class") "code"
+    attending := encProvider
+    location := (encRow enc).location
+    weight? := bannerWeightOf today rs }
+
+/-! ## Structured display projections -/
 
 /-- Age and sex are read only from the referenced patient. -/
 def refAgeSex (today : String) (rs : List Json) (ref : Json) : String :=
@@ -945,21 +969,6 @@ def administrationRows (rs : List Json) : List AdministrationRow :=
   oldestFirst (·.time) ((ofType "MedicationAdministration" rs |>.filter
     (fun r => str r "status" != "entered-in-error")).map (administrationRow rs))
 
-/-- One clinical Observation, including integer and boolean assessments. -/
-def observationRow (r : Json) : ObservationRow :=
-  let (value, unit, _) := obsValue r
-  let value := if value != "" then value else
-    match field r "valueInteger" with
-    | .num n => toString n
-    | _ => match field r "valueBoolean" with
-      | .bool b => if b then "Yes" else "No"
-      | _ => "Not recorded"
-  { measure := ccText (field r "code"), value, unit, time := obsWhen r, status := str r "status" }
-
-/-- Each clinical Observation retains its own time, unit, value and status. -/
-def observationRows (rs : List Json) : List ObservationRow :=
-  oldestFirst (·.time) ((rs.filter isObservation).map observationRow)
-
 /-- Lab flag from source interpretation, else numeric comparison in Lean.
 The existing demo reference-range policy is unchanged. -/
 def labFlag (r : Json) : String :=
@@ -977,6 +986,505 @@ def labFlags (rs : List Json) : List (String × String) :=
   ((labs.map (fun r => firstCode (field r "code"))).eraseDups).filterMap fun code =>
     (latestBy obsWhen (labs.filter (fun r => firstCode (field r "code") == code))).map
       (fun r => (code, labFlag r))
+
+/-- Preserve every source interpretation concept, preferring standard flag codes. -/
+def labSourceFlags (r : Json) : String :=
+  " · ".intercalate (((arr r "interpretation").map fun cc =>
+    (((codings cc).map (str · "code")).find? (fun code => abnormalCodes.contains code || code == "N"))
+      |>.getD (ccText cc)).filter (· != ""))
+
+/-- A complex result keeps the comparator and unit alongside its recorded quantity. -/
+def labQuantityText (q : Json) : String :=
+  let value := qtyText q
+  let unit := qtyUnitText q
+  if value == "" then if unit == "" then "" else "Value not recorded (" ++ unit ++ ")"
+  else str q "comparator" ++ value ++ (if unit == "" then "" else " " ++ unit)
+
+/-- Retain sampled values and their supplied scale/timing as readable clinical data. -/
+def labSampledValue (s : Json) : String :=
+  let number := fun key => match field s key with | .num n => toString n | _ => ""
+  let entry := fun label value => if value == "" then "" else label ++ ": " ++ value
+  " · ".intercalate ([entry "Samples" (str s "data"), entry "Origin" (labQuantityText (field s "origin")),
+    entry "Factor" (number "factor"), entry "Period (ms)" (number "period"),
+    entry "Dimensions" (number "dimensions"), entry "Lower limit" (number "lowerLimit"),
+    entry "Upper limit" (number "upperLimit")].filter (· != ""))
+
+/-- Raw laboratory values retain comparators, signed values and qualitative results. -/
+def labResultValue (r : Json) : String :=
+  let quantity := field r "valueQuantity"
+  if quantity != .null then str quantity "comparator" ++ qtyText quantity
+  else if field r "valueCodeableConcept" != .null then ccText (field r "valueCodeableConcept")
+  else if str r "valueString" != "" then str r "valueString" else
+    match field r "valueInteger" with
+    | .num n => toString n
+    | _ => match field r "valueBoolean" with
+      | .bool b => if b then "Yes" else "No"
+      | _ =>
+        let range := field r "valueRange"
+        let ratio := field r "valueRatio"
+        let period := field r "valuePeriod"
+        let low := labQuantityText (field range "low")
+        let high := labQuantityText (field range "high")
+        if range != .null then
+          if low != "" && high != "" then low ++ "–" ++ high
+          else if low != "" then "Low: " ++ low else if high != "" then "High: " ++ high else "Range not recorded"
+        else if ratio != .null then
+          let numerator := labQuantityText (field ratio "numerator")
+          let denominator := labQuantityText (field ratio "denominator")
+          (if numerator == "" then "Numerator not recorded" else numerator) ++ " / " ++
+            (if denominator == "" then "Denominator not recorded" else denominator)
+        else if str r "valueDateTime" != "" then str r "valueDateTime"
+        else if str r "valueTime" != "" then str r "valueTime"
+        else if period != .null then str period "start" ++ " – " ++ str period "end"
+        else if field r "valueSampledData" != .null then labSampledValue (field r "valueSampledData")
+        else let reason := ccText (field r "dataAbsentReason")
+          if reason != "" then "Not available · " ++ reason
+          else if !(arr r "component").isEmpty then "See component results" else "Not recorded"
+
+/-- Units of the existing demo intervals; no numeric interval or clinical fact changes. -/
+def renderRefUnits : List (String × String) :=
+  [("2339-0", "mg/dL"), ("4548-4", "%"), ("6298-4", "mmol/L"),
+   ("2947-0", "mmol/L"), ("2069-3", "mmol/L"), ("2028-9", "mmol/L"),
+   ("38483-4", "mg/dL"), ("6299-2", "mg/dL"), ("49765-1", "mg/dL"),
+   ("2093-3", "mg/dL"), ("18262-6", "mg/dL"), ("2085-9", "mg/dL"),
+   ("2571-8", "mg/dL"), ("718-7", "g/dL"), ("6690-2", "10*3/uL"),
+   ("777-3", "10*3/uL"), ("33914-3", "mL/min/1.73m2")]
+
+/-- A configured display interval is used only with its recorded matching unit. -/
+def labDemoRangeCompatible (r : Json) : Bool :=
+  let unit := qtyUnitText (field r "valueQuantity")
+  unit != "" && renderRefUnits.lookup (firstCode (field r "code")) == some unit
+
+/-- Keep source range text, bounds and population qualifiers together. -/
+def labRangeText (unit : String) (rr : Json) : String :=
+  let quantity := fun q =>
+    if qtyText q == "" then
+      if qtyUnitText q == "" then "" else "Not recorded " ++ qtyUnitText q
+    else qtyText q ++ (if qtyUnitText q == "" || qtyUnitText q == unit then "" else " " ++ qtyUnitText q)
+  let low := quantity (field rr "low")
+  let high := quantity (field rr "high")
+  let bounds := if low != "" && high != "" then low ++ "–" ++ high
+    else if low != "" then "Low: " ++ low else if high != "" then "High: " ++ high else ""
+  let age := field rr "age"
+  let ageLow := quantity (field age "low")
+  let ageHigh := quantity (field age "high")
+  let ageText := if age == .null then "" else
+    if ageLow != "" && ageHigh != "" then "Age " ++ ageLow ++ "–" ++ ageHigh
+    else if ageLow != "" then "Age low: " ++ ageLow
+    else if ageHigh != "" then "Age high: " ++ ageHigh else "Age not recorded"
+  " · ".intercalate ([bounds, str rr "text", ccText (field rr "type"),
+    ", ".intercalate ((arr rr "appliesTo").map ccText), ageText].filter (· != ""))
+
+/-- Show each observation's own interval; incompatible demo units stay unknown. -/
+def labResultRange (r : Json) : String :=
+  let ranges := arr r "referenceRange"
+  if !ranges.isEmpty then "; ".intercalate (ranges.map (labRangeText (qtyUnitText (field r "valueQuantity"))))
+  else if labDemoRangeCompatible r then
+    match (labPoint r).range? with
+    | some (low, high) => fmtHundredths low ++ "–" ++ fmtHundredths high
+    | none => ""
+  else ""
+
+/-- An inferred display flag needs an exact quantity and an unambiguous unit context. -/
+def labResultFlag (r : Json) : String :=
+  let source := labSourceFlags r
+  if source != "" then source
+  else if str (field r "valueQuantity") "comparator" != "" then ""
+  else match arr r "referenceRange" with
+  | [] => if labDemoRangeCompatible r then labFlag r else ""
+  | [rr] =>
+    let unit := qtyUnitText (field r "valueQuantity")
+    let unitsMatch := fun q => qtyUnitText q == "" || qtyUnitText q == unit
+    if (qtyScaled (field rr "low") 2).isSome && (qtyScaled (field rr "high") 2).isSome &&
+        unitsMatch (field rr "low") && unitsMatch (field rr "high") &&
+        (arr rr "appliesTo").isEmpty && field rr "age" == .null &&
+        (field rr "type" == .null || firstCode (field rr "type") == "normal")
+    then labFlag r else ""
+  | _ => ""
+
+/-- One result retains its own raw value and metadata, never the latest row's unit. -/
+def labResultRow (r : Json) : LabResultRow :=
+  { code := firstCode (field r "code"), name := labDisplayName (field r "code")
+    value := labResultValue r, unit := qtyUnitText (field r "valueQuantity"), date := obsWhen r
+    refRange := labResultRange r, flag := labResultFlag r, status := str r "status" }
+
+/-- Component values keep their names and units and inherit the report's time/status. -/
+def labComponentResultRow (parent component : Json) : LabResultRow :=
+  let row := labResultRow component
+  { row with name := labDisplayName (field parent "code") ++ " • " ++ row.name
+             date := obsWhen parent, status := str parent "status" }
+
+/-- Retain the report row and every component, without merging same-time records. -/
+def labResultRowsFor (r : Json) : List LabResultRow :=
+  labResultRow r :: (arr r "component").map (labComponentResultRow r)
+
+/-- Full clinical result history. Latest-result aggregates remain a separate legacy API. -/
+def labResultRows (rs : List Json) : List LabResultRow :=
+  newestFirst (·.date) ((rs.filter isLab).flatMap labResultRowsFor)
+
+/-- Only explicitly coded BP components can form a systolic/diastolic pair.
+FHIR slices are unordered; a component's array position never supplies its meaning. -/
+def observationBpValue? (r : Json) : Option (String × String) := do
+  let loinc := fun cc code => (codings cc).any
+    (fun c => str c "system" == "http://loinc.org" && str c "code" == code)
+  let suppliedValue := ["valueQuantity", "valueCodeableConcept", "valueString", "valueBoolean",
+    "valueInteger", "valueRange", "valueRatio", "valueSampledData", "valueTime", "valueDateTime", "valuePeriod"]
+      |>.any (fun key => field r key != .null)
+  if suppliedValue || !loinc (field r "code") "85354-9" then none else do
+    let [systolic] := (arr r "component").filter (fun c => loinc (field c "code") "8480-6") | none
+    let [diastolic] := (arr r "component").filter (fun c => loinc (field c "code") "8462-4") | none
+    let s := field systolic "valueQuantity"
+    let d := field diastolic "valueQuantity"
+    if systolic == diastolic || qtyText s == "" || qtyText d == "" || qtyUnitText s == "" || qtyUnitText s != qtyUnitText d then none
+    else some (str s "comparator" ++ qtyText s ++ "/" ++ str d "comparator" ++ qtyText d, qtyUnitText s)
+
+/-- Source values include assessments, absent reasons and censored quantities. -/
+def observationRow (r : Json) : ObservationRow :=
+  let (value, unit) := (observationBpValue? r).getD
+    (labResultValue r, qtyUnitText (field r "valueQuantity"))
+  { measure := ccText (field r "code"), value, unit, time := obsWhen r,
+    status := str r "status", categories := categoryCodes r }
+
+/-- Ambulatory vitals use coded BP meaning and retain component labels/units.
+Unpaired or ambiguous panels stay explicit instead of acquiring slash order. -/
+def vitalRow (r : Json) : VitalRow :=
+  let reading := observationRow r
+  let components := arr r "component"
+  let bp := observationBpValue? r
+  let bpPart := fun c => (codings (field c "code")).any fun code =>
+    str code "system" == "http://loinc.org" && ["8480-6", "8462-4"].contains (str code "code")
+  let exactPair := bp.isSome && components.all (fun c => str (field c "valueQuantity") "comparator" == "")
+  let details := if exactPair then components.filter (fun c => !bpPart c) else components
+  let detailText := details.map fun c =>
+    let name := ccText (field c "code")
+    (if name == "" then "Component" else name) ++ ": " ++ labResultValue c ++
+      (let unit := qtyUnitText (field c "valueQuantity")
+       if unit == "" then "" else " " ++ unit)
+  let primary := if reading.value == "See component results" then "" else
+    reading.value ++ if reading.unit == "" then "" else " " ++ reading.unit
+  let value := if components.isEmpty || exactPair && details.isEmpty then reading.value
+    else " · ".intercalate ((if primary == "" || !exactPair && bp.isSome then [] else [primary]) ++ detailText)
+  let unit := if components.isEmpty || exactPair && details.isEmpty then reading.unit else ""
+  { id := str r "id", code := firstCode (field r "code"), name := reading.measure
+    value, unit, date := reading.time
+    hundredths? := if components.isEmpty && str (field r "valueQuantity") "comparator" == ""
+      then qtyScaled (field r "valueQuantity") 2 else none }
+
+/-- Every assessment component retains its own value/unit and report context. -/
+def observationComponentRow (parent component : Json) : ObservationRow :=
+  let row := observationRow component
+  { row with
+    measure := ccText (field parent "code") ++ " • " ++ row.measure
+    time := obsWhen parent
+    status := str parent "status"
+    categories := categoryCodes parent }
+
+/-- Parent and component records are all retained, including repeated timestamps. -/
+def observationRowsFor (r : Json) : List ObservationRow :=
+  observationRow r :: (arr r "component").map (observationComponentRow r)
+
+/-- Each valid Observation retains its own time, category, value and components. -/
+def observationRows (rs : List Json) : List ObservationRow :=
+  oldestFirst (·.time) ((rs.filter isObservation).flatMap observationRowsFor)
+
+/-! ## Ambulatory supporting views
+
+These are display projections of supplied FHIR records. They do not infer
+protocol eligibility, delivery, adherence, percentiles or vaccine due dates.
+The ordinary InfoPayload boundary keeps patient/version binding intact. -/
+
+namespace Ambulatory
+
+/-- A typed appointment row; opening its encounter remains an ordinary UI goto. -/
+structure AmbulatoryScheduleRow where
+  time : String
+  patient : String
+  ageSex : String
+  visitType : String
+  status : String
+  complaint : String
+  provider : String
+  location : String
+  deriving Inhabited
+
+/-- A typed message row, preserving the Task's actual status and received time. -/
+structure AmbulatoryMessageRow where
+  received : String
+  patient : String
+  subject : String
+  sender : String
+  priority : String
+  status : String
+  folder : String
+  deriving Inhabited
+
+/-- References are used only for matching; internal resource IDs are never cells. -/
+def referenceMatches (reference : String) (p : Json) : Bool :=
+  let raw := str p "id"
+  let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
+  !id.isEmpty && (reference == raw || reference == "Patient/" ++ id || reference == "urn:uuid:" ++ id)
+
+/-- Select only tasks explicitly bound to the current chart. -/
+def patientTasks (rs : List Json) (p : Json) : List Json :=
+  newestFirst (str · "authoredOn") ((ofType "Task" rs).filter fun r =>
+    referenceMatches (str (field r "for") "reference") p &&
+    !["entered-in-error", "cancelled", "completed", "failed"].contains (str r "status"))
+
+/-- Folder names describe the supplied message type, not a made-up workflow. -/
+def taskFolder (r : Json) : String :=
+  let code := (ccText (field r "code") ++ " " ++ str r "description").toLower
+  if (code.splitOn "refill").length > 1 || (code.splitOn "rx request").length > 1 then "Rx Requests"
+  else if (code.splitOn "result").length > 1 then "Results" else "Patient Messages"
+
+/-- Project every current-chart appointment on the requested day. -/
+def scheduleRows (ctx : FactsContext) (rs : List Json) (p : Json) : List AmbulatoryScheduleRow :=
+  ((ofType "Appointment" rs).filter fun r =>
+    dayOf (str r "start") == ctx.today && (arr r "participant").any fun participant =>
+      referenceMatches (str (field participant "actor") "reference") p).map fun r =>
+    let participants := (arr r "participant").map (field · "actor")
+    let displayFor := fun referenceType =>
+      ", ".intercalate ((participants.filter (fun actor => (str actor "reference").startsWith referenceType)).map (str · "display"))
+    { time := str r "start", patient := displayName p
+      ageSex := s!"{ageYears (str p "birthDate") ctx.today} / {sexOf p}"
+      visitType := ccText (field r "appointmentType"), status := str r "status"
+      complaint := let reason := "; ".intercalate ((arr r "reasonCode").map ccText)
+        if reason == "" then str r "description" else reason
+      provider := displayFor "Practitioner/", location := displayFor "Location/" }
+
+/-- The supplied Task list, without guessed unread or completion flags. -/
+def messageRows (rs : List Json) (p : Json) : List AmbulatoryMessageRow :=
+  (patientTasks rs p).map fun r =>
+    { received := str r "authoredOn", patient := displayName p
+      subject := let description := str r "description"
+        if description == "" then ccText (field r "code") else description
+      sender := str (field r "requester") "display", priority := str r "priority"
+      status := str r "status", folder := taskFolder r }
+
+/-- Enclosing Task context tolerates an absent legacy fragment subject, but an
+explicitly different patient reference is never treated as the same person. -/
+def refillPatientCompatible (left right : String) : Bool :=
+  let normalize := fun (key : String) =>
+    if key.startsWith "urn:uuid:" then sub key 9 key.length
+    else if key.startsWith "Patient/" then sub key 8 key.length else key
+  left == "" || right == "" || normalize left == normalize right
+
+/-- Resolve the medication actually referenced by a refill request, including
+contained MedicationRequests. Never substitute the first active medication. -/
+def refillMedication (rs : List Json) (task : Json) : Option Json :=
+  let reference := str (field task "focus") "reference"
+  let candidate := if reference.startsWith "#" then
+    (arr task "contained").find? fun r => resourceType r == "MedicationRequest" &&
+      reference == "#" ++ str r "id"
+  else (ofType "MedicationRequest" rs).find? fun r =>
+    let raw := str r "id"
+    let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
+    !id.isEmpty && (reference == raw || reference == "MedicationRequest/" ++ id ||
+      reference == "urn:uuid:" ++ id)
+  candidate.filter fun r =>
+    let owner := str (field r "subject") "reference"
+    let patient := str (field task "for") "reference"
+    refillPatientCompatible owner patient
+
+/-- A pharmacy display is shown only when the prescription actually supplies it. -/
+def prescriptionPharmacy (rs : List Json) (r : Json) : String :=
+  humanRef rs (field (field r "dispenseRequest") "performer")
+
+/-- Latest dated observations per coded analyte, retaining same-time records,
+components and records whose date or identity is unknown. Full history remains
+in Chart Review and the selected-analyte trend. -/
+def latestResultSources (rs : List Json) : List Json :=
+  let labs := rs.filter isLab
+  let key := fun r =>
+    let coding := (codings (field r "code")).headD .null
+    let code := str coding "code"
+    if code == "" then ("", ccText (field r "code")) else (str coding "system", code)
+  let latest := (labs.map key).eraseDups.map fun code =>
+    (code, ((latestBy obsWhen (labs.filter (fun r => key r == code))).map obsWhen).getD "")
+  labs.filter fun r => key r == ("", "") || obsWhen r == "" || latest.lookup (key r) == some (obsWhen r)
+
+/-- An active focused prescription, or its explicitly linked active predecessor.
+The first medication with a similar name is never substituted. -/
+def currentRefillPrescription (rs : List Json) (task requested : Json) : Option Json :=
+  if str requested "status" == "active" || str requested "status" == "on-hold" then some requested
+  else (referenced? rs (field requested "priorPrescription")).filter fun r =>
+    resourceType r == "MedicationRequest" && (str r "status" == "active" || str r "status" == "on-hold") &&
+      refillPatientCompatible (str (field r "subject") "reference") (str (field requested "subject") "reference") &&
+      refillPatientCompatible (str (field r "subject") "reference") (str (field task "for") "reference")
+
+/-- Prescription detail is source text; a missing unit never becomes mg. -/
+def refillPrescriptionDetail (rs : List Json) (r : Json) (detail : String) : String :=
+  let value := match detail with
+    | "Dose" =>
+      let q := field (first (first r "dosageInstruction") "doseAndRate") "doseQuantity"
+      if qtyText q == "" then "" else
+        qtyText q ++ if qtyUnitText q == "" then " (unit not recorded)" else " " ++ qtyUnitText q
+    | "Dispense quantity" =>
+      let q := field (field r "dispenseRequest") "quantity"
+      qtyText q ++ if qtyUnitText q == "" then "" else " " ++ qtyUnitText q
+    | "Refills" => match field (field r "dispenseRequest") "numberOfRepeatsAllowed" with
+      | .num n => toString n
+      | _ => ""
+    | "Pharmacy" => prescriptionPharmacy rs r
+    | _ => ""
+  if value == "" then "Not recorded" else value
+
+/-- The response column is added later from the interpreter's actual captures.
+No proposed prescription or protocol pass is inferred from chart data. -/
+def refillComparisonRows (rs : List Json) (task : Json) : List (List (String × String)) :=
+  match refillMedication rs task with
+  | none => []
+  | some requested =>
+    let current := (currentRefillPrescription rs task requested).getD .null
+    ["Dose", "Dispense quantity", "Refills", "Pharmacy"].map fun detail =>
+      [("detail", detail), ("requested", refillPrescriptionDetail rs requested detail),
+       ("current", refillPrescriptionDetail rs current detail),
+       ("proposed", "Awaiting clinician entry"), ("source", "Referenced prescription")]
+
+/-- A last-fill date needs a completed dispensing record for this prescription
+or the same explicit medication code/system, not a reported medication statement. -/
+def refillLastFill (rs : List Json) (task requested : Json) : String :=
+  let coding := (codings (field requested "medicationCodeableConcept")).headD .null
+  let code := str coding "code"
+  let system := str coding "system"
+  let eligibleFill := fun r =>
+    let linked := (arr r "authorizingPrescription").any fun ref =>
+      (referenced? rs ref).any (fun rx => resourceType rx == "MedicationRequest" &&
+        str rx "id" != "" && str rx "id" == str requested "id")
+    let sameCode := code != "" && system != "" &&
+      (codings (field r "medicationCodeableConcept")).any fun c =>
+        str c "code" == code && str c "system" == system
+    str r "status" == "completed" && str r "whenHandedOver" != "" && (linked || sameCode) &&
+      refillPatientCompatible (str (field r "subject") "reference") (str (field task "for") "reference")
+  ((latestBy (str · "whenHandedOver") ((ofType "MedicationDispense" rs).filter eligibleFill)).map
+    (str · "whenHandedOver")).getD "Not recorded"
+
+/-- Complete raw result rows, with the original reference ranges and flags. -/
+def resultRows (rs : List Json) : List (List (String × String)) :=
+  (newestFirst obsWhen (rs.filter isLab)).flatMap fun source =>
+    (labResultRowsFor source).map fun lab =>
+      [("test", lab.name), ("value", lab.value), ("unit", lab.unit),
+       ("flag", lab.flag), ("referenceRange", lab.refRange),
+       ("collectedAt", lab.date), ("resultedAt", str source "issued"),
+       ("status", lab.status)]
+
+/-- Match relative or transaction-bundle references without showing them. -/
+def resolveReference (rs : List Json) (reference : String) : Option Json :=
+  if reference.isEmpty then none else rs.find? fun r =>
+    let raw := str r "id"
+    let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
+    !id.isEmpty && (reference == raw || reference == resourceType r ++ "/" ++ id ||
+      reference == "urn:uuid:" ++ id)
+
+/-- The selected result Task owns its report/Observation references. Older
+unrelated analytes remain in Chart Review, not the selected-result report. -/
+def selectedResultSources (rs : List Json) (p : Json) : List Json :=
+  match (patientTasks rs p).find? (fun task => taskFolder task == "Results") with
+  | none => rs.filter isLab
+  | some task =>
+    let inputs := (arr task "input").filterMap fun input =>
+      resolveReference rs (str (field input "valueReference") "reference")
+    let focus := resolveReference rs (str (field task "focus") "reference")
+    let fromReport := focus.toList.flatMap fun report =>
+      if resourceType report == "Observation" then [report]
+      else (arr report "result").filterMap fun reference => resolveReference rs (str reference "reference")
+    (inputs ++ fromReport).filter isLab |>.eraseDups
+
+/-- All dated observations of the selected analytes, with units kept separate
+by the presentation contract. No current-value row is duplicated. -/
+def selectedTrendRows (rs selected : List Json) : List (List (String × String)) :=
+  let codes := selected.map fun r => firstCode (field r "code")
+  (oldestFirst obsWhen ((rs.filter isLab).filter fun r => codes.contains (firstCode (field r "code")))).flatMap fun r =>
+    (labResultRowsFor r).map fun lab =>
+      [("Test", lab.name), ("Recorded", lab.date), ("Value", lab.value),
+       ("Unit", lab.unit), ("Range", lab.refRange), ("Flag", lab.flag), ("Status", lab.status)]
+
+/-- Forecast rows are read from ImmunizationRecommendation, never calculated
+from age or an incomplete immunization history. -/
+def forecastRows (rs : List Json) : List (List (String × String)) :=
+  (ofType "ImmunizationRecommendation" rs).flatMap fun r =>
+    (arr r "recommendation").map fun recommendation =>
+      [("Vaccine", "; ".intercalate ((arr recommendation "vaccineCode").map ccText)),
+       ("Status", ccText (field recommendation "forecastStatus")),
+       ("Forecast date", str r "date"),
+       ("Due dates", "; ".intercalate ((arr recommendation "dateCriterion").map fun date =>
+         ccText (field date "code") ++ ": " ++ str date "value")),
+       ("Source", str (field r "authority") "display")]
+
+/-- Add a view only when source records exist. Empty data stays visibly absent. -/
+def payload (p : Json) (rs : List Json) (info : InfoId)
+    (rows : List (List (String × String))) (allowEmpty : Bool := false) : Option InfoPayload :=
+  if rows.isEmpty && !allowEmpty then none else
+  let version := listVersion rs
+  some {
+    info := info
+    patient := patientIdOf p
+    artifactKey := "ambulatory:" ++ info
+    artifact := "FHIR bundle projection:" ++ toString version
+    version := version
+    rows := rows.zipIdx.map fun (fields, slot) => { id := toString slot, slot, fields } }
+
+/-- Supporting clinic/inbox data, kept separate from all clinical guard logic. -/
+def payloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload :=
+  if !(rs.any fun r => ["Appointment", "Task", "Encounter", "MedicationDispense",
+      "ImmunizationRecommendation"].contains (resourceType r) || isLab r) then [] else
+  let messages := messageRows rs p
+  let tasks := patientTasks rs p
+  let selectedResults := selectedResultSources rs p
+  let refill := tasks.find? (fun r => taskFolder r == "Rx Requests")
+  let priorVisit := latestBy (fun r => str (field r "period") "start")
+    ((ofType "Encounter" rs).filter fun r =>
+      let date := str (field r "period") "start"
+      date != "" && dayOf date < ctx.today && str r "status" != "entered-in-error")
+  let requestRows := refill.toList.map fun task =>
+    let rx := (refillMedication rs task).getD .null
+    [("Medication", medName rx), ("Sig", sigText rx),
+     ("Prescription status", let status := str rx "status"
+       if status == "" then "Not recorded" else status),
+     ("Requested by", str (field task "requester") "display"),
+     ("Received", str task "authoredOn"), ("Prescription date", str rx "authoredOn"),
+     ("Pharmacy", let name := prescriptionPharmacy rs rx
+       if name == "" then "Not recorded" else name),
+     ("Last fill", refillLastFill rs task rx),
+     ("Last encounter", (priorVisit.map (fun r => str (field r "period") "start")).getD "Not recorded"),
+     ("Request", str task "description"), ("Status", str task "status")]
+  let views : List (InfoId × List (List (String × String))) :=
+    [("inBasketFolders", if tasks.isEmpty then [] else ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
+        [("Folder", folder), ("Count", toString (messages.filter (·.folder == folder)).length)]),
+     ("scheduleTasks", (scheduleRows ctx rs p).map fun row =>
+        [("time", row.time), ("patient", row.patient), ("Age / sex", row.ageSex),
+         ("Visit type", row.visitType), ("status", row.status), ("Chief complaint", row.complaint),
+         ("Provider", row.provider), ("Location", row.location)]),
+     ("inbasketItems", messages.map fun row =>
+        [("received", row.received), ("patient", row.patient), ("subject", row.subject),
+         ("sender", row.sender), ("priority", row.priority), ("status", row.status), ("Folder", row.folder)]),
+     ("inBasketResults", (messages.filter (·.folder == "Results")).map fun row =>
+        [("received", row.received), ("patient", row.patient), ("subject", row.subject),
+         ("sender", row.sender), ("priority", row.priority), ("status", row.status)]),
+     ("inBasketRxRequests", (messages.filter (·.folder == "Rx Requests")).map fun row =>
+        [("received", row.received), ("patient", row.patient), ("subject", row.subject),
+         ("sender", row.sender), ("priority", row.priority), ("status", row.status)]),
+     ("messagePreview", (messages.filter (·.folder == "Results")).take 1 |>.map fun row =>
+        [("subject", row.subject), ("context", row.folder ++ " — " ++ row.sender), ("received", row.received)]),
+     ("refillRequest", requestRows),
+     ("refillComparison", refill.toList.flatMap (refillComparisonRows rs)),
+     ("resultDetail", resultRows selectedResults), ("resultTrend", selectedTrendRows rs selectedResults),
+     ("relevantLabs", resultRows (latestResultSources rs)),
+     ("lastVisit", priorVisit.toList.map fun r =>
+        let row := encRow r
+        [("Date", row.start), ("Visit type", row.encType), ("Setting", row.encClass), ("Reason", row.reason),
+         ("Provider", row.provider), ("Location", row.location)]),
+     ("adherence", ((ofType "MedicationDispense" rs).filter (fun r => str r "status" != "entered-in-error")).map fun r =>
+        [("Medication", medName r), ("Last fill", str r "whenHandedOver"),
+         ("Quantity", qtyText (field r "quantity")), ("Days supply", qtyText (field r "daysSupply")),
+         ("Status", str r "status"), ("Source", "Dispensing record")]),
+     ("immunizationHistory", forecastRows rs)]
+  -- A selected Task with unresolved references is an explicitly empty report,
+  -- not permission to substitute unrelated historical analytes.
+  views.filterMap fun (info, rows) => payload p rs info rows
+    (tasks.any (fun task => taskFolder task == "Results") &&
+      ["resultDetail", "resultTrend"].contains info)
+
+end Ambulatory
 
 /-! ## Facts and display -/
 
@@ -1160,6 +1668,13 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let visitDx := match latestEncounter (encounterRecords ctx rs p) with
     | some e => firstCode (first e "reasonCode")
     | none => ""
+  let surgical := surgicalPayloads ctx.today rs p
+  let ambulatory := Ambulatory.payloads ctx rs p
+  let setting := encounterKindOf ctx rs p
+  let preop := setting == some "preop" ||
+    (setting.isNone && !(surgicalCaseRows ctx.today rs p).isEmpty)
+  let supporting := (surgical.filter fun payload => payload.info != "scheduleTasks" || preop) ++
+    (ambulatory.filter fun payload => payload.info != "scheduleTasks" || !preop)
   { patientId := patientIdOf p
     identity := { initials := initials p, sex := sexOf p, ageYears := age }
     allergyVersion := listVersion allergies
@@ -1175,8 +1690,9 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     medToGive? := ctx.medToGive?
     encounterKind? := encounterKindOf ctx rs p
     receipts := ctx.receipts
-    infoPayloads? := some (surgicalPayloads ctx.today rs p)
-    artifactBindings? := some (surgicalBindings (surgicalPayloads ctx.today rs p))
+    infoPayloads? := some supporting
+    artifactBindings? := some (supporting.map fun payload =>
+      { key := payload.artifactKey, artifact := payload.artifact, version := payload.version })
     record := (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++ ctx.record }
 
 /-- The display rows. -/
@@ -1194,11 +1710,13 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     encounters := newestFirst (·.start) ((ofType "Encounter" rs).map encRow)
     procedures := newestFirst (·.date) ((ofType "Procedure" rs).map procRow)
     growth := growthPoints dob rs
+    growthReferenceSex? := if isoDateValid dob && isoDateValid ctx.today && dob ≤ ctx.today
+      then growthReferenceSex p else none
     notes := noteRows rs
     history := historyRows rs
     schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs
     marOrders := marOrderRows rs, administrations := administrationRows rs
-    observations := observationRows rs, labFlags := labFlags rs
+    observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs
     clinicians? := match clinicianRows rs with | [] => none | rows => some rows }
 
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the

@@ -1,0 +1,700 @@
+{
+  "resourceType": "Bundle",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p0",
+        "name": [
+          {
+            "family": "Morgan",
+            "given": [
+              "Alex"
+            ]
+          }
+        ],
+        "birthDate": "2017-05-01",
+        "gender": "female",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MR"
+                }
+              ]
+            },
+            "value": "00450892"
+          }
+        ],
+        "generalPractitioner": [
+          {
+            "display": "Maya Brooks, MD"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p1",
+        "name": [
+          {
+            "family": "Chen",
+            "given": [
+              "David"
+            ]
+          }
+        ],
+        "birthDate": "1974-03-22",
+        "gender": "male",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MR"
+                }
+              ]
+            },
+            "value": "00451892"
+          }
+        ],
+        "generalPractitioner": [
+          {
+            "display": "Maya Brooks, MD"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p2",
+        "name": [
+          {
+            "family": "Patel",
+            "given": [
+              "Anika"
+            ]
+          }
+        ],
+        "birthDate": "1988-06-18",
+        "gender": "female",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MR"
+                }
+              ]
+            },
+            "value": "00452892"
+          }
+        ],
+        "generalPractitioner": [
+          {
+            "display": "Maya Brooks, MD"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p3",
+        "name": [
+          {
+            "family": "Williams",
+            "given": [
+              "James"
+            ]
+          }
+        ],
+        "birthDate": "1961-12-06",
+        "gender": "male",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MR"
+                }
+              ]
+            },
+            "value": "00453892"
+          }
+        ],
+        "generalPractitioner": [
+          {
+            "display": "Maya Brooks, MD"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p4",
+        "name": [
+          {
+            "family": "Garcia",
+            "given": [
+              "Elena"
+            ]
+          }
+        ],
+        "birthDate": "1994-10-25",
+        "gender": "female",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MR"
+                }
+              ]
+            },
+            "value": "00454892"
+          }
+        ],
+        "generalPractitioner": [
+          {
+            "display": "Maya Brooks, MD"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "p5",
+        "name": [
+          {
+            "family": "Anderson",
+            "given": [
+              "Robert"
+            ]
+          }
+        ],
+        "birthDate": "1958-08-13",
+        "gender": "male",
+        "identifier": [
+          {
+            "type": {
+              "coding": [
+                {
+                  "code": "MR"
+                }
+              ]
+            },
+            "value": "00455892"
+          }
+        ],
+        "generalPractitioner": [
+          {
+            "display": "Maya Brooks, MD"
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "dr",
+        "name": [
+          {
+            "family": "Brooks",
+            "given": [
+              "Maya"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Location",
+        "id": "clinic",
+        "name": "Family Medicine \u2022 West Pavilion"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-29463-7-0",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 22200,
+          "unit": "g",
+          "code": "g",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2024-05-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-8302-2-0",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body height",
+          "coding": [
+            {
+              "code": "8302-2"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 120.4,
+          "unit": "cm",
+          "code": "cm",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2024-05-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-29463-7-1",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 23.1,
+          "unit": "kg",
+          "code": "kg",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2024-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-8302-2-1",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body height",
+          "coding": [
+            {
+              "code": "8302-2"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 1.232,
+          "unit": "m",
+          "code": "m",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2024-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-29463-7-2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 24.7,
+          "unit": "kg",
+          "code": "kg",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2025-05-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-8302-2-2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body height",
+          "coding": [
+            {
+              "code": "8302-2"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 126.4,
+          "unit": "cm",
+          "code": "cm",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2025-05-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-29463-7-3",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 26.2,
+          "unit": "kg",
+          "code": "kg",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2025-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-8302-2-3",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body height",
+          "coding": [
+            {
+              "code": "8302-2"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 129.5,
+          "unit": "cm",
+          "code": "cm",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2025-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-29463-7-4",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 28.1,
+          "unit": "kg",
+          "code": "kg",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-05-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-8302-2-4",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body height",
+          "coding": [
+            {
+              "code": "8302-2"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 132.7,
+          "unit": "cm",
+          "code": "cm",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-05-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-29463-7-5",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 30.4,
+          "unit": "kg",
+          "code": "kg",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-8302-2-5",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body height",
+          "coding": [
+            {
+              "code": "8302-2"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 135.6,
+          "unit": "cm",
+          "code": "cm",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-unit-late",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 30.4,
+          "unit": "kg",
+          "code": "kg",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-11-01T10:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "growth-unit-early",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Body weight",
+          "coding": [
+            {
+              "code": "29463-7"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 29.9,
+          "unit": "kg",
+          "code": "kg",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p0"
+        }
+      }
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import { UiChildren } from "../src/ehr/ui/nodes";
 import { clinicalTheme } from "../src/ehr/ui/theme";
 import { uiNodeSchema, type UiNode } from "../src/ehr/ui/types";
 import { suppliedTone } from "../src/ehr/ui/presentations/StructuredInfo";
+import { expectedNodeAria } from "../src/ehr/ui/fidelity";
 
 beforeAll(() => {
   window.matchMedia = vi.fn().mockImplementation(() => ({
@@ -390,6 +391,10 @@ describe("structured clinical data boundary", () => {
     expect(measurements.textContent).not.toContain("31.177548");
     expect(references.textContent).toContain("31.177548");
     expect(references.textContent).toContain("CDC 2000, girls 2–20 years");
+    const ageLabels = [
+      ...screen.getByRole("img").querySelectorAll('text[y="222"]'),
+    ].map((tick) => tick.textContent);
+    expect(ageLabels).toEqual(["114"]);
   });
   it("labels a single dated observation once without inventing a time range", () => {
     paint([
@@ -406,8 +411,8 @@ describe("structured clinical data boundary", () => {
                 rows: [
                   [
                     ["Measure", "Example"],
-                    ["Value", "5"],
-                    ["Unit", "mg/dL"],
+                    ["Value", "120"],
+                    ["Unit", "g/L"],
                     ["Recorded", "Nov 1, 2026 23:30"],
                   ],
                 ],
@@ -417,7 +422,16 @@ describe("structured clinical data boundary", () => {
         },
       },
     ]);
-    expect(screen.getAllByText("23:30")).toHaveLength(1);
+    const plot = screen.getByRole("img");
+    const clockLabels = [...plot.querySelectorAll("text")]
+      .map((tick) => tick.textContent)
+      .filter((label) => label?.includes("23:30"));
+    expect(clockLabels).toEqual(["Nov 1, 2026 23:30"]);
+    const valueLabels = [
+      ...plot.querySelectorAll('text[text-anchor="end"]'),
+    ].map((tick) => tick.textContent);
+    expect(new Set(valueLabels).size).toBe(valueLabels.length);
+    expect(valueLabels).toContain("120");
     expect(screen.queryByText("Nov 2")).toBeNull();
   });
   it("uses explicit status words and never derives a flag from a numeric value", () => {
@@ -427,6 +441,106 @@ describe("structured clinical data boundary", () => {
     expect(suppliedTone("Held · Per order")).toBe("amber");
     expect(suppliedTone("6.5")).toBeUndefined();
     expect(suppliedTone("No high alert")).toBeUndefined();
+  });
+  it("draws a time series chronologically while retaining the supplied table order", () => {
+    const dates = ["Nov 1, 2026", "Nov 3, 2026", "Nov 2, 2026"];
+    paint([
+      {
+        presentation: {
+          kind: "trend",
+          children: [
+            {
+              info: {
+                comp: "unordered",
+                label: "Recorded history",
+                infoId: "history",
+                display: "trend",
+                rows: dates.map((date, i) => [
+                  ["Test", "Example"],
+                  ["Value", String(i + 1)],
+                  ["Recorded", date],
+                ]),
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const points = [...screen.getByRole("img").querySelectorAll("circle")].map(
+      (point) => Number(point.getAttribute("cx")),
+    );
+    expect(points).toEqual([...points].sort((a, b) => a - b));
+    expect(points).toHaveLength(3);
+    const rows = [
+      ...screen.getByRole("table").querySelectorAll("tbody tr"),
+    ].map((row) => row.textContent);
+    dates.forEach((date, i) => expect(rows[i]).toContain(date));
+  });
+  it("retains numeric text outside the plotting range without inventing a point", () => {
+    const value = "9".repeat(400);
+    const node: UiNode = {
+      presentation: {
+        kind: "trend",
+        children: [
+          {
+            info: {
+              comp: "large",
+              label: "Source result",
+              infoId: "resultTrend",
+              display: "trend",
+              rows: [
+                [
+                  ["Test", "Example"],
+                  ["Value", value],
+                  ["Recorded", "Nov 1, 2026"],
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    };
+    paint([node]);
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.getByRole("table").textContent).toContain(value);
+    expect(expectedNodeAria(node).some((entry) => entry.role === "img")).toBe(
+      false,
+    );
+  });
+  it("keeps finite geometry for a large supplied numeric result", () => {
+    const values = ["174", "178"].map((prefix) => prefix + "0".repeat(306));
+    paint([
+      {
+        presentation: {
+          kind: "trend",
+          children: [
+            {
+              info: {
+                comp: "large-finite",
+                label: "Finite result",
+                infoId: "resultTrend",
+                display: "trend",
+                rows: values.map((value, i) => [
+                  ["Test", "Example"],
+                  ["Value", value],
+                  ["Recorded", `Nov ${i + 1}, 2026`],
+                ]),
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const circles = [...screen.getByRole("img").querySelectorAll("circle")];
+    expect(circles).toHaveLength(2);
+    expect(
+      circles.every((circle) =>
+        Number.isFinite(Number(circle.getAttribute("cy"))),
+      ),
+    ).toBe(true);
+    values.forEach((value) =>
+      expect(screen.getByRole("table").textContent).toContain(value),
+    );
   });
   it("validates the new semantic wrapper and rejects an unknown wire kind", () => {
     expect(

@@ -10,18 +10,19 @@ import { flushSync } from "react-dom";
 import { MantineProvider } from "@mantine/core";
 import { UiScreenView } from "./ui/Screen";
 import type { UiScreen } from "./ui/types";
-import type { Emit } from "./ui/nodes";
 import { clinicalTheme } from "./ui/theme";
 import { paint } from "./painter";
 import type { Html } from "./html";
+import type { Event } from "../../../lean/generated/ehr-types";
 
 declare global {
   interface Window {
     renderEhr: (tree: Html) => void;
     renderUi: (
       screen: UiScreen,
-      presentations?: PresentationBundle | null,
-      onEvent?: Emit,
+      presentationsOrEvent?:
+        PresentationBundle | null | ((event: Event) => void),
+      onEvent?: (event: Event) => void,
     ) => void;
   }
 }
@@ -32,14 +33,22 @@ window.renderEhr = (tree) => {
   flushSync(() => root.render(paint(tree, () => {})));
 };
 
-window.renderUi = (screen, presentations, onEvent) => {
+window.renderUi = (screen, presentationsOrEvent, onEvent) => {
+  const presentations =
+    typeof presentationsOrEvent === "function"
+      ? null
+      : (presentationsOrEvent ?? null);
+  const emit =
+    typeof presentationsOrEvent === "function"
+      ? presentationsOrEvent
+      : (onEvent ?? (() => {}));
   flushSync(() =>
     root.render(
       <MantineProvider theme={clinicalTheme}>
         <UiScreenView
           screen={screen}
-          onEvent={onEvent ?? (() => {})}
-          presentations={presentations ?? null}
+          onEvent={emit}
+          presentations={presentations}
         />
       </MantineProvider>,
     ),

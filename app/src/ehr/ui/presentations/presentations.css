@@ -1,5 +1,6 @@
 /* Clinical data surfaces. Global shell colors remain owned by the shell lane. */
 .clinical-presentation {
+  container: clinical-records / inline-size;
   --p-ink: var(--clinical-ink, #243341);
   --p-muted: var(--clinical-muted, #526171);
   --p-border: var(--clinical-border, #cbd5df);
@@ -12,6 +13,12 @@
   border-radius: 3px;
   font-size: 12px;
   line-height: 16px;
+}
+.presentation-trackBoard {
+  container-name: clinical-board;
+}
+.presentation-timeGrid {
+  container-name: clinical-mar;
 }
 .presentation-heading {
   margin: 0;
@@ -77,10 +84,42 @@
   font-variant-numeric: tabular-nums;
 }
 .table-schedule th:nth-child(2),
-.table-schedule td:nth-child(2),
-.table-trackBoard th:nth-child(2),
-.table-trackBoard td:nth-child(2) {
+.table-schedule td:nth-child(2) {
   width: 17%;
+}
+.table-trackBoard [data-column="Patient"] {
+  width: 12.5%;
+}
+.table-trackBoard [data-column="Chief complaint"] {
+  width: 13.5%;
+}
+.table-trackBoard [data-column="Room"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="Acuity"],
+.table-trackBoard [data-column="Arrival"],
+.table-trackBoard [data-column="LOS"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="RN"],
+.table-trackBoard [data-column="Provider"] {
+  width: 6.5%;
+}
+.table-trackBoard [data-column="Age/sex"] {
+  width: 6%;
+}
+.table-trackBoard [data-column="Labs"],
+.table-trackBoard [data-column="Imaging"],
+.table-trackBoard [data-column="Disposition"] {
+  width: 8%;
+}
+.table-trackBoard [data-column="Status"] {
+  width: 9%;
+}
+.table-trackBoard th,
+.table-trackBoard td {
+  padding-left: 6px;
+  padding-right: 6px;
 }
 .table-schedule th:nth-child(6),
 .table-schedule td:nth-child(6) {
@@ -90,23 +129,59 @@
 .table-orSchedule td:nth-child(3) {
   width: 28%;
 }
-.table-messages th:nth-child(1) {
+.table-messages[data-columns="6"] th:nth-child(1) {
   width: 19%;
 }
-.table-messages th:nth-child(2) {
+.table-messages[data-columns="6"] th:nth-child(2) {
   width: 17%;
 }
-.table-messages th:nth-child(3) {
+.table-messages[data-columns="6"] th:nth-child(3) {
   width: 29%;
 }
-.table-messages th:nth-child(4) {
+.table-messages[data-columns="6"] th:nth-child(4) {
   width: 12%;
 }
-.table-messages th:nth-child(5) {
+.table-messages[data-columns="6"] th:nth-child(5) {
   width: 9%;
 }
-.table-messages th:nth-child(6) {
+.table-messages[data-columns="6"] th:nth-child(6) {
   width: 14%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(1) {
+  width: 16%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(2) {
+  width: 16%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(3) {
+  width: 24%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(4) {
+  width: 9%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(5) {
+  width: 9%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(6) {
+  width: 11%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(7) {
+  width: 15%;
+}
+.table-results [data-column="Test"] {
+  width: 28%;
+}
+.table-results [data-column="Unit"] {
+  width: 9%;
+}
+.table-results [data-column="Flag"] {
+  width: 6%;
+}
+.table-flowsheet [data-column="Measure"] {
+  width: 28%;
+}
+.table-flowsheet [data-column="Unit"] {
+  width: 9%;
 }
 .table-timeGrid th,
 .table-timeGrid td,
@@ -181,7 +256,7 @@
   border-bottom: 0;
 }
 .presentation-folder-name {
-  flex: 1 1 130px;
+  flex: 1 1 88px;
   font-weight: 600;
 }
 .presentation-folder-count {
@@ -257,12 +332,13 @@
 .presentation-chart svg {
   display: block;
   width: 100%;
+  max-width: 700px;
   height: auto;
   overflow: visible;
 }
 .presentation-chart svg text {
   fill: var(--p-muted);
-  font-size: 20px;
+  font-size: 16px;
   font-family: inherit;
 }
 .chart-grid {
@@ -334,6 +410,52 @@
   }
 }
 
+/* A patient sidebar can constrain a widget even in a wide browser window. */
+@container clinical-board (max-width: 1000px), clinical-mar (max-width: 800px), clinical-records (max-width: 650px) {
+  .presentation-table thead {
+    display: contents;
+  }
+  .presentation-table thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table th {
+    flex: 1 1 100px;
+    width: auto !important;
+  }
+  .presentation-table tbody,
+  .presentation-table tbody tr {
+    display: block;
+  }
+  .presentation-table tbody tr {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table td {
+    display: grid;
+    grid-template-columns: minmax(90px, 34%) minmax(0, 1fr);
+    gap: 6px;
+    width: auto !important;
+    border: 0;
+    padding: 4px 8px;
+  }
+  .presentation-table td::before {
+    content: attr(data-column);
+    font-weight: 400;
+    color: var(--p-muted);
+  }
+  .presentation-table .presentation-cell-value + .presentation-cell-value {
+    grid-column: 2;
+  }
+}
+@container clinical-board (min-width: 650px) and (max-width: 1000px) {
+  .table-trackBoard tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .presentation-mar th:first-child {
   width: 30%;
 }
@@ -356,10 +478,10 @@
   font-size: 13px;
   line-height: 18px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 .mar-medication-name dt {
-  flex-basis: 100%;
+  flex-basis: auto;
   font-size: 12px;
 }
 .mar-medication-detail {
@@ -451,12 +573,50 @@
 }
 
 /* The columns exist in UiScreen; only their proportions belong to the painter. */
-.clinical-columns:has(> .presentation-folderList) {
+.clinical-columns:has(.presentation-folderList) {
   grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
   align-items: start;
 }
 @media (max-width: 1100px) {
-  .clinical-columns:has(> .presentation-folderList) {
+  .clinical-columns:has(.presentation-folderList) {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* A composed folder/messages view needs one clinical frame, not nested cards. */
+.clinical-section:has(
+  > .clinical-section-body > .clinical-columns .presentation-folderList
+) {
+  border: 0;
+  background: transparent;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-body {
+  padding: 0;
+}
+.clinical-columns:has(.presentation-folderList) > .clinical-section {
+  border: 0;
+  background: transparent;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-body {
+  padding: 0;
 }

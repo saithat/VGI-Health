@@ -37,7 +37,9 @@ export function DisplayValue({ value }: { value: string }) {
       {formatted}
     </time>
   ) : (
-    <span title={value} aria-label={value}>{formatted}</span>
+    <span title={value} aria-label={value}>
+      {formatted}
+    </span>
   );
 }
 
