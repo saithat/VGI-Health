@@ -29,6 +29,7 @@ import {
   bundleResources,
   restoreUser,
   loadPatientBundle,
+  loadListContext,
   loadWorklist,
   quickSignIn,
   readResource,
@@ -82,6 +83,7 @@ const titles: Record<string, string> = {
 type Session = Awaited<ReturnType<typeof createLiveSession>>;
 interface Selection {
   bundle: Bundle;
+  worldContext: Bundle;
   patient: Patient;
   encounters: Encounter[];
   tasks: Task[];
@@ -671,9 +673,10 @@ function Home({
     setPending(true);
     setError("");
     try {
-      const [bundle, beds] = await Promise.all([
+      const [bundle, beds, worldContext] = await Promise.all([
         loadPatientBundle(patientId),
         user.persona === "P2" ? availableBeds() : Promise.resolve([]),
+        loadListContext(user, workDate),
       ]);
       const resources = bundleResources(bundle);
       const patient = resources.find(
@@ -700,6 +703,7 @@ function Home({
       ).flatMap((r) => (r.resourceType === "Location" ? [r] : []));
       setSelection({
         bundle,
+        worldContext,
         patient,
         ...(workItem ? { workItem } : {}),
         beds: [
@@ -1038,7 +1042,7 @@ function Home({
                   program,
                   selection.bundle,
                   user,
-                  context,
+                  { ...context, worldContext: selection.worldContext },
                 );
               })
               .then(setSession)

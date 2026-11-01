@@ -12,7 +12,9 @@ import { catalogSchema, defaultPatient } from "../../src/browser/data";
 const personas = ["P1", "P2", "P3", "P4", "P5", "RN2"];
 // This is a bounded control-configuration audit, not exhaustive state search.
 // Clinical state reachability and every task remain gates in Lean/world-2.
-const maxStatesPerPersona = 48;
+const maxStatesPerPersona = Number(process.env.AUDIT_MAX_STATES ?? 48);
+if (!Number.isInteger(maxStatesPerPersona) || maxStatesPerPersona < 1 || maxStatesPerPersona > 48)
+  throw new Error("AUDIT_MAX_STATES must be an integer from 1 to 48");
 const gotoKind = z.object({
   button: z.object({
     action: z.object({ goto: z.object({ screen: z.string() }) }),

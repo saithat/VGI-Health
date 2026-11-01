@@ -665,3 +665,38 @@
   > .clinical-section-body {
   padding: 0;
 }
+
+/* Explicit flags decorate both the result and its flag, never infer a threshold. */
+.presentation-table .result-high td[data-column="Value"],
+.presentation-table .result-high td[data-column="Result"],
+.presentation-table .result-high td[data-column="Flag"] { color: #a12837; font-weight: 700; }
+.presentation-table .result-low td[data-column="Value"],
+.presentation-table .result-low td[data-column="Result"],
+.presentation-table .result-low td[data-column="Flag"] { color: #215b94; font-weight: 700; }
+.presentation-table .result-critical td { background: #fce7eb; }
+.presentation-table .result-critical td[data-column="Value"],
+.presentation-table .result-critical td[data-column="Result"],
+.presentation-table .result-critical td[data-column="Flag"] { color: #a12837; font-weight: 750; }
+.presentation-table .esi-1 { color: #a12837; background: #fce7eb; }
+.presentation-table .esi-3 { color: #795010; background: #fff0c4; }
+.presentation-table .esi-4 { color: #205e55; background: #e3f2e9; }
+.presentation-table .esi-5 { color: #215b94; background: #e8f1fa; }
+.table-trackBoard [data-column="Arrival"], .table-trackBoard [data-column="LOS"] { white-space: nowrap; overflow-wrap: normal; }
+.presentation-table tr:has([data-row-navigation="true"]) { cursor: pointer; }
+.presentation-table tr:has([data-row-navigation="true"]):hover { background: var(--clinical-selected); }
+.presentation-row-actions .mantine-Button-root { min-width: max-content; }
+@media (min-width: 901px) {
+  .presentation-table.with-row-actions { table-layout: auto; }
+  .presentation-table td { padding-top: 5px; padding-bottom: 5px; }
+}
+.presentation-table .esi-2 { color: #944908; background: #fff0e0; }
+.presentation-chart .chart-latest { color: var(--p-ink); font-weight: 600; }
+.presentation-timeGrid > .presentation-heading { background: #eee8f4; color: #543e70; }
+.presentation-flowsheet > .presentation-heading { background: #e7f3ef; color: #205e55; }
+.presentation-growth > .presentation-heading { background: #e7f3ef; color: #205e55; }
+.presentation-orSchedule > .presentation-heading { background: #fff0e0; color: #944908; }
+@media (min-width: 901px) {
+  .table-trackBoard [data-column="Arrival"] { width: 7.5%; }
+  .table-trackBoard [data-column="Arrival"] .presentation-cell-value,
+  .table-trackBoard [data-column="LOS"] .presentation-cell-value { white-space: nowrap; }
+}

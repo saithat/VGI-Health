@@ -69,6 +69,7 @@ export function writeReport(rows: Control[], scope: string) {
     JSON.stringify(
       {
         generatedAt: new Date().toISOString(),
+        observedStateLimitPerPersona: Number(process.env.AUDIT_MAX_STATES ?? 48),
         auditMode:
           process.env.AUDIT_CANONICAL_BASELINE === "1"
             ? "canonical-baseline"

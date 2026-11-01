@@ -48,17 +48,17 @@ def worklist : Screen :=
   let s := "w4Worklist"
   { id := s, title := "Unit Census & MAR", workflow := "W4"
     components := frame s ++ [
-      presentation "table" (group s "workActivity" "My patients" (collapsible := false)),
-      presentation "table" (wideWorkspace (table s "patients" "unitCensus" "Patient list"
-        (parent := some "workActivity"))),
-      rowAction (cid s "patients") 0 (goto s "toMar" "w4Mar" "Open selected patient's MAR"
-        (parent := some "workActivity")),
-      presentation "worklist" (table s "work" "shiftWorklist" "Selected patient — shift worklist"),
-      presentation "table" (table s "newOrders" "newOrders" "Orders requiring review"),
-      panel s "handoff" "handoffSummary" "Selected patient — handoff report",
-      group s "allergyGroup" "Shift allergy review" (collapsible := false),
+      { group s "census" "My Patients" (collapsible := false) with tag := "layout.overview.present.table" },
+      { table s "work" "shiftWorklist" "Assigned patients" (parent := some "census") with tag := "present.table" },
+      group s "unitContext" "Unit Census" (startCollapsed := true),
+      { table s "unitCensus" "unitCensus" "Unit census — all patients" (parent := some "unitContext") with tag := "present.table" },
+      presentation "worklist" (table s "tasks" "shiftTasks" "Selected patient — shift worklist"),
+      table s "newOrders" "newOrders" "New orders since last shift",
+      panel s "handoff" "handoffSummary" "Last handoff",
+      group s "allergyGroup" "Allergies",
       panel s "allergies" "allergyList" "Allergies" (parent := some "allergyGroup"),
-      reviewBtn s "allergyList" "Mark allergies reviewed — shift start" (parent := some "allergyGroup")
+      reviewBtn s "allergyList" "Mark allergies reviewed (start of shift)" (parent := some "allergyGroup"),
+      { goto s "toMar" "w4Mar" "Open MAR" (parent := some "census") with tag := "present.row|" ++ cid s "work" ++ "|0" }
     ] }
 
 /-- The MAR grid, with PRN history, glucose, and coagulation labs on tabs. -/

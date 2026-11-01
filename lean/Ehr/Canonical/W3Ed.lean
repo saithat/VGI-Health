@@ -47,12 +47,11 @@ def trackBoard : Screen :=
   let s := "w3TrackBoard"
   { id := s, title := "ED Track Board", workflow := "W3"
     components := frame s ++ [
-      presentation "trackBoard" (wideWorkspace (table s "board" "edTrackBoard" "Emergency department patients")),
+      { group s "census" "Emergency Department Census" (collapsible := false) with tag := "layout.overview.present.trackBoard" },
+      { table s "board" "edTrackBoard" "Department" (parent := some "census") with tag := "present.trackBoard" },
+      { goto s "open" "w3Triage" "Open encounter" (parent := some "census") with tag := "present.row|" ++ cid s "board" ++ "|0" },
       group s "selectedActivity" "Selected encounter" (collapsible := false),
-      primaryNavigation (goto s "open" "w3Triage" "Open selected encounter"
-        (parent := some "selectedActivity")),
-      panel s "selected" "triageSummary" "Triage summary"
-        (parent := some "selectedActivity")
+      panel s "selected" "triageSummary" "Triage summary" (parent := some "selectedActivity")
     ] }
 
 /-- Triage: vital signs (weight in kg), acuity, arrival, complaint, isolation

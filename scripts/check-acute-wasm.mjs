@@ -41,6 +41,10 @@ try {
         record: legacy.record.map(([key, value]) => [key, key === 'selectedEncounterId' ? 'another-admission' : value]) };
       const selectedSource = equal('facts', { bundle, context: explicit });
       const rows = (projection, info) => projection.facts.infoPayloads.find(item => item.info === info)?.rows ?? [];
+      assert.equal(rows(source, 'shiftWorklist').length, 1, 'the chart fallback lists the selected patient once');
+      assert.ok(rows(source, 'shiftWorklist').every(row => new Map(row.fields).has('Room')), 'assigned patients retain census columns');
+      assert.equal(rows(source, 'shiftTasks').length, 3, 'all supplied selected-encounter tasks remain separate from the patient list');
+      assert.ok(rows(source, 'shiftTasks').every(row => new Map(row.fields).has('Task')), 'the task worklist retains task descriptions');
       for (const info of ['triageSummary', 'marDoseDetails', 'marSchedule', 'prnHistory']) {
         assert.deepEqual(rows(selectedSource, info), rows(source, info), `${info}: explicit encounter overrides the legacy selector`);
       }

@@ -7,6 +7,7 @@ import { FieldSourceContext } from "./clinical-metadata";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
 import { allergyDisplay, sectionCaption } from "./clinical-display";
+import { ageSex, encounterClass } from "./clinical-formatters";
 import { clinicalCssVariables } from "./theme";
 import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
 import { FieldChoicesContext } from "./FieldChoices";
@@ -76,7 +77,7 @@ export function PatientBanner({
         </strong>
         <span className="clinical-brand-divider" />
         <span>Clinical workspace</span>
-        <span className="clinical-encounter">{viewer ?? "Patient chart"}</span>
+        {viewer && <span className="clinical-encounter">{viewer}</span>}
       </div>
       <div className="clinical-banner-content">
         <div className="patient-avatar" aria-hidden="true">
@@ -93,7 +94,15 @@ export function PatientBanner({
                 <span key={label}>
                   <span className="banner-label">{label} </span>
                   <strong>
-                    <DisplayValue value={value || "Not recorded"} />
+                    <span title={value} aria-label={value}>
+                      <DisplayValue
+                        value={
+                          /age.*sex/i.test(label)
+                            ? ageSex(value)
+                            : value || "Not recorded"
+                        }
+                      />
+                    </span>
                   </strong>
                 </span>
               ))}
@@ -102,8 +111,14 @@ export function PatientBanner({
         <div className="patient-banner-details">
           {fields
             .filter(
-              ([label]) =>
-                !/^(patient|name|patient name|dob|mrn|age.*sex)$/i.test(label),
+              ([label, value]) =>
+                !/^(patient|name|patient name|dob|mrn|age.*sex)$/i.test(
+                  label,
+                ) &&
+                (/allerg/i.test(label) ||
+                  !/^(?:not recorded|not documented|unknown)?$/i.test(
+                    value.trim(),
+                  )),
             )
             .map(([label, value]) =>
               /allerg/i.test(label) ? (
@@ -119,7 +134,7 @@ export function PatientBanner({
                         : "red"
                   }
                   variant="light"
-                  className="allergy-badge"
+                  className={`allergy-badge${allergyDisplay(value) === "Allergies not on file" ? " allergy-unknown" : ""}`}
                   size="lg"
                   title={value}
                   aria-label={`${label}: ${value}`}
@@ -142,11 +157,39 @@ export function PatientBanner({
                     {label}
                   </span>
                   <strong>
-                    <DisplayValue value={value || "Not recorded"} />
+                    <span title={value} aria-label={value}>
+                      <DisplayValue
+                        value={encounterClass(value) || "Not recorded"}
+                      />
+                    </span>
                   </strong>
                 </span>
               ),
             )}
+          <div className="banner-missing">
+            {fields
+              .filter(
+                ([label, value]) =>
+                  !/allerg|^(patient|name|patient name|dob|mrn|age.*sex)$/i.test(
+                    label,
+                  ) &&
+                  /^(?:not recorded|not documented|unknown)?$/i.test(
+                    value.trim(),
+                  ),
+              )
+              .map(([label, value], index) => (
+                <span
+                  key={label}
+                  title={`${label}: ${value}`}
+                  aria-label={`${label}: ${value}`}
+                >
+                  {index > 0 && " · "}
+                  {/code status/i.test(label)
+                    ? "No code status order"
+                    : `${label}: ${value || "Not recorded"}`}
+                </span>
+              ))}
+          </div>
         </div>
       </div>
     </AppShell.Header>
@@ -310,9 +353,6 @@ function StockUiScreenView({
         >
           <div className="clinical-workspace-heading">
             <div>
-              <Text size="xs" c="dimmed" mb={3}>
-                PATIENT CHART <span aria-hidden="true"> / </span> ENCOUNTER
-              </Text>
               <Title order={1} title={screen.title}>
                 {sectionCaption(screen.title)}
               </Title>

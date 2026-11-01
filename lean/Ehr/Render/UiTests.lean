@@ -562,7 +562,7 @@ def uiFlatNavItem : ItemView :=
   | .info "shell.side.problems" _ "problemList" "list" rows => rows == [[("Record", "Hypertension (active)")]]
   | _ => false)
 #guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
-  | .info "shell.allProblems" _ "problemList" "table" rows => rows.length == 2
+  | .info "shell.allProblems" _ "problemList" "table" rows => rows.length == 1
   | _ => false)
 #guard (uiAtomsList uiShellScreen.side).any (fun n => match n with
   | .button "shell.sidebar" "Collapse section" "toggle" _ _ _ => true

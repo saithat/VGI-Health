@@ -9,6 +9,17 @@
     "kind": "search",
     "humanOnly": false,
     "comp": "w1Orders.chartSearch"}},
+  {"section":
+   {"title": "Include resolved problems",
+    "id": "w1Orders.chart.includeResolved",
+    "children":
+    [{"button":
+      {"role": "toggle",
+       "label": "Expand section",
+       "hotkey": null,
+       "enabled": true,
+       "comp": "w1Orders.chart.includeResolved",
+       "blockedReason": null}}]}},
   {"field":
    {"value": null,
     "unit": null,
@@ -651,6 +662,8 @@
   ["Last encounter", "AMB"],
   ["Last provider", ""],
   ["Last location", "NORTHEAST BEHAVIORAL HEALTH LLC"],
+  ["Encounter type", "Encounter for check up (procedure)"],
+  ["Department", ""],
   ["Allergies", "No allergy records on file"],
   ["Code status", "Not recorded"],
   ["Weight", "93.4 kg · Apr 22, 2026 13:28"],

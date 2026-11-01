@@ -35,3 +35,6 @@ runs/screen-check-cache/
 
 # Existing local native checker used by live agent attempts
 /.cache/native-checker/
+
+# Lane-local validation inputs and baseline executable
+.cache/content2/

@@ -234,14 +234,16 @@ def preOp : State := run preOpPath (f := preOpFacts) (u := surgeon)
 /-- W6 operative note from a template, confirmed by its author. -/
 def opNote : State := run
   ([.click "home.work.w6OpNote", .click "w6OpNote.template"] ++
-   ["opPreopDiagnosis", "opPostopDiagnosis", "opProcedure", "opAnesthesia", "opFindings",
-    "opSpecimens", "opComplications", "opCondition"].map (fun n => .confirm (cid "w6OpNote" n)) ++
+   enter "w6OpNote" [("opPreopDiagnosis", .code "K35.80"), ("opPostopDiagnosis", .code "K35.80"),
+    ("opProcedure", .code "44970"), ("opAnesthesia", .code "general"), ("opFindings", .text "Inflamed appendix"),
+    ("opSpecimens", .text "Appendix"), ("opComplications", .code "none"), ("opCondition", .code "stable")] ++
    [.enter "w6OpNote.opEbl" (.qty 100 .mL)] ++ LegalExamples.artifact "w6OpNote") (f := hospital) (u := surgeon)
 #guard (finish opNote "w6OpNote" "signOpNote" (f := hospital) (u := surgeon)).commits == ["signOpNote"]
 /-- W6 post-op set, each value on each fixed row individually confirmed. -/
 def postOpPath : List Event :=
   [.click "home.work.w6PostOp", .click "w6PostOp.appendectomySet"] ++
-  [10, 11, 12, 13].flatMap (fun n => confirmLine "w6PostOp" (rowPrefix n)) ++
+  [10, 11, 12, 13].flatMap (fun n =>
+    [.enter (cid "w6PostOp" (rowPrefix n ++ "orderDiagnosis")) (.code "K35.80")] ++ confirmLine "w6PostOp" (rowPrefix n)) ++
   [.click "w6PostOp.toSign"] ++ enter "w6Sign"
     [("weight", .qty 700 .kg), ("dosingWeight", .qty 700 .kg), ("patientIdReentry", .text "RK/M/58")]
 /-- Post-op signing state. -/

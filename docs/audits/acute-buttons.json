@@ -1,44 +1,44 @@
 {
   "scope": "Initially shown acute buttons, inactive tabs and unmasked search inputs, all three current releases and both role projections; native interpreter events. Search must return semantic query/results without changing captures, receipts, commits or the order slot. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "bf80e6b79f4c4e08b9b9d18c2a641f4ae6ea8398",
+  "sourceRevision": "97f2f13956adc623fd1f613cc3e5ecdc147d20b6",
   "sourceTreeDirty": true,
-  "binarySha256": "0b73ef02d40251fbb66e29c42a5ec1517627f576c5def20b14880b07f841c806",
+  "binarySha256": "a373b1bc9f694849ae4f24aacd313a1cfd0dd0f77f89ca99a5fecd8a70163d28",
   "programs": [
     {
       "release": "v1",
       "persona": "P2",
       "path": "releases/v1/personas/P2.json",
-      "sha256": "d4f7b21fdd7994aef8f5466ad6c5f728e72043d5513b5a2b41974116ebdc680d"
+      "sha256": "f294d202cf988ccfba567d5f7f4f420231829150917aa24898b84468d0b45c23"
     },
     {
       "release": "v1",
       "persona": "P3",
       "path": "releases/v1/personas/P3.json",
-      "sha256": "506e18a69fb0ff7d339b1abb1113f33cc818485f2caef73bd264237649ae98d3"
+      "sha256": "33af928d10c267a15e0ed0e1cc6149de29b1efac30b33e91e1f5130e8e525119"
     },
     {
       "release": "v2",
       "persona": "P2",
       "path": "releases/v2/personas/P2.json",
-      "sha256": "9ee3e3158fbeccdb575208998589b2e764d9cbb8166bf832233fdc9854df8274"
+      "sha256": "d96ac36e807b3cad1c468bd64df83876800bccc411c1579d7967c983f0f60ace"
     },
     {
       "release": "v2",
       "persona": "P3",
       "path": "releases/v2/personas/P3.json",
-      "sha256": "0e4bb8fc4c97271f8e9c1892c67256f5d0024d7c4204835bbd47d4d052352b6c"
+      "sha256": "0c4d3e17a23b46b2dd13a2fece2876415ffab2f4cdee016e84511aeb3109305a"
     },
     {
       "release": "v3",
       "persona": "P2",
       "path": "releases/v3/personas/P2.json",
-      "sha256": "8d1c1722c42cbf26b4f45271fad4e8875e1df75069bf368ac163356f752bf501"
+      "sha256": "21d696eba4403a1655d0a27c8f3717b9f128dc300c53668c8c8374b73c66d2a4"
     },
     {
       "release": "v3",
       "persona": "P3",
       "path": "releases/v3/personas/P3.json",
-      "sha256": "a791a0283aded81eb4b3c6565be12f95ab4d9019def23d265708bea050f49d1f"
+      "sha256": "9e2ea7032a4df01f0232265905f8c70a0db7a3cb2fec40f8a1e6c2fa002eb66d"
     }
   ],
   "fixtures": [
@@ -78,7 +78,7 @@
     }
   ],
   "screens": 36,
-  "clicked": 357,
+  "clicked": 399,
   "tabs": 228,
   "searches": 39,
   "disabled": 23,
@@ -88,13 +88,14 @@
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
-        "w3TrackBoard.open",
+        "w3TrackBoard.chart.includeResolved",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
         "w3TrackBoard.nav.w3Orders",
         "w3TrackBoard.nav.w3OrderSets",
-        "w3TrackBoard.nav.w3Disposition"
+        "w3TrackBoard.nav.w3Disposition",
+        "w3TrackBoard.open"
       ],
       "disabled": [
         {
@@ -119,6 +120,7 @@
       "persona": "P2",
       "screen": "w3Triage",
       "clicked": [
+        "w3Triage.chart.includeResolved",
         "w3Triage.review.allergyList",
         "w3Triage.back",
         "w3Triage.home",
@@ -147,6 +149,7 @@
       "persona": "P2",
       "screen": "w3Provider",
       "clicked": [
+        "w3Provider.chart.includeResolved",
         "w3Provider.back",
         "w3Provider.home",
         "w3Provider.nav.w3TrackBoard",
@@ -180,6 +183,7 @@
       "persona": "P2",
       "screen": "w3Orders",
       "clicked": [
+        "w3Orders.chart.includeResolved",
         "w3Orders.prefList",
         "w3Orders.prefAcetaminophen",
         "w3Orders.prefIbuprofen",
@@ -222,6 +226,7 @@
       "persona": "P2",
       "screen": "w3OrderSets",
       "clicked": [
+        "w3OrderSets.chart.includeResolved",
         "w3OrderSets.sepsis",
         "w3OrderSets.abdominal",
         "w3OrderSets.cellulitis",
@@ -261,6 +266,7 @@
       "persona": "P2",
       "screen": "w3Sign",
       "clicked": [
+        "w3Sign.chart.includeResolved",
         "w3Sign.controlled",
         "w3Sign.back",
         "w3Sign.home",
@@ -296,6 +302,7 @@
       "persona": "P2",
       "screen": "w3Disposition",
       "clicked": [
+        "w3Disposition.chart.includeResolved",
         "w3Disposition.dischargeGroup",
         "w3Disposition.back",
         "w3Disposition.home",
@@ -328,6 +335,9 @@
       "persona": "P3",
       "screen": "w4Worklist",
       "clicked": [
+        "w4Worklist.chart.includeResolved",
+        "w4Worklist.unitContext",
+        "w4Worklist.allergyGroup",
         "w4Worklist.review.allergyList",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
@@ -358,6 +368,7 @@
       "persona": "P3",
       "screen": "w4Mar",
       "clicked": [
+        "w4Mar.chart.includeResolved",
         "w4Mar.openDue",
         "w4Mar.back",
         "w4Mar.home",
@@ -385,6 +396,7 @@
       "persona": "P3",
       "screen": "w4Admin",
       "clicked": [
+        "w4Admin.chart.includeResolved",
         "w4Admin.heldNpo",
         "w4Admin.back",
         "w4Admin.home",
@@ -418,6 +430,7 @@
       "persona": "P3",
       "screen": "w4Flowsheet",
       "clicked": [
+        "w4Flowsheet.chart.includeResolved",
         "w4Flowsheet.copyAssessment",
         "w4Flowsheet.back",
         "w4Flowsheet.home",
@@ -449,6 +462,7 @@
       "persona": "P3",
       "screen": "w4Handoff",
       "clicked": [
+        "w4Handoff.chart.includeResolved",
         "w4Handoff.template",
         "w4Handoff.back",
         "w4Handoff.home",
@@ -475,13 +489,14 @@
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
-        "w3TrackBoard.open",
+        "w3TrackBoard.chart.includeResolved",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
         "w3TrackBoard.nav.w3Orders",
         "w3TrackBoard.nav.w3OrderSets",
-        "w3TrackBoard.nav.w3Disposition"
+        "w3TrackBoard.nav.w3Disposition",
+        "w3TrackBoard.open"
       ],
       "disabled": [
         {
@@ -506,6 +521,7 @@
       "persona": "P2",
       "screen": "w3Triage",
       "clicked": [
+        "w3Triage.chart.includeResolved",
         "w3Triage.review.allergyList",
         "w3Triage.back",
         "w3Triage.home",
@@ -534,6 +550,7 @@
       "persona": "P2",
       "screen": "w3Provider",
       "clicked": [
+        "w3Provider.chart.includeResolved",
         "w3Provider.back",
         "w3Provider.home",
         "w3Provider.nav.w3TrackBoard",
@@ -567,6 +584,7 @@
       "persona": "P2",
       "screen": "w3Orders",
       "clicked": [
+        "w3Orders.chart.includeResolved",
         "w3Orders.prefList",
         "w3Orders.prefAcetaminophen",
         "w3Orders.prefIbuprofen",
@@ -614,6 +632,7 @@
       "persona": "P2",
       "screen": "w3OrderSets",
       "clicked": [
+        "w3OrderSets.chart.includeResolved",
         "w3OrderSets.sepsis",
         "w3OrderSets.abdominal",
         "w3OrderSets.cellulitis",
@@ -653,6 +672,7 @@
       "persona": "P2",
       "screen": "w3Sign",
       "clicked": [
+        "w3Sign.chart.includeResolved",
         "w3Sign.controlled",
         "w3Sign.back",
         "w3Sign.home",
@@ -688,6 +708,7 @@
       "persona": "P2",
       "screen": "w3Disposition",
       "clicked": [
+        "w3Disposition.chart.includeResolved",
         "w3Disposition.dischargeGroup",
         "w3Disposition.back",
         "w3Disposition.home",
@@ -720,6 +741,9 @@
       "persona": "P3",
       "screen": "w4Worklist",
       "clicked": [
+        "w4Worklist.chart.includeResolved",
+        "w4Worklist.unitContext",
+        "w4Worklist.allergyGroup",
         "w4Worklist.review.allergyList",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
@@ -750,6 +774,7 @@
       "persona": "P3",
       "screen": "w4Mar",
       "clicked": [
+        "w4Mar.chart.includeResolved",
         "w4Mar.openDue",
         "w4Mar.back",
         "w4Mar.home",
@@ -777,6 +802,7 @@
       "persona": "P3",
       "screen": "w4Admin",
       "clicked": [
+        "w4Admin.chart.includeResolved",
         "w4Admin.heldNpo",
         "w4Admin.back",
         "w4Admin.home",
@@ -810,6 +836,7 @@
       "persona": "P3",
       "screen": "w4Flowsheet",
       "clicked": [
+        "w4Flowsheet.chart.includeResolved",
         "w4Flowsheet.copyAssessment",
         "w4Flowsheet.back",
         "w4Flowsheet.home",
@@ -841,6 +868,7 @@
       "persona": "P3",
       "screen": "w4Handoff",
       "clicked": [
+        "w4Handoff.chart.includeResolved",
         "w4Handoff.template",
         "w4Handoff.back",
         "w4Handoff.home",
@@ -867,13 +895,14 @@
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
-        "w3TrackBoard.open",
+        "w3TrackBoard.chart.includeResolved",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
         "w3TrackBoard.nav.w3Orders",
         "w3TrackBoard.nav.w3OrderSets",
-        "w3TrackBoard.nav.w3Disposition"
+        "w3TrackBoard.nav.w3Disposition",
+        "w3TrackBoard.open"
       ],
       "disabled": [
         {
@@ -898,6 +927,7 @@
       "persona": "P2",
       "screen": "w3Triage",
       "clicked": [
+        "w3Triage.chart.includeResolved",
         "w3Triage.review.allergyList",
         "w3Triage.back",
         "w3Triage.home",
@@ -926,6 +956,7 @@
       "persona": "P2",
       "screen": "w3Provider",
       "clicked": [
+        "w3Provider.chart.includeResolved",
         "w3Provider.back",
         "w3Provider.home",
         "w3Provider.nav.w3TrackBoard",
@@ -959,6 +990,7 @@
       "persona": "P2",
       "screen": "w3Orders",
       "clicked": [
+        "w3Orders.chart.includeResolved",
         "w3Orders.prefList",
         "w3Orders.prefAcetaminophen",
         "w3Orders.prefIbuprofen",
@@ -1006,6 +1038,7 @@
       "persona": "P2",
       "screen": "w3OrderSets",
       "clicked": [
+        "w3OrderSets.chart.includeResolved",
         "w3OrderSets.sepsis",
         "w3OrderSets.abdominal",
         "w3OrderSets.cellulitis",
@@ -1045,6 +1078,7 @@
       "persona": "P2",
       "screen": "w3Sign",
       "clicked": [
+        "w3Sign.chart.includeResolved",
         "w3Sign.controlled",
         "w3Sign.back",
         "w3Sign.home",
@@ -1080,6 +1114,7 @@
       "persona": "P2",
       "screen": "w3Disposition",
       "clicked": [
+        "w3Disposition.chart.includeResolved",
         "w3Disposition.dischargeGroup",
         "w3Disposition.back",
         "w3Disposition.home",
@@ -1112,6 +1147,9 @@
       "persona": "P3",
       "screen": "w4Worklist",
       "clicked": [
+        "w4Worklist.chart.includeResolved",
+        "w4Worklist.unitContext",
+        "w4Worklist.allergyGroup",
         "w4Worklist.review.allergyList",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
@@ -1142,6 +1180,7 @@
       "persona": "P3",
       "screen": "w4Mar",
       "clicked": [
+        "w4Mar.chart.includeResolved",
         "w4Mar.openDue",
         "w4Mar.back",
         "w4Mar.home",
@@ -1169,6 +1208,7 @@
       "persona": "P3",
       "screen": "w4Admin",
       "clicked": [
+        "w4Admin.chart.includeResolved",
         "w4Admin.heldNpo",
         "w4Admin.back",
         "w4Admin.home",
@@ -1202,6 +1242,7 @@
       "persona": "P3",
       "screen": "w4Flowsheet",
       "clicked": [
+        "w4Flowsheet.chart.includeResolved",
         "w4Flowsheet.copyAssessment",
         "w4Flowsheet.back",
         "w4Flowsheet.home",
@@ -1233,6 +1274,7 @@
       "persona": "P3",
       "screen": "w4Handoff",
       "clicked": [
+        "w4Handoff.chart.includeResolved",
         "w4Handoff.template",
         "w4Handoff.back",
         "w4Handoff.home",

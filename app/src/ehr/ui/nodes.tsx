@@ -53,6 +53,15 @@ import {
   sectionCaption,
 } from "./clinical-display";
 import type { NodeOf, UiNode } from "./types";
+import {
+  controlCaption,
+  internalSource,
+  displayRows,
+  vitalGroups,
+  observationValue,
+  columnCaption,
+  medicationTaskCaption,
+} from "./clinical-formatters";
 
 export type Emit = (event: Event) => void;
 type Props<K extends ParametersKey> = { node: NodeOf<K>; onEvent: Emit };
@@ -390,9 +399,10 @@ export function FieldNode({
             size="sm"
             variant="light"
             color="gray"
-            leftSection={<ClinicalIcon name="lock" />}
+            title="Clinician entry required"
+            aria-label="Clinician entry required"
           >
-            Clinician entry required
+            <ClinicalIcon name="lock" />
           </Badge>
         )}
       </Group>
@@ -449,11 +459,7 @@ export function FieldNode({
           }
 
           value={node.value}
-          placeholder={
-            choices.length
-              ? "Search or enter code"
-              : fieldPlaceholder(node.label, kind)
-          }
+          placeholder={fieldPlaceholder(node.label, kind)}
           onChange={(value) => {
             send(value ?? "");
             setCodeSearch("");
@@ -512,7 +518,16 @@ export function FieldNode({
               className="provenance-chip"
               id={`field-source-${node.comp}`}
             >
-              {sourceCaption ?? formatProvenance(node.provenance)}
+              <span
+                title={sourceCaption ?? formatProvenance(node.provenance)}
+                aria-label={sourceCaption ?? formatProvenance(node.provenance)}
+              >
+                {internalSource(
+                  sourceCaption ?? formatProvenance(node.provenance),
+                )
+                  ? "Source"
+                  : (sourceCaption ?? formatProvenance(node.provenance))}
+              </span>
             </Badge>
           )}
           {node.pendingConfirm &&
@@ -545,7 +560,14 @@ function RecordValue({
   medication?: string | undefined;
 }) {
   if (label === "Text" || label === "Title") return <span>{value}</span>;
-
+  if (label === "Source" && internalSource(value))
+    return (
+      <span title={value} aria-label={value}>
+        {columnCaption(value) === value
+          ? "Source details"
+          : columnCaption(value)}
+      </span>
+    );
   const tone =
     /status|confirmation|review state|scheduled|administration|^\d{1,2}:\d{2}/i.test(
       label,
@@ -561,7 +583,9 @@ function RecordValue({
         value={
           medication && label === "Instructions"
             ? formatMedicationDirections(medication, value)
-            : value
+            : /^(value|result)$/i.test(label)
+              ? observationValue(value)
+              : value
         }
       />
     </span>
@@ -637,7 +661,20 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
       new Map(
         [...slots].map(([row, nodes]) => [
           row,
-          <UiChildren key={row} nodes={nodes} onEvent={onEvent} />,
+          <div
+            key={row}
+            data-row-navigation={
+              nodes.length === 1 &&
+              nodes[0] &&
+              "button" in nodes[0] &&
+              nodes[0].button.role === "nav" &&
+              nodes[0].button.enabled
+                ? "true"
+                : undefined
+            }
+          >
+            <UiChildren nodes={nodes} onEvent={onEvent} />
+          </div>,
         ]),
       );
     return <StructuredInfo node={node} kind={kind} actions={actions} />;
@@ -683,44 +720,68 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
       ) : node.display === "list" ? (
         <ul aria-label={node.label} className="clinical-info-list">
           {node.rows.length === 0 && <li>No records on file</li>}
-          {node.rows.map((row, index) => (
-            <li
-              key={index}
-              title={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
-              aria-label={row
-                .map(([key, value]) => `${key}: ${value}`)
-                .join(" · ")}
-            >
-              {row.map(([key, value], fieldIndex) => (
-                <span
-                  key={key}
-                  className={
-                    fieldIndex === 0 ? "record-primary" : "record-secondary"
-                  }
+          {vitalGroups(displayRows(node.rows, true, true)).map(
+            ({ entries, caption }) => {
+              const first = entries[0];
+              if (!first) return null;
+              const { cells: row, index } = first;
+              const source = entries.flatMap((entry) => entry.source);
+              return (
+                <li
+                  key={index}
+                  title={source
+                    .flat()
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(" · ")}
+                  aria-label={source
+                    .flat()
+                    .map(([key, value]) => `${key}: ${value}`)
+                    .join(" · ")}
                 >
-                  {fieldIndex > 0 && (
-                    <span className="record-label">{key}: </span>
-                  )}
-                  <RecordValue
-                    label={key}
-                    value={value}
-                    medication={
-                      node.infoId === "currentMeds"
-                        ? row.find(([name]) => name === "Medication")?.[1]
-                        : undefined
-                    }
-                  />
-                </span>
-              ))}
-            </li>
-          ))}
+                  {caption ??
+                    medicationTaskCaption(row) ??
+                    row.map(([key, value], fieldIndex) => (
+                      <span
+                        key={key}
+                        className={
+                          fieldIndex === 0
+                            ? "record-primary"
+                            : "record-secondary"
+                        }
+                      >
+                        {fieldIndex > 0 && (
+                          <span
+                            className="record-label"
+                            title={key}
+                            aria-label={key}
+                          >
+                            {columnCaption(key)}:{" "}
+                          </span>
+                        )}
+                        <RecordValue
+                          label={key}
+                          value={value}
+                          medication={
+                            node.infoId === "currentMeds"
+                              ? row.find(([name]) => name === "Medication")?.[1]
+                              : undefined
+                          }
+                        />
+                      </span>
+                    ))}
+                </li>
+              );
+            },
+          )}
         </ul>
       ) : node.display === "summary" ? (
         <dl aria-label={node.label} className="clinical-summary">
           {node.rows.flatMap((row, index) =>
             row.map(([key, value]) => (
               <div key={`${index}-${key}`}>
-                <dt>{key}</dt>
+                <dt title={key} aria-label={key}>
+                  {columnCaption(key)}
+                </dt>
                 <dd aria-label={value} title={value}>
                   <RecordValue
                     label={key}
@@ -806,11 +867,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
               !node.enabled && node.blockedReason ? reasonId : undefined
             }
             title={
-              !node.enabled
-                ? (node.blockedReason ?? undefined)
-                : node.role === "toggle"
-                  ? node.label
-                  : undefined
+              !node.enabled ? (node.blockedReason ?? undefined) : node.label
             }
             data-comp-id={node.comp}
             data-event={
@@ -840,7 +897,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
             {node.role === "toggle" ? (
               <ClinicalIcon name="chevron" />
             ) : (
-              node.label
+              controlCaption(node.label)
             )}
           </Button>
         </span>

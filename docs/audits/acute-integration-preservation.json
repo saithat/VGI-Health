@@ -1,6 +1,6 @@
 {
-  "integratedMain": "f59ed3acb148ac5de07ad9a01970732b79334af8",
-  "clinicalSpec": "Identical to main after removing the retained additive unitCensus display-catalog declaration; no required field, guard or property changes.",
+  "integratedMain": "1721e64a4d2c189faa7ad59950699fae23429c15",
+  "clinicalSpec": "V1, V2 and V3 match integrated main exactly. The shared optional display catalog adds shiftTasks; no required field, guard or property changes.",
   "unchangedClinicalFiles": [
     "lean/Ehr/Props/Basics.lean",
     "lean/Ehr/Props/Contracts.lean",
@@ -102,8 +102,13 @@
       "file": "lean/Ehr/Check/PatchWitness.lean",
       "originalTheoremStatementsUnchanged": 15,
       "addedLemma": "signature_workflow"
+    },
+    {
+      "file": "lean/Ehr/Render/UiProofs.lean",
+      "originalTheoremStatementsUnchanged": 59,
+      "scope": "Proof terms and helper lemmas adapt to the retained acute renderer structure; all original theorem statements match integrated main."
     }
   ],
-  "rendererTheoremStatementsUnchanged": 47,
-  "leanSourceHash": "8f2b7bf8476da8ddc70ad6e7629bce64f3b1f0283c74e9515cbabbccb3a71376"
+  "rendererTheoremStatementsUnchanged": 59,
+  "leanSourceHash": "07ee5a3e6abea9c2cbfa8c0eb287ccf1bd004b0a5d101e2286fca5a3776de0a3"
 }

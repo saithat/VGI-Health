@@ -192,8 +192,10 @@ tab 0 is open at first. -/
 def tabStrip (s : ScreenId) (name : String) (label : String) (blocks : List Block) :
     List Component :=
   tabsC s name label ::
-    ((List.range blocks.length).zip blocks).map fun (i, look, info, lbl) =>
-      showInfo s (name ++ "." ++ info) look info lbl (parent := some name) (tab := i)
+    (((List.range blocks.length).zip blocks).map fun (i, look, info, lbl) =>
+      showInfo s (name ++ "." ++ info) look info lbl (parent := some name) (tab := i)) ++
+    (if blocks.any (fun (_, info, _) => info == "problemList") then
+      [group s (name ++ ".includeResolved") "Include resolved problems" (startCollapsed := true)] else [])
 
 /-- A visit navigator: one button per screen of the workflow, except `s` itself. -/
 def navigator (s : ScreenId) (steps : List (ScreenId × String)) : List Component :=
@@ -391,8 +393,8 @@ def fillLine (s : ScreenId) (pre : String) (o : OrderLine) : List MacroStep :=
    .setValue (c "freq") o.freq, .setValue (c "prn") (toString o.prn),
    .setValue (c "duration") o.duration, .setValue (c "quantity") o.quantity,
    .setValue (c "refills") o.refills, .setValue (c "substitution") (toString o.substitution),
-   .setValue (c "pharmacy") o.pharmacy, .setValue (c "indication") o.indication,
-   .setValue (c "orderDiagnosis") o.diagnosis]
+   .setValue (c "pharmacy") o.pharmacy, .setValue (c "indication") o.indication] ++
+   (if o.diagnosis == "" then [] else [.setValue (c "orderDiagnosis") o.diagnosis])
 
 /-- An order-set macro: goes to screen `s` and fills the rows on order lines
 10, 11, … with `lines`. The clinician then confirms each value. It never signs. -/

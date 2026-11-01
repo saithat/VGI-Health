@@ -98,12 +98,17 @@ def uiEncounterBanner (facts : Facts) (d : Display) : List (String × String) :=
     ((uiBanner d).filter fun pair => !["Encounter", "Attending", "Location"].contains pair.1) ++
       [("Encounter context", "Preoperative chart review"),
        ("Planned OR", uiCaseValue facts "Room"), ("Surgeon", uiCaseValue facts "Surgeon")]
-  else if facts.encounterKind? == some "emergency" || facts.encounterKind? == some "inpatient" then
-    (uiBanner d).map fun (key, value) =>
-      if key == "Last encounter" then ("Encounter", uiEncounterClass value)
-      else if key == "Last provider" then ("Attending", value)
-      else if key == "Last location" then ("Location", value) else (key, value)
-  else uiBanner d
+  else
+    let base := if facts.encounterKind? == some "emergency" || facts.encounterKind? == some "inpatient" then
+      (uiBanner d).map fun (key, value) =>
+        if key == "Last encounter" then ("Encounter", uiEncounterClass value)
+        else if key == "Last provider" then ("Attending", value)
+        else if key == "Last location" then ("Location", value) else (key, value)
+      else uiBanner d
+    base ++ [("Encounter type", (facts.record.lookup "encounterName").getD ""),
+      ("Department", (facts.record.lookup "department").getD "")] ++
+      (let pod := (facts.record.lookup "postoperativeDay").getD ""
+       if pod == "" then [] else [("Postoperative day", "POD #" ++ pod)])
 
 /-- Human-readable clinical roles never expose a user ID. -/
 def uiViewer : Role → String
@@ -129,6 +134,8 @@ def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
   uiEncounterBanner facts d ++
     [("Allergies", if d.allergies.isEmpty then "No allergy records on file"
       else "; ".intercalate (d.allergies.map (fun r => r.substance ++
+        (if r.reaction == "" then "" else " — " ++ r.reaction) ++
+        (if r.severity == "" then "" else " (" ++ r.severity ++ ")") ++
         (if r.status == "" || r.status == "active" then "" else " (" ++ r.status ++ ")")))),
      ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded"),
      ("Weight", uiBannerWeight facts d),
@@ -227,7 +234,9 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "vitals" => if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
       (cx.disp.vitals.filter fun r => (uiLatestVitals cx.disp).any fun latest =>
         latest.code == r.code && latest.date == r.date).map vitalCells
-    | "problemList" => cx.disp.problems.map problemCells
+    | "problemList" =>
+      let includeResolved := cx.s.expanded.any (fun id => id.endsWith ".includeResolved")
+      (cx.disp.problems.filter (fun r => includeResolved || (r.status != "resolved" && r.status != "inactive" && r.abatement == ""))).map problemCells
     | "labs" | "labResults" | "resultTrend" =>
       if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
       if !cx.disp.labResults.isEmpty then
@@ -239,7 +248,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
         r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
           ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
     | "anticoagulants" | "anticoagulantList" =>
-        (cx.disp.meds.filter uiAntithrombotic).map medCells
+        (cx.disp.meds.filter uiAntithrombotic).map medCells ++ uiPayloadRows cx i
     | "immunizations" | "immunizationHistory" => (cx.disp.immunizations.map fun r =>
         [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]) ++ uiPayloadRows cx i
     | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
@@ -495,6 +504,27 @@ def uiReviewStatus (cx : Ctx) (it : ItemView) : List UiNode :=
       else []
   | _ => []
 
+/-- A queue opener belongs only to the current chart's named row. Missing
+snapshot membership leaves the ordinary action adjacent to the list. -/
+def uiQueueRowTag (cx : Ctx) (tag : String) : String :=
+  match uiRowTarget? tag with
+  | none => tag
+  | some (target, _) =>
+    match cx.v.items.find? (fun it => it.comp.id == target) with
+    | none => tag
+    | some it => match it.comp.kind with
+      | .table info | .panel info =>
+        if !["scheduleTasks", "orSchedule", "edTrackBoard", "shiftWorklist", "consultList", "inBasketResults", "inBasketRxRequests"].contains info then tag
+        else
+          let payload := infoPayload cx.facts info
+          let selected := if payload.any (fun p => p.artifactKey.startsWith "world:") then
+            payload.bind fun p => p.rows.findIdx? (fun row => row.id == "selected-chart")
+          else (uiRows cx info).findIdx? (fun row => row.lookup "Patient" == some cx.disp.banner.name)
+          match selected with
+          | none => ""
+          | some index => "present.row|" ++ target ++ "|" ++ toString index
+      | _ => tag
+
 /-- Render one shown item and its already-visible children. No visibility test
 is repeated here. Confirm buttons retain the field's id for Event.confirm. -/
 def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
@@ -507,7 +537,7 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   | .panel i | .priorAuth i => [uiItemInfo cx it i "list"]
   | .table i => [uiItemInfo cx it i "table"]
   | .trend i => [uiItemInfo cx it i "trend"]
-  | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))] ++ uiReviewStatus cx it
+  | .button a => [uiWrapRow (if uiNavButton cx it then "" else uiQueueRowTag cx it.comp.tag) (uiButton cx it (actionRole a))] ++ uiReviewStatus cx it
   | .«macro» _ => [uiButton cx it "macro"]
   | .search scope =>
       let query := ((cx.s.searchQueries?.getD []).lookup it.comp.id).getD ""

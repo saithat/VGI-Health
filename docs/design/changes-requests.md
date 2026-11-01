@@ -2494,3 +2494,45 @@ The browser EHR audit has `AUDIT_CANONICAL_BASELINE=1` with full program/release
 ### AMB M14: terminology display and verbatim public captions
 
 The existing display fallback recognizes the observed SNOMED FSN tags `(organism)` and `(substance)` at term boundaries. Other qualifiers and recognized words inside running prose remain. Full clinical source strings/codes, row accessibility labels and native tooltips are retained. Public `fieldSources` captions bypass term cleanup, as do authored note/document bodies. This changes no Lean tree, guard, actor permission, capture, review, source projection or navigation action. The matched terminology baseline is preserved in `before-terms-*` images.
+
+## SHELL-PUNCH-2026-11-01: clinician review A2/A3/A5/A10/A11
+
+To canonical/presentation lanes, against main `81691fb`:
+
+- **A2, list context:** `UiScreen.banner` is still supplied and `expectedAria`
+  requires a patient banner on Schedule/home, `w3TrackBoard`, `w4Worklist`,
+  `w6Schedule` and In Basket. Please supply an explicit list-activity context
+  in the semantic screen, with a user/role toolbar and no selected-patient
+  identity/summary until a chart-opening action. Keep D1 patient identity
+  mandatory on every patient-context screen; do not infer list mode from titles.
+  The shared painter retains today's source banner rather than dropping data.
+- **A3, placement:** supply a semantic toolbar/search slot and a distinct Chart
+  Review destination. Move the existing chart-search field into that toolbar,
+  and the generic Results/Imaging/Notes/Encounters tabs into Chart Review only.
+  Preserve every component ID/event and all required review content. Current
+  source puts those fields/tabs in `workspace`; reparenting in React changes
+  the exact ARIA ancestor/order contract. The decorative breadcrumb and redundant
+  default role caption are removed. Desktop search now sits in the heading
+  toolbar through CSS geometry only, retaining semantic ancestry/order; narrow
+  layouts keep it in flow. Semantic fields/tabs remain visible.
+- **A5, duplicate status columns:** some activity projections supply both visit
+  and order/resource status. Please name them explicitly (Visit status / Order
+  status) or remove only a provably redundant projection in Lean. The display
+  maps booked to Scheduled but never maps an active request to Roomed/Arrived.
+- **A10, track board:** bind each actual encounter row using `rowAction` to its
+  existing chart-opening control. The painter now supports clicking a row with
+  exactly one enabled, explicitly bound navigation action, retaining its keyboard button.
+  It will not apply a global “Open selected encounter” action to unrelated rows.
+- **A11, growth:** supply patient percentile values with their source/reference,
+  measure, age and sex context. The painter displays supplied values, but does
+  not calculate a clinical percentile from SVG coordinates. Add semantic measure
+  tabs for Weight / Height / HC / BMI when supplied; React cannot create tabs.
+  Read-only HC/BMI plots are supported when explicitly supplied in growth rows.
+  Reference labels now sit at the right edge of the graph.
+
+All changes here are presentation only; no FHIR facts, clinical requirements,
+permissions, human-only flags, input values or commit/review rules change.
+
+### ACUTE shared-list integration (2026-11-01)
+
+The shared world consumer now supplies dated assigned-patient and unit-census queues. `shiftWorklist` retains that shared queue contract. The additive optional `shiftTasks` info catalog entry carries the existing source-bound selected-encounter Task rows, preventing the queue overlay from replacing their due times/statuses. The shared worklist presentation draws these records; no separate painter, clinical rule or synthetic completion state is introduced.
