@@ -34,12 +34,6 @@ def shownComp? (sp : Spec) (prog : Program) (facts : Facts) (s : State) (cid : C
   let comps := prog.compsOf s.screen
   comps.find? fun c => c.id == cid && compShown sp facts s comps c
 
-/-- The component kind displays this info. -/
-def showsInfo (i : InfoId) : Kind → Bool
-  | .panel j | .table j | .trend j | .priorAuth j => j == i
-  | .banner => i == bannerInfo
-  | _ => false
-
 /-- The info is shown on the current screen. -/
 def infoShown (sp : Spec) (prog : Program) (facts : Facts) (s : State) (i : InfoId) : Bool :=
   let comps := prog.compsOf s.screen
@@ -57,6 +51,7 @@ def AlertSpec.targetsScreen (a : AlertSpec) (sc : Screen) : Bool :=
 
 /-- A `When` condition holds now. -/
 def whenHolds (facts : Facts) (s : State) : When → Bool
+  | .clinical p => clinicalApplies facts s p
   | .always => true
   | .orderClass cls | .drugClass cls => (orderLines s).any (fun p => inClass p.2 cls)
   | .medClass cls =>
@@ -73,6 +68,7 @@ def whenHolds (facts : Facts) (s : State) : When → Bool
 per-order-line requirements. -/
 def lineMatches (facts : Facts) (s : State) (w : When) (slot : Nat) (d : String) : Bool :=
   match w with
+  | .clinical p => clinicalApplies facts s p
   | .always => true
   | .orderClass cls | .drugClass cls => inClass d cls
   | .medClass cls =>
@@ -160,7 +156,8 @@ def reviewsOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : Comm
 /-- Guard items 1–3: role, entries, reviews. -/
 def guardBase (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : Bool :=
-  roleOk sp user c && entriesOk sp facts user s c && reviewsOk sp prog facts s c
+  roleOk sp user c && entriesOk sp facts user s c && reviewsOk sp prog facts s c &&
+    extraGuard sp prog facts s c
 
 /-- The full commit guard: role, entries, reviews, and interruptive alerts
 acknowledged. -/
@@ -193,6 +190,9 @@ def entryReason (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : Entr
 def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : String :=
   if !roleOk sp user c then s!"role: {user.role.name} may not perform {c}"
+  else if !validationsOk sp facts s then "value validation failed"
+  else if !defaultsOk sp prog then "required default missing or incorrect"
+  else if !displaysOk sp prog facts s c then "structured display or action label required"
   else
     match sp.entries.find? (fun rq => rq.commit == c && !entryMet sp facts user s rq) with
     | some rq => entryReason sp facts user s rq
@@ -205,6 +205,9 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
           (match rq.waivedBy? with
            | some e => s!" (or a reason entered in {e})"
            | none => "")
-      | none => "guard"
+      | none =>
+        match (obligationViews sp facts s).find? (fun o => o.commit == c && o.status != .met) with
+        | some o => s!"obligation: {o.requirement} ({reprStr o.status})"
+        | none => if extraGuard sp prog facts s c then "guard" else "additional commit contract"
 
 end Ehr

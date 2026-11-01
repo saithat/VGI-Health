@@ -85,6 +85,14 @@ def isLbWeight (x : Captured) : Bool :=
 
 /-- The keys an alert condition fires for (empty = the condition does not hold). -/
 def alertKeys (facts : Facts) (s : State) : AlertCond → List String
+  | .clinical p =>
+    match clinicalEval facts s p with
+    | some false => []
+    | result =>
+      -- Bind acknowledgments to the complete clinical snapshot and captures.
+      -- A changed code, provenance or capture yields a new key.
+      [(if result == some true then "clinical:true:" else "clinical:unknown:") ++
+        reprStr (facts.clinical?, facts.artifactBindings?, s.captured)]
   | .drugAllergy =>
     (((drugsInPlay facts s).filter (allergyMatch facts)).map (keyAt · facts.allergyVersion)).eraseDups
   | .interaction =>

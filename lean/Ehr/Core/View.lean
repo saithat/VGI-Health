@@ -67,7 +67,21 @@ def itemView (sp : Spec) (facts : Facts) (s : State) (comps : List Component)
     | .field e _ _ => capturedAt? s e slot
     | .priorAuth _ => capturedAt? s priorAuthElement slot
     | _ => none
-  { comp := c
+  { payload? := match c.kind with
+      | .panel i | .table i | .trend i | .priorAuth i => payloadView sp facts s i
+      | .banner => payloadView sp facts s bannerInfo
+      | _ => none
+    pinned? := match c.kind with
+      | .panel i | .table i | .trend i | .priorAuth i => some (infoPinned sp facts s i)
+      | .banner => some (infoPinned sp facts s bannerInfo)
+      | _ => none
+    validationError? := match c.kind, cap with
+      | .field e _ _, some x =>
+        match sp.element? e with
+        | some el => if elementValueValid facts s el slot x.value then none else some "value validation failed"
+        | none => some "unknown element"
+      | _, _ => none
+    comp := c
     shown := compShown sp facts s comps c
     depth := depthAux comps (comps.length + 1) c
     expanded := match c.kind with
@@ -95,7 +109,8 @@ def view (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State) 
   let comps := prog.compsOf s.screen
   let statuses := (comps.filter (compShown sp facts s comps)).filterMap fun c =>
     (actionStatus sp prog facts user s c).map (c.id, ·)
-  { screen := s.screen
+  { obligations? := some (obligationViews sp facts s)
+    screen := s.screen
     title := match prog.screen? s.screen with
       | some sc => sc.title
       | none => ""

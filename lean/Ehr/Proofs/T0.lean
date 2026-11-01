@@ -166,12 +166,13 @@ theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : Use
       (∀ rq ∈ sp.entries, rq.commit = c → entryMet sp facts user s rq = true) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
-        ∀ k ∈ alertKeys facts s al.cond, (al.id, k) ∈ s.acked) := by
+        ∀ k ∈ alertKeys facts s al.cond, (al.id, k) ∈ s.acked) ∧
+      extraGuard sp prog facts s c = true := by
   simp only [commitGuard, guardBase, entriesOk, reviewsOk, alertsAcked, Bool.and_eq_true,
     List.all_eq_true, Bool.or_eq_true, bne_iff_ne, ne_eq, List.contains_iff_mem, and_assoc]
   constructor
-  · rintro ⟨h1, h2, h3, h4⟩
-    refine ⟨h1, ?_, ?_, ?_⟩
+  · rintro ⟨h1, h2, h3, hextra, h4⟩
+    refine ⟨h1, ?_, ?_, ?_, hextra⟩
     · intro rq hrq hc; exact (h2 rq hrq).resolve_left (by simp [hc])
     · intro rq hrq hc; exact (h3 rq hrq).resolve_left (by simp [hc])
     · intro al hal hc ht k hk
@@ -179,8 +180,8 @@ theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : Use
       · exact absurd hc h
       · exact absurd ht h
       · exact h k hk
-  · rintro ⟨h1, h2, h3, h4⟩
-    refine ⟨h1, ?_, ?_, ?_⟩
+  · rintro ⟨h1, h2, h3, h4, hextra⟩
+    refine ⟨h1, ?_, ?_, hextra, ?_⟩
     · intro rq hrq
       by_cases hc : rq.commit = c
       · exact Or.inr (h2 rq hrq hc)
@@ -255,7 +256,8 @@ theorem commitGuard_iff_values (sp : Spec) (prog : Program) (facts : Facts) (use
       (∀ rq ∈ sp.entries, rq.commit = c → EntryValuesMet sp facts user s rq) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
-        ∀ k ∈ alertKeys facts s al.cond, (al.id, k) ∈ s.acked) := by
+        ∀ k ∈ alertKeys facts s al.cond, (al.id, k) ∈ s.acked) ∧
+      extraGuard sp prog facts s c = true := by
   simpa only [entryMet_iff_values] using commitGuard_iff sp prog facts user s c
 
 /-- A met entry requirement that is not per order line and applies now has a
@@ -443,5 +445,15 @@ example : commitGuard CoreTests.ScheduleII.constrainedSpec CoreTests.ScheduleII.
     facts user CoreTests.ScheduleII.bad "signOrders" = false := by decide
 
 end Examples
+
+/-- A new commit satisfies its additional temporal/expiry/display contracts. -/
+theorem T0_extra_contract (sp : Spec) (prog : Program) (facts : Facts) (user : User)
+    (actor : Actor) (s : State) (e : Event) (c : CommitId)
+    (hnew : c ∉ s.commits) (hafter : c ∈ (step sp prog facts user actor s e).1.commits) :
+    extraGuard sp prog facts s c = true :=
+  ((commitGuard_iff sp prog facts user s c).1
+    (T0_commit_needs_guard sp prog facts user actor s e c hnew hafter)).2.2.2.2
+
+#print axioms T0_extra_contract
 
 end Ehr.Proofs
