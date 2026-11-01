@@ -248,7 +248,7 @@
           "code": "g",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2024-05-01T08:00:00",
+        "effectiveDateTime": "2024-05-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -282,7 +282,7 @@
           "code": "cm",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2024-05-01T08:00:00",
+        "effectiveDateTime": "2024-05-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -316,7 +316,7 @@
           "code": "kg",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2024-11-01T08:00:00",
+        "effectiveDateTime": "2024-11-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -350,7 +350,7 @@
           "code": "m",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2024-11-01T08:00:00",
+        "effectiveDateTime": "2024-11-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -384,7 +384,7 @@
           "code": "kg",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2025-05-01T08:00:00",
+        "effectiveDateTime": "2025-05-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -418,7 +418,7 @@
           "code": "cm",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2025-05-01T08:00:00",
+        "effectiveDateTime": "2025-05-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -452,7 +452,7 @@
           "code": "kg",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2025-11-01T08:00:00",
+        "effectiveDateTime": "2025-11-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -486,7 +486,7 @@
           "code": "cm",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2025-11-01T08:00:00",
+        "effectiveDateTime": "2025-11-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -520,7 +520,7 @@
           "code": "kg",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2026-05-01T08:00:00",
+        "effectiveDateTime": "2026-05-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -554,7 +554,7 @@
           "code": "cm",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2026-05-01T08:00:00",
+        "effectiveDateTime": "2026-05-01T08:00:00-07:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -588,7 +588,7 @@
           "code": "kg",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2026-11-01T08:00:00",
+        "effectiveDateTime": "2026-11-01T08:00:00-08:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -622,7 +622,7 @@
           "code": "cm",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2026-11-01T08:00:00",
+        "effectiveDateTime": "2026-11-01T08:00:00-08:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -656,7 +656,7 @@
           "code": "kg",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2026-11-01T10:00:00",
+        "effectiveDateTime": "2026-11-01T10:00:00-08:00",
         "subject": {
           "reference": "Patient/p0"
         }
@@ -690,7 +690,7 @@
           "code": "kg",
           "system": "http://unitsofmeasure.org"
         },
-        "effectiveDateTime": "2026-11-01T08:00:00",
+        "effectiveDateTime": "2026-11-01T08:00:00-08:00",
         "subject": {
           "reference": "Patient/p0"
         }

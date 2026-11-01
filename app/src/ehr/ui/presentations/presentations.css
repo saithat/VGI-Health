@@ -125,9 +125,17 @@
 .table-schedule td:nth-child(6) {
   width: 18%;
 }
-.table-orSchedule th:nth-child(3),
-.table-orSchedule td:nth-child(3) {
-  width: 28%;
+.table-orSchedule th[data-column="Room"] {
+  width: 6%;
+}
+.table-orSchedule th[data-column="Start"] {
+  width: 8%;
+}
+.table-orSchedule th[data-column="Procedure"] {
+  width: 36%;
+}
+.table-orSchedule th[data-column="Status"] {
+  width: 10%;
 }
 .table-messages th:nth-child(1) {
   width: 19%;

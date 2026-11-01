@@ -37,7 +37,7 @@
       "file": "app/shots/realism/present/orSchedule.png",
       "width": 1440,
       "height": 900,
-      "sha256": "fae2297bb688d71b0e0b83d61d748e63a0e62ad982cf73fd942a8e113c08d94d",
+      "sha256": "4537f79db9de9655fc29f2b3c5f5104511a692829417c9868019b556117b4ee4",
       "semanticTree": "app/src/fixtures/presentations/orSchedule.json",
       "semanticSha256": "0f8a7fedc3e70aa8c8c5bdca45bb450161bcb8e952f93fd567f3fc15f3ec3903"
     },

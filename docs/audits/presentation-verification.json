@@ -147,7 +147,13 @@
       "distinctReceipt": "76a6fde1-0a1a-4c64-96f2-63113275a204.coverage.json",
       "wholeVersionReceipt": "ed90596f-f05b-4a01-972b-8e86e3429b78.coverage.json"
     },
-    "directImportedNotesAria": "passed; every displayed note body also equals its native source string"
+    "directImportedNotesAria": "passed; every displayed note body also equals its native source string",
+    "fixtureTimestampOffsets": {
+      "sourceTimezone": "America/Los_Angeles",
+      "occurrences": 93,
+      "semanticTreesUnchanged": 32,
+      "nativeWasmPresentations": 16
+    }
   },
   "handoffs": [
     {
