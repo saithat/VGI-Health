@@ -43,6 +43,6 @@ it('loads a rebound fork against the current build and keeps its frozen replay c
  vi.stubGlobal('fetch',async(input:unknown)=>{const value=artifacts[String(input)];if(!value)throw new Error(`Unexpected ${String(input)}`);return new Response(JSON.stringify(value));});
  try{
  await expect(verifyRecordedBuild('runs/FAKE/programs/P1/v1.json',program)).resolves.toBeNull();
- expect(programSpecPath({path:'runs/FAKE/programs/P1/v1.json',run:'FAKE',persona:'P1',release:'v3',version:1,role:'physician',group:'run',label:'fake',deployed:true,mock:false})).toBe('/runs/FAKE/certifications/P1/v1/spec.json');
+ expect(programSpecPath({path:'runs/FAKE/programs/P1/v1.json',run:'FAKE',persona:'P1',release:'v3',version:1,role:'physician',group:'run',label:'fake',deployed:true,mock:false,recordedCertificate:null})).toBe('/runs/FAKE/certifications/P1/v1/spec.json');
  }finally{vi.unstubAllGlobals();}
 });

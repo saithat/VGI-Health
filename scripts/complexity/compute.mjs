@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const exec = promisify(execFile);
 // Limit Lean children while allowing Node's WebAssembly runtime to reserve its address space.
-const leanMemoryKb = Number(process.env.EHR_LEAN_MEMORY_KB ?? 8000000);
+const leanMemoryKb = Number(process.env.EHR_LEAN_MEMORY_KB ?? 12000000);
 if (!Number.isSafeInteger(leanMemoryKb) || leanMemoryKb < 1) throw new Error('EHR_LEAN_MEMORY_KB must be a positive integer');
 const run = (bin, args, options = {}) => bin === 'lake'
   ? exec('bash', ['-c', `ulimit -v ${leanMemoryKb}; exec lake "$@"`, 'lake', ...args], { timeout: 180000, ...options })
@@ -52,7 +52,7 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
     const source = path.join(root, 'scripts/complexity/Measure.lean');
     const c = path.join(work, 'Measure.c');
     const helper = path.join(work, 'ehr-benchmark');
-    await run('lake', ['env', 'lean', `--root=${root}`, '-c', c, source], { cwd: lean });
+    await run('lake', ['env', 'lean', '-j4', `--root=${root}`, '-c', c, source], { cwd: lean });
     const rsp = await readFile(path.join(lean, '.lake/build/bin/ehr.rsp'), 'utf8');
     const objects = [...rsp.matchAll(/"([^"\n]+\.o\.export)"/g)].map(x => x[1]).filter(p => !p.endsWith('/Main.c.o.export'));
     if (!objects.length) throw new Error('Missing native CLI link objects; rebuild ehr');

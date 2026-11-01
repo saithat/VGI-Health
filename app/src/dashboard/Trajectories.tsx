@@ -1,12 +1,13 @@
 import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
 import type { PresentationBundle } from "../ehr/ui/presentation-types";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MantineProvider } from "@mantine/core";
 import { programSchema, type Program } from "../../../agent/src/schema";
 import type { UiScreen } from "../ehr/ui/types";
 import { UiScreenView } from "../ehr/ui/Screen";
 import type { InterpFactory } from "./replay";
+import { loadWasmInterp } from "../core/wasmInterp";
 import { readRunJson } from "./data";
 import { readArtifact, verifyRecordedBuild } from "../browser/data";
 import {
@@ -44,8 +45,19 @@ function SemanticFrame({
     // owns scrolling, so screen transitions must reset that window explicitly.
     doc?.defaultView?.scrollTo(0, 0);
   }, [doc, screen.title]);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!doc) return;
+    // This is a recorded frame. Only the playback controls may advance it.
+    for (const control of doc.querySelectorAll<HTMLElement>(
+      'button, input, select, textarea, [role="tab"]',
+    )) {
+      control.setAttribute("disabled", "");
+      control.setAttribute("aria-disabled", "true");
+      const reason =
+        "Recorded replay; use the playback controls above this EHR";
+      if (!control.title.includes(reason))
+        control.title = [control.title, reason].filter(Boolean).join(" · ");
+    }
     const nodes = doc.querySelectorAll<HTMLElement>("[data-comp-id]");
     nodes.forEach((node) => {
       node.dataset.trajectoryHighlight = String(
@@ -90,7 +102,11 @@ function SemanticFrame({
               },
             }}
           >
-            <UiScreenView screen={screen} onEvent={() => {}} presentations={presentations} />
+            <UiScreenView
+              screen={screen}
+              onEvent={() => {}}
+              presentations={presentations}
+            />
           </MantineProvider>,
           doc.body,
         )}
@@ -187,6 +203,10 @@ function TaskPlayback({
   useEffect(() => {
     let active = true;
     setError("");
+    if (!factory)
+      return () => {
+        active = false;
+      };
     async function load(file: string) {
       if (!factory) throw new Error("Loading the real WASM interpreter…");
       const task = trajectorySchema.parse(
@@ -197,7 +217,10 @@ function TaskPlayback({
         readArtifact(`/${task.context.specPath}`),
         readArtifact(`/${task.context.fixtureFile}`),
       ]);
-      const presentations = await verifyRecordedBuild(task.context.programPath, program);
+      const presentations = await verifyRecordedBuild(
+        task.context.programPath,
+        program,
+      );
       const bundle = trajectoryBundleSchema.parse(fixture);
       const parsedProgram = programSchema.parse(program);
       let resources: { resourceType: string; id?: string | undefined }[] =
@@ -279,7 +302,7 @@ function TaskPlayback({
   return (
     <div className="trajectory-playback">
       <h3>
-        {entry.id} · {entry.workflow} · v{entry.programVersion} /{" "}
+        {entry.id} · {entry.workflow} · rev {entry.programVersion} /{" "}
         {entry.release}
       </h3>
       <p>
@@ -288,6 +311,8 @@ function TaskPlayback({
       </p>
       <div className="trajectory-controls">
         <button
+          disabled={!count && !playing}
+          title={!count && !playing ? "Already at the first event" : undefined}
           onClick={() => {
             setPlaying(false);
             setCount(0);
@@ -296,7 +321,14 @@ function TaskPlayback({
           Reset
         </button>
         <button
-          disabled={!loaded || !factory}
+          disabled={!loaded || !factory || !max}
+          title={
+            !loaded || !factory
+              ? "Loading the selected trajectory"
+              : !max
+                ? "No recorded events"
+                : undefined
+          }
           onClick={() => {
             if (count >= max) setCount(0);
             setPlaying((p) => !p);
@@ -306,6 +338,13 @@ function TaskPlayback({
         </button>
         <button
           disabled={!loaded || count >= max}
+          title={
+            !loaded
+              ? "Loading the selected trajectory"
+              : count >= max
+                ? "No more recorded events"
+                : undefined
+          }
           onClick={() => {
             setPlaying(false);
             setCount((n) => Math.min(max, n + 1));
@@ -340,7 +379,7 @@ function TaskPlayback({
                 setPlaying(false);
               }}
             />
-            Compare baseline v0
+            Compare baseline rev 0
           </label>
         )}
       </div>
@@ -351,9 +390,9 @@ function TaskPlayback({
       </p>
       {compare && (
         <p>
-          Baseline uses its original v0 release and the same day/patient
-          schedule and simulation seed. Each panel advances one recorded event
-          per step.
+          Baseline uses its original release for revision 0 and the same
+          day/patient schedule and simulation seed. Each panel advances one
+          recorded event per step.
         </p>
       )}
       {error && <p role="alert">{error}</p>}
@@ -372,7 +411,7 @@ function TaskPlayback({
             loaded={baseline}
             factory={factory}
             count={Math.min(count, baseline.task.trace.length)}
-            label="Baseline v0"
+            label="Baseline rev 0"
           />
         )}
       </div>
@@ -380,17 +419,38 @@ function TaskPlayback({
   );
 }
 export function Trajectories({
+  initialDay = 1,
   runId,
   persona,
   factory,
 }: {
   runId: string;
   persona: string;
+  initialDay?: number;
   factory?: InterpFactory | undefined;
 }) {
+  const [ownFactory, setOwnFactory] = useState<InterpFactory>();
+  useEffect(() => {
+    let active = true;
+    if (!factory)
+      void loadWasmInterp()
+        .then((interp) => {
+          if (active) setOwnFactory(() => () => interp);
+        })
+        .catch((error: unknown) => {
+          if (active) setError(String(error));
+        });
+    return () => {
+      active = false;
+    };
+  }, [factory]);
   const [index, setIndex] = useState<TrajectoryIndex | null>(null);
   const [error, setError] = useState("");
-  const [day, setDay] = useState(1);
+  const [day, setDay] = useState(
+    Number.isInteger(initialDay) && initialDay >= 1 && initialDay <= 10
+      ? initialDay
+      : 1,
+  );
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState("");
   useEffect(() => {
@@ -430,6 +490,8 @@ export function Trajectories({
           Day{" "}
           <select
             aria-label="Trajectory day"
+            disabled={days.length < 2}
+            title={days.length < 2 ? "No other recorded days" : undefined}
             value={day}
             onChange={(e) => {
               setDay(Number(e.target.value));
@@ -447,6 +509,14 @@ export function Trajectories({
           Search tasks{" "}
           <input
             type="search"
+            disabled={!index || !tasks.length}
+            title={
+              !index
+                ? "Loading trajectory index"
+                : !tasks.length
+                  ? "No trajectories recorded for this persona"
+                  : undefined
+            }
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Task, workflow or patient"
@@ -468,6 +538,8 @@ export function Trajectories({
           <button
             role="option"
             aria-selected={entry?.id === t.id}
+            disabled={entry?.id === t.id}
+            title={entry?.id === t.id ? "Current trajectory" : undefined}
             key={t.id}
             onClick={() => setSelected(t.id)}
           >
@@ -490,7 +562,7 @@ export function Trajectories({
           key={`${runId}-${persona}-${entry.id}`}
           runId={runId}
           entry={entry}
-          factory={factory}
+          factory={factory ?? ownFactory}
         />
       )}
     </section>

@@ -32,3 +32,6 @@ runs/screen-check-cache/
 
 # Pinned Synthetic Hospital upstream downloads
 .cache/synthetic-hospital/
+
+# Existing local native checker used by live agent attempts
+/.cache/native-checker/

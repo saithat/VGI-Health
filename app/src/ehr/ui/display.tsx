@@ -64,7 +64,10 @@ export function statusTone(value: string): ClinicalTone | undefined {
   return undefined;
 }
 export function severityTone(severity: string): ClinicalTone {
-  // Legacy wires supply interruption tiers here. Placement never implies severity.
+  // The legacy wire supplies tiers here. Color is a presentation cue; it never
+  // changes clinical severity text, modality, acknowledgment or enabled state.
+  if (severity === "interruptive") return "red";
+  if (severity === "removable") return "yellow";
   if (/^(severe|critical|error|high|danger)$/.test(severity.toLowerCase()))
     return "red";
   if (/^(warning|caution|moderate)$/.test(severity.toLowerCase()))

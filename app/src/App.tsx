@@ -1,3 +1,5 @@
+import { clinicianRoleNames } from "./ehr/ui/personas";
+import { navigate } from "./navigation";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Alert, Button, Drawer } from "@mantine/core";
@@ -5,7 +7,7 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createSession } from "./core/session";
 import type { Interp } from "./core/interp";
-import { PatientPicker } from "./browser/Browse";
+import { PatientPicker } from "./browser/PatientPicker";
 import {
   currentProgram,
   defaultPatient,
@@ -42,12 +44,13 @@ const roles: Record<string, string> = {
 const pretty = (value: unknown) => JSON.stringify(value, null, 2);
 function LiveWorkspace({ workspace }: { workspace: Workspace }) {
   const { session, catalog, program, patient, persona, verdict } = workspace;
-  const { ui, state, view, result } = useSyncExternalStore(
+  const { ui, state, result } = useSyncExternalStore(
     session.subscribe,
     session.getSnapshot,
   );
   const [error, setError] = useState("");
   const [inspecting, setInspecting] = useState(false);
+  const view = inspecting ? session.getSnapshot().view : undefined;
   const dispatch = (event: Parameters<typeof session.dispatch>[0]) => {
     try {
       session.dispatch(event);
@@ -71,7 +74,12 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
         }}
       >
         {ui ? (
-          <UiScreenView screen={ui} onEvent={dispatch} presentations={workspace.presentations} />
+          <UiScreenView
+            screen={ui}
+            presentations={workspace.presentations}
+            onEvent={dispatch}
+            viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} ${program.path.endsWith("/canonical.json") ? "vendor reference" : "baseline"}`}`}
+          />
         ) : (
           <Alert color="red" role="alert">
             The semantic renderer is unavailable. Rebuild the EHR WASM assets.
@@ -80,14 +88,16 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
       </div>
       {window.location.pathname === "/ehr" && (
         <>
-          <Button
-            size="compact-xs"
-            variant="default"
-            className="inspector-toggle"
-            onClick={() => setInspecting(true)}
-          >
-            Inspector
-          </Button>
+          {!inspecting && (
+            <Button
+              size="compact-xs"
+              variant="default"
+              className="inspector-toggle"
+              onClick={() => setInspecting(true)}
+            >
+              Inspector
+            </Button>
+          )}
           <Drawer
             opened={inspecting}
             onClose={() => setInspecting(false)}
@@ -96,98 +106,101 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
             closeButtonProps={{ "aria-label": "Close inspector" }}
             size="lg"
           >
-            <div className="inspector-content">
-              <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
-                ← UI browser
-              </a>
-              <label>
-                Persona{" "}
-                <select
-                  aria-label="Persona"
-                  value={persona}
-                  onChange={(event) => {
-                    const id = event.currentTarget.value;
-                    window.location.assign(
-                      ehrUrl(
-                        currentProgram(catalog, id, program.run),
-                        defaultPatient(catalog, id).id,
-                        id,
-                      ),
-                    );
-                  }}
+            {view && (
+              <div className="inspector-content">
+                <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
+                  ← UI browser
+                </a>
+                <label>
+                  Persona{" "}
+                  <select
+                    aria-label="Persona"
+                    value={persona}
+                    onChange={(event) => {
+                      const id = event.currentTarget.value;
+                      navigate(
+                        ehrUrl(
+                          currentProgram(catalog, id, program.run),
+                          defaultPatient(catalog, id).id,
+                          id,
+                        ),
+                      );
+                    }}
+                  >
+                    {personas.map((id) => (
+                      <option key={id}>{id}</option>
+                    ))}
+                  </select>
+                </label>
+                <details className="patient-switcher">
+                  <summary>
+                    {patient.name} · {patient.age} · {patient.encounterClass} ·
+                    Change patient
+                  </summary>
+                  <PatientPicker
+                    catalog={catalog}
+                    value={patient.id}
+                    onChange={(selected) =>
+                      navigate(ehrUrl(program, selected.id, persona))
+                    }
+                  />
+                </details>
+                <p>
+                  {program.release} · {program.path}
+                </p>
+                <Button
+                  size="xs"
+                  onClick={() => navigate(window.location.href)}
                 >
-                  {personas.map((id) => (
-                    <option key={id}>{id}</option>
-                  ))}
-                </select>
-              </label>
-              <details className="patient-switcher">
-                <summary>
-                  {patient.name} · {patient.age} · {patient.encounterClass} ·
-                  Change patient
-                </summary>
-                <PatientPicker
-                  catalog={catalog}
-                  value={patient.id}
-                  onChange={(selected) =>
-                    window.location.assign(
-                      ehrUrl(program, selected.id, persona),
-                    )
+                  Reset episode
+                </Button>
+                <a
+                  href={
+                    program.run
+                      ? `/dashboard?run=${encodeURIComponent(program.run)}`
+                      : "/dashboard"
                   }
-                />
-              </details>
-              <p>
-                {program.release} · {program.path}
-              </p>
-              <Button size="xs" onClick={() => window.location.reload()}>
-                Reset episode
-              </Button>
-              <a
-                href={
-                  program.run
-                    ? `/dashboard?run=${encodeURIComponent(program.run)}`
-                    : "/dashboard"
-                }
-              >
-                Dashboard
-              </a>
-              <h2>Current screen</h2>
-              <p>
-                {view.title} · {state.screen}
-              </p>
-              <p aria-live="polite">
-                Last step: {result === null ? "initialized" : pretty(result)}
-              </p>
-              <h2>Checker verdict</h2>
-              <p>{verdict.status}</p>
-              {verdict.output !== undefined && (
-                <pre>{pretty(verdict.output)}</pre>
-              )}
-              <h2>Enabled actions</h2>
-              <pre>{pretty(view.enabled)}</pre>
-              <h2>Blocked reasons</h2>
-              <pre>{pretty(view.blocked)}</pre>
-              <h2>Captured values · provenance</h2>
-              <pre data-testid="captured">{pretty(state.captured)}</pre>
-              <h2>Pending confirms</h2>
-              <pre>
-                {pretty(
-                  view.items
-                    .filter((item) => item.pendingConfirm)
-                    .map((item) => ({
-                      component: item.comp.id,
-                      value: item.value,
-                      provenance: item.provenance,
-                    })),
+                >
+                  Dashboard
+                </a>
+                <h2>Current screen</h2>
+                <p>
+                  {view.title} · {state.screen}
+                </p>
+                <p aria-live="polite">
+                  Last step: {result === null ? "initialized" : pretty(result)}
+                </p>
+                <h2>Checker verdict</h2>
+                <p>{verdict.status}</p>
+                {verdict.output !== undefined && (
+                  <pre>{pretty(verdict.output)}</pre>
                 )}
-              </pre>
-              <h2>Receipts</h2>
-              <pre>{pretty(state.receipts)}</pre>
-              <h2>Acknowledged alerts</h2>
-              <pre>{pretty(state.acked)}</pre>
-              <h2>Commit log</h2>
-              <pre data-testid="commits">{pretty(state.commits)}</pre>
-            </div>
+                <h2>Enabled actions</h2>
+                <pre>{pretty(view.enabled)}</pre>
+                <h2>Blocked reasons</h2>
+                <pre>{pretty(view.blocked)}</pre>
+                <h2>Captured values · provenance</h2>
+                <pre data-testid="captured">{pretty(state.captured)}</pre>
+                <h2>Pending confirms</h2>
+                <pre>
+                  {pretty(
+                    view.items
+                      .filter((item) => item.pendingConfirm)
+                      .map((item) => ({
+                        component: item.comp.id,
+                        value: item.value,
+                        provenance: item.provenance,
+                      })),
+                  )}
+                </pre>
+                <h2>Receipts</h2>
+                <pre>{pretty(state.receipts)}</pre>
+                <h2>Acknowledged alerts</h2>
+                <pre>{pretty(state.acked)}</pre>
+                <h2>Commit log</h2>
+                <pre data-testid="commits">{pretty(state.commits)}</pre>
+              </div>
+            )}
           </Drawer>
         </>
       )}

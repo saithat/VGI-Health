@@ -1892,6 +1892,36 @@ rendering about 1.4 seconds in a Node WASM measurement. The app now computes
 legacy HTML and the inspection view lazily, with immutable snapshot inputs.
 Please continue profiling semantic rendering/structured-payload checks in Lean;
 UI logic remains there. No files under lean/ were edited for these changes.
+
+## Visible control audit handoff (lane/app, 2026-10-31)
+
+The owner requires every visible enabled control to produce an observable effect
+within approximately two seconds. The app shell audit and fixes are in
+`docs/audits/buttons.md`. The precise clinical inventory, including program,
+screen, component id, label, action, and observed result, is generated in
+[`ehr-dead-controls.md`](../audits/ehr-dead-controls.md).
+
+**Content lane:** resolve the precise components in the generated inventory.
+Chart-search inputs currently echo the query without results or a clinical state
+change, even when the interpreter reports `ok`; remove them or implement search.
+Any confirmation, selected tab, or repeated action listed as `ignored` or unchanged
+needs meaningful behavior or an explicitly disabled reason. Retain actual clinical
+guards; the audit must not invent patient evidence to make a commit clickable.
+Commit paths blocked by missing phase/temporal/source contracts remain content/core
+integration work. Runtime nav metadata has landed: the former Patient workspace
+placeholder now navigates successfully, and Navigator/Sidebar placeholders are
+absent from the current projection. This supersedes the earlier blanket request
+to remove those labels.
+
+**Render lane status after main's d932551:** nav pairs now contain real goto
+component IDs. The app dispatches those IDs with Event.click, opens available
+groups by default and omits empty groups. Stepper overview pairs still contain
+screen destinations, so they remain static and are listed with null component
+IDs in the inventory. Supply click metadata or an explicitly informational or
+disabled treatment for those steps. No screen ID is converted into an invented
+click. The final audit uses the newly committed cached-view WASM without a Lean
+build.
+
 ## CHECK-2026-11-01: current baseline and evidence-domain obstruction
 
 This supersedes the stale CHECK-2026-10-31 missing-review and D5 reports for
@@ -2149,3 +2179,15 @@ flowsheet request it. MAR Category is order metadata, not an hourly column.
 Current selected acute vitals/results bind their actual current-encounter rows,
 including explicit empty payloads, to prevent silently substituting historical
 outpatient values. Tied current records are retained. No rule is changed.
+
+
+### ACUTE shared-search resolution
+
+Integrated the shell lane’s `f8280e7` search implementation and `29c42a8` dated
+weight/banner follow-up. Search uses the existing text-entry event and optional
+nonclinical State query metadata. It returns actual Lean-projected matches or an
+explicit empty result; full source/commit panels remain intact. The acute audit
+now exercises all 39 shown, unmasked search fields across v1/v2/v3 and verifies
+semantic feedback plus unchanged captures, receipts, commits and order slot.
+The original no-op legacy search event remains for archived trajectory behavior;
+visible search inputs use the new ordinary-entry path. No new clinical rule.

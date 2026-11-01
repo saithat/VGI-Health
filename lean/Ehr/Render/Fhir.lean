@@ -224,11 +224,11 @@ def patientIdOf (p : Json) : String :=
   | some i => "https://github.com/synthetichealth/synthea|" ++ str i "value"
   | none => str p "id"
 
-/-- The medical record number (identifier of type `MR`), else the id. -/
+/-- A medical record number is a business identifier, not the resource id. -/
 def mrnOf (p : Json) : String :=
   match (arr p "identifier").find? (fun i => hasCode (field i "type") "MR") with
   | some i => str i "value"
-  | none => str p "id"
+  | none => ""
 
 /-! ## Allergies (T11) -/
 
@@ -425,6 +425,15 @@ def weightTodayOf (today : String) (rs : List Json) : Option (Nat × UnitKind) :
   let todays := rs.filter fun r => isBodyWeight r && dayOf (obsWhen r) == today
   let readings := todays.filterMap fun r => (weightReading r).map (obsWhen r, ·)
   (latestBy (·.1) readings).map (·.2)
+
+/-- The banner shows the latest recorded body weight no later than the chart
+date, with its original unit and date. It is not confirmed dosing evidence. -/
+def bannerWeightOf (today : String) (rs : List Json) : Option (Nat × UnitKind × String) :=
+  let readings := rs.filterMap fun r =>
+    if isBodyWeight r && dayOf (obsWhen r) <= today then
+      (weightReading r).map fun (weight, unit) => (obsWhen r, weight, unit)
+    else none
+  (latestBy (·.1) readings).map fun (date, weight, unit) => (weight, unit, date)
 
 /-- A vital-sign Observation. -/
 def isVital (r : Json) : Bool := isObservation r && (categoryCodes r).contains "vital-signs"
@@ -801,7 +810,8 @@ def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
     coverage := coverageOf rs
     encounterClass := str (field enc "class") "code"
     attending := encProvider
-    location := (encRow enc).location }
+    location := (encRow enc).location
+    weight? := bannerWeightOf today rs }
 
 /-! ## Structured display projections -/
 

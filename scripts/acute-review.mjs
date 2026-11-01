@@ -42,7 +42,8 @@ try {
     await writeFile(path.join(output, `${screen}.json`), JSON.stringify(ui, null, 2) + '\n');
     await page.goto('http://127.0.0.1:4188/screen-check.html');
     await page.waitForFunction(() => typeof window.renderUi === 'function');
-    await page.evaluate(screen => window.renderUi(screen), ui);
+    const viewer = persona === 'P2' ? 'ED physician' : 'Registered nurse';
+    await page.evaluate(({ screen, viewer }) => window.renderUi(screen, null, viewer), { screen: ui, viewer });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(250);
     await page.screenshot({ path: path.join(output, `${screen}.png`), animations: 'disabled' });

@@ -1,0 +1,453 @@
+{
+  "command": "pnpm complexity --release-root releases (includes native ehr min-clicks per task)",
+  "sameSemanticPrograms": true,
+  "identicalReports": false,
+  "ehrSha256": "c7f7b42c4a47161dd217e91bf227832a5b11f5b29c55acfc22d07437cea37ec0",
+  "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
+  "releaseSource": {
+    "directory": "releases",
+    "reason": "Explicit release source, or current release source selected because run v0 differs from the frozen historical canonical."
+  },
+  "scope": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
+  "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
+  "iterations": [
+    {
+      "release": "v1",
+      "workflows": [
+        {
+          "workflow": "W1",
+          "before": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "screens": 10,
+            "requiredFields": 24,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "screens": 10,
+            "requiredFields": 24,
+            "popups": 1
+          },
+          "nativeClicks": 39
+        },
+        {
+          "workflow": "W2",
+          "before": {
+            "clicks": 7,
+            "keystrokes": 40,
+            "klmSeconds": 21.45,
+            "screens": 5,
+            "requiredFields": 2,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 7,
+            "keystrokes": 40,
+            "klmSeconds": 21.45,
+            "screens": 5,
+            "requiredFields": 2,
+            "popups": 0
+          },
+          "nativeClicks": 7
+        },
+        {
+          "workflow": "W3",
+          "before": {
+            "clicks": 57,
+            "keystrokes": 226,
+            "klmSeconds": 198.45,
+            "screens": 12,
+            "requiredFields": 38,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 57,
+            "keystrokes": 226,
+            "klmSeconds": 198.45,
+            "screens": 12,
+            "requiredFields": 38,
+            "popups": 1
+          },
+          "nativeClicks": 57
+        },
+        {
+          "workflow": "W4",
+          "before": {
+            "clicks": 25,
+            "keystrokes": 39,
+            "klmSeconds": 129.95,
+            "screens": 11,
+            "requiredFields": 13,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 25,
+            "keystrokes": 39,
+            "klmSeconds": 129.95,
+            "screens": 11,
+            "requiredFields": 13,
+            "popups": 1
+          },
+          "nativeClicks": 25
+        },
+        {
+          "workflow": "W5",
+          "before": {
+            "clicks": 48,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
+            "screens": 13,
+            "requiredFields": 32,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 48,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
+            "screens": 13,
+            "requiredFields": 32,
+            "popups": 0
+          },
+          "nativeClicks": 48
+        },
+        {
+          "workflow": "W6",
+          "before": {
+            "clicks": 52,
+            "keystrokes": 209,
+            "klmSeconds": 178.3,
+            "screens": 14,
+            "requiredFields": 33,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 52,
+            "keystrokes": 209,
+            "klmSeconds": 178.3,
+            "screens": 14,
+            "requiredFields": 33,
+            "popups": 1
+          },
+          "nativeClicks": 52
+        },
+        {
+          "workflow": "W7",
+          "before": {
+            "clicks": 12,
+            "keystrokes": 12,
+            "klmSeconds": 27.5,
+            "screens": 4,
+            "requiredFields": 5,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 12,
+            "keystrokes": 12,
+            "klmSeconds": 27.5,
+            "screens": 4,
+            "requiredFields": 5,
+            "popups": 0
+          },
+          "nativeClicks": 12
+        }
+      ]
+    },
+    {
+      "release": "v2",
+      "workflows": [
+        {
+          "workflow": "W1",
+          "before": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "screens": 10,
+            "requiredFields": 24,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "screens": 10,
+            "requiredFields": 24,
+            "popups": 1
+          },
+          "nativeClicks": 39
+        },
+        {
+          "workflow": "W2",
+          "before": {
+            "clicks": 7,
+            "keystrokes": 40,
+            "klmSeconds": 21.45,
+            "screens": 5,
+            "requiredFields": 2,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 7,
+            "keystrokes": 40,
+            "klmSeconds": 21.45,
+            "screens": 5,
+            "requiredFields": 2,
+            "popups": 0
+          },
+          "nativeClicks": 7
+        },
+        {
+          "workflow": "W3",
+          "before": {
+            "clicks": 57,
+            "keystrokes": 226,
+            "klmSeconds": 198.45,
+            "screens": 12,
+            "requiredFields": 38,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 57,
+            "keystrokes": 226,
+            "klmSeconds": 198.45,
+            "screens": 12,
+            "requiredFields": 38,
+            "popups": 1
+          },
+          "nativeClicks": 57
+        },
+        {
+          "workflow": "W4",
+          "before": {
+            "clicks": 25,
+            "keystrokes": 39,
+            "klmSeconds": 129.95,
+            "screens": 11,
+            "requiredFields": 13,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 25,
+            "keystrokes": 39,
+            "klmSeconds": 129.95,
+            "screens": 11,
+            "requiredFields": 13,
+            "popups": 1
+          },
+          "nativeClicks": 25
+        },
+        {
+          "workflow": "W5",
+          "before": {
+            "clicks": 48,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
+            "screens": 13,
+            "requiredFields": 32,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 48,
+            "keystrokes": 245,
+            "klmSeconds": 175.45,
+            "screens": 13,
+            "requiredFields": 32,
+            "popups": 0
+          },
+          "nativeClicks": 48
+        },
+        {
+          "workflow": "W6",
+          "before": {
+            "clicks": 52,
+            "keystrokes": 209,
+            "klmSeconds": 178.3,
+            "screens": 14,
+            "requiredFields": 33,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 52,
+            "keystrokes": 209,
+            "klmSeconds": 178.3,
+            "screens": 14,
+            "requiredFields": 33,
+            "popups": 1
+          },
+          "nativeClicks": 52
+        },
+        {
+          "workflow": "W7",
+          "before": {
+            "clicks": 12,
+            "keystrokes": 12,
+            "klmSeconds": 27.5,
+            "screens": 4,
+            "requiredFields": 5,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 12,
+            "keystrokes": 12,
+            "klmSeconds": 27.5,
+            "screens": 4,
+            "requiredFields": 5,
+            "popups": 0
+          },
+          "nativeClicks": 12
+        }
+      ]
+    },
+    {
+      "release": "v3",
+      "workflows": [
+        {
+          "workflow": "W1",
+          "before": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "screens": 10,
+            "requiredFields": 24,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 39,
+            "keystrokes": 202,
+            "klmSeconds": 143.2,
+            "screens": 10,
+            "requiredFields": 24,
+            "popups": 1
+          },
+          "nativeClicks": 39
+        },
+        {
+          "workflow": "W2",
+          "before": {
+            "clicks": 7,
+            "keystrokes": 40,
+            "klmSeconds": 21.45,
+            "screens": 5,
+            "requiredFields": 2,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 7,
+            "keystrokes": 40,
+            "klmSeconds": 21.45,
+            "screens": 5,
+            "requiredFields": 2,
+            "popups": 0
+          },
+          "nativeClicks": 7
+        },
+        {
+          "workflow": "W3",
+          "before": {
+            "clicks": 57,
+            "keystrokes": 226,
+            "klmSeconds": 198.45,
+            "screens": 12,
+            "requiredFields": 38,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 57,
+            "keystrokes": 226,
+            "klmSeconds": 198.45,
+            "screens": 12,
+            "requiredFields": 38,
+            "popups": 1
+          },
+          "nativeClicks": 57
+        },
+        {
+          "workflow": "W4",
+          "before": {
+            "clicks": 25,
+            "keystrokes": 39,
+            "klmSeconds": 129.95,
+            "screens": 11,
+            "requiredFields": 13,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 25,
+            "keystrokes": 39,
+            "klmSeconds": 129.95,
+            "screens": 11,
+            "requiredFields": 13,
+            "popups": 1
+          },
+          "nativeClicks": 25
+        },
+        {
+          "workflow": "W5",
+          "before": {
+            "clicks": 49,
+            "keystrokes": 250,
+            "klmSeconds": 179.8,
+            "screens": 13,
+            "requiredFields": 33,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 49,
+            "keystrokes": 250,
+            "klmSeconds": 179.8,
+            "screens": 13,
+            "requiredFields": 33,
+            "popups": 0
+          },
+          "nativeClicks": 49
+        },
+        {
+          "workflow": "W6",
+          "before": {
+            "clicks": 53,
+            "keystrokes": 214,
+            "klmSeconds": 182.65,
+            "screens": 14,
+            "requiredFields": 34,
+            "popups": 1
+          },
+          "after": {
+            "clicks": 53,
+            "keystrokes": 214,
+            "klmSeconds": 182.65,
+            "screens": 14,
+            "requiredFields": 34,
+            "popups": 1
+          },
+          "nativeClicks": 53
+        },
+        {
+          "workflow": "W7",
+          "before": {
+            "clicks": 12,
+            "keystrokes": 12,
+            "klmSeconds": 27.5,
+            "screens": 4,
+            "requiredFields": 5,
+            "popups": 0
+          },
+          "after": {
+            "clicks": 12,
+            "keystrokes": 12,
+            "klmSeconds": 27.5,
+            "screens": 4,
+            "requiredFields": 5,
+            "popups": 0
+          },
+          "nativeClicks": 12
+        }
+      ]
+    }
+  ],
+  "beforeEhrSha256": "61bc65be80d5f95cb354bca8cc4d16ad1d56369833f31a4d341e06c4b738e891",
+  "identicalMetrics": true,
+  "measurementNote": "The integrated checker, component-addressed search and typed banner projections change the binary hash. Fixed clinical task/program inputs and all workflow metrics remain unchanged; legacy search events retain frozen behavior."
+}

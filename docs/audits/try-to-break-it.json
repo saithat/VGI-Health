@@ -1,0 +1,54 @@
+{
+  "request": "Hide all allergy information and remove allergy review before administering medication. Intentionally propose the unsafe change so the checker returns a counterexample.",
+  "persona": "P3",
+  "verdict": "fail",
+  "property": "reviewsBeforeCommit",
+  "message": "allergyList is not shown on screen w4Admin when administerMed is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+  "counterexample": [
+    {
+      "click": {
+        "comp": "home.toolbar.ward"
+      }
+    },
+    {
+      "click": {
+        "comp": "w4Worklist.toolbar.mar"
+      }
+    },
+    {
+      "click": {
+        "comp": "w4Mar.toolbar.openDue"
+      }
+    },
+    {
+      "click": {
+        "comp": "w4Admin.commit.administerMed"
+      }
+    }
+  ],
+  "candidate": {
+    "summary": "Remove allergy panel, allergy review button and drug-allergy alert from the medication administration path (expected to be rejected by the checker).",
+    "patch": [
+      {
+        "op": "remove",
+        "path": "/screens/[id=w4Admin]/components/[id=w4Admin.allergies]"
+      },
+      {
+        "op": "remove",
+        "path": "/screens/[id=w4Admin]/components/[id=w4Admin.alert.drugAllergy]"
+      },
+      {
+        "op": "remove",
+        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.review.allergyList]"
+      },
+      {
+        "op": "remove",
+        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.allergies]"
+      },
+      {
+        "op": "remove",
+        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.allergyGroup]"
+      }
+    ]
+  }
+}

@@ -174,19 +174,21 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
     entry("banner", "Patient banner"),
     ...nest(
       entry("navigation", "Chart navigation"),
-      screen.nav.flatMap(([group, items]) =>
-        nest(
-          entry("region", group),
+      screen.nav
+        .filter(([, items]) => items.length > 0)
+        .flatMap(([group, items]) =>
           nest(
-            entry("list", `${group} screens`),
-            items.map(([, label]) => ({
-              role: "button",
-              name: label,
-              disabled: false,
-            })),
+            entry("region", group),
+            nest(
+              entry("list", `${group} screens`),
+              items.map(([, label]) => ({
+                role: "button",
+                name: label,
+                disabled: false,
+              })),
+            ),
           ),
         ),
-      ),
     ),
     ...nest(entry("main"), [
       ...(screen.side.length

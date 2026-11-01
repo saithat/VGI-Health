@@ -17,7 +17,11 @@ import type { Html } from "./html";
 declare global {
   interface Window {
     renderEhr: (tree: Html) => void;
-    renderUi: (screen: UiScreen, presentations?: PresentationBundle | null) => void;
+    renderUi: (
+      screen: UiScreen,
+      presentations?: PresentationBundle | null,
+      viewer?: string,
+    ) => void;
   }
 }
 const element = document.getElementById("root");
@@ -27,11 +31,16 @@ window.renderEhr = (tree) => {
   flushSync(() => root.render(paint(tree, () => {})));
 };
 
-window.renderUi = (screen, presentations) => {
+window.renderUi = (screen, presentations, viewer) => {
   flushSync(() =>
     root.render(
       <MantineProvider theme={clinicalTheme}>
-        <UiScreenView screen={screen} onEvent={() => {}} presentations={presentations ?? null} />
+        <UiScreenView
+          screen={screen}
+          onEvent={() => {}}
+          presentations={presentations ?? null}
+          viewer={viewer}
+        />
       </MantineProvider>,
     ),
   );
