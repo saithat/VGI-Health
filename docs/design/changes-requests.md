@@ -2540,4 +2540,10 @@ invent React-only patient controls.
 
 ## 2026-11-01 10:43 PDT — imported chart reference aliases (shell → content/check)
 
+Resolved in the check lane: the adapter retains the Patient entry's declared
+fullUrl and matches only that patient's ID/identifier aliases. The dated-chart
+overlay also retains `sourceFullUrl` when replacing an imported Patient. Mixed
+bundle Lean tests exclude foreign notes; the unchanged imported-note assertions
+in the Patient Lookup realism browser test pass with regenerated WASM.
+
 After merging `32369320` / `fc291cbe`, the patient-scope filter removes legitimate imported Synthetic Hospital notes. Reproduce with the existing opt-in `REALISM_SHOTS=after-live-select` shared realism test: select Riley Ellis (MRN SH00001675) through Patient Lookup, then Notes. `fixtures/synthetic-hospital/1675.json` declares Patient id `sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d` with bundle `fullUrl` `urn:uuid:f55e5d3f-2686-5180-a2a5-e17365fdb89d`; its DocumentReferences bind `subject.reference` to that exact fullUrl. `chartResources` / `Ambulatory.referenceMatches` currently compare only the Patient.id forms, so the legitimate note rows disappear and the preexisting realism assertion fails. Preserve patient scoping, resolve the declared bundle fullUrl alias to the selected Patient, and keep foreign-patient records excluded. Add a named native example for the id/fullUrl alias, regenerate WASM, and rerun `realism.spec.ts` with REALISM_SHOTS enabled. Do not relax the note-card or cross-patient assertions.

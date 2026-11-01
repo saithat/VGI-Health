@@ -8,6 +8,13 @@ vi.mock("../src/browser/data", () => ({
         ? {
             entry: [
               {
+                source: "fixtures/synthetic-hospital/imported.json",
+                sourceFullUrl: "urn:uuid:imported",
+                key: "Patient/sh-imported",
+                action: "replace",
+                resource: { resourceType: "Patient", id: "sh-imported" },
+              },
+              {
                 source: "fixtures/synthea/p.json",
                 sourceFullUrl: "urn:uuid:med",
                 key: "MedicationRequest/med",
@@ -39,6 +46,36 @@ vi.mock("../src/browser/data", () => ({
           },
 }));
 describe("world transport boundary", () => {
+  it("preserves an imported Patient alias when replacing its dated chart", async () => {
+    const result = await prepareWorldChart(
+      {
+        resourceType: "Bundle",
+        entry: [
+          {
+            fullUrl: "urn:uuid:imported",
+            resource: { resourceType: "Patient", id: "sh-imported" },
+          },
+          {
+            resource: {
+              resourceType: "DocumentReference",
+              id: "own-note",
+              subject: { reference: "urn:uuid:imported" },
+            },
+          },
+        ],
+      },
+      "fixtures/synthetic-hospital/imported.json",
+      "2026-11-02",
+    );
+    const patient = result.bundle.entry.find(
+      (e) => e.resource.resourceType === "Patient",
+    );
+    expect(patient?.fullUrl).toBe("urn:uuid:imported");
+    expect(
+      result.bundle.entry.find((e) => e.resource.id === "own-note")?.resource
+        .subject,
+    ).toEqual({ reference: "urn:uuid:imported" });
+  });
   it("uses the declared workday independently of the historical fixture cutoff", async () => {
     expect(await worldWorkDate()).toBe("2026-11-02");
   });

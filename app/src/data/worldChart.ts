@@ -93,7 +93,11 @@ export async function prepareWorldChart(
       );
     });
     if (change.action !== "withdraw" && change.resource)
-      entry.push({ fullUrl: change.key, resource: change.resource });
+      // Imported clinical references still point at this declared source URL.
+      entry.push({
+        fullUrl: change.sourceFullUrl ?? change.key,
+        resource: change.resource,
+      });
   }
   for (const resource of task?.todayResources ?? []) {
     entry = entry.filter(

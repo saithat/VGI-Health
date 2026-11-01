@@ -1,5 +1,24 @@
 # Project status
 
+## Imported patient reference aliases — 2026-11-01
+
+Chart scoping resolves the selected Patient's resource ID, declared bundle
+fullUrl and system/value identifiers, including absolute and contained reference
+forms. An explicit reference to another patient cannot fall back to a matching
+identifier. Dated chart replacements retain their original fullUrl, so imported
+Synthetic Hospital notes and history keep their patient binding.
+
+Lean examples cover own and foreign notes in a mixed imported-style bundle and
+shared-graph enrichment. The Patient Lookup realism browser test shows all three
+source notes for Riley Ellis (SH00001675). Certification remains 15/15; all 23
+bad programs are rejected; world-2 completes 1,284/1,284 tasks; archived run1-P3
+verification reports zero mismatches (424 tasks, 14,658 events and three
+baselines). Default build: 63.45 seconds after merging main; cached repeat:
+0.13 seconds. Kernel checking, Comparator, WASM freshness and 293 app tests pass.
+The five conformance gap families pass all 93 applicable checks across the 15
+role views, including all patient-scoping cases (zero failures).
+`Statements.lean` is unchanged.
+
 Consolidated 2026-11-01. Active releases are v1/v2/v3; v1.1 appears only in archived runs. The rule profile is **core**. Clinicians use role-based pre-set views, landing patient lists and **Open chart** for in-UI patient selection. Only the AI agent modifies UI programs. New runs use **world/2**. Metrics are clicks, scroll count/distance and mouse travel; keystrokes are secondary and time is not an optimization metric.
 
 The realism lanes cover chart notes, patient context, signing and rendered interactions. Pre-op signing uses encounter-role privileges: NPs cannot sign pre-op orders; route them to the surgeon. There is no attending-cosign route. The held-out `conformance/` suite is report-only: 195+ scenarios exposed five gap families subsequently closed; see [results](../conformance/RESULTS.md).

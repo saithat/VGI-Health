@@ -153,18 +153,41 @@ def unitOf (q : Json) : Option UnitKind :=
 /-- A resource's type. -/
 def resourceType (r : Json) : String := str r "resourceType"
 
-/-- Normalize a fixture resource's identity. Medplum resources keep their
-server id; Synthea transaction entries without an id use the entire fullUrl. -/
+/-- Keep server IDs and the Patient's declared bundle alias. Resources without
+an ID use their fullUrl. The private alias stays inside the FHIR adapter. -/
 def entryResource (e : Json) : Json :=
   let r := field e "resource"
   match r with
   | .obj _ =>
-    if str r "id" == "" then r.setObjVal! "id" (.str (str e "fullUrl")) else r
+    let r := if str r "id" == "" then r.setObjVal! "id" (.str (str e "fullUrl")) else r
+    if resourceType r == "Patient" && str e "fullUrl" != "" then
+      r.setObjVal! "_bundleFullUrl" (.str (str e "fullUrl")) else r
   | _ => r
 
 /-- **The resources of a bundle**: normalized `entry[i].resource`, in order. -/
 def bundleResources (b : Json) : List Json :=
   (arr b "entry").map entryResource
+
+/-- Only IDs and identifiers declared by this Patient are patient aliases. -/
+def patientReferenceMatches (ref p : Json) : Bool :=
+  let raw := str p "id"
+  let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
+  let reference := str ref "reference"
+  let base := ((reference.splitOn "/_history/").headD "")
+  let identifier := field ref "identifier"
+  let identifiers := (arr p "identifier").filter fun i =>
+    str i "system" != "" && str i "value" != ""
+  if reference != "" then
+    (str p "_bundleFullUrl" != "" && reference == str p "_bundleFullUrl") ||
+    (!id.isEmpty && (reference == raw || reference == "Patient/" ++ id ||
+      reference == "urn:uuid:" ++ id || reference == "#" ++ id ||
+      base == "Patient/" ++ id ||
+      ((base.startsWith "https://" || base.startsWith "http://") &&
+        base.endsWith ("/Patient/" ++ id)))) ||
+    identifiers.any (fun i => reference == str i "system" ++ "|" ++ str i "value" ||
+      reference == "Patient?identifier=" ++ str i "system" ++ "|" ++ str i "value")
+  else identifiers.any fun i => str identifier "system" == str i "system" &&
+    str identifier "value" == str i "value"
 
 /-- Sort newest first by a date key (stable: ties keep bundle order). -/
 def newestFirst {α : Type} (key : α → String) (l : List α) : List α :=
@@ -1240,14 +1263,12 @@ structure AmbulatoryMessageRow where
 
 /-- References are used only for matching; internal resource IDs are never cells. -/
 def referenceMatches (reference : String) (p : Json) : Bool :=
-  let raw := str p "id"
-  let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
-  !id.isEmpty && (reference == raw || reference == "Patient/" ++ id || reference == "urn:uuid:" ++ id)
+  patientReferenceMatches (Json.mkObj [("reference", .str reference)]) p
 
 /-- Select only tasks explicitly bound to the current chart. -/
 def patientTasks (rs : List Json) (p : Json) : List Json :=
   newestFirst (str · "authoredOn") ((ofType "Task" rs).filter fun r =>
-    referenceMatches (str (field r "for") "reference") p &&
+    patientReferenceMatches (field r "for") p &&
     !["entered-in-error", "cancelled", "completed", "failed"].contains (str r "status"))
 
 /-- Folder names describe the supplied message type, not a made-up workflow. -/
@@ -1260,7 +1281,7 @@ def taskFolder (r : Json) : String :=
 def scheduleRows (ctx : FactsContext) (rs : List Json) (p : Json) : List AmbulatoryScheduleRow :=
   ((ofType "Appointment" rs).filter fun r =>
     dayOf (str r "start") == ctx.today && (arr r "participant").any fun participant =>
-      referenceMatches (str (field participant "actor") "reference") p).map fun r =>
+      patientReferenceMatches (field participant "actor") p).map fun r =>
     let participants := (arr r "participant").map (field · "actor")
     let displayFor := fun referenceType =>
       ", ".intercalate ((participants.filter (fun actor => (str actor "reference").startsWith referenceType)).map (str · "display"))
@@ -1536,7 +1557,8 @@ def periopReferenceName (rs : List Json) (ref : Json) : String :=
 same selected resource. Missing identities never match each other. -/
 def periopReferenceMatches (target ref : Json) : Bool :=
   let id := str target "id"
-  id != "" && (str ref "reference" == id ||
+  if resourceType target == "Patient" then patientReferenceMatches ref target
+  else id != "" && (str ref "reference" == id ||
     str ref "reference" == resourceType target ++ "/" ++ id)
 
 /-- A resource belongs to the selected chart only through its explicit subject. -/
@@ -1760,9 +1782,9 @@ def chartResources (rs : List Json) (p : Json) : List Json :=
     if resourceType r == "Patient" then str r "id" == str p "id"
     else if ["Practitioner", "Organization", "Location", "Medication", "PractitionerRole"].contains (resourceType r) then true
     else [field r "subject", field r "patient", field r "for", field r "beneficiary"].any
-      (fun ref => Ambulatory.referenceMatches (str ref "reference") p) ||
+      (fun ref => patientReferenceMatches ref p) ||
       (resourceType r == "Appointment" && (arr r "participant").any
-        (fun a => Ambulatory.referenceMatches (str (field a "actor") "reference") p))
+        (fun a => patientReferenceMatches (field a "actor") p))
 
 /-- The selected patient's chart resources, excluding unrelated patients and lists. -/
 def chartResourcesOfBundle (b : Json) : List Json :=
@@ -1803,8 +1825,8 @@ def worldExtension (r : Json) (key : String) : String :=
 
 /-- Source patient references identify a chart row independently of name formatting. -/
 def worldRowMatches (p r : Json) : Bool :=
-  periopSubject p r || Ambulatory.referenceMatches (str (field r "for") "reference") p ||
-    (arr r "participant").any (fun a => Ambulatory.referenceMatches (str (field a "actor") "reference") p)
+  periopSubject p r || patientReferenceMatches (field r "for") p ||
+    (arr r "participant").any (fun a => patientReferenceMatches (field a "actor") p)
 
 /-- Pin the current chart's source rows while retaining the other source rows. -/
 def selectedFirst (p : Json) (rows : List Json) : List Json :=
@@ -1933,7 +1955,7 @@ def runFacts (i : FactsInput) : Except String FactsOutput :=
     let all := bundleResources graph
     let selected := all.filter fun r =>
       let refs := [field r "subject", field r "patient", field r "for", field r "beneficiary"]
-      refs.any (fun ref => Ambulatory.referenceMatches (str ref "reference") p) && resourceType r != "List"
+      refs.any (fun ref => patientReferenceMatches ref p) && resourceType r != "List"
     let support := all.filter fun r => ["Practitioner", "Organization", "Location"].contains (resourceType r)
     let original := bundleResources i.bundle
     let sameIdentity := fun a b => resourceType a == resourceType b && str a "id" == str b "id"
