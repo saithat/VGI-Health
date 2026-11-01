@@ -214,7 +214,7 @@ The following block is replaced by the script. The commit and content hash ident
 
 <!-- BEGIN GENERATED AUDIT -->
 
-Generated at `f56679566bc9a3328d583cb8d4835d29e292bcec`. Source SHA-256: `336131a15c896b1880081ed921784bed52972045ebbff75b7cb6542a859c1a28`.
+Generated at `37743f840b7eb0cec48d5934b3caf49d151c832c`. Source SHA-256: `336131a15c896b1880081ed921784bed52972045ebbff75b7cb6542a859c1a28`.
 
 48 theorems audited; 50 statement surfaces; 32 distinct lists; 555 distinct definitions/types overall; 2–443 per statement. 67 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
 
