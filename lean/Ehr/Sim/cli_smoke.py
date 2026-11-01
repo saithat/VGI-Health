@@ -24,10 +24,10 @@ def check_schedule(job, args):
     schedule = json.loads(schedule_path.read_text())
     cmd = [binary, "simulate", "--spec", version, "--program", str(ROOT / "releases" / version / "personas" / f"{persona}.json"),
            "--persona", str(ROOT / "programs/personas" / f"{persona}.json"), "--schedule", str(schedule_path), "--world", str(args.world), "--seed", "123"]
-    result = subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True, text=True, timeout=120)
+    result = subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True, text=True, timeout=args.timeout_seconds)
     output = json.loads(result.stdout)
     if day == 1:
-        again = subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True, text=True, timeout=120)
+        again = subprocess.run(cmd, cwd=ROOT, check=True, capture_output=True, text=True, timeout=args.timeout_seconds)
         report["determinism"] &= result.stdout == again.stdout
     completed = {t["task"]: t["completed"] for t in output["tasks"]}
     expected = {t["id"]: t["interruptions"] for t in schedule["tasks"]}
@@ -63,9 +63,10 @@ def main():
     parser.add_argument("--require-complete", action="store_true")
     parser.add_argument("--personas", nargs="+", default=["P1", "P2", "P3", "P4", "P5"])
     parser.add_argument("--jobs", type=int, default=1, help="independent native schedule workers (never Lake workers)")
+    parser.add_argument("--timeout-seconds", type=int, default=120, help="wall-clock budget per native process; independent of simulated clinical time")
     args = parser.parse_args()
-    if args.jobs < 1:
-        parser.error("--jobs must be positive")
+    if args.jobs < 1 or args.timeout_seconds < 1:
+        parser.error("--jobs and --timeout-seconds must be positive")
     report = {"schedules": [], "incomplete": [], "floorViolations": [], "interruptionViolations": [], "determinism": True}
     jobs = [(day, persona) for day in range(1, args.days + 1) for persona in args.personas]
     # Threads only orchestrate independent native subprocesses; no worker runs
