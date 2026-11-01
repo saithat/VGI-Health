@@ -1,6 +1,6 @@
 # Run 1 — real single-persona integration
 
-Status: full Lean build and native preflight passed; real Codex run has completed Day 1 and is working through the nights.
+Status: full Lean build and native preflight passed; real Codex run has completed Days 1–2 and is working through the nights.
 
 Branch: `lane/run`. Merged checker `1cd621a` and simulator `231d5b5` sequentially after the requested octopus merge could not resolve conflicts. `Main.lean` match arms/imports were unioned; proof/change-request documents merged without dropping either lane's material.
 
@@ -39,6 +39,7 @@ Minimal changes outside `agent/`:
 - `app/scripts/runs-plugin.ts`: assess replayability against the run's declared personas so a one-persona run can be selected.
 - `app/scripts/screen-check.mjs`: use an isolated free server port and run the screen visibility suite with four workers; all supplied pages still run at both desktop and narrow viewports.
 - `app/scripts/verdicts.mjs`: supply the required persona canonical to the native checker.
+- `app/src/dashboard/Dashboard.tsx`: expose recorded migration patches/checks in the release view.
 - Rebuilt WASM from the integrated source and refreshed its manifest. No interpreter semantics were translated into TypeScript.
 
 ## Run and recordings
@@ -55,10 +56,12 @@ Run artifacts will be in `runs/run1-P3/`. `scripts/export-replay.mjs run1-P3` ex
 
 Record with `node scripts/record-demo.mjs --run run1-P3 --persona P3 --base http://localhost:5193`. Playwright records 1440×900 at human pace; ffmpeg converts to H.264 MP4 using OpenH264 (this host's ffmpeg lacks libx264).
 
-Completed: `docs/recordings/05-bad-program.mp4` — 74.7 s, 1.60 MB; real WASM signing screen, allergy list absent, Sign blocked on `allergyList`. Other recordings pending the run.
+Completed: `docs/recordings/05-bad-program.mp4` — 74.7 s, 1.60 MB; real WASM signing screen, allergy list absent, Sign blocked on `allergyList`. `docs/recordings/03-counterexample.mp4` — 23.1 s, 0.26 MB; seeded hidden-allergy rejection stepped on real WASM screens. Other recordings pending the run.
 
 ## Integration recovery during the run
 
 Night 1's four natural candidates all added `popup=true` to certified interruptive alert components; the real checker rejected them under `noFalseAlarms`. The seeded hidden-allergy candidate was rejected under `reviewsBeforeCommit`. These original proposals and verdicts remain in the run.
 
 The old agent prompt misleadingly said interruptive alerts should keep popping up. It now explains the actual semantics: condition-triggered interruption occurs automatically at commit; `popup=true` requests an unsolicited screen popup. No checker rule was changed. The process was stopped after Day 2, during an unfinished Night 2 call, and resumed with `--resume`; completed days, Night 1's decision and its LLM call were reused. A test verifies that resume neither re-simulates recorded days nor repeats completed LLM calls. Resume timestamps are in the manifest; all later calls record the corrected prompt.
+
+The dashboard default endpoint resolves to `run1-P3` after native replay export. App validation: all 90 unit tests and lint passed; the migration-detail addition also passed its 9 dashboard tests.

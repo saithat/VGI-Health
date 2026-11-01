@@ -10,6 +10,11 @@
       "file": "05-bad-program.mp4",
       "duration": 74.666667,
       "bytes": 1597740
+    },
+    {
+      "file": "03-counterexample.mp4",
+      "duration": 23.133333,
+      "bytes": 260782
     }
   ]
 }

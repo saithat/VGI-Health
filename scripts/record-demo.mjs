@@ -12,7 +12,7 @@ const run = values.run, persona = values.persona, base = values.base;
 const out = resolve('docs/recordings');
 await mkdir(out, { recursive: true });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
-const standaloneBad = values.only === '05';
+const standaloneBad = ['03', '05'].includes(values.only);
 const manifest = standaloneBad ? { days: 0 } : await read(`runs/${run}/manifest.json`);
 const summary = standaloneBad ? null : await read(`runs/${run}/summary.json`);
 const final = summary?.timelines.find(t => t.persona === persona).days.at(-1).programVersion;
@@ -88,18 +88,26 @@ try {
   await record('03-counterexample', async page => {
     await dashboard(page, 'Counterexamples');
     await page.getByLabel('Persona', { exact: true }).selectOption(persona); await pause(page);
+    const rejected = page.getByLabel('Rejected proposal');
+    const allergy = await rejected.locator('option').evaluateAll(options => (options.find(o => /Declutter/i.test(o.textContent ?? '')) ?? options.find(o => /allerg.*hidden|hide.*allerg/i.test(o.textContent ?? '')))?.value);
+    if (allergy) { await rejected.selectOption(allergy); await pause(page); }
     await expect(page.locator('.counterexample .ehr-shell')).toBeVisible();
     for (let i = 0; i < 7; i++) {
       const next = page.getByRole('button', { name: 'Next event', exact: true });
       if (!(await next.isEnabled())) break;
       await click(page, next);
     }
-    await page.mouse.wheel(0, 350); await pause(page);
+    const rejectedCommit = page.locator('.counterexample [data-comp-id="w4Admin.commit.administerMed"][data-event]');
+    if (await rejectedCommit.count()) await rejectedCommit.scrollIntoViewIfNeeded();
+    else await page.mouse.wheel(0, 350);
+    await pause(page);
   });
   if (manifest.days >= 7) await record('04-release-v2-migration', async page => {
     await dashboard(page, 'Releases');
     const card = page.locator('.release-card').filter({ has: page.getByRole('heading', { name: new RegExp(`^${persona} `) }) });
     await card.scrollIntoViewIfNeeded(); await pause(page);
+    await click(page, card.locator('.migration-patch summary'));
+    await page.mouse.wheel(0, 350); await pause(page);
     const cert = card.locator('.certificate summary');
     if (await cert.count()) await click(page, cert);
     await page.mouse.wheel(0, 450); await pause(page);

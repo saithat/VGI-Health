@@ -807,6 +807,12 @@ function Releases({
                   </button>
                 </p>
               ))}
+            <details className="migration-patch">
+              <summary>Migration patch and checks</summary>
+              <pre>{JSON.stringify(r.certification.attempts.map((attempt) => ({
+                source: attempt.source, patch: attempt.patch, verdict: attempt.check.status,
+              })), null, 2)}</pre>
+            </details>
             <div className="paired-screens">
               <div>
                 <h4>Before · v{r.versionBefore}</h4>
