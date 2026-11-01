@@ -14,6 +14,7 @@ import { mkdir, readFile, readdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
+import { recordingEhr } from './recording-ehr.js';
 import { LlmAgent } from './agent.js';
 import { RecordingLlm } from './backends/recording.js';
 import type { JsonLlm } from './backends/types.js';
@@ -63,6 +64,7 @@ export interface RunSummary {
   timelines: PersonaTimeline[];
   rejections: { night: number; persona: string; candidate: string; seeded: boolean; property: string | null; message: string | null }[];
   seededRejectedKinds: string[];
+  llmErrors: { persona: string; night: number; message: string }[];
 }
 
 export function deployedPatch(r: DecisionRecord): HistoryItem['patch'] {
@@ -88,13 +90,16 @@ export function historyItem(r: DecisionRecord): HistoryItem {
 
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const log = opts.log ?? (() => undefined);
-  const ehr = opts.ehr ?? createEhr();
+  const underlyingEhr = opts.ehr ?? createEhr();
   const world = await loadWorld(opts.worldDir);
-  const personaIds = (opts.personas ?? world.manifest.personas).filter((p) => world.personas.has(p));
+  const personaIds = opts.personas ?? world.manifest.personas;
+  if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
+    throw new Error('Every requested persona must occur exactly once in the world');
   const releaseDays = opts.releaseDays ?? { v1_1: 4, v2: 7 };
   const runId = opts.runId ?? `${opts.llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });
+  const ehr = underlyingEhr.mode === 'real' ? recordingEhr(underlyingEhr, path.join(dir, 'ehr')) : underlyingEhr;
   const store = new RunStore(dir);
   const recorder = new RecordingLlm(opts.llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
@@ -120,14 +125,16 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       throw new Error('resume world/backend/ehr/personas/release days/seed policy must match the recorded run');
     }
   }
-  await writeJson(manifestFile, {
+  const manifestData = {
+    status: 'initializing',
     buildBindingRequired: ehr.mode === 'real',
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
     resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
     worldIsFake: world.manifest.fake ?? false, backend: opts.llm.name, model: opts.llm.model, ehr: { mode: ehr.mode, binary: ehr.binary },
     seedPolicy: deps.seedPolicy, releaseDays,
     warning: ehr.mode === 'fake' ? 'EHR_FAKE=1: checker and simulator are fakes; nothing in this run is certified' : null,
-  });
+  };
+  await writeJson(manifestFile, manifestData);
 
   const releases = new Map<string, Release>();
   const release = async (id: string) => {
@@ -151,7 +158,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       await writeJson(path.join(dir, 'preflight', `${id}.json`), { program, verdict });
       if (verdict !== 'ok') blocked.push(`${id}: ${verdict.violation.property}: ${verdict.violation.message}`);
     }
-    if (blocked.length) throw new Error(`Initial certification blocked (nothing deployed):\n${blocked.join('\n')}`);
+    if (blocked.length) {
+      await writeJson(manifestFile, { ...manifestData, status: 'blocked', blockers: blocked });
+      throw new Error(`Initial certification blocked (nothing deployed):\n${blocked.join('\n')}`);
+    }
   }
 
   // Day-1 programs: the canonical program personalized per user (version 0), deployed with a certificate.
@@ -188,6 +198,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     timelines.set(id, { persona: id, days: [], nights: [] });
   }
 
+  await writeJson(manifestFile, { ...manifestData, status: 'running' });
   for (let day = 1; day <= opts.days; day++) {
     // Login -> shift -> logout.
     for (const [id, view] of views) {
@@ -245,7 +256,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (!r.deployed || r.versionAfter === r.versionBefore) continue;
     const testDay = r.night + 2;
     const view = views.get(r.persona);
-    const schedule = testDay <= opts.days ? await world.schedule(testDay, r.persona) : null;
+    const schedule = testDay <= world.manifest.days ? await world.schedule(testDay, r.persona) : null;
     const before = programs.get(r.persona)?.get(r.versionBefore);
     const after = programs.get(r.persona)?.get(r.versionAfter);
     if (!view || !schedule || !before || !after) continue;
@@ -269,7 +280,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       })),
     ]),
     seededRejectedKinds: [...seedState.rejected],
+    llmErrors: records.flatMap((r) => r.flags.filter((flag) => flag.startsWith('llm-error')).map((message) => ({ persona: r.persona, night: r.night, message }))),
   };
   await writeJson(path.join(dir, 'summary.json'), summary);
+  await writeJson(manifestFile, { ...manifestData, status: summary.llmErrors.length ? 'failed' : 'completed', llmErrors: summary.llmErrors });
   return summary;
 }

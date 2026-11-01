@@ -17,7 +17,7 @@
  * FOR TESTS ONLY.
  */
 import { spawn } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readFileSync, createWriteStream } from 'node:fs';
 import { mkdtemp, rm, mkdir, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
@@ -57,11 +57,11 @@ export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bund
   return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir);
 }
 
-function run(cmd: string, args: string[], cwd: string): Promise<{ code: number; output: string }> {
+function run(cmd: string, args: string[], cwd: string, onOutput?: (chunk: string) => void): Promise<{ code: number; output: string }> {
   return new Promise((resolve) => {
     const child = spawn(cmd, args, { cwd, stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '';
-    const keep = (d: Buffer) => { output = (output + d.toString()).slice(-200_000); };
+    const keep = (d: Buffer) => { const chunk = d.toString(); output = (output + chunk).slice(-200_000); onOutput?.(chunk); };
     child.stdout.on('data', keep);
     child.stderr.on('data', keep);
     child.on('error', (e) => resolve({ code: 127, output: `${output}\n${e.message}` }));
@@ -107,15 +107,18 @@ class CliScreenChecker implements ScreenChecker {
         const hash = sha256(await readFile(file, 'utf8'));
         const representative = representatives.get(hash) ?? file;
         representatives.set(hash, representative);
-        coverage.push({ file: path.basename(file), sha256: hash, representative: path.basename(representative) });
+        coverage.push({ file: path.relative(dir, file), sha256: hash, representative: path.relative(dir, representative) });
       }
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT);
-      if (this.artifactsDir) {
-        const reportDir = path.join(this.artifactsDir, input.program.owner, `v${input.program.version}`);
+      const reportDir = this.artifactsDir ? path.join(this.artifactsDir, input.program.owner, `v${input.program.version}`) : null;
+      if (reportDir) {
         await mkdir(reportDir, { recursive: true });
-        await writeFile(path.join(reportDir, 'output.txt'), res.output);
         await writeFile(path.join(reportDir, 'coverage.json'), JSON.stringify({ pages: files.length, distinct: representatives.size, coverage }, null, 2));
       }
+      const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
+      process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; one browser, desktop + narrow\n`);
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); });
+      if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
+      process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
       if (res.code === 0) return { ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
       const failingFiles = failingFilesFromOutput(res.output, files);
       return {

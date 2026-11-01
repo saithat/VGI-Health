@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Event, StepOutput } from "../../../lean/generated/ehr-types";
 import { applyPatch } from "../../../agent/src/jsonpatch";
 import {
@@ -6,6 +6,7 @@ import {
   type Program,
   type JsonPatchOp,
 } from "../../../agent/src/schema";
+import { verifyRecordedBuild } from "../browser/data";
 import type { Interp } from "../core/interp";
 import { mockReplayInterp } from "../mock/replay";
 import { paint } from "../ehr/painter";
@@ -58,8 +59,20 @@ export function ReplayScreen({
   onEvent?: (event: Event) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const bindingKey = `${run.manifest.runId}/${persona}/${version}`;
+  const [binding, setBinding] = useState({ key: "", error: "Verifying certified build…" });
+  useEffect(() => {
+    let active = true;
+    if (!run.manifest.buildBindingRequired) return;
+    verifyRecordedBuild(`runs/${run.manifest.runId}/programs/${persona}/v${version}.json`, programAt(run, persona, version))
+      .then(() => { if (active) setBinding({ key: bindingKey, error: "" }); })
+      .catch((error: unknown) => { if (active) setBinding({ key: bindingKey, error: error instanceof Error ? error.message : String(error) }); });
+    return () => { active = false; };
+  }, [run, persona, version, bindingKey]);
   const result = useMemo(() => {
     try {
+      if (run.manifest.buildBindingRequired && (binding.key !== bindingKey || binding.error))
+        throw new Error(binding.key === bindingKey ? binding.error : "Verifying certified build…");
       if (!run.replay)
         throw new Error(
           "This run needs replay.json with spec, bundle, user and same-task traces. See app/README.md.",
@@ -98,7 +111,7 @@ export function ReplayScreen({
         error: error instanceof Error ? error.message : "Replay failed",
       };
     }
-  }, [run, persona, version, specVersion, events, patch, factory]);
+  }, [run, persona, version, specVersion, events, patch, factory, binding, bindingKey]);
   useEffect(() => {
     const nodes = ref.current?.querySelectorAll<HTMLElement>("[data-comp-id]");
     nodes?.forEach((node) => {

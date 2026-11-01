@@ -22,6 +22,9 @@ export const manifestSchema = z.object({
   days: z.number().int().positive(),
   personas: z.array(z.string()),
   warning: z.string().nullable().optional(),
+  buildBindingRequired: z.boolean().optional(),
+  status: z.string().optional(),
+  blockers: z.array(z.string()).optional(),
   ehr: z.object({ mode: z.enum(["real", "fake"]) }),
 });
 const sideSchema = z.object({

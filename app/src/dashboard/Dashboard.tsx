@@ -886,11 +886,13 @@ export function Dashboard({
   const record = selection?.record;
   return (
     <div className="dashboard">
+      {run?.manifest.status === "blocked" && <div role="alert">Run blocked before deployment: {run.manifest.blockers?.join("; ")}</div>}
       <header className="dash-header">
         <a href="/" className="dash-brand">
           VGI Health
         </a>
         <h1>UI evolution</h1>
+        <p>One canonical EHR, with role permissions and a pre-set view. The overnight agent evolves each persona’s fork; vendor releases merge into every fork and are re-certified.</p>
         <label>
           Run{" "}
           <select

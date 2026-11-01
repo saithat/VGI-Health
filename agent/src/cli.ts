@@ -86,6 +86,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   });
   console.log(`\nrun ${summary.runId} -> ${summary.dir}`);
   console.log(`rejections logged: ${summary.rejections.length}; tempting-move kinds rejected: ${summary.seededRejectedKinds.join(', ') || 'none'}`);
+  if (summary.llmErrors.length) throw new Error(`${summary.llmErrors.length} LLM calls failed; see decision flags and llm/*.error.json`);
 }
 
 async function cmdTryToBreakIt(argv: string[]): Promise<void> {

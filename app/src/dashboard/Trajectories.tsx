@@ -6,7 +6,7 @@ import type { UiScreen } from "../ehr/ui/types";
 import { UiScreenView } from "../ehr/ui/Screen";
 import type { InterpFactory } from "./replay";
 import { readRunJson } from "./data";
-import { readArtifact } from "../browser/data";
+import { readArtifact, verifyRecordedBuild } from "../browser/data";
 import {
   trajectoryIndexSchema,
   trajectorySchema,
@@ -191,6 +191,7 @@ function TaskPlayback({
         readArtifact(`/${task.context.specPath}`),
         readArtifact(`/${task.context.fixtureFile}`),
       ]);
+      await verifyRecordedBuild(task.context.programPath, program);
       const bundle = trajectoryBundleSchema.parse(fixture);
       const parsedProgram = programSchema.parse(program);
       let resources: { resourceType: string; id?: string | undefined }[] =
