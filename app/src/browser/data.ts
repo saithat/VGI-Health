@@ -128,10 +128,10 @@ export function currentProgram(
 }
 export function ehrUrl(
   program: ProgramEntry,
-  patient: string,
+  _patient: string,
   persona = program.persona,
 ) {
-  return `/ehr?${new URLSearchParams({ mode: "replay", release: program.release, program: program.path, persona, patient })}`;
+  return `/ehr?${new URLSearchParams({ mode: "replay", release: program.release, program: program.path, persona })}`;
 }
 export const verdictsSchema = z.object({
   programs: z.record(

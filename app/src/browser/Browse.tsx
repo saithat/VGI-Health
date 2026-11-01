@@ -1,14 +1,11 @@
-import { PatientPicker } from "./PatientPicker";
 import { useEffect, useMemo, useState } from "react";
 import type { KeyboardEvent } from "react";
 import { Button, Switch } from "@mantine/core";
 import { navigate } from "../navigation";
 import { AppHeader } from "../ehr/ui/AppHeader";
 import { ClinicalIcon } from "../ehr/ui/Icons";
-import { formatDisplayValue } from "../ehr/ui/display";
 import { loadRunSummary, type RunData } from "../dashboard/data";
 import {
-  defaultPatient,
   ehrUrl,
   loadCatalog,
   personas,
@@ -274,13 +271,7 @@ function Timeline({
                           onMouseEnter={() => setSelectedKey(nodeKey(node))}
                           onKeyDown={(event) => move(event, node)}
                           onClick={() =>
-                            navigate(
-                              ehrUrl(
-                                node.program,
-                                patient || defaultPatient(catalog, persona).id,
-                                persona,
-                              ),
-                            )
+                            navigate(ehrUrl(node.program, patient, persona))
                           }
                         >
                           <span className="timeline-dot" aria-hidden="true">
@@ -355,7 +346,12 @@ function Timeline({
             />
             <p>{selected.summary}</p>
             <div className="timeline-measure">
-              <strong>Measured change vs {run?.manifest.measurementProtocol?"active canonical":"rev 0"}</strong>
+              <strong>
+                Measured change vs{" "}
+                {run?.manifest.measurementProtocol
+                  ? "active canonical"
+                  : "rev 0"}
+              </strong>
               {delta ? (
                 <dl>
                   <div>
@@ -365,8 +361,23 @@ function Timeline({
                       {delta.clicks.toFixed(1)}
                     </dd>
                   </div>
-                  <div><dt>Scrolls</dt><dd>{delta.scrolls>0?"+":""}{delta.scrolls.toFixed(1)}</dd></div>
-                  <div><dt>Scroll distance</dt><dd>{delta.scrollPx!==null&&delta.scrollPx>0?"+":""}{delta.scrollPx===null?"—":delta.scrollPx.toFixed(1)} px</dd></div>
+                  <div>
+                    <dt>Scrolls</dt>
+                    <dd>
+                      {delta.scrolls > 0 ? "+" : ""}
+                      {delta.scrolls.toFixed(1)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Scroll distance</dt>
+                    <dd>
+                      {delta.scrollPx !== null && delta.scrollPx > 0 ? "+" : ""}
+                      {delta.scrollPx === null
+                        ? "—"
+                        : delta.scrollPx.toFixed(1)}{" "}
+                      px
+                    </dd>
+                  </div>
                   <div>
                     <dt>Keys (secondary)</dt>
                     <dd>
@@ -377,8 +388,13 @@ function Timeline({
                   <div>
                     <dt>Mouse travel</dt>
                     <dd>
-                      {delta.mouseTravelPx!==null&&delta.mouseTravelPx>0 ? "+" : ""}
-                      {delta.mouseTravelPx===null?"—":delta.mouseTravelPx.toFixed(1)} px
+                      {delta.mouseTravelPx !== null && delta.mouseTravelPx > 0
+                        ? "+"
+                        : ""}
+                      {delta.mouseTravelPx === null
+                        ? "—"
+                        : delta.mouseTravelPx.toFixed(1)}{" "}
+                      px
                     </dd>
                   </div>
                 </dl>
@@ -423,7 +439,7 @@ function Timeline({
 export function Browse() {
   const query = new URLSearchParams(window.location.search);
   const [catalog, setCatalog] = useState<Catalog>();
-  const [patient, setPatient] = useState(query.get("patient") ?? "");
+  const patient = "";
   const [runId, setRunId] = useState(query.get("run") ?? "");
   const [run, setRun] = useState<RunData>();
   const [verdicts, setVerdicts] = useState<Verdicts>({});
@@ -438,11 +454,6 @@ export function Browse() {
       .then(([data, checks]) => {
         setCatalog(data);
         setVerdicts(checks.programs);
-        setPatient((current) =>
-          data.patients.some((patient) => patient.id === current)
-            ? current
-            : defaultPatient(data, query.get("persona") ?? "P3").id,
-        );
         setRunId((current) =>
           data.runs.some((run) => run.id === current && (!run.mock || showMock))
             ? current
@@ -469,9 +480,8 @@ export function Browse() {
     };
   }, [runId]);
   useEffect(() => {
-    if (!catalog || !patient) return;
+    if (!catalog) return;
     const params = new URLSearchParams({
-      patient,
       ...(runId ? { run: runId } : {}),
       ...(showMock ? { mock: "1" } : {}),
     });
@@ -480,8 +490,7 @@ export function Browse() {
       "",
       `/browse?${params}${window.location.hash}`,
     );
-  }, [catalog, patient, runId, showMock]);
-  const selected = catalog?.patients.find((item) => item.id === patient);
+  }, [catalog, runId, showMock]);
   const visibleRuns =
     catalog?.runs.filter((run) => showMock || !run.mock) ?? [];
   const programs =
@@ -541,14 +550,9 @@ export function Browse() {
         ) : (
           <>
             <div className="browse-context">
-              <span className="browser-badge info">
-                <ClinicalIcon name="user" /> {selected?.name} · {selected?.age}{" "}
-                years · {selected?.sex}
-              </span>
               <span>
-                Chart date {formatDisplayValue(catalog.referenceDate)}
+                Choose a role view, then find the patient inside the EHR.
               </span>
-              <a href="#patient-selection">Change patient ↓</a>
               {run?.manifest.ehr.mode === "fake" && (
                 <span className="browser-badge warning">
                   MOCK authored data
@@ -565,14 +569,10 @@ export function Browse() {
                 patient={patient}
               />
             )}
-            <div className="browse-lower">
-              <div id="patient-selection">
-                <PatientPicker
-                  catalog={catalog}
-                  value={patient}
-                  onChange={(patient) => setPatient(patient.id)}
-                />
-              </div>
+            <div
+              className="browse-lower"
+              style={{ gridTemplateColumns: "1fr" }}
+            >
               <section
                 className="browser-panel program-panel"
                 aria-labelledby="program-title"
@@ -580,7 +580,7 @@ export function Browse() {
                 <div className="browser-section-heading">
                   <ClinicalIcon name="lock" />
                   <h2 id="program-title">Certified role views</h2>
-                  <span>Open with the selected patient</span>
+                  <span>Patient selection opens inside each view</span>
                 </div>
                 <div className="program-grid-scroll">
                   <table className="program-grid">
@@ -711,9 +711,9 @@ export function Browse() {
                   </table>
                 </div>
                 <p className="program-grid-note">
-                  The vendor reference is shared by every role. Sign in through a certified
-                  role view to use that role’s permissions and preset
-                  navigation.
+                  The vendor reference is shared by every role. Sign in through
+                  a certified role view to use that role’s permissions and
+                  preset navigation.
                 </p>
               </section>
             </div>

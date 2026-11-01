@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 // Navigation stays offline and each chosen node carries the exact certified artifact.
-test("browser leads with the real run, filters charts and opens P3 day 5", async ({
+test("browser opens P3 day 5 with patient selection inside the EHR", async ({
   page,
 }) => {
   await page.goto("/browse");
@@ -20,23 +20,7 @@ test("browser leads with the real run, filters charts and opens P3 day 5", async
     name: /^P3 Inpatient RN, day 5, revision 4, certified/,
   });
   await expect(day5).toBeVisible();
-  await page.getByRole("button", { name: "pediatric", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "pediatric", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await expect(
-    page
-      .getByRole("group", { name: "Matching patients" })
-      .getByRole("button")
-      .first(),
-  ).toContainText("pediatric");
-  await page.getByRole("button", { name: "pediatric", exact: true }).click();
-  await page.getByLabel("Search by name or MRN").fill("Aaron");
-  await expect(page.locator(".patient-card")).toHaveCount(1);
-  await page.locator(".patient-card").click();
-  await expect(page.getByLabel("Selected patient summary")).toContainText(
-    "Aaron",
-  );
+  await expect(page.getByLabel("Search by name or MRN")).toHaveCount(0);
   await day5.focus();
   await page.keyboard.press("ArrowRight");
   await expect(
@@ -48,11 +32,15 @@ test("browser leads with the real run, filters charts and opens P3 day 5", async
     /program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv4.json/,
   );
   await expect(page).toHaveURL(/persona=P3/);
-  await expect(page.locator(".clinical-app")).toBeVisible({timeout:20_000});
+  await expect(page.locator(".clinical-app")).toBeVisible({ timeout: 20_000 });
+  await expect(
+    page.getByRole("textbox", { name: "Patient search by name or MRN" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("banner", { name: "Patient banner" }),
+  ).toHaveCount(0);
   await page.goBack();
-  await expect(page.getByLabel("Selected patient summary")).toContainText(
-    "Aaron",
-  );
+  await expect(page.getByLabel("Selected patient summary")).toHaveCount(0);
 });
 
 test("release grid orders v1 v2 v3 and exposes the vendor as a reference", async ({
