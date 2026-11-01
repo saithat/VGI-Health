@@ -504,7 +504,7 @@
       "element:restraintCarePlanChange",
       "entry:signRestraintOrder:restraintCarePlanChange:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.13-e5-authorized-order",
@@ -1624,7 +1624,7 @@
       "element:restraintBehavior",
       "entry:chartRestraintEpisode:restraintBehavior:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.13-e16ii-document-intervention",
@@ -1760,7 +1760,7 @@
       "element:restraintIntervention",
       "entry:chartRestraintEpisode:restraintIntervention:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.13-e16iii-document-alternatives",
@@ -1896,7 +1896,7 @@
       "element:restraintAlternatives",
       "entry:chartRestraintEpisode:restraintAlternatives:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.13-e16iv-document-condition",
@@ -2032,7 +2032,7 @@
       "element:restraintCondition",
       "entry:chartRestraintEpisode:restraintCondition:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.13-e16v-document-response",
@@ -2168,7 +2168,7 @@
       "element:restraintResponse",
       "entry:chartRestraintEpisode:restraintResponse:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.13-e16v-document-continuation",
@@ -2304,7 +2304,7 @@
       "element:restraintContinuationReason",
       "entry:chartRestraintEpisode:restraintContinuationReason:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.22-c5i-hp-qualified-author",
@@ -2874,7 +2874,7 @@
       "element:selfAdministrationCapacity",
       "entry:documentSelfAdministration:selfAdministrationCapacity:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.23-c6iC-self-instruction",
@@ -2997,7 +2997,7 @@
       "element:selfAdministrationTeaching",
       "entry:documentSelfAdministration:selfAdministrationTeaching:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.23-c6iD-self-security",
@@ -3120,7 +3120,7 @@
       "element:selfAdministrationSecurity",
       "entry:documentSelfAdministration:selfAdministrationSecurity:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.23-c6iE-self-record-dose",
@@ -3296,7 +3296,7 @@
       "element:patientOwnedMedicationIdentity",
       "entry:documentSelfAdministration:patientOwnedMedicationIdentity:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.23-c6iiC-own-med-integrity",
@@ -3419,7 +3419,7 @@
       "element:patientOwnedMedicationIntegrity",
       "entry:documentSelfAdministration:patientOwnedMedicationIntegrity:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.24-c1-legible",
@@ -4957,7 +4957,7 @@
       "element:hospitalizationOutcome",
       "entry:discharge:hospitalizationOutcome:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.24-c4vii-summary-disposition",
@@ -5572,7 +5572,7 @@
       "entry:discharge:postHospitalNeeds:always",
       "entry:disposition:postHospitalNeeds:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.43-a2-service-availability",
@@ -5723,7 +5723,7 @@
       "entry:discharge:postHospitalServiceAvailability:always",
       "entry:disposition:postHospitalServiceAvailability:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.43-a2-service-access",
@@ -5874,7 +5874,7 @@
       "entry:discharge:postHospitalServiceAccess:always",
       "entry:disposition:postHospitalServiceAccess:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.43-a3-evaluation-record",
@@ -6025,7 +6025,7 @@
       "entry:discharge:dischargePlanningEvaluation:always",
       "entry:disposition:dischargePlanningEvaluation:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.43-a3-evaluation-discussion",
@@ -6176,7 +6176,7 @@
       "entry:discharge:dischargeEvaluationDiscussion:always",
       "entry:disposition:dischargeEvaluationDiscussion:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.43-a6-update-plan",
@@ -6576,7 +6576,7 @@
       "element:opTechnique",
       "entry:signOpNote:opTechnique:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.51-b6-findings",
@@ -6754,7 +6754,7 @@
       "element:opTissuesRemovedAltered",
       "entry:signOpNote:opTissuesRemovedAltered:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "cms-482.51-b6-immediate-report",
@@ -8083,7 +8083,7 @@
       "element:treatmentOrder",
       "entry:signTreatmentOrder:treatmentOrder:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-diet-orders",
@@ -8456,7 +8456,7 @@
       "element:nursingCareProvided",
       "entry:chartAssessment:nursingCareProvided:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-nursing-observations",
@@ -8573,7 +8573,7 @@
       "element:nursingObservations",
       "entry:chartAssessment:nursingObservations:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-nursing-incidents",
@@ -8690,7 +8690,7 @@
       "element:nursingIncidents",
       "entry:chartAssessment:nursingIncidents:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-nursing-interpretation",
@@ -8807,7 +8807,7 @@
       "element:nursingInterpretation",
       "entry:chartAssessment:nursingInterpretation:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-mar-drug",
@@ -8924,7 +8924,7 @@
       "element:administeredDrug",
       "entry:administerMed:administeredDrug:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-mar-dose",
@@ -9158,7 +9158,7 @@
       "element:actualAdministrationTime",
       "entry:administerMed:actualAdministrationTime:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-mar-route",
@@ -9664,7 +9664,7 @@
       "element:restraintApplicationTime",
       "entry:recordRestraintStart:restraintApplicationTime:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-restraint-end",
@@ -9800,7 +9800,7 @@
       "element:restraintRemovalTime",
       "entry:recordRestraintEnd:restraintRemovalTime:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-vital-sheet",
@@ -10258,7 +10258,7 @@
       "element:opTechnique",
       "entry:signOpNote:opTechnique:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-op-tissue",
@@ -10375,7 +10375,7 @@
       "element:opTissuesRemovedAltered",
       "entry:signOpNote:opTissuesRemovedAltered:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-discharge-course",
@@ -10526,7 +10526,7 @@
       "entry:discharge:hospitalCourse:always",
       "entry:disposition:hospitalCourse:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-discharge-condition",
@@ -10740,7 +10740,7 @@
       "entry:discharge:futureCareRecommendations:always",
       "entry:disposition:futureCareRecommendations:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70749-discharge-arrangements",
@@ -10891,7 +10891,7 @@
       "entry:discharge:futureCareArrangements:always",
       "entry:disposition:futureCareArrangements:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70751-record-integrity",
@@ -11826,7 +11826,7 @@
       "element:nursingDiagnosis",
       "entry:chartAssessment:nursingDiagnosis:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70215-nursing-plan",
@@ -11943,7 +11943,7 @@
       "element:nursingPlan",
       "entry:chartAssessment:nursingPlan:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70215-nursing-intervention",
@@ -12060,7 +12060,7 @@
       "element:nursingIntervention",
       "entry:chartAssessment:nursingIntervention:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70215-nursing-evaluation",
@@ -12177,7 +12177,7 @@
       "element:nursingEvaluation",
       "entry:chartAssessment:nursingEvaluation:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70223-verify-identity",
@@ -13260,7 +13260,7 @@
       "element:verbalOrderGiver",
       "entry:recordVerbalOrder:verbalOrderGiver:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70263-verbal-receiver-signature",
@@ -13570,7 +13570,7 @@
       "element:standingOrderCircumstances",
       "entry:signStandingOrder:standingOrderCircumstances:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70263-standing-conditions",
@@ -13705,7 +13705,7 @@
       "element:standingOrderConditions",
       "entry:signStandingOrder:standingOrderConditions:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70263-standing-dated",
@@ -14598,7 +14598,7 @@
       "element:anesthesiaChoiceRationale",
       "entry:signAnesthesiaRecord:anesthesiaChoiceRationale:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70233-preinduction-review",
@@ -15191,7 +15191,7 @@
       "element:edArrivalTime",
       "entry:recordEdArrival:edArrivalTime:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70413-ed-arrival-means",
@@ -15437,7 +15437,7 @@
       "element:edArrivalComplaint",
       "entry:recordEdArrival:edArrivalComplaint:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70413-ed-disposition",
@@ -15619,7 +15619,7 @@
       "element:edDepartureTime",
       "entry:disposition:edDepartureTime:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70413-ed-dead-on-arrival",
@@ -16318,7 +16318,7 @@
       "element:newbornOxygenTarget",
       "entry:signNewbornOxygenOrder:newbornOxygenTarget:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70547-newborn-oxygen-24h",
@@ -17635,7 +17635,7 @@
       "element:consentRiskDisclosure",
       "entry:documentTreatmentConsent:consentRiskDisclosure:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70707-consent-alternatives",
@@ -17802,7 +17802,7 @@
       "element:consentAlternativesDisclosure",
       "entry:documentTreatmentConsent:consentAlternativesDisclosure:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-title22-70707-treatment-refusal",
@@ -18196,7 +18196,7 @@
       "element:prescriptionPatientName",
       "entry:signOrders:prescriptionPatientName:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-bpc-4040-patient-address",
@@ -18368,7 +18368,7 @@
       "element:prescriptionPatientAddress",
       "entry:signOrders:prescriptionPatientAddress:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-bpc-4040-drug",
@@ -18676,7 +18676,7 @@
       "element:prescriptionDirections",
       "entry:signOrders:prescriptionDirections:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-bpc-4040-issue-date",
@@ -18908,7 +18908,7 @@
       "element:prescriberLicenseClassification",
       "entry:signOrders:prescriberLicenseClassification:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-bpc-4040-federal-registry",
@@ -19091,7 +19091,7 @@
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-II-IV",
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "ca-statutes-bpc-4040-requested-purpose",
@@ -19807,7 +19807,7 @@
       "element:controlledTransmissionAgentName",
       "entry:recordDelegatedControlledTransmission:controlledTransmissionAgentName:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-hsc-11158-direct-72-hour",
@@ -21822,7 +21822,7 @@
       "element:mentalHealthAccessRequestDate",
       "entry:documentMentalHealthAccessDenial:mentalHealthAccessRequestDate:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-hsc-123115-mental-record-denial-consequences",
@@ -21963,7 +21963,7 @@
       "element:mentalHealthAccessDenialConsequences",
       "entry:documentMentalHealthAccessDenial:mentalHealthAccessDenialConsequences:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-hsc-123130-summary-deadline",
@@ -22706,7 +22706,7 @@
       "element:minorMentalHealthParentContactDecision",
       "entry:documentMinorMentalHealthConsent:minorMentalHealthParentContactDecision:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-fam-6924-psychotropic-exclusion",
@@ -22997,7 +22997,7 @@
       "element:minorAssaultParentContactTime",
       "entry:documentMinorAssaultCareConsent:minorAssaultParentContactTime:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-fam-6929-substance-care-consent",
@@ -23211,7 +23211,7 @@
       "element:minorSubstanceParentInvolvementDecision",
       "entry:documentMinorSubstanceCareConsent:minorSubstanceParentInvolvementDecision:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-fam-6929-minor-moud-sixteen",
@@ -25257,7 +25257,7 @@
       "element:holdApplicationCircumstances",
       "entry:documentHoldApplication:holdApplicationCircumstances:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-wic-5150-application-probable-cause",
@@ -25378,7 +25378,7 @@
       "element:holdApplicationProbableCause",
       "entry:documentHoldApplication:holdApplicationProbableCause:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-wic-5150-application-history",
@@ -25623,7 +25623,7 @@
       "element:holdAdvisementPerformer",
       "entry:recordHoldAdvisement:holdAdvisementPerformer:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-wic-5150-advisement-date",
@@ -25744,7 +25744,7 @@
       "element:holdAdvisementDate",
       "entry:recordHoldAdvisement:holdAdvisementDate:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-wic-5150-advisement-completion",
@@ -25989,7 +25989,7 @@
       "element:holdAdvisementLanguage",
       "entry:recordHoldAdvisement:holdAdvisementLanguage:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-wic-5150-advisement-good-cause",
@@ -26617,7 +26617,7 @@
       "element:patientDialect",
       "entry:recordCommunicationNeeds:patientDialect:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "ca-statutes-bpc-4118-5-admission-medication-profile",
@@ -27886,7 +27886,7 @@
       "entry:signOrders:controlledMedicalPurpose:orderClass controlled-II-IV",
       "entry:signOrders:controlledMedicalPurpose:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-04-usual-practice",
@@ -28189,7 +28189,7 @@
       "entry:signOrders:prescriptionPatientName:orderClass controlled-II-IV",
       "entry:signOrders:prescriptionPatientName:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-patient-address",
@@ -28372,7 +28372,7 @@
       "entry:signOrders:prescriptionPatientAddress:orderClass controlled-II-IV",
       "entry:signOrders:prescriptionPatientAddress:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-drug-name",
@@ -28623,7 +28623,7 @@
       "entry:signOrders:controlledProductStrength:orderClass controlled-II-IV",
       "entry:signOrders:controlledProductStrength:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-dosage-form",
@@ -28806,7 +28806,7 @@
       "entry:signOrders:controlledDosageForm:orderClass controlled-II-IV",
       "entry:signOrders:controlledDosageForm:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-quantity",
@@ -29057,7 +29057,7 @@
       "entry:signOrders:prescriptionDirections:orderClass controlled-II-IV",
       "entry:signOrders:prescriptionDirections:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-prescriber-name",
@@ -29240,7 +29240,7 @@
       "entry:signOrders:controlledPrescriberName:orderClass controlled-II-IV",
       "entry:signOrders:controlledPrescriberName:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-prescriber-address",
@@ -29423,7 +29423,7 @@
       "entry:signOrders:controlledPrescriberAddress:orderClass controlled-II-IV",
       "entry:signOrders:controlledPrescriberAddress:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-prescriber-dea",
@@ -29606,7 +29606,7 @@
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-II-IV",
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-ghb-need",
@@ -29778,7 +29778,7 @@
       "element:ghbMedicalNeed",
       "entry:signOrders:ghbMedicalNeed:drugClass ghb"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-institution-code",
@@ -30732,7 +30732,7 @@
       "element:earliestFillDate",
       "entry:signScheduleIISeries:earliestFillDate:orderClass scheduleII"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "federal-rx-1306-12-diversion-risk",
@@ -35409,7 +35409,7 @@
       "element:vaccineAdministrationDate",
       "entry:recordImmunization:vaccineAdministrationDate:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "federal-rx-300aa-25-manufacturer",
@@ -35713,7 +35713,7 @@
       "element:vaccineProviderAddress",
       "entry:recordImmunization:vaccineProviderAddress:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "federal-rx-300aa-25-provider-title",
@@ -35834,7 +35834,7 @@
       "element:vaccineProviderTitle",
       "entry:recordImmunization:vaccineProviderTitle:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "federal-rx-300aa-26-vis-before-dose",
@@ -38977,7 +38977,7 @@
       "element:suicideRiskLevel",
       "entry:signSuicideRiskAssessment:suicideRiskLevel:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "entrenched-npg-suicide-mitigation",
@@ -39112,7 +39112,7 @@
       "element:suicideMitigationPlan",
       "entry:signSuicideRiskAssessment:suicideMitigationPlan:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply. Nonempty narratives use validated text; identity record-confirm sources are reviewed in human_labels.py."
   },
   {
     "id": "entrenched-npg-label-name",

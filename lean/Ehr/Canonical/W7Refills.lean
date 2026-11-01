@@ -60,6 +60,7 @@ def decision : Screen :=
   let s := "w7Decision"
   { id := s, title := "Refill decision", workflow := "W7"
     components := frame s ++ [
+      table s "comparison" "refillComparison" "Requested / current / proposed",
       panel s "request" "refillRequest" "Refill request",
       table s "labs" "relevantLabs" "Relevant labs",
       panel s "lastVisit" "lastVisit" "Last visit",

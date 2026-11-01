@@ -86,7 +86,7 @@ def rooming : Screen :=
 and the fill history (one tab away). -/
 def medRec : Screen :=
   let s := "w1MedRec"
-  { id := s, title := "Medication reconciliation", workflow := "W1"
+  { id := s, title := "Med rec", workflow := "W1"
     components := frame s ++ [
       table s "meds" "currentMeds" "Medication list",
       reviewBtn s "currentMeds" "Mark medications reviewed",
@@ -102,7 +102,7 @@ def medRec : Screen :=
 /-- HPI and review of systems, with copy-forward and a template. -/
 def hpi : Screen :=
   let s := "w1Hpi"
-  { id := s, title := "History", workflow := "W1"
+  { id := s, title := "HPI / ROS", workflow := "W1"
     components := frame s ++ [
       macroBtn s "copyForward" "w1CopyForward" "Copy forward last note",
       macroBtn s "rosTemplate" "w1RosTemplate" "ROS template (12 systems negative)",
@@ -116,7 +116,7 @@ def hpi : Screen :=
 /-- Exam, assessment and plan, and the visit diagnosis. -/
 def exam : Screen :=
   let s := "w1Exam"
-  { id := s, title := "Exam and assessment", workflow := "W1"
+  { id := s, title := "Exam / A&P", workflow := "W1"
     components := frame s ++ [
       macroBtn s "examTemplate" "w1ExamTemplate" "Normal exam template",
       field s "exam" "exam" "Physical exam",
@@ -155,6 +155,7 @@ def labs : Screen :=
       field s "labPriority" "labPriority" "Priority" (parent := some "labOrder"),
       field s "labFasting" "labFasting" "Fasting required" (parent := some "labOrder"),
       table s "recent" "labResults" "Recent results",
+      table s "pending" "orderSummary" "Pending orders",
       goto s "toMeds" "w1Orders" "Medication orders",
       goto s "toSign" "w1Verify" "Review and sign"
     ] }
@@ -163,7 +164,7 @@ def labs : Screen :=
 again and asks for one more allergy checkbox (accidental friction). -/
 def verify : Screen :=
   let s := "w1Verify"
-  { id := s, title := "Order verification", workflow := "W1"
+  { id := s, title := "Verify orders", workflow := "W1"
     components := frame s ++ [
       table s "orders" "orderSummary" "Orders to sign",
       panel s "allergies" "allergyList" "Allergies",
@@ -199,8 +200,9 @@ def sign : Screen :=
 and Sign note. A removable health-maintenance popup fires at signing. -/
 def close : Screen :=
   let s := "w1Close"
-  { id := s, title := "Visit close", workflow := "W1"
+  { id := s, title := "Close visit", workflow := "W1"
     components := frame s ++ [
+      panel s "noteReview" "noteSummary" "Note review",
       field s "claimDiagnosis" "claimDiagnosis" "Billing diagnosis (ICD-10)",
       field s "levelOfService" "levelOfService" "Level of service",
       field s "followUp" "followUp" "Follow-up",

@@ -242,7 +242,8 @@ controlled-substance section, a collapsed "additional" section, an order-info
 tab strip whose second tab holds the CURES report, the pending-orders list, and
 the buttons. -/
 def orderComposer (s : ScreenId) (o : ComposerOptions) : List Component :=
-  [searchC s "orderSearch" "formulary" "Search medications"] ++
+  [searchC s "orderSearch" "formulary" "Find orders",
+   table s "catalog" "orderCatalog" "Catalog results"] ++
   o.inlineAlerts.map (fun (n, a, l) => alertC s n a l (popup := false)) ++
   [group s "prefList" "Preference list"] ++
   o.prefs.map (fun (n, m, l) => macroBtn s n m l (parent := some "prefList")) ++
