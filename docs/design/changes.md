@@ -381,3 +381,171 @@ and the JSON API. GenTS regenerates the optional list and new constructor;
 real JSON samples include the requirement and an example spec. Content/check,
 agent validators, and WASM artifact adoption are requested explicitly in
 `changes-requests.md`, respecting lane ownership.
+
+## Rules catalog: event-time-window (67 rules, M)
+
+`CommitSpec.temporal?` adds independent `TemporalReq` obligations. Event refs
+select a unique current artifact binding and evidence with matching patient,
+episode, artifact/version and nonempty actor. Completion and filing are separate
+event IDs. Only anchor evidence may be planned; future actual evidence fails.
+`Facts.epochMinute?` plus the interpreter clock uses signed UTC epoch minutes,
+independent of the existing day-relative receipt clock. Inclusive signed offsets
+express both before and after windows. An explicit deadline distinguishes missing,
+invalid and overdue obligations. Completed timely obligations stay met thereafter.
+Business-day calculations require a named calendar covering both local epoch dates;
+the trusted adapter supplies timezone and holiday mapping. Missing/ambiguous inputs
+fail closed. No typed UI value can fabricate external event evidence.
+
+`extraGuard` strengthens `guardBase`; screen views expose all obligation statuses
+and commit buttons use the same guard/reason. GenTS now exports Int as number and
+the evidence, calendar and temporal types, with real JSON samples. Tiny examples
+and boundary/identity/version/calendar regression guards live in Core.Tests.
+
+**DRAFT statement change:** `commitGuard_iff` (and its value corollary) now has
+an additional `extraGuard = true` conjunct. This is necessary to describe the
+stronger executable guard; the other 17 Comparator statements remain unchanged.
+The proof implementation and matching DRAFT Statements entry are minimal
+compatibility edits explicitly requested by the orchestrator. No finished proof
+uses sorry, admit, new axioms or native_decide. Adapter, checker route coverage
+and production content adoption remain owning-lane work below.
+
+## Rules catalog: patient-predicate (59 rules, M)
+
+`ClinicalPredicate` is a closed AST: age bands, named service/payer/setting,
+homelessness, pregnancy, capacity and consent facts, named risk/test categories,
+confirmed captured-code equality on a specific slot, and and/or/not. Record
+facts retain artifact/version provenance checked against the unique current
+binding. Missing, ambiguous or stale facts evaluate to unknown. Kleene logic
+preserves unknown through negation; **the explicit fixed unknown policy applies
+a requirement unless known false**. Thus missing age never bypasses a minor rule.
+`When.clinical` is shared by whole-episode and per-line entries and reviews;
+`TemporalReq.when` supports conditional event obligations. `AlertCond.clinical`
+uses the same evaluation, with distinct true/unknown keys bound to the clinical
+snapshot and captures so changed evidence can be acknowledged again.
+
+Core Tiny examples cover age 17/18, composition, stale provenance, unknowns,
+captured equality, actual entry applicability and alert keys. GenTS exports the
+AST, source records and examples. No property or theorem statement changed in
+this group. Adapter completeness and truth remain trusted; content must choose
+source codes, applicability and lawful refusal paths explicitly.
+
+## Rules catalog: value-validation (34 rules, M)
+
+`ElementSpec.validation` is an optional closed `Validation` AST. It supports
+nonempty narratives, exact membership in a versioned trusted code/product table,
+Gregorian ISO dates, bounded lexical tokens/decimal formatting, quantity bounds,
+formulation/unit pairs, kg weight bands, GTIN-14 checksums, a closed GS1 UDI
+human-readable grammar, and named supply-days-ceiling / capped mg-per-kg
+calculations. `and` composes constraints. Lexical rules require `Value.text` or
+`Value.code` and preserve the exact input; a numeric quantity cannot satisfy them.
+Other UDI issuer/codec formats use explicit versioned validated product tables;
+the GS1 grammar accepts (01), optionally (17)/(10)/(21) in that order, with
+20xx expiry dates. This is an explicit supported grammar, not a universal codec.
+
+Validation runs on human/macro entry, generated default/record/linked prefills,
+and again on every captured value at commit, including relational dependencies.
+Relations require unique confirmed captures on the correct slot and exact units;
+zero denominators, missing terminology and pending/wrong-unit weights fail closed.
+The fixed arithmetic functions use bounded output contracts, never arbitrary
+executable predicates. `ElementSpec.defaultValue` also requires program fields
+to declare the exact specified default; incorrect generated values are ignored.
+Views expose field validation errors and the same commit hard stop/reason. GenTS
+exports all constraints and real examples. Existing theorem statements remain
+unchanged; all original human/confirmation/unit/allowed-value checks are retained.
+
+## Rules catalog: order-expiry-clock (11 rules, M)
+
+`OrderClock` preserves durable order/detention IDs and original issue/start/
+first-fill `ClockStamp`s across episodes and transfers. `CommitSpec.expiry` lists
+`ExpiryReq` policies bound to current order artifact IDs/versions, independently
+conditional on clinical predicates. A new UI slot/episode cannot reset an anchor;
+core never writes these trusted record inputs. Actions fail at the exact expiry
+instant. Views expose missing/invalid/overdue clocks and the commit hard stop.
+
+Policies support elapsed minutes or actual calendar-month anniversaries, clamping
+the day at month end. `MonthCutoff` evidence supplies the timezone service's UTC
+resolution (including DST ambiguity); core verifies Gregorian date arithmetic,
+zone, wall time, offset bounds and exact UTC conversion. It never approximates
+months as 30 days. Renewal/reassessment use named current-version instance events,
+nonempty actors, nonfuture timestamps and explicit validity windows. Renewal is
+opt-in and never overrides the separate maximum original lifetime. Stop/release/
+lawful-exception routes are separate commits; backend auto-stop or release is
+still a scheduler duty. GenTS and Tiny guards cover cutoff boundaries, transfers,
+renewals, max lifetime, reassessment and January-31 → February-28 behavior.
+No property or theorem statement changed in this group.
+
+## Rules catalog: structured-display (10 rules, M)
+
+`InfoSpec.payload` declares required fields, semantic identifier categories,
+per-row fields and grouping. `InfoPayload` binds real data to patient and current
+artifact/version; a visible placeholder is insufficient. `DisplayReq` scopes
+that contract to a commit or trusted workflow phase, independently of review
+receipts/waivers. Missing phase context conservatively activates phase rules.
+Conditional available fields are skipped only with explicit false availability;
+unknown availability requires the field. Rows have unique IDs, and selection
+contracts additionally require unique slots. Required values are nonblank.
+
+`PayloadView` returns the actual source and groups computed from row values;
+confirmed per-slot flags determine selection emphasis. `ItemView.payload` and
+`pinned` expose this structured data to the renderer. Pinned display contracts
+require legible, always-visible top-level components. `CommitSpec.actionLabel`
+requires the exact semantic label on every shown signing button. The strengthened
+guard checks payload, visibility and labels together and reports a display hard
+stop. GenTS exports the full typed contract and Tiny examples, including missing
+fields/identifiers/rows, stale versions, bad labels, selection and phase scope.
+
+Core supplies the contract/view and commit enforcement. The owning renderer must
+paint PayloadView's groups/selection/pinned state; checker phase-path coverage
+must ensure continuous presence on every screen in a phase (including initial
+and navigation screens). Those cross-lane integrations are explicitly requested;
+this commit does not claim their completion. All original proof statements are
+unchanged in this group, including receipt and page-tree theorems.
+
+## Final core integration: evidence, local dates and artifact validation
+
+Event selection now filters patient, episode and current artifact version before
+requiring uniqueness: historical evidence can coexist with one current witness;
+duplicate current witnesses still fail closed. Business calendars optionally
+carry unique UTC offset-transition tables. Endpoint dates use the correct local
+offset, including DST changes; missing transition coverage/ambiguous tables block.
+Absent tables explicitly mean UTC. This closes the UTC-midnight/local-midnight
+difference without assuming fixed-offset hospital time.
+
+PayloadFieldReq now accepts the same optional Validation AST and ValueKind as
+input elements; PayloadContract.rowConstraints applies it to each row, with
+row-specific availability. The commit guard validates external artifact output
+against these constraints using current facts and per-row slots. This preserves
+lexical strings and rejects invalid signed dates/numbers even when fields are
+present and visible. Missing/unknown availability continues to require a field.
+All changes tighten the existing guard; no theorem statement changes.
+
+Business-day windows additionally require an explicit TemporalDirection
+(before/after/either): zero business-date distance does not imply actual time
+ordering. Minute windows retain their signed-offset interpretation. A before-
+anchor obligation with deadline zero becomes overdue immediately after the
+anchor, even if the business date has not changed. This prevents a same-day
+post-procedure event from satisfying a pre-procedure rule.
+
+## Permanent core native/WASM regression coverage
+
+`node lean/Ehr/Core/test-wasm-features.mjs` compares the installed WASM assets
+with native init/view/step on 84 native-encoded cases (252 API comparisons): all
+five feature groups, Schedule II allowed values/drugClass, calendar cutoffs,
+invalid dates/UDI, clinical alerts, missing payload fields and timing boundaries.
+FeatureFixtures.lean uses the same Tiny definitions as the Core #guard tests;
+there is no separate TypeScript model of the guard. The harness builds and runs
+Lake commands sequentially, and checks the asset manifest before comparison.
+
+The older WASM equivalence runner's single giant JSON join overflows JavaScript's
+string limit on main's expanded canonical data. The owning-lane fix is requested
+in changes-requests.md. Verification uses a batched copy preserving every one
+of its 4,096 cases and every event, rather than reducing the dataset.
+
+The permanent feature suite exposed a WASM heap failure on ISO-date rejection
+(and an artifact-output rejection), despite matching native behavior on valid
+dates. The parser now splits fixed-width date groups before checking digits and
+Gregorian validity, instead of destructively matching a ten-character list.
+GS1 expiry parsing shares that exact full-date grammar. Validation was not
+weakened: leap years, invalid dates, exact widths and public rejection preserving
+the original state are regression-tested. All 252 native/WASM feature API
+comparisons pass with this implementation.

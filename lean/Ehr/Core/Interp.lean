@@ -63,6 +63,11 @@ def prefillRecord (facts : Facts) (s : State) (e : ElementId) (el : ElementSpec)
         confirmed := el.prefill == .autoLinked && x.confirmed
         provenance? := some ("linked:" ++ src) }
 
+/-- Validate generated prefills, preserving the original policy/source rules. -/
+def prefillValueValid (facts : Facts) (s : State) (el : ElementSpec) (n : Nat) (pf : Prefill) : Bool :=
+  (el.defaultValue?.all (fun expected => pf == .default expected)) &&
+    (prefillRecord facts s el.id el n pf).all (fun x => elementValueValid facts s el n x.value)
+
 /-- Prefill one field, if allowed: the element is known, its policy is not
 `never`, it is not human-only, and nothing is captured on that slot yet. -/
 def prefillField (sp : Spec) (facts : Facts) (s : State) (c : Component) : State :=
@@ -72,7 +77,7 @@ def prefillField (sp : Spec) (facts : Facts) (s : State) (c : Component) : State
     | none => s
     | some el =>
       let n := resolveSlot s slot
-      if el.prefill == .never || needsHuman el || hasEntry s e n then s
+      if el.prefill == .never || needsHuman el || (hasEntry s e n || !prefillValueValid facts s el n pf) then s
       else
         match prefillRecord facts s e el n pf with
         | none => s
@@ -255,14 +260,16 @@ def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
           match actor with
           | .«macro» =>
             if needsHuman el || el.prefill == .never then (s, .blocked s!"human only: {e}")
-            else if !valueAccepted facts user el.kind v then (s, .blocked (rejectReason el v))
+            else if (!valueAccepted facts user el.kind v ||
+                !elementValueValid facts s el (resolveSlot s slot) v) then (s, .blocked (rejectReason el v))
             else
               let x : Captured :=
                 { element := e, slot := resolveSlot s slot, value := v, byHuman := false
                   confirmed := false, provenance? := some "macro" }
               ({ s with captured := setCaptured s.captured x }, .ok)
           | .human =>
-            if !valueAccepted facts user el.kind v then (s, .blocked (rejectReason el v))
+            if (!valueAccepted facts user el.kind v ||
+                !elementValueValid facts s el (resolveSlot s slot) v) then (s, .blocked (rejectReason el v))
             else
               let x : Captured :=
                 { element := e, slot := resolveSlot s slot, value := v, byHuman := true

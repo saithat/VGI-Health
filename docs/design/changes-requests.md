@@ -555,3 +555,193 @@ round-trip requests CR-12/14 still apply.
 forbids weakening an existing rule. Content retains that flag and human
 naloxoneOffer, adding the human outcome enum alongside them. A declined/prior
 education outcome alone therefore does not bypass the older stricter flag.
+## Rules catalog core extensions: adoption contract
+
+Core's event-time-window API is `CommitSpec.temporal` (optional list), with
+`TemporalReq {id, subject: EventRef, anchor: EventRef, metric, minOffset,
+maxOffset, deadline}`. All offsets are inclusive signed integers. `EventRef`
+selects `{event, artifactKey}`. Render/FHIR must supply `Facts.episodeId`,
+`epochMinute` (UTC epoch minutes), `artifactBindings`, `eventEvidence` and,
+for business-day rules, `calendars` with hospital-local epoch dates and explicit
+coverage. Evidence must come from trusted record/scheduler events, not a typed
+attestation, and must retain distinct completion/filing events. Core does not
+assert a physical event occurred. Tiny adoption: CoreTests.EventWindow.
+
+- Content: bind each unlocked temporal rule to its real artifact commit and
+  completion/filing/anchor event; set exact jurisdictional bounds/deadline and
+  citations. Exceptions must be explicit separate lawful routes, never invented
+  timely evidence. Do not equate panel visibility with evidence completion.
+- Check: validate refs, bounds, calendar coverage obligations and evidence
+  collection/exception route reachability. Treat missing evidence as a live
+  branch; never certify completability just because the present sample is met.
+- Agent/app: preserve optional commit/Facts fields and all new JSON constructors;
+  show `ScreenView.obligations` and blocked reasons; never manufacture evidence.
+- Render/world: maintain absolute event timestamps and current artifact bindings
+  across adapter calls; expose missing/overdue obligations, including offscreen.
+
+## L-cost design: qualified-authorization (35 rules; do not implement yet)
+
+Introduce opaque CapabilityId and ActionIntent {patient, episode, artifact,
+version, action, scope}. `CapabilityReq` on commit/release intents names the
+required licenses/scopes, privilege, relationship or designated-party role;
+ordinary demo Role remains only the coarse UI permission. AuthEvidence contains
+issuer, subject UserId, capability, intent binding, validFrom/until, policyVersion,
+revocationVersion and authenticated signature reference. The trusted identity
+adapter verifies signatures and supplies a complete current revocation snapshot.
+The guard universally checks requirements against the signed-in user and exact
+intent; absent/ambiguous/stale evidence blocks. No free-text cosign value counts
+as authentication. Checker covers every intent-producing path and required
+identity/exception collection routes. Prove new-commit authorization and replay
+failure after version/relationship/user/revocation changes; exercise expired,
+wrong-patient, self-sign and absent credential witnesses. Backend is responsible
+for identity proofing, license accuracy and revocation delivery. Integrate with
+T0 as independent guard conjuncts, never weaken the existing role/human checks.
+
+## L-cost design: record-level-completeness (38 rules; do not implement yet)
+
+Add ArtifactId/version, RecordSetId and a finite authoritative snapshot
+{patient, version, members, completeAsOf}. `RecordSetReq` names a set, applicability,
+per-member field/value/provenance requirements, parent-child linkage and allowed
+age, plus closed sum/count bounds (refills, cumulative supply). Per-member
+captures use artifact ID/version rather than ephemeral UI slot. Guard quantifies
+over the whole trusted set, rejecting missing/duplicate/stale members and
+cross-artifact witnesses; empty sets require an explicit empty-set policy.
+Artifact-writing commits emit date/time/author metadata and invalidate old linked
+receipts when member versions change. Checker verifies every writer's target
+and member binding and reachable collection route. Prove each new commit has
+one current-version witness for every required member and aggregate bounds hold;
+test extra unseen members, deleted/versioned members, swapped slots, partial
+snapshots, duplicate IDs and overflow boundaries. Storage durability, retention
+and actual inventory completeness remain backend assumptions. Compose temporal
+rules with per-member evidence, and require capability rules on relevant writers.
+
+## L-cost design: release-access-policy (10 rules; do not implement yet)
+
+Introduce ReadIntent/ReleaseIntent separate from ackResult, containing patient,
+data categories and artifact versions, recipient/relationship/jurisdiction,
+purpose, service context and requested scope. `ReadReleaseReq` is a closed policy
+AST with explicit deny/allow/review-needed outcomes and refusal/appeal routes.
+Versioned ConsentEvidence binds grantor, recipient, exact scope, purpose,
+validity interval, jurisdiction, hold and revocation version. Missing context or
+policy conflicts deny; stale grants never authorize a newer intent. Every modeled
+read/export/release route must call the same guard, including preview/search,
+download and batch paths. Checker enumerates those paths and validates
+review/revocation reachability. Prove emitted release intents satisfy policy,
+and revocation/version changes invalidate grants; test mixed-category requests,
+wrong recipients, holds, unknown jurisdiction, partial consent and cache replay.
+Backend enforces tokens, delivery, physical export and encryption; UI eligibility
+is not proof of successful transmission. Compose qualified capabilities with
+consent, never replace either with a checkbox or an ackResult receipt.
+
+### Patient-predicate adoption (59-rule group)
+
+Use `When.clinical` / `AlertCond.clinical` with `ClinicalPredicate`; do not encode
+patient properties in encounterKind. Render/world must populate Facts.clinical
+named source records and artifactBindings. Age is explicitly sourced, not guessed
+from identity.ageYears's default. Unknowns apply requirements and fire unknown
+alerts. Content: use actual coded source values and dedicated exception/refusal
+routes. Check: cover true/false/unknown branches, code domains, slot-specific
+captured dependencies (including unconfirmed captures) and all refusal routes.
+Agent/app validators must round-trip recursive and/or/not, optional clinical
+facts and conditional temporal requirements. Tiny: CoreTests.PatientPredicate.
+
+### Value-validation adoption (34-rule group)
+
+Use ElementSpec.validation (Validation AST), optional defaultValue, and
+Facts.codeTables [{system, version, codes}]. The table adapter must supply vetted
+terminology/product codes; a coded value-set name is still not a membership check.
+Lexically significant numbers/dates/tokens use text/code fields, preserving their
+raw spelling. Map those validated values to backend types explicitly. The closed
+GS1 grammar is documented in changes.md; other issuers/formats need versioned
+validated product tables, not weaker token validation. Content supplies clinical
+factor/cap/formulation/weight constraints and table versions; core does not invent
+clinical calculator data. Check must reject unsupported/missing tables, invalid
+defaults and unsatisfiable or cyclic relational dependencies, prove source fields
+reachable before outputs, and include stale-dependency branches in completability.
+Render/app: preserve validation/default fields and display ItemView.validationError;
+FHIR/world populate trusted versioned code tables. Examples: CoreTests.ValueValidation.
+
+### Order-expiry-clock adoption (11-rule group)
+
+Content: add CommitSpec.expiry policies, using durable orderKey bindings and the
+law's actual issued/started/firstFill anchor, duration and renewal/reassessment
+rules. Use separate stop/release/exception commits so expiry cannot prevent the
+required safe action. Age-specific policies compose ClinicalPredicate. Do not
+reset original anchors on transfer or reinterpret a UI slot as order identity.
+Render/world/backend supply Facts.orderClocks and artifactBindings from durable
+records. ClockStamp validates UTC/civil conversion; calendarMonths needs a unique
+MonthCutoff for the exact anchor/month count, with the timezone service resolving
+DST offsets. Missing/ambiguous calendar evidence blocks. Check: cover missing,
+expired, renewal/refusal and stop routes; ensure every affected order action is
+guarded, including refills and renewed/transfer contexts. Agent/app preserve the
+new types and expose overdue obligations. Backend must separately perform actual
+auto-stop/release; the core guard proves no scheduler execution. Tiny: OrderExpiry.
+
+### Structured-display adoption (10-rule group)
+
+Content: pair InfoSpec.payload with Spec.displays scoped to .commit or
+.phase workflow name; set required identifier categories/row fields/groupBy,
+conditional available fields, pinned, and optional selectionElement (confirmed
+flag on each row's slot). Set CommitSpec.actionLabel for critical actions. A
+receipt/waiver cannot satisfy a DisplayReq. Render/FHIR supplies patient/current-
+version InfoPayloads through Facts.infoPayloads and artifactBindings, explicit
+availability, and trusted Facts.phase. Unknown phase activates phase requirements.
+Render must paint ItemView.payload's complete source, computed groups, per-row
+selected flags and pinned state; do not render an empty named panel as success.
+Keep EPCS details/notice pinned throughout signing. App/agent must preserve all
+fields and exact action labels. Check must require contracted payload bindings,
+correct labels, grouping and visibility at each affected commit and every phase
+screen (including start/navigation/return paths), covering known/unknown context
+and refusal routes. Phase tags are trusted context, never freely changed program
+navigation tags. Per-record completeness beyond the supplied finite rows belongs
+to the L-group design. Tiny examples: CoreTests.StructuredDisplay. Backend EPCS
+identity and authenticated transmission remain separate duties.
+
+### Final integration clarifications
+
+BusinessCalendar.utcOffsets is optional: omitted explicitly means UTC. Hospitals
+using local dates must supply a transition table of [UTC minute, offset minutes]
+covering both endpoints, including DST transitions; duplicate thresholds and
+missing coverage fail. Current event evidence may coexist with old versions.
+PayloadFieldReq.kind and .validation share the element Validation AST;
+PayloadContract.rowConstraints and PayloadRow.availability support per-row
+external-output validation. Render/check/content must preserve and validate these
+contracts, including terminology versions and relational dependencies. Unknown
+clinical values should be absent optional facts, not literal codes named unknown.
+
+For business-day TemporalReq, direction is mandatory (before/after/either);
+zero business dates crossed cannot determine actual event ordering. Use the
+law's ordering explicitly. Missing direction fails closed. Minute windows keep
+signed offsets, and may additionally declare a direction.
+
+Clinical alert keys are opaque acknowledgment identities containing the exact
+source/capture snapshot, to avoid collision-based acknowledgment reuse. Render
+must show the alert's clinical label/context rather than the raw key (the current
+legacy popup prints its key); adopt that renderer change before enabling clinical
+alerts in production specs. It must not expose internal source/capture dumps as
+clinical alert copy.
+
+### WASM runner memory fix (owning lane)
+
+The expanded canonical spec makes wasm/test/equivalence.mjs fail at line 98
+with RangeError: Invalid string length when joining all 4,096 JSON inputs.
+Retain every case and event. Process small native batches (e.g. 16 cases),
+compare/discard each batch's outputs, and translate output case indices to the
+batch-local index; do not collect the full native output either (512 MB limit).
+A full-case-count workaround is /tmp/lean-streamed-equivalence.mjs, with results
+in /tmp/lean-streamed-equivalence-results.json. Please apply this memory-bounded
+approach in the owned runner. Permanent new-feature coverage is independently
+provided in lean/Ehr/Core/test-wasm-features.mjs (252 API comparisons/84 cases).
+
+The exact minimal owned-runner patch is prepared at
+/tmp/wasm-equivalence-memory.patch. It keeps the original seed, case generation,
+case/event counts and full byte comparisons; only native batching and output
+case-index bookkeeping change.
+
+Final verification passed with the full original seed/corpus: 4,096 cases,
+144,807 step and 144,807 view byte comparisons, plus 32 init comparisons.
+The temporary parallel driver is /tmp/lean-parallel-equivalence.mjs; its workers
+run no Lake commands, and the report asserts disjoint full coverage and identical
+WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
+setup; preserve every event and the same byte comparisons. Renderer/FHIR also
+passes 174 Synthea bundles and 694 canonical page variants with current assets.
