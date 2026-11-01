@@ -1,8 +1,9 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
+import { Alert, Button, Drawer } from "@mantine/core";
+import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createSession } from "./core/session";
 import type { Interp } from "./core/interp";
-import { paint } from "./ehr/painter";
 import { PatientPicker } from "./browser/Browse";
 import {
   currentProgram,
@@ -37,122 +38,155 @@ const roles: Record<string, string> = {
 const pretty = (value: unknown) => JSON.stringify(value, null, 2);
 function LiveWorkspace({ workspace }: { workspace: Workspace }) {
   const { session, catalog, program, patient, persona, verdict } = workspace;
-  const { page, state, view, result } = useSyncExternalStore(
+  const { ui, state, view, result } = useSyncExternalStore(
     session.subscribe,
     session.getSnapshot,
   );
   const [error, setError] = useState("");
+  const [inspecting, setInspecting] = useState(false);
+  const dispatch = (event: Parameters<typeof session.dispatch>[0]) => {
+    try {
+      session.dispatch(event);
+      setError("");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : String(error));
+    }
+  };
   return (
     <>
-      <header className="workspace-toolbar">
-        <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
-          ← UI browser
-        </a>
-        <label>
-          Persona{" "}
-          <select
-            aria-label="Persona"
-            value={persona}
-            onChange={(event) => {
-              const id = event.currentTarget.value;
-              window.location.assign(
-                ehrUrl(
-                  currentProgram(catalog, id, program.run),
-                  defaultPatient(catalog, id).id,
-                  id,
-                ),
-              );
-            }}
-          >
-            {personas.map((id) => (
-              <option key={id}>{id}</option>
-            ))}
-          </select>
-        </label>
-        <span>
-          LIVE · Lean WASM · {program.release} · {program.label}
-        </span>
-        <button onClick={() => window.location.reload()}>Reset episode</button>
-        <a
-          href={
-            program.run
-              ? `/dashboard?run=${encodeURIComponent(program.run)}`
-              : "/dashboard"
-          }
-        >
-          Dashboard
-        </a>
-      </header>
-      <details className="patient-switcher">
-        <summary>
-          {patient.name} · {patient.age} · {patient.encounterClass} · Change
-          patient
-        </summary>
-        <PatientPicker
-          catalog={catalog}
-          value={patient.id}
-          onChange={(selected) =>
-            window.location.assign(ehrUrl(program, selected.id, persona))
-          }
-        />
-      </details>
-      <p className="workspace-source">
-        {program.path}
-        {program.mock
-          ? " · MOCK-authored program, executed by real Lean WASM"
-          : ""}{" "}
-        · Offline episode · no clinical writes
-      </p>
-      {error && <p role="alert">{error}</p>}
-      <div className="live-workspace">
-        <div className="live-page">
-          {paint(page, (event) => {
-            try {
-              session.dispatch(event);
-              setError("");
-            } catch (error) {
-              setError(error instanceof Error ? error.message : String(error));
-            }
-          })}
-        </div>
-        <details className="inspector" open>
-          <summary>Inspector · {state.screen}</summary>
-          <h2>Current screen</h2>
-          <p>
-            {view.title} · <code>{state.screen}</code>
-          </p>
-          <p aria-live="polite">
-            Last step: {result === null ? "initialized" : pretty(result)}
-          </p>
-          <h2>Checker verdict</h2>
-          <p>{verdict.status}</p>
-          {verdict.output !== undefined && <pre>{pretty(verdict.output)}</pre>}
-          <h2>Enabled actions</h2>
-          <pre>{pretty(view.enabled)}</pre>
-          <h2>Blocked reasons</h2>
-          <pre>{pretty(view.blocked)}</pre>
-          <h2>Captured values · provenance</h2>
-          <pre data-testid="captured">{pretty(state.captured)}</pre>
-          <h2>Pending confirms</h2>
-          <pre>
-            {pretty(
-              view.items
-                .filter((item) => item.pendingConfirm)
-                .map((item) => ({
-                  component: item.comp.id,
-                  value: item.value,
-                  provenance: item.provenance,
-                })),
-            )}
-          </pre>
-          <h2>Receipts</h2>
-          <pre>{pretty(state.receipts)}</pre>
-          <h2>Acknowledged alerts</h2>
-          <pre>{pretty(state.acked)}</pre>
-          <h2>Commit log</h2>
-          <pre data-testid="commits">{pretty(state.commits)}</pre>
-        </details>
+      {error && (
+        <Alert role="alert" color="red">
+          {error}
+        </Alert>
+      )}
+      <div
+        className="live-page"
+        aria-hidden={inspecting ? true : undefined}
+        ref={(element) => {
+          if (element) element.inert = inspecting;
+        }}
+      >
+        {ui ? (
+          <UiScreenView screen={ui} onEvent={dispatch} />
+        ) : (
+          <Alert color="red" role="alert">
+            The semantic renderer is unavailable. Rebuild the EHR WASM assets.
+          </Alert>
+        )}
       </div>
+      {window.location.pathname === "/ehr" && (
+        <>
+          <Button
+            size="compact-xs"
+            variant="default"
+            className="inspector-toggle"
+            onClick={() => setInspecting(true)}
+          >
+            Inspector
+          </Button>
+          <Drawer
+            opened={inspecting}
+            onClose={() => setInspecting(false)}
+            position="right"
+            title="Encounter inspector"
+            closeButtonProps={{ "aria-label": "Close inspector" }}
+            size="lg"
+          >
+            <div className="inspector-content">
+              <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
+                ← UI browser
+              </a>
+              <label>
+                Persona{" "}
+                <select
+                  aria-label="Persona"
+                  value={persona}
+                  onChange={(event) => {
+                    const id = event.currentTarget.value;
+                    window.location.assign(
+                      ehrUrl(
+                        currentProgram(catalog, id, program.run),
+                        defaultPatient(catalog, id).id,
+                        id,
+                      ),
+                    );
+                  }}
+                >
+                  {personas.map((id) => (
+                    <option key={id}>{id}</option>
+                  ))}
+                </select>
+              </label>
+              <details className="patient-switcher">
+                <summary>
+                  {patient.name} · {patient.age} · {patient.encounterClass} ·
+                  Change patient
+                </summary>
+                <PatientPicker
+                  catalog={catalog}
+                  value={patient.id}
+                  onChange={(selected) =>
+                    window.location.assign(
+                      ehrUrl(program, selected.id, persona),
+                    )
+                  }
+                />
+              </details>
+              <p>
+                {program.release} · {program.path}
+              </p>
+              <Button size="xs" onClick={() => window.location.reload()}>
+                Reset episode
+              </Button>
+              <a
+                href={
+                  program.run
+                    ? `/dashboard?run=${encodeURIComponent(program.run)}`
+                    : "/dashboard"
+                }
+              >
+                Dashboard
+              </a>
+              <h2>Current screen</h2>
+              <p>
+                {view.title} · {state.screen}
+              </p>
+              <p aria-live="polite">
+                Last step: {result === null ? "initialized" : pretty(result)}
+              </p>
+              <h2>Checker verdict</h2>
+              <p>{verdict.status}</p>
+              {verdict.output !== undefined && (
+                <pre>{pretty(verdict.output)}</pre>
+              )}
+              <h2>Enabled actions</h2>
+              <pre>{pretty(view.enabled)}</pre>
+              <h2>Blocked reasons</h2>
+              <pre>{pretty(view.blocked)}</pre>
+              <h2>Captured values · provenance</h2>
+              <pre data-testid="captured">{pretty(state.captured)}</pre>
+              <h2>Pending confirms</h2>
+              <pre>
+                {pretty(
+                  view.items
+                    .filter((item) => item.pendingConfirm)
+                    .map((item) => ({
+                      component: item.comp.id,
+                      value: item.value,
+                      provenance: item.provenance,
+                    })),
+                )}
+              </pre>
+              <h2>Receipts</h2>
+              <pre>{pretty(state.receipts)}</pre>
+              <h2>Acknowledged alerts</h2>
+              <pre>{pretty(state.acked)}</pre>
+              <h2>Commit log</h2>
+              <pre data-testid="commits">{pretty(state.commits)}</pre>
+            </div>
+          </Drawer>
+        </>
+      )}
     </>
   );
 }

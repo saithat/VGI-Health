@@ -4,6 +4,24 @@ import Ehr.Api
 namespace Ehr.CoreTests
 open Ehr.Examples.Tiny Ehr.Examples.TinyTests
 
+namespace CompositeFormat
+def definition : ComponentDef := {
+  name := "weight"
+  params := ["label"]
+  body := [{ id := "weight", kind := .field "weight" (.fixed 0) .none, label := "{{label}}" }]
+}
+#guard roundTrips definition
+#guard roundTrips { program with componentDefs := [definition] }
+#guard ((Lean.toJson program).getObjVal? "componentDefs").toOption.isNone
+#guard (decodeJson Program (Lean.toJson program).compress).toOption == some program
+#guard (decodeJson Program (Lean.Json.mkObj [
+  ("id", Lean.toJson program.id), ("version", Lean.toJson program.version),
+  ("owner", Lean.toJson program.owner), ("role", Lean.toJson program.role),
+  ("specVersion", Lean.toJson program.specVersion), ("start", Lean.toJson program.start),
+  ("screens", Lean.toJson program.screens), ("macros", Lean.toJson program.macros),
+  ("componentDefs", Lean.Json.str "malformed")]).compress).toOption.isNone
+end CompositeFormat
+
 def addLine : Component := { id := "add", kind := .button .newOrderLine }
 def incomplete : State :=
   run atOrder [.enter "drugField" (.code "amoxicillin")]

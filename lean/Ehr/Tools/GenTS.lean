@@ -103,7 +103,10 @@ def emitDecl (env : Environment) (known : NameSet) : Decl → IO String
       let fty := ci.type.bindingBody!
       let fname := f.toString
       let doc := jsDoc "  " (← findDocString? env proj)
-      if fname.endsWith "?" then
+      if n == ``Ehr.Program && fname == "componentDefs" then
+        -- Program uses custom JSON: empty definitions may be omitted.
+        out := out ++ s!"{doc}  {fname}?: {← IO.ofExcept (tsType known fty)};\n"
+      else if fname.endsWith "?" then
         let jname := (fname.dropEnd 1).toString
         let inner ← match fty with
           | .app (.const ``Option _) a => IO.ofExcept (tsType known a)
@@ -186,7 +189,7 @@ def main (args : List String) : IO UInt32 := do
   let known := decls.foldl (fun s d => s.insert d.name) {}
   -- Fail generation if a module rename accidentally drops a public boundary.
   for n in [``Ehr.Render.Display, ``Ehr.Render.Html, ``Ehr.Render.PageNode,
-            ``Ehr.PayloadContract, ``Ehr.DisplayReq, ``Ehr.PayloadView, ``Ehr.ExpiryReq, ``Ehr.OrderClock, ``Ehr.Validation, ``Ehr.ClinicalPredicate, ``Ehr.TemporalReq, ``Ehr.EventEvidence, ``Ehr.Task, ``Ehr.DaySchedule] do
+            ``Ehr.ComponentDef, ``Ehr.PayloadContract, ``Ehr.DisplayReq, ``Ehr.PayloadView, ``Ehr.ExpiryReq, ``Ehr.OrderClock, ``Ehr.Validation, ``Ehr.ClinicalPredicate, ``Ehr.TemporalReq, ``Ehr.EventEvidence, ``Ehr.Task, ``Ehr.DaySchedule] do
     unless known.contains n do
       throw (IO.userError s!"missing required exported type {n}")
   let names := decls.map (fun d => tsName d.name)

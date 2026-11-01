@@ -48,6 +48,14 @@ export interface Interp {
     userJson: string,
     stateJson: string,
   ): string;
+  /** Semantic §10 UI. Optional until ehr_render_ui is present in the loaded artifact. */
+  renderUi?(
+    specJson: string,
+    programJson: string,
+    factsOrBundleJson: string,
+    userJson: string,
+    stateJson: string,
+  ): string;
   facts(bundleJson: string): string;
 }
 

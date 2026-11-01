@@ -21,6 +21,8 @@ def patientSpec : Spec :=
     commits := [{ id := "signOrders", label := "Sign", roles := [.physician] }] }
 
 def fixtures : List Lean.Json := [
+  fixture "unused-composite-definition" spec
+    { program with componentDefs := [CompositeFormat.definition] } facts s0 (.click "toOrder"),
   fixture "business-before" { EventWindow.tinySpec with commits :=
     [{ id := "signOrders", label := "Sign", roles := [.physician], temporal? := some [{ EventWindow.requirement with metric := .businessDays "hospital", direction? := some .before, minOffset := -1 }] }] }
     program EventWindow.calendarFacts signingState (.click "signButton"),

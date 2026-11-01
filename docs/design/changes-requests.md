@@ -1150,3 +1150,82 @@ Render/core must provide its actual grouping function/type before check can
 certify D5 against the tree the app will paint. Do not certify a separate guessed
 navigation model or mistake screen-ID uniqueness for navigation-label uniqueness.
 This is additional pending integration beyond the five merged core features.
+## Composite expansion integration (lean-core, owner task Oct 31)
+
+Core is adding `Kind.use (def : String) (args : List (String × String))`,
+`ComponentDef`, `Program.componentDefs := []`, and Init-only `Program.expand`.
+Source programs must be retained for certification/hashing. Expansion returns
+ordinary components and clears defs; errors must fail closed as `wellFormed`.
+
+- **Render (urgent build dependency):** Page.lean's exhaustive Kind match needs
+  a `.use ..` arm (unexpanded use has no runtime content; reject at load).
+  Core is explicitly forbidden to edit Render. Expand source programs in the
+  renderer/API and `render-screens` before traversing screens/components, and
+  propagate the wrapper's `tag = "composite:<name>"` into UiNode as a presentation
+  key. Preserve every component/clinical field and all rendering properties.
+- **Check/deploy:** expand candidate, previous, and canonical inputs before all
+  structural/semantic checks. On `.error e`, return violation `wellFormed` with
+  the expansion reason. State `Satisfies` over successful expansion (Core's
+  `Program.Satisfies` is the property-lifting definition/theorem). Hash the SOURCE
+  Program including defs; deploy/store the SOURCE program, never hash expanded
+  components as a replacement. No property or theorem may be weakened.
+- **Sim:** expand before simulate/min-clicks and reject expansion errors; policies,
+  state exploration, metrics, and navigation must inspect the expanded screens.
+- **Agent/app:** preserve `componentDefs` and `use.args` through schemas and patches;
+  accept only checked composites, render wrapper presentation keys as supplied
+  by Lean. No backend behavior is added by expansion.
+
+This checkout's main still has no Check/Deploy/Sim modules or CLI commands;
+these integrations must land from their owning lanes. Existing T0/T2/T3/T6/A2/A4
+statements apply to every expanded Program without changing their hypotheses.
+
+- **App baseline regression after main merge:** `pnpm --filter app test` now
+  fails `tests/app.test.tsx:25`: the catalog expectation is 16 seeded bad programs,
+  but content has merged 24. Please update the fixture-count assertion to cover
+  the full catalog. The real-WASM projection test and the other 89 tests pass.
+## Render → content/checker: section 10 navigation report
+
+`Ehr.Render.NavRules.NavSane spec prog` is ready to wire into certification.
+`#eval reportReleaseNav` reads `releases/v1/personas/P1.json` and its spec.
+Current result is **false**: W1 has 14 entries, W3 17, W6 18, exceeding D5's
+12-entry group limit. Labels within all groups are unique. Render retains every
+screen and does not silently truncate navigation. Content/checker should agree
+on a conforming program/navigation grouping before certifying this release.
+
+## App → render/core: semantic painter integration gaps (section 10)
+
+The React painter now consumes the generated `UiScreen` types and real P1
+fixtures. The following contract gaps prevent the requested interaction/design
+from being represented faithfully without inventing interpreter semantics:
+
+- `nav` and `stepper` carry destination screen IDs, while generated `Event` only
+  supports click/selectTab/enter/confirm/ack/scroll/search. Please export a
+  navigation Event accepted by the interpreter, or supply actual component IDs
+  for these destinations. The app currently displays the destinations as an
+  overview; actual workspace nav buttons retain their real component clicks.
+- `uiBanner` omits allergies and code status. Please emit clinical allergy summary
+  and code status (including explicit unknown state) as banner fields. The app
+  currently supplements allergy text from the supplied allergy info rows and
+  displays missing code status as "Not recorded".
+- `field.kind` collapses identity, scan and cosign to text/code/user and coded
+  domains lose their options. Please preserve specialized kinds and coded
+  choices in the semantic wire format. Until then the app can style recognizable
+  identity/barcode labels and user fields, but cannot invent formulary options.
+- `pendingConfirm` plus a sibling button with role `confirm` describes the same
+  affordance twice. The painter supports explicit confirm nodes and uses its
+  field-level affordance only when no sibling confirm node exists.
+- Some real P1 sign labels are authoring instructions (for example
+  `w1Sign.legal.controlledSigningLegalNotice` asks the renderer to obtain and
+  display legal source text). Please supply the intended clinical text in the
+  semantic tree; React must not interpret legal instructions or fabricate text.
+
+No Lean source has been edited by the app lane. The offline fidelity command
+checks the supplied semantic content exactly and does not claim D1–D6 proof or
+clinical correctness of the source fixtures.
+## Render → app: catalog test count after main integration
+
+After merging `cd60f62`, app build and lint pass, but `pnpm --filter app test`
+has one failure: `tests/app.test.tsx:25` expects 16 permanent bad programs and
+`programs/bad/` now contains 24. Please update that source test to the current
+24-seed catalog (or derive the reviewed catalog expectation). Render did not
+edit app-owned tests or reduce catalog scope. The other 89 app tests pass.

@@ -11,3 +11,4 @@ import Ehr.Render.CommitProofs
 import Ehr.Render.FhirProofs
 import Ehr.Render.PanelProofs
 import Ehr.Render.PrefillProofs
+import Ehr.Render.UiTests

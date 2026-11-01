@@ -7,6 +7,7 @@ The finished implementation theorems use only `propext`, `Classical.choice`, `Qu
 
 | Theorem | Statement (plain words) | Status | Where |
 |---|---|---|---|
+| Composite expansion | Source properties are the properties of successful expansion; non-use components are retained exactly | Candidate proofs compile with permitted axiom audits in `Core/composites-pending.patch`; not integrated into checker-owned `Satisfies`, full `lake check`, or Comparator. Blocked on constructor/render compatibility and owning-lane integration; no `sorry` or new axioms. | lean-core / check |
 | T0 | The interpreter never performs a commit unless its review and human-only requirements are met | **proven** for the interpreter (`T0_commit_needs_guard`, plain-logic form `commitGuard_iff`, units/human-only corollary `T0_entry_values`; stronger allowed-value equivalence `commitGuard_iff_values` and value corollaries `T0_entry_values_allowed`, `T0_entry_values_perLine`, with the constraint on the same confirmed capture) | `lean/Ehr/Proofs/T0.lean` |
 | T1 | If the checker accepts a program, it satisfies properties 1–12 | **in progress**: full soundness proved for properties 1–5 and 7–12, plus all decidable structural clauses, commit entry/review/cosign/alert obligations, reachable-screen and CR-6 request invariants. The five expanded contract families are proved by `commitContracts`; actual human entry construction is proved by `human_enter`/`human_entry_exists`. Remaining: general completability (property 6), including navigation/reveal, archived-line invariants and finite alert discharge; assemble full theorem and Comparator statement. No unfinished theorem is asserted as proven. | `lean/Ehr/Check/{RuleSound,GuardSound,ScreenSound,PinSound,PartialSound,BudgetSound,SeveritySound,RequestSound,WritesSound,EnterOnceSound,HumanSound,HumanEventsSound,AlertSound}.lean` |
 | T2 | A review prompt is skipped only with a valid receipt | **proven** for the interpreter: an applicable review requirement whose info was not shown was covered by a valid receipt (same version, inside the window, allowed role) or a human-entered waiver (`T2_receipts_sound`); `shownOnCommit` without a waiver means shown (`T2_shownOnCommit_shown`) | `lean/Ehr/Proofs/T2.lean` |
@@ -43,3 +44,17 @@ negative proof implementations. The original seed-13 CURES completeness claim
 still has an actual cross-workflow escape; its existing negative theorem uses the
 separate pre-op review defect. Seed 16 still needs its intended stranded-refills
 semantic completion obstruction. Do not label either intended proof finished.
+Section 10 semantic renderer: **D1, D2, D3, D4, D6 and UiScreen T10/T11 are
+proven** in `lean/Ehr/Render/UiProofs.lean`, with satisfiable examples (including
+pending confirmations, actual FHIR records, interruptive/passive alerts, and a
+malformed missing-review program) and `#print axioms` in `UiTests.lean`.
+D2 adds complete read-only missing reviews without changing the interpreter.
+D1 guarantees name/DOB/MRN fields; it cannot invent absent source identifiers.
+T10 hidden-id absence applies to nonempty component ids; empty ids are reserved
+for read-only sidebar and safety review info. The actual component forest has
+an exact shown-item equivalence for every input, including malformed graphs.
+All 18 new main semantic theorems are registered in the render Comparator audit.
+D5 is intentionally **not** a universal renderer theorem: `NavSane spec prog`
+is decidable and ready for checker integration. P1 currently fails the 12-entry
+per-group limit; content/checker integration is requested, with no weakened rule.
+No unfinished render proof remains.
