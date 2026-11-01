@@ -2,7 +2,7 @@ import { enterPatientChart } from "../clinical-navigation";
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { Audit } from "./driver";
+import { Audit, dismissNotifications } from "./driver";
 import { z } from "zod";
 
 test("response clock separates target readiness from input response", async ({
@@ -190,4 +190,17 @@ test("fast app regression: report gate and dashboard control effects", async ({
   expect(
     audit.rows.filter((r) => ["dead", "error"].includes(r.status)),
   ).toEqual([]);
+});
+
+test("checkpoint cleanup accepts an expiring notification without hiding a blocker", async ({
+  page,
+}) => {
+  await page.setContent(
+    '<style>@keyframes move{from{transform:translateX(0)}to{transform:translateX(100px)}}.mantine-Notification-closeButton{animation:move .1s infinite alternate}</style><button class="mantine-Notification-closeButton">Dismiss</button>',
+  );
+  await page.evaluate(() =>
+    setTimeout(() => document.querySelector("button")?.remove(), 250),
+  );
+  await dismissNotifications(page);
+  await expect(page.locator("button")).toHaveCount(0);
 });

@@ -320,3 +320,24 @@ export class Audit {
     }
   }
 }
+
+/** A notification may expire during Playwright's ordinary actionability wait. */
+export async function dismissNotifications(page: Page) {
+  for (const notification of await page
+    .locator(".mantine-Notification-closeButton")
+    .all()) {
+    if (!(await notification.isVisible())) continue;
+    try {
+      await notification.click({ timeout: 1500 });
+    } catch (error) {
+      // Disappearance is the intended cleanup effect; a remaining blocker fails.
+      if (await notification.isVisible()) {
+        await notification
+          .waitFor({ state: "hidden", timeout: 10000 })
+          .catch(() => {
+            throw error;
+          });
+      }
+    }
+  }
+}
