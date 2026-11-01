@@ -50,6 +50,15 @@ export function formatProvenance(source: string): string {
 /** Only explicit supplied status text receives a tone; no timing or workflow inference. */
 export function statusTone(value: string): ClinicalTone | undefined {
   const status = value.trim().toLowerCase();
+  if (/^(signed|reviewed|complete|completed)(?:$|\s)/.test(status))
+    return "green";
+  if (
+    /^(unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation)(?:$|\s)/.test(
+      status,
+    )
+  )
+    return "yellow";
+  if (/^in progress(?:$|\s)/.test(status)) return "blue";
   if (/^overdue(?:$|\s)/.test(status)) return "red";
   if (/^due(?:$|\s)/.test(status)) return "blue";
   if (/^given(?:$|\s)/.test(status)) return "green";

@@ -261,7 +261,7 @@ function StockUiScreenView({
               <Title order={1}>{screen.title}</Title>
             </div>
             <Badge color="gray" size="md">
-              Active encounter
+              Patient chart
             </Badge>
           </div>
           <div

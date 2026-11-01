@@ -58,7 +58,7 @@
             ],
             [
               "Text",
-              "Attachment 1\nSituation: pneumonia, on room air. Background: antibiotics started overnight. Assessment: alert, ambulates with assistance, peripheral IV patent. Recommendation: morning medications, glucose before meals, reassess pain."
+              "Situation: pneumonia, on room air. Background: antibiotics started overnight. Assessment: alert, ambulates with assistance, peripheral IV patent. Recommendation: morning medications, glucose before meals, reassess pain."
             ],
             [
               "Status",
@@ -173,6 +173,10 @@
                   [
                     "Owner",
                     "Jordan Lee, RN"
+                  ],
+                  [
+                    "Task status",
+                    "Overdue"
                   ]
                 ],
                 [

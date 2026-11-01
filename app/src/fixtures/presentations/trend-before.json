@@ -139,8 +139,10 @@
   ["Language", ""],
   ["PCP", "Maya Brooks, MD"],
   ["Coverage", ""],
-  ["Encounter", "IMP"],
-  ["Attending", "Daniel Park, MD"],
+  ["Encounter", "Inpatient"],
+  ["Attending", ""],
   ["Location", "5 West • 512B"],
   ["Allergies", "Amoxicillin — Hives (active)"],
-  ["Code status", "Full code"]]}
+  ["Code status", "Full code"],
+  ["Weight", "82.4 kg · Nov 1, 2026 06:00"],
+  ["Isolation", "Not recorded"]]}

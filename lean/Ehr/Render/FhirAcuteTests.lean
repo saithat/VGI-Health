@@ -56,7 +56,7 @@ def administration : Json := Json.mkObj [("resourceType", .str "MedicationAdmini
   ("dosage", Json.mkObj [("dose", Json.mkObj [("value", toJson (3 : Nat)), ("unit", .str "units")])])]
 
 #guard (acuteDoseRows context (resources ++ [administration]) patient).length == 2
-#guard (acuteDoseRows context (resources ++ [administration]) patient).getLast!.lookup "Actual dose" == some "3"
+#guard (acuteDoseRows context (resources ++ [administration]) patient).getLast!.lookup "Recorded dose" == some "3"
 #guard (acuteDoseRows context (resources ++ [administration]) patient).getLast!.lookup "Status" == some "Given"
 #guard !(acuteDoseRows context resources patient).any (fun row => row.lookup "Status" == some "Given")
 
@@ -173,15 +173,207 @@ def unmatchedMarExample := acuteMarRows context
 #guard (acuteMarRows context
   (resources ++ [unmatchedAdministration "2026-11-01T09:03:00-08:00" "in-progress"]) patient).length == 3
 
-/-- Same-time MAR cells preserve both source dose records. -/
-def repeatedMarTimeExample : List (String × String) :=
-  acuteMergeColumns [("08:00", "Given 3 units"), ("08:00", "Given 4 units")]
-#guard repeatedMarTimeExample == [("08:00", "Given 3 units; Given 4 units")]
 #guard (acuteMarRows context resources patient).length == 2
 #guard (acuteMarRows context resources patient).all fun row =>
   !row.any (fun (_, value) => value.startsWith "Given")
-#guard (acuteWorklistRows [Json.mkObj [("resourceType", .str "Task"),
+#guard (acuteWorklistRows context [Json.mkObj [("resourceType", .str "Task"),
   ("for", reference "Patient/other")]] patient).isEmpty
 #guard (acuteBoardRows context resources patient).length == 1
+
+/-- A current panel whose glucose is a censored component, not a top-level scalar. -/
+def componentPanel : Json := Json.mkObj
+  [("resourceType", .str "Observation"), ("id", .str "chemistry-panel"),
+   ("subject", reference "Patient/selected"), ("encounter", reference "Encounter/ed-1"),
+   ("status", .str "corrected"), ("category", .arr #[concept "laboratory"]),
+   ("code", concept "Chemistry panel"), ("effectiveDateTime", .str "2026-11-02T08:00:00-08:00"),
+   ("component", .arr #[Json.mkObj [("code", concept "2339-0"),
+     ("valueQuantity", Json.mkObj [("value", toJson (5 : Nat)), ("comparator", .str "<"), ("unit", .str "mg/dL")]),
+     ("interpretation", .arr #[concept "N"]),
+     ("referenceRange", .arr #[Json.mkObj [("text", .str "See laboratory report")]])]])]
+
+#guard (acuteLabRowsFor componentPanel).length == 2
+#guard (acuteLabsByCodes [componentPanel] ["2339-0"]).length == 1
+#guard (acuteLabsByCodes [componentPanel] ["2339-0"]).head!.lookup "Value" == some "<5"
+#guard (acuteLabsByCodes [componentPanel] ["2339-0"]).head!.lookup "Flag" == some "N"
+#guard (acuteLabsByCodes [componentPanel] ["2339-0"]).head!.lookup "Range" == some "See laboratory report"
+#guard (acuteLabsByCodes [componentPanel] ["2339-0"]).head!.lookup "Status" == some "corrected"
+#guard (acuteLabsByCodes [componentPanel] ["2339-0"]).head!.lookup "Recorded" == some "2026-11-02T08:00:00-08:00"
+
+/-- Tasks may belong to a different admission for this same patient. -/
+def taskFor (subject encounterId : String) : Json := Json.mkObj
+  [("resourceType", .str "Task"), ("for", reference subject), ("encounter", reference encounterId),
+   ("status", .str "requested"), ("businessStatus", concept "Overdue"),
+   ("description", .str "Morning medication pass"),
+   ("restriction", Json.mkObj [("period", Json.mkObj [("end", .str "2026-11-02T08:00:00-08:00")])])]
+
+#guard (acuteWorklistRows context (resources ++ [taskFor "Patient/selected" "Encounter/ed-1",
+  taskFor "Patient/selected" "Encounter/previous", taskFor "Patient/other" "Encounter/ed-1"]) patient).length == 1
+#guard (acuteWorklistRows context (resources ++ [taskFor "Patient/selected" "Encounter/ed-1"]) patient).head!.lookup "Status" == some "requested"
+#guard (acuteWorklistRows context (resources ++ [taskFor "Patient/selected" "Encounter/ed-1"]) patient).head!.lookup "Task status" == some "Overdue"
+#guard (acuteWorklistRows { context with record := [("selectedEncounterId", "missing")] }
+  (resources ++ [taskFor "Patient/selected" "Encounter/ed-1"]) patient).isEmpty
+
+/-- Bedside examinations and nursing assessments use their explicit FHIR category. -/
+def bedside (subject encounterId code category time : String) (value : Json) : Json := Json.mkObj
+  [("resourceType", .str "Observation"), ("subject", reference subject),
+   ("encounter", reference encounterId), ("status", .str "final"),
+   ("code", concept code), ("category", .arr #[concept category]),
+   ("effectiveDateTime", .str time),
+   (if category == "survey" then "valueString" else "valueQuantity", value)]
+
+/-- Two recorded intake units remain distinct and a narrative is not made numeric. -/
+def bedsideSources : List Json := currentVitalSources ++
+  [bedside "Patient/selected" "Encounter/ed-1" "9000-1" "exam" "2026-11-02T08:15:00-08:00"
+      (Json.mkObj [("value", toJson (250 : Nat)), ("unit", .str "mL")]),
+   bedside "Patient/selected" "Encounter/ed-1" "9000-1" "exam" "2026-11-02T08:15:00-08:00"
+      (Json.mkObj [("value", toJson (1 : Nat)), ("unit", .str "L")]),
+   bedside "Patient/selected" "Encounter/ed-1" "Nursing assessment" "survey" "2026-11-02T08:00:00-08:00"
+      (.str "Alert and oriented; breathing comfortably."),
+   bedside "Patient/other" "Encounter/ed-1" "Wrong patient" "survey" "2026-11-02T08:00:00-08:00" (.str "Excluded"),
+   bedside "Patient/selected" "Encounter/previous" "Prior admission" "survey" "2026-11-02T08:00:00-08:00" (.str "Excluded"),
+   glucose "Patient/selected"]
+
+/-- The nursing grid has one common time axis and preserves tied/conflicting values. -/
+def bedsideGrid := acuteFlowsheetRows context bedsideSources patient
+#guard bedsideGrid.length == 4
+#guard bedsideGrid.any (fun row => row.lookup "Unit" == some "mL")
+#guard bedsideGrid.any (fun row => row.lookup "Unit" == some "L")
+#guard bedsideGrid.any (fun row => row.lookup "2026-11-02 08:00 -08:00" == some "82; 88")
+#guard bedsideGrid.any (fun row => row.lookup "2026-11-02 08:00 -08:00" == some "Alert and oriented; breathing comfortably.")
+#guard bedsideGrid.all (fun row => row.map (·.1) == (bedsideGrid.head!).map (·.1))
+#guard bedsideGrid.all (fun row => row.lookup "Measure" != some "Wrong patient" && row.lookup "Measure" != some "Prior admission")
+#guard bedsideGrid.all (fun row => row.lookup "Measure" != some "2339-0")
+
+/-- A letter or another encounter's report is not the current nursing handoff. -/
+def handoffFor (kind encounterId : String) : Json := Json.mkObj
+  [("resourceType", .str "DocumentReference"), ("subject", reference "Patient/selected"),
+   ("status", .str "current"), ("type", concept kind),
+   ("context", Json.mkObj [("encounter", .arr #[reference encounterId])]),
+   ("date", .str "2026-11-02T07:00:00-08:00"), ("description", .str "Shift report")]
+
+#guard !acuteHandoffDocument (handoffFor "51852-2" "Encounter/ed-1")
+#guard acuteHandoffDocument (handoffFor "handoff" "Encounter/ed-1")
+#guard (((acuteSupportingRows context (resources ++ [handoffFor "handoff" "Encounter/ed-1",
+  handoffFor "handoff" "Encounter/previous", handoffFor "51852-2" "Encounter/ed-1"]) patient).lookup "handoffSummary").getD []).length == 1
+
+/-- An observation admission is a legitimate acute context, not an old clinic fallback. -/
+def observationEncounter : Json := Json.mkObj
+  [("resourceType", .str "Encounter"), ("id", .str "obs-1"), ("subject", reference "Patient/selected"),
+   ("status", .str "in-progress"), ("class", Json.mkObj [("code", .str "OBSENC")])]
+
+#guard (acuteEncounter { context with record := [] } [patient, observationEncounter] patient).isSome
+#guard (acuteEncounter { context with record := [] } (resources ++ [observationEncounter]) patient).isNone
+#guard (acuteEncounter context (resources ++ [observationEncounter]) patient).any (fun selected => str selected "id" == "ed-1")
+#guard acuteProjectionVersion context resources == acuteProjectionVersion context resources.reverse
+#guard acuteProjectionVersion context resources != acuteProjectionVersion { context with today := "2026-11-03" } resources
+#guard acuteProjectionVersion context resources != acuteProjectionVersion { context with record := [("selectedEncounterId", "other")] } resources
+
+/-- A due task names its exact order and encounter; execution time is separate. -/
+def medicationTask (status business encounterId orderId due : String) : Json := Json.mkObj
+  [("resourceType", .str "Task"), ("for", reference "Patient/selected"),
+   ("encounter", reference encounterId), ("focus", reference orderId),
+   ("intent", .str "order"), ("status", .str status), ("businessStatus", concept business),
+   ("executionPeriod", Json.mkObj [("start", .str "2026-11-02T08:07:00-08:00")]),
+   ("restriction", Json.mkObj [("period", Json.mkObj [("end", .str due)])])]
+
+/-- The current selected order is supplied to the read-only MAR task projection. -/
+def selectedMedication := medication "rx-2" "Encounter/ed-1" 4
+
+#guard (acuteMarTaskEvents context (resources ++ [medicationTask "requested" "Overdue"
+  "Encounter/ed-1" "MedicationRequest/rx-2" "2026-11-02T08:00:00-08:00"]) selectedMedication).head!.2.startsWith "Overdue"
+#guard (acuteMarTaskEvents context (resources ++ [medicationTask "requested" "Overdue"
+  "Encounter/previous" "MedicationRequest/rx-2" "2026-11-02T08:00:00-08:00"]) selectedMedication).isEmpty
+#guard (acuteMarTaskEvents context (resources ++ [medicationTask "requested" "Overdue"
+  "Encounter/ed-1" "MedicationRequest/rx-1" "2026-11-02T08:00:00-08:00"]) selectedMedication).isEmpty
+#guard (acuteMarTaskEvents context (resources ++ [medicationTask "requested" "Due"
+  "Encounter/ed-1" "MedicationRequest/rx-2" ""]) selectedMedication).isEmpty
+#guard (acuteMarTaskEvents context (resources ++ [medicationTask "requested" "Due"
+  "Encounter/ed-1" "MedicationRequest/rx-2" "2026-11-02"]) selectedMedication).isEmpty
+#guard (acuteMarTaskEvents context (resources ++ [medicationTask "completed" "Given"
+  "Encounter/ed-1" "MedicationRequest/rx-2" "2026-11-02T08:00:00-08:00"]) selectedMedication).all
+  (fun (_, text) => text.startsWith "Task completed" && !text.startsWith "Given")
+
+/-- Another dated visit and a first-listed nurse cannot replace this encounter's attending. -/
+def chartVisit (id kind date location diagnosis : String) : Json := Json.mkObj
+  [("resourceType", .str "Encounter"), ("id", .str id), ("subject", reference "Patient/selected"),
+   ("status", .str (if kind == "EMER" then "in-progress" else "finished")),
+   ("class", Json.mkObj [("code", .str kind)]), ("period", Json.mkObj [("start", .str date)]),
+   ("reasonCode", .arr #[concept diagnosis]),
+   ("location", .arr #[Json.mkObj [("location", Json.mkObj [("display", .str location)])]]),
+   ("participant", .arr #[
+     Json.mkObj [("type", .arr #[concept "RN"]), ("individual", Json.mkObj [("display", .str "Jordan Lee, RN")])],
+     Json.mkObj [("type", .arr #[concept "ATND"]), ("individual", Json.mkObj [("display", .str "Morgan Patel, MD")])]])]
+
+/-- The explicit selected encounter predates a newer historical clinic visit. -/
+def chartSources := [patient,
+  chartVisit "ed-1" "EMER" "2026-11-01T08:00:00-08:00" "ED A04" "R06.02",
+  chartVisit "clinic-2" "AMB" "2026-11-02T09:00:00-08:00" "Clinic 2" "R51"]
+
+#guard (bannerFor context chartSources patient).location == "ED A04"
+#guard (bannerFor context chartSources patient).encounterClass == "EMER"
+#guard (bannerFor context chartSources patient).attending == "Morgan Patel, MD"
+#guard (bannerFor context chartSources patient).pcp == ""
+#guard (bannerFor { context with record := [] } chartSources patient).location == "ED A04"
+#guard (bannerFor { context with record := [("selectedEncounterId", "missing")] } chartSources patient).location == ""
+#guard (factsOf { context with record := [] } chartSources patient).record.lookup "visitDiagnosis" == some "R06.02"
+#guard (factsOf { context with record := [("selectedEncounterId", "ed-1"), ("visitDiagnosis", "J18.9")] }
+  chartSources patient).record.lookup "visitDiagnosis" == some "J18.9"
+/-- Invalid selection cannot make unrelated cached display data current. -/
+def invalidEncounterContext : Ctx :=
+  { latestVitalsContext with facts := factsOf { context with record := [("selectedEncounterId", "missing")] } chartSources patient }
+
+/-- Ambiguous ongoing encounters likewise produce explicit empty current panels. -/
+def ambiguousEncounterContext : Ctx :=
+  { latestVitalsContext with facts := factsOf { context with record := [] } (resources ++ [observationEncounter]) patient }
+
+#guard (uiRows invalidEncounterContext "vitals").isEmpty
+#guard (uiRows invalidEncounterContext "labResults").isEmpty
+#guard (uiRows ambiguousEncounterContext "vitals").isEmpty
+#guard (uiRows ambiguousEncounterContext "labResults").isEmpty
+#guard acuteCareClass "inpatient"
+
+/-- A standard blood-pressure report has two separately recorded components. -/
+def pressurePanel : Json := Json.mkObj
+  [("resourceType", .str "Observation"), ("subject", reference "Patient/selected"),
+   ("encounter", reference "Encounter/ed-1"), ("status", .str "final"),
+   ("category", .arr #[concept "vital-signs"]), ("code", concept "85354-9"),
+   ("effectiveDateTime", .str "2026-11-02T08:00:00-08:00"), ("component", .arr #[
+     Json.mkObj [("code", concept "8480-6"), ("valueQuantity", Json.mkObj [("value", toJson (128 : Nat)), ("unit", .str "mmHg")])],
+     Json.mkObj [("code", concept "8462-4"), ("valueQuantity", Json.mkObj [("value", toJson (82 : Nat)), ("unit", .str "mmHg")])]])]
+
+#guard (acuteFlowsheetRows context (resources ++ [pressurePanel]) patient).length == 2
+#guard (acuteFlowsheetRows context (resources ++ [pressurePanel]) patient).any
+  (fun row => row.lookup "2026-11-02 08:00 -08:00" == some "128" && row.lookup "Unit" == some "mmHg")
+#guard (acuteFlowsheetRows context (resources ++ [pressurePanel]) patient).any
+  (fun row => row.lookup "2026-11-02 08:00 -08:00" == some "82")
+
+/-- The single handoff's original narrative needs no invented attachment heading. -/
+def singleHandoff : Json := Json.mkObj [("content", .arr #[Json.mkObj [("attachment", Json.mkObj
+  [("contentType", .str "text/plain"), ("data", .str "U0JBUiByZXBvcnQ=")])]])]
+#guard acuteHandoffText singleHandoff == "SBAR report"
+
+/-- A current-dated administration can still belong to a previous admission. -/
+def previousAdmissionAdministration : Json := Json.mkObj
+  [("resourceType", .str "MedicationAdministration"), ("subject", reference "Patient/selected"),
+   ("context", reference "Encounter/previous"), ("request", reference "MedicationRequest/prior-rx"),
+   ("status", .str "completed"), ("effectiveDateTime", .str "2026-11-02T08:00:00-08:00")]
+
+#guard (((acuteSupportingRows context (resources ++ [administration,
+  medication "prior-rx" "Encounter/previous" 90, previousAdmissionAdministration]) patient).lookup "prnHistory").getD []).length == 1
+#guard (((acuteSupportingRows { context with record := [("selectedEncounterId", "missing")] }
+  (chartSources ++ [historicalGlucose]) patient).lookup "resultTrend").getD []).length == 1
+
+/-- Two real administrations in one displayed hour remain separate source records. -/
+def secondAdministration : Json := Json.mkObj
+  [("resourceType", .str "MedicationAdministration"), ("id", .str "admin-2"),
+   ("subject", reference "Patient/selected"), ("request", reference "MedicationRequest/rx-2"),
+   ("status", .str "completed"), ("effectiveDateTime", .str "2026-11-02T08:22:00-08:00"),
+   ("dosage", Json.mkObj [("dose", Json.mkObj [("value", toJson (4 : Nat)), ("unit", .str "units")])])]
+
+/-- Repeated hour keys let the painter retain each record's supplied status tint. -/
+def repeatedHourRows := (acuteMarRows context (resources ++ [administration, secondAdministration]) patient).getLast!
+#guard (repeatedHourRows.filter (·.1 == "2026-11-02 08:00 -08:00")).length == 2
+#guard repeatedHourRows.any (fun (key, value) => key == "2026-11-02 08:00 -08:00" && value.startsWith "Given · 08:07")
+#guard repeatedHourRows.any (fun (key, value) => key == "2026-11-02 08:00 -08:00" && value.startsWith "Given · 08:22")
 
 end Ehr.Render.Fhir.AcuteTests

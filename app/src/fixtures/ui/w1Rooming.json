@@ -919,10 +919,12 @@
   ["MRN", "47839287"],
   ["Age / sex", "58 / M"],
   ["Language", "English (United States)"],
-  ["PCP", "Dr. Laurena Anderson"],
+  ["PCP", ""],
   ["Coverage", ""],
-  ["Encounter", "AMB"],
-  ["Attending", "Dr. Laurena Anderson"],
+  ["Encounter", "Ambulatory"],
+  ["Attending", ""],
   ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"],
   ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"]]}
+  ["Code status", "Not recorded"],
+  ["Weight", "93.4 kg · Apr 22, 2026 13:28"],
+  ["Isolation", "Not recorded"]]}

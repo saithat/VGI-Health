@@ -166,7 +166,7 @@
                     "insulin lispro"
                   ],
                   [
-                    "Actual dose",
+                    "Recorded dose",
                     "4"
                   ],
                   [
@@ -182,7 +182,7 @@
                     "Left abdomen"
                   ],
                   [
-                    "Actual time",
+                    "Recorded time",
                     "Nov 1, 2026 17:08"
                   ],
                   [
@@ -253,7 +253,7 @@
                   ],
                   [
                     "2026-11-02 08:00 -08:00",
-                    "Scheduled · 08:00"
+                    "Overdue · 08:00 · Record status: requested"
                   ],
                   [
                     "2026-11-02 09:00 -08:00",
@@ -330,6 +330,10 @@
                     "Scheduled · 09:00"
                   ],
                   [
+                    "2026-11-02 09:00 -08:00",
+                    "Held · 09:05 · 40 mg · SC · Held per procedure team"
+                  ],
+                  [
                     "2026-11-02 10:00 -08:00",
                     ""
                   ],
@@ -398,6 +402,10 @@
                   [
                     "2026-11-02 09:00 -08:00",
                     "Scheduled · 09:00"
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    "Given · 09:12 · 1000 mg · IV"
                   ],
                   [
                     "2026-11-02 10:00 -08:00",
@@ -525,7 +533,7 @@
                     "acetaminophen"
                   ],
                   [
-                    "Actual dose",
+                    "Recorded dose",
                     "650"
                   ],
                   [
@@ -541,7 +549,7 @@
                     ""
                   ],
                   [
-                    "Actual time",
+                    "Recorded time",
                     "Nov 2, 2026 07:30"
                   ],
                   [

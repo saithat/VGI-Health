@@ -26,6 +26,21 @@
   background: var(--clinical-banner);
   border-bottom: 1px solid var(--clinical-border);
 }
+/* Keep patient identity in view during long desktop chart activities. Large
+   supplied banners remain scrollable without covering the clinical workspace. */
+@media (min-width: 1000px) and (min-height: 700px) {
+  .clinical-app .clinical-banner {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    max-height: 40vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .clinical-app [data-comp-id] {
+    scroll-margin-block: 180px 24px;
+  }
+}
 .clinical-brand {
   display: flex;
   align-items: center;

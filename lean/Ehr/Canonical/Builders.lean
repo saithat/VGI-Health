@@ -79,7 +79,7 @@ def rowAction (target : CompId) (row : Nat) (c : Component) : Component :=
 
 /-- A wide clinical grid omits automatic summary-rail supplements, not authored reviews. -/
 def wideWorkspace (c : Component) : Component :=
-  { c with tag := c.tag ++ ".wideWorkspace" }
+  { c with tag := c.tag ++ ".layout.overview" }
 
 /-- A trend chart. -/
 def trend (s : ScreenId) (name : String) (info : InfoId) (label : String)

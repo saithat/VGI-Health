@@ -78,7 +78,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
             screen={ui}
             presentations={workspace.presentations}
             onEvent={dispatch}
-            viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} ${program.path.endsWith("/canonical.json") ? "vendor reference" : "baseline"}`}`}
+            viewer={clinicianRoleNames[persona] ?? "Clinician"}
           />
         ) : (
           <Alert color="red" role="alert">

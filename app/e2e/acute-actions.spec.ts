@@ -107,6 +107,15 @@ for (const [
     expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
       expectedAria(ui),
     );
+    if (start === "w4Mar") {
+      const grid = page.getByRole("table", {
+        name: "Medication administration record",
+        exact: true,
+      });
+      await expect(grid.locator(".tone-green")).toContainText(["Given"]);
+      await expect(grid.locator(".tone-amber")).toContainText(["Held"]);
+      await expect(grid.locator(".tone-red")).toContainText(["Overdue"]);
+    }
     const button = page.locator(
       `button[data-comp-id="${component}"][data-event="click"]`,
     );

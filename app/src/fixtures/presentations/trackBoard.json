@@ -99,8 +99,10 @@
   ["Language", ""],
   ["PCP", "Maya Brooks, MD"],
   ["Coverage", ""],
-  ["Encounter", "EMER"],
+  ["Encounter", "Emergency"],
   ["Attending", "Nora Shah, MD"],
   ["Location", "ED 04"],
   ["Allergies", "Amoxicillin — Hives (active)"],
-  ["Code status", "Full code"]]}
+  ["Code status", "Full code"],
+  ["Weight", "82.4 kg · Nov 1, 2026 06:00"],
+  ["Isolation", "Not recorded"]]}

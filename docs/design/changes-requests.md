@@ -2191,3 +2191,25 @@ now exercises all 39 shown, unmasked search fields across v1/v2/v3 and verifies
 semantic feedback plus unchanged captures, receipts, commits and order slot.
 The original no-op legacy search event remains for archived trajectory behavior;
 visible search inputs use the new ordinary-entry path. No new clinical rule.
+
+
+### ACUTE source-context and bedside projection follow-up
+
+Integrated shared complete laboratory rows and `layout.overview`; new acute
+programs use the standard hint, with compatibility for the earlier acute hint.
+The banner, current result/vital panels, worklist, PRN history and handoff now
+share exact encounter selection. Missing/ambiguous selection cannot substitute
+an older visit. Projection versions also include order/encounter/day selectors.
+
+Acute MAR reads explicit order-linked Task due times/business statuses without
+turning Task completion into an actual dose. Bedside flowsheets include exam and
+survey observations, components, I&O and narrative assessments. Raw lab values,
+comparators, components, intervals and source flags survive the acute payload.
+Existing info IDs and ordinary source actions are unchanged.
+
+Corrected source terminology in the original review fixtures: measured oral
+intake is LOINC 9000-1; point urine output is 9187-6; 9192-6 is a 24-hour rate.
+A generic Letter (51852-2) is not an SBAR handoff. The acute handoff now uses an
+explicit local code and encounter reference. No frozen world or trajectory data
+was changed. Desktop patient context is sticky; narrow layouts retain document
+flow. Research links and source regressions are in the acute research section.

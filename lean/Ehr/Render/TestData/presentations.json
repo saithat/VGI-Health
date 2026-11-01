@@ -1279,7 +1279,7 @@
     {
       "resource": {
         "resourceType": "Observation",
-        "id": "9187-6-0",
+        "id": "9000-1-0",
         "status": "final",
         "category": [
           {
@@ -1294,12 +1294,114 @@
           "text": "Oral intake",
           "coding": [
             {
-              "code": "9187-6"
+              "code": "9000-1"
             }
           ]
         },
         "valueQuantity": {
           "value": 240,
+          "unit": "mL",
+          "code": "mL",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-11-01T06:00:00",
+        "subject": {
+          "reference": "Patient/p1"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "9000-1-1",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "exam"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Oral intake",
+          "coding": [
+            {
+              "code": "9000-1"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 180,
+          "unit": "mL",
+          "code": "mL",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-11-01T08:00:00",
+        "subject": {
+          "reference": "Patient/p1"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "9000-1-2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "exam"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Oral intake",
+          "coding": [
+            {
+              "code": "9000-1"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 240,
+          "unit": "mL",
+          "code": "mL",
+          "system": "http://unitsofmeasure.org"
+        },
+        "effectiveDateTime": "2026-11-01T10:00:00",
+        "subject": {
+          "reference": "Patient/p1"
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "9187-6-0",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "exam"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "text": "Urine output",
+          "coding": [
+            {
+              "code": "9187-6"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 350,
           "unit": "mL",
           "code": "mL",
           "system": "http://unitsofmeasure.org"
@@ -1325,7 +1427,7 @@
           }
         ],
         "code": {
-          "text": "Oral intake",
+          "text": "Urine output",
           "coding": [
             {
               "code": "9187-6"
@@ -1333,7 +1435,7 @@
           ]
         },
         "valueQuantity": {
-          "value": 180,
+          "value": 250,
           "unit": "mL",
           "code": "mL",
           "system": "http://unitsofmeasure.org"
@@ -1359,112 +1461,10 @@
           }
         ],
         "code": {
-          "text": "Oral intake",
+          "text": "Urine output",
           "coding": [
             {
               "code": "9187-6"
-            }
-          ]
-        },
-        "valueQuantity": {
-          "value": 240,
-          "unit": "mL",
-          "code": "mL",
-          "system": "http://unitsofmeasure.org"
-        },
-        "effectiveDateTime": "2026-11-01T10:00:00",
-        "subject": {
-          "reference": "Patient/p1"
-        }
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "9192-6-0",
-        "status": "final",
-        "category": [
-          {
-            "coding": [
-              {
-                "code": "exam"
-              }
-            ]
-          }
-        ],
-        "code": {
-          "text": "Urine output",
-          "coding": [
-            {
-              "code": "9192-6"
-            }
-          ]
-        },
-        "valueQuantity": {
-          "value": 350,
-          "unit": "mL",
-          "code": "mL",
-          "system": "http://unitsofmeasure.org"
-        },
-        "effectiveDateTime": "2026-11-01T06:00:00",
-        "subject": {
-          "reference": "Patient/p1"
-        }
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "9192-6-1",
-        "status": "final",
-        "category": [
-          {
-            "coding": [
-              {
-                "code": "exam"
-              }
-            ]
-          }
-        ],
-        "code": {
-          "text": "Urine output",
-          "coding": [
-            {
-              "code": "9192-6"
-            }
-          ]
-        },
-        "valueQuantity": {
-          "value": 250,
-          "unit": "mL",
-          "code": "mL",
-          "system": "http://unitsofmeasure.org"
-        },
-        "effectiveDateTime": "2026-11-01T08:00:00",
-        "subject": {
-          "reference": "Patient/p1"
-        }
-      }
-    },
-    {
-      "resource": {
-        "resourceType": "Observation",
-        "id": "9192-6-2",
-        "status": "final",
-        "category": [
-          {
-            "coding": [
-              {
-                "code": "exam"
-              }
-            ]
-          }
-        ],
-        "code": {
-          "text": "Urine output",
-          "coding": [
-            {
-              "code": "9192-6"
             }
           ]
         },
@@ -1516,7 +1516,7 @@
             "valueQuantity": {
               "value": 128,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           },
@@ -1532,7 +1532,7 @@
             "valueQuantity": {
               "value": 76,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           }
@@ -1578,7 +1578,7 @@
             "valueQuantity": {
               "value": 126,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           },
@@ -1594,7 +1594,7 @@
             "valueQuantity": {
               "value": 74,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           }
@@ -1640,7 +1640,7 @@
             "valueQuantity": {
               "value": 124,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           },
@@ -1656,7 +1656,7 @@
             "valueQuantity": {
               "value": 72,
               "unit": "mmHg",
-              "code": "mmHg",
+              "code": "mm[Hg]",
               "system": "http://unitsofmeasure.org"
             }
           }

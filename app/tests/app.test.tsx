@@ -11,9 +11,57 @@ import {
 } from "../src/browser/data";
 import { createWasmInterp } from "../src/core/wasmInterp";
 import { createSession } from "../src/core/session";
+import type { UiNode } from "../src/ehr/ui/types";
 
 const catalog = catalogSchema.parse(await buildCatalog());
 describe("offline live UI catalog", () => {
+  it("renders a nonempty chart search for every committed patient without runtime exceptions", async () => {
+    const interp = createWasmInterp(await loadEhrInterp());
+    const spec = await readJson("releases/v3/spec.json");
+    const program = await readJson("releases/v3/personas/P1.json");
+    const infos = (nodes: UiNode[]): { infoId: string; rows: unknown[] }[] =>
+      nodes.flatMap((node) =>
+        "info" in node
+          ? [node.info]
+          : "section" in node
+            ? infos(node.section.children)
+            : "columns" in node
+              ? infos(node.columns.children)
+              : "tabs" in node
+                ? infos(node.tabs.body)
+                : [],
+      );
+    for (const patient of catalog.patients) {
+      const facts = JSON.parse(
+        interp.facts(
+          JSON.stringify({
+            bundle: await readJson(patient.bundlePath),
+            context: {
+              today: catalog.referenceDate,
+              now: 540,
+              receipts: [],
+              record: [],
+            },
+          }),
+        ),
+      );
+      const session = createSession(interp, spec, program, facts, {
+        id: "P1",
+        role: "physician",
+      });
+      session.dispatch({
+        enter: { comp: "home.chartSearch", value: { text: { s: "72" } } },
+      });
+      const snapshot = session.getSnapshot();
+      expect(snapshot.result, patient.name).toBe("ok");
+      const result = infos(snapshot.ui?.workspace ?? []).find(
+        (info) => info.infoId === "searchResults",
+      );
+      expect(result, patient.name).toBeDefined();
+      expect(result?.rows.length, patient.name).toBeGreaterThan(0);
+      expect(result?.rows.length, patient.name).toBeLessThanOrEqual(26);
+    }
+  }, 240000);
   it("includes canonical and all persona releases, bad programs, and recorded versions", () => {
     for (const release of ["v1", "v2", "v3"]) {
       expect(
@@ -24,13 +72,21 @@ describe("offline live UI catalog", () => {
     }
     expect(
       catalog.programs.filter((program) => program.group === "Bad programs"),
-    ).toHaveLength(readdirSync(new URL("../../programs/bad/", import.meta.url)).filter((f) => f.endsWith(".json")).length);
+    ).toHaveLength(
+      readdirSync(new URL("../../programs/bad/", import.meta.url)).filter((f) =>
+        f.endsWith(".json"),
+      ).length,
+    );
     expect(
       catalog.programs.filter((program) => program.run === "mock").length,
     ).toBeGreaterThan(20);
     expect(catalog.patients).toHaveLength(324);
-    expect(catalog.patients.filter((p) => p.source === "synthea")).toHaveLength(174);
-    expect(catalog.patients.filter((p) => p.source === "synthetic-hospital")).toHaveLength(150);
+    expect(catalog.patients.filter((p) => p.source === "synthea")).toHaveLength(
+      174,
+    );
+    expect(
+      catalog.patients.filter((p) => p.source === "synthetic-hospital"),
+    ).toHaveLength(150);
     expect(defaultPatient(catalog, "P2").encounterClass).toBe("EMER");
     expect(defaultPatient(catalog, "P3").encounterClass).toBe("IMP");
     expect(defaultPatient(catalog, "P4").flags.pediatric).toBe(true);

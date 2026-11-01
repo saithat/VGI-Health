@@ -1,0 +1,120 @@
+{
+  "source": {
+    "revision": "a462b19b3edb4e19f54dac31945e335ea8a9a1ed",
+    "mainRevision": "251d9a0029c2d0fa1aec0116668668e6c474af25",
+    "leanHash": "afec57a5b662fde10e2de8b2338e6495899044ed7623e5fc0f7c4ae04adf40cc",
+    "builtAt": "2026-11-01T09:16:41.258Z"
+  },
+  "checks": {
+    "lean": [
+      "default build",
+      "lake check",
+      "Comparator",
+      "CheckerComparator",
+      "CompletionComparator",
+      "D1\u2013D6",
+      "make wasm-check"
+    ],
+    "certification": {
+      "personas": 15,
+      "accepted": 15,
+      "bad": 18,
+      "rejected": 18
+    },
+    "world2": {
+      "schedules": 50,
+      "tasks": 1284,
+      "completed": 1284
+    },
+    "run1P3": {
+      "tasks": 424,
+      "events": 14658,
+      "baselineReplays": 3,
+      "baselineEvents": 137,
+      "mismatches": 0
+    },
+    "appUnitTests": 189,
+    "agentTests": 84,
+    "liveMapperTests": 6,
+    "desktop": {
+      "passed": 33,
+      "skipped": 5
+    },
+    "narrow": {
+      "passed": 18,
+      "skipped": 3
+    },
+    "buttonAudit": {
+      "counts": {
+        "works": 2746,
+        "disabled-with-reason": 115,
+        "dead": 0,
+        "error": 0
+      },
+      "personas": [
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "RN2"
+      ],
+      "scope": "Bounded observed-state sample, at most 48 configurations per persona; not exhaustive state exploration.",
+      "regression": "passed"
+    },
+    "performance": {
+      "measurements": [
+        {
+          "host": "127.0.0.1",
+          "label": "cold dashboard",
+          "bytes": 265532,
+          "requests": 18,
+          "interactiveMs": 855,
+          "wasmRequests": 0
+        },
+        {
+          "host": "127.0.0.1",
+          "label": "EHR \u2192 dashboard",
+          "bytes": 901,
+          "requests": 9,
+          "interactiveMs": 217,
+          "wasmRequests": 0
+        },
+        {
+          "host": "127.0.0.1",
+          "label": "dashboard \u2192 EHR",
+          "bytes": 1052,
+          "requests": 4,
+          "interactiveMs": 118,
+          "wasmRequests": 0
+        },
+        {
+          "host": "vgi-audit.example.ts.net",
+          "label": "cold dashboard",
+          "bytes": 290982,
+          "requests": 18,
+          "interactiveMs": 244,
+          "wasmRequests": 0
+        },
+        {
+          "host": "vgi-audit.example.ts.net",
+          "label": "EHR \u2192 dashboard",
+          "bytes": 901,
+          "requests": 9,
+          "interactiveMs": 215,
+          "wasmRequests": 0
+        },
+        {
+          "host": "vgi-audit.example.ts.net",
+          "label": "dashboard \u2192 EHR",
+          "bytes": 1052,
+          "requests": 4,
+          "interactiveMs": 123,
+          "wasmRequests": 0
+        }
+      ],
+      "scope": "One Chromium worker, localhost and a synthetic non-localhost Host resolving to loopback; not a slow-link simulation."
+    },
+    "baselineComplexity": "All 21 release/workflow metric payloads unchanged."
+  }
+}

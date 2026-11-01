@@ -103,10 +103,21 @@ function checkUi(ui, view, program, display, name) {
     }
   }
   const side = walk(ui.side).flatMap((n) => n.info ? [n.info] : []);
-  assert.equal(side.find((n) => n.infoId === 'allergyList')?.rows.length, display.allergies.length);
-  assert.equal(side.find((n) => n.infoId === 'currentMeds')?.rows.length, display.meds.length);
-  assert.equal(side.find((n) => n.infoId === 'problemList')?.rows.length, display.problems.filter((r) => r.status !== 'resolved' && r.status !== 'inactive' && !r.abatement).length);
-  assert.equal(side.find((n) => n.infoId === 'vitals')?.rows.length, new Set(display.vitals.map((r) => r.code)).size);
+  const overview = view.items.some((item) => {
+    if (!item.shown) return false;
+    const parts = item.comp.tag.split('.');
+    return parts.includes('wideWorkspace') || parts.some((part, i) => part === 'layout' && parts[i + 1] === 'overview');
+  });
+  if (overview) {
+    // Only generated supplements are omitted. Every authored component is still
+    // required exactly once by the independent source-key comparison above.
+    assert.ok(side.every((info) => info.comp !== ''), `${name}: overview must omit automatic summaries`);
+  } else {
+    assert.equal(side.find((n) => n.infoId === 'allergyList')?.rows.length, display.allergies.length);
+    assert.equal(side.find((n) => n.infoId === 'currentMeds')?.rows.length, display.meds.length);
+    assert.equal(side.find((n) => n.infoId === 'problemList')?.rows.length, display.problems.filter((r) => r.status !== 'resolved' && r.status !== 'inactive' && !r.abatement).length);
+    assert.equal(side.find((n) => n.infoId === 'vitals')?.rows.length, new Set(display.vitals.map((r) => r.code)).size);
+  }
   for (const info of side.filter((n) => ['allergyList', 'currentMeds', 'problemList', 'vitals'].includes(n.infoId))) assert.equal(info.display, 'list');
   for (const info of side.filter((n) => ['allergyList', 'currentMeds', 'problemList', 'vitals'].includes(n.infoId))) {
     assert.ok(info.rows.every((row) => row.length <= 2 && row[0]?.[0] === 'Record'));

@@ -146,7 +146,7 @@
      "kind": {"group": {"startCollapsed": false, "collapsible": false}},
      "id": "w3TrackBoard.nav"},
     {"visibility": "always",
-     "tag": "w3TrackBoard.board.wideWorkspace.present.trackBoard",
+     "tag": "w3TrackBoard.board.layout.overview.present.trackBoard",
      "tab": 0,
      "size": "normal",
      "label": "Emergency department patients",
