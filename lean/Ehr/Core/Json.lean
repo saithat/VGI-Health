@@ -23,7 +23,7 @@ deriving instance Lean.ToJson, Lean.FromJson for
   ClinicalField, ClinicalObservation, ClinicalAge, ClinicalFacts, ClinicalPredicate,
   IdentifierCategory, PayloadFieldReq, PayloadContract, PayloadIdentifier, PayloadRow,
   InfoPayload, WorkflowPhase, DisplayScope, DisplayReq, SelectedPayloadRow, PayloadGroup, PayloadView, InfoSpec,
-  EventRef, TimeMetric, TemporalReq, ArtifactBinding, EventEvidence, BusinessCalendar,
+  EventRef, TimeMetric, TemporalDirection, TemporalReq, ArtifactBinding, EventEvidence, BusinessCalendar,
   ObligationStatus, ObligationView, ClockAnchor, ClockStamp, MonthCutoff, ClockRenewal,
   OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec,
   DesignRules, Spec

@@ -261,6 +261,8 @@ export interface PayloadFieldReq {
    * False availability explicitly skips this field; absent/unknown requires it.
    */
   ifAvailable: boolean;
+  kind?: ValueKind;
+  validation?: Validation;
 }
 
 /**
@@ -270,6 +272,7 @@ export interface PayloadContract {
   fields: PayloadFieldReq[];
   identifiers: IdentifierCategory[];
   rowFields: string[];
+  rowConstraints?: PayloadFieldReq[];
   groupBy?: string;
 }
 
@@ -283,6 +286,7 @@ export interface PayloadRow {
   id: string;
   slot: number;
   fields: [string, string][];
+  availability?: [string, boolean][];
 }
 
 /**
@@ -373,6 +377,16 @@ export type TimeMetric =
   | { businessDays: { calendar: string } };
 
 /**
+ * Ordering is independent of the number of business dates crossed.
+ */
+export type TemporalDirection =
+  | "before"
+  | "after"
+  | "either";
+/** All values of `TemporalDirection`. */
+export const TemporalDirectionValues = ["before", "after", "either"] as const;
+
+/**
  * Subject time minus anchor time must lie in these inclusive bounds.
  * The deadline is an explicit offset from the anchor, in the same metric.
  * Missing evidence always blocks; passing a deadline also exposes overdue status.
@@ -383,6 +397,10 @@ export interface TemporalReq {
   subject: EventRef;
   anchor: EventRef;
   metric: TimeMetric;
+  /**
+   * Required for business-day windows, whose zero distance alone has no ordering.
+   */
+  direction?: TemporalDirection;
   minOffset: number;
   maxOffset: number;
   deadline: number;
@@ -424,6 +442,11 @@ export interface BusinessCalendar {
   firstDay: number;
   lastDay: number;
   workingDays: number[];
+  /**
+   * UTC-minute transition -> local offset in minutes. None denotes UTC;
+   * other zones require coverage before both endpoints, including DST changes.
+   */
+  utcOffsets?: [number, number][];
 }
 
 /**

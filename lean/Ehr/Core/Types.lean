@@ -202,6 +202,8 @@ structure PayloadFieldReq where
   field : String
   /-- False availability explicitly skips this field; absent/unknown requires it. -/
   ifAvailable : Bool := false
+  kind? : Option ValueKind := none
+  validation? : Option Validation := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Required fields and identifier categories, on every row when requested. -/
@@ -209,6 +211,7 @@ structure PayloadContract where
   fields : List PayloadFieldReq := []
   identifiers : List IdentifierCategory := []
   rowFields : List String := []
+  rowConstraints? : Option (List PayloadFieldReq) := none
   groupBy? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
@@ -222,6 +225,7 @@ structure PayloadRow where
   id : String
   slot : Nat
   fields : List (String × String)
+  availability? : Option (List (String × Bool)) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Trusted current-version data, not a declaration that a placeholder exists. -/
@@ -297,6 +301,11 @@ inductive TimeMetric
   | businessDays (calendar : String)
   deriving DecidableEq, Repr, Inhabited
 
+/-- Ordering is independent of the number of business dates crossed. -/
+inductive TemporalDirection
+  | before | after | either
+  deriving DecidableEq, Repr, Inhabited
+
 /-- Subject time minus anchor time must lie in these inclusive bounds.
 The deadline is an explicit offset from the anchor, in the same metric.
 Missing evidence always blocks; passing a deadline also exposes overdue status. -/
@@ -306,6 +315,8 @@ structure TemporalReq where
   subject : EventRef
   anchor : EventRef
   metric : TimeMetric := .minutes
+  /-- Required for business-day windows, whose zero distance alone has no ordering. -/
+  direction? : Option TemporalDirection := none
   minOffset : Int
   maxOffset : Int
   deadline : Int
@@ -339,6 +350,9 @@ structure BusinessCalendar where
   firstDay : Int
   lastDay : Int
   workingDays : List Int
+  /-- UTC-minute transition -> local offset in minutes. None denotes UTC;
+  other zones require coverage before both endpoints, including DST changes. -/
+  utcOffsets? : Option (List (Int × Int)) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Status of an event obligation, also returned by the screen view. -/

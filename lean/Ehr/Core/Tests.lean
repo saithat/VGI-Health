@@ -314,6 +314,20 @@ def calendarFacts : Facts :=
 #guard timeDistance calendarFacts (.businessDays "hospital") 0 (11 * 1440) == none
 #guard timeDistance context .minutes 10000 8560 == some (-1440)
 
+-- Historical versions do not make unique current-version evidence ambiguous.
+#guard temporalStatus { context with eventEvidence? := context.eventEvidence?.map (fun es =>
+  es ++ es.map (fun e => { e with version := 0 })) } atOrder requirement == .met
+-- 07:00 to 09:00 UTC crosses local midnight in UTC-8, although not UTC midnight.
+#guard timeDistance { context with calendars? := some [{ id := "local", firstDay := -1, lastDay := 1, workingDays := [0], utcOffsets? := some [(-10000, -480)] }] } (.businessDays "local") 420 540 == some 1
+#guard businessLocalDay { id := "local", firstDay := 0, lastDay := 2, workingDays := [], utcOffsets? := some [(0, -480), (1440, -420)] } 1860 == some 1
+#guard businessLocalDay { id := "unknown-zone", firstDay := 0, lastDay := 2, workingDays := [], utcOffsets? := some [] } 600 == none
+-- A zero business-date distance never substitutes for actual before/after ordering.
+#guard !temporalOrdering { requirement with metric := .businessDays "hospital" } 10000 10001
+#guard !temporalOrdering { requirement with metric := .businessDays "hospital", direction? := some .before } 10000 10001
+#guard temporalOrdering { requirement with metric := .businessDays "hospital", direction? := some .after } 10000 10001
+#guard !temporalOrdering { requirement with metric := .businessDays "hospital", direction? := some .after } 10000 9999
+#guard temporalStatus { calendarFacts with epochMinute? := some 10001, eventEvidence? := calendarFacts.eventEvidence?.map (fun es => es.filter (·.event != "assessment-complete")) }
+  atOrder { requirement with metric := .businessDays "hospital", direction? := some .before } == .overdue
 end EventWindow
 
 namespace PatientPredicate
@@ -523,6 +537,13 @@ def selected : State := { initial with captured :=
   selected (some "signOrders") { requirement with scope := .phase "W1" "signing" }
 #guard displayActive context selected none { requirement with scope := .phase "W1" "signing" }
 #guard roundTrips contract && roundTrips payload && roundTrips requirement
+-- Artifact outputs share the validation AST; visibility alone cannot validate dates or numbers.
+#guard !payloadComplete { payload with fields := [("date", "2025-02-29")] }
+  { contract with fields := [{ field := "date", validation? := some .isoDate }] }
+#guard payloadComplete { payload with fields := [("date", "2024-02-29")] }
+  { contract with fields := [{ field := "date", validation? := some .isoDate }] }
+#guard payloadComplete payload { contract with rowConstraints? := some [{ field := "quantity", kind? := some (.quantity .none), validation? := some (.quantityRange .none 10 100) }] }
+#guard !payloadComplete payload { contract with rowConstraints? := some [{ field := "quantity", kind? := some (.quantity .none), validation? := some (.quantityRange .none 10 99) }] }
 end StructuredDisplay
 
 end Ehr.CoreTests

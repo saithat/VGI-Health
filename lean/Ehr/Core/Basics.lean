@@ -253,11 +253,26 @@ def eventTime (facts : Facts) (s : State) (ref : EventRef) (allowPlanned : Bool)
   let now ← epochNow facts s
   let [binding] := (facts.artifactBindings?.getD []).filter (·.key == ref.artifactKey) | none
   let [ev] := (facts.eventEvidence?.getD []).filter (fun e =>
-    e.event == ref.event && e.artifact == binding.artifact) | none
+    e.event == ref.event && e.artifact == binding.artifact && e.version == binding.version &&
+      e.patient == facts.patientId && e.episode == episode) | none
   if episode.isEmpty || binding.artifact.isEmpty || ev.patient != facts.patientId ||
       ev.episode != episode || ev.version != binding.version || ev.actor.isEmpty ||
       (!allowPlanned && ev.planned) || (now < ev.time && !ev.planned) then none
   else some ev.time
+
+/-- Convert UTC event time to a hospital-local epoch day using a complete,
+unique offset-transition table. The adapter supplies timezone/DST truth. -/
+def businessLocalDay (cal : BusinessCalendar) (time : Int) : Option Int :=
+  match cal.utcOffsets? with
+  | none => some (time / 1440)
+  | some transitions =>
+    if (transitions.map (·.1)).eraseDups.length != transitions.length ||
+        transitions.any (fun p => p.2 < -840 || 840 < p.2) then none else
+    match transitions.filter (fun p => p.1 ≤ time) with
+    | [] => none
+    | first :: rest =>
+      let latest := rest.foldl (fun best next => if best.1 < next.1 then next else best) first
+      some ((time + latest.2) / 1440)
 
 /-- Signed distance. Calendar coverage must include both endpoints.
 Business-day offsets count working dates in (earlier date, later date]. -/
@@ -266,8 +281,10 @@ def timeDistance (facts : Facts) (metric : TimeMetric) (a b : Int) : Option Int 
   | .minutes => some (b - a)
   | .businessDays name => do
     let [cal] := (facts.calendars?.getD []).filter (·.id == name) | none
-    let lo := min (a / 1440) (b / 1440)
-    let hi := max (a / 1440) (b / 1440)
+    let da ← businessLocalDay cal a
+    let db ← businessLocalDay cal b
+    let lo := min da db
+    let hi := max da db
     if cal.firstDay > lo || cal.lastDay < hi then none else
       let n := (cal.workingDays.eraseDups.filter (fun d => lo < d && d ≤ hi)).length
       some (if a ≤ b then Int.ofNat n else -Int.ofNat n)
@@ -326,6 +343,15 @@ def clinicalEval (facts : Facts) (s : State) : ClinicalPredicate → Option Bool
 def clinicalApplies (facts : Facts) (s : State) (p : ClinicalPredicate) : Bool :=
   clinicalEval facts s p != some false
 
+/-- Zero business-day distance does not imply chronological ordering.
+An explicit direction is mandatory for that metric, including .either. -/
+def temporalOrdering (rq : TemporalReq) (anchor subject : Int) : Bool :=
+  match rq.direction? with
+  | some .before => subject ≤ anchor
+  | some .after => anchor ≤ subject
+  | some .either => true
+  | none => match rq.metric with | .minutes => true | .businessDays _ => false
+
 /-- Evaluate one obligation. A missing/invalid subject is overdue only after
 its explicit deadline; an already completed valid event stays met thereafter. -/
 def temporalStatus (facts : Facts) (s : State) (rq : TemporalReq) : ObligationStatus :=
@@ -333,13 +359,14 @@ def temporalStatus (facts : Facts) (s : State) (rq : TemporalReq) : ObligationSt
   match eventTime facts s rq.anchor true, epochNow facts s with
   | some anchor, some now =>
     let overdue : Bool := match timeDistance facts rq.metric anchor now with
-      | some d => rq.deadline < d
+      | some d => rq.deadline < d ||
+          (rq.direction? == some .before && rq.deadline == 0 && anchor < now)
       | none => false
     match eventTime facts s rq.subject false with
     | some subject =>
       match timeDistance facts rq.metric anchor subject with
       | some d =>
-        if rq.minOffset ≤ d && d ≤ rq.maxOffset && d ≤ rq.deadline then .met
+        if temporalOrdering rq anchor subject && rq.minOffset ≤ d && d ≤ rq.maxOffset && d ≤ rq.deadline then .met
         else if overdue then .overdue else .invalid
       | none => .invalid
     | none => if overdue then .overdue else .missing
@@ -677,18 +704,30 @@ def payloadField (fields : List (String × String)) (id : String) : Option Strin
   | [(_, value)] => if value.trimAscii.toString.isEmpty then none else some value
   | _ => none
 
-def fieldRequired (p : InfoPayload) (r : PayloadFieldReq) : Bool :=
-  !r.ifAvailable || (match p.availability.filter (·.1 == r.field) with
+def fieldRequired (availability : List (String × Bool)) (r : PayloadFieldReq) : Bool :=
+  !r.ifAvailable || (match availability.filter (·.1 == r.field) with
     | [(_, false)] => false | _ => true)
 
-/-- Every required field/identifier and every contracted row field is present.
-Grouping derives from actual row values, never a free-form HTML promise. -/
-def payloadComplete (p : InfoPayload) (contract : PayloadContract) : Bool :=
-  contract.fields.all (fun r => !fieldRequired p r || (payloadField p.fields r.field).isSome) &&
+/-- Validate external artifact output with the same AST used at entry/prefill. -/
+def payloadFieldMet (facts : Facts) (s : State) (slot : Nat)
+    (fields : List (String × String)) (availability : List (String × Bool))
+    (r : PayloadFieldReq) : Bool :=
+  !fieldRequired availability r || (payloadField fields r.field).any (fun raw =>
+    (parseValue (r.kind?.getD .text) raw).any (fun v =>
+      r.validation?.all (validationHolds facts s slot v)))
+
+/-- Every required field/identifier and every contracted row field is present
+and valid. Grouping derives from row values, never a free-form HTML promise. -/
+def payloadComplete (p : InfoPayload) (contract : PayloadContract)
+    (facts : Facts := default) (s : State := default) : Bool :=
+  contract.fields.all (payloadFieldMet facts s 0 p.fields p.availability) &&
     contract.identifiers.all (fun cat => p.identifiers.any (fun i => i.category == cat &&
       !i.system.trimAscii.toString.isEmpty && !i.value.trimAscii.toString.isEmpty)) &&
     (p.rows.map (·.id)).eraseDups.length == p.rows.length &&
-    p.rows.all (fun row => !row.id.isEmpty && contract.rowFields.all (fun f => (payloadField row.fields f).isSome) &&
+    p.rows.all (fun row => !row.id.trimAscii.toString.isEmpty &&
+      contract.rowFields.all (fun f => (payloadField row.fields f).isSome) &&
+      (contract.rowConstraints?.getD []).all
+        (payloadFieldMet facts s row.slot row.fields (row.availability?.getD [])) &&
       contract.groupBy?.all (fun f => (payloadField row.fields f).isSome))
 
 /-- Absent phase context conservatively activates phase requirements. -/
@@ -716,7 +755,7 @@ def displayReqMet (sp : Spec) (prog : Program) (facts : Facts) (s : State) (r : 
     match sp.info? r.info, infoPayload facts r.info with
     | some inf, some payload =>
       match inf.payload? with
-      | some contract => payloadComplete payload contract &&
+      | some contract => payloadComplete payload contract facts s &&
         (r.selectionElement?.isNone || (payload.rows.map (·.slot)).eraseDups.length == payload.rows.length)
       | none => false
     | _, _ => false

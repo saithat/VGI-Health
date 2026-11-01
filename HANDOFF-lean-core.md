@@ -190,3 +190,12 @@ critical-action labels. Owning renderer/checker/content adoption is requested
 in changes-requests.md; it is not claimed complete by the core lane.
 Remaining core work: final evidence/timezone hardening, integration verification,
 WASM rebuild/install/manifest and final handoff cleanup.
+
+Structured-display bfe01dc is pushed. Final hardening is complete and passes
+lake build/check/comparator and generated-sample strict tsc: event selection
+ignores old versions, business dates use timezone transition tables with explicit
+ordering, and artifact field/row outputs use the Validation AST. No extra theorem
+statement changes; all 25 core axiom audits use only the three permitted axioms.
+Remaining core lane work: finish the currently running WASM build, install assets,
+verify the manifest and native/WASM equivalence, then replace this historical
+handoff with an exact final status. Owning-lane adoption remains requested.

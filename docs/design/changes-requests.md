@@ -616,3 +616,27 @@ and refusal routes. Phase tags are trusted context, never freely changed program
 navigation tags. Per-record completeness beyond the supplied finite rows belongs
 to the L-group design. Tiny examples: CoreTests.StructuredDisplay. Backend EPCS
 identity and authenticated transmission remain separate duties.
+
+### Final integration clarifications
+
+BusinessCalendar.utcOffsets is optional: omitted explicitly means UTC. Hospitals
+using local dates must supply a transition table of [UTC minute, offset minutes]
+covering both endpoints, including DST transitions; duplicate thresholds and
+missing coverage fail. Current event evidence may coexist with old versions.
+PayloadFieldReq.kind and .validation share the element Validation AST;
+PayloadContract.rowConstraints and PayloadRow.availability support per-row
+external-output validation. Render/check/content must preserve and validate these
+contracts, including terminology versions and relational dependencies. Unknown
+clinical values should be absent optional facts, not literal codes named unknown.
+
+For business-day TemporalReq, direction is mandatory (before/after/either);
+zero business dates crossed cannot determine actual event ordering. Use the
+law's ordering explicitly. Missing direction fails closed. Minute windows keep
+signed offsets, and may additionally declare a direction.
+
+Clinical alert keys are opaque acknowledgment identities containing the exact
+source/capture snapshot, to avoid collision-based acknowledgment reuse. Render
+must show the alert's clinical label/context rather than the raw key (the current
+legacy popup prints its key); adopt that renderer change before enabling clinical
+alerts in production specs. It must not expose internal source/capture dumps as
+clinical alert copy.

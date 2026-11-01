@@ -500,3 +500,28 @@ must ensure continuous presence on every screen in a phase (including initial
 and navigation screens). Those cross-lane integrations are explicitly requested;
 this commit does not claim their completion. All original proof statements are
 unchanged in this group, including receipt and page-tree theorems.
+
+## Final core integration: evidence, local dates and artifact validation
+
+Event selection now filters patient, episode and current artifact version before
+requiring uniqueness: historical evidence can coexist with one current witness;
+duplicate current witnesses still fail closed. Business calendars optionally
+carry unique UTC offset-transition tables. Endpoint dates use the correct local
+offset, including DST changes; missing transition coverage/ambiguous tables block.
+Absent tables explicitly mean UTC. This closes the UTC-midnight/local-midnight
+difference without assuming fixed-offset hospital time.
+
+PayloadFieldReq now accepts the same optional Validation AST and ValueKind as
+input elements; PayloadContract.rowConstraints applies it to each row, with
+row-specific availability. The commit guard validates external artifact output
+against these constraints using current facts and per-row slots. This preserves
+lexical strings and rejects invalid signed dates/numbers even when fields are
+present and visible. Missing/unknown availability continues to require a field.
+All changes tighten the existing guard; no theorem statement changes.
+
+Business-day windows additionally require an explicit TemporalDirection
+(before/after/either): zero business-date distance does not imply actual time
+ordering. Minute windows retain their signed-offset interpretation. A before-
+anchor obligation with deadline zero becomes overdue immediately after the
+anchor, even if the business date has not changed. This prevents a same-day
+post-procedure event from satisfying a pre-procedure rule.
