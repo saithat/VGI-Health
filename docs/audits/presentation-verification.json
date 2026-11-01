@@ -272,5 +272,12 @@
       "location": "docs/design/changes-requests.md#presentation-handoff--patient-context-during-long-note-scrolling-1-nov-realism-review",
       "capture": "app/shots/realism/present/notes-import.png"
     }
-  ]
+  ],
+  "cutoffIntegration": {
+    "verifiedMain": "062a4ef83519772f5a4ea0feba95ce09339c4239",
+    "latestFetchedMain": "e4d10c5",
+    "status": "pending",
+    "observedAt": "2026-11-01T13:29:33Z",
+    "reason": "Main advanced with ambulatory integration at the final cutoff fetch. This branch preserves its fully checked application checkpoint; integrating that new source requires artifact regeneration and fresh gates."
+  }
 }

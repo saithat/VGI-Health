@@ -2096,3 +2096,7 @@ Please keep the PCP tied to its supplied patient care-provider reference (resolv
 ## Presentation handoff — patient context during long-note scrolling (1 Nov realism review)
 
 For SHELL ownership: the actual chart capture [notes-import.png](../../app/shots/realism/present/notes-import.png) is scrolled to the first imported note. The full patient banner and application bar are above the viewport. Please keep patient-identification context visible while long chart content scrolls, consistent with the shared-shell brief, and retain usable space at narrow widths. The source tree still contains the banner; this is a shared scrolling/layout follow-up, not missing Lean data. The note body remains complete and its exact native text and ARIA tree pass. Presentation leaves the frozen shared-shell layout unchanged.
+
+## Presentation cutoff integration (1 Nov, 13:29 UTC)
+
+The final fetch observed main `e4d10c5`, including the ambulatory merge. The presentation checkpoint is fully checked against main `062a4ef`; its final application source is `cfad9e9`. Please integrate the remaining presentation commits with the new main, regenerate generated artifacts and rerun the combined gates. The new ambulatory/main combination is not claimed as checked by this lane. Branch application source remains frozen at the requested cutoff.
