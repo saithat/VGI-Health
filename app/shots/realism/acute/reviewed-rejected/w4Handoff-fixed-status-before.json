@@ -1,0 +1,1251 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Ankunding, Aaron Bruno"
+    ],
+    [
+      "DOB",
+      "Jul 3, 1968"
+    ],
+    [
+      "MRN",
+      "47839287"
+    ],
+    [
+      "Age / sex",
+      "58 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      ""
+    ],
+    [
+      "Coverage",
+      ""
+    ],
+    [
+      "Encounter",
+      "Inpatient"
+    ],
+    [
+      "Attending",
+      "Morgan Patel, MD"
+    ],
+    [
+      "Location",
+      "5 West · 512 A"
+    ],
+    [
+      "Allergies",
+      "No allergy records on file"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "93.4 kg · Nov 2, 2026 07:30"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "modal": null,
+  "nav": [
+    [
+      "Nursing Navigator",
+      [
+        [
+          "w4Handoff.nav.w4Worklist",
+          "Unit Census & MAR"
+        ],
+        [
+          "w4Handoff.nav.w4Mar",
+          "MAR"
+        ],
+        [
+          "w4Handoff.nav.w4Flowsheet",
+          "Flowsheets"
+        ]
+      ]
+    ]
+  ],
+  "side": [
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "allergyList",
+        "label": "Allergies",
+        "rows": []
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "currentMeds",
+        "label": "Active medications",
+        "rows": [
+          [
+            [
+              "Record",
+              "insulin lispro — 4 units subcutaneously before meals"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "enoxaparin — 40 mg subcutaneously daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "ceftriaxone — 1 g IV daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "acetaminophen — 650 mg by mouth every 6 hours as needed for pain"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "lisinopril 10 MG Oral Tablet — 1, 1x per 1 d"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "problemList",
+        "label": "Problems",
+        "rows": [
+          [
+            [
+              "Record",
+              "Full-time employment (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Gingivitis (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Stress (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Sleep apnea (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Sleep disorder (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Medication review due (situation) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Essential hypertension (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic pain (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic low back pain (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Anemia (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Prediabetes (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Impacted molars (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Housing unsatisfactory (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Educated to high school level (finding) (active)"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "vitals",
+        "label": "Recent vitals",
+        "rows": [
+          [
+            [
+              "Record",
+              "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Systolic BP 136 mmHg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Diastolic BP 82 mmHg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 82 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 18 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Temperature 37.4 °C (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "SpO2 96 % (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain score 4 score (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body Height 183.4 cm (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body mass index (BMI) [Ratio] 27.77 kg/m2 (Apr 22, 2026 13:28)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "title": "Handoff / SBAR",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w4Handoff.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "info": {
+        "comp": "w4Handoff.last",
+        "display": "list",
+        "infoId": "handoffSummary",
+        "label": "Last handoff",
+        "rows": [
+          [
+            [
+              "Report",
+              "Night shift report"
+            ],
+            [
+              "Author",
+              "Casey Brooks, RN"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:00"
+            ],
+            [
+              "Text",
+              "Situation: pneumonia, on room air. Background: antibiotics started overnight. Assessment: alert, ambulates with assistance, peripheral IV patent. Recommendation: morning medications, glucose before meals, reassess pain."
+            ],
+            [
+              "Status",
+              "current / final"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Handoff.template",
+        "enabled": true,
+        "hotkey": null,
+        "label": "SBAR template",
+        "role": "macro"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w4Handoff.handoffSituation",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Situation",
+              "pendingConfirm": true,
+              "provenance": "macro",
+              "required": false,
+              "unit": null,
+              "value": "Stable overnight."
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w4Handoff.handoffSituation",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Handoff.handoffBackground",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Background",
+              "pendingConfirm": true,
+              "provenance": "macro",
+              "required": false,
+              "unit": null,
+              "value": "Admitted from the ED; see H&P."
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w4Handoff.handoffBackground",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Handoff.handoffAssessment",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Assessment",
+              "pendingConfirm": true,
+              "provenance": "macro",
+              "required": false,
+              "unit": null,
+              "value": "Vital signs stable; pain controlled."
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w4Handoff.handoffAssessment",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Handoff.handoffRecommendation",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Recommendation",
+              "pendingConfirm": true,
+              "provenance": "macro",
+              "required": false,
+              "unit": null,
+              "value": "Continue current plan; reassess pain after PRN doses."
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w4Handoff.handoffRecommendation",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          }
+        ],
+        "id": "w4Handoff.sbar",
+        "title": "Shift report — SBAR"
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "w4Handoff.remainingTasks",
+              "display": "table",
+              "infoId": "shiftWorklist",
+              "label": "Shift tasks and status",
+              "rows": [
+                [
+                  [
+                    "Due",
+                    "Nov 2, 2026 08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Ankunding, Aaron Bruno"
+                  ],
+                  [
+                    "Task",
+                    "08:00 medication pass"
+                  ],
+                  [
+                    "Priority",
+                    "routine"
+                  ],
+                  [
+                    "Status",
+                    "requested"
+                  ],
+                  [
+                    "Owner",
+                    "Jordan Lee, RN"
+                  ],
+                  [
+                    "Task status",
+                    "Overdue"
+                  ]
+                ],
+                [
+                  [
+                    "Due",
+                    "Nov 2, 2026 08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Ankunding, Aaron Bruno"
+                  ],
+                  [
+                    "Task",
+                    "Shift assessment and vital signs"
+                  ],
+                  [
+                    "Priority",
+                    "routine"
+                  ],
+                  [
+                    "Status",
+                    "requested"
+                  ],
+                  [
+                    "Owner",
+                    "Jordan Lee, RN"
+                  ]
+                ],
+                [
+                  [
+                    "Due",
+                    "Nov 2, 2026 08:30"
+                  ],
+                  [
+                    "Patient",
+                    "Ankunding, Aaron Bruno"
+                  ],
+                  [
+                    "Task",
+                    "Pain reassessment after PRN medication"
+                  ],
+                  [
+                    "Priority",
+                    "routine"
+                  ],
+                  [
+                    "Status",
+                    "requested"
+                  ],
+                  [
+                    "Owner",
+                    "Jordan Lee, RN"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "kind": "worklist"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Handoff.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Handoff.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w4Handoff.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Nov 1, 2026 15:40"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Pneumonia; receiving antibiotics"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "5 West · 512 A"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "May 6, 2026 13:28"
+                  ],
+                  [
+                    "End",
+                    "May 6, 2026 15:00"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 22, 2026 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 22, 2026 14:18"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 30, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 30, 2025 15:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 23, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 23, 2025 13:43"
+                  ],
+                  [
+                    "Reason",
+                    "Acute viral pharyngitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 16, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 16, 2025 14:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up visit (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Jul 4, 2024 15:10"
+                  ],
+                  [
+                    "End",
+                    "Jul 5, 2024 15:10"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 27, 2024 14:24"
+                  ],
+                  [
+                    "End",
+                    "Jun 27, 2024 15:10"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 19, 2024 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jun 19, 2024 14:24"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 10, 2024 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 10, 2024 14:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 19, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jul 19, 2023 14:14"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 5, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jul 5, 2023 14:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 25, 2023 20:28"
+                  ],
+                  [
+                    "End",
+                    "Jun 25, 2023 20:49"
+                  ],
+                  [
+                    "Reason",
+                    "Acute bronchitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 5, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 5, 2023 14:01"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency room admission (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Aug 6, 2022 16:13"
+                  ],
+                  [
+                    "End",
+                    "Aug 6, 2022 17:13"
+                  ],
+                  [
+                    "Reason",
+                    "Injury of neck (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Troy Carter"
+                  ],
+                  [
+                    "Location",
+                    "OAKS, THE"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Hospital admission (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Aug 6, 2022 16:13"
+                  ],
+                  [
+                    "End",
+                    "Aug 9, 2022 16:28"
+                  ],
+                  [
+                    "Reason",
+                    "Patient transfer to skilled nursing facility (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chung Collins"
+                  ],
+                  [
+                    "Location",
+                    "221 FITZGERALD DRIVE OPERATING COMPANY, LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 13, 2022 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 13, 2022 14:08"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 30, 2022 13:28"
+                  ],
+                  [
+                    "End",
+                    "Mar 30, 2022 14:06"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 23, 2022 04:28"
+                  ],
+                  [
+                    "End",
+                    "Mar 23, 2022 04:43"
+                  ],
+                  [
+                    "Reason",
+                    "Acute viral pharyngitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up encounter (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 29, 2022 12:28"
+                  ],
+                  [
+                    "End",
+                    "Jan 29, 2022 12:43"
+                  ],
+                  [
+                    "Reason",
+                    "Essential hypertension (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up encounter (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 30, 2021 12:28"
+                  ],
+                  [
+                    "End",
+                    "Nov 30, 2021 12:43"
+                  ],
+                  [
+                    "Reason",
+                    "Essential hypertension (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w4Handoff.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Meds",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Handoff.toWorklist",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Unit Census & MAR",
+        "role": "nav"
+      }
+    }
+  ]
+}

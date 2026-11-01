@@ -1,8 +1,8 @@
 {
   "scope": "Initially shown acute buttons, inactive tabs and unmasked search inputs, all three current releases and both role projections; native interpreter events. Search must return semantic query/results without changing captures, receipts, commits or the order slot. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "c97fe54f872342f8c409139c2a527987159c564f",
+  "sourceRevision": "dac1094c4a785429b144fd190e391375fb9a5227",
   "sourceTreeDirty": true,
-  "binarySha256": "458022e6d702cf7eff5c03972906c64c9a467ff9f65779b93cfcc6e2fc65121f",
+  "binarySha256": "78ecbdf745ea8900e9e5a1a11cc7fdee5281978ae529ea5b43d600b0a2796195",
   "programs": [
     {
       "release": "v1",
@@ -14,7 +14,7 @@
       "release": "v1",
       "persona": "P3",
       "path": "releases/v1/personas/P3.json",
-      "sha256": "454ce633069bc56629e99b02e3b5ddb68702d1c4d1058f2a79174d5c7f9b212f"
+      "sha256": "d6808d6ee57d0aea3096e5041d7825ffcf682ab9051edc7c6fee14b57a428b0e"
     },
     {
       "release": "v2",
@@ -26,7 +26,7 @@
       "release": "v2",
       "persona": "P3",
       "path": "releases/v2/personas/P3.json",
-      "sha256": "5cece71977d958c990bedc13eb9820d540aef7672d8f772d1d614886b72db4ca"
+      "sha256": "be078092dfc535893952d202e0a137518e8eedd8c4db517caa07eb5822db547e"
     },
     {
       "release": "v3",
@@ -38,7 +38,7 @@
       "release": "v3",
       "persona": "P3",
       "path": "releases/v3/personas/P3.json",
-      "sha256": "22c650897b5a9c0020a9276984931a8d862142cf48af5831278c4c325df6b884"
+      "sha256": "deb1a26da346c0fb90d74b491fa1663d89c343b4c2ad3d69c90ef714f5d66ccf"
     }
   ],
   "fixtures": [

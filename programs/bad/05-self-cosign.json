@@ -5311,7 +5311,7 @@
      "tag": "w4Flowsheet.copyAssessment",
      "tab": 0,
      "size": "normal",
-     "label": "Copy forward last assessment",
+     "label": "Insert assessment outline",
      "kind": {"macro": {"id": "w4CopyAssessment"}},
      "id": "w4Flowsheet.copyAssessment"},
     {"visibility": "always",
@@ -5478,7 +5478,7 @@
      "tag": "w4Handoff.template",
      "tab": 0,
      "size": "normal",
-     "label": "SBAR template",
+     "label": "Insert SBAR outline",
      "kind": {"macro": {"id": "w4HandoffTemplate"}},
      "id": "w4Handoff.template"},
     {"visibility": "always",
@@ -9198,23 +9198,25 @@
   {"steps":
    [{"setValue":
      {"value":
-      "Neuro: alert and oriented x3. Cardiac: regular. Respiratory: clear, room air. GI: soft, tolerating diet. GU: voiding. Skin: intact. Safety: fall precautions in place. (Copied forward.)",
+      "Neurologic: [findings]\nCardiovascular: [findings]\nRespiratory: [findings and oxygen support]\nGastrointestinal: [findings and intake]\nGenitourinary: [findings and output]\nSkin: [findings]\nSafety and mobility: [findings and precautions]\nResponse to care: [response]",
       "comp": "w4Flowsheet.nursingAssessment"}}],
-   "label": "Copy forward last assessment",
+   "label": "Insert assessment outline",
    "id": "w4CopyAssessment"},
   {"steps":
    [{"setValue":
-     {"value": "Stable overnight.", "comp": "w4Handoff.handoffSituation"}},
+     {"value": "Current concern and reason for handoff: [enter findings]",
+      "comp": "w4Handoff.handoffSituation"}},
     {"setValue":
-     {"value": "Admitted from the ED; see H&P.",
+     {"value": "Reason for admission and relevant history: [enter details]",
       "comp": "w4Handoff.handoffBackground"}},
     {"setValue":
-     {"value": "Vital signs stable; pain controlled.",
+     {"value":
+      "Current assessment, trends and response to care: [enter findings]",
       "comp": "w4Handoff.handoffAssessment"}},
     {"setValue":
-     {"value": "Continue current plan; reassess pain after PRN doses.",
+     {"value": "Next actions, pending tasks and contingency plan: [enter plan]",
       "comp": "w4Handoff.handoffRecommendation"}}],
-   "label": "SBAR template",
+   "label": "Insert SBAR outline",
    "id": "w4HandoffTemplate"},
   {"steps":
    [{"setValue": {"value": "150", "comp": "w5Immunizations.vaccine"}},

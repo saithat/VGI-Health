@@ -586,7 +586,7 @@
     {
       "button": {
         "role": "macro",
-        "label": "Copy forward last assessment",
+        "label": "Insert assessment outline",
         "hotkey": null,
         "enabled": true,
         "comp": "w4Flowsheet.copyAssessment",

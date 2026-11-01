@@ -124,7 +124,7 @@ def flowsheet : Screen :=
       group s "pain" "Pain reassessment" (collapsible := false),
       field s "painReassessment" "painReassessment" "Response after intervention (0–10)" (parent := some "pain"),
       group s "assessment" "Shift nursing assessment" (collapsible := false),
-      macroBtn s "copyAssessment" "w4CopyAssessment" "Copy forward last assessment",
+      macroBtn s "copyAssessment" "w4CopyAssessment" "Insert assessment outline",
       narrative (field s "nursingAssessment" "nursingAssessment" "Systems assessment and response to care" (parent := some "assessment")),
       commitBtn s "chartAssessment" "File assessment",
       goto s "toHandoff" "w4Handoff" "Handoff / SBAR"
@@ -136,7 +136,7 @@ def handoff : Screen :=
   { id := s, title := "Handoff / SBAR", workflow := "W4"
     components := frame s ++ [
       panel s "last" "handoffSummary" "Last handoff",
-      macroBtn s "template" "w4HandoffTemplate" "SBAR template",
+      macroBtn s "template" "w4HandoffTemplate" "Insert SBAR outline",
       group s "sbar" "Shift report — SBAR" (collapsible := false),
       narrative (field s "handoffSituation" "handoffSituation" "Situation" (parent := some "sbar")),
       narrative (field s "handoffBackground" "handoffBackground" "Background" (parent := some "sbar")),
@@ -146,18 +146,18 @@ def handoff : Screen :=
       goto s "toWorklist" "w4Worklist" "Unit Census & MAR"
     ] }
 
-/-- The W4 macros. -/
+/-- Nursing outlines insert pending drafts, without claiming prior findings. -/
 def macros : List Macro := [
   textMacro "w4HeldNpo" "Document held: NPO"
     [(cid "w4Admin" "adminStatus", "held"), (cid "w4Admin" "adminReason", "npo")],
-  textMacro "w4CopyAssessment" "Copy forward last assessment"
+  textMacro "w4CopyAssessment" "Insert assessment outline"
     [(cid "w4Flowsheet" "nursingAssessment",
-      "Neuro: alert and oriented x3. Cardiac: regular. Respiratory: clear, room air. GI: soft, tolerating diet. GU: voiding. Skin: intact. Safety: fall precautions in place. (Copied forward.)")],
-  textMacro "w4HandoffTemplate" "SBAR template"
-    [(cid "w4Handoff" "handoffSituation", "Stable overnight."),
-     (cid "w4Handoff" "handoffBackground", "Admitted from the ED; see H&P."),
-     (cid "w4Handoff" "handoffAssessment", "Vital signs stable; pain controlled."),
-     (cid "w4Handoff" "handoffRecommendation", "Continue current plan; reassess pain after PRN doses.")]
+      "Neurologic: [findings]\nCardiovascular: [findings]\nRespiratory: [findings and oxygen support]\nGastrointestinal: [findings and intake]\nGenitourinary: [findings and output]\nSkin: [findings]\nSafety and mobility: [findings and precautions]\nResponse to care: [response]")],
+  textMacro "w4HandoffTemplate" "Insert SBAR outline"
+    [(cid "w4Handoff" "handoffSituation", "Current concern and reason for handoff: [enter findings]"),
+     (cid "w4Handoff" "handoffBackground", "Reason for admission and relevant history: [enter details]"),
+     (cid "w4Handoff" "handoffAssessment", "Current assessment, trends and response to care: [enter findings]"),
+     (cid "w4Handoff" "handoffRecommendation", "Next actions, pending tasks and contingency plan: [enter plan]")]
 ]
 
 /-- The W4 screens. -/

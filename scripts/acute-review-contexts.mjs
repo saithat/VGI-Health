@@ -44,4 +44,15 @@ for (const [persona, target] of [['P2', 'w3Provider'], ['P3', 'w4Mar']]) {
     writeFileSync(file, JSON.stringify(ui, null, 2) + '\n');
     process.stdout.write(`${file}\n`);
   }
+  if (persona === 'P3') for (const [screen, button] of [['w4Flowsheet', 'copyAssessment'], ['w4Handoff', 'template']]) {
+    let draft = native('init', input);
+    for (const event of [...routes.get(screen), { click: { comp: `${screen}.${button}` } }]) {
+      const step = native('step', { ...input, state: draft, event });
+      if (step.result !== 'ok') throw new Error(`Failed outline action: ${JSON.stringify(step.result)}`);
+      draft = step.state;
+    }
+    const file = path.join(output, persona, `${screen}-outline.json`);
+    writeFileSync(file, JSON.stringify(native('render-ui', { ...input, state: draft }), null, 2) + '\n');
+    process.stdout.write(`${file}\n`);
+  }
 }

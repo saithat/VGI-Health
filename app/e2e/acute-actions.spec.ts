@@ -39,6 +39,110 @@ test.beforeAll(() => {
     fixtures,
   ]);
 });
+
+for (const [screen, button, elements] of [
+  ["w4Flowsheet", "copyAssessment", ["nursingAssessment"]],
+  [
+    "w4Handoff",
+    "template",
+    [
+      "handoffSituation",
+      "handoffBackground",
+      "handoffAssessment",
+      "handoffRecommendation",
+    ],
+  ],
+] as const) {
+  test(`${screen}: outlines remain editable drafts without invented patient findings`, async ({
+    page,
+  }) => {
+    const base = {
+      spec: read(join(root, "releases/v1/spec.json")),
+      program: read(join(root, "releases/v1/personas/P3.json")),
+      user: read(join(fixtures, "P3-user.json")),
+      ...native<FactsOutput>("facts", {
+        bundle: read(join(fixtures, "P3.json")),
+        context: read(join(fixtures, "P3-context.json")),
+      }),
+    };
+    const input: RenderInput = { ...base, state: native<State>("init", base) };
+    const events: Event[] = [];
+    await page.exposeFunction("recordAcuteEvent", (event: Event) => {
+      events.push(event);
+    });
+    await page.goto("/screen-check.html");
+    await page.waitForFunction(() => typeof window.renderUi === "function");
+    const paint = async () => {
+      const ui = native<UiScreen>("render-ui", input);
+      await page.evaluate(
+        (screen) =>
+          window.renderUi(screen, null, (event) => {
+            void window.recordAcuteEvent(event);
+          }),
+        ui,
+      );
+      expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
+        expectedAria(ui),
+      );
+    };
+    const advance = async (count: number) => {
+      await expect.poll(() => events.length).toBe(count);
+      const next = native<StepOutput>("step", {
+        ...input,
+        event: events[count - 1],
+      });
+      expect(next.result).toBe("ok");
+      input.state = next.state;
+      await paint();
+    };
+    await paint();
+    await page
+      .locator(`button[data-comp-id="w4Worklist.nav.${screen}"]`)
+      .click();
+    await advance(1);
+    const original = input.state;
+    await page.locator(`button[data-comp-id="${screen}.${button}"]`).click();
+    await advance(2);
+    expect(input.state.receipts).toEqual(original.receipts);
+    expect(input.state.commits).toEqual(original.commits);
+    for (const element of elements) {
+      const capture = input.state.captured.find(
+        (item) => item.element === element,
+      );
+      expect(capture).toMatchObject({ byHuman: false, confirmed: false });
+      await expect(
+        page.locator(`textarea[data-comp-id="${screen}.${element}"]`),
+      ).toHaveValue(/\[.*\]/);
+    }
+    await expect(
+      page.getByRole("button", {
+        name: "Confirm prefilled value",
+        exact: true,
+      }),
+    ).toHaveCount(elements.length);
+    await expect(page.locator("textarea").first()).not.toHaveValue(
+      /Stable overnight|Vital signs stable|alert and oriented|Copied forward/,
+    );
+    const first = elements[0];
+    await page
+      .locator(`textarea[data-comp-id="${screen}.${first}"]`)
+      .fill("Clinician-entered assessment for this handoff.");
+    await advance(3);
+    await expect(
+      page.locator(`textarea[data-comp-id="${screen}.${first}"]`),
+    ).toBeFocused();
+    expect(
+      input.state.captured.find((item) => item.element === first),
+    ).toMatchObject({ byHuman: true, confirmed: true });
+    expect(input.state.commits).toEqual(original.commits);
+    await expect(
+      page.getByRole("button", {
+        name: "Confirm prefilled value",
+        exact: true,
+      }),
+    ).toHaveCount(elements.length - 1);
+  });
+}
 test.afterAll(() => rmSync(fixtures, { recursive: true, force: true }));
 
 for (const [

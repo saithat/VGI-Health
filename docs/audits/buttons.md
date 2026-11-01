@@ -1,6 +1,6 @@
 # Button audit
 
-Generated 2026-11-01T10:07:15.243Z. Preview build; one Chromium worker.
+Generated 2026-11-01T10:58:14.039Z. Preview build; one Chromium worker.
 
 | Scope | Works | Disabled with reason | Dead | Error |
 |---|---:|---:|---:|---:|
@@ -41,7 +41,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · P3 · — | sign-in | P3 · Inpatient RN | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons · P3 · — | sign-in | P3 · Inpatient RN | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons · P3 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · P3 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -54,7 +54,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · P4 · — | sign-in | P4 · Pediatric NP | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons · P4 · — | sign-in | P4 · Pediatric NP | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons · P4 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · P4 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · — | worklist | Search Medplum | — | button / app | works | DOM changed |
@@ -66,7 +66,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · P5 · — | sign-in | P5 · Surgeon | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons · P5 · — | sign-in | P5 · Surgeon | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons · P5 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · P5 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -79,7 +79,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · RN2 · — | sign-in | RN2 · Second nurse | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons · RN2 · — | sign-in | RN2 · Second nurse | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons · RN2 · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -92,7 +92,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · — | live encounter header | Close live encounter | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | live encounter header | Back to worklist / refresh chart | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · — | live encounter header | Sign out | — | button / app | works | POST /medplum/oauth2/logout |
-| /?audit=buttons · baseline · — | sign-in | Original canonical EHR (baseline) | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token |
+| /?audit=buttons · baseline · — | sign-in | Original canonical EHR (baseline) | — | button / app | works | POST /__dev/persona-password; POST /medplum/auth/login |
 | /?audit=buttons · baseline · — | worklist | Worklist date | — | input / app | works | DOM changed |
 | /?audit=buttons · baseline · — | worklist | Refresh worklist | — | button / app | works | DOM changed |
 | /?audit=buttons · baseline · — | worklist | Open patient | — | button / app | works | DOM changed |
@@ -160,33 +160,33 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Open | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=releases%2Fv3%2Fpersonas%2FP5.json&persona=P5&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
 | /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Bad programs (should be rejected) 33 safety examples | — | summary / app | works | DOM changed |
 | /browse?patient=50d2c695-5faa-dfae-da75-4b182154a1ea&run=run1-P3 · — · — | program browser | Recorded revisions Certified forks and deployment history | — | summary / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | ← UI browser | — | a / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Mr. Aaron Bruno Ankunding · 58 · AMB · Change patient | — | summary / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard?run=run1-P3&view=Evolution&persona=P3 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | ← UI browser | — | a / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Mr. Aaron Bruno Ankunding · 58 · AMB · Change patient | — | summary / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Search by name or MRN | — | input / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | All sources | — | button / app | disabled-with-reason | Current patient source |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Synthea | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Synthetic Hospital | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | pediatric | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | allergic | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | anticoagulated | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | surgical | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | ED | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | inpatient | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Abdul Bradford Sauer13 years · male · MRN 47466339pediatric | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=d0fe99e5-c869-b0e2-1379-6ff2293e6704 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Abe Bruen11 years · male · MRN 46220082pediatric | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=03a74d02-12a9-6ff0-5eb9-c44fff429559 |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
-| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7 · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Inspector | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | ← UI browser | — | a / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Mr. Aaron Bruno Ankunding · 58 · AMB · Change patient | — | summary / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Close inspector | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | ← UI browser | — | a / app | works | URL → /browse?patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&run=run1-P3 |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Persona | — | select / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP2.json&persona=P2&patient=9e937da7-1921-8752-9ee8-83a22ee5b4fd |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Mr. Aaron Bruno Ankunding · 58 · AMB · Change patient | — | summary / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Search by name or MRN | — | input / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | All sources | — | button / app | disabled-with-reason | Current patient source |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Synthea | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Synthetic Hospital | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | pediatric | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | allergic | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | anticoagulated | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | surgical | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | ED | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | inpatient | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Abdul Bradford Sauer13 years · male · MRN 47466339pediatric | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=d0fe99e5-c869-b0e2-1379-6ff2293e6704 |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Abe Bruen11 years · male · MRN 46220082pediatric | — | button / app | works | URL → /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=03a74d02-12a9-6ff0-5eb9-c44fff429559 |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Reset episode | — | button / app | works | DOM changed |
+| /ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons · — · — | replay inspector | Dashboard | — | a / app | works | URL → /dashboard |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | VGI HEALTH | — | a / app | works | URL → / |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Recorded run | — | select / app | works | URL → /dashboard?run=mock&view=Evolution&persona=P3 |
 | /dashboard?run=run1-P3&view=Evolution&persona=P3 · P3 · run1-P3 | Evolution | Open EHR | — | a / app | works | URL → /ehr?mode=replay&release=v3&program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv7.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered |
@@ -277,7 +277,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Labs | w1Rooming.nav.w1Labs | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Visit close | w1Rooming.nav.w1Close | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.sidebar | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Search chart | w1Rooming.chartSearch | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Search chart | w1Rooming.chartSearch | enter / app | disabled-with-reason | Search chart · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Back | w1Rooming.back | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Patient workspace | w1Rooming.home | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Results | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
@@ -290,25 +290,25 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Immunizations | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Coverage | w1Rooming.chart | selectTab / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.vitalsGroup | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Weight (kg) | w1Rooming.weight | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Height (cm) | w1Rooming.height | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | BP systolic | w1Rooming.bpSystolic | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | BP diastolic | w1Rooming.bpDiastolic | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Heart rate | w1Rooming.heartRate | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Respiratory rate | w1Rooming.respRate | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Temperature | w1Rooming.temperature | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | SpO₂ | w1Rooming.spo2 | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Pain (0–10) | w1Rooming.painScore | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Chief complaint | w1Rooming.chiefComplaint | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Weight (kg) | w1Rooming.weight | enter / app | disabled-with-reason | Weight (kg) · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Height (cm) | w1Rooming.height | enter / app | disabled-with-reason | Height (cm) · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | BP systolic | w1Rooming.bpSystolic | enter / app | disabled-with-reason | BP systolic · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | BP diastolic | w1Rooming.bpDiastolic | enter / app | disabled-with-reason | BP diastolic · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Heart rate | w1Rooming.heartRate | enter / app | disabled-with-reason | Heart rate · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Respiratory rate | w1Rooming.respRate | enter / app | disabled-with-reason | Respiratory rate · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Temperature | w1Rooming.temperature | enter / app | disabled-with-reason | Temperature · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | SpO₂ | w1Rooming.spo2 | enter / app | disabled-with-reason | SpO₂ · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Pain (0–10) | w1Rooming.painScore | enter / app | disabled-with-reason | Pain (0–10) · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Chief complaint | w1Rooming.chiefComplaint | enter / app | disabled-with-reason | Chief complaint · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.intake | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Tobacco use | w1Rooming.tobaccoUse | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Fall in the past year? | w1Rooming.fallRiskScreen | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Travel in the past 30 days? | w1Rooming.travelScreen | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Advance directive discussed | w1Rooming.advanceDirectiveAsked | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Interpreter needed? | w1Rooming.interpreterNeeded | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Preferred pharmacy confirmed | w1Rooming.pharmacyConfirmedRooming | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Tobacco use | w1Rooming.tobaccoUse | enter / app | disabled-with-reason | Tobacco use · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Fall in the past year? | w1Rooming.fallRiskScreen | enter / app | disabled-with-reason | Fall in the past year? · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Travel in the past 30 days? | w1Rooming.travelScreen | enter / app | disabled-with-reason | Travel in the past 30 days? · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Advance directive discussed | w1Rooming.advanceDirectiveAsked | enter / app | disabled-with-reason | Advance directive discussed · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Interpreter needed? | w1Rooming.interpreterNeeded | enter / app | disabled-with-reason | Interpreter needed? · Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Preferred pharmacy confirmed | w1Rooming.pharmacyConfirmedRooming | enter / app | disabled-with-reason | Preferred pharmacy confirmed · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.phq | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
-| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | PHQ-2 score | w1Rooming.depressionScreen | enter / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
+| /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | PHQ-2 score | w1Rooming.depressionScreen | enter / app | disabled-with-reason | PHQ-2 score · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Collapse section | w1Rooming.allergyGroup | click / app | disabled-with-reason | Collapse section · Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Mark allergies reviewed | w1Rooming.review.allergyList | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
 | /dashboard?run=run1-P3&view=Trajectories&persona=P3 · P3 · run1-P3 | Trajectories | Next: medication reconciliation | w1Rooming.next | click / app | disabled-with-reason | Recorded replay; use the playback controls above this EHR |
@@ -498,7 +498,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"depressionScreen"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P1 · canonical-P1 | w1Rooming | /medplum/fhir/R4/Provenance/51572399-2440-401f-9770-ca5272a34a34 | — | button / app | works | DOM changed |
+| /?audit=buttons · P1 · canonical-P1 | w1Rooming | /medplum/fhir/R4/Provenance/1874a10f-65a8-47f8-a9d9-90de8112f424 | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Back | w1Rooming.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1Rooming | Patient workspace | w1Rooming.home | click / {"button":{"action":{"goto":{"screen":"home"}}}} / lean | works | Lean state changed; result "ok" |
@@ -528,7 +528,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P1 · canonical-P1 | w7Queue | Care gaps | w7Queue.chart | selectTab index 2 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Search chart | w1MedRec.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P1 · canonical-P1 | w1MedRec | /medplum/fhir/R4/Provenance/2dfaea99-8515-45fe-97c2-7a82e67eaf1a | — | button / app | works | DOM changed |
+| /?audit=buttons · P1 · canonical-P1 | w1MedRec | /medplum/fhir/R4/Provenance/0268775f-4d87-42ed-a69f-63a00943f84f | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
@@ -683,7 +683,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P1 · canonical-P1 | w7Review | /medplum/fhir/R4/Provenance/ef72b70b-ed41-40ab-a76d-9d4913acbbf6 | — | button / app | works | DOM changed |
+| /?audit=buttons · P1 · canonical-P1 | w7Review | /medplum/fhir/R4/Provenance/329a4eaa-a1ac-40d3-ad01-1fa21a54ac53 | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Back | w7Review.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P1 · canonical-P1 | w7Review | Encounters | w7Review.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -775,7 +775,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Isolation screen | w3Triage.isolationScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"isolationScreen"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Collapse section | w3Triage.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Mark allergies reviewed | w3Triage.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P2 · canonical-P2 | w3Triage | /medplum/fhir/R4/Provenance/6e71cac0-ddc2-453a-ab71-d385fb982939 | — | button / app | works | DOM changed |
+| /?audit=buttons · P2 · canonical-P2 | w3Triage | /medplum/fhir/R4/Provenance/b89e43b9-c44c-4dbe-a10c-8cfd13469861 | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Back | w3Triage.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P2 · canonical-P2 | w3Triage | Results | w3Triage.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -958,7 +958,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w4Worklist | Collapse section | w4Worklist.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w4Worklist | Collapse section | w4Worklist.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w4Worklist | Mark allergies reviewed (start of shift) | w4Worklist.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/6ad019c9-9694-4648-8340-4d2eb1d6192e | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/4a0c9935-5227-4049-a8a8-3ab9b48eda4d | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w4Worklist | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w4Worklist | Search chart | w4Worklist.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w4Worklist | Back | w4Worklist.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
@@ -998,7 +998,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"element":"depressionScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/a5aa1d3b-1d9f-40ce-aaa4-0c94aed4bbf4 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/0939a080-0fb1-48bf-8d4f-ad916bae5956 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w2Inbasket | Result | w2Inbasket.nav.w2Result | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w2Inbasket | Message patient | w2Inbasket.nav.w2Message | click / {"button":{"action":{"goto":{"screen":"w2Message"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1045,7 +1045,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w5Rooming | Collapse section | w5Rooming.measures | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w5Rooming | Collapse section | w5Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w5Rooming | Mark allergies reviewed | w5Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/06f76946-9f56-480e-b4f9-7ac552808681 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/11485bbf-c036-4ce2-b548-675df4566450 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w5Rooming | Collapse section | w5Rooming.medRec | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w5Rooming | Medication 1: continue / stop / modify | w5Rooming.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -1163,7 +1163,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w1MedRec | Immunizations | w1MedRec.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1MedRec | Coverage | w1MedRec.chart | selectTab index 8 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/54d501a0-cdfa-4fd6-9d52-8f62c9be432b | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/77a3479b-7992-452b-8420-2ad754420134 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -1275,7 +1275,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w7Review | /medplum/fhir/R4/Provenance/558c9513-4f84-448e-b123-08428513a47b | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w7Review | /medplum/fhir/R4/Provenance/2adfdeba-f2fd-459d-9216-acc0715a53e0 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w7Review | Go to decision | w7Review.decide | click / {"button":{"action":{"goto":{"screen":"w7Decision"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Triage | Collapse section | w3Triage.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
@@ -1292,7 +1292,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P3 · P3 | w3Triage | Isolation screen | w3Triage.isolationScreen | enter / {"field":{"element":"isolationScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Triage | Collapse section | w3Triage.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Triage | Mark allergies reviewed | w3Triage.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P3 · P3 | w3Triage | /medplum/fhir/R4/Provenance/07fef598-78f1-4e5d-b217-857d35ea2e24 | — | button / app | works | DOM changed |
+| /?audit=buttons · P3 · P3 | w3Triage | /medplum/fhir/R4/Provenance/f8320666-2c74-4a12-8726-5c77c1819998 | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w3Triage | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P3 · P3 | w3Provider | Collapse section | w3Provider.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P3 · P3 | w3Provider | Search chart | w3Provider.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
@@ -1527,7 +1527,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Collapse section | w5Rooming.measures | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Collapse section | w5Rooming.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Mark allergies reviewed | w5Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P4 · canonical-P4 | w5Rooming | /medplum/fhir/R4/Provenance/4c074be6-6849-4c09-b1eb-eee111d375ec | — | button / app | works | DOM changed |
+| /?audit=buttons · P4 · canonical-P4 | w5Rooming | /medplum/fhir/R4/Provenance/f4dc23cd-986a-4fdf-aed7-612013c5dd1c | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Collapse section | w5Rooming.medRec | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Rooming | Medication 1: continue / stop / modify | w5Rooming.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
@@ -1563,7 +1563,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P4 · canonical-P4 | w7Review | /medplum/fhir/R4/Provenance/cd99407d-29ee-418b-b55e-ba2fbeb592c9 | — | button / app | works | DOM changed |
+| /?audit=buttons · P4 · canonical-P4 | w7Review | /medplum/fhir/R4/Provenance/14416f6c-75a9-46e9-8029-19d199b3edc3 | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Back | w7Review.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w7Review | Encounters | w7Review.chart | selectTab index 0 / "tabs" / lean | works | Lean state changed; result "ok" |
@@ -1692,7 +1692,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P4 · canonical-P4 | w5Close | Confirm prefilled value | w5Close.exam | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"exam"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Close | Confirm prefilled value | w5Close.anticipatoryGuidance | confirm / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"anticipatoryGuidance"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P4 · canonical-P4 | w5Immunizations | Record immunization | w5Immunizations.commit.recordImmunization | click / {"button":{"action":{"commit":{"commit":"recordImmunization"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P4 · canonical-P4 | w5Immunizations | /medplum/fhir/R4/Immunization/ae1a3c93-0396-4681-b08a-32a2a4071474 | — | button / app | works | DOM changed |
+| /?audit=buttons · P4 · canonical-P4 | w5Immunizations | /medplum/fhir/R4/Immunization/0b7c60d0-90c6-47a3-9588-2873d825a858 | — | button / app | works | DOM changed |
 | /?audit=buttons · P4 · canonical-P4 | w5Immunizations | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | home | Search chart | home.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | home | Consults | home.work.w1Rooming | click / {"button":{"action":{"goto":{"screen":"w1Rooming"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1726,7 +1726,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"depressionScreen"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w1Rooming | /medplum/fhir/R4/Provenance/6d3798bf-2c93-4ea4-8d19-b820fbc89cf8 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w1Rooming | /medplum/fhir/R4/Provenance/81b59231-4f35-415f-81d1-1873731bcb14 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Back | w1Rooming.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Rooming | Patient workspace | w1Rooming.home | click / {"button":{"action":{"goto":{"screen":"home"}}}} / lean | works | Lean state changed; result "ok" |
@@ -1770,7 +1770,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · canonical-P5 | w6PreOp | Encounters | w6PreOp.chart | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Search chart | w1MedRec.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w1MedRec | /medplum/fhir/R4/Provenance/9aa75b39-13bd-4674-beb5-a1b5deb04040 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w1MedRec | /medplum/fhir/R4/Provenance/f0616520-c0a6-4de7-abaf-1fbd1bf133df | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"startCollapsed":false,"collapsible":true}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"slot":{"fixed":{"n":0}},"prefill":"none","element":"medRecDecision"}} / lean | works | Lean state changed; result "ok" |
@@ -2223,16 +2223,16 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · P5 · canonical-P5 | w1Sign | Immunizations | w1Sign.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w1Sign | Coverage | w1Sign.chart | selectTab index 8 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · P5 · canonical-P5 | w6OpNote | Sign op note | w6OpNote.commit.signOpNote | click / {"button":{"action":{"commit":{"commit":"signOpNote"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/DocumentReference/57befd93-d25a-4973-8dae-0c44bae9b5bb | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/DocumentReference/ebe8ebb7-d661-472a-b3f0-6ced3f44cf64 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6OpNote | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/Procedure/ad7b9c38-68b8-4259-a378-ff19720f228a | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6OpNote | /medplum/fhir/R4/Procedure/df05a7fe-f18c-4897-9c22-c2f140dd9129 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6OpNote | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Discharge patient | w6Discharge.commit.discharge | click / {"button":{"action":{"commit":{"commit":"discharge"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Condition/cb360f4c-455d-4a83-b794-317be12fc9f9 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Condition/cae267ff-d6a1-4b55-8e56-4c790207330b | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/DocumentReference/f1bd5da5-40ed-4523-96f2-56ba188033c5 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/DocumentReference/05a1dbad-059b-427c-9c26-7dc5c99911a8 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Close saved resource | — | button / app | works | DOM changed |
-| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Encounter/b230ae58-f50c-49cb-be8f-dd2355c1aaf4 | — | button / app | works | DOM changed |
+| /?audit=buttons · P5 · canonical-P5 | w6Discharge | /medplum/fhir/R4/Encounter/30c1f464-a200-4855-b875-3b7a3036d0e7 | — | button / app | works | DOM changed |
 | /?audit=buttons · P5 · canonical-P5 | w6Discharge | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | home | Collapse section | home.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | home | Ward: shift worklist and MAR | home.toolbar.ward | click / {"button":{"action":{"goto":{"screen":"w4Worklist"}}}} / lean | works | Lean state changed; result "ok" |
@@ -2261,7 +2261,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w4Worklist | Collapse section | w4Worklist.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Collapse section | w4Worklist.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Mark allergies reviewed (start of shift) | w4Worklist.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/e7781f77-3709-415f-9933-07527076a207 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w4Worklist | /medplum/fhir/R4/Provenance/289b63b6-64bf-43f3-848d-1d7a65867d65 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Search chart | w4Worklist.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w4Worklist | Back | w4Worklist.back | click / {"button":{"action":"back"}} / lean | works | Lean state changed; result "ok" |
@@ -2301,7 +2301,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w1Rooming | PHQ-2 score | w1Rooming.depressionScreen | enter / {"field":{"element":"depressionScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1Rooming | Collapse section | w1Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1Rooming | Mark allergies reviewed | w1Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/9e7e1ce8-f211-4677-8246-dc12c955d437 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w1Rooming | /medplum/fhir/R4/Provenance/60b8821e-24cd-4a66-832b-88442f57c693 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w1Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w2Inbasket | Result | w2Inbasket.nav.w2Result | click / {"button":{"action":{"goto":{"screen":"w2Result"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w2Inbasket | Message patient | w2Inbasket.nav.w2Message | click / {"button":{"action":{"goto":{"screen":"w2Message"}}}} / lean | works | Lean state changed; result "ok" |
@@ -2348,7 +2348,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w5Rooming | Collapse section | w5Rooming.measures | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Collapse section | w5Rooming.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Mark allergies reviewed | w5Rooming.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/622fe26a-b293-412f-8988-1ffd3430e99d | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w5Rooming | /medplum/fhir/R4/Provenance/23e76812-38a3-42de-86b4-ab09e88285fd | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Collapse section | w5Rooming.medRec | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w5Rooming | Medication 1: continue / stop / modify | w5Rooming.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -2466,7 +2466,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w1MedRec | Immunizations | w1MedRec.chart | selectTab index 7 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Coverage | w1MedRec.chart | selectTab index 8 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Mark medications reviewed | w1MedRec.review.currentMeds | click / {"button":{"action":{"markReviewed":{"info":"currentMeds"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/eb05504a-6510-415b-8b55-b111efa2b3b4 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w1MedRec | /medplum/fhir/R4/Provenance/7a552e96-2c38-4887-b377-2f034dfbeae0 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Collapse section | w1MedRec.rows | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w1MedRec | Medication 1: continue / stop / modify | w1MedRec.decision0 | enter / {"field":{"element":"medRecDecision","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
@@ -2578,7 +2578,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w7Review | Medications | w7Review.refillTabs | selectTab index 3 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w7Review | Last note | w7Review.refillTabs | selectTab index 4 / "tabs" / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w7Review | Mark last visit reviewed | w7Review.review.lastVisit | click / {"button":{"action":{"markReviewed":{"info":"lastVisit"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w7Review | /medplum/fhir/R4/Provenance/4774625f-bcc5-49ab-878a-d09db0856311 | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w7Review | /medplum/fhir/R4/Provenance/af3d6a7a-2a28-4bf0-b925-863f861e4665 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w7Review | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w7Review | Go to decision | w7Review.decide | click / {"button":{"action":{"goto":{"screen":"w7Decision"}}}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Triage | Collapse section | w3Triage.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
@@ -2595,7 +2595,7 @@ Each sampled enabled control is clicked from an observed checkpoint. A changed i
 | /?audit=buttons · RN2 · P3 | w3Triage | Isolation screen | w3Triage.isolationScreen | enter / {"field":{"element":"isolationScreen","slot":{"fixed":{"n":0}},"prefill":"none"}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Triage | Collapse section | w3Triage.allergyGroup | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Triage | Mark allergies reviewed | w3Triage.review.allergyList | click / {"button":{"action":{"markReviewed":{"info":"allergyList"}}}} / lean | works | POST /medplum/fhir/R4 |
-| /?audit=buttons · RN2 · P3 | w3Triage | /medplum/fhir/R4/Provenance/daeb1e1b-63e0-4a26-ab4f-df672f9dc83d | — | button / app | works | DOM changed |
+| /?audit=buttons · RN2 · P3 | w3Triage | /medplum/fhir/R4/Provenance/79c17071-dc84-490c-8d0d-253b3a1a4e36 | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w3Triage | Close saved resource | — | button / app | works | DOM changed |
 | /?audit=buttons · RN2 · P3 | w3Provider | Collapse section | w3Provider.sidebar | click / {"group":{"collapsible":true,"startCollapsed":false}} / lean | works | Lean state changed; result "ok" |
 | /?audit=buttons · RN2 · P3 | w3Provider | Search chart | w3Provider.chartSearch | enter / {"search":{"scope":"chart"}} / lean | works | Lean state changed; result "ok" |

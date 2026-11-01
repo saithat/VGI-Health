@@ -14,7 +14,7 @@
     },
     "releases/v1/personas/P3.json": {
       "status": "certified",
-      "sha256": "454ce633069bc56629e99b02e3b5ddb68702d1c4d1058f2a79174d5c7f9b212f",
+      "sha256": "d6808d6ee57d0aea3096e5041d7825ffcf682ab9051edc7c6fee14b57a428b0e",
       "output": "ok"
     },
     "releases/v1/personas/P4.json": {
@@ -39,7 +39,7 @@
     },
     "releases/v2/personas/P3.json": {
       "status": "certified",
-      "sha256": "5cece71977d958c990bedc13eb9820d540aef7672d8f772d1d614886b72db4ca",
+      "sha256": "be078092dfc535893952d202e0a137518e8eedd8c4db517caa07eb5822db547e",
       "output": "ok"
     },
     "releases/v2/personas/P4.json": {
@@ -64,7 +64,7 @@
     },
     "releases/v3/personas/P3.json": {
       "status": "certified",
-      "sha256": "22c650897b5a9c0020a9276984931a8d862142cf48af5831278c4c325df6b884",
+      "sha256": "deb1a26da346c0fb90d74b491fa1663d89c343b4c2ad3d69c90ef714f5d66ccf",
       "output": "ok"
     },
     "releases/v3/personas/P4.json": {
@@ -227,7 +227,7 @@
     },
     "programs/bad/05-self-cosign.json": {
       "status": "rejected",
-      "sha256": "28eb555ee69159a9a440195f36c1d801fb2b7386f0e9f4bfb40e389237174a54",
+      "sha256": "49f6f7c1b87eeb03ca40227fe63db95a29359c1160af50375910cf86505ab0a8",
       "output": {
         "violation": {
           "screens": [
@@ -644,17 +644,17 @@
     },
     "releases/v1/canonical.json": {
       "status": "reference",
-      "sha256": "198b1ee7f55b4ce16892a56a3fdbaad4abc718fba31c26886e75b1cfc60fb9e5",
+      "sha256": "d9175a32b08b96f078a78a8642922c8eb24b6420c61fec5e85cc7c42ff5eb384",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v2/canonical.json": {
       "status": "reference",
-      "sha256": "a3d0f089b2d0d3860f1dac583c834431002b8c1c460f4450f3aea1ddb5c4131f",
+      "sha256": "852782905c8fd4be0c07934e2faf6dd5c894ce8703fcc542c73076c158a4adcd",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v3/canonical.json": {
       "status": "reference",
-      "sha256": "bf8ac6b9665b3ee9adf3332f70f393976ebdbd5638e2577d0587b83f1e52df37",
+      "sha256": "829ddf13aac5a31fc9c2de122ed3316bf750993d776d41c4db84c9474b47d6c2",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {

@@ -429,8 +429,20 @@ describe.skipIf(!available)(
             "ok",
           );
         };
-        await act({ click: { comp: "home.work.w3TrackBoard" } });
-        await act({ click: { comp: "w3TrackBoard.nav.w3Disposition" } });
+        expect(session.getSnapshot().state.screen).toBe("w3TrackBoard");
+        const disposition = session
+          .getSnapshot()
+          .view.items.find(
+            (item) =>
+              item.shown &&
+              typeof item.comp.kind === "object" &&
+              "button" in item.comp.kind &&
+              typeof item.comp.kind.button.action === "object" &&
+              "goto" in item.comp.kind.button.action &&
+              item.comp.kind.button.action.goto.screen === "w3Disposition",
+          );
+        if (!disposition) throw new Error("No shown route to ED disposition");
+        await act({ click: { comp: disposition.comp.id } });
         for (const [element, text] of Object.entries({
           dispositionChoice: "admit",
           visitDiagnosis: "J18.9",

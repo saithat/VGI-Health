@@ -1369,9 +1369,9 @@ patient observations and inline report text. No conclusion is inferred from imag
 def acuteImagingText (sources : List Json) (report : Json) : String :=
   let findings := (arr report "result").flatMap fun reference =>
     (sources.filter fun resource => resourceType resource == "Observation" &&
-      !["entered-in-error", "cancelled"].contains (str resource "status") && acuteRefersTo reference resource).map fun result =>
-        ccText (field result "code") ++ ": " ++ labResultValue result ++
-          (let unit := qtyUnitText (field result "valueQuantity"); if unit == "" then "" else " " ++ unit)
+      !["entered-in-error", "cancelled"].contains (str resource "status") && acuteRefersTo reference resource).flatMap fun result =>
+        (labResultRowsFor result).map fun row =>
+          row.name ++ ": " ++ row.value ++ (if row.unit == "" then "" else " " ++ row.unit)
   "\n".intercalate (([str report "conclusion"] ++ (arr report "conclusionCode").map ccText ++
     findings ++ (arr report "presentedForm").map acuteReportAttachment).filter (· != ""))
 
@@ -1694,7 +1694,7 @@ def acuteProjectionVersion (ctx : FactsContext) (rs : List Json) : Nat :=
   let selection := fun key => key ++ ":" ++ match ctx.record.lookup key with
     | none => "absent" | some value => "selected:" ++ value
   versionDigest (((rs.map (fun resource => versionKey resource ++ "|" ++ str resource "_vgiBundleFullUrl")) ++
-    ["acute-projection:v4", "day:" ++ ctx.today,
+    ["acute-projection:v5", "day:" ++ ctx.today,
     selection "selectedEncounterId", selection "selectedMedicationRequestId"]).mergeSort (· ≤ ·))
 
 /-- Banner encounter/location/attending follow the selected chart, not whichever

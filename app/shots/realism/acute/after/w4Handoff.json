@@ -48,7 +48,7 @@
     {
       "button": {
         "role": "macro",
-        "label": "SBAR template",
+        "label": "Insert SBAR outline",
         "hotkey": null,
         "enabled": true,
         "comp": "w4Handoff.template",

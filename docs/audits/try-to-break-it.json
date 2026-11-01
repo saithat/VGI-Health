@@ -27,7 +27,7 @@
     }
   ],
   "candidate": {
-    "summary": "Remove all allergy display and the allergy-review button from the W4 medication-administration path (unsafe; expected rejection).",
+    "summary": "UNSAFE (demo): remove the allergy panel from Administer medication and remove the worklist allergy group, panel and 'Mark allergies reviewed' button.",
     "patch": [
       {
         "op": "remove",
@@ -35,11 +35,11 @@
       },
       {
         "op": "remove",
-        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.allergies]"
+        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.review.allergyList]"
       },
       {
         "op": "remove",
-        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.review.allergyList]"
+        "path": "/screens/[id=w4Worklist]/components/[id=w4Worklist.allergies]"
       },
       {
         "op": "remove",

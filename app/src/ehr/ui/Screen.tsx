@@ -1,17 +1,11 @@
 import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
-import { useLayoutEffect } from "react";
-import {
-  AppShell,
-  Badge,
-  Group,
-  Modal,
-  Text,
-  Title,
-} from "@mantine/core";
+import { useLayoutEffect, useRef } from "react";
+import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
+import { allergyDisplay, sectionCaption } from "./clinical-display";
 import { clinicalCssVariables } from "./theme";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
@@ -113,18 +107,25 @@ export function PatientBanner({
                 <Badge
                   key={label}
                   color={
-                    !value.trim() ||
-                    /not recorded|no allergy records|not reviewed/i.test(value)
+                    allergyDisplay(value) === "Allergies not on file"
                       ? "yellow"
-                      : /no known|nkda/i.test(value)
+                      : /^No Known (?:Drug )?Allergies(?: \([^()]+\))?$/.test(
+                            allergyDisplay(value),
+                          )
                         ? "gray"
                         : "red"
                   }
                   variant="light"
                   className="allergy-badge"
                   size="lg"
+                  title={value}
+                  aria-label={`${label}: ${value}`}
                 >
-                  {label}: <DisplayValue value={value || "Not recorded"} />
+                  {/^(?:Allergies not on file|No Known (?:Drug )?Allergies)/.test(
+                    allergyDisplay(value),
+                  )
+                    ? allergyDisplay(value)
+                    : `${label}: ${allergyDisplay(value)}`}
                 </Badge>
               ) : (
                 <span
@@ -189,7 +190,7 @@ export function WorkflowNav({
                         : "user"
                 }
               />
-              {group}
+              {sectionCaption(group)}
             </h2>
             <ul className="workflow-links" aria-label={`${group} screens`}>
               {items.map(([id, label]) => (
@@ -199,20 +200,17 @@ export function WorkflowNav({
                     data-comp-id={id}
                     data-event="click"
                     aria-current={label === title ? "page" : undefined}
+                    aria-label={label}
                     onClick={() => onEvent({ click: { comp: id } })}
                   >
                     <span aria-hidden="true" className="nav-dot" />
-                    {label}
+                    {sectionCaption(label)}
                   </button>
                 </li>
               ))}
             </ul>
           </section>
         ))}
-      </div>
-      <div className="nav-footer">
-        <span className="status-dot" aria-hidden="true" />
-        <Text size="xs">Encounter workspace</Text>
       </div>
     </AppShell.Navbar>
   );
@@ -227,6 +225,7 @@ function StockUiScreenView({
   onEvent: Emit;
   viewer?: string | undefined;
 }) {
+  const shellRef = useRef<HTMLDivElement | null>(null);
   const modal = screen.modal;
   const stepper = screen.workspace.find((node) => "stepper" in node);
   const active =
@@ -237,6 +236,22 @@ function StockUiScreenView({
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, [active, screen.title]);
+  // Measure layout only: navigation and focused fields clear a wrapped banner.
+  useLayoutEffect(() => {
+    const shell = shellRef.current;
+    const banner = shell?.querySelector<HTMLElement>(".clinical-banner");
+    if (!shell || !banner) return;
+    const measure = () =>
+      shell.style.setProperty(
+        "--clinical-banner-height",
+        `${banner.getBoundingClientRect().height}px`,
+      );
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(banner);
+    return () => observer.disconnect();
+  }, []);
   return (
     <AppShell
       className="clinical-app"
@@ -249,6 +264,7 @@ function StockUiScreenView({
         className={`clinical-shell${screen.nav.some(([, items]) => items.length) ? "" : " without-nav"}`}
         aria-hidden={modal ? true : undefined}
         ref={(element) => {
+          shellRef.current = element;
           if (element) element.inert = Boolean(modal);
         }}
       >
@@ -265,7 +281,9 @@ function StockUiScreenView({
               <Text size="xs" c="dimmed" mb={3}>
                 PATIENT CHART <span aria-hidden="true"> / </span> ENCOUNTER
               </Text>
-              <Title order={1}>{screen.title}</Title>
+              <Title order={1} title={screen.title}>
+                {sectionCaption(screen.title)}
+              </Title>
             </div>
             <Badge color="gray" size="md">
               Patient chart

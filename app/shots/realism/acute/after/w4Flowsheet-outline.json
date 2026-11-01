@@ -1,0 +1,1384 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Ankunding, Aaron Bruno"
+    ],
+    [
+      "DOB",
+      "Jul 3, 1968"
+    ],
+    [
+      "MRN",
+      "47839287"
+    ],
+    [
+      "Age / sex",
+      "58 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      ""
+    ],
+    [
+      "Coverage",
+      ""
+    ],
+    [
+      "Encounter",
+      "Inpatient"
+    ],
+    [
+      "Attending",
+      "Morgan Patel, MD"
+    ],
+    [
+      "Location",
+      "5 West · 512 A"
+    ],
+    [
+      "Allergies",
+      "No allergy records on file"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "93.4 kg · Nov 2, 2026 07:30"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "modal": null,
+  "nav": [
+    [
+      "Nursing Navigator",
+      [
+        [
+          "w4Flowsheet.nav.w4Worklist",
+          "Unit Census & MAR"
+        ],
+        [
+          "w4Flowsheet.nav.w4Mar",
+          "MAR"
+        ],
+        [
+          "w4Flowsheet.nav.w4Handoff",
+          "Handoff / SBAR"
+        ]
+      ]
+    ]
+  ],
+  "side": [],
+  "title": "Flowsheets",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w4Flowsheet.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "w4Flowsheet.history",
+              "display": "table",
+              "infoId": "flowsheetHistory",
+              "label": "Recent observations by time",
+              "rows": [
+                [
+                  [
+                    "Measure",
+                    "Weight"
+                  ],
+                  [
+                    "Unit",
+                    "kg"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "93.4"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "93.4"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Systolic BP"
+                  ],
+                  [
+                    "Unit",
+                    "mmHg"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "140"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "136"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Diastolic BP"
+                  ],
+                  [
+                    "Unit",
+                    "mmHg"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "84"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "82"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Heart rate"
+                  ],
+                  [
+                    "Unit",
+                    "/min"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "88"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "82"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Respiratory rate"
+                  ],
+                  [
+                    "Unit",
+                    "/min"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "20"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "18"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Temperature"
+                  ],
+                  [
+                    "Unit",
+                    "°C"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "37.7"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "37.4"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "SpO2"
+                  ],
+                  [
+                    "Unit",
+                    "%"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "95"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "96"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Pain score"
+                  ],
+                  [
+                    "Unit",
+                    "score"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    "6"
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    "4"
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Oral intake"
+                  ],
+                  [
+                    "Unit",
+                    "mL"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    "250"
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    "350"
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Urine output"
+                  ],
+                  [
+                    "Unit",
+                    "mL"
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    "300"
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    "450"
+                  ]
+                ],
+                [
+                  [
+                    "Measure",
+                    "Nursing assessment"
+                  ],
+                  [
+                    "Unit",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 06:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 07:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 08:00 -08:00",
+                    "Alert and oriented; breathing comfortably on room air."
+                  ],
+                  [
+                    "2026-11-02 08:30 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:00 -08:00",
+                    ""
+                  ],
+                  [
+                    "2026-11-02 09:30 -08:00",
+                    ""
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "kind": "flowsheet"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w4Flowsheet.bpSystolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP systolic (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Flowsheet.bpDiastolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP diastolic (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Flowsheet.heartRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Heart rate (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Flowsheet.respRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Respiratory rate (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Flowsheet.temperature",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Temperature (°C)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w4Flowsheet.spo2",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "SpO₂ (%)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w4Flowsheet.vitalsGroup",
+        "title": "Vital signs — new documentation"
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "w4Flowsheet.prn",
+              "display": "table",
+              "infoId": "prnHistory",
+              "label": "PRN administrations",
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "acetaminophen"
+                  ],
+                  [
+                    "Recorded dose",
+                    "650"
+                  ],
+                  [
+                    "Unit",
+                    "mg"
+                  ],
+                  [
+                    "Route",
+                    "PO"
+                  ],
+                  [
+                    "Site",
+                    ""
+                  ],
+                  [
+                    "Recorded time",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "Given"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "kind": "table"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w4Flowsheet.painReassessment",
+              "humanOnly": true,
+              "kind": "code",
+              "label": "Response after intervention (0–10)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w4Flowsheet.pain",
+        "title": "Pain reassessment"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w4Flowsheet.nursingAssessment",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Systems assessment and response to care",
+              "pendingConfirm": true,
+              "provenance": "macro",
+              "required": true,
+              "unit": null,
+              "value": "Neurologic: [findings]\nCardiovascular: [findings]\nRespiratory: [findings and oxygen support]\nGastrointestinal: [findings and intake]\nGenitourinary: [findings and output]\nSkin: [findings]\nSafety and mobility: [findings and precautions]\nResponse to care: [response]"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w4Flowsheet.nursingAssessment",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          }
+        ],
+        "id": "w4Flowsheet.assessment",
+        "title": "Shift nursing assessment"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Flowsheet.copyAssessment",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Insert assessment outline",
+        "role": "macro"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": "entry required: BP systolic (mmHg)",
+        "comp": "w4Flowsheet.commit.chartAssessment",
+        "enabled": false,
+        "hotkey": "Ctrl+Enter",
+        "label": "File assessment",
+        "role": "primary"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Flowsheet.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Flowsheet.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w4Flowsheet.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Nov 1, 2026 15:40"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Pneumonia; receiving antibiotics"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "5 West · 512 A"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "May 6, 2026 13:28"
+                  ],
+                  [
+                    "End",
+                    "May 6, 2026 15:00"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 22, 2026 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 22, 2026 14:18"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 30, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 30, 2025 15:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 23, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 23, 2025 13:43"
+                  ],
+                  [
+                    "Reason",
+                    "Acute viral pharyngitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 16, 2025 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 16, 2025 14:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up visit (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Jul 4, 2024 15:10"
+                  ],
+                  [
+                    "End",
+                    "Jul 5, 2024 15:10"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 27, 2024 14:24"
+                  ],
+                  [
+                    "End",
+                    "Jun 27, 2024 15:10"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 19, 2024 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jun 19, 2024 14:24"
+                  ],
+                  [
+                    "Reason",
+                    "Sleep disorder (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 10, 2024 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 10, 2024 14:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 19, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jul 19, 2023 14:14"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 5, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Jul 5, 2023 14:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 25, 2023 20:28"
+                  ],
+                  [
+                    "End",
+                    "Jun 25, 2023 20:49"
+                  ],
+                  [
+                    "Reason",
+                    "Acute bronchitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 5, 2023 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 5, 2023 14:01"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency room admission (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Aug 6, 2022 16:13"
+                  ],
+                  [
+                    "End",
+                    "Aug 6, 2022 17:13"
+                  ],
+                  [
+                    "Reason",
+                    "Injury of neck (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Troy Carter"
+                  ],
+                  [
+                    "Location",
+                    "OAKS, THE"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Hospital admission (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Aug 6, 2022 16:13"
+                  ],
+                  [
+                    "End",
+                    "Aug 9, 2022 16:28"
+                  ],
+                  [
+                    "Reason",
+                    "Patient transfer to skilled nursing facility (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chung Collins"
+                  ],
+                  [
+                    "Location",
+                    "221 FITZGERALD DRIVE OPERATING COMPANY, LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for check up (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 13, 2022 13:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 13, 2022 14:08"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "General examination of patient (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 30, 2022 13:28"
+                  ],
+                  [
+                    "End",
+                    "Mar 30, 2022 14:06"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Taylor Haley"
+                  ],
+                  [
+                    "Location",
+                    "CHILD & FAMILY SERVICES, INC."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Encounter for symptom (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 23, 2022 04:28"
+                  ],
+                  [
+                    "End",
+                    "Mar 23, 2022 04:43"
+                  ],
+                  [
+                    "Reason",
+                    "Acute viral pharyngitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up encounter (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 29, 2022 12:28"
+                  ],
+                  [
+                    "End",
+                    "Jan 29, 2022 12:43"
+                  ],
+                  [
+                    "Reason",
+                    "Essential hypertension (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Follow-up encounter (procedure)"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 30, 2021 12:28"
+                  ],
+                  [
+                    "End",
+                    "Nov 30, 2021 12:43"
+                  ],
+                  [
+                    "Reason",
+                    "Essential hypertension (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Laurena Anderson"
+                  ],
+                  [
+                    "Location",
+                    "NORTHEAST BEHAVIORAL HEALTH LLC"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w4Flowsheet.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Meds",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Flowsheet.toHandoff",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Handoff / SBAR",
+        "role": "nav"
+      }
+    }
+  ]
+}

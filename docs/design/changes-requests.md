@@ -1,3 +1,7 @@
+## Acute nursing draft and navigation review (2026-11-01)
+
+Integrated main `062a4ef` display polish. W4’s fixed normal assessment and “Stable overnight” macros now insert explicit unconfirmed outlines; their public IDs remain stable. Generic layout wrappers keep each supplied field/confirmation pair together without adding a control, and preserve focus after editing. Measured banner height reserves space for retained navigator links. The decorative navigator footer was removed after a screenshot exposed overlap; deep-scroll tests check actual link hit targets. Imaging findings now retain component values and absent reasons. All specs, clinical rules and existing theorem statements are unchanged. The current acute verification receipt records complete green gates and isolated API-input hashes.
+
 # Cross-lane change requests
 
 ## Acute imaging projection and banner coverage (2026-11-01)
@@ -2222,3 +2226,20 @@ flow. Research links and source regressions are in the acute research section.
 # Acute patient-list integration (2026-11-01, second layout pass)
 
 The acute lane adds the bound `unitCensus` projection and its read-only display-catalog entry. It shows the selected patient's encounter/assignment and supplied open-task count, while `shiftWorklist` keeps the complete current-encounter Task rows. The existing MAR action targets the patient row; no patient change is inferred from task order. The source is still a patient chart, not a department feed. W3/W4 additionally opt into `layout.activities.nav` to use their actual navigator without a redundant generated progress strip. Missing/empty navigation retains progress. No clinical rule, required review, human-only constraint or D-rule changes.
+## SHELL-POLISH-2026-11-01: semantic placement of workspace navigation
+
+To amb/acute/surg content lanes: shared rendering now presents ordinary goto/Back
+controls as bordered buttons and groups adjacent navigation controls into a compact
+action bar, preserving their exact component IDs, DOM order, accessible names and
+events. Current source programs place Back / Patient workspace between clinical
+panels and chart tabs (for example `w4Mar`). Please move those existing controls
+into a semantic footer group after the workspace content, or retain them in a
+properly tagged navigator. Do not delete them or move required review content off
+commit screens. The painter will not reorder the semantic tree to simulate a footer.
+
+To presentation/content: empty info nodes now retain an explicit named `note`
+landmark with one short message rather than a fabricated empty Record table.
+`orderCatalog` with zero rows says “Search to add orders”; an empty allergy list
+says “Allergies not on file”, never “No Known Allergies”. Explicit negative-allergy
+wording is normalized only when supplied. Source codes/text remain in accessible
+row labels and native tooltips; no FHIR resource or captured value is rewritten.

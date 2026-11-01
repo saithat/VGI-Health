@@ -28,6 +28,8 @@ for (const [persona, screen, focus] of [
   ['P3', 'w4Mar-chart-results', 'w4Mar.chart'],
   ['P2', 'w3Provider-chart-imaging', 'w3Provider.chart'],
   ['P3', 'w4Mar-chart-imaging', 'w4Mar.chart'],
+  ['P3', 'w4Flowsheet-outline', 'w4Flowsheet.nursingAssessment'],
+  ['P3', 'w4Handoff-outline', 'w4Handoff.handoffRecommendation'],
 ]) {
   if (existsSync(path.join(input, persona, `${screen}.json`))) screens.push([persona, screen, focus]);
 }

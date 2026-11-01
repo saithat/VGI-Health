@@ -427,6 +427,16 @@ def chestRows := acuteImagingRows context chestSources patient
 #guard chestRows.head!.lookup "Modality" == some "Digital radiography"
 #guard chestRows.head!.lookup "Encounter" == some "Selected encounter"
 #guard chestRows.head!.lookup "Text" == some "Bilateral lower-lung airspace opacities.\nRadiology findings: Full supplied finding, without truncation."
+
+/-- Linked measurement components and absent reasons remain part of the report. -/
+def measuredChestFinding : Json := chestFinding.setObjVal! "component" (.arr #[
+  Json.mkObj [("code", concept "Diameter"), ("valueQuantity", Json.mkObj
+    [("value", toJson (4 : Nat)), ("comparator", .str "<"), ("unit", .str "mm")])],
+  Json.mkObj [("code", concept "Second measurement"), ("dataAbsentReason", concept "Not visualized")]])
+
+#guard acuteImagingText [measuredChestFinding] chestReport ==
+  "Bilateral lower-lung airspace opacities.\nRadiology findings: Full supplied finding, without truncation.\nRadiology findings • Diameter: <4 mm\nRadiology findings • Second measurement: Not available · Not visualized"
+
 #guard acuteImagingAvailability [chestOrder] == "Ordered"
 #guard acuteImagingAvailability [chestOrder, chestStudy] == "Images available"
 #guard acuteImagingAvailability [chestOrder, chestStudy, chestReport.setObjVal! "status" (.str "preliminary")] == "Preliminary report"
@@ -458,10 +468,10 @@ def aliasedStudy := entryResource (Json.mkObj [("fullUrl", .str "https://hospita
 
 /-- URN graph links are resolved without replacing logical ids or leaking aliases. -/
 def urnImagingBundle : Json := Json.mkObj [("resourceType", .str "Bundle"), ("entry", .arr #[
-  Json.mkObj [("fullUrl", .str "urn:uuid:patient"), ("resource", patient)],
-  Json.mkObj [("fullUrl", .str "urn:uuid:encounter"), ("resource", encounter.setObjVal! "subject" (reference "urn:uuid:patient"))],
-  Json.mkObj [("fullUrl", .str "urn:uuid:study"), ("resource", (chestStudy.setObjVal! "subject" (reference "urn:uuid:patient")).setObjVal! "encounter" (reference "urn:uuid:encounter"))],
-  Json.mkObj [("fullUrl", .str "urn:uuid:report"), ("resource", (((chestReport.setObjVal! "subject" (reference "urn:uuid:patient")).setObjVal! "encounter" (reference "urn:uuid:encounter")).setObjVal! "imagingStudy" (.arr #[reference "urn:uuid:study"])))]])]
+  Json.mkObj [("fullUrl", .str "urn:uuid:00000000-0000-4000-8000-000000000001"), ("resource", patient)],
+  Json.mkObj [("fullUrl", .str "urn:uuid:00000000-0000-4000-8000-000000000002"), ("resource", encounter.setObjVal! "subject" (reference "urn:uuid:00000000-0000-4000-8000-000000000001"))],
+  Json.mkObj [("fullUrl", .str "urn:uuid:00000000-0000-4000-8000-000000000003"), ("resource", (chestStudy.setObjVal! "subject" (reference "urn:uuid:00000000-0000-4000-8000-000000000001")).setObjVal! "encounter" (reference "urn:uuid:00000000-0000-4000-8000-000000000002"))],
+  Json.mkObj [("fullUrl", .str "urn:uuid:00000000-0000-4000-8000-000000000004"), ("resource", (((chestReport.setObjVal! "subject" (reference "urn:uuid:00000000-0000-4000-8000-000000000001")).setObjVal! "encounter" (reference "urn:uuid:00000000-0000-4000-8000-000000000002")).setObjVal! "imagingStudy" (.arr #[reference "urn:uuid:00000000-0000-4000-8000-000000000003"])))]])]
 def urnImagingResources := bundleResources urnImagingBundle
 def urnImagingRows := acuteImagingRows context urnImagingResources urnImagingResources.head!
 #guard urnImagingRows.length == 1

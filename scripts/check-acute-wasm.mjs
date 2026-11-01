@@ -50,6 +50,21 @@ try {
           `${persona}: only the patient with the supplied report displays its conclusion`);
         views++;
       }
+      const outline = { w4Flowsheet: ['copyAssessment', ['nursingAssessment']],
+        w4Handoff: ['template', ['handoffSituation', 'handoffBackground', 'handoffAssessment', 'handoffRecommendation']] }[screen];
+      if (outline) {
+        const drafted = equal('step', { ...input, event: { click: { comp: `${screen}.${outline[0]}` } } });
+        assert.equal(drafted.result, 'ok');
+        for (const element of outline[1]) {
+          const capture = drafted.state.captured.find(item => item.element === element);
+          assert.equal(capture?.byHuman, false);
+          assert.equal(capture?.confirmed, false);
+          assert.ok(capture.value.text.s.includes('['), `${element}: explicit draft prompt`);
+        }
+        for (const key of ['receipts', 'commits', 'orderSlot']) assert.deepEqual(drafted.state[key], state[key]);
+        equal('render-ui', { ...base, state: drafted.state });
+        views++;
+      }
       for (const component of program.screens.find(item => item.id === screen).components) {
         const target = component.kind.button?.action?.goto?.screen;
         if (!target || states.has(target)) continue;
@@ -67,8 +82,8 @@ try {
     }
     assert.equal(states.size, program.screens.length, `${persona}: every acute screen reachable`);
   }
-  assert.equal(views, 16);
-  process.stdout.write('Native/WASM acute review: 2 supplied-source bundles, 14 reachable screens (including 2 Home views) and 2 Imaging tabs agree; navigation adds no human attestation or commits.\n');
+  assert.equal(views, 18);
+  process.stdout.write('Native/WASM acute review: 2 supplied-source bundles, 14 reachable screens (including 2 Home views), 2 Imaging tabs and 2 unconfirmed nursing outlines agree; navigation adds no human attestation or commits.\n');
 } finally {
   rmSync(fixtures, { recursive: true, force: true });
 }
