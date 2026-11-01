@@ -144,14 +144,14 @@ open Ehr.Examples.Tiny Ehr.Examples.TinyTests
 
 /-- On the tiny example, the amoxicillin macro's reference fold stops at step 3
 (typing the patient ID), and the click's result is the matching message. -/
-example : (foldMacro spec program facts user 0 atOrder amoxMacro.steps).2 =
+theorem tiny_macro_stops_at_identity : (foldMacro spec program facts user 0 atOrder amoxMacro.steps).2 =
       some (3, .blocked "human only: patientIdReentry") ∧
     (step spec program facts user .human atOrder (.click "quickAmox")).2 =
       .blocked (macroStopReason 3 (.blocked "human only: patientIdReentry")) := by
   decide
 
 /-- A macro without a human-only step runs to the end with result `ok`. -/
-example : (runMacro spec program facts user 0 atOrder (amoxMacro.steps.take 3)).2 = .ok ∧
+theorem tiny_safe_macro_prefix_succeeds : (runMacro spec program facts user 0 atOrder (amoxMacro.steps.take 3)).2 = .ok ∧
     (foldMacro spec program facts user 0 atOrder (amoxMacro.steps.take 3)).2 = none := by
   decide
 
