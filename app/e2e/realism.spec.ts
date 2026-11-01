@@ -40,6 +40,13 @@ test("shared shell and browser visual review", async ({ page }) => {
     await page
       .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
       .click();
+    if (process.env.REALISM_SHOTS !== "before") {
+      const navigator = page.getByRole("navigation", {
+        name: "Clinical workflows",
+      });
+      await expect(navigator.locator("button[data-comp-id]").first()).toBeVisible();
+      await expect(navigator).not.toHaveClass(/empty-navigator/);
+    }
     const destination = page.locator(
       `button[data-comp-id$=".nav.${screen}"][data-event]`,
     );
