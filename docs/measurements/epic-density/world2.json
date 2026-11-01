@@ -13,7 +13,7 @@
       "tasks": 42,
       "selectedTasks": 42,
       "clicks": 1160,
-      "klmDeciSec": 59000
+      "klmDeciSec": 58079
     },
     {
       "persona": "P1",
@@ -23,7 +23,7 @@
       "tasks": 40,
       "selectedTasks": 40,
       "clicks": 853,
-      "klmDeciSec": 47288
+      "klmDeciSec": 46708
     },
     {
       "persona": "P1",
@@ -33,7 +33,7 @@
       "tasks": 35,
       "selectedTasks": 35,
       "clicks": 682,
-      "klmDeciSec": 40355
+      "klmDeciSec": 39852
     },
     {
       "persona": "P1",
@@ -43,7 +43,7 @@
       "tasks": 40,
       "selectedTasks": 40,
       "clicks": 918,
-      "klmDeciSec": 48249
+      "klmDeciSec": 47672
     },
     {
       "persona": "P1",
@@ -53,7 +53,7 @@
       "tasks": 23,
       "selectedTasks": 23,
       "clicks": 809,
-      "klmDeciSec": 46293
+      "klmDeciSec": 45779
     },
     {
       "persona": "P1",
@@ -63,7 +63,7 @@
       "tasks": 41,
       "selectedTasks": 41,
       "clicks": 894,
-      "klmDeciSec": 48118
+      "klmDeciSec": 47442
     },
     {
       "persona": "P1",
@@ -73,7 +73,7 @@
       "tasks": 40,
       "selectedTasks": 40,
       "clicks": 970,
-      "klmDeciSec": 49690
+      "klmDeciSec": 49019
     },
     {
       "persona": "P1",
@@ -83,7 +83,7 @@
       "tasks": 39,
       "selectedTasks": 39,
       "clicks": 848,
-      "klmDeciSec": 47018
+      "klmDeciSec": 46402
     },
     {
       "persona": "P1",
@@ -93,7 +93,7 @@
       "tasks": 39,
       "selectedTasks": 39,
       "clicks": 724,
-      "klmDeciSec": 37194
+      "klmDeciSec": 36655
     },
     {
       "persona": "P1",
@@ -103,7 +103,7 @@
       "tasks": 39,
       "selectedTasks": 39,
       "clicks": 829,
-      "klmDeciSec": 42379
+      "klmDeciSec": 41774
     },
     {
       "persona": "P2",
@@ -112,8 +112,8 @@
       "completed": 22,
       "tasks": 22,
       "selectedTasks": 22,
-      "clicks": 1728,
-      "klmDeciSec": 95144
+      "clicks": 1706,
+      "klmDeciSec": 96125
     },
     {
       "persona": "P2",
@@ -122,8 +122,8 @@
       "completed": 18,
       "tasks": 18,
       "selectedTasks": 18,
-      "clicks": 1128,
-      "klmDeciSec": 63315
+      "clicks": 1111,
+      "klmDeciSec": 64099
     },
     {
       "persona": "P2",
@@ -132,8 +132,8 @@
       "completed": 18,
       "tasks": 18,
       "selectedTasks": 18,
-      "clicks": 1232,
-      "klmDeciSec": 66586
+      "clicks": 1225,
+      "klmDeciSec": 67683
     },
     {
       "persona": "P2",
@@ -142,8 +142,8 @@
       "completed": 13,
       "tasks": 13,
       "selectedTasks": 13,
-      "clicks": 950,
-      "klmDeciSec": 51690
+      "clicks": 934,
+      "klmDeciSec": 52221
     },
     {
       "persona": "P2",
@@ -152,8 +152,8 @@
       "completed": 20,
       "tasks": 20,
       "selectedTasks": 20,
-      "clicks": 1478,
-      "klmDeciSec": 82636
+      "clicks": 1456,
+      "klmDeciSec": 83608
     },
     {
       "persona": "P2",
@@ -162,8 +162,8 @@
       "completed": 21,
       "tasks": 21,
       "selectedTasks": 21,
-      "clicks": 1817,
-      "klmDeciSec": 98111
+      "clicks": 1794,
+      "klmDeciSec": 99014
     },
     {
       "persona": "P2",
@@ -172,8 +172,8 @@
       "completed": 18,
       "tasks": 18,
       "selectedTasks": 18,
-      "clicks": 1259,
-      "klmDeciSec": 65743
+      "clicks": 1229,
+      "klmDeciSec": 66124
     },
     {
       "persona": "P2",
@@ -182,8 +182,8 @@
       "completed": 15,
       "tasks": 15,
       "selectedTasks": 15,
-      "clicks": 1499,
-      "klmDeciSec": 79398
+      "clicks": 1485,
+      "klmDeciSec": 79806
     },
     {
       "persona": "P2",
@@ -192,8 +192,8 @@
       "completed": 12,
       "tasks": 12,
       "selectedTasks": 12,
-      "clicks": 1092,
-      "klmDeciSec": 58833
+      "clicks": 1080,
+      "klmDeciSec": 59192
     },
     {
       "persona": "P2",
@@ -202,8 +202,8 @@
       "completed": 14,
       "tasks": 14,
       "selectedTasks": 14,
-      "clicks": 915,
-      "klmDeciSec": 48099
+      "clicks": 902,
+      "klmDeciSec": 48559
     },
     {
       "persona": "P3",
@@ -212,8 +212,8 @@
       "completed": 38,
       "tasks": 38,
       "selectedTasks": 38,
-      "clicks": 499,
-      "klmDeciSec": 57945
+      "clicks": 474,
+      "klmDeciSec": 57616
     },
     {
       "persona": "P3",
@@ -222,8 +222,8 @@
       "completed": 51,
       "tasks": 51,
       "selectedTasks": 51,
-      "clicks": 746,
-      "klmDeciSec": 72603
+      "clicks": 688,
+      "klmDeciSec": 71384
     },
     {
       "persona": "P3",
@@ -232,8 +232,8 @@
       "completed": 44,
       "tasks": 44,
       "selectedTasks": 44,
-      "clicks": 617,
-      "klmDeciSec": 53898
+      "clicks": 576,
+      "klmDeciSec": 53192
     },
     {
       "persona": "P3",
@@ -242,8 +242,8 @@
       "completed": 41,
       "tasks": 41,
       "selectedTasks": 41,
-      "clicks": 604,
-      "klmDeciSec": 58309
+      "clicks": 569,
+      "klmDeciSec": 57745
     },
     {
       "persona": "P3",
@@ -252,8 +252,8 @@
       "completed": 37,
       "tasks": 37,
       "selectedTasks": 37,
-      "clicks": 577,
-      "klmDeciSec": 58380
+      "clicks": 538,
+      "klmDeciSec": 57653
     },
     {
       "persona": "P3",
@@ -262,8 +262,8 @@
       "completed": 32,
       "tasks": 32,
       "selectedTasks": 32,
-      "clicks": 524,
-      "klmDeciSec": 56223
+      "clicks": 484,
+      "klmDeciSec": 55460
     },
     {
       "persona": "P3",
@@ -272,8 +272,8 @@
       "completed": 54,
       "tasks": 54,
       "selectedTasks": 54,
-      "clicks": 743,
-      "klmDeciSec": 68618
+      "clicks": 691,
+      "klmDeciSec": 67552
     },
     {
       "persona": "P3",
@@ -282,8 +282,8 @@
       "completed": 38,
       "tasks": 38,
       "selectedTasks": 38,
-      "clicks": 578,
-      "klmDeciSec": 45527
+      "clicks": 541,
+      "klmDeciSec": 44941
     },
     {
       "persona": "P3",
@@ -292,8 +292,8 @@
       "completed": 44,
       "tasks": 44,
       "selectedTasks": 44,
-      "clicks": 680,
-      "klmDeciSec": 55572
+      "clicks": 638,
+      "klmDeciSec": 54660
     },
     {
       "persona": "P3",
@@ -302,8 +302,8 @@
       "completed": 45,
       "tasks": 45,
       "selectedTasks": 45,
-      "clicks": 683,
-      "klmDeciSec": 55286
+      "clicks": 651,
+      "klmDeciSec": 54697
     },
     {
       "persona": "P4",
@@ -313,7 +313,7 @@
       "tasks": 22,
       "selectedTasks": 22,
       "clicks": 696,
-      "klmDeciSec": 41954
+      "klmDeciSec": 41074
     },
     {
       "persona": "P4",
@@ -323,7 +323,7 @@
       "tasks": 20,
       "selectedTasks": 20,
       "clicks": 763,
-      "klmDeciSec": 43959
+      "klmDeciSec": 42997
     },
     {
       "persona": "P4",
@@ -333,7 +333,7 @@
       "tasks": 19,
       "selectedTasks": 19,
       "clicks": 637,
-      "klmDeciSec": 34387
+      "klmDeciSec": 33567
     },
     {
       "persona": "P4",
@@ -343,7 +343,7 @@
       "tasks": 17,
       "selectedTasks": 17,
       "clicks": 429,
-      "klmDeciSec": 23765
+      "klmDeciSec": 23069
     },
     {
       "persona": "P4",
@@ -353,7 +353,7 @@
       "tasks": 19,
       "selectedTasks": 19,
       "clicks": 635,
-      "klmDeciSec": 33227
+      "klmDeciSec": 32191
     },
     {
       "persona": "P4",
@@ -363,7 +363,7 @@
       "tasks": 18,
       "selectedTasks": 18,
       "clicks": 581,
-      "klmDeciSec": 32123
+      "klmDeciSec": 31235
     },
     {
       "persona": "P4",
@@ -373,7 +373,7 @@
       "tasks": 17,
       "selectedTasks": 17,
       "clicks": 614,
-      "klmDeciSec": 33345
+      "klmDeciSec": 32473
     },
     {
       "persona": "P4",
@@ -383,7 +383,7 @@
       "tasks": 15,
       "selectedTasks": 15,
       "clicks": 498,
-      "klmDeciSec": 31800
+      "klmDeciSec": 31018
     },
     {
       "persona": "P4",
@@ -393,7 +393,7 @@
       "tasks": 12,
       "selectedTasks": 12,
       "clicks": 413,
-      "klmDeciSec": 21606
+      "klmDeciSec": 20946
     },
     {
       "persona": "P4",
@@ -403,7 +403,7 @@
       "tasks": 16,
       "selectedTasks": 16,
       "clicks": 555,
-      "klmDeciSec": 30614
+      "klmDeciSec": 29731
     },
     {
       "persona": "P5",
@@ -413,7 +413,7 @@
       "tasks": 18,
       "selectedTasks": 18,
       "clicks": 567,
-      "klmDeciSec": 40414
+      "klmDeciSec": 40139
     },
     {
       "persona": "P5",
@@ -423,7 +423,7 @@
       "tasks": 14,
       "selectedTasks": 14,
       "clicks": 750,
-      "klmDeciSec": 46555
+      "klmDeciSec": 45917
     },
     {
       "persona": "P5",
@@ -433,7 +433,7 @@
       "tasks": 19,
       "selectedTasks": 19,
       "clicks": 543,
-      "klmDeciSec": 34935
+      "klmDeciSec": 34649
     },
     {
       "persona": "P5",
@@ -443,7 +443,7 @@
       "tasks": 11,
       "selectedTasks": 11,
       "clicks": 504,
-      "klmDeciSec": 29207
+      "klmDeciSec": 28811
     },
     {
       "persona": "P5",
@@ -453,7 +453,7 @@
       "tasks": 17,
       "selectedTasks": 17,
       "clicks": 458,
-      "klmDeciSec": 28042
+      "klmDeciSec": 27811
     },
     {
       "persona": "P5",
@@ -463,7 +463,7 @@
       "tasks": 11,
       "selectedTasks": 11,
       "clicks": 539,
-      "klmDeciSec": 34889
+      "klmDeciSec": 34471
     },
     {
       "persona": "P5",
@@ -473,7 +473,7 @@
       "tasks": 14,
       "selectedTasks": 14,
       "clicks": 386,
-      "klmDeciSec": 19843
+      "klmDeciSec": 19634
     },
     {
       "persona": "P5",
@@ -483,7 +483,7 @@
       "tasks": 12,
       "selectedTasks": 12,
       "clicks": 584,
-      "klmDeciSec": 34946
+      "klmDeciSec": 34671
     },
     {
       "persona": "P5",
@@ -493,7 +493,7 @@
       "tasks": 11,
       "selectedTasks": 11,
       "clicks": 330,
-      "klmDeciSec": 17846
+      "klmDeciSec": 17714
     },
     {
       "persona": "P5",
@@ -503,7 +503,7 @@
       "tasks": 9,
       "selectedTasks": 9,
       "clicks": 344,
-      "klmDeciSec": 20401
+      "klmDeciSec": 20236
     }
   ],
   "failures": []

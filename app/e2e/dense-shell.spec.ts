@@ -38,15 +38,21 @@ test("curated dense shell review and semantic fidelity", async ({ page }) => {
     if (target !== "landing") {
       await enterPatientChart(page);
       if (target === "summary") {
+        const current = await page.evaluate(() => window.__buttonAuditSession?.snapshot().state.screen);
         const summary = page
           .getByRole("button", {
             name: /^(Summary|Chart Summary|Patient Summary|Index)$/i,
           })
           .first();
-        if (await summary.count()) await summary.click();
+        if (current === "chartSummary") await expect(page.getByRole("heading", { name: "Chart Summary", exact: true })).toBeVisible();
+        else if (await summary.count()) await summary.click();
         else if (process.env.DENSE_SHOTS === "after")
           throw new Error("The semantic chart Summary has not landed");
       } else {
+        if (await page.getByRole("heading", { name: "Chart Summary", exact: true }).count()) {
+          const navigator = { P1: "Visit Navigator", P2: "ED Navigator", P3: "MAR", P4: "Child Health Navigator", P5: "Surgical Navigator" }[persona];
+          await page.getByRole("button", { name: navigator, exact: true }).first().click();
+        }
         const current = await page.evaluate(
           () => window.__buttonAuditSession?.snapshot().state.screen,
         );

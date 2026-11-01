@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import type {} from "../src/core/buttonAudit";
 const phase = process.env.EPIC_DENSITY_SHOTS;
 for (const persona of ["P1", "P2", "P3", "P4", "P5"])
@@ -25,6 +25,10 @@ for (const persona of ["P1", "P2", "P3", "P4", "P5"])
       ).toBeVisible();
     const folder = `shots/final/epic-${phase}`;
     mkdirSync(folder, { recursive: true });
+    if (phase === "after") {
+      const ui = await page.evaluate(() => window.__buttonAuditSession!.snapshot().ui);
+      writeFileSync(`${folder}/${persona}-summary.ui.json`, JSON.stringify(ui));
+    }
     await page.screenshot({
       path: `${folder}/${persona}-chart.png`,
       animations: "disabled",

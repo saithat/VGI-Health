@@ -1,0 +1,7 @@
+ℹ [36/82] Replayed Ehr.Specs.V2
+info: Ehr/Specs/V2.lean:67:0: 'Ehr.Specs.V2.specV2_extends_specV1' depends on axioms: [propext]
+ℹ [37/82] Replayed Ehr.Specs.V3
+info: Ehr/Specs/V3.lean:65:0: 'Ehr.Specs.V3.specV3_extends_specV2' depends on axioms: [propext]
+✔ [80/82] Built Ehr.Tools.ExportContent (258ms)
+✔ [82/82] Built «export-content»:exe (446ms)
+Exported canonical v1, v2, v3; 15 persona canonicals; active bad programs; specs; statistics.
