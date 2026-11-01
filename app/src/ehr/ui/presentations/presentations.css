@@ -289,6 +289,33 @@
 .presentation-note-body dd {
   white-space: pre-wrap;
 }
+.presentation-note-provenance {
+  display: block;
+  color: var(--p-muted, var(--clinical-muted, #526171));
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  margin-top: 3px;
+}
+.presentation-note-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 6px 0 0;
+  color: var(--clinical-muted, #526171);
+  font-size: 12px;
+}
+.presentation-note-footer div {
+  display: flex;
+  gap: 5px;
+}
+.presentation-note-footer dd {
+  margin: 0;
+}
+.presentation-empty {
+  margin: 0;
+  padding: 7px 10px;
+}
 .presentation-charts {
   padding: 12px;
   display: grid;

@@ -1,11 +1,12 @@
 import type { ClinicalTone } from "./theme";
+import { formatClinicalRecord } from "./clinical-display";
 
 const iso =
   /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})?)?$/;
 /** Presentation fallback only: never changes captured field values or ordering. */
 export function formatDisplayValue(value: string): string {
   const match = iso.exec(value);
-  if (!match) return value;
+  if (!match) return formatClinicalRecord(value);
   const [, year, month, day, hour, minute, second] = match;
   const calendar = new Date(`${year}-${month}-${day}T12:00:00Z`);
   // Reject impossible calendar dates instead of silently normalizing them.
@@ -19,22 +20,29 @@ export function formatDisplayValue(value: string): string {
     return value;
   const date = hour === undefined ? calendar : new Date(value);
   if (!Number.isFinite(date.getTime())) return value;
-  return new Intl.DateTimeFormat("en-GB", {
+  const label = new Intl.DateTimeFormat("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
     // A date-only DOB must not move to the previous day in a western timezone.
-    ...(hour === undefined ? { timeZone: "UTC" } : {}),
-  }).format(date);
+    timeZone: "UTC",
+  }).format(calendar);
+  // Keep the supplied clock, precision and offset rather than converting zones
+  // or discarding the recorded time when a payload contains an ISO timestamp.
+  return hour === undefined ? label : `${label} ${value.slice(11)}`;
 }
 export function DisplayValue({ value }: { value: string }) {
   const formatted = formatDisplayValue(value);
   return formatted === value ? (
     value
-  ) : (
+  ) : iso.test(value) ? (
     <time dateTime={value} title={value}>
       {formatted}
     </time>
+  ) : (
+    <span title={value} aria-label={value}>
+      {formatted}
+    </span>
   );
 }
 

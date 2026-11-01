@@ -139,6 +139,7 @@ export function expectedNodeAria(
       ];
     }
     case "info" in node:
+      if (node.info.rows.length === 0) return [entry("note", node.info.label)];
       if (presentation) {
         const controls = [...(placement?.rows.get(node.info) ?? [])]
           .sort(([left], [right]) => left - right)
@@ -303,6 +304,7 @@ const roles = new Set([
   "main",
   "complementary",
   "region",
+  "note",
   "dialog",
   "textbox",
   "combobox",

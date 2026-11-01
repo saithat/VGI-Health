@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { UiPresentationKind } from "../../../../../lean/generated/ehr-types";
 import type { NodeOf, Pair } from "../types";
 import { DisplayValue } from "../display";
+import { emptyInfoText, formatMedicationDirections } from "../clinical-display";
 import { ClinicalChart } from "./charts";
 import { MarGrid } from "./MarGrid";
 import "./presentations.css";
@@ -105,8 +106,24 @@ export function RecordTable({
                           <span className="presentation-cell-value" key={n}>
                             {isStatus(key, kind) ? (
                               <SuppliedStatus value={value} />
+                            ) : key === "Text" || key === "Title" ? (
+                              value || "—"
                             ) : (
-                              <DisplayValue value={value || "—"} />
+                              <span title={value} aria-label={value}>
+                                <DisplayValue
+                                  value={
+                                    (node.infoId === "currentMeds" &&
+                                    key === "Instructions"
+                                      ? formatMedicationDirections(
+                                          row.find(
+                                            ([name]) => name === "Medication",
+                                          )?.[1] ?? "",
+                                          value,
+                                        )
+                                      : value) || "—"
+                                  }
+                                />
+                              </span>
                             )}
                           </span>
                         ))
@@ -198,6 +215,22 @@ function FolderList({
     </ul>
   );
 }
+/** Imported provenance stays visible in secondary typography. No characters are removed. */
+export function NoteTitle({ value }: { value: string }) {
+  const metadata =
+    / Source date \d{4}-\d{2}-\d{2}; structured dates shifted [+-]?\d+ days\. Note text retained verbatim\.?$/.exec(
+      value,
+    );
+  if (!metadata) return value;
+  return (
+    <>
+      {value.slice(0, metadata.index)}
+      <span className="presentation-note-provenance">
+        {value.slice(metadata.index)}
+      </span>
+    </>
+  );
+}
 function NoteCards({ node }: { node: Info }) {
   return (
     <ul className="presentation-notes" aria-label={node.label}>
@@ -220,6 +253,10 @@ function NoteCards({ node }: { node: Info }) {
                 <dd>
                   {key === "Status" ? (
                     <SuppliedStatus value={value} />
+                  ) : key === "Text" ? (
+                    value || "—"
+                  ) : key === "Title" ? (
+                    <NoteTitle value={value || "—"} />
                   ) : (
                     <DisplayValue value={value || "—"} />
                   )}
@@ -248,7 +285,15 @@ export function StructuredInfo({
       data-info-id={node.infoId}
     >
       <h3 className="presentation-heading">{node.label}</h3>
-      {kind === "folderList" ? (
+      {node.rows.length === 0 ? (
+        <p
+          role="note"
+          aria-label={node.label}
+          className="clinical-empty presentation-empty"
+        >
+          {emptyInfoText(node.infoId)}
+        </p>
+      ) : kind === "folderList" ? (
         <FolderList node={node} actions={actions} />
       ) : kind === "notes" ? (
         <NoteCards node={node} />

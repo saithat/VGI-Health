@@ -27,7 +27,7 @@
     }
   ],
   "candidate": {
-    "summary": "Remove the allergy panel from the Administer medication screen, and remove the allergy panel and allergy-review button from the shift worklist (intentionally unsafe; expected to be rejected).",
+    "summary": "UNSAFE (demo): remove the allergy panel from Administer medication and remove the worklist allergy group, panel and 'Mark allergies reviewed' button.",
     "patch": [
       {
         "op": "remove",

@@ -93,3 +93,9 @@ The painter may reflow dense tables into complete labeled records based on the w
 Numeric strings outside the browser's finite plotting range remain complete table text, without a fabricated point. Axis geometry also remains finite for large representable source values. The independent ARIA projection expects images only for representable plotted series; source-value coverage remains unchanged.
 
 Growth measurements use the existing tenths-of-kg/cm display precision. Gram weights are converted to kg; the shared ambulatory height reader accepts explicitly recorded cm, m or inches and declines unknown units. The latest timestamp supplies each day's plotted weight/height regardless of FHIR array order. Original Observation values and units remain in their complete display projections. A missing/invalid birth or measurement date produces `Not recorded` for plotted age while retaining the measurement row; a valid newborn age remains zero. Clinical Facts and dosing calculations are unchanged.
+
+### Shared display integration
+
+Structured medication review uses the shared painter's existing explicit-direction grammar, retaining original source values in native tooltips and accessible labels. Captured fields, units and events are unchanged. Note `Text` and `Title` fields stay verbatim; a recognized converter-provenance suffix uses smaller secondary type with every original character retained. Both structured and legacy note cards retain supplied extra metadata.
+
+ISO display timestamps retain the supplied clock, fractional seconds and offset alongside their calendar date. They do not shift through the browser's timezone. Empty info keeps its clinical label and a named notice; original actions remain inline when there is no matching data row.
