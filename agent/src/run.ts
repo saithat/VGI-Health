@@ -331,7 +331,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     llmErrors: records.flatMap((r) => r.flags.filter((flag) => flag.startsWith('llm-error')).map((message) => ({ persona: r.persona, night: r.night, message }))),
   };
   await writeJson(path.join(dir, 'summary.json'), summary);
-  await writeJson(manifestFile, { ...manifestData, status: summary.infrastructureErrors.length ? 'infrastructure-error' : summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
+  await writeJson(manifestFile, { ...manifestData, status: summary.infrastructureErrors.length ? 'infrastructure-error' : summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', nightDeploys: records.filter(r=>r.deployed).length, infrastructureErrors:summary.infrastructureErrors, llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
   return summary;
   } catch (error) {
     await writeJson(manifestFile, { ...manifestData, status: error instanceof InfrastructureError ? 'infrastructure-error' : 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });

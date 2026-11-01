@@ -9,6 +9,7 @@ import {RunStore} from '../src/store.js';
 import {rejectionKind,pickSeeded} from '../src/seeded.js';
 import {fakeCanonical,fakeSpec} from '../src/fake/fixtures.js';
 import {sumMetrics,pairedMetrics,saving} from '../src/observe.js';
+import {writeJson} from '../src/util.js';
 import {dayResultSchema,type CheckResult} from '../src/schema.js';
 it('does not label an antibiotic review, other human-only element, or unrelated unit failure as a seeded target',()=>{
  const check:CheckResult={status:'fail',property:'reviewsBeforeCommit',message:'abxIndication is not shown on screen signing when signOrders is clicked',counterexample:[],screens:['signing'],verdict:null};
@@ -56,4 +57,7 @@ it('a no-change designer has zero agent saving through both releases despite can
  await store.recover('P1',true);
  expect((await readdir(path.join(run.dir,'programs/P1')))).not.toContain(`v${next.version}.json`);
  expect((await store.login('P1')).program.version).toBe(current.program.version);
+ await writeJson(path.join(run.dir,'programs/P1',`v${next.version}.source.json`),next);
+ await store.recover('P1',true);
+ expect((await readdir(path.join(run.dir,'programs/P1')))).not.toContain(`v${next.version}.source.json`);
 },30000);

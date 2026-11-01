@@ -17,9 +17,9 @@ else
 (cd lean && (ulimit -v 8000000; lake build))
 pnpm --filter agent manual
 pnpm --filter agent typecheck
-pnpm --filter agent test
 pnpm --filter agent lint
 pnpm --filter app build
+pnpm --filter agent test
 pnpm --filter app test
 pnpm --filter app lint
 fi

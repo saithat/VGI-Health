@@ -11,6 +11,7 @@ const runId = process.argv[2] ?? 'run1-P3';
 const dir = join(root, 'runs', runId);
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const manifest = await read(join(dir, 'manifest.json'));
+if(historicalRunIds.has(runId))throw new Error('Archived replay contracts are immutable; do not regenerate them with current releases');
 const scratch = await mkdtemp(join(tmpdir(), 'replay-'));
 function command(binary, args, options = {}) {
   const command=binary==='lake'?'bash':binary;
@@ -41,7 +42,6 @@ try {
     const versions = (await readdir(join(dir, 'programs', persona))).filter(f => /^v\d+\.json$/.test(f)).sort((a,b) => Number(a.slice(1,-5))-Number(b.slice(1,-5)));
     const programs = await Promise.all(versions.map(file => read(join(dir, 'programs', persona, file))));
     const specs = Object.values(RELEASE_IDS);
-    if(historicalRunIds.has(runId))throw new Error('Archived replay contracts are immutable; do not regenerate them with current releases');
     for (const program of programs) for (const specVersion of [program.specVersion, ...specs.filter(version => version !== program.specVersion)]) contexts.push({ persona, version: program.version, specVersion, spec: await read(join(root, 'releases', specVersion, 'spec.json')), bundle: projection, user: { id: program.owner, role: program.role } });
     const sides = [];
     for (const file of [versions[0], versions.at(-1)]) {

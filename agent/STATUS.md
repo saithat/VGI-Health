@@ -10,11 +10,13 @@ were retained; main's historical display aliases remain authoritative.
 - Wrapper resume verifies the existing binary/WASM and emitted `appSha256`,
   excludes copied run JSON, and checks agent source plus screen-gate harness
   hashes. It does not build or regenerate the manual. A shell-wrapper regression
-  uses REAL native/app/world/fixture fingerprinting and zero model calls.
+  uses REAL native/app/world/fixture fingerprinting and zero model calls. The
+  fresh-run wrapper builds the production app before agent tests, which require
+  those real build artifacts for this regression.
 - Codex always passes explicit `-m` (CLI/env/config model); missing configuration
   fails closed. Served-model JSON metadata is recorded when the CLI supplies it.
   One authorized trivial live probe succeeded via the exact bwrap/read-only /
-  fast/high invocation: configured `gpt-6.1-sol`, 15 output tokens, zero reasoning
+  fast/high invocation: configured `gpt-6.1-sol`, 11,143 input tokens (the CLI’s built-in context), 15 output tokens, zero reasoning
   output tokens, no tool events. CLI 0.166.0 emitted thread.started, turn.started,
   item.completed(agent_message), turn.completed. It did NOT expose served model;
   `servedBy` remains null, never inferred. Sanitized captured events live in
@@ -34,7 +36,7 @@ were retained; main's historical display aliases remain authoritative.
 - Native/build/publication exceptions produce `infrastructure-error`; genuine
   screen infrastructure produces nightly `error`, distinct from an assertion
   `screen-check-failed`. Manifest status preserves infrastructure errors even
-  with zero accepted changes. Error records retain the failing deployment stage.
+  with zero accepted changes; the CLI exits nonzero on recorded infrastructure errors. Error records retain the failing deployment stage.
 - Resume removes unpublished staged versions/artifacts after recovering any
   durable decision. Dashboard version enumeration excludes unpublished staging.
 
@@ -42,7 +44,7 @@ Even nights get no new calibration data; they reuse the preceding odd day.
 Under the standard calendar a night-2 accepted version is superseded by night-3
 release recertification before blind day 4. Its independent test is shown as
 UNMEASURED, not zero or a validation-derived saving. Night 9 uses day 10.
-P5 blind days have only 9–14 tasks; reports list exact day/task/completion counts,
+P5 blind days have only 9–14 tasks (days 2/4/6/8/10: 14/11/11/12/9); reports list exact day/task/completion counts,
 loads and unmeasured/superseded notes. These are descriptive samples, with no
 claim of equal sample size, statistical significance or ten independent tests.
 
@@ -154,11 +156,11 @@ resuming an interrupted run with changed input fingerprints.
 
 ## Verification (zero LLM cost)
 
-- Agent: updated tests pass; includes a FAKE and REPLAY eight-day / five-persona run
+- Agent: 82 tests pass; includes a FAKE and REPLAY eight-day / five-persona run
   crossing releases on days 4 and 7, certification tampering, completion gating
   on all three deploy modes, fallback/abort, transcript isolation, resume hashes,
   durable-decision crash recovery, rebind success/cache/refusal and no edits.
-- App: updated tests pass; includes matched canonical/blind-day workload and binding
+- App: 176 tests pass; includes matched canonical/blind-day workload and binding
   pointer/refusal loading. World: 95 tests pass. Agent/app/world lint and
   typechecks pass. Production app build passes. Default Lean build passes,
   341 jobs, six workers, 8 GB virtual-memory ceiling.
@@ -185,8 +187,9 @@ No real smoke/full run has been started. Prepare without a browser/dev server:
 ```sh
 (cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake build))
 pnpm --filter agent manual
-pnpm --filter agent typecheck && pnpm --filter agent test && pnpm --filter agent lint
-pnpm --filter app build && pnpm --filter app test && pnpm --filter app lint
+pnpm --filter agent typecheck && pnpm --filter agent lint
+pnpm --filter app build
+pnpm --filter agent test && pnpm --filter app test && pnpm --filter app lint
 ```
 
 (a) ONE real smoke night: two workdays, all five personas, world/2:

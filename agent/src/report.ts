@@ -64,6 +64,7 @@ for (const persona of manifest.personas) {
   rows.push({ persona, checkerAccepted: decisions.flatMap((d) => d.candidates).filter((c) => c.check.status === 'pass').length,
     checkerRejected: decisions.flatMap((d) => d.candidates).filter((c) => c.check.status === 'fail').length,
     invalidPatches: decisions.flatMap((d)=>d.candidates).filter((c)=>c.check.status==='invalid-patch').length,
+    infrastructureErrors:decisions.filter(d=>['error','infrastructure-error'].includes(d.outcome)||d.flags.some(f=>f.startsWith('infrastructure-error'))).length,
     screenInfrastructureErrors: decisions.filter((d)=>d.screenCheck?.status==='error').length,
     samples, noAgent: noAgentDays?{before:noAgentBefore,after:noAgentAfter,saving:saving(noAgentBefore,noAgentAfter),days:noAgentDays}:null,
     deployedVersions: [...versions].sort((a, b) => a - b), before, after, incomplete,
