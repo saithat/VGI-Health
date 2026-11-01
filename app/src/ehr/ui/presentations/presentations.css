@@ -375,3 +375,14 @@
 .clinical-presentation[data-info-id] .presentation-table td {
   height: auto;
 }
+
+.presentation-subheading {
+  margin: 0;
+  padding: 7px 10px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--p-muted);
+  border-bottom: 1px solid var(--p-border);
+  background: var(--p-surface);
+}

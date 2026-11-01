@@ -102,6 +102,12 @@ export function expectedNodeAria(
         return [
           ...[...names].map((name) => entry("img", name)),
           entry("table", node.info.label),
+          ...(presentation === "growth" &&
+          node.info.rows.some((row) =>
+            row.some(([key, value]) => key === "Percentile" && value !== ""),
+          )
+            ? [entry("table", `${node.info.label} reference data`)]
+            : []),
         ];
       }
       return node.info.display === "summary"

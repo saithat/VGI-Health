@@ -119,14 +119,20 @@ export function ClinicalChart({
     <div className="presentation-charts">
       {series.map((s) => {
         const all = [...s.points, ...[...s.references.values()].flat()];
-        const xmin = Math.min(...all.map((p) => p.x)),
-          xmax = Math.max(...all.map((p) => p.x));
-        const ymin = Math.min(...all.map((p) => p.y)),
-          ymax = Math.max(...all.map((p) => p.y));
+        const { xmin, xmax, ymin, ymax } = all.reduce(
+          (bounds, point) => ({
+            xmin: Math.min(bounds.xmin, point.x),
+            xmax: Math.max(bounds.xmax, point.x),
+            ymin: Math.min(bounds.ymin, point.y),
+            ymax: Math.max(bounds.ymax, point.y),
+          }),
+          { xmin: Infinity, xmax: -Infinity, ymin: Infinity, ymax: -Infinity },
+        );
         const yrange = ymax - ymin || Math.abs(ymax) * 0.1 || 1;
         const low = ymin - yrange * 0.12,
           high = ymax + yrange * 0.12;
-        const x = (n: number) => 64 + ((n - xmin) / (xmax - xmin || 1)) * 560;
+        const x = (n: number) =>
+          xmin === xmax ? 344 : 64 + ((n - xmin) / (xmax - xmin)) * 560;
         const y = (n: number) => 200 - ((n - low) / (high - low)) * 162;
         const path = (points: Point[]) =>
           points.map((p) => `${x(p.x)},${y(p.y)}`).join(" ");
@@ -139,6 +145,39 @@ export function ClinicalChart({
           lower.every((p, i) => p.x === upper[i]?.x)
             ? path(lower) + " " + path([...upper].reverse())
             : undefined;
+        const recorded = [...new Set(s.points.map((point) => point.x))];
+        const recordedTicks =
+          recorded.length <= 5
+            ? recorded
+            : [0, 1, 2, 3, 4].map(
+                (i) =>
+                  recorded[Math.round((i * (recorded.length - 1)) / 4)] ?? xmin,
+              );
+        const ticks =
+          kind === "growth"
+            ? xmin === xmax
+              ? [xmin]
+              : [0, 1, 2, 3, 4].map((i) => xmin + ((xmax - xmin) * i) / 4)
+            : recordedTicks;
+        const sourceTick = (value: number) => {
+          if (kind === "growth") return String(Number(value.toFixed(1)));
+          if (!s.timeBased) return String(Math.round(value) + 1);
+          const label =
+            s.points.find((point) => point.x === value)?.label ?? "";
+          const human =
+            /^([A-Za-z]{3}) (\d{1,2}), \d{4}(?: (\d{2}:\d{2}))?$/.exec(label);
+          if (human)
+            return xmax - xmin < 86_400_000 && human[3]
+              ? human[3]
+              : `${human[1]} ${human[2]}`;
+          // Labels retain the supplied wall date/time; geometry never rewrites them through UTC.
+          const iso = /^(\d{4}-\d{2}-\d{2})(?:T(\d{2}:\d{2}))?/.exec(label);
+          return iso
+            ? xmax - xmin < 86_400_000 && iso[2]
+              ? iso[2]
+              : (iso[1] ?? label)
+            : label;
+        };
         const aria = `${node.label}: ${s.name}${s.unit ? ` (${s.unit})` : ""}`;
         return (
           <figure key={`${s.name}-${s.unit}`} className="presentation-chart">
@@ -177,19 +216,9 @@ export function ClinicalChart({
                   </g>
                 );
               })}
-              {[0, 1, 2, 3, 4].map((i) => {
-                const value = xmin + ((xmax - xmin) * i) / 4,
-                  px = x(value);
-                const text =
-                  kind === "growth"
-                    ? String(Number(value.toFixed(1)))
-                    : s.timeBased
-                      ? new Date(value).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          timeZone: "UTC",
-                        })
-                      : s.points[Math.round(value)]?.label || "Not recorded";
+              {ticks.map((value, i) => {
+                const px = x(value),
+                  text = sourceTick(value);
                 return (
                   <g key={i}>
                     <line
@@ -225,7 +254,7 @@ export function ClinicalChart({
                   </g>
                 );
               })}
-              {s.points.length > 1 && (
+              {s.points.length > 1 && xmin !== xmax && (
                 <polyline
                   points={path(s.points)}
                   className="chart-patient-line"

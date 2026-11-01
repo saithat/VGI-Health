@@ -7,13 +7,11 @@ import { uiNodeSchema, type UiNode } from "../src/ehr/ui/types";
 import { suppliedTone } from "../src/ehr/ui/presentations/StructuredInfo";
 
 beforeAll(() => {
-  window.matchMedia = vi
-    .fn()
-    .mockImplementation(() => ({
-      matches: false,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }));
+  window.matchMedia = vi.fn().mockImplementation(() => ({
+    matches: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
 });
 afterEach(cleanup);
 function paint(nodes: UiNode[]) {
@@ -156,6 +154,77 @@ describe("structured clinical data boundary", () => {
     ]);
     expect(screen.queryByText(/1970/)).toBeNull();
     expect(screen.getByText("Observation sequence")).toBeTruthy();
+  });
+  it("separates patient measurements from complete published reference data", () => {
+    paint([
+      {
+        presentation: {
+          kind: "growth",
+          children: [
+            {
+              info: {
+                comp: "growth",
+                label: "Growth",
+                infoId: "growth",
+                display: "trend",
+                rows: [
+                  [
+                    ["Date", "Nov 1, 2026"],
+                    ["Age (months)", "114"],
+                    ["Weight (kg)", "30.4"],
+                  ],
+                  [
+                    ["Series", "Weight"],
+                    ["Percentile", "50th"],
+                    ["Age (months)", "114.5"],
+                    ["Value", "31.177548"],
+                    ["Unit", "kg"],
+                    ["Reference", "CDC 2000, girls 2–20 years"],
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const measurements = screen.getByRole("table", { name: "Growth" });
+    const references = screen.getByRole("table", {
+      name: "Growth reference data",
+    });
+    expect(measurements.textContent).toContain("30.4");
+    expect(measurements.textContent).not.toContain("31.177548");
+    expect(references.textContent).toContain("31.177548");
+    expect(references.textContent).toContain("CDC 2000, girls 2–20 years");
+  });
+  it("labels a single dated observation once without inventing a time range", () => {
+    paint([
+      {
+        presentation: {
+          kind: "trend",
+          children: [
+            {
+              info: {
+                comp: "single",
+                label: "Single result",
+                infoId: "single",
+                display: "trend",
+                rows: [
+                  [
+                    ["Measure", "Example"],
+                    ["Value", "5"],
+                    ["Unit", "mg/dL"],
+                    ["Recorded", "Nov 1, 2026 23:30"],
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(screen.getAllByText("23:30")).toHaveLength(1);
+    expect(screen.queryByText("Nov 2")).toBeNull();
   });
   it("uses explicit status words and never derives a flag from a numeric value", () => {
     expect(suppliedTone("L")).toBe("blue");

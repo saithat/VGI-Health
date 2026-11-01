@@ -118,6 +118,32 @@ export function RecordTable({
     </div>
   );
 }
+/** Patient measurements and published reference rows serve different reading tasks. */
+function GrowthRecords({ node }: { node: Info }) {
+  const reference = (row: Pair[]) =>
+    row.some(([key, value]) => key === "Percentile" && value !== "");
+  const measurements = node.rows.filter((row) => !reference(row));
+  const references = node.rows.filter(reference);
+  return (
+    <>
+      <h4 className="presentation-subheading">Recorded measurements</h4>
+      <RecordTable node={{ ...node, rows: measurements }} kind="growth" />
+      {references.length > 0 && (
+        <>
+          <h4 className="presentation-subheading">Reference curve data</h4>
+          <RecordTable
+            node={{
+              ...node,
+              label: `${node.label} reference data`,
+              rows: references,
+            }}
+            kind="growth"
+          />
+        </>
+      )}
+    </>
+  );
+}
 function FolderList({ node }: { node: Info }) {
   return (
     <ul className="presentation-folders" aria-label={node.label}>
@@ -209,6 +235,8 @@ export function StructuredInfo({
           )}
           {kind === "timeGrid" ? (
             <MarGrid node={node} />
+          ) : kind === "growth" ? (
+            <GrowthRecords node={node} />
           ) : (
             <RecordTable node={node} kind={kind} />
           )}
