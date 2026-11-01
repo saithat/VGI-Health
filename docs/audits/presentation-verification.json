@@ -80,7 +80,8 @@
         1440
       ],
       "height": 900,
-      "committedPairs": 17
+      "committedPairs": 17,
+      "manifestImagesVerified": 34
     },
     "directCanonicalAriaRoles": 5,
     "buttons": {
@@ -251,7 +252,11 @@
       "semanticTreesUnchanged": 32,
       "nativeWasmPresentations": 16
     },
-    "nativeCheckReuse": "The final increment changes OR CSS and fictional timestamp offsets only. Native binary and Lean source hashes are unchanged; all 16 native/WASM presentation comparisons were rerun."
+    "nativeCheckReuse": "The final increment changes OR CSS and fictional timestamp offsets only. Native binary and Lean source hashes are unchanged; all 16 native/WASM presentation comparisons were rerun.",
+    "coreComparatorStatements": 18,
+    "checkerComparatorStatements": 21,
+    "completionFragmentComparatorStatements": 5,
+    "finalArtifactBinding": "Passed: source build and emitted app fingerprint, native binary, all fifteen program hashes, actual button report/counts and documentation-only changes since frozen source agree."
   },
   "handoffs": [
     {
