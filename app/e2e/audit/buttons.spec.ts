@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { ButtonAuditSession } from "../../src/core/buttonAudit";
+import type { UiNode } from "../../src/ehr/ui/types";
 import type { Control } from "./report";
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
@@ -9,6 +10,32 @@ import { writeLiveAttempt, writeReport } from "./report";
 import { catalogSchema, defaultPatient } from "../../src/browser/data";
 
 const personas = ["P1", "P2", "P3", "P4", "P5", "RN2"];
+
+function controlShape(nodes: UiNode[]): unknown[] {
+  return nodes.flatMap<unknown>((node) => {
+    if ("button" in node) {
+      const b = node.button;
+      return [["button", b.comp, b.label, b.role, b.enabled]];
+    }
+    if ("field" in node) {
+      const f = node.field;
+      return [["field", f.comp, f.kind, f.pendingConfirm]];
+    }
+    if ("tabs" in node)
+      return [
+        [
+          "tabs",
+          node.tabs.id,
+          node.tabs.labels,
+          node.tabs.selected,
+          controlShape(node.tabs.body),
+        ],
+      ];
+    if ("section" in node) return controlShape(node.section.children);
+    if ("columns" in node) return controlShape(node.columns.children);
+    return [];
+  });
+}
 
 test("app shell: every shell control has an effect or an explained disabled state", async ({
   page: initialPage,
@@ -648,15 +675,18 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       ];
       const seenScreens = new Set<string>();
       const checkedResources = new Set<string>();
-      // Deduplicate by the rendered control configuration. Off-screen history and
-      // expansion order cannot expose a new visible control on this screen.
+      // Patient row text and off-screen history do not add controls. Preserve
+      // every actual button enablement, tab, field-confirm and modal configuration.
       const variantOf = (
         snapshot: ReturnType<ButtonAuditSession["snapshot"]>,
       ) =>
         JSON.stringify({
           screen: snapshot.state.screen,
-          slot: snapshot.state.currentSlot,
-          ui: snapshot.ui,
+          popup: snapshot.state.popup,
+          nav: snapshot.ui?.nav,
+          workspace: controlShape(snapshot.ui?.workspace ?? []),
+          side: controlShape(snapshot.ui?.side ?? []),
+          modal: controlShape(snapshot.ui?.modal ? [snapshot.ui.modal] : []),
         });
       const discovered = new Set<string>();
       const enqueue = async (

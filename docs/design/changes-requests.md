@@ -1867,13 +1867,17 @@ within approximately two seconds. The app shell audit and fixes are in
 screen, component id, label, action, and observed result, is generated in
 [`ehr-dead-controls.md`](../audits/ehr-dead-controls.md).
 
-**Content lane:** remove placeholder Navigator, Sidebar and Patient workspace
-buttons from the canonical, or give them a meaningful interpreter action. Remove
-search fields whose input is ignored, or implement their search result behavior.
-Current selected tabs and repeated actions need a state change, or an explicitly
-disabled reason. Retain actual clinical guard reasons; the audit must not invent
-patient evidence to make a commit clickable. Commit paths blocked by missing
-phase/temporal/source contracts remain content/core integration work.
+**Content lane:** resolve the precise components in the generated inventory.
+Chart-search inputs currently echo the query without results or a clinical state
+change, even when the interpreter reports `ok`; remove them or implement search.
+Any confirmation, selected tab, or repeated action listed as `ignored` or unchanged
+needs meaningful behavior or an explicitly disabled reason. Retain actual clinical
+guards; the audit must not invent patient evidence to make a commit clickable.
+Commit paths blocked by missing phase/temporal/source contracts remain content/core
+integration work. Runtime nav metadata has landed: the former Patient workspace
+placeholder now navigates successfully, and Navigator/Sidebar placeholders are
+absent from the current projection. This supersedes the earlier blanket request
+to remove those labels.
 
 **Render lane status after main's d932551:** nav pairs now contain real goto
 component IDs. The app dispatches those IDs with Event.click, opens available
@@ -1883,6 +1887,7 @@ IDs in the inventory. Supply click metadata or an explicitly informational or
 disabled treatment for those steps. No screen ID is converted into an invented
 click. The final audit uses the newly committed cached-view WASM without a Lean
 build.
+
 ## CHECK-2026-11-01: current baseline and evidence-domain obstruction
 
 This supersedes the stale CHECK-2026-10-31 missing-review and D5 reports for

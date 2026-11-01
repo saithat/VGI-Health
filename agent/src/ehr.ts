@@ -3,19 +3,19 @@
  * with EHR_BIN). Inputs go to JSON files in a temp dir; outputs are read from
  * stdout and validated against the Lean-format mirrors.
  *
- * ASSUMED command lines (the Lean lane has not published the CLI yet; keep
- * this block in sync with docs/STATUS.md):
+ * Native command lines (check/deploy read committed spec JSON; simulation
+ * and spec-export resolve registered release versions):
  *
- *   ehr check     --spec <ver> --program P.json --prev PREV.json --canonical C.json
+ *   ehr check     --spec <spec.json> --program P.json --prev PREV.json --canonical C.json
  *                 stdout: Verdict              exit 0 = ok, 1 = violation
  *   ehr simulate  --spec <ver> --program P.json --persona PP.json --schedule DAY.json
  *                 --world <worldDir> --seed <n>
  *                 stdout: DayResult
  *   ehr min-clicks --spec <ver> --program P.json --schedule DAY.json --world <worldDir>
  *                 stdout: { tasks: [{ task, workflow?, clicks, keystrokes }] }
- *   ehr deploy    --spec <ver> --program P.json --prev PREV.json --canonical C.json --out <dir>
+ *   ehr deploy    --spec <spec.json> --program P.json --prev PREV.json --canonical C.json --out <dir>
  *                 stdout: Certificate (exit 0) | Verdict (exit 1, refused; T4)
- *   ehr render-screens --spec <ver> --program P.json --fhir <bundle.json> --out <dir>
+ *   ehr render-screens --spec <spec.json> --program P.json --fhir <bundle.json> --out <dir>
  *                 writes one page-tree JSON (Html) per screen/state into <dir>,
  *                 named <screenId>.json or <screenId>__<state>.json; exit 0 = ok
  *                 (input to the offline screen check, src/screencheck.ts)
