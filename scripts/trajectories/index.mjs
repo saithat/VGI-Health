@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { dailyCanonical, recordedWorld } from './daily-canonical.mjs';
 import { readFile, writeFile, readdir, mkdir, mkdtemp, rm, access } from 'node:fs/promises';
 import { execFile } from 'node:child_process';
 import { promisify, isDeepStrictEqual } from 'node:util';
@@ -68,8 +69,7 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
   const runDir = path.join(root, 'runs', runId);
   const manifest = await read(path.join(runDir, 'manifest.json'));
   if (manifest.ehr.mode !== 'real') throw new Error('Only real interpreter runs can be verified');
-  const localWorld = path.join(root, 'runs/world', String(manifest.worldSeed));
-  const world = await exists(localWorld) ? localWorld : manifest.world;
+  const world = await recordedWorld({root,manifest});
   const worldManifest = await read(path.join(world, 'manifest.json'));
   const fixtureIndexPath = path.resolve(root, worldManifest.fixtures.index);
   const fixtureIndex = await read(fixtureIndexPath);
@@ -84,8 +84,18 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
     if (snapshots.has(version)) return snapshots.get(version);
     const contexts = archived?.contexts.filter(c => c.specVersion === version) ?? [];
     if (contexts.some(c => !isDeepStrictEqual(c.spec, contexts[0].spec))) throw new Error(`Ambiguous archived spec ${version}`);
-    const source = contexts.length ? 'replay.json archived context' : `releases/${version}/spec.json`;
-    const spec = contexts[0]?.spec ?? await read(path.join(root, 'releases', version, 'spec.json'));
+    const frozen=[];
+    const certifications=path.join(runDir,'certifications');
+    if(await exists(certifications)) for(const persona of manifest.personas){
+      const directory=path.join(certifications,persona);if(!await exists(directory))continue;
+      for(const name of await readdir(directory)){
+        const inputs=await read(path.join(directory,name,'inputs.json'));
+        if(inputs.specVersion===version)frozen.push({path:path.join(directory,name,'spec.json'),spec:await read(path.join(directory,name,'spec.json'))});
+      }
+    }
+    if(frozen.some(f=>!isDeepStrictEqual(f.spec,frozen[0].spec)))throw new Error(`Ambiguous recorded spec ${version}`);
+    const source = frozen.length ? relative(frozen[0].path) : contexts.length ? 'replay.json archived context' : `releases/${version}/spec.json`;
+    const spec = frozen[0]?.spec ?? contexts[0]?.spec ?? await read(path.join(root, 'releases', version, 'spec.json'));
     const file = path.join(output, 'specs', `${version}.json`);
     await write(file, spec);
     specSources.set(version, { path: relative(file), source, sha256: await sha(file) });
@@ -164,7 +174,10 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
           wasmEvents += exported.verification.eventsVerified;
           if (exported.firstMismatch) mismatches.push({ id: task.id, side: 'recorded', firstDivergentEvent: exported.firstMismatch });
           if (baseline.includes(task.id) || baseline.includes('all')) {
-            const baselinePath = path.join(runDir, 'programs', persona, 'v0.json');
+            const baselineDirectory=path.join(output,'canonicals',dayFolder);
+            await mkdir(baselineDirectory,{recursive:true});
+            const baselinePath=path.join(baselineDirectory,`${persona}.json`);
+            await write(baselinePath,await dailyCanonical({root,runDir,runId,dayFolder,persona,program}));
             const baseProgram = await read(baselinePath);
             const baseSpec = await specFor(baseProgram.specVersion);
             // Simulate the full day so prior resources/receipts are preserved. Cache per day below.

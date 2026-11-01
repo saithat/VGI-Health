@@ -830,6 +830,40 @@ with a JSON verdict on stdout and document it in command usage. The app's
 `pnpm --filter app verdicts` discovers all programs, invokes that contract if
 advertised, and otherwise records “verdict not computed”. Mock certificates
 are never substituted. This request does not block live interaction.
+## Value-constraint integration in check
+
+The world reference fix brings core's `EntryReq.allowed` API into this lane.
+`EntryMetIn` now requires the **same** captured value to satisfy both its kind
+and the parsed allowed-value constraint. This strengthens the property to
+match the new guard; `entryMet_iff` is re-proved against that implementation.
+Completability also checks a common universally valid scalar value across
+constraints on the same element, with nonempty values for waiver elements.
+Empty, unparseable and conflicting allowed lists are rejected. Fixed allowed
+lists for record-dependent identity/scan/cosign values are conservatively
+rejected; no clinical permission or guard is relaxed. Zero-refill quantities
+are supported generically.
+- The all-workflows `canonical.json` remains a source template. Deployable
+  role projections are exported as `releases/<version>/personas/P1.json` …
+  `P5.json` (physician, physician, RN, NP, surgeon). Their field/commit
+  declarations and macro targets stay within the role. Interpreter paths
+  still pass for the intended clinicians. Every seed starts from a matching
+  role projection before its unsafe mutation is applied.
+- All auto-linked canonical fields now use `.linked` with the spec's exact
+  source (`weight`, `visitDiagnosis`). This resolves the check lane's
+  LinkedNotRetyped concern without weakening that property. Repeated copies
+  remain visible; no workflow screen is removed.
+- **Agent integration:** select the persona canonical file for deployment;
+  `loadRelease` currently reads only the all-workflows template. Do not certify
+  the source template as a single-role program.
+- **Checker CR-6 remains core/check work:** `requestPriorAuth` is still a
+  human click capturing a never-prefill element, while HumanStepsByHuman
+  currently names only `Event.enter`; repeated requests may overwrite a
+  confirmed capture. No content prefill policy or safety property was weakened
+  to conceal that mismatch. Resolve with owner-reviewed semantics/properties.
+- **Episode/role domain:** a pediatric NP cannot verify surgical consent under
+  the preserved consent role rule. An NP supplied a `preop` episode must stay
+  blocked. Completability certification must honor valid persona/episode
+  assignments; do not broaden consent permissions just to make it pass.
 
 ## Sim final integration status (2026-10-31)
 
@@ -1937,6 +1971,11 @@ an accepted value; clinical-choice fidelity needs review even when a task comple
 P4's complete day-1 schedule does not discharge universal pre-op completability.
 See `lean/Ehr/Check/sim-smoke-report.json`. Sim changes remain with its lane.
 
+## Overnight all-persona smoke prerequisite (lane/run, 2026-10-31)
+
+Native core-profile `ehr check --spec releases/v1/spec.json --program releases/v1/personas/P4.json --prev releases/v1/personas/P4.json --canonical releases/v1/personas/P4.json` still rejects P4 with `completable`: `commit signOrders: no field the user can reach for required element consentVerified`. Counterexample follows home → w1Rooming → w1Orders → w1Verify → w1Sign → signOrders. Owner now requires NP pre-op orders to have a **human-only attending co-signature**, supplied by a simulated attending, never automated by the overnight agent. Please land the corresponding spec/canonical/simulator fix and regenerated release exports on main; lane/run will not change protected Lean directories or weaken the universal completion property. This blocks a certified all-five-persona smoke and the full run.
+
+Composite prerequisite: main currently has `ComponentDef`/`Program.componentDefs`, but no `Kind.use` or `Program.expand` in Core. Please supply finite structural expansion, source certificate binding and checker/render/sim integration; the agent must not invent an unchecked semantic kind.
 
 ## SIM-WORLD2-DOSE-2026-10-31: incompatible medication units need core/content change
 
@@ -1987,6 +2026,15 @@ boundary, preserving all spec fields and Schedule II constraints. New-run defaul
 now select world 2, but this separate schema mismatch must be fixed before an
 actual overnight agent run. Native `ehr simulate` reads the spec successfully.
 
+### Overnight preflight update
+
+The P4 startup obstruction above is resolved by main `72bee1e`/`3da9ace`, with
+an encounter-specific signing policy: physicians/surgeons sign pre-op orders;
+NP pre-op signing is refused. The agent adopts that exported rule unchanged and
+never treats an attending co-signature as automatable. World 2 arrived in
+`181ceb3`. The world-1 blocked/diagnostic attempts are archived separately;
+`smoke-core` will be a fresh all-five, world-2 run. Composite expansion remains
+an open protected-core prerequisite.
 Resolved by the check lane: the generated-type boundary now accepts and preserves
 `drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
 All three active specs round-trip exactly; agent tests and typecheck pass.

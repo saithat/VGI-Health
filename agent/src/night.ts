@@ -1,25 +1,31 @@
+import { calibrationPartition, validationSeed } from './protocol.js';
+import { expandProgram } from './composites.js';
+import { compilePresentations } from './presentation-compiler.js';
+import path from 'node:path';
+import { bindBuild, installedBuild } from './build-binding.js';
+import { promptContext } from './manual.js';
 /**
  * The nightly loop for one persona (BRIEF section 9):
  *   1 observe -> 2 hypothesize -> 3 generate 3-5 candidates -> 4 pre-screen
  *   (ehr check + ehr simulate on train days) -> 5 choose -> 6 certify (<= 3
- *   repairs with counterexamples) -> 7 validate on day d+1 -> 8 simulated user
+ *   repairs with counterexamples) -> 7 validate on past calibration tasks -> 8 simulated user
  *   response -> 9 decision record + ehr deploy.
  *
  * EVALUATION INTEGRITY (BRIEF 8.4): prompts are built only from `NightInput.train`
- * (days <= d). Day d+1 is reachable only through `Holdout.validate`, which
+ * (days <= d). Past calibration data is reachable only through `Holdout.validate`, which
  * returns aggregate metrics to the loop and is never passed to a prompt
  * builder; the LLM sees only accept/reject outcomes of earlier nights.
  */
 import type { AgentBackend, Proposal } from './agent.js';
 import type { EhrClient } from './ehr.js';
 import { touchedPaths } from './jsonpatch.js';
-import { addMetrics, pctAboveFloor, saving, sumMetrics, summarizeTrain, type TrainDay } from './observe.js';
+import { addMetrics, pairedMetrics, pctAboveFloor, saving, sumMetrics, summarizeTrain, type TrainDay } from './observe.js';
 import { applyToProgram, componentsMoved } from './program.js';
 import { choosePrompt, nightlyPrompt, repairPrompt, type HistoryItem, type PersonaView } from './prompts.js';
 import type { Release } from './releases.js';
 import {
   violationOf, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
-  type JsonPatchOp, type LlmCallRef, type Metrics, type Program, type ReplayDay, type Savings, type ScreenCheckResult, type TrainSummary, type Verdict,
+  type JsonPatchOp, type LlmCallRef, type Metrics, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
 } from './schema.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
@@ -29,7 +35,7 @@ import { errorMessage, hash32, pad2, rng } from './util.js';
 export const MAX_REPAIRS = 3;
 const TRAIN_ESTIMATE_DAYS = 2;
 
-/** Opaque access to the validation day (d+1). Returns aggregates only; never feeds a prompt. */
+/** Opaque access to the past validation partition. Returns aggregates only; never feeds a prompt. */
 export interface Holdout {
   readonly day: number | null;
   validate(before: Program, after: Program, specVersion: string): Promise<ReplayDay | null>;
@@ -83,6 +89,8 @@ export interface Gate {
   prev: Program;
   canonical: Program;
   nextVersion: number;
+  night?: number;
+  validation?: ReplayDay | null;
 }
 
 /** Apply a patch to `base` and run `ehr check`. */
@@ -90,6 +98,8 @@ export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly 
   let program: Program;
   try {
     program = applyToProgram(base, patch, { version: gate.nextVersion, specVersion: gate.specVersion }).program;
+    expandProgram(program);
+    compilePresentations(program);
   } catch (e) {
     return { program: null, check: invalidPatch(e) };
   }
@@ -99,20 +109,22 @@ export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly 
 
 /** Simulate train schedules on the current program and a candidate; saving per train day. */
 export class TrainEstimator {
-  private readonly baseline = new Map<number, Metrics>();
+  private readonly baseline = new Map<number, DayResult>();
   constructor(private readonly deps: LoopDeps, private readonly input: NightInput, private readonly specVersion: string) {}
 
   private days(): readonly TrainDay[] {
     return this.input.train.slice(-TRAIN_ESTIMATE_DAYS);
   }
 
-  private async run(program: Program, day: TrainDay): Promise<Metrics> {
+  private async run(program: Program, day: TrainDay): Promise<DayResult> {
+    const verdict = await this.deps.ehr.check({specVersion:this.specVersion, program, prev:program, canonical:program});
+    if (verdict !== 'ok') throw new Error('Uncertified training simulation refused');
     const persona = this.input.persona.params;
     const res = await this.deps.ehr.simulate({
       specVersion: this.specVersion, program, persona, schedule: day.schedule, worldDir: this.deps.worldDir,
       seed: daySeed(this.deps.worldSeed, day.schedule.day),
     });
-    return sumMetrics(res.tasks);
+    return res;
   }
 
   async estimate(candidate: Program): Promise<EvaluatedCandidate['trainEstimate']> {
@@ -126,8 +138,9 @@ export class TrainEstimator {
         b = await this.run(this.input.current, d);
         this.baseline.set(d.schedule.day, b);
       }
-      before = addMetrics(before, b);
-      after = addMetrics(after, await this.run(candidate, d));
+      const pair = pairedMetrics(b, await this.run(candidate, d));
+      before = addMetrics(before, pair.before);
+      after = addMetrics(after, pair.after);
     }
     return { days: days.map((d) => d.schedule.day), before, after, saving: saving(before, after, days.length) };
   }
@@ -153,28 +166,38 @@ export function noteRejections(state: SeedState, evaluated: readonly EvaluatedCa
 }
 
 export function replayDay(day: number, load: string, before: DayResult, after: DayResult): ReplayDay {
-  const b = sumMetrics(before.tasks);
-  const a = sumMetrics(after.tasks);
+  const { before: b, after: a } = pairedMetrics(before, after);
   return { day, load, before: b, after: a, saving: saving(b, a), pctAboveFloor: { before: pctAboveFloor(before), after: pctAboveFloor(after) } };
 }
 
-/** Holdout backed by the world's schedule for day d+1. */
+/** Holdout backed by the world's schedule for past calibration tasks. */
 export function makeHoldout(deps: LoopDeps, persona: PersonaView, schedule: DaySchedule | null): Holdout {
+  const past = schedule ? calibrationPartition(schedule, 'validation') : null;
   return {
-    day: schedule?.day ?? null,
+    day: past?.day ?? null,
     async validate(before, after, specVersion) {
-      if (!schedule) return null;
-      const args = { specVersion, persona: persona.params, schedule, worldDir: deps.worldDir, seed: daySeed(deps.worldSeed, schedule.day) };
+      if (!past || !past.tasks.length) return null;
+      for (const program of [before, after]) {
+        const verdict = await deps.ehr.check({ specVersion, program, prev: program, canonical: program });
+        if (verdict !== 'ok') throw new Error(`Refusing uncertified validation replay: ${JSON.stringify(verdict)}`);
+      }
+      const args = { specVersion, persona: persona.params, schedule: past, worldDir: deps.worldDir, seed: validationSeed(deps.worldSeed, past.day) };
       const b = await deps.ehr.simulate({ ...args, program: before });
       const a = await deps.ehr.simulate({ ...args, program: after });
-      return replayDay(schedule.day, schedule.load, b, a);
+      const expected = [...past.tasks.map((t)=>t.id)].sort();
+      for (const result of [b,a]) if (JSON.stringify(result.tasks.map((t)=>t.task).sort()) !== JSON.stringify(expected)) throw new Error('Validation simulator omitted or substituted scheduled tasks');
+      return replayDay(past.day, past.load, b, a);
     },
   };
 }
 
+export function completionOk(r: ReplayDay | null): boolean {
+  return r !== null && r.after.tasks > 0 && r.after.tasks === r.before.tasks && r.after.completed === r.after.tasks && r.after.completed >= r.before.completed;
+}
+
 export function improved(r: ReplayDay): boolean {
   const interactions = (m: Metrics) => m.clicks + m.keystrokes + m.scrolls;
-  return r.after.klmDeciSec < r.before.klmDeciSec && interactions(r.after) <= interactions(r.before) && r.after.completed >= r.before.completed;
+  return r.after.klmDeciSec < r.before.klmDeciSec && interactions(r.after) <= interactions(r.before) && completionOk(r);
 }
 
 export function sumSavings(cs: readonly Candidate[]): Savings {
@@ -195,7 +218,9 @@ export function predictionVerdict(predicted: Savings | null, measured: ReplayDay
 export async function minClicksByWorkflow(deps: LoopDeps, specVersion: string, before: Program, after: Program, day: TrainDay | undefined): Promise<DecisionRecord['measured']['minClicks']> {
   if (!day) return [];
   const args = { specVersion, schedule: day.schedule, worldDir: deps.worldDir };
-  const b = await deps.ehr.minClicks({ ...args, program: before });
+  // The pre-migration program may be intentionally non-conforming under the
+  // new spec. Measure its old valid workflow rather than searching an impossible task.
+  const b = await deps.ehr.minClicks({ ...args, specVersion: before.specVersion, program: before });
   const a = await deps.ehr.minClicks({ ...args, program: after });
   const wf = new Map(day.schedule.tasks.map((t) => [t.id, t.workflow]));
   const agg = new Map<string, { b: number; a: number; n: number }>();
@@ -234,9 +259,10 @@ export function userResponse(deps: LoopDeps, night: number, persona: string, mov
 
 export const callId = (night: number, persona: string, step: string): string => `night-${pad2(night)}/${persona}/${step}`;
 
-export function emptyRecord(deps: LoopDeps, input: { night: number; persona: PersonaView; specVersion: string; current: Program }, evidence: TrainSummary): DecisionRecord {
+export function emptyRecord(deps: LoopDeps, input: { night: number; persona: PersonaView; specVersion: string; current: Program; spec: Spec }, evidence: TrainSummary): DecisionRecord {
   return {
     schemaVersion: 1,
+    context: (({ manualHash, ruleContextHash, ruleProfile }) => ({ manualHash, ruleContextHash, ruleProfile }))(promptContext(input.spec, input.current)),
     runId: deps.runId,
     night: input.night,
     persona: input.persona.id,
@@ -278,12 +304,25 @@ export type DeployOutcome =
  * (T4) and publishes. A version failing either gate is never deployed.
  */
 export async function deployVersion(deps: LoopDeps, persona: string, program: Program, gate: Gate): Promise<DeployOutcome> {
+  try {
+  if (gate.night !== undefined && !completionOk(gate.validation ?? null)) throw new Error('Full validation completion required before deploy');
+  const build = deps.ehr.mode === 'real' ? await installedBuild(undefined, deps.ehr.binary ?? undefined) : undefined;
   const screenCheck = await deps.screens.check({ specVersion: gate.specVersion, program });
   if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
-  const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: deps.store.dir });
+  const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: path.join(deps.store.dir, 'native', persona, `v${program.version}`) });
   if (!res.deployed) return { ok: false, reason: 'deploy-refused', check: toCheckResult(res.verdict), screenCheck };
-  const deployed = await deps.store.deploy(persona, program, res.certificate);
+  const specFile = gate.specVersion.endsWith('.json') ? gate.specVersion : path.join((await import('./util.js')).REPO_ROOT, 'releases', gate.specVersion, 'spec.json');
+  const spec = deps.ehr.mode === 'real' ? JSON.parse(await (await import('node:fs/promises')).readFile(specFile, 'utf8')) : await deps.ehr.specExport(gate.specVersion);
+  const inputsDir = path.join(deps.store.dir, 'certifications', persona, `v${program.version}`);
+  await (await import('./util.js')).writeJson(path.join(inputsDir, 'spec.json'), spec);
+  const inputs = { specVersion: res.certificate.specVersion, prev: expandProgram(gate.prev), canonical: expandProgram(gate.canonical), program, night: gate.night ?? null };
+  await (await import('./util.js')).writeJson(path.join(inputsDir, 'inputs.json'), inputs);
+  const deployed = await deps.store.deploy(persona, program, res.certificate, build ? { ...bindBuild(build, program, res.certificate), certificationInputsSha256: (await import('./program.js')).sha256((await import('./program.js')).stableStringify({spec,inputs})) } : undefined, gate.night);
   return { ok: true, certificate: res.certificate, deployed, screenCheck };
+  } catch (error) {
+    const screenCheck: ScreenCheckResult = { status:'error', mode:deps.screens.mode, bundles:[], pages:0, failingScreens:[], failingFiles:[], message:`Deployment infrastructure error: ${errorMessage(error)}` };
+    return { ok:false, reason:'screen-check', check:screenCheckRejection(screenCheck), screenCheck };
+  }
 }
 
 /** Put a deploy outcome into the record; a screen-check failure is logged like a rejection. */
@@ -313,11 +352,11 @@ function compatible(a: Candidate, b: Candidate): boolean {
 export async function runNight(deps: LoopDeps, input: NightInput): Promise<NightResult> {
   const { night, persona, release, current } = input;
   const specVersion = release.specVersion;
-  const gate: Gate = { specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1 };
+  const gate: Gate = { specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
 
   // 1. Observe (train days only).
   const evidence = summarizeTrain(persona.id, current, input.train, input.programs);
-  const rec = emptyRecord(deps, { night, persona, specVersion, current }, evidence);
+  const rec = emptyRecord(deps, { night, persona, specVersion, current, spec: input.release.spec }, evidence);
   const calls: LlmCallRef[] = [];
   let noted = 0;
   const note = () => {
@@ -342,6 +381,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   } catch (e) {
     rec.hypothesis = '(no hypothesis: the LLM call failed)';
     rec.flags.push(`llm-error: ${errorMessage(e)}`);
+    rec.outcome = 'llm-error';
     return finish(null);
   }
   calls.push(proposal.call);
@@ -380,7 +420,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   try {
     const choice = await deps.agent.chooseCandidates({
       callId: callId(night, persona.id, 'choose-0'),
-      parts: choosePrompt({ night, persona, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }),
+      parts: choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }),
     });
     calls.push(choice.call);
     const byId = new Map(eligible.map((e) => [e.candidate.id, e.candidate]));
@@ -402,6 +442,8 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     }
   } catch (e) {
     rec.flags.push(`llm-error (choose): ${errorMessage(e)}`);
+    rec.outcome = 'llm-error';
+    return finish(null);
   }
   if (chosen.length === 0) {
     const best = [...eligible].sort((a, b) => (b.trainEstimate?.saving.klmDeciSec ?? 0) - (a.trainEstimate?.saving.klmDeciSec ?? 0))[0];
@@ -433,7 +475,8 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
       });
     } catch (e) {
       rec.flags.push(`llm-error (repair ${r}): ${errorMessage(e)}`);
-      break;
+      rec.outcome = 'llm-error';
+      return finish(null);
     }
     calls.push(repair.call);
     for (const c of repair.candidates) {
@@ -459,7 +502,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   }
   rec.certification.result = 'certified';
 
-  // 7. Validate: replay day d+1 (same patients, events, choices) on the old and new versions.
+  // 7. Validate: replay past calibration tasks (same patients, events, choices) on the old and new versions.
   const moved = componentsMoved(current, finalProgram);
   const replay = await input.holdout.validate(current, finalProgram, specVersion);
   const stabilityOk = moved <= release.spec.design.stabilityBudget;
@@ -492,7 +535,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   }
 
   // 9. Screen check, then deploy (ehr deploy re-checks; only certified, screen-checked versions are published).
-  const dep = await deployVersion(deps, persona.id, finalProgram, gate);
+  const dep = await deployVersion(deps, persona.id, finalProgram, { ...gate, validation: replay });
   recordDeploy(rec, dep, { candidateIds: chosen.map((c) => c.id), patch: chosen.flatMap((c) => c.patch) });
   if (!dep.ok) {
     rec.outcome = dep.reason === 'screen-check' ? 'screen-check-failed' : 'certification-failed';
