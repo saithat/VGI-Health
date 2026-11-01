@@ -95,7 +95,10 @@ def augment (s : Screen) : Screen :=
     (specV1.alerts.filter (·.commit == k)).filterMap fun a =>
       if s.components.any (fun c => match c.kind with | .alert id _ => id == a.id | _ => false)
       then none else some (alertC s.id ("legal.alert." ++ a.id) a.id a.label false))
-  withEducationOutcome { s with components := s.components ++ additions ++ inheritedAlerts }
+  let before := s.components.takeWhile fun c => match c.kind with
+    | .button (.commit _) => false | _ => true
+  let after := s.components.drop before.length
+  withEducationOutcome { s with components := before ++ additions ++ inheritedAlerts ++ after }
 
 /-- Clinician-facing names never expose internal screen identifiers. -/
 def screenTitle (id : ScreenId) : String :=

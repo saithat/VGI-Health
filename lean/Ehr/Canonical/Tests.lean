@@ -153,6 +153,7 @@ def adminPath (drug : String) : List Event :=
    ("painScore", .code "7")] ++ LegalExamples.artifact "w4Admin" ++
   [.enter "w4Admin.legal.administeredDrug" (.code drug),
    .enter "w4Admin.legal.administeredDose" (.code (if drug == "insulin lispro" then "2 units" else if drug == "oxycodone" then "5 mg" else "2 g")),
+   .enter "w4Admin.adminSite" (.code (if drug == "insulin lispro" then "left abdomen" else if drug == "oxycodone" then "not applicable: oral" else "left forearm IV")),
    .enter "w4Admin.legal.actualAdministrationRoute" (.code (if drug == "insulin lispro" then "subcutaneous" else if drug == "oxycodone" then "PO" else "IV"))]
 /-- W4 insulin without a second nurse is blocked. -/
 def insulinMissing : State := run (adminPath "insulin lispro") (f := adminFacts "insulin lispro") (u := nurse)

@@ -18327,7 +18327,7 @@
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-II-IV",
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "ca-statutes-bpc-4040-requested-purpose",
@@ -20058,7 +20058,7 @@
       "element:naloxoneEducationOutcome",
       "entry:signOrders:naloxoneEducationOutcome:naloxoneRisk"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. The existing naloxoneEducation flag remains required as stricter hospital policy; the outcome enum does not replace it."
   },
   {
     "id": "ca-statutes-hsc-120990-hiv-right-decline",
@@ -26307,7 +26307,7 @@
       "entry:signOrders:controlledMedicalPurpose:orderClass controlled-II-IV",
       "entry:signOrders:controlledMedicalPurpose:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-04-usual-practice",
@@ -26610,7 +26610,7 @@
       "entry:signOrders:prescriptionPatientName:orderClass controlled-II-IV",
       "entry:signOrders:prescriptionPatientName:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-patient-address",
@@ -26793,7 +26793,7 @@
       "entry:signOrders:prescriptionPatientAddress:orderClass controlled-II-IV",
       "entry:signOrders:prescriptionPatientAddress:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-drug-name",
@@ -27044,7 +27044,7 @@
       "entry:signOrders:controlledProductStrength:orderClass controlled-II-IV",
       "entry:signOrders:controlledProductStrength:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-dosage-form",
@@ -27227,7 +27227,7 @@
       "entry:signOrders:controlledDosageForm:orderClass controlled-II-IV",
       "entry:signOrders:controlledDosageForm:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-quantity",
@@ -27478,7 +27478,7 @@
       "entry:signOrders:prescriptionDirections:orderClass controlled-II-IV",
       "entry:signOrders:prescriptionDirections:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-prescriber-name",
@@ -27661,7 +27661,7 @@
       "entry:signOrders:controlledPrescriberName:orderClass controlled-II-IV",
       "entry:signOrders:controlledPrescriberName:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-prescriber-address",
@@ -27844,7 +27844,7 @@
       "entry:signOrders:controlledPrescriberAddress:orderClass controlled-II-IV",
       "entry:signOrders:controlledPrescriberAddress:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-prescriber-dea",
@@ -28027,7 +28027,7 @@
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-II-IV",
       "entry:signOrders:prescriberFederalRegistration:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-ghb-need",
@@ -28199,7 +28199,7 @@
       "element:ghbMedicalNeed",
       "entry:signOrders:ghbMedicalNeed:drugClass ghb"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1306-05-institution-code",
@@ -30812,7 +30812,7 @@
       "entry:signOrders:controlledReadyToSign:orderClass controlled-II-IV",
       "entry:signOrders:controlledReadyToSign:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags."
   },
   {
     "id": "federal-rx-1311-120-edit-review",
@@ -31042,7 +31042,7 @@
       "review:signOrders:controlledSigningIssueDate:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningIssueDate:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-patient-name",
@@ -31212,7 +31212,7 @@
       "review:signOrders:controlledSigningPatientName:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningPatientName:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-drug-name",
@@ -31382,7 +31382,7 @@
       "review:signOrders:controlledSigningDrugName:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningDrugName:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-strength",
@@ -31552,7 +31552,7 @@
       "review:signOrders:controlledSigningStrength:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningStrength:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-form",
@@ -31722,7 +31722,7 @@
       "review:signOrders:controlledSigningDosageForm:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningDosageForm:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-quantity",
@@ -31892,7 +31892,7 @@
       "review:signOrders:controlledSigningQuantity:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningQuantity:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-directions",
@@ -32062,7 +32062,7 @@
       "review:signOrders:controlledSigningDirections:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningDirections:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-refills",
@@ -32232,7 +32232,7 @@
       "review:signOrders:controlledSigningRefills:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningRefills:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-earliest-fill",
@@ -32402,7 +32402,7 @@
       "review:signOrders:controlledSigningEarliestFill:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningEarliestFill:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-prescriber-name",
@@ -32572,7 +32572,7 @@
       "review:signOrders:controlledSigningPrescriberName:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningPrescriberName:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-prescriber-address",
@@ -32742,7 +32742,7 @@
       "review:signOrders:controlledSigningPrescriberAddress:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningPrescriberAddress:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-120-display-prescriber-dea",
@@ -32912,7 +32912,7 @@
       "review:signOrders:controlledSigningDea:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningDea:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-140-signing-notice",
@@ -33082,7 +33082,7 @@
       "review:signOrders:controlledSigningLegalNotice:orderClass controlled-II-IV",
       "review:signOrders:controlledSigningLegalNotice:orderClass controlled-V"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "federal-rx-1311-140-label-sign",
@@ -40157,7 +40157,7 @@
       "info:resultAbnormalFlags",
       "review:ackResult:resultAbnormalFlags:always"
     ],
-    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply."
+    "encodingNote": "Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply. Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work."
   },
   {
     "id": "entrenched-safer-result-surrogate",

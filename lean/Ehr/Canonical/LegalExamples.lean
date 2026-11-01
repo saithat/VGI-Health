@@ -99,6 +99,7 @@ def values : List (ElementId × String) :=
    ("suicideRiskLevel", "High acute risk based on intent, plan and access to means."),
    ("suicideMitigationPlan", "Continuous observation, remove access to means and urgent psychiatric evaluation."),
    ("methotrexateTeachBack", "true"),
+   ("abxIndication", "surgical-prophylaxis"),
    ("patientIdReentry", "RK/M/58"), ("weight", "70"), ("dosingWeight", "70"),
    ("refillDecision", "approve"), ("refillDenyReason", "Request is for a Schedule II drug; new prescription evaluation required."),
    ("refillQuantity", "30"), ("refillRefills", "0"), ("refillPharmacy", "Community pharmacy"), ("refillProtocolMet", "true"),

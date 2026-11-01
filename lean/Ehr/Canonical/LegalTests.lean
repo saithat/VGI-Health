@@ -19,24 +19,24 @@ def navigate (p : Program) (origin target : ScreenId) : List Event :=
   ((paths.find? (·.1 == target)).map (·.2)).getD []
 
 /-- Explicit samples enter real fields. Missing samples stay absent. -/
-def fillArtifact (p : Program) (screen : ScreenId) (drug : String := "lisinopril") (refillChoice : String := "approve") : List Event :=
+def fillArtifact (p : Program) (screen : ScreenId) (drug : String := "lisinopril") (refillChoice : String := "approve") (sp : Spec := specV1) : List Event :=
   (p.screen? screen).toList.flatMap fun sc => sc.components.flatMap fun c =>
     match c.kind with
     | .field e _ _ =>
       let sample := if e == "drug" then some drug else if e == "refillDecision" then some refillChoice else
         (LegalExamples.values.find? (·.1 == e)).map (·.2)
-      match sample, specV1.element? e with
+      match sample, sp.element? e with
       | some text, some el => (parseValue el.kind text).toList.map (.enter c.id)
       | _, _ => []
     | _ => []
 
 /-- Walk from Home, enter the synthetic documentation and commit as a human. -/
 def artifactWalk (screen commit : String) (p : Program := canonicalV1)
-    (drug : String := "lisinopril") : State :=
-  let role := ((specV1.commit? commit).map (fun (cs : CommitSpec) => cs.roles.headD Role.physician)).getD .physician
+    (drug : String := "lisinopril") (sp : Spec := specV1) : State :=
+  let role := ((sp.commit? commit).map (fun (cs : CommitSpec) => cs.roles.headD Role.physician)).getD .physician
   let u : User := { id := "doctor1", role }
-  let es := navigate p "home" screen ++ fillArtifact p screen drug (if commit == "denyRefill" then "deny" else "approve")
-  finish (run es p hospital u) screen commit p hospital u
+  let es := navigate p "home" screen ++ fillArtifact p screen drug (if commit == "denyRefill" then "deny" else "approve") sp
+  finish (run es p hospital u sp) screen commit p hospital u sp
 
 /-- Every new artifact action; original commits have detailed W1–W7 walks. -/
 def newArtifacts : List (ScreenId × CommitId) :=

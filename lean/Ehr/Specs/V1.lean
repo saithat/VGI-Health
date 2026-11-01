@@ -564,7 +564,9 @@ every line (see `orderSigningEntries`). -/
 
 /-- Law: 22 CCR 70263(g), (h)(4).
 The drug (formulary name). Order sets and preference lists may fill it in,
-and a human confirms it. -/
+and a human confirms it.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def drug : ElementSpec where
   id := "drug"
   label := "Medication"
@@ -641,7 +643,9 @@ def quantity : ElementSpec where
   fhirTarget := "MedicationRequest.dispenseRequest.quantity"
 
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Number of refills allowed. -/
+Number of refills allowed.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def refills : ElementSpec where
   id := "refills"
   label := "Refills"
@@ -918,8 +922,9 @@ def triageAcuity : ElementSpec where
   friction := .safety
   fhirTarget := "Encounter.priority"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-How the patient arrived (walk-in, ambulance, …). -/
+/-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-arrival-means.
+How the patient arrived (walk-in, ambulance, ...), required on recordEdArrival.
+This reuses the original field and record-confirm policy. -/
 def arrivalMode : ElementSpec where
   id := "arrivalMode"
   label := "Arrival mode"
@@ -1009,8 +1014,10 @@ def adminReason : ElementSpec where
   friction := .compliance
   fhirTarget := "MedicationAdministration.statusReason"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Injection site, for injected medications. Optional. -/
+/-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-site.
+Record the injection site. The UI requires a site answer for every administration
+as a broader hospital policy; an oral dose may explicitly say not applicable.
+The original confirmation policy and compliance friction remain. -/
 def adminSite : ElementSpec where
   id := "adminSite"
   label := "Site"
@@ -1325,8 +1332,10 @@ def opCondition : ElementSpec where
   friction := .compliance
   fhirTarget := "Procedure.outcome.text"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Post-op order set: diet. Optional. -/
+/-- Law: 22 CCR §70749(a)(4). Catalog: ca-title22-70749-diet-orders.
+Diet content is required on the dedicated signDietOrder artifact. Its existing
+safety friction and confirmation policy remain; medication signing does not
+silently acquire a universal diet requirement. -/
 def postOpDiet : ElementSpec where
   id := "postOpDiet"
   label := "Diet"
@@ -1474,7 +1483,9 @@ def dischargeDestination : ElementSpec where
 /-! ## Data elements: refill requests (W7) -/
 
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Approve, deny, or modify the refill request. -/
+Approve, deny, or modify the refill request.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def refillDecision : ElementSpec where
   id := "refillDecision"
   label := "Refill decision"
@@ -1507,7 +1518,9 @@ def refillQuantity : ElementSpec where
   fhirTarget := "MedicationRequest.dispenseRequest.quantity"
 
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-The number of refills granted. -/
+The number of refills granted.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def refillRefills : ElementSpec where
   id := "refillRefills"
   label := "Refills"
@@ -1542,8 +1555,10 @@ def refillProtocolMet : ElementSpec where
   friction := .compliance
   fhirTarget := "Task.extension.protocolMet"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-The reason for denying a refill. Optional. -/
+/-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
+The dedicated denyRefill path needs a nonempty denial reason. Requiring this
+explanation is the hospital's implementation of a separate refusal path, not a
+claim that federal law mandates this exact field. Approval cannot record a denial. -/
 def refillDenyReason : ElementSpec where
   id := "refillDenyReason"
   label := "Reason for denial"

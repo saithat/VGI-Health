@@ -137,6 +137,13 @@ for r in rules:
             ['review:' + e['commit'] + ':' + e['info'] + ':' + e['when'] for e in p['reviews']]))
         r.pop('encodingSkippedReason', None)
         r['encodingNote'] = 'Spec v1 data; v1.1/v2 inherit. Scope and backend limits in encoding-plan.md apply.'
+        if r['id'] == 'ca-statutes-bpc-741-education-exceptions':
+            r['encodingNote'] += ' The existing naloxoneEducation flag remains required as stricter hospital policy; the outcome enum does not replace it.'
+        if p['infos']:
+            r['encodingNote'] += ' Panel identifiers/guards are encoded; actual renderer payload bindings remain CR-15 work.'
+        if any(e['when'] in ('orderClass controlled-V', 'drugClass ghb') for e in p['entries']):
+            r['encodingNote'] += ' Controlled-V/GHB branches require actual formulary support from core/world; no demo products currently carry these tags.'
+
     elif r['fit'] == 'existing':
         r['encodedIn'] = r.get('existingSpecItems', [])
         r.pop('encodingSkippedReason', None)
