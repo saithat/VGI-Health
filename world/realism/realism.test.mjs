@@ -55,6 +55,8 @@ test('all ten day graphs have full lists, role assignments, standing orders, sen
     for(const p of ['P1','P4']) {const n=find(p,'clinic-schedule').entry.length; assert.ok(n>=12&&n<=18);}
     assert.ok(find('P2','ed-census').entry.length>=12&&find('P2','ed-census').entry.length<=20);
     assert.equal(find('P3','my-patients').entry.length,5);assert.equal(find('P3','unit-census').entry.length,12);
+    const unitBeds=find('P3','unit-census').entry.map(row=>byKey.get(byKey.get(row.item.reference).location[0].location.reference).name);
+    assert.equal(new Set(unitBeds).size,12,'A bed cannot contain two unit census patients');
     const cases=find('P5','or-schedule').entry.map(e=>byKey.get(e.item.reference));
     assert.equal(cases.length,10);assert.equal(new Set(cases.map(r=>r.locationReference[0].reference)).size,2);
     assert.equal(find('P5','consults').entry.length,3);
@@ -62,7 +64,9 @@ test('all ten day graphs have full lists, role assignments, standing orders, sen
       assert.ok(e.location.length&&e.participant.length>=2);
       if(e.class.code!=='EMER'||e.extension?.some(x=>x.url===EXT+'disposition'&&x.valueString==='Admit')) {
         const orders=resources.filter(r=>r.resourceType==='ServiceRequest'&&r.encounter?.reference===`Encounter/${e.id}`);
-        assert.ok(orders.some(r=>codes(r).some(c=>['full-code','dnr'].includes(c))));
+        const statusOrder=orders.find(r=>codes(r).some(c=>['full-code','dnr'].includes(c)));
+        assert.ok(statusOrder);
+        assert.ok(!/RN/.test(byKey.get(statusOrder.requester.reference).name[0].text),'Code status order must have a physician requester');
         assert.ok(orders.some(r=>codes(r).some(c=>['no-isolation','contact-precautions'].includes(c))));
       }
     }
@@ -71,12 +75,12 @@ test('all ten day graphs have full lists, role assignments, standing orders, sen
       const inbox=find(p,'inbasket').entry.map(e=>byKey.get(e.item.reference));
       assert.ok(inbox.filter(r=>r.resourceType==='Communication').length>=2);
       assert.ok(inbox.filter(r=>codes(r).includes('result-review')).length>=2);
-      for(const r of inbox.filter(r=>codes(r).includes('result-review'))) assert.ok(r.requester?.reference&&r.description.includes(':'));
+      for(const r of inbox.filter(r=>codes(r).includes('result-review'))) assert.ok(r.requester?.reference&&r.requester.display&&r.description.includes(':'));
       const rx=inbox.filter(r=>r.contained?.some(c=>c.resourceType==='MedicationRequest'));
       assert.ok(rx.length>=2);
       for(const r of rx) {
         const med=r.contained.find(c=>c.resourceType==='MedicationRequest'),dispense=r.contained.find(c=>c.resourceType==='MedicationDispense');
-        assert.ok(med.dispenseRequest.performer.reference&&med.dispenseRequest.quantity.value>0&&med.dispenseRequest.expectedSupplyDuration.value>0);
+        assert.ok(med.dispenseRequest.performer.reference&&med.dispenseRequest.performer.display&&med.dispenseRequest.quantity.value>0&&med.dispenseRequest.expectedSupplyDuration.value>0);
         assert.ok(dispense.whenHandedOver.slice(0,10)<'2026-11-02'||dispense.whenHandedOver.slice(0,10)<read(resolve(ROOT,`runs/world/2/state-day-${day}.json`)).date);
       }
     }

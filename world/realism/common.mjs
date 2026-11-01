@@ -9,7 +9,10 @@ export const write = (p, value, indent = 0) => { mkdirSync(dirname(p), { recursi
 export const hash = x => createHash('sha256').update(typeof x === 'string' ? x : JSON.stringify(x)).digest('hex');
 export const id = (...parts) => `wr-${hash(parts.join('|')).slice(0, 32)}`;
 export const cc = (code, text, system = SYSTEM) => ({ coding: [{ system, code, display: text }], text });
-export const ref = (r, display) => ({ reference: typeof r === 'string' ? r : `${r.resourceType}/${r.id}`, ...(display ? { display } : {}) });
+export const ref = (r, display) => {
+  const label=display??(typeof r==='object'?(typeof r.name==='string'?r.name:r.name?.[0]?.text??[...(r.name?.[0]?.given??[]),r.name?.[0]?.family].filter(Boolean).join(' ')):undefined);
+  return {reference:typeof r==='string'?r:`${r.resourceType}/${r.id}`,...(label?{display:label}:{})};
+};
 export const text = c => c?.text ?? c?.coding?.[0]?.display ?? '';
 export const title = s => s?.replace(/\b[A-Z][A-Z']+\b/g, w => ['ED','OR','ICU','LLC','MD','RN'].includes(w) ? w : w[0] + w.slice(1).toLowerCase());
 export const tag = (r, ...codes) => { r.meta = { ...r.meta, tag: [...(r.meta?.tag ?? []), ...codes.map(code => ({ system: SYSTEM, code }))] }; return r; };

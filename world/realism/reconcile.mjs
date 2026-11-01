@@ -73,7 +73,7 @@ export function reconcileBundle(source, { date = '2026-11-02' } = {}) {
     const name = text(r.code);
     if (/^(NKDA|no known|none known)/i.test(name) || r.code?.coding?.some(c => ['716186003','409137002'].includes(c.code))) { rejected.push(r); return false; }
     const coding = r.code?.coding?.[0];
-    const common = ALLERGENS[coding?.code] ?? name.replace(/ \((?:substance|organism)\)/g,'');
+    const common = ALLERGENS[coding?.code] ?? name.replace(/ \((?:substance|organism)\)/g,'').replace(/Hymenoptera venom(?: \(bees\/wasps\))?/i,'Bee and wasp venom');
     r.code = { ...r.code, text:common, ...(coding ? { coding:r.code.coding.map(c => ({ ...c, display:ALLERGENS[c.code] ?? c.display })) } : {}) };
     r.verificationStatus = cc('confirmed','Confirmed','http://terminology.hl7.org/CodeSystem/allergyintolerance-verification');
     r.clinicalStatus ??= cc('active','Active','http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical');

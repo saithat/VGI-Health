@@ -167,3 +167,168 @@ When no encounter setting is available, a real dated surgical request can supply
 the case queue. Other supporting payloads and their version bindings coexist.
 Per-observation laboratory rows use the same conservative source-label aliases
 as aggregate summaries, retaining their complete values, units and metadata.
+
+## World data
+
+World revision 2 preserves every original DaySchedule byte for byte: all 1,284
+task IDs, patients, personas, days, times, choices, interruptions and
+todayResources. See world/realism/task-diff.mjs and the committed proof in
+runs/world/2/task-diff.json (baseline 81691fbbeeb08d906bf4b2d43e8e8e152af9a735).
+List context creates no simulator tasks or clinical decisions.
+
+The generator also emits runs/world/2/context/day-{DD}.json: a FHIR R4
+collection Bundle shared by all five personas that day. Each entry has
+fullUrl "ResourceType/id" and resource. SHA256 IDs and an independent patient
+ordering use the seed/day/semantic slot without consuming scenario random
+draws. Both Synthea and Synthetic Hospital supply real imported identities.
+An extra patient cannot occupy two extra roles that day.
+
+fixtures/clinical/overrides.json has this exact envelope:
+
+    { "schemaVersion": 1, "referenceDate": "2026-11-02", "description": "...",
+      "entry": [{ "source": "fixtures/synthea/example.json",
+        "sourceFullUrl": "urn:uuid:...", "key": "MedicationRequest/...",
+        "action": "replace", "resource": { ...FHIR R4 resource... } }] }
+
+Action is replace, create or withdraw. Source identifies the imported bundle;
+key is ResourceType/id (Synthea IDs derive from entry fullUrl). Replace by
+identity before chart projection; a withdrawal is excluded from the active
+chart. Live withdrawal uses entered-in-error and preserves history. The
+overlay must not become a second active medication/allergy list. Raw imports
+remain immutable scenario inputs. fixtures/clinical/index.json lists all 324
+patients; audit.json records source SHA256s and change counts. Historical
+narrative alone never creates a current admission/order.
+
+### Collection shapes and scope
+
+All context resources carry meta.tag with system urn:vgi:world:realism.
+Codes include day-N, persona P1…P5 where applicable, and list-context
+(co-scheduled/read-only context) or patient-context (patient facts/standing
+orders). Tags confer no action permission. Filter chart facts by subject,
+patient, for or beneficiary and by selected encounter. Other rows' facts must
+never enter the single-patient task episode.
+
+Each List has the following fields:
+
+    { "resourceType": "List", "id": "wr-...", "status": "current",
+      "mode": "snapshot", "title": "...",
+      "code": { "coding": [{ "system": "urn:vgi:world:realism",
+        "code": "clinic-schedule", "display": "..." }], "text": "..." },
+      "date": "2026-11-02T07:00:00-08:00",
+      "source": { "reference": "Practitioner/wr-..." },
+      "entry": [{ "item": { "reference": "Appointment/wr-..." } }] }
+
+| Persona | List code | Exact row collection |
+|---|---|---|
+| P1/P4 | clinic-schedule | 16–18 Appointments; scheduled, completed, arrived, checked-in, no-show |
+| P2 | ed-census | 16–20 Encounters from the day's ED arrivals |
+| P3 | my-patients | 5 assigned inpatients |
+| P3 | unit-census | 12 inpatients including those five and other RN assignments |
+| P5 | or-schedule | 10 ServiceRequests: 5 cases per room, 2 rooms |
+| P5 | consults | 3 consultation ServiceRequests |
+| All | inbasket | Existing results/Rx tasks plus 2 results, 2 Rx requests and 2 messages |
+
+Use List membership to bound each view. The Bundle can contain additional
+source encounters outside a board snapshot. A task outside that snapshot
+retains its own patient. P5's second OR has another surgeon. Other unit
+patients have the second RN; scenario tasks beyond the five assigned patients
+are cross-coverage work.
+
+### Resource fields to project
+
+- Appointment: status, start, end, minutesDuration, appointmentType (coded
+  visit name), serviceType:[{text:department}], description and participant
+  [{actor:Reference(Patient|Practitioner|Location),status:"accepted"}].
+  Resolve actors for patient, provider and location.
+- Encounter: class {system:"http://terminology.hl7.org/CodeSystem/v3-ActCode",
+  code:"EMER"|"IMP"|"SS",display}; type:[{text:humanName}];
+  serviceType:{text:department}; subject; period.start; serviceProvider;
+  reasonCode:[{text:chiefComplaintOrDiagnosis}]; location:[{location:Reference,
+  status:"active"}]; participant:[{type:[CodeableConcept],individual:Reference}].
+  Participant codes ATND/PPRF use
+  http://terminology.hl7.org/CodeSystem/v3-ParticipationType.
+  ED priority uses urn:vgi:world:realism/esi, codes 1…5, display ESI N.
+  Extensions below https://vgi-health.example/fhir/StructureDefinition/:
+  disposition, pending-labs, pending-imaging, each valueString;
+  unit nursing-assignment also uses valueString. Beds have a Location.partOf
+  unit reference. OR requests reference individual room Locations.
+- Standing ServiceRequest: status:"active", intent:"order", subject,
+  encounter, requester, authoredOn, code with system urn:vgi:world:realism.
+  Codes full-code / dnr display Full Code / Do Not Resuscitate (DNR).
+  DNR has a synthetic goals-of-care note, limited to a few deterministic
+  patients aged 80+ outside surgery. Isolation codes no-isolation /
+  contact-precautions display No isolation / Contact precautions.
+  Read orders for the selected encounter.
+- Surgical ServiceRequest: code.text procedure, occurrencePeriod times,
+  locationReference room, performer surgeon, active/completed status,
+  note[].text case progress. Linked Procedure has R4 status preparation,
+  in-progress or completed; basedOn, encounter, location, performedPeriod
+  when started. Consults use SNOMED CT 11429006, reason, priority, requester,
+  performer, location and authoredOn.
+- CarePlan titled Perioperative antiplatelet plan: subject, encounter,
+  status:"active", intent:"plan", description and activity[].detail
+  {status:"scheduled",code:{text:drugReview},description:holdOrContinuePlan}.
+  Plans require prescriber/surgery/anesthesia review; urgent cases cannot
+  assume elective washout. Synthetic timing is based on the
+  [AHA/ACC perioperative guidance](https://professional.heart.org/en/-/media/PHD-Files-2/Science-News/2/2024/2024-Guideline-for-Perioperative-Cardiovascular-Management-slide-set.pdf).
+- Result Task: requested/order status/intent, result-review code, for, owner,
+  requester:Reference(Organization) (Central Laboratory), focus:
+  Reference(DiagnosticReport|Observation), authoredOn and complete description,
+  e.g. CBC: Hemoglobin: 8.4 g/dL (L). DiagnosticReport carries performer,
+  resultsInterpreter, result references and the summary in conclusion.
+  Resolve Organization name for the sender.
+- Refill Task: for, owner, requester pharmacy, focus {reference:"#current-rx"},
+  contained MedicationRequest id current-rx and MedicationDispense id last-fill.
+  Request dispenseRequest is {performer:Reference(Organization),
+  quantity:{value,unit},expectedSupplyDuration:{value,unit:"days",
+  system:"http://unitsofmeasure.org",code:"d"}}.
+  Dispense has authorizingPrescription:[{reference:"#current-rx"}],
+  performer:[{actor:Reference(Organization)}], quantity, daysSupply,
+  whenHandedOver. Task.input links #last-fill; description repeats pharmacy,
+  quantity, supply and date. Live migration retains an existing external
+  prescription focus when present and adds the same dispense fields there.
+- Portal Communication: status:"completed", category patient-message, subject,
+  sender, recipient, sent, payload:[{contentString}]. These are collection
+  items, never simulator tasks.
+
+### Reconciliation and metadata
+
+world/realism/reconcile.mjs completes medications after recorded end dates;
+stops imports over five years old without renewal evidence; completes old
+short antibiotic courses; retains latest ingredient/dose across duplicates,
+brands and superseded strengths. Statins and P2Y12 inhibitors each reconcile
+to one agent. Combination analgesics suppress concurrent plain acetaminophen
+and older combination products. Scheduled antihypertensives receive
+asNeededBoolean:false and explicit timing.repeat. Notes identify synthetic
+reconciliation. This is an authored synthetic scenario policy, not treatment
+advice for a real patient.
+
+Allergy 609328004 (Allergic disposition) is withdrawn. Scientific allergens
+retain codes and gain common text/display: 256355007 becomes Soy; mold, dust
+mites, dander, pollen, foods and latex use common names. Positive allergies
+have reaction[].manifestation, severity and criticality. Source reactions
+take precedence; added reactions are labeled synthetic. Patients without
+active allergies receive SNOMED CT 716186003, text No Known Allergies,
+active clinical status, confirmed verification, recordedDate, reviewed note
+and an allergy-review Provenance. Do not treat this negated assertion as an
+allergen. New task allergies supersede baseline NKA; the live migration
+withdraws conflicting NKA assertions. See
+[FHIR R4 negated allergy guidance](https://hl7.org/fhir/R4/allergyintolerance.html).
+
+Patient.generalPractitioner references one of 11 stable community PCPs with
+a human display. Every patient has active Coverage; source insurance remains.
+Generated Coverage includes beneficiary, payor[].display, type, subscriberId
+and calendar-year period. Historical encounters gain human type/department
+text; legal location names use title case.
+
+The Lean lane must load the shared dated List graph, resolve rows and actors,
+apply overlays before chart projection, preserve patient/encounter scope, and
+project standing orders, reviewed NKA, pharmacy/last fill, result summaries and
+senders, and antiplatelet plans. The simulator's unchanged one-patient episode
+must never absorb other list rows. No Lean files, specs or proof statements
+were edited by this lane.
+
+Human references also carry display names, allowing sender, pharmacy and provider
+captions without another lookup. Original world refill fill-ages use business-day
+indices; the new MedicationDispense records use calendar dates and the recorded
+supply when available, otherwise the scenario's monthly 30-day fill.

@@ -10,7 +10,7 @@ export const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
 export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROOT,'fixtures/synthea/index.json'),clinical=resolve(ROOT,'fixtures/clinical')}={}) {
   const sources=[fixtures];
   // Real imported patients supply list context, without expanding the scenario cohort.
-  if(fixtures===resolve(ROOT,'fixtures/synthea/index.json')) sources.push(resolve(ROOT,'fixtures/synthetic-hospital/index.json'));
+  if(existsSync(resolve(ROOT,'fixtures/synthetic-hospital/index.json'))&&fixtures!==resolve(ROOT,'fixtures/synthetic-hospital/index.json')) sources.push(resolve(ROOT,'fixtures/synthetic-hospital/index.json'));
   const charts=new Map(),population=[],overlays=[],audit={sourceFiles:[],changed:{},rejectedAllergyFindings:0,patients:0};
   for(const path of sources) {
     const index=read(path),base=dirname(path);
