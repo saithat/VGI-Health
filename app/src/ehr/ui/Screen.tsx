@@ -7,6 +7,7 @@ import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
 import { clinicalCssVariables } from "./theme";
 import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
+import { FieldChoicesContext } from "./FieldChoices";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
 
@@ -216,7 +217,9 @@ function StockUiScreenView({
   const draw = (nodes: UiNode[]) => (
     <SourceLabelsContext.Provider value={screen.sourceLabels ?? []}>
       <EntryHintsContext.Provider value={screen.entryHints ?? []}>
-        <UiChildren nodes={nodes} onEvent={onEvent} />
+        <FieldChoicesContext.Provider value={screen.fieldChoices ?? []}>
+          <UiChildren nodes={nodes} onEvent={onEvent} />
+        </FieldChoicesContext.Provider>
       </EntryHintsContext.Provider>
     </SourceLabelsContext.Provider>
   );

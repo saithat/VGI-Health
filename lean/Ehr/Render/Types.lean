@@ -577,6 +577,13 @@ inductive UiNode
   | text (s : String)
   deriving Repr, Inhabited
 
+/-- Code quick picks carry their display mode, not clinical defaults or rules. -/
+structure UiCodeChoices where
+  options : List (String × String)
+  showCode : Bool := false
+  allowOther : Bool := true
+  deriving Repr, Inhabited
+
 /-- A semantic screen. The banner is the first and sole banner landmark. -/
 structure UiScreen where
   banner : List (String × String)
@@ -589,6 +596,8 @@ structure UiScreen where
   sourceLabels? : Option (List (String × String)) := none
   /-- Entry guidance for a field, including recorded values in another unit. -/
   entryHints? : Option (List (CompId × String)) := none
+  /-- Optional department quick picks: raw code and readable description. -/
+  fieldChoices? : Option (List (CompId × UiCodeChoices)) := none
   title : String
   workspace : List UiNode
   side : List UiNode

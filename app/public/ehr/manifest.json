@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "a4e1d159d7d46fc487c89453e549aec63bff219fd8c4d1be0fa3be97d3d42d39",
+  "leanSourceHash": "a951c8ac2837389ccc02862c1e02fec0af9e0bc6ccc8deb0c878775be71274af",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "72476834fa5384ee3210a86198497c9c227feea88d01568509e8f1c7c75c235b",
@@ -40,7 +40,7 @@
     "lean/Ehr/Canonical/W3Ed.lean": "9df04048370a6f29e3b650cd44c495c1fb96d54cbd5f21fd837c5d7ed02c220e",
     "lean/Ehr/Canonical/W4Mar.lean": "e55cd7cfe8e3a78c046dec492841b504768e3ed37720a7ace3b75ff64fe3abaa",
     "lean/Ehr/Canonical/W5Peds.lean": "05fa3867e5adad91a0d7d53b909c85b1a6c8122a3857bcb5cd9b3d82ae211f2f",
-    "lean/Ehr/Canonical/W6Surgery.lean": "76b31f038331b011e8733275898b03a74a89cc20fe4eec1ee3d03683f394cfd6",
+    "lean/Ehr/Canonical/W6Surgery.lean": "18fef59c5f532ff1b6c69e9f7ae1df4215c4331ed6c96175639bc17cc33af989",
     "lean/Ehr/Canonical/W7Refills.lean": "e3d425149d8c1184db5fbeac9cc18b32e032e653208ce61851cb020cfb16dc7d",
     "lean/Ehr/Check/AdditionalBadProofs.lean": "37b108568cb909cac7c0025a9d4272fb5fbff5f62b0a07184b4526ae12f61fdd",
     "lean/Ehr/Check/AlertCompletion.lean": "987f1e9ae7e967f366d5b447f3a3f2222d19bdc401e722e51c5b0b51cdec9e4a",
@@ -173,7 +173,7 @@
     "lean/Ehr/Render/FhirProofs.lean": "9426285d1e3b347b6e67e9e742a8e679d956d9c56be5fd2ef59b512727014912",
     "lean/Ehr/Render/FhirTests.lean": "8e8a28abf1390eead91884f616124bbca81957ecfa8f625fb6ba1e51f52cf88c",
     "lean/Ehr/Render/Html.lean": "4207b067e49e3a12a5401d08bca8c3ec76f018c98202f40fec663ef67fa67aba",
-    "lean/Ehr/Render/Json.lean": "bcf7468d9ca5b4a25f7ab15f160a4ed9541ec12156a8cc08f28ac03ff6b0bdf4",
+    "lean/Ehr/Render/Json.lean": "b86a103a12b78ddf2d11b0a422e89072b84df5594dc00789db89321073affffc",
     "lean/Ehr/Render/NavRules.lean": "55b11ecd494b4f0db6fba8d577d3c402fcf802bd13df9da736f6da3301d6fbd1",
     "lean/Ehr/Render/Page.lean": "200614547e375887066dfa25a5373340e71a60bd54f8b05fa2e0c52ae53d234d",
     "lean/Ehr/Render/PageTests.lean": "6ecda8c71837f4a6c4d5eea79e5fbe9d10d973bcb1f7a081c55d9258b4e65f49",
@@ -184,12 +184,13 @@
     "lean/Ehr/Render/PresentationTests.lean": "8567732ce141dec5225b905ebb43d70a8e6fb7b429ef3c1b805efe942141b4d8",
     "lean/Ehr/Render/Presentations.lean": "681bfe9f921041ccb54c6bbda162d7e6dc19a049ad8596b327dd18b87ef3ea7a",
     "lean/Ehr/Render/Proofs.lean": "73e66422de77c8db330c53937c340f8ea7892523f264275dea1b093731bf4a4e",
-    "lean/Ehr/Render/Types.lean": "1dded2b8664eed4d659518a2d3e3b318389b16b292258a2b653e1dc901575b48",
-    "lean/Ehr/Render/Ui.lean": "df3b5f725b0533cd8cd57146cb2771971e634131294d836eb0b57c1906fbf749",
+    "lean/Ehr/Render/SurgeryChoices.lean": "fdd7e32e6322909b0a90f77fc89d1268d404c8db5bc50ccbed9c45b83b54c4ea",
+    "lean/Ehr/Render/Types.lean": "3a304465ef30c52e2f0ed709a810991399cab92bd305d6df4ec238f9b6ed939c",
+    "lean/Ehr/Render/Ui.lean": "d39fade7da5d08cb149c914d642258307adb607751fd27f7dbcdabd3a02f8487",
     "lean/Ehr/Render/UiContracts.lean": "eae9972b2988d409ce8dd2a31119fe8a0e364fd44071c0aa31bba3c6bf860385",
     "lean/Ehr/Render/UiData.lean": "9c8896323b1d4b44d6d0a25e680fa839069fa3a5d358c604596391c6472ce0a0",
     "lean/Ehr/Render/UiProofs.lean": "5cf6c4c48fba28dcf33cab5190c3ea293241367bd3109919d73fa904b0fd96de",
-    "lean/Ehr/Render/UiTests.lean": "b3748c522a0acf34cc4929e07eb2b84aa91e673057d7c2adf3ad9a302dc23c3e",
+    "lean/Ehr/Render/UiTests.lean": "556e2aadf92a0f1a4e8a1ec1bf353e84cd0784c891feb9f6d0dcd8de38cd68fe",
     "lean/Ehr/Sim/Audit.lean": "67deda93e64b08d26ed13a7896606a742a858dc6824f11d22b322b8cb51d71a5",
     "lean/Ehr/Sim/Certificate.lean": "e685918d081fb1f887299b8a6f768ea04e3239338830dc32ec9db5131af024c2",
     "lean/Ehr/Sim/FactsTests.lean": "7139f5045bde039ac62334901972a80ebfeb3b30221c98cb24106668fdbad161",
@@ -246,7 +247,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "2d9ee5a65ac539f9fe5e909477fc0a186d315d9396e8d01555ff9cd7d5f0a6b6",
+    "ehr-interp.wasm": "2768f558387447ee5c133579d62313b911b5bf48e8da1a894b8b3ef2cab5d1eb",
     "interp-loader.mjs": "898e0bd0c37b3520c95f7cdd78cefd6c23d17ef225275544c49cbcbd6d1f5b14",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

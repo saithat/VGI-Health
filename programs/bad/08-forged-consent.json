@@ -10066,7 +10066,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6OpNote.note",
-     "label": "Pre-op diagnosis",
+     "label": "Pre-op diagnosis (ICD-10-CM)",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
@@ -10078,7 +10078,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6OpNote.note",
-     "label": "Post-op diagnosis",
+     "label": "Post-op diagnosis (ICD-10-CM)",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
@@ -10090,7 +10090,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6OpNote.note",
-     "label": "Procedure",
+     "label": "Procedure (CPT)",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},

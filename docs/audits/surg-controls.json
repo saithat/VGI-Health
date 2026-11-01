@@ -4,578 +4,650 @@
     {
       "release": "v1",
       "screen": "home",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 5,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w1Rooming",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 16,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v1",
       "screen": "w1MedRec",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 12,
       "disabled": 0,
-      "tabChanges": 10
+      "tabChanges": 10,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v1",
       "screen": "w1Hpi",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 13,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w1Exam",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 11,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v1",
       "screen": "w1Orders",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 27,
       "disabled": 0,
-      "tabChanges": 11
+      "tabChanges": 11,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v1",
       "screen": "w1Labs",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 12,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v1",
       "screen": "w1Verify",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 12,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w1Sign",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 12,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w1Close",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 10,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v1",
       "screen": "w2Inbasket",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 5,
       "disabled": 0,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w2Result",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 5,
       "disabled": 1,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w2Message",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 7,
       "disabled": 0,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w6Schedule",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 17,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w6Consults",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 16,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w6Consult",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 15,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v1",
       "screen": "w6ConsultClose",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 14,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v1",
       "screen": "w6PreOp",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 14,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w6Orders",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 27,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v1",
       "screen": "w6Sign",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 18,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w6OpNote",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 15,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v1",
       "screen": "w6PostOp",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 28,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 14
     },
     {
       "release": "v1",
       "screen": "w6Rounding",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 15,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v1",
       "screen": "w6Discharge",
-      "programSha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "programSha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "enabled": 16,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v2",
       "screen": "home",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 5,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w1Rooming",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 16,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v2",
       "screen": "w1MedRec",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 12,
       "disabled": 0,
-      "tabChanges": 10
+      "tabChanges": 10,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v2",
       "screen": "w1Hpi",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 13,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w1Exam",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 11,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v2",
       "screen": "w1Orders",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 27,
       "disabled": 1,
-      "tabChanges": 11
+      "tabChanges": 11,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v2",
       "screen": "w1Labs",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 13,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v2",
       "screen": "w1Verify",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 12,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w1Sign",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 12,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w1Close",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 10,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v2",
       "screen": "w2Inbasket",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 5,
       "disabled": 0,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w2Result",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 5,
       "disabled": 1,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w2Message",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 7,
       "disabled": 0,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w6Schedule",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 17,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w6Consults",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 16,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w6Consult",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 15,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v2",
       "screen": "w6ConsultClose",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 14,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v2",
       "screen": "w6PreOp",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 15,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w6Orders",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 27,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v2",
       "screen": "w6Sign",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 18,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w6OpNote",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 15,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v2",
       "screen": "w6PostOp",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 28,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 14
     },
     {
       "release": "v2",
       "screen": "w6Rounding",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 15,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v2",
       "screen": "w6Discharge",
-      "programSha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "programSha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "enabled": 16,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v3",
       "screen": "home",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 5,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w1Rooming",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 16,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v3",
       "screen": "w1MedRec",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 12,
       "disabled": 0,
-      "tabChanges": 10
+      "tabChanges": 10,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v3",
       "screen": "w1Hpi",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 13,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w1Exam",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 11,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v3",
       "screen": "w1Orders",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 27,
       "disabled": 1,
-      "tabChanges": 11
+      "tabChanges": 11,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v3",
       "screen": "w1Labs",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 13,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v3",
       "screen": "w1Verify",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 12,
       "disabled": 0,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w1Sign",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 12,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w1Close",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 10,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v3",
       "screen": "w2Inbasket",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 5,
       "disabled": 0,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w2Result",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 5,
       "disabled": 1,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w2Message",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 7,
       "disabled": 0,
-      "tabChanges": 3
+      "tabChanges": 3,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w6Schedule",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 17,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w6Consults",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 16,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w6Consult",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 15,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v3",
       "screen": "w6ConsultClose",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 14,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 1
     },
     {
       "release": "v3",
       "screen": "w6PreOp",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 15,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w6Orders",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 27,
       "disabled": 1,
-      "tabChanges": 9
+      "tabChanges": 9,
+      "codedFieldsWithChoices": 3
     },
     {
       "release": "v3",
       "screen": "w6Sign",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 18,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w6OpNote",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 15,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 4
     },
     {
       "release": "v3",
       "screen": "w6PostOp",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 28,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 14
     },
     {
       "release": "v3",
       "screen": "w6Rounding",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 15,
       "disabled": 0,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 0
     },
     {
       "release": "v3",
       "screen": "w6Discharge",
-      "programSha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "programSha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "enabled": 16,
       "disabled": 1,
-      "tabChanges": 7
+      "tabChanges": 7,
+      "codedFieldsWithChoices": 1
     }
   ],
   "failures": [],

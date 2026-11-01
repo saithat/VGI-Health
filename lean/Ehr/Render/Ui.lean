@@ -1,5 +1,6 @@
 import Ehr.Core.Navigation
 import Ehr.Render.Presentations
+import Ehr.Render.SurgeryChoices
 
 /-! Semantic EHR rendering. This module and its imports use only Init.
 The interpreter resolves visibility exactly once. Nesting consumes no item:
@@ -45,6 +46,20 @@ def uiEntryHint (cx : Ctx) (it : ItemView) : Option String :=
 def uiEntryHints (cx : Ctx) : List (CompId × String) :=
   (cx.v.items.filter (·.shown)).filterMap fun it =>
     (uiEntryHint cx it).map (fun hint => (it.comp.id, hint))
+
+/-- A surgeon's department favorites attach only to their actual visible field.
+They never select a value, change a flag, or replace the spec's validators. -/
+def uiFieldChoices (cx : Ctx) : List (CompId × UiCodeChoices) :=
+  if cx.user.role != .surgeon then [] else
+  (cx.v.items.filter (·.shown)).filterMap fun it => match it.comp.kind with
+    | .field element _ _ =>
+      (cx.sp.element? element).bind fun spec =>
+        let choices := surgicalChoices spec.kind
+        if !spec.enteredBy.contains cx.user.role || choices.isEmpty then none else
+          some (it.comp.id, {
+            options := choices
+            showCode := spec.kind == .coded "icd10" || spec.kind == .coded "cpt" })
+    | _ => none
 
 def uiBanner (d : Display) : List (String × String) :=
   [("Patient", d.banner.name), ("DOB", uiDate d.banner.dob), ("MRN", d.banner.mrn),
@@ -485,10 +500,12 @@ def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
   let cx : Ctx := { sp, prog, facts, disp, user, s }
   let sources := uiSourceLabels cx
   let hints := uiEntryHints cx
+  let choices := uiFieldChoices cx
   { banner := uiClinicalBanner facts disp, viewer? := some (uiViewer user.role),
     nav := uiNav cx, activeNav? := uiActiveNav cx, title := cx.v.title,
     sourceLabels? := if sources.isEmpty then none else some sources,
     entryHints? := if hints.isEmpty then none else some hints,
+    fieldChoices? := if choices.isEmpty then none else some choices,
     workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

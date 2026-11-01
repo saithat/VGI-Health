@@ -2238,6 +2238,15 @@ export type UiNode =
   | { text: { s: string } };
 
 /**
+ * Code quick picks carry their display mode, not clinical defaults or rules.
+ */
+export interface UiCodeChoices {
+  options: [string, string][];
+  showCode: boolean;
+  allowOther: boolean;
+}
+
+/**
  * A semantic screen. The banner is the first and sole banner landmark.
  */
 export interface UiScreen {
@@ -2259,6 +2268,10 @@ export interface UiScreen {
    * Entry guidance for a field, including recorded values in another unit.
    */
   entryHints?: [CompId, string][];
+  /**
+   * Optional department quick picks: raw code and readable description.
+   */
+  fieldChoices?: [CompId, UiCodeChoices][];
   title: string;
   workspace: UiNode[];
   side: UiNode[];

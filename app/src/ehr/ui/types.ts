@@ -101,15 +101,37 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     activeNav: label.optional(),
     sourceLabels: z.array(pair).optional(),
     entryHints: z.array(pair).optional(),
+    fieldChoices: z
+      .array(
+        z.tuple([
+          label,
+          z.strictObject({
+            options: z.array(pair),
+            showCode: z.boolean(),
+            allowOther: z.boolean(),
+          }),
+        ]),
+      )
+      .optional(),
     title: label,
     workspace: z.array(uiNodeSchema),
     side: z.array(uiNodeSchema),
     modal: uiNodeSchema.nullable(),
   })
-  .transform(({ viewer, activeNav, sourceLabels, entryHints, ...screen }) => ({
-    ...screen,
-    ...(viewer === undefined ? {} : { viewer }),
-    ...(activeNav === undefined ? {} : { activeNav }),
-    ...(sourceLabels === undefined ? {} : { sourceLabels }),
-    ...(entryHints === undefined ? {} : { entryHints }),
-  }));
+  .transform(
+    ({
+      viewer,
+      activeNav,
+      sourceLabels,
+      entryHints,
+      fieldChoices,
+      ...screen
+    }) => ({
+      ...screen,
+      ...(viewer === undefined ? {} : { viewer }),
+      ...(activeNav === undefined ? {} : { activeNav }),
+      ...(sourceLabels === undefined ? {} : { sourceLabels }),
+      ...(entryHints === undefined ? {} : { entryHints }),
+      ...(fieldChoices === undefined ? {} : { fieldChoices }),
+    }),
+  );

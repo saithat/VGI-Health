@@ -73,6 +73,16 @@ for (const release of ['v1', 'v2', 'v3']) {
       assert.ok(ui.nav.some(([, items]) => items.some(([id]) => id === ui.activeNav)));
     }
     const shown = [...ui.workspace, ...ui.side, ...(ui.modal ? [ui.modal] : [])].flatMap(nodes);
+    const choices = ui.fieldChoices ?? [];
+    assert.equal(new Set(choices.map(([comp]) => comp)).size, choices.length);
+    for (const [comp, choice] of choices) {
+      const field = shown.find(n => n.field?.comp === comp)?.field;
+      assert.ok(field?.kind.startsWith('code'), `${comp}: choices require a visible coded field`);
+      assert.equal(choice.allowOther, true, `${comp}: department favorites must retain manual entry`);
+      assert.ok(choice.options.length > 0);
+      assert.equal(new Set(choice.options.map(([code]) => code)).size, choice.options.length);
+      for (const [code, label] of choice.options) assert.ok(code.trim() && label.trim());
+    }
     const rowControls = {
       home: ['home.schedule', 'home.openSelectedCase'],
       w6Schedule: ['w6Schedule.cases', 'w6Schedule.openCase'],
@@ -111,7 +121,7 @@ for (const release of ['v1', 'v2', 'v3']) {
         tabChanges++;
       }
     }
-    report.screens.push({ release, screen: screen.id, programSha256: createHash('sha256').update(programBytes).digest('hex'), enabled, disabled, tabChanges });
+    report.screens.push({ release, screen: screen.id, programSha256: createHash('sha256').update(programBytes).digest('hex'), enabled, disabled, tabChanges, codedFieldsWithChoices: choices.length });
   }
 }
 // The seeded consult has an explicitly recorded pounds weight. Exercise the

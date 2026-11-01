@@ -7,7 +7,7 @@
     "reason": "Explicit release source, or current release source selected because run v0 differs from the frozen historical canonical."
   },
   "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
-  "ehrSha256": "f8fae6f017f33bff8da58ad1edbb1c43843ac4ef19540eb5b8ce631ebaf955d1",
+  "ehrSha256": "e2939f54c2025a2fc7134905ca19ef86e43d398a88c966428325f88a423fdbd3",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
   "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path at fixed clock; KLM is an estimate, not a KLM minimum. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",

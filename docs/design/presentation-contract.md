@@ -48,6 +48,16 @@ Research and visual review: [presentation research](ehr-ui-research.md#presentat
 
 ### Additions after first implementation
 
+SURG supplies optional `UiScreen.fieldChoices` for an existing visible coded
+field. Each entry pairs its component ID with `options` (code/label pairs),
+`showCode` and `allowOther`. These are department favorites, never defaults or
+validators. The painter may filter the supplied code/label text. Selecting an
+option emits the field's ordinary raw-code entry event; filtering alone emits
+no clinical event. `showCode` retains a clinical code in the input and presents
+its supplied description beside it. Other choices show their supplied readable
+label while retaining the original code value. Manual entry remains available
+when `allowOther` is true. This metadata adds no clinical action or UI node kind.
+
 SURG's OR requests also supply `Indication`, read from the same ServiceRequest's
 reason codes. It remains source request evidence, independent of an order's
 diagnosis association or a postoperative diagnosis. Compact case/consult summaries

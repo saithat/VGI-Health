@@ -6,6 +6,21 @@ Research and implementation review: 2026-11-01, SURG lane. This is the shared ve
 
 ### Evidence and target layouts
 
+Code entry follows the same department-preference pattern: search a readable
+term, select its code, then retain the clinical code with its description. The
+surgeon preset supplies 15 diagnosis quick picks and the three procedure codes
+already present in the project's surgical case feed. Diagnosis codes were
+checked against the [CMS ICD-10-CM index](https://www.cms.gov/medicare/coding-billing/icd-10-codes)
+and its [FY2027 code descriptions](https://www.cms.gov/files/zip/2027-code-descriptions-tabular-order.zip)
+(effective October 1, 2026); labels are concise original paraphrases. Procedure
+names reuse the project's existing case terminology. This is a small department
+preference list, with manual codes retained, rather than a full terminology
+catalog. Nothing chooses a diagnosis or fills a blank operative note. Local
+anesthesia, diet, activity and yes/no choices display readable labels while
+retaining their existing raw values. Lean supplies the choices; React only
+filters and paints them. Browser checks cover term selection, an unlisted manual
+code, untouched blank fields after filtering, and persistence across navigation.
+
 Public hospital training, rather than promotional artwork, is the primary reference. Salem Health's [surgeon workspace tip sheet, pp.1–5](https://www.salemhealth.org/docs/default-source/common-ground-docs-and-images/surgeon-buttons-tip-sheet.pdf?sfvrsn=5d1cc7e5_2) was read and its preprocedure, postprocedure and brief-note screenshots inspected. It shows schedule/status-board entry, a preprocedure navigator with H&P update, consent and orders, and postprocedure floor/discharge sections with a brief-note template. VGI adopts these information groups and phase terminology, with original composition and styling. No vendor screenshots or assets are stored in this repository.
 
 Alberta Health Services' [Connect Care surgical procedures manual](https://manual.connect-care.ca/workflows/surgical-procedures) distinguishes phases of care and active orders from work saved in a queue and orders signed for later release. VGI only offers its implemented active-sign action: it must not label a normal signature “Sign & Hold”. A pending-order list is draft information; navigating to the next phase cannot activate it.
@@ -50,7 +65,7 @@ Screenshots are captured at 1440×900 under `app/shots/realism/surg/`, with load
 
 The integrated shared shell adds the indigo signed-in role bar, blue chart strips, explicit recorded weight/date and isolation status. On desktop, the banner and navigator remain visible while the workspace scrolls; opening a section returns that workspace to its heading. This fixes the earlier task-focused screenshots where patient identity scrolled away. The only current-section marker is on the actual Lean navigation button. The final 1440×900 review covers all surgical and clinic screens below, with the pre-op banner's planned context and the consult queue's Received column explicitly checked.
 
-The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 39 before and 41 after images, including an additional pounds-weight signing view with sections expanded. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
+The before programs and painter are frozen at `add0d2e`, using the same review inputs. The original painter runs from a temporary archive through `EHR_REVIEW_APP_ROOT`; the after images use the integrated presentation renderer. There are 39 before and 43 after images, including an additional pounds-weight signing view with sections expanded and two real-browser code-choice views. The two new queue screens have no before counterpart. Source images from vendors remain outside the repository.
 
 ### Screen-by-screen visual review
 
@@ -67,7 +82,7 @@ Compared with Salem's navigator and brief-note examples, the improvement is prim
 | Orders | Existing search, preferences and complete prescription composer retained. A surgical navigator and case context replace the numbered progress strip and footer navigation bank. | [Order composer](../../app/shots/realism/surg/after/w6Orders-task.png) |
 | Sign Orders | Required review tables stay in the workspace. Dosing weight is open, its source labels are readable, and identity remains immediately above signing. | [Signing](../../app/shots/realism/surg/after/w6Sign-task.png) |
 | Pounds signing review | A kg-labeled field showed/submitted the recorded pounds unit → separate recorded-value guidance and blank kg entries. The original alert and confirmation requirements remain. | [Pounds review](../../app/shots/realism/surg/after/w6Sign-pounds-task.png) |
-| Brief Op Note | One dense mixed grid with single-line findings → diagnoses/procedure/team, anesthesia/EBL, findings, specimens/devices and outcome sections. Narrative fields now have room to document. | [Brief Op Note](../../app/shots/realism/surg/after/w6OpNote-task.png) |
+| Brief Op Note | One dense mixed grid with single-line findings → diagnoses/procedure/team, anesthesia/EBL, findings, specimens/devices and outcome sections. Narratives have room to document. Diagnosis/procedure fields now search Lean-supplied terms, retain raw codes, and show descriptions below aligned inputs. The first open-dropdown review exposed dark text on a dark highlight; the final painter inherits the option's contrasting foreground, with a browser contrast assertion. | [Brief Op Note](../../app/shots/realism/surg/after/w6OpNote-task.png), [code search](../../app/shots/realism/surg/after/w6OpNote-code-search.png), [explicit draft selections](../../app/shots/realism/surg/after/w6OpNote-code-selected.png) |
 | Postprocedure Orders | Generic numbered medication rows → diet/activity, VTE, monitoring, nursing, scheduled/PRN pain, prophylaxis and nausea groups. Draft set values still require their original confirmations. | [Postprocedure](../../app/shots/realism/surg/after/w6PostOp-task.png) |
 | Rounding | Single-line progress field below an unbounded historical lab report → SOAP narrative with adjacent active-order review and scrollable reports. The vitals label no longer claims a 24-hour restriction. | [Rounding](../../app/shots/realism/surg/after/w6Rounding-task.png) |
 | Discharge | Flat fields → medication reconciliation, diagnosis/disposition, and follow-up/AVS sections. Prescriptions, note/order signatures and discharge remain distinct. | [Discharge](../../app/shots/realism/surg/after/w6Discharge-task.png) |
@@ -86,6 +101,10 @@ Compared with Salem's navigator and brief-note examples, the improvement is prim
 Machine-readable before/after measurements: [surg-realism-metrics.json](surg-realism-metrics.json). Control probes: [surg-controls.json](../audits/surg-controls.json). The measurement script uses the existing certified `Measure.lean` adapter and `ehr min-clicks` on the actual P5 presets, plus all ten World-2 P5 schedules. Both programs run under the same native interpreter. The stock `pnpm complexity --release-root releases` union benchmark is retained separately in `programs/benchmarks/canonical-complexity.json`; its workflow totals are not the P5 preset totals.
 
 Clicks and keys are optimized independently within the reported search space. These P5 measurements use `navigationDirected`; they do not establish a global minimum over all interpreter moves. KLM replays the minimum-click path at a fixed clock and is an estimate, not a KLM minimum or a clinician timing study. World-2 replay uses the actual release day transitions and seed 7, including the simulated interruptions/detours. Layout changes can alter its policy path and random draws; fewer clicks need not imply a lower total KLM estimate.
+
+The code-choice increment retains those measurements: the model counts the
+interpreter's raw-code entry, rather than timing a clinician's terminology
+search. It therefore makes no estimated time-saving claim for the new quick picks.
 
 | P5 benchmark | Releases | Minimum clicks before → after | KLM seconds before → after |
 | --- | --- | --- | --- |
@@ -108,6 +127,16 @@ Main integration through `251d9a0` preserves both the structured widgets and the
 Presentation integration through `6062379` adds source-row placement for the existing Home/OR Schedule and Consults goto buttons. The first visual pass exposed wrapping and a fixed-table action-column sizing issue; the final review keeps the full action label visible and preserves readable procedure/indication columns. The independent custom-presentation and structured-widget suites remain, with 192 app tests. Kernel checking, all three Comparator suites, 15/15 certification, 18/18 bad-program rejection, 1,284/1,284 simulated tasks, 1,030 enabled control probes, 15 structured native/WASM comparisons, both clinical/row-action browser walks, and the 45-state browser gate pass; archived replay has zero mismatches. The P5 and stock complexity measurements are regenerated. [Current validation](../audits/surg-realism-validation.json).
 
 Shared-shell integration through `a462b19` preserves the semantic navigator, multiline fields, entry hints and row actions. The role now comes from Lean's permission-bearing user, and pre-op context no longer displays the unrelated historical clinic as a current location. The desktop banner/section-scroll behavior has a real-browser regression. App build/lint/206 tests, agent 84 tests/typecheck/lint, the full proof and certification gates, 1,284 simulated tasks, the 45-state browser gate and archived replay all pass. Both surgical native/WASM FHIR projections match; min-click/KLM evidence and all after screenshots are refreshed. [Current validation](../audits/surg-realism-validation.json).
+
+The surgical code-choice milestone passes the same full proof, certification,
+simulation and archived-replay gates, with 209 app tests and 84 agent tests.
+All 120 coded-field instances with supplied choices across the 72 release/screens
+bind to visible semantic fields and retain manual entry. The real-WASM browser
+walk verifies code selection, no capture during filtering, persistence, and
+keyboard-highlight contrast of at least 4.5:1. The 45-state desktop/narrow gate
+passes again without cache reuse (99 pass, three fixture-dependent skips).
+The 82-image set includes the two additional draft code-choice views. Min-click
+and KLM measurements are regenerated and unchanged by this increment.
 
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 

@@ -66,6 +66,16 @@ request. Consult `authoredOn` is labeled `Received`, never a due deadline.
 Lean `User` used for permissions. The shell uses that label; user IDs stay in
 proof/transport metadata. Legacy saved screens may omit the optional field.
 
+`UiScreen.fieldChoices` optionally supplies department code favorites for actual
+visible coded fields: component ID plus `options` (raw code, readable label),
+`showCode` and `allowOther`. The surgeon preset supplies surgical ICD-10-CM/CPT
+quick picks and readable local anesthesia/diet/activity/yes-no terms. All options
+and display modes come from Lean. The painter filters these supplied terms and
+submits the existing raw code only on selection. Filtering never captures a
+value, picks a diagnosis, changes confirmation, or replaces clinical validation.
+Manual codes remain available. This is a small department preference list,
+not a terminology service. Archived screens omit this additive metadata.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

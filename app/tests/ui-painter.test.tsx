@@ -70,6 +70,142 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("searches Lean procedure descriptions and emits the selected raw code", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "procedure",
+            label: "Procedure (CPT)",
+            kind: "code",
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "procedure",
+          {
+            options: [
+              ["44970", "Laparoscopic appendectomy"],
+              ["47562", "Laparoscopic cholecystectomy"],
+            ],
+            showCode: true,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    const input = screen.getByRole("combobox", { name: "Procedure (CPT)" });
+    fireEvent.input(input, { target: { value: "cholecystectomy" } });
+    expect(onEvent).not.toHaveBeenCalled();
+    fireEvent.click(
+      screen.getByRole("option", {
+        name: "Laparoscopic cholecystectomy (47562)",
+      }),
+    );
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "procedure", value: { code: { c: "47562" } } },
+    });
+  });
+  it("retains manual code entry beyond the department quick picks", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "diagnosis",
+            label: "Diagnosis",
+            kind: "code",
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "diagnosis",
+          {
+            options: [["K35.80", "Acute appendicitis, unspecified"]],
+            showCode: true,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    fireEvent.input(screen.getByRole("combobox", { name: "Diagnosis" }), {
+      target: { value: "R10.84" },
+    });
+    fireEvent.click(screen.getByRole("option", { name: "Use code: R10.84" }));
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "diagnosis", value: { code: { c: "R10.84" } } },
+    });
+  });
+  it("displays local labels without turning a supplied macro value into human entry", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse({
+      ...rooming,
+      nav: [],
+      side: [],
+      workspace: [
+        {
+          field: {
+            ...field,
+            comp: "prn",
+            label: "As needed",
+            kind: "code",
+            value: "true",
+            provenance: "macro",
+            pendingConfirm: true,
+          },
+        },
+      ],
+      fieldChoices: [
+        [
+          "prn",
+          {
+            options: [
+              ["true", "Yes"],
+              ["false", "No"],
+            ],
+            showCode: false,
+            allowOther: true,
+          },
+        ],
+      ],
+    });
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView screen={view} onEvent={onEvent} />
+      </MantineProvider>,
+    );
+    const input = screen.getByRole("combobox", { name: "As needed" });
+    if (!(input instanceof HTMLInputElement))
+      throw new Error("Expected code input");
+    expect(input.value).toBe("Yes");
+    expect(onEvent).not.toHaveBeenCalled();
+    fireEvent.click(input);
+    fireEvent.click(screen.getByRole("option", { name: /^No$/ }));
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: { comp: "prn", value: { code: { c: "false" } } },
+    });
+  });
   it("shows the clinical role supplied by Lean in the banner", () => {
     const view = uiScreenSchema.parse({
       ...rooming,

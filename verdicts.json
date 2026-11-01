@@ -24,7 +24,7 @@
     },
     "releases/v1/personas/P5.json": {
       "status": "certified",
-      "sha256": "3be1095fcab21de7343b3cec64320bc2bfc76956b957e10429583428d760a8fb",
+      "sha256": "58cc7fb35a9edfee732866c840033c28c9720119a6fbba7773eda6071bc01625",
       "output": "ok"
     },
     "releases/v2/personas/P1.json": {
@@ -49,7 +49,7 @@
     },
     "releases/v2/personas/P5.json": {
       "status": "certified",
-      "sha256": "46c1d46ae63b19bb869b8517cc1a75302f3b47b36264334b1d121b543ecb39f7",
+      "sha256": "56e6dea12fdcd51fc62ff7ad9528c2df73e8d435dce8e8d9740bb40b982cc1bb",
       "output": "ok"
     },
     "releases/v3/personas/P1.json": {
@@ -74,7 +74,7 @@
     },
     "releases/v3/personas/P5.json": {
       "status": "certified",
-      "sha256": "9af43da8228bf9396eb24b36811e915f88345ddf33e83806451655b6fafa45c3",
+      "sha256": "9da75b0e1e2139fc5e0b85fd45b3f95b0ec081d4c8fd0a65ce9a34da34434c1b",
       "output": "ok"
     },
     "programs/bad/01-hidden-allergies.json": {
@@ -295,7 +295,7 @@
     },
     "programs/bad/08-forged-consent.json": {
       "status": "rejected",
-      "sha256": "5bb4ad4d3c77e6a15c8e06a52b7cd75977f3498590289b73abb33360399ebc7f",
+      "sha256": "259d2525c755638abc6c7ec052fb8304ec46d599bca3d7757998661db9130efc",
       "output": {
         "violation": {
           "screens": [
@@ -644,17 +644,17 @@
     },
     "releases/v1/canonical.json": {
       "status": "reference",
-      "sha256": "78cc0432aa75795b96987aa93a3200c7d6ff25274dc72946d819ec5ed9cff6cf",
+      "sha256": "d036ea0c92e2437216ebd491048e8559f26b0fdbc874de6cf7f5403b1a04a195",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v2/canonical.json": {
       "status": "reference",
-      "sha256": "b09a0d120901d916c4faf540fdeaef02e9c988df503238ed0c8729656ea1bcac",
+      "sha256": "a43787021861e8238de0003fdd6239f3a0517ed6d8ecee4c3d19973b6287cf70",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "releases/v3/canonical.json": {
       "status": "reference",
-      "sha256": "bc336e4dc56a764c31205ec9c9b3abf1a9fdd502186afc758c8647a82b73e32c",
+      "sha256": "f739c1c73b2493c9b931babe8322ed60445c15c7267a0ef32f4621ed7dbcf713",
       "output": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program."
     },
     "programs/bad/17-no-restraint-care-plan.json": {

@@ -19,6 +19,8 @@ import {
   TextInput,
   Textarea,
   Tooltip,
+  type InputWrapperProps,
+  type SelectProps,
 } from "@mantine/core";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import { entryEvent } from "./events";
@@ -26,6 +28,7 @@ import { ClinicalIcon } from "./Icons";
 import { DisplayValue, severityTone, statusTone } from "./display";
 import { clinicalTokens } from "./theme";
 import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
+import { FieldChoicesContext } from "./FieldChoices";
 import { StructuredInfo } from "./presentations/StructuredInfo";
 import { PresentationContext, rowLayout } from "./presentations/row-layout";
 import type { NodeOf, UiNode } from "./types";
@@ -164,7 +167,14 @@ export function FieldNode({
   confirmProvided = false,
 }: Props<"field"> & { confirmProvided?: boolean }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [codeSearch, setCodeSearch] = useState("");
   const sourceLabels = useContext(SourceLabelsContext);
+  const choiceSet = useContext(FieldChoicesContext).find(
+    ([comp]) => comp === node.comp,
+  )?.[1];
+  const choices = choiceSet?.options ?? [];
+  const choiceText = (code: string) =>
+    choices.find(([value]) => value === code)?.[1];
   const entryHint = useContext(EntryHintsContext).find(
     ([comp]) => comp === node.comp,
   )?.[1];
@@ -190,8 +200,20 @@ export function FieldNode({
     "data-comp-id": node.comp,
     "data-event": "enter",
     className: "clinical-control",
-    description: entryHint,
-    descriptionProps: { className: "clinical-entry-hint" },
+    description:
+      entryHint ??
+      (choiceSet?.showCode && node.value ? choiceText(node.value) : undefined),
+    classNames: { description: "clinical-entry-hint" },
+    ...(!entryHint && choiceSet?.showCode
+      ? {
+          inputWrapperOrder: [
+            "label",
+            "input",
+            "description",
+            "error",
+          ] satisfies NonNullable<InputWrapperProps["inputWrapperOrder"]>,
+        }
+      : {}),
   };
   const options = node.kind
     .split(":")
@@ -200,7 +222,43 @@ export function FieldNode({
     .split("|")
     .filter(Boolean);
   const codes = Array.from(
-    new Set([...(node.value ? [node.value] : []), ...options]),
+    new Set([
+      ...(node.value ? [node.value] : []),
+      ...options,
+      ...choices.map(([code]) => code),
+      ...(choiceSet?.allowOther && codeSearch ? [codeSearch] : []),
+    ]),
+  );
+  const choiceData = codes.map((value) => ({
+    value,
+    label: choiceSet?.showCode
+      ? value
+      : (choiceText(value) ??
+        (value === codeSearch && value !== node.value
+          ? `Use code: ${value}`
+          : value)),
+  }));
+  const choiceFilter: NonNullable<SelectProps["filter"]> = ({
+    options,
+    search,
+  }) =>
+    options.filter(
+      (option) =>
+        "value" in option &&
+        `${option.value} ${choiceText(option.value) ?? ""}`
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+    );
+  const choiceOption: NonNullable<SelectProps["renderOption"]> = ({
+    option,
+  }) => (
+    <Text component="span" size="xs" c="inherit">
+      {choiceText(option.value)
+        ? choiceSet?.showCode
+          ? `${choiceText(option.value)} (${option.value})`
+          : choiceText(option.value)
+        : `Use code: ${option.value}`}
+    </Text>
   );
   return (
     <Box
@@ -260,20 +318,33 @@ export function FieldNode({
       ) : kind === "coded" || kind === "code" ? (
         <Select
           {...common}
+          {...(choices.length
+            ? {
+                selectFirstOptionOnChange: codeSearch !== "",
+                filter: choiceFilter,
+                renderOption: choiceOption,
+              }
+            : {})}
           role="combobox"
           aria-expanded={dropdownOpen}
           onDropdownOpen={() => setDropdownOpen(true)}
-          onDropdownClose={() => setDropdownOpen(false)}
+          onDropdownClose={() => {
+            setDropdownOpen(false);
+            setCodeSearch("");
+          }}
           rightSection={<ClinicalIcon name="chevron" />}
           searchable
-          data={codes}
+          data={choices.length ? choiceData : codes}
           value={node.value}
-          placeholder="Select or search code"
+          placeholder={
+            choices.length ? "Search or enter code" : "Select or search code"
+          }
           onChange={(value) => send(value ?? "")}
           onInput={(event) => {
             // Select's onSearchChange also fires when it synchronizes a supplied
             // value. Only a real input event may turn a code into human entry.
-            if (options.length === 0) send(event.currentTarget.value);
+            if (choices.length) setCodeSearch(event.currentTarget.value);
+            else if (options.length === 0) send(event.currentTarget.value);
           }}
           nothingFoundMessage="Enter a code"
         />

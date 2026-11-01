@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { mkdir } from "node:fs/promises";
 
 function control(page: Page, comp: string, event = "click") {
   return page.locator(`[data-comp-id="${comp}"][data-event="${event}"]`);
@@ -10,6 +11,7 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
 }) => {
   test.setTimeout(120000);
   const desktop = (page.viewportSize()?.width ?? 0) > 700;
+  if (desktop) await page.setViewportSize({ width: 1440, height: 900 });
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.route("**/*", (route) =>
@@ -72,6 +74,75 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
     );
   }
   await control(page, "w6Schedule.nav.w6OpNote").click();
+  const procedure = control(page, "w6OpNote.opProcedure", "enter");
+  await procedure.fill("cholecystectomy");
+  await control(page, "w6OpNote.opSurgeons", "enter").click();
+  await expect(procedure).toHaveValue("");
+  await procedure.fill("cholecystectomy");
+  const procedureOption = page.getByRole("option", {
+    name: "Laparoscopic cholecystectomy (47562)",
+    exact: true,
+  });
+  await expect(procedureOption).toBeVisible();
+  await procedure.press("ArrowDown");
+  if ((await procedureOption.getAttribute("data-combobox-selected")) === null)
+    await procedure.press("ArrowUp");
+  await expect(procedureOption).toHaveAttribute("data-combobox-selected");
+  const optionContrast = await procedureOption.evaluate((element) => {
+    const rgb = (value: string) =>
+      (value.match(/[\d.]+/g) ?? []).slice(0, 3).map(Number);
+    const luminance = (channels: number[]) =>
+      channels.reduce((sum, channel, index) => {
+        const value = channel / 255;
+        const linear =
+          value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+        return sum + linear * ([0.2126, 0.7152, 0.0722][index] ?? 0);
+      }, 0);
+    const foreground = luminance(
+      rgb(getComputedStyle(element.querySelector("span") ?? element).color),
+    );
+    const background = luminance(
+      rgb(getComputedStyle(element).backgroundColor),
+    );
+    return (
+      (Math.max(foreground, background) + 0.05) /
+      (Math.min(foreground, background) + 0.05)
+    );
+  });
+  expect(optionContrast).toBeGreaterThanOrEqual(4.5);
+  if (desktop) {
+    await mkdir("shots/realism/surg/after", { recursive: true });
+    await page.screenshot({
+      path: "shots/realism/surg/after/w6OpNote-code-search.png",
+      animations: "disabled",
+    });
+  }
+  await procedureOption.click();
+  await expect(procedure).toHaveValue("47562");
+  const diagnosis = control(page, "w6OpNote.opPreopDiagnosis", "enter");
+  await diagnosis.fill("gallbladder");
+  await page
+    .getByRole("option", {
+      name: "Gallbladder stones, no cholecystitis or obstruction (K80.20)",
+      exact: true,
+    })
+    .click();
+  await expect(diagnosis).toHaveValue("K80.20");
+  const postoperativeDiagnosis = control(
+    page,
+    "w6OpNote.opPostopDiagnosis",
+    "enter",
+  );
+  await postoperativeDiagnosis.fill("R10.84");
+  await page
+    .getByRole("option", { name: "Use code: R10.84", exact: true })
+    .click();
+  await expect(postoperativeDiagnosis).toHaveValue("R10.84");
+  if (desktop)
+    await page.screenshot({
+      path: "shots/realism/surg/after/w6OpNote-code-selected.png",
+      animations: "disabled",
+    });
   const findings = control(page, "w6OpNote.opFindings", "enter");
   await expect(findings).toHaveJSProperty("tagName", "TEXTAREA");
   await findings.fill("Operative findings:\nDocumented by the surgeon.");
@@ -84,6 +155,8 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   await expect(findings).toHaveValue(
     "Operative findings:\nDocumented by the surgeon.",
   );
+  await expect(procedure).toHaveValue("47562");
+  await expect(diagnosis).toHaveValue("K80.20");
   await control(page, "w6OpNote.nav.w6PostOp").click();
   await control(page, "w6PostOp.appendectomySet").click();
   await expect(control(page, "w6PostOp.row10.drug", "enter")).toHaveValue(

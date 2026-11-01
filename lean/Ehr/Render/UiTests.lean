@@ -47,6 +47,32 @@ def uiHistoricalVisitDisplay : Display :=
 #guard (uiClinicalBanner Tests.periopFacts uiHistoricalVisitDisplay).lookup "Location" == some "Previous clinic"
 #guard uiViewer .surgeon == "General surgeon"
 #guard uiViewer .rn == "Registered nurse"
+/-- A visible surgical diagnosis field receives choices without a default. -/
+def surgicalPickerElement : ElementSpec :=
+  { id := "pickerDiagnosis", label := "Diagnosis", kind := .coded "icd10",
+    enteredBy := [.surgeon], prefill := .defaultConfirm, friction := .compliance,
+    fhirTarget := "Condition.code" }
+def surgicalPickerCtx : Ctx :=
+  { uiRoomCtx with
+    viewCache := ⟨_, rfl⟩
+    user := { id := "surgical-picker-reviewer", role := .surgeon }
+    sp := { uiRoomCtx.sp with elements := uiRoomCtx.sp.elements ++ [surgicalPickerElement] }
+    prog := { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
+      if screen.id == uiRoomCtx.s.screen then { screen with components := screen.components ++
+        [{ id := "pickerDiagnosis", label := "Diagnosis", kind := .field "pickerDiagnosis" (.fixed 0) .none }] }
+      else screen } }
+#guard ((uiFieldChoices surgicalPickerCtx).lookup "pickerDiagnosis").any (fun set =>
+  set.showCode && set.allowOther && set.options.lookup "K80.20" ==
+    some "Gallbladder stones, no cholecystitis or obstruction")
+#guard (uiAtomsList (renderUi surgicalPickerCtx.sp surgicalPickerCtx.prog surgicalPickerCtx.facts
+  surgicalPickerCtx.disp surgicalPickerCtx.user surgicalPickerCtx.s).workspace).any (fun node => match node with
+  | .field "pickerDiagnosis" _ _ value _ _ pending _ _ => value.isNone && !pending
+  | _ => false)
+#guard (uiFieldChoices { surgicalPickerCtx with
+    viewCache := ⟨_, rfl⟩
+    user := { id := "different-role", role := .physician } }).isEmpty
+#guard (surgicalProcedureChoices.lookup "47562") == some "Laparoscopic cholecystectomy"
+#guard (surgicalChoices (.coded "boolean")).lookup "true" == some "Yes"
 def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)
