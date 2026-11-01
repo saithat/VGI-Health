@@ -70,8 +70,11 @@ def admin : Screen :=
   let s := "w4Admin"
   { id := s, title := "Medication administration", workflow := "W4"
     components := frame s ++ [
-      presentation "table" (table s "dose" "marDoseDetails" "Ordered dose and administration details"),
+      panel s "dose" "marDoseDetails" "Ordered dose and prior administration",
       panel s "allergies" "allergyList" "Allergies",
+      group s "fiveRights" "Barcode medication verification" (collapsible := false),
+      field s "wristbandScan" "wristbandScan" "1. Scan patient wristband" (parent := some "fiveRights"),
+      field s "medScan" "medScan" "2. Scan medication barcode" (parent := some "fiveRights"),
       presentation "trend" (trend s "glucose" "glucoseTrend" "Blood glucose — review before insulin"),
       presentation "results" (table s "coag" "coagLabs" "Coagulation results — review before anticoagulants"),
       presentation "table" (table s "prn" "prnHistory" "PRN administrations and response"),
@@ -79,13 +82,9 @@ def admin : Screen :=
       alertC s "alert.highAlert" "highAlertAdmin" "High-alert medication: double check" (popup := false),
       alertC s "alert.minorInteraction" "minorInteractionPopup" "Interaction information"
         (popup := true),
-      group s "fiveRights" "Barcode medication verification" (collapsible := false),
-      field s "wristbandScan" "wristbandScan" "1. Scan patient wristband" (parent := some "fiveRights"),
-      field s "medScan" "medScan" "2. Scan medication barcode" (parent := some "fiveRights"),
-      group s "independentCheck" "High-alert independent double check" (collapsible := false),
+      group s "independentCheck" "Independent check and pre-dose assessment" (collapsible := false),
       field s "highAlertCosign" "highAlertCosign" "Second nurse — independent check" (parent := some "independentCheck"),
-      group s "pain" "Pain assessment before administration" (collapsible := false),
-      field s "painScore" "painScore" "Pain score before dose (0–10)" (parent := some "pain"),
+      field s "painScore" "painScore" "Pain score before dose (0–10)" (parent := some "independentCheck"),
       group s "documentation" "Administration documentation" (collapsible := false),
       field s "adminStatus" "adminStatus" "Action: given / held / refused" (parent := some "documentation"),
       field s "adminSite" "adminSite" "Administration site (or not applicable)" (parent := some "documentation"),

@@ -42,7 +42,86 @@
     },
     {
       "info": {
-        "rows": [],
+        "rows": [
+          [
+            [
+              "Due",
+              "Nov 2, 2026 08:00"
+            ],
+            [
+              "Patient",
+              "Ankunding, Aaron Bruno"
+            ],
+            [
+              "Task",
+              "08:00 medication pass"
+            ],
+            [
+              "Priority",
+              "routine"
+            ],
+            [
+              "Status",
+              "requested"
+            ],
+            [
+              "Owner",
+              "Jordan Lee, RN"
+            ]
+          ],
+          [
+            [
+              "Due",
+              "Nov 2, 2026 08:00"
+            ],
+            [
+              "Patient",
+              "Ankunding, Aaron Bruno"
+            ],
+            [
+              "Task",
+              "Shift assessment and vital signs"
+            ],
+            [
+              "Priority",
+              "routine"
+            ],
+            [
+              "Status",
+              "requested"
+            ],
+            [
+              "Owner",
+              "Jordan Lee, RN"
+            ]
+          ],
+          [
+            [
+              "Due",
+              "Nov 2, 2026 08:30"
+            ],
+            [
+              "Patient",
+              "Ankunding, Aaron Bruno"
+            ],
+            [
+              "Task",
+              "Pain reassessment after PRN medication"
+            ],
+            [
+              "Priority",
+              "routine"
+            ],
+            [
+              "Status",
+              "requested"
+            ],
+            [
+              "Owner",
+              "Jordan Lee, RN"
+            ]
+          ]
+        ],
         "label": "My patients — shift tasks",
         "infoId": "shiftWorklist",
         "display": "table",
@@ -60,7 +139,30 @@
     },
     {
       "info": {
-        "rows": [],
+        "rows": [
+          [
+            [
+              "Report",
+              "Night shift report"
+            ],
+            [
+              "Author",
+              "Casey Brooks, RN"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:00"
+            ],
+            [
+              "Text",
+              "Attachment 1\nSituation: pneumonia, on room air. Background: antibiotics started overnight. Assessment: alert, ambulates with assistance, peripheral IV patent. Recommendation: morning medications, glucose before meals, reassess pain."
+            ],
+            [
+              "Status",
+              "current / final"
+            ]
+          ]
+        ],
         "label": "Selected patient — handoff report",
         "infoId": "handoffSummary",
         "display": "list",
@@ -161,6 +263,36 @@
           {
             "info": {
               "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "IMP"
+                  ],
+                  [
+                    "Start",
+                    "Nov 1, 2026 15:40"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Pneumonia; receiving antibiotics"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "5 West · 512 A"
+                  ]
+                ],
                 [
                   [
                     "Encounter",
@@ -799,6 +931,30 @@
           [
             [
               "Record",
+              "insulin lispro — 4 units subcutaneously before meals"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "enoxaparin — 40 mg subcutaneously daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "ceftriaxone — 1 g IV daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "acetaminophen — 650 mg by mouth every 6 hours as needed for pain"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"
             ]
           ],
@@ -915,19 +1071,43 @@
           [
             [
               "Record",
+              "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 82 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 18 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Temperature 37.4 °C (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "SpO2 96 % (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain score 4 score (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Body Height 183.4 cm (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
             ]
           ],
           [
@@ -940,24 +1120,6 @@
             [
               "Record",
               "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 70 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
             ]
           ]
         ],
@@ -993,7 +1155,7 @@
     ],
     [
       "PCP",
-      "Dr. Laurena Anderson"
+      ""
     ],
     [
       "Coverage",
@@ -1001,15 +1163,15 @@
     ],
     [
       "Encounter",
-      "AMB"
+      "IMP"
     ],
     [
       "Attending",
-      "Dr. Laurena Anderson"
+      "Morgan Patel, MD"
     ],
     [
       "Location",
-      "NORTHEAST BEHAVIORAL HEALTH LLC"
+      "5 West · 512 A"
     ],
     [
       "Allergies",

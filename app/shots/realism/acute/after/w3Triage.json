@@ -102,15 +102,25 @@
         "children": [
           {
             "field": {
-              "value": null,
+              "value": "93.4",
               "unit": "kg",
               "required": true,
-              "provenance": null,
-              "pendingConfirm": false,
+              "provenance": "record:weightToday",
+              "pendingConfirm": true,
               "label": "Weight (kg)",
               "kind": "qty",
               "humanOnly": false,
               "comp": "w3Triage.weight"
+            }
+          },
+          {
+            "button": {
+              "role": "confirm",
+              "label": "Confirm prefilled value",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w3Triage.weight",
+              "blockedReason": null
             }
           },
           {
@@ -342,6 +352,36 @@
           {
             "info": {
               "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "EMER"
+                  ],
+                  [
+                    "Start",
+                    "Nov 2, 2026 07:15"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Shortness of breath and fever"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "ED · A04"
+                  ]
+                ],
                 [
                   [
                     "Encounter",
@@ -1096,19 +1136,43 @@
           [
             [
               "Record",
+              "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 82 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 18 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Temperature 37.4 °C (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "SpO2 96 % (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain score 4 score (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Body Height 183.4 cm (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
             ]
           ],
           [
@@ -1121,24 +1185,6 @@
             [
               "Record",
               "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 70 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
             ]
           ]
         ],
@@ -1174,7 +1220,7 @@
     ],
     [
       "PCP",
-      "Dr. Laurena Anderson"
+      ""
     ],
     [
       "Coverage",
@@ -1182,15 +1228,15 @@
     ],
     [
       "Encounter",
-      "AMB"
+      "EMER"
     ],
     [
       "Attending",
-      "Dr. Laurena Anderson"
+      "Morgan Patel, MD"
     ],
     [
       "Location",
-      "NORTHEAST BEHAVIORAL HEALTH LLC"
+      "ED · A04"
     ],
     [
       "Allergies",

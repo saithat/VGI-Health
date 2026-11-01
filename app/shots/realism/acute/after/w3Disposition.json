@@ -54,6 +54,114 @@
           [
             [
               "Vital sign",
+              "Weight"
+            ],
+            [
+              "Value",
+              "93.4"
+            ],
+            [
+              "Unit",
+              "kg"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Heart rate"
+            ],
+            [
+              "Value",
+              "82"
+            ],
+            [
+              "Unit",
+              "/min"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Respiratory rate"
+            ],
+            [
+              "Value",
+              "18"
+            ],
+            [
+              "Unit",
+              "/min"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Temperature"
+            ],
+            [
+              "Value",
+              "37.4"
+            ],
+            [
+              "Unit",
+              "°C"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "SpO2"
+            ],
+            [
+              "Value",
+              "96"
+            ],
+            [
+              "Unit",
+              "%"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Pain score"
+            ],
+            [
+              "Value",
+              "4"
+            ],
+            [
+              "Unit",
+              "score"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
               "Body Height"
             ],
             [
@@ -63,42 +171,6 @@
             [
               "Unit",
               "cm"
-            ],
-            [
-              "Recorded",
-              "Apr 22, 2026 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
-            ],
-            [
-              "Value",
-              "0"
-            ],
-            [
-              "Unit",
-              "{score}"
-            ],
-            [
-              "Recorded",
-              "Apr 22, 2026 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
             ],
             [
               "Recorded",
@@ -139,510 +211,6 @@
             [
               "Recorded",
               "Apr 22, 2026 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Heart rate"
-            ],
-            [
-              "Value",
-              "70"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Apr 22, 2026 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Respiratory rate"
-            ],
-            [
-              "Value",
-              "15"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Apr 22, 2026 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body temperature"
-            ],
-            [
-              "Value",
-              "37.055"
-            ],
-            [
-              "Unit",
-              "Cel"
-            ],
-            [
-              "Recorded",
-              "Apr 23, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Height"
-            ],
-            [
-              "Value",
-              "183.4"
-            ],
-            [
-              "Unit",
-              "cm"
-            ],
-            [
-              "Recorded",
-              "Apr 16, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
-            ],
-            [
-              "Value",
-              "4"
-            ],
-            [
-              "Unit",
-              "{score}"
-            ],
-            [
-              "Recorded",
-              "Apr 16, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
-            ],
-            [
-              "Recorded",
-              "Apr 16, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body mass index (BMI) [Ratio]"
-            ],
-            [
-              "Value",
-              "27.77"
-            ],
-            [
-              "Unit",
-              "kg/m2"
-            ],
-            [
-              "Recorded",
-              "Apr 16, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "93/131"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Apr 16, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Heart rate"
-            ],
-            [
-              "Value",
-              "65"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Apr 16, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Respiratory rate"
-            ],
-            [
-              "Value",
-              "15"
-            ],
-            [
-              "Unit",
-              "/min"
-            ],
-            [
-              "Recorded",
-              "Apr 16, 2025 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Height"
-            ],
-            [
-              "Value",
-              "183.4"
-            ],
-            [
-              "Unit",
-              "cm"
-            ],
-            [
-              "Recorded",
-              "Apr 10, 2024 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
-            ],
-            [
-              "Recorded",
-              "Apr 10, 2024 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body mass index (BMI) [Ratio]"
-            ],
-            [
-              "Value",
-              "27.77"
-            ],
-            [
-              "Unit",
-              "kg/m2"
-            ],
-            [
-              "Recorded",
-              "Apr 10, 2024 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "99/137"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Apr 10, 2024 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Height"
-            ],
-            [
-              "Value",
-              "183.4"
-            ],
-            [
-              "Unit",
-              "cm"
-            ],
-            [
-              "Recorded",
-              "Jul 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
-            ],
-            [
-              "Recorded",
-              "Jul 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body mass index (BMI) [Ratio]"
-            ],
-            [
-              "Value",
-              "27.77"
-            ],
-            [
-              "Unit",
-              "kg/m2"
-            ],
-            [
-              "Recorded",
-              "Jul 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "99/124"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Jul 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Height"
-            ],
-            [
-              "Value",
-              "183.4"
-            ],
-            [
-              "Unit",
-              "cm"
-            ],
-            [
-              "Recorded",
-              "Apr 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
-            ],
-            [
-              "Recorded",
-              "Apr 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body mass index (BMI) [Ratio]"
-            ],
-            [
-              "Value",
-              "27.77"
-            ],
-            [
-              "Unit",
-              "kg/m2"
-            ],
-            [
-              "Recorded",
-              "Apr 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "98/143"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Apr 5, 2023 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Height"
-            ],
-            [
-              "Value",
-              "183.4"
-            ],
-            [
-              "Unit",
-              "cm"
-            ],
-            [
-              "Recorded",
-              "Mar 30, 2022 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body Weight"
-            ],
-            [
-              "Value",
-              "93.4"
-            ],
-            [
-              "Unit",
-              "kg"
-            ],
-            [
-              "Recorded",
-              "Mar 30, 2022 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Body mass index (BMI) [Ratio]"
-            ],
-            [
-              "Value",
-              "27.77"
-            ],
-            [
-              "Unit",
-              "kg/m2"
-            ],
-            [
-              "Recorded",
-              "Mar 30, 2022 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "95/138"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Mar 30, 2022 13:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "90/140"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Jan 29, 2022 12:28"
-            ]
-          ],
-          [
-            [
-              "Vital sign",
-              "Blood pressure panel with all children optional"
-            ],
-            [
-              "Value",
-              "99/143"
-            ],
-            [
-              "Unit",
-              "mm[Hg]"
-            ],
-            [
-              "Recorded",
-              "Nov 30, 2021 12:28"
             ]
           ]
         ],
@@ -857,6 +425,36 @@
           {
             "info": {
               "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "EMER"
+                  ],
+                  [
+                    "Start",
+                    "Nov 2, 2026 07:15"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Shortness of breath and fever"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "ED · A04"
+                  ]
+                ],
                 [
                   [
                     "Encounter",
@@ -1601,19 +1199,43 @@
           [
             [
               "Record",
+              "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 82 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 18 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Temperature 37.4 °C (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "SpO2 96 % (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain score 4 score (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Body Height 183.4 cm (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
             ]
           ],
           [
@@ -1626,24 +1248,6 @@
             [
               "Record",
               "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 70 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
             ]
           ]
         ],
@@ -1679,7 +1283,7 @@
     ],
     [
       "PCP",
-      "Dr. Laurena Anderson"
+      ""
     ],
     [
       "Coverage",
@@ -1687,15 +1291,15 @@
     ],
     [
       "Encounter",
-      "AMB"
+      "EMER"
     ],
     [
       "Attending",
-      "Dr. Laurena Anderson"
+      "Morgan Patel, MD"
     ],
     [
       "Location",
-      "NORTHEAST BEHAVIORAL HEALTH LLC"
+      "ED · A04"
     ],
     [
       "Allergies",

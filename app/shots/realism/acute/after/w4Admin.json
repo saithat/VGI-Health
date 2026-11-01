@@ -42,10 +42,75 @@
     },
     {
       "info": {
-        "rows": [],
-        "label": "Ordered dose and administration details",
+        "rows": [
+          [
+            [
+              "Ordered medication",
+              "insulin lispro"
+            ],
+            [
+              "Ordered dose",
+              "4"
+            ],
+            [
+              "Unit",
+              "units"
+            ],
+            [
+              "Route",
+              "SC"
+            ],
+            [
+              "Instructions",
+              "4 units subcutaneously before meals"
+            ],
+            [
+              "Scheduled times (recorded local time)",
+              "2026-11-02 08:00; 2026-11-02 12:00; 2026-11-02 17:00"
+            ],
+            [
+              "Order status",
+              "active"
+            ]
+          ],
+          [
+            [
+              "Medication",
+              "insulin lispro"
+            ],
+            [
+              "Actual dose",
+              "4"
+            ],
+            [
+              "Unit",
+              "units"
+            ],
+            [
+              "Route",
+              "SC"
+            ],
+            [
+              "Site",
+              "Left abdomen"
+            ],
+            [
+              "Actual time",
+              "Nov 1, 2026 17:08"
+            ],
+            [
+              "Status",
+              "Given"
+            ],
+            [
+              "Reason",
+              ""
+            ]
+          ]
+        ],
+        "label": "Ordered dose and prior administration",
         "infoId": "marDoseDetails",
-        "display": "table",
+        "display": "list",
         "comp": "w4Admin.dose"
       }
     },
@@ -56,33 +121,6 @@
         "infoId": "allergyList",
         "display": "list",
         "comp": "w4Admin.allergies"
-      }
-    },
-    {
-      "info": {
-        "rows": [],
-        "label": "Blood glucose — review before insulin",
-        "infoId": "glucoseTrend",
-        "display": "trend",
-        "comp": "w4Admin.glucose"
-      }
-    },
-    {
-      "info": {
-        "rows": [],
-        "label": "Coagulation results — review before anticoagulants",
-        "infoId": "coagLabs",
-        "display": "table",
-        "comp": "w4Admin.coag"
-      }
-    },
-    {
-      "info": {
-        "rows": [],
-        "label": "PRN administrations and response",
-        "infoId": "prnHistory",
-        "display": "table",
-        "comp": "w4Admin.prn"
       }
     },
     {
@@ -120,15 +158,147 @@
       }
     },
     {
+      "info": {
+        "rows": [
+          [
+            [
+              "Test",
+              "Glucose"
+            ],
+            [
+              "Value",
+              "186"
+            ],
+            [
+              "Unit",
+              "mg/dL"
+            ],
+            [
+              "Flag",
+              "H"
+            ],
+            [
+              "Range",
+              "70–99"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ],
+            [
+              "Status",
+              "final"
+            ]
+          ]
+        ],
+        "label": "Blood glucose — review before insulin",
+        "infoId": "glucoseTrend",
+        "display": "trend",
+        "comp": "w4Admin.glucose"
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Test",
+              "INR"
+            ],
+            [
+              "Value",
+              "1.1"
+            ],
+            [
+              "Unit",
+              "1"
+            ],
+            [
+              "Flag",
+              ""
+            ],
+            [
+              "Range",
+              "0.8–1.2"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ],
+            [
+              "Status",
+              "final"
+            ]
+          ]
+        ],
+        "label": "Coagulation results — review before anticoagulants",
+        "infoId": "coagLabs",
+        "display": "table",
+        "comp": "w4Admin.coag"
+      }
+    },
+    {
+      "info": {
+        "rows": [
+          [
+            [
+              "Medication",
+              "acetaminophen"
+            ],
+            [
+              "Actual dose",
+              "650"
+            ],
+            [
+              "Unit",
+              "mg"
+            ],
+            [
+              "Route",
+              "PO"
+            ],
+            [
+              "Site",
+              ""
+            ],
+            [
+              "Actual time",
+              "Nov 2, 2026 07:30"
+            ],
+            [
+              "Status",
+              "Given"
+            ],
+            [
+              "Reason",
+              ""
+            ]
+          ]
+        ],
+        "label": "PRN administrations and response",
+        "infoId": "prnHistory",
+        "display": "table",
+        "comp": "w4Admin.prn"
+      }
+    },
+    {
+      "alert": {
+        "severity": "interruptive",
+        "label": "High-alert medication: double check required",
+        "comp": "w4Admin.alert.highAlert",
+        "alertId": "highAlertAdmin"
+      }
+    },
+    {
       "section": {
-        "title": "High-alert independent double check",
+        "title": "Independent check and pre-dose assessment",
         "id": "w4Admin.independentCheck",
         "children": [
           {
             "field": {
               "value": null,
               "unit": null,
-              "required": false,
+              "required": true,
               "provenance": null,
               "pendingConfirm": false,
               "label": "Second nurse — independent check",
@@ -136,15 +306,7 @@
               "humanOnly": true,
               "comp": "w4Admin.highAlertCosign"
             }
-          }
-        ]
-      }
-    },
-    {
-      "section": {
-        "title": "Pain assessment before administration",
-        "id": "w4Admin.pain",
-        "children": [
+          },
           {
             "field": {
               "value": null,
@@ -305,6 +467,36 @@
           {
             "info": {
               "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "IMP"
+                  ],
+                  [
+                    "Start",
+                    "Nov 1, 2026 15:40"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Pneumonia; receiving antibiotics"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "5 West · 512 A"
+                  ]
+                ],
                 [
                   [
                     "Encounter",
@@ -953,6 +1145,30 @@
           [
             [
               "Record",
+              "insulin lispro — 4 units subcutaneously before meals"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "enoxaparin — 40 mg subcutaneously daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "ceftriaxone — 1 g IV daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "acetaminophen — 650 mg by mouth every 6 hours as needed for pain"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"
             ]
           ],
@@ -1069,19 +1285,43 @@
           [
             [
               "Record",
+              "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 82 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 18 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Temperature 37.4 °C (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "SpO2 96 % (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain score 4 score (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Body Height 183.4 cm (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
             ]
           ],
           [
@@ -1094,24 +1334,6 @@
             [
               "Record",
               "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 70 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
             ]
           ]
         ],
@@ -1147,7 +1369,7 @@
     ],
     [
       "PCP",
-      "Dr. Laurena Anderson"
+      ""
     ],
     [
       "Coverage",
@@ -1155,15 +1377,15 @@
     ],
     [
       "Encounter",
-      "AMB"
+      "IMP"
     ],
     [
       "Attending",
-      "Dr. Laurena Anderson"
+      "Morgan Patel, MD"
     ],
     [
       "Location",
-      "NORTHEAST BEHAVIORAL HEALTH LLC"
+      "5 West · 512 A"
     ],
     [
       "Allergies",

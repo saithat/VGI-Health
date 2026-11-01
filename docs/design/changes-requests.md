@@ -2018,3 +2018,55 @@ frequency-to-due-time inference.
 all component IDs, scans, distinct-nurse checks, modal alerts, commit reviews
 and the separate worklist/MAR/administration path. No hospital spec changes
 are requested. Layout groups are open without extra navigation requirements.
+
+### ACUTE supporting panels / selected-order follow-up
+
+The acute lane now supplies patient-scoped `triageSummary`, `marDoseDetails`,
+`glucoseTrend`, `coagLabs`, `prnHistory` and `handoffSummary` in a clearly separated
+`Render/Fhir.lean` section. They use existing InfoPayload/ArtifactBinding types,
+with the current bundle's documented version digest. No event evidence or human
+capture is synthesized. `FactsContext.record` accepts `selectedEncounterId` and
+`selectedMedicationRequestId`; these are exact selectors, never visible columns.
+The live-session adapter forwards its already-selected Encounter/MedicationRequest
+IDs and retains native payloads unless an explicit version-bound adapter payload
+for the same info replaces one. This resolves acute supporting-panel selection
+without changing a wire type or hospital rule. Missing order identity stays empty;
+the reader never chooses a same-drug order. Named FHIR regressions cover duplicate
+drugs, wrong encounter/patient, ordered-vs-actual dose and missing flags.
+
+`present.trackBoard`, `present.timeGrid`, `present.worklist` and
+`present.flowsheet` still need the presentation lane's FHIR aliases and wrapper.
+The current Blueprint cleanup also strips the old nav group and leaves its goto
+buttons in the workspace. Please preserve real semantic navigation when the shell
+lands; a displayed list item without a click event does not replace a goto button.
+
+### ACUTE populated fallback views
+
+The same separated section now also supplies existing `edTrackBoard`,
+`shiftWorklist`, `marSchedule` and `flowsheetHistory` payloads. This uses the
+presentation contract's human-readable row keys and tags, with no new wire type.
+A scoped bundle yields its scoped patient rows; a full departmental census still
+requires a supplied departmental payload. MAR scheduled cells come only from
+explicit `dosageInstruction.timing.event`; Given/Held/Refused cells come only
+from MedicationAdministration. Same-time source records are retained together.
+Flowsheets use current-encounter observations, grouped by measure/unit with
+explicit time columns. No frequency expansion or inferred overdue threshold.
+These payloads can flow directly into the presentation wrapper once merged;
+they take ordinary explicit-payload precedence over derived fallback rows.
+
+### ACUTE observed shell/control issues for owning lanes
+
+Populated screenshots expose `record:weightToday` in the provenance badge.
+Please keep the semantic provenance metadata, but present its source category
+in clinical language without internal record keys. Generic formatting is enough;
+no human confirmation or source identity should be changed.
+
+Search is a separate functional gap: current `Core/Interp.lean` `basic` handles
+`Event.search` as `(s, .ok)` when a search is shown; State contains no search
+query/results. Semantic `Ui.lean` emits the search field with no value. The
+native **button** audit does not cover search inputs and is not a claim that
+these search fields work. Please supply actual Lean search state/results and
+preserve archived trajectory compatibility, rather than adding a React-only
+search engine. This affects the shared chart search and Find orders composer.
+The acute lane retains the declared controls while this core/shell integration
+is outstanding; removing required search would be an unauthorized scope cut.

@@ -42,7 +42,140 @@
     },
     {
       "info": {
-        "rows": [],
+        "rows": [
+          [
+            [
+              "Medication",
+              "insulin lispro"
+            ],
+            [
+              "Dose",
+              "4 units"
+            ],
+            [
+              "Route",
+              "SC"
+            ],
+            [
+              "Frequency",
+              "4 units subcutaneously before meals"
+            ],
+            [
+              "Category",
+              "Scheduled"
+            ],
+            [
+              "Order status",
+              "active"
+            ],
+            [
+              "2026-11-02 08:00",
+              "Scheduled"
+            ],
+            [
+              "2026-11-02 12:00",
+              "Scheduled"
+            ],
+            [
+              "2026-11-02 17:00",
+              "Scheduled"
+            ],
+            [
+              "2026-11-01T17:08:00-08:00",
+              "Given · 4 units · SC · Left abdomen"
+            ]
+          ],
+          [
+            [
+              "Medication",
+              "enoxaparin"
+            ],
+            [
+              "Dose",
+              "40 mg"
+            ],
+            [
+              "Route",
+              "SC"
+            ],
+            [
+              "Frequency",
+              "40 mg subcutaneously daily"
+            ],
+            [
+              "Category",
+              "Scheduled"
+            ],
+            [
+              "Order status",
+              "active"
+            ],
+            [
+              "2026-11-02 09:00",
+              "Scheduled"
+            ]
+          ],
+          [
+            [
+              "Medication",
+              "ceftriaxone"
+            ],
+            [
+              "Dose",
+              "1000 mg"
+            ],
+            [
+              "Route",
+              "IV"
+            ],
+            [
+              "Frequency",
+              "1 g IV daily"
+            ],
+            [
+              "Category",
+              "Scheduled"
+            ],
+            [
+              "Order status",
+              "active"
+            ],
+            [
+              "2026-11-02 09:00",
+              "Scheduled"
+            ]
+          ],
+          [
+            [
+              "Medication",
+              "acetaminophen"
+            ],
+            [
+              "Dose",
+              "650 mg"
+            ],
+            [
+              "Route",
+              "PO"
+            ],
+            [
+              "Frequency",
+              "650 mg by mouth every 6 hours as needed for pain"
+            ],
+            [
+              "Category",
+              "PRN"
+            ],
+            [
+              "Order status",
+              "active"
+            ],
+            [
+              "2026-11-02T07:30:00-08:00",
+              "Given · 650 mg · PO"
+            ]
+          ]
+        ],
         "label": "Medication administration record",
         "infoId": "marSchedule",
         "display": "table",
@@ -51,7 +184,72 @@
     },
     {
       "info": {
-        "rows": [],
+        "rows": [
+          [
+            [
+              "Ordered medication",
+              "insulin lispro"
+            ],
+            [
+              "Ordered dose",
+              "4"
+            ],
+            [
+              "Unit",
+              "units"
+            ],
+            [
+              "Route",
+              "SC"
+            ],
+            [
+              "Instructions",
+              "4 units subcutaneously before meals"
+            ],
+            [
+              "Scheduled times (recorded local time)",
+              "2026-11-02 08:00; 2026-11-02 12:00; 2026-11-02 17:00"
+            ],
+            [
+              "Order status",
+              "active"
+            ]
+          ],
+          [
+            [
+              "Medication",
+              "insulin lispro"
+            ],
+            [
+              "Actual dose",
+              "4"
+            ],
+            [
+              "Unit",
+              "units"
+            ],
+            [
+              "Route",
+              "SC"
+            ],
+            [
+              "Site",
+              "Left abdomen"
+            ],
+            [
+              "Actual time",
+              "Nov 1, 2026 17:08"
+            ],
+            [
+              "Status",
+              "Given"
+            ],
+            [
+              "Reason",
+              ""
+            ]
+          ]
+        ],
         "label": "Selected medication task",
         "infoId": "marDoseDetails",
         "display": "list",
@@ -70,7 +268,42 @@
         "body": [
           {
             "info": {
-              "rows": [],
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "acetaminophen"
+                  ],
+                  [
+                    "Actual dose",
+                    "650"
+                  ],
+                  [
+                    "Unit",
+                    "mg"
+                  ],
+                  [
+                    "Route",
+                    "PO"
+                  ],
+                  [
+                    "Site",
+                    ""
+                  ],
+                  [
+                    "Actual time",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Status",
+                    "Given"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ]
+                ]
+              ],
               "label": "PRN history",
               "infoId": "prnHistory",
               "display": "table",
@@ -147,6 +380,36 @@
           {
             "info": {
               "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "IMP"
+                  ],
+                  [
+                    "Start",
+                    "Nov 1, 2026 15:40"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Pneumonia; receiving antibiotics"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "5 West · 512 A"
+                  ]
+                ],
                 [
                   [
                     "Encounter",
@@ -785,6 +1048,30 @@
           [
             [
               "Record",
+              "insulin lispro — 4 units subcutaneously before meals"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "enoxaparin — 40 mg subcutaneously daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "ceftriaxone — 1 g IV daily"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "acetaminophen — 650 mg by mouth every 6 hours as needed for pain"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"
             ]
           ],
@@ -901,19 +1188,43 @@
           [
             [
               "Record",
+              "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 82 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 18 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Temperature 37.4 °C (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "SpO2 96 % (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain score 4 score (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Body Height 183.4 cm (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
             ]
           ],
           [
@@ -926,24 +1237,6 @@
             [
               "Record",
               "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 70 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
             ]
           ]
         ],
@@ -979,7 +1272,7 @@
     ],
     [
       "PCP",
-      "Dr. Laurena Anderson"
+      ""
     ],
     [
       "Coverage",
@@ -987,15 +1280,15 @@
     ],
     [
       "Encounter",
-      "AMB"
+      "IMP"
     ],
     [
       "Attending",
-      "Dr. Laurena Anderson"
+      "Morgan Patel, MD"
     ],
     [
       "Location",
-      "NORTHEAST BEHAVIORAL HEALTH LLC"
+      "5 West · 512 A"
     ],
     [
       "Allergies",

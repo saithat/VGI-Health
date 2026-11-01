@@ -56,6 +56,15 @@ def historyCells (r : HistoryRow) : List (String × String) :=
   [("Kind", r.kind), ("Item", r.item), ("Detail", r.detail), ("Status", r.status), ("Source", r.source)]
 def vitalCells (r : VitalRow) : List (String × String) :=
   [("Vital sign", r.name), ("Value", r.value), ("Unit", r.unit), ("Recorded", uiDate r.date)]
+
+/-- Latest dated vital per measure. Safety panels below retain all records tied
+at that latest timestamp, including conflicting values. -/
+def uiLatestVitals (d : Display) : List VitalRow :=
+  ((d.vitals.map (·.code)).eraseDups).filterMap fun code =>
+    (d.vitals.filter (·.code == code)).foldl (fun current r =>
+      match current with
+      | none => some r
+      | some prev => some (if prev.date < r.date then r else prev)) none
 def problemCells (r : ProblemRow) : List (String × String) :=
   [("Problem", r.name), ("Code", r.code), ("Onset", uiDate r.onset), ("Abatement", uiDate r.abatement), ("Status", r.status)]
 
@@ -78,7 +87,8 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
   | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
   | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
-  | "vitals" => cx.disp.vitals.map vitalCells
+  | "vitals" => (cx.disp.vitals.filter fun r => (uiLatestVitals cx.disp).any fun latest =>
+      latest.code == r.code && latest.date == r.date).map vitalCells
   | "problemList" => cx.disp.problems.map problemCells
   | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
       [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
@@ -206,13 +216,6 @@ def uiMedSummary (r : MedRow) : List (String × String) :=
     (if r.status == "" || r.status == "active" then "" else " (" ++ r.status ++ ")"))]
 def uiProblemSummary (r : ProblemRow) : List (String × String) :=
   [("Record", r.name ++ (if r.status == "" then "" else " (" ++ r.status ++ ")"))]
-def uiLatestVitals (d : Display) : List VitalRow :=
-  ((d.vitals.map (·.code)).eraseDups).filterMap fun code =>
-    (d.vitals.filter (·.code == code)).foldl (fun current r =>
-      match current with
-      | none => some r
-      | some prev => some (if prev.date < r.date then r else prev)) none
-
 def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match i with
   | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells

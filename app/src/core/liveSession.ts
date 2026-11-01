@@ -44,6 +44,10 @@ export function factsContext(
   const date = new Date(now);
   const renewal = context?.renewal;
   const record: [string, string][] = [];
+  if (context?.encounter.id)
+    record.push(["selectedEncounterId", context.encounter.id]);
+  if (context?.medication?.id)
+    record.push(["selectedMedicationRequestId", context.medication.id]);
   if (renewal) {
     const dosage = renewal.dosageInstruction?.[0];
     for (const [key, value] of Object.entries({
@@ -99,17 +103,34 @@ export function projectLive(
       : /Orders|Labs|Sign|Verify|PreOp|PostOp|Rx|Refill/.test(screen)
         ? "order-entry"
         : screen;
+  const adapter = fhirDisplayContext(
+    bundle,
+    context.patient.id ?? "",
+    projection.facts.patientId,
+    context.encounter.id,
+  );
   return {
     ...projection,
     facts: {
       ...projection.facts,
       ...(drug ? { medToGive: drug } : {}),
-      ...fhirDisplayContext(
-        bundle,
-        context.patient.id ?? "",
-        projection.facts.patientId,
-        context.encounter.id,
-      ),
+      ...adapter,
+      artifactBindings: [
+        ...(projection.facts.artifactBindings ?? []).filter(
+          (binding) =>
+            !adapter.artifactBindings.some(
+              (other) => other.key === binding.key,
+            ),
+        ),
+        ...adapter.artifactBindings,
+      ],
+      infoPayloads: [
+        ...(projection.facts.infoPayloads ?? []).filter(
+          (payload) =>
+            !adapter.infoPayloads.some((other) => other.info === payload.info),
+        ),
+        ...adapter.infoPayloads,
+      ],
       phase: { workflow, phase },
       episodeId: context.encounter.id ?? "",
       epochMinute: Math.floor(Date.parse(now) / 60000),

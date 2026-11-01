@@ -50,7 +50,62 @@
     },
     {
       "info": {
-        "rows": [],
+        "rows": [
+          [
+            [
+              "Room",
+              "ED · A04"
+            ],
+            [
+              "Patient",
+              "Ankunding, Aaron Bruno"
+            ],
+            [
+              "Age/sex",
+              "58 / M"
+            ],
+            [
+              "Chief complaint",
+              "Shortness of breath and fever"
+            ],
+            [
+              "Acuity",
+              "ESI 2"
+            ],
+            [
+              "Arrival",
+              "Nov 2, 2026 07:15"
+            ],
+            [
+              "LOS",
+              " "
+            ],
+            [
+              "RN",
+              "Jordan Lee, RN"
+            ],
+            [
+              "Provider",
+              "Morgan Patel, MD"
+            ],
+            [
+              "Labs",
+              "Results available"
+            ],
+            [
+              "Imaging",
+              "Ordered"
+            ],
+            [
+              "Disposition",
+              ""
+            ],
+            [
+              "Status",
+              "in-progress"
+            ]
+          ]
+        ],
         "label": "Emergency department patients",
         "infoId": "edTrackBoard",
         "display": "table",
@@ -59,7 +114,138 @@
     },
     {
       "info": {
-        "rows": [],
+        "rows": [
+          [
+            [
+              "Chief complaint",
+              "Shortness of breath and fever"
+            ],
+            [
+              "Acuity",
+              "ESI 2"
+            ],
+            [
+              "Arrival",
+              "Nov 2, 2026 07:15"
+            ],
+            [
+              "Arrival mode",
+              "Ambulance"
+            ],
+            [
+              "Location",
+              "ED · A04"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Weight"
+            ],
+            [
+              "Value",
+              "93.4"
+            ],
+            [
+              "Unit",
+              "kg"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Heart rate"
+            ],
+            [
+              "Value",
+              "82"
+            ],
+            [
+              "Unit",
+              "/min"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Respiratory rate"
+            ],
+            [
+              "Value",
+              "18"
+            ],
+            [
+              "Unit",
+              "/min"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Temperature"
+            ],
+            [
+              "Value",
+              "37.4"
+            ],
+            [
+              "Unit",
+              "°C"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "SpO2"
+            ],
+            [
+              "Value",
+              "96"
+            ],
+            [
+              "Unit",
+              "%"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ],
+          [
+            [
+              "Vital sign",
+              "Pain score"
+            ],
+            [
+              "Value",
+              "4"
+            ],
+            [
+              "Unit",
+              "score"
+            ],
+            [
+              "Recorded",
+              "Nov 2, 2026 07:30"
+            ]
+          ]
+        ],
         "label": "Selected encounter — triage summary",
         "infoId": "triageSummary",
         "display": "list",
@@ -153,6 +339,36 @@
           {
             "info": {
               "rows": [
+                [
+                  [
+                    "Encounter",
+                    ""
+                  ],
+                  [
+                    "Class",
+                    "EMER"
+                  ],
+                  [
+                    "Start",
+                    "Nov 2, 2026 07:15"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Shortness of breath and fever"
+                  ],
+                  [
+                    "Provider",
+                    "Morgan Patel, MD"
+                  ],
+                  [
+                    "Location",
+                    "ED · A04"
+                  ]
+                ],
                 [
                   [
                     "Encounter",
@@ -907,19 +1123,43 @@
           [
             [
               "Record",
+              "Weight 93.4 kg (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 82 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 18 /min (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Temperature 37.4 °C (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "SpO2 96 % (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain score 4 score (today)"
+            ]
+          ],
+          [
+            [
+              "Record",
               "Body Height 183.4 cm (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Weight 93.4 kg (Apr 22, 2026 13:28)"
             ]
           ],
           [
@@ -932,24 +1172,6 @@
             [
               "Record",
               "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 70 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 15 /min (Apr 22, 2026 13:28)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body temperature 37.055 Cel (Apr 23, 2025 13:28)"
             ]
           ]
         ],
@@ -985,7 +1207,7 @@
     ],
     [
       "PCP",
-      "Dr. Laurena Anderson"
+      ""
     ],
     [
       "Coverage",
@@ -993,15 +1215,15 @@
     ],
     [
       "Encounter",
-      "AMB"
+      "EMER"
     ],
     [
       "Attending",
-      "Dr. Laurena Anderson"
+      "Morgan Patel, MD"
     ],
     [
       "Location",
-      "NORTHEAST BEHAVIORAL HEALTH LLC"
+      "ED · A04"
     ],
     [
       "Allergies",
