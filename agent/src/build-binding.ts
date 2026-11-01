@@ -16,6 +16,8 @@ export async function installedBuild(root = REPO_ROOT, binary = path.join(root, 
   const actualWasm = await readFile(path.join(root, 'app/public/ehr/ehr-interp.wasm'));
   const { createHash } = await import('node:crypto');
   const wasmSha256 = createHash('sha256').update(actualWasm).digest('hex');
+  const distWasmSha256 = createHash('sha256').update(await readFile(path.join(root,'app/dist/ehr/ehr-interp.wasm'))).digest('hex');
+  if (distWasmSha256 !== wasmSha256) throw new Error('Production app contains stale WASM; rebuild before certification');
   if (manifest.assets['ehr-interp.wasm'] !== wasmSha256) throw new Error('WASM bytes do not match the installed manifest; rebuild before certification');
   return { ehrSha256: createHash('sha256').update(await readFile(binary)).digest('hex'), appSha256: build.appSha256, wasmSha256, componentsSha256: sha256(stableStringify([])) };
 }

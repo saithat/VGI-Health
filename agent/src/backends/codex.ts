@@ -60,7 +60,11 @@ export class CodexLlm implements JsonLlm {
         '--skip-git-repo-check', '-C', dir, ...(this.explicitModel ? ['-m', this.explicitModel] : []), '-',
       ];
       const stdin = `${req.system}\n\n---\n\n${req.prompt}\n\nReply with only the JSON object described by the output schema.`;
-      const transcript = await this.run(args, stdin, dir);
+      let executable=this.binary;
+      if (path.isAbsolute(executable) && !executable.startsWith('/usr/')) {
+        const staged=path.join(dir,'codex-executable'); await copyFile(executable,staged); executable=staged;
+      }
+      const transcript = await this.run(args, stdin, dir, executable);
       const audit = auditTranscript(transcript.stdout);
       if (audit.status !== 'pass') throw Object.assign(new Error('Codex attempted forbidden tools; request rejected'), { transcript, audit });
       const text = await readFile(outFile, 'utf8');
@@ -76,9 +80,9 @@ export class CodexLlm implements JsonLlm {
     }
   }
 
-  private run(args: string[], stdin: string, cwd: string): Promise<{ stdout: string; stderr: string }> {
+  private run(args: string[], stdin: string, cwd: string, executable: string): Promise<{ stdout: string; stderr: string }> {
     return new Promise((resolve, reject) => {
-      const child = spawn('bwrap', confinedArgs(cwd, this.binary, args), { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
+      const child = spawn('bwrap', confinedArgs(cwd, executable, args), { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
       let stderr = '';
       let stdout = '';
       child.stderr.on('data', (d: Buffer) => { stderr = (stderr + d.toString()).slice(-2_000_000); });

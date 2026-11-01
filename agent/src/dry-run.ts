@@ -68,7 +68,7 @@ const deps: LoopDeps = { runId: 'FAKE-dry-run', store, ehr,
 const planned = toCandidate({ id: 'dry-change', summary: 'fixture', moveType: 'shortcut', rationale: 'fixture', targets: [], patch, predicted: { clicks: 0, keystrokes: 0, scrolls: 0, klmDeciSec: 0 } }, 'llm');
 const moved = componentsMoved(current, applyToProgram(current, planned.patch, { version: 1, specVersion }).program);
 while (userResponse(deps, 1, 'P1', moved).response === 'reverted') deps.worldSeed++;
-await writeJson(path.join(out, 'manifest.json'), { runId: deps.runId, mode: 'FAKE', backend: 'scripted', model: backend.model, ehr: { mode: 'real', binary: ehr.binary }, warning: 'FAKE zero-cost wiring fixture; no LLM calls and no clinical performance evidence', world: world.dir, days: 2, nights: 1, personas: ['P1'], committedRunData: false });
+await writeJson(path.join(out, 'manifest.json'), { runId: deps.runId, mode: 'FAKE', buildBindingRequired: true, backend: 'scripted', model: backend.model, ehr: { mode: 'real', binary: ehr.binary }, warning: 'FAKE zero-cost wiring fixture; no LLM calls and no clinical performance evidence', world: world.dir, days: 2, nights: 1, personas: ['P1'], committedRunData: false });
 const preflight = await ehr.check({ specVersion, program: current, prev: current, canonical: current });
 if (preflight !== 'ok') throw new Error(`Tiny fixture rejected: ${JSON.stringify(preflight)}`);
 const initial = await deployVersion(deps, 'P1', current, { specVersion, prev: current, canonical: current, nextVersion: 0 });

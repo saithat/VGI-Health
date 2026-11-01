@@ -1,3 +1,4 @@
+import { assertCertified } from './certification.js';
 import { z } from 'zod';
 /** No model, no program edits. Revalidate every published version against its frozen inputs. */
 import { existsSync } from 'node:fs';
@@ -46,6 +47,7 @@ export async function rebindRun(dir: string, options: {ehr?: EhrClient; screens?
       const parts=z.tuple([z.string().regex(/^P[1-5]$/),z.string()]).parse(key.split('/')); const [persona,raw]=parts; const version=Number(raw);
       const prefix = path.join(dir,'certs',persona,`v${version}`);
       const currentFile = `${prefix}.build.json`;
+      const alreadyRebound = existsSync(currentFile) && JSON.parse(await readFile(currentFile,'utf8')).status === 'bound';
       let old: unknown = null;
       try { old = await readBinding(currentFile); } catch { /* a rejected version may be retried */ }
       if (!old && existsSync(`${prefix}.build.0.json`)) old = JSON.parse(await readFile(`${prefix}.build.0.json`,'utf8'));
@@ -64,9 +66,13 @@ export async function rebindRun(dir: string, options: {ehr?: EhrClient; screens?
         if (certificate.verdict !== 'ok' || certificate.specVersion !== inputs.specVersion) throw new Error('Original certificate is invalid');
         const inputHash = sha256(stableStringify({spec,inputs}));
         if (!old || z.object({certificationInputsSha256:z.string().optional()}).parse(old).certificationInputsSha256 !== inputHash) throw new Error('Recorded certification input hash mismatch or missing original provenance');
+        assertCertified(program,certificate,inputs.specVersion,ehr.mode);
         const target = { ...bindBuild(build,program,certificate), certificationInputsSha256: inputHash };
+        const original=z.object({certificateSha256:z.string(),componentsSha256:z.string()}).parse(old);
+        if (target.programSha256 !== sha256(stableStringify(JSON.parse(await readFile(programFile,'utf8'))))) throw new Error('Current compiler changes the recorded executable; program edits are forbidden in rebind');
+        if (target.certificateSha256 !== original.certificateSha256 || target.componentsSha256 !== original.componentsSha256) throw new Error('Certificate/component artifacts changed since original binding');
         // A completed receipt for these exact inputs and this build is a resumable checkpoint.
-        if (old && stableStringify(old) === stableStringify(target)) {results.push({persona,version,status:'cached'});continue;}
+        if (alreadyRebound && old && stableStringify(old) === stableStringify(target)) {results.push({persona,version,status:'cached'});continue;}
         check = await ehr.check({specVersion:specFile,program,prev:inputs.prev,canonical:inputs.canonical});
         if (check !== 'ok') throw new Error(`CURRENT CHECKER REFUSED: ${JSON.stringify(check)}`);
         screen = await screens.check({specVersion:specFile,program});

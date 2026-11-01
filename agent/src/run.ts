@@ -99,6 +99,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const log = opts.log ?? (() => undefined);
   const underlyingEhr = opts.ehr ?? createEhr();
   const world = await loadWorld(opts.worldDir);
+  if (['codex','claude'].includes(opts.llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
   const personaIds = opts.personas ?? world.manifest.personas;
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
     throw new Error('Every requested persona must occur exactly once in the world');
@@ -120,7 +121,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const resumeManifestSchema = z.object({
     fingerprints: z.unknown(),
     releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
-    createdAt: z.string(), world: z.string(), backend: z.string(), personas: z.array(z.string()),
+    createdAt: z.string(), world: z.string(), backend: z.string(), model: z.string(), personas: z.array(z.string()),
     ehr: z.object({ mode: z.string() }), resumes: z.array(z.string()).optional(),
     releaseDays: z.object({ v2: z.number(), v3: z.number() }), seedPolicy: z.string(),
   });
@@ -131,7 +132,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
-    if (previous.world !== world.dir || previous.backend !== opts.llm.name || previous.ehr.mode !== ehr.mode ||
+    if (previous.world !== world.dir || previous.backend !== opts.llm.name || previous.model !== opts.llm.model || previous.ehr.mode !== ehr.mode ||
         JSON.stringify(previous.personas) !== JSON.stringify(personaIds) ||
         JSON.stringify(previous.releaseDays) !== JSON.stringify(releaseDays) || previous.seedPolicy !== deps.seedPolicy) {
       throw new Error('resume world/backend/ehr/personas/release days/seed policy must match the recorded run');

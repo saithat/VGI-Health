@@ -29,6 +29,7 @@ export type Action =
   | { commit: { commit: CommitId } }
   
 export type Visibility =
+  | { encounter: { kind: string } }
   | "always"
   | { unlessReceipt: { info: InfoId } };
 
@@ -114,18 +115,18 @@ When a commit happens, every entry requirement for it is met: each
 required element is captured, confirmed, valid, in the right unit, and entered
 by a human if only a human may enter it. By construction (T0).
 
-A confirmed value is never asked for again. Navigating, opening groups or
-tabs, reviewing, acknowledging, or confirming keep every confirmed value;
-only typing a new value, or running a macro, changes one. By construction.
+Confirmed captures are retained by non-entry events. A human macro-button
+click without an open popup is excluded because it may run entry steps.
+This clause preserves stored values and permits deliberate re-entry.
 
-A field for an auto-linked element (e.g. the diagnosis on an order,
-linked from the visit diagnosis) copies the linked element, so the human
-never types it twice. Needs the checker.
+Every field for an auto-linked element declares a linked prefill from
+that element's named source (e.g. an order diagnosis from the visit diagnosis).
+Needs the checker.
 
 **Property 2, captures all, once.** Every commit captures each required
-element (by construction), a confirmed value is never asked for again (by
-construction), and auto-linked elements are never retyped (checker). Units
-are in property 7.
+element (by construction), confirmed captures survive the specified
+non-entry events (by construction), and auto-linked fields declare their
+source prefill (checker). Units are in property 7.
 
 Every field is for an element of the spec that the program's role may
 enter; every commit button is for a commit of the spec that the role may
@@ -162,8 +163,8 @@ Commits and acknowledgments are done only by the human's own click: a
 commit only by clicking a shown button for that commit; an acknowledgment only
 by the human's `ack`. Never by a macro. By construction (T3).
 
-When a commit happens, every cosign it needs names a second user, not
-the signed-in one. By construction (T0).
+At commit, every applicable whole-episode cosign requirement has a
+human-entered capture naming a user other than the signed-in user. T0.
 
 The program never tries to automate a human step: no field prefills an
 element a human must enter; no macro step types into such a field, clicks a
@@ -187,16 +188,18 @@ every reachable state: the user can always enter what is required, see what
 must be reviewed (or enter its waiver), and acknowledge alerts. Needs the
 checker.
 
-When a commit happens, every required quantity counts only in the spec's
-unit: a weight in lb never satisfies a weight in kg. By construction (T0).
+At commit, each applicable whole-episode quantity requirement has a
+confirmed capture in the element's declared unit. A weight in lb cannot
+satisfy a requirement declared in kg. By construction (T0).
 
-A quantity field is prefilled from the record only from `weightToday`,
-which keeps the unit it was recorded in. Other record values are bare numbers
-with no unit or date (e.g. a weight in lb, or yesterday's weight), so they may
-not fill a quantity. Needs the checker.
+A quantity field's named record prefill source must be `weightToday`.
+The interpreter preserves that record's unit; the commit checks the required
+unit separately. Needs the checker.
 
-**Property 7, units.** Weight in kg only, and the dose check uses kg
-(the interpreter's dose check reads only kg weights).
+**Property 7, units.** Whole-episode quantity requirements use their
+declared units at commit, and quantity record prefills use `weightToday`.
+Native medication-dose compatibility has its separate interpreter theorem
+`committed_dose_native`.
 
 The program asks for no more popups, on screens reachable from its start,
 than the canonical program does. Needs the checker.
@@ -277,7 +280,7 @@ Every prompt includes the persona's formalRuleContext, derived from the active r
 
 ## Certification and deployment
 
-Each candidate is pre-screened. Compatible candidates are merged, then checked as ONE program. The whole merged version passes offline screen visibility, legibility, no-cover and ARIA fidelity checks before real ehr deploy re-checks it. A refusal publishes nothing. The per-user login pointer is replaced atomically after program, components, certificate and build binding are staged. Next login loads the certified fork; release migrations preserve customizations where certification permits. Stability and alert budgets come from spec.design and alert tiers; no budget is relaxed.
+Each candidate is pre-screened. Compatible candidates are merged, then checked as ONE program. The whole merged version passes offline screen visibility, legibility, no-cover and ARIA fidelity checks before real ehr deploy re-checks it. A refusal publishes nothing. The per-user login pointer is replaced atomically only after program, components, certificate, build binding and the complete decision record are durable. Validation requires every task to complete and no completion regression; savings use tasks completed in both arms. Odd days are calibration only (a held-out task partition and independent validation seed); even days are blind measurements and never enter selection. Daily measurement compares the certified role canonical for the active release on the same schedule and seed. Rebind rechecks frozen inputs and current whole-version screen gates without changing programs or calling a model. Next login loads the certified fork; release migrations preserve customizations where certification permits. Stability and alert budgets come from spec.design and alert tiers; no budget is relaxed.
 
 Counterexample: {violation:{property,message,counterexample:[Event],screens:[ScreenId]}}. Replay the events to see why the checker refused the design; repair the program, never the rule.
 

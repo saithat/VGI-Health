@@ -184,13 +184,15 @@ export function makeHoldout(deps: LoopDeps, persona: PersonaView, schedule: DayS
       const args = { specVersion, persona: persona.params, schedule: past, worldDir: deps.worldDir, seed: validationSeed(deps.worldSeed, past.day) };
       const b = await deps.ehr.simulate({ ...args, program: before });
       const a = await deps.ehr.simulate({ ...args, program: after });
+      const expected = [...past.tasks.map((t)=>t.id)].sort();
+      for (const result of [b,a]) if (JSON.stringify(result.tasks.map((t)=>t.task).sort()) !== JSON.stringify(expected)) throw new Error('Validation simulator omitted or substituted scheduled tasks');
       return replayDay(past.day, past.load, b, a);
     },
   };
 }
 
 export function completionOk(r: ReplayDay | null): boolean {
-  return r !== null && r.after.tasks > 0 && r.after.completed === r.after.tasks && r.after.completed >= r.before.completed;
+  return r !== null && r.after.tasks > 0 && r.after.tasks === r.before.tasks && r.after.completed === r.after.tasks && r.after.completed >= r.before.completed;
 }
 
 export function improved(r: ReplayDay): boolean {
@@ -313,7 +315,7 @@ export async function deployVersion(deps: LoopDeps, persona: string, program: Pr
   const spec = deps.ehr.mode === 'real' ? JSON.parse(await (await import('node:fs/promises')).readFile(specFile, 'utf8')) : await deps.ehr.specExport(gate.specVersion);
   const inputsDir = path.join(deps.store.dir, 'certifications', persona, `v${program.version}`);
   await (await import('./util.js')).writeJson(path.join(inputsDir, 'spec.json'), spec);
-  const inputs = { specVersion: res.certificate.specVersion, prev: gate.prev, canonical: gate.canonical, program, night: gate.night ?? null };
+  const inputs = { specVersion: res.certificate.specVersion, prev: expandProgram(gate.prev), canonical: expandProgram(gate.canonical), program, night: gate.night ?? null };
   await (await import('./util.js')).writeJson(path.join(inputsDir, 'inputs.json'), inputs);
   const deployed = await deps.store.deploy(persona, program, res.certificate, build ? { ...bindBuild(build, program, res.certificate), certificationInputsSha256: (await import('./program.js')).sha256((await import('./program.js')).stableStringify({spec,inputs})) } : undefined, gate.night);
   return { ok: true, certificate: res.certificate, deployed, screenCheck };

@@ -151,6 +151,7 @@ export async function verifyRecordedBuild(programPath: string, program: unknown)
 /** Historical replay uses its frozen contract; aliases change display names only. */
 export function programSpecPath(program: ProgramEntry): string {
   if (program.run === "run1-P3") return `/runs/run1-P3/trajectories/specs/${archivedReleaseId(program.release)}.json`;
+  if (program.run && !["run1-P3","mock","run1-preflight"].includes(program.run)) return `/runs/${program.run}/certifications/${program.persona}/v${program.version}/spec.json`;
   if (program.path.startsWith("programs/benchmarks/releases/")) return `/${program.path.split("/").slice(0, 4).join("/")}/spec.json`;
   return `/releases/${program.release}/spec.json`;
 }

@@ -29,7 +29,7 @@ import { isRecord } from './jsonpatch.js';
 import type { CheckResult, Program, ScreenCheckResult } from './schema.js';
 
 export type { ScreenCheckResult } from './schema.js';
-import { REPO_ROOT, errorMessage } from './util.js';
+import { REPO_ROOT, errorMessage, resolveUserPath } from './util.js';
 
 
 export interface ScreenChecker {
@@ -55,7 +55,8 @@ export function bundlesFromEnv(): string[] {
 
 export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string; artifactsDir?: string } = {}): ScreenChecker {
   const fake = opts.fake ?? ehr.mode === 'fake';
-  const bundles = [...(opts.bundles ?? bundlesFromEnv())];
+  const bundles = [...(opts.bundles ?? bundlesFromEnv())].map(resolveUserPath);
+  if (!fake && !bundles.length) bundles.push(path.join(REPO_ROOT,'fixtures/synthea/Ashly_Rippin_149fcc1f.json'));
   if (!fake) {
     const catalog = z.object({patients:z.array(z.object({flags:z.object({pediatric:z.boolean(),surgical:z.boolean()}),file:z.string()}))}).parse(JSON.parse(readFileSync(path.join(REPO_ROOT,'fixtures/synthea/index.json'),'utf8')));
     for (const flag of ['pediatric','surgical'] as const) {

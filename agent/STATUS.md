@@ -1,86 +1,145 @@
-# Agent code handoff
+# Agent run handoff — 2026-11-01
 
-Owner/orchestrator stopped live runs. `runs/smoke-core` and
-`runs/smoke-core-world1-blocked` were deleted as requested. No live LLM nights
-or `run-days` commands have been run since that instruction. Historical
-`runs/run1-P3` records, programs, certificates and transcripts are unchanged.
+No live Codex/Claude nights were run after the orchestrator stopped them. The
+untracked partial `smoke-core` and `smoke-core-world1-blocked` directories were
+removed. Historical run1-P3 clinical records/programs/certificates/transcripts
+were retained; main's historical display aliases remain authoritative.
 
-## Implemented
+## Code ready
 
-- Generated capabilities manual and active persona rule context, each hashed
-  in decision records. Core lists only enforced base rules and the explicit
-  denyRefill exception; catalog additions are labeled off. Formal docstrings,
-  active spec labels/citations/conditions, design rules and examples are included.
-- Composite source templates: `componentDefs` + `kind.use {name,args}`; finite,
-  non-nested expansion with parameter substitution, isolated ids and closed
-  parent references. The **entire expanded executable** goes through real
-  `ehr check`, simulate, render and deploy. Native Lean Kind.use/Program.expand
-  has not landed: this adapter is an explicit source compiler, not a new native
-  semantic kind or a claim of a Lean compiler proof. Native checking covers
-  exactly the executable delivered to the app and reporting tools.
-- Editable `v<N>.source.json` is separate from certified `v<N>.json`; this keeps
-  native trajectories/complexity compatible. Source and executable hashes bind
-  the compilation result. Source edits cannot change owner, role or release
-  metadata; the loop controls those fields.
-- Sandboxed versioned presentation TSX under
-  `app/src/ehr/ui/custom/<owner>/v<N>/<Name>.tsx`, with per-version manifests.
-  A deliberately declarative subset lowers to a typed layout bundle: named
-  Box/Stack/Group/Paper/Flex imports, literal layout props, exactly one unchanged
-  UiNode subtree and its mapped callback. Arbitrary JS, hooks, globals, network,
-  storage, timers, unsafe HTML, extra event handlers, spread props and import
-  escapes are rejected. This supports layout/density changes, not arbitrary
-  React logic. ESLint, compiler type/grammar validation, a typed TSX example,
-  malicious-source tests and the real renderer harness enforce the boundary.
-- The actual component bundle is painted in whole-version ARIA/visibility/
-  legibility/no-cover checks before deploy. Its source + compiled layout hash,
-  actual WASM bytes and emitted painter/app build bind the version sidecar.
-  Live EHR, replay and trajectories load the certified component manifest.
-- Program, source, certificate and components stage before one atomic per-user
-  pointer update. Published versions are immutable. Failed bundle writes keep
-  the previous pointer. Login rejects tampered source/program/bundle data.
-- Real EHR command journals (including all simulated traces), successful and
-  failed LLM request journals/transcripts, exact screen coverage receipts and
-  resume are retained. Browser checks use one production-preview browser and
-  both widths. Exact-tree receipts bind app, browser, assertions and font limit;
-  known-bad controls run on every invocation.
+- Generated `docs/agent/CAPABILITIES.md` and active persona rule context appear
+  in every design/choice/repair/release prompt; decision records bind both hashes.
+  Core lists enforced obligations only, with an explicit catalog-off line and
+  main's retained denyRefill exception. One canonical EHR serves everyone; v0
+  applies role permissions and a preset view. The agent evolves each persona's
+  FORK; vendor releases enter every fork and are re-certified.
+- Composites compile finite, non-nested `componentDefs`/`kind.use` into existing
+  native kinds, namespaced IDs and closed parents. The complete executable is
+  checked, simulated, rendered and deployed. Source and executable are separate
+  bound artifacts. This is a source compiler, not a new Lean semantic kind/proof.
+- Versioned presentation TSX compiles a deliberately declarative subset to a
+  typed layout bundle. Only allowed Mantine layout wrappers around exactly one
+  unchanged UiNode/callback are accepted. No arbitrary JS, hooks, network,
+  storage, DOM, timers, unsafe HTML, spread props or extra handlers. Compiler,
+  ESLint, type harness, malicious-source tests and the actual renderer gates
+  enforce this boundary; bundle/source hashes bind the accepted version.
+- Day simulation requires an ok certificate for the active spec and the exact
+  program hash (independent native FNV implementation tested on all 15 role /
+  release canonicals). Validation/prescreen simulations recheck their inputs.
+- Every nightly deploy path requires full validation completion and
+  `after.completed >= before.completed`. Costs/savings use only tasks completed
+  in both arms; unfinished-task effort never becomes a saving. A failed release
+  deploy, including screen infrastructure errors, falls back to the exact
+  certified role canonical. Failure of that fallback aborts the run loudly.
+- Screen/ARIA/visibility/legibility/no-cover gates render adult, pediatric and
+  surgical bundles at desktop and narrow widths, one browser at a time. Missing
+  render/startup/browser infrastructure is `error`; assertion failures are `fail`.
+  Exact-tree cache receipts bind the current app/browser/assertions/component
+  bundle; known-bad controls still run. Environment bundle paths are absolute.
+- Program, source, components, native certificate, frozen spec/prev/canonical,
+  and build sidecar stage first; the complete decision is durable BEFORE the
+  atomic deploy pointer moves. Resume recovers a durable pending publication.
+- Manifest fingerprints bind the native EHR binary, all release specs, world,
+  app build, WASM and referenced patient fixtures. Resume refuses changed fingerprints, identity/calendar,
+  backend/model/personas or seed policy. Rebind never rewrites resume provenance.
+- Codex uses a bwrap filesystem containing only read-only runtime directories,
+  TLS/DNS files, and its private request directory, with a private CODEX_HOME
+  containing auth only. No repository, world, release or user-home mount. Shell
+  tools/web search are disabled; recorded tool events reject the response. The
+  manifest audits recorded transcripts (including failed calls). An OS probe
+  and a confined stub CLI test verify isolation and fast/high flags without API
+  calls. No unconfined fallback exists. Live backends refuse fake EHR/worlds.
+- `llm-error` is explicit, including release recertification after a model error.
+  Three consecutive error nights for a persona abort with a manifest reason.
+  Unsafe-rejected counts include only checker `fail` verdicts; invalid patches
+  and screen infrastructure errors have separate report fields. Seed/LLM unsafe
+  categories use exact property IDs, never message matching.
+- Current IDs are v1/v2/v3. `agent/src/release-config.ts` owns runtime identities
+  and Lean-module mapping; `world/releases.json` owns the shared calendar:
+  v2 prior authorization on day 4, v3 antibiotic policy on day 7. Archived IDs
+  are handled only by the historical alias map. Main's dose/completion fixes
+  were merged. Attending co-signatures remain human-only.
 
-## Release configuration and Codex options
+## Measurement protocol (explicit change from the old future-day validation)
 
-`world/releases.json` is the one configuration for `ids` (base/feature/migration),
-`leanModules`, `legacyIds` and the existing calendar. Agent runtime, fake fixtures,
-release tests and prompts read it. **No release rename was performed.** Historical
-ids are kept separately; the orchestrator's coming alias-map change still belongs
-with the repo-wide rename. Resume refuses changed release identities.
+Ten calendar workdays still run for all five personas. Odd days 1/3/5/7/9 are
+CALIBRATION ONLY; headline results use blind even days 2/4/6/8/10. Even schedules,
+traces and complaints never enter selection prompts, including ad-hoc reruns.
+Training uses the non-validation tasks of past odd days. Every third task of the
+most recent past odd day is held out for validation, with an independent seed
+namespace; those tasks/complaints do not enter training. Repeated validation can
+influence later selections, so validation metrics are never headline results.
+This provides five independent measured workdays, not ten independent samples.
 
-CLI options `--service-tier fast --reasoning-effort high` produce exactly
-`-c service_tier="fast" -c model_reasoning_effort="high"` in the Codex CLI.
-`CODEX_SERVICE_TIER` / `CODEX_REASONING_EFFORT` are environment alternatives.
-A stub-CLI test verifies this with zero API calls.
+Each day's baseline is that release's certified canonical persona program on
+that exact schedule and seed. Reports, dashboard workload and trajectories
+`--baseline` use it, with paired completion. Dashboard shows the matched canonical
+beside actual workload; vendor release cost is separate from agent saving.
+Frozen certification specs and daily canonical programs are retained for replay.
+World directory identity is preserved: world/2 deliberately retains seed 1 and
+must never be substituted with world/1 merely because the seeds match.
 
-## Verification
+Post-run decision tests use the next blind even day on which that accepted
+version was actually measured, against that day's canonical. Superseded or
+unmeasured versions are explicitly flagged. Night 9 is tested on day 10; there
+is no silent request for absent day 11. A short run may have no independent test
+for its final accepted version, and reports say so.
 
-Latest unit suites: 46 agent tests, 165 app tests and 93 world tests; all
-typechecks/lints and the app production build pass. The Lean default build
-passes (315 jobs, six workers, 8 GB virtual-memory ceiling). The native composite test certifies the expansion and
-rejects a hidden required review. Replay/fake nightly tests cover all personas,
-release modes, rejection, atomic failure, resume and train/holdout separation.
+## Rebind, without models or program changes
 
-Zero-cost single-night integration command (output outside runs/, never commit it):
+`pnpm --filter agent rebind --run <id>` (`make rebind RUN=<id>`) enumerates all
+published versions, not orphan staging files. It uses the recorded spec, prev
+and canonical, rechecks with the current real EHR binary, and reruns the current
+production screen gates. It verifies original input/certificate/component hashes
+and that the current source compiler reproduces the recorded executable.
+Native-binary, app, WASM, components, source, executable, certificate and frozen
+certification-input hashes are bound.
 
-```sh
-pnpm --filter app build
-pnpm --filter agent dry-run
-```
+Old sidecars become immutable `vN.build.0.json`; subsequent bindings are
+`vN.build.K.json`, selected by atomic `vN.build.json` pointers. A failed version
+gets a rejected pointer, remains refused by the app, emits a loud error and a
+nonzero command exit. Other versions are still checked. `rebind/log.jsonl`
+records old/new hashes, time and results; native journals and screen receipts
+remain. A successful receipt for identical inputs/build is resumable. A dead
+process lock is reclaimed; a live lock prevents concurrent writers. No checks
+are weakened. Old runs without frozen certification inputs cannot be rebound
+by guessing their old contracts.
 
-The dry runner uses the unchanged Lean Tiny spec with a repaired, certifiable
-teaching UI and one synthetic task. Its manifest says **FAKE**, uses a scripted
-backend, costs zero LLM calls, and uses the real native EHR and production screen
-checks. Its candidate combines a composite, a sandboxed presentation and a hotkey.
-Dry-run result: **deployed v1** at `/tmp/vgi-agent-FAKE-dry-run` (FAKE manifest, real EHR, zero LLM cost). Both v0/v1 whole-version production gates passed (9 exported states / 3 distinct trees each, both widths). The real simulator completes the one fixture task before and after. Native verdict is ok; the non-empty presentation bundle and editable source are bound in the v1 sidecar. Command journal: 3 check, 2 deploy, 2 min-clicks, 2 render-screens, 5 simulate. No dry-run data is committed.
+After editing app/WASM code: stop browsers/servers, build, rebind, then build
+again to copy the new run JSON into static hosting. The second copy-only build
+keeps the emitted renderer hash stable. Timeline, replay and live fork loading
+follow binding pointers and use recorded specs. Rebind does not authorize
+resuming an interrupted run with changed input fingerprints.
 
-## Future real commands — orchestrator only, after pending main merges
+## Verification (zero LLM cost)
 
-Prepare with no browser/dev server running:
+- Agent: 73 tests pass; includes a FAKE and REPLAY eight-day / five-persona run
+  crossing releases on days 4 and 7, certification tampering, completion gating
+  on all three deploy modes, fallback/abort, transcript isolation, resume hashes,
+  durable-decision crash recovery, rebind success/cache/refusal and no edits.
+- App: 175 tests pass; includes matched canonical/blind-day workload and binding
+  pointer/refusal loading. World: 95 tests pass. Agent/app/world lint and
+  typechecks pass. Production app build passes. Default Lean build passes,
+  341 jobs, six workers, 8 GB virtual-memory ceiling.
+- Trajectory schema and real-WASM archived determinism tests pass (424 task
+  coverage; historical run files were not regenerated). Daily-canonical baseline
+  regression and complexity/historical-alias tests pass.
+- `/tmp/vgi-review-FAKE-native-dry`: uncommitted FAKE one-night fixture, real
+  native EHR, scripted backend, zero model calls. Composite + sandboxed
+  presentation + hotkey deploy v1; both v0/v1 gates pass over 27 exported states
+  each (9 distinct adult/pediatric/surgical trees, two widths). Real tasks finish
+  before and after. Rebind against the updated native binary/current app passes
+  both versions and retains original sidecars; repeating it returns two cached
+  receipts with no additional native/browser work. An initial environment-path
+  infrastructure error was refused and logged, then fixed and retried.
+- Reproduce the standalone fixture outside runs/: `pnpm --filter agent dry-run`.
+  This tiny teaching spec is wiring evidence, not five-persona clinical metrics.
+  The all-persona eight-day evidence uses fake EHR/recorded backends and is also
+  outside the repo. No dry-run data or cache is committed.
+
+## Exact future commands — orchestrator only
+
+No real smoke/full run has been started. Prepare without a browser/dev server:
 
 ```sh
 (cd lean && (ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 lake build))
@@ -89,40 +148,58 @@ pnpm --filter agent typecheck && pnpm --filter agent test && pnpm --filter agent
 pnpm --filter app build && pnpm --filter app test && pnpm --filter app lint
 ```
 
-Single real smoke: all five personas, world 2, three work days = two nights:
+(a) ONE real smoke night: two workdays, all five personas, world/2:
 
 ```sh
-EHR_SCREEN_WORKERS=1 LEAN_NUM_THREADS=6 pnpm --filter agent run-days \
-  --days 3 --backend codex --service-tier fast --reasoning-effort high \
-  --world runs/world/2 --personas P1,P2,P3,P4,P5 --run-id smoke-core \
+EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
+pnpm --filter agent run-days --days 2 --backend codex \
+  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --personas P1,P2,P3,P4,P5 --run-id smoke-core \
   --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
-(ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 pnpm trajectories --run smoke-core)
-(ulimit -v 8000000; LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 pnpm complexity --run smoke-core)
-pnpm --filter agent report --run runs/smoke-core
+```
+
+(b) Full TEN workdays × five personas, world/2 (nine overnight adaptations):
+
+```sh
+EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
+pnpm --filter agent run-days --days 10 --backend codex \
+  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --personas P1,P2,P3,P4,P5 --run-id core-10day \
+  --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
+```
+
+These options emit `-c service_tier="fast" -c model_reasoning_effort="high"` to
+the confined Codex CLI. Resume only unchanged inputs with the same command plus
+`--resume`. Prepared full-run wrapper: `scripts/run-overnight.sh core-10day`
+(or `scripts/run-overnight.sh core-10day --resume`).
+
+(c) Rebind after building current app/WASM (no browser/server during builds):
+
+```sh
+pnpm --filter app build
+LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 pnpm --filter agent rebind --run core-10day
+# equivalent: make rebind RUN=core-10day
 pnpm --filter app build
 ```
 
-Full five-persona × ten-work-day run, with builds/checks/reports and Codex fast/high:
+(d) Post-run indexing (substitute smoke-core or another run ID):
 
 ```sh
-scripts/run-overnight.sh core-10day
-# interrupted run, unchanged inputs/build:
-scripts/run-overnight.sh core-10day --resume
+LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 pnpm trajectories --run core-10day
+LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 pnpm complexity --run core-10day
+pnpm --filter agent report --run runs/core-10day
+pnpm --filter app build
 ```
 
-Equivalent run invocation after preparation:
+Indexers enforce `ulimit -v 8000000;` locally on each Lean/lake helper. Do not
+apply that virtual-address cap to the whole Node/Chromium runner: V8/WASM needs
+large reserved address space. One lake and one browser at a time; never build
+while a browser/server is running.
 
-```sh
-EHR_SCREEN_WORKERS=1 LEAN_NUM_THREADS=6 pnpm --filter agent run-days \
-  --days 10 --backend codex --service-tier fast --reasoning-effort high \
-  --world runs/world/2 --personas P1,P2,P3,P4,P5 --run-id core-10day \
-  --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
-```
+## Left for the orchestrator
 
-## Before the real run
-
-Merge the forthcoming unit-aware doses, attending co-signature, release rename/
-alias map and UI redesign; regenerate the manual/builds and rerun these checks.
-Attending co-signatures remain human-only. No real smoke or full run is authorized
-in this lane now. Native Lean composite syntax can later replace the explicit
-source compiler; deploy must continue certifying the exact expanded executable.
+Run the single real smoke, inspect its completion/report, then start the full
+run. Later UI changes require the current build plus rebind. No requested code
+item is intentionally deferred; clinical-performance claims await those real
+runs. The presentation language intentionally remains declarative and composites
+remain source-compiled until native syntax/proofs land.
