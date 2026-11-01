@@ -33,6 +33,10 @@ def uiSteps (cx : Ctx) : List (String × String) :=
   (cx.prog.screens.filter (·.workflow == workflow)).map fun sc =>
     (sc.id, uiLabel sc.title "Untitled screen")
 
+/-- Fixed-point results retain their two decimal places (e.g. 4.05, not 4.5). -/
+def uiHundredths (n : Nat) : String :=
+  s!"{n / 100}.{if n % 100 < 10 then "0" else ""}{n % 100}"
+
 def allergyCells (r : AllergyRow) : List (String × String) :=
   [("Substance", r.substance), ("Reaction", r.reaction), ("Severity", r.severity),
    ("Status", r.status), ("Verification", r.verification), ("Recorded", r.recorded)]
@@ -57,7 +61,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
       [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
        ("Recorded", r.date), ("Abnormal", toString r.abnormal)] ::
       r.trend.map (fun p => [("Test", r.name), ("Recorded", p.date),
-        ("Value", s!"{p.hundredths / 100}.{p.hundredths % 100}"), ("Unit", r.unit)])
+        ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
   | "anticoagulants" | "anticoagulantList" =>
       (cx.disp.meds.filter fun r => inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet").map medCells
   | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
@@ -158,12 +162,21 @@ def uiNest (cx : Ctx) (it : ItemView) (rest : List UiBranch) : List UiBranch :=
 def uiComponents (cx : Ctx) : List UiNode :=
   (((cx.v.items.filter (·.shown)).foldr (uiNest cx) []).flatMap (·.nodes))
 
+/-- Latest measurement per vital-sign code; complete history remains in the
+workspace vitals panel. Stable input order breaks equal-date ties. -/
+def uiRecentVitals (d : Display) : List VitalRow :=
+  ((d.vitals.map (·.code)).eraseDups).filterMap fun code =>
+    (d.vitals.filter (·.code == code)).foldl (fun current r =>
+      match current with
+      | none => some r
+      | some prev => some (if prev.date < r.date then r else prev)) none
+
 /-- Clinical sidebar, never identity/debug transport metadata. No row limit. -/
 def uiSide (cx : Ctx) : List UiNode :=
   [uiInfo cx "" "Allergies" "allergyList" "summary",
    uiInfo cx "" "Active medications" "currentMeds" "summary",
    uiInfo cx "" "Problems" "problemList" "summary",
-   uiInfo cx "" "Recent vitals" "vitals" "summary"]
+   .info "" "Recent vitals" "vitals" "summary" ((uiRecentVitals cx.disp).map vitalCells)]
 
 /-- Passive/unknown alerts cannot become modals, even in a malformed state.
 Only the matching Event.ack is accepted by the interpreter while a popup is open. -/
@@ -175,12 +188,23 @@ def uiModal (cx : Ctx) : Option UiNode := do
       [.text (uiLabel rule.label "Clinical alert"),
        .button a "Acknowledge" "ack" true none none])
 
+/-- Applicable reviews on this screen, including disabled commit buttons.
+The original component tree is untouched; the safety supplement has no event id. -/
+def uiRequiredReviews (cx : Ctx) : List ReviewReq :=
+  cx.sp.reviews.filter fun r =>
+    whenHolds cx.facts cx.s r.when && cx.v.items.any (fun it =>
+      it.shown && it.comp.kind == .button (.commit r.commit))
+
+def uiMissingReviews (cx : Ctx) : List UiNode :=
+  ((uiRequiredReviews cx).filter fun r => !infoShown cx.sp cx.prog cx.facts cx.s r.info).map fun r =>
+    uiInfo cx "" (infoLabel cx r.info) r.info "list"
+
 def uiWorkspace (cx : Ctx) : List UiNode :=
   let steps := uiSteps cx
-  .stepper steps ((steps.map (·.1)).idxOf cx.s.screen) :: uiComponents cx
+  .stepper steps ((steps.map (·.1)).idxOf cx.s.screen) :: (uiComponents cx ++ uiMissingReviews cx)
 
-/-- The actual semantic UI sent to the browser. Banner fields are first in the
-wire record; component banners become info nodes, never a second landmark. -/
+/-- The actual semantic UI sent to the browser. The banner is the first
+layout landmark; component banners become info nodes, never a second landmark. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }

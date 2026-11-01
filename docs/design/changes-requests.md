@@ -754,3 +754,11 @@ Current result is **false**: W1 has 14 entries, W3 17, W6 18, exceeding D5's
 12-entry group limit. Labels within all groups are unique. Render retains every
 screen and does not silently truncate navigation. Content/checker should agree
 on a conforming program/navigation grouping before certifying this release.
+
+## Render → app: catalog test count after main integration
+
+After merging `cd60f62`, app build and lint pass, but `pnpm --filter app test`
+has one failure: `tests/app.test.tsx:25` expects 16 permanent bad programs and
+`programs/bad/` now contains 24. Please update that source test to the current
+24-seed catalog (or derive the reviewed catalog expectation). Render did not
+edit app-owned tests or reduce catalog scope. The other 89 app tests pass.
