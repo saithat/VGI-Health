@@ -797,3 +797,119 @@ round-trip requests CR-12/14 still apply.
 forbids weakening an existing rule. Content retains that flag and human
 naloxoneOffer, adding the human outcome enum alongside them. A declined/prior
 education outcome alone therefore does not bypass the older stricter flag.
+
+## CHECK-2026-10-31: expanded canonical certification blockers (content/app)
+
+All fifteen release/persona candidates reject in the real `ehr check` CLI. Keep the properties unchanged. This pin audit enumerates missing nonwaivable reviews; conditionally applicable reviews still range over all patient records.
+
+### v1
+
+- P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `allergyList` review.
+- P1, P2, P4, P5: `w5Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w6PostOp` / `signTreatmentOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6PostOp` / `signDietOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6Rounding` / `signProgressNote` lacks a pinned `currentMeds` review.
+- P1, P2, P4: `w6Discharge` / `disposition` lacks a pinned `vitals` review.
+- P1, P2, P4, P5: `w3Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeSelfAdministration` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeBedsideMedication` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizePatientOwnedMedication` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Anesthesia` / `signAnesthesiaRecord` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6StandingOrders` / `signStandingOrder` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Recovery` / `signPostAnesthesiaNote` lacks a pinned `currentMeds` review.
+- P1, P2: `w5OxygenOrder` / `signNewbornOxygenOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7Sign` / `signOrders` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+
+### v1.1
+
+- P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `allergyList` review.
+- P1, P2, P4, P5: `w5Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w6PostOp` / `signTreatmentOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6PostOp` / `signDietOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6Rounding` / `signProgressNote` lacks a pinned `currentMeds` review.
+- P1, P2, P4: `w6Discharge` / `disposition` lacks a pinned `vitals` review.
+- P1, P2, P4, P5: `w3Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeSelfAdministration` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeBedsideMedication` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizePatientOwnedMedication` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Anesthesia` / `signAnesthesiaRecord` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6StandingOrders` / `signStandingOrder` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Recovery` / `signPostAnesthesiaNote` lacks a pinned `currentMeds` review.
+- P1, P2: `w5OxygenOrder` / `signNewbornOxygenOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7Sign` / `signOrders` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+
+### v2
+
+- P1, P2, P4, P5: `w1Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3Disposition` / `discharge` lacks a pinned `allergyList` review.
+- P1, P2, P4, P5: `w5Sign` / `signOrders` lacks a pinned `anticoagulantList` review.
+- P1, P2, P4, P5: `w6PostOp` / `signTreatmentOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6PostOp` / `signDietOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6Rounding` / `signProgressNote` lacks a pinned `currentMeds` review.
+- P1, P2, P4: `w6Discharge` / `disposition` lacks a pinned `vitals` review.
+- P1, P2, P4, P5: `w3Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4Restraint` / `signRestraintOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeSelfAdministration` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizeBedsideMedication` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w4SelfAdministration` / `authorizePatientOwnedMedication` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Anesthesia` / `signAnesthesiaRecord` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6StandingOrders` / `signStandingOrder` lacks a pinned `currentMeds` review.
+- P1, P2: `w6Recovery` / `signPostAnesthesiaNote` lacks a pinned `currentMeds` review.
+- P1, P2: `w5OxygenOrder` / `signNewbornOxygenOrder` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6DirectDispense` / `authorizeDirectDispensing` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7Sign` / `signOrders` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7EmergencyRxFollowup` / `signEmergencyRxFollowup` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w1ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w3ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w5ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w6ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P4, P5: `w7ScheduleIISeries` / `signScheduleIISeries` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w3SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+- P1, P2, P3, P4, P5: `w4SuicideAssessment` / `signSuicideRiskAssessment` lacks a pinned `currentMeds` review.
+
+Content must also resolve the previously proved NP pre-op consent obstruction without broadening legal role permissions or shrinking the property domain. P3 no longer certifies after the legal screen expansion; its first failure is `currentMeds` on `w3SuicideAssessment` / `signSuicideRiskAssessment`.
+
+App: `app/scripts/verdicts.mjs` invokes `ehr check` without required `--canonical`. Supply `releases/${program.release}/canonical.json`; a nonzero exit with valid violation JSON (exit 1) is a computed rejection, not a checker invocation failure. Check lane may regenerate `app/public/verdicts.json` after this owning-lane script correction.
