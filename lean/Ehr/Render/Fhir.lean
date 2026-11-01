@@ -727,16 +727,30 @@ def historyVersionOf (rs : List Json) : Nat := listVersion (rs.filter isHistoryR
 
 /-! ## Growth -/
 
+/-- Normalize an explicitly supplied height unit for a centimeter growth axis.
+Unknown units stay unavailable; an unlabelled number is never assumed to be cm. -/
+def heightCmTenths (quantity : Json) : Option Nat :=
+  let code := str quantity "code"
+  let unit := (if code == "" then str quantity "unit" else code).toLower
+  match unit with
+  | "cm" => qtyScaled quantity 1
+  | "m" => qtyScaled quantity 3
+  | "[in_i]" | "in" => (qtyScaled quantity 3).map (fun n => n * 254 / 10000)
+  | _ => none
+
 /-- Growth points: body weights (kg) and heights (cm), joined by day, oldest
-first. -/
+first. Each day uses the latest recorded reading, independent of bundle order. -/
 def growthPoints (dob : String) (rs : List Json) : List GrowthPoint :=
+  let rs := oldestFirst obsWhen (rs.filter fun r => isBodyWeight r ||
+    (isObservation r && hasCode (field r "code") bodyHeightCode))
   let ws := (rs.filter isBodyWeight).filterMap fun r =>
     match weightReading r with
     | some (w, .kg) => some (dayOf (obsWhen r), w)
     | some (w, .lb) => some (dayOf (obsWhen r), w * 4536 / 10000)
+    | some (w, .g) => some (dayOf (obsWhen r), w / 1000)
     | _ => none
   let hs := (rs.filter fun r => isObservation r && hasCode (field r "code") bodyHeightCode).filterMap
-    fun r => (qtyScaled (field r "valueQuantity") 1).map (dayOf (obsWhen r), ·)
+    fun r => (heightCmTenths (field r "valueQuantity")).map (dayOf (obsWhen r), ·)
   let days := oldestFirst id ((ws.map (·.1) ++ hs.map (·.1)).eraseDups)
   days.map fun d =>
     { date := d, ageMonths := ageMonths dob d

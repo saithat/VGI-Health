@@ -11,12 +11,13 @@ test.skip(
 const files = readdirSync("src/fixtures/presentations").filter((file) =>
   file.endsWith(".json"),
 );
+const width = Number(process.env.EHR_PRESENT_WIDTH ?? "1440");
 for (const file of files) {
   test(`structured presentation review: ${file}`, async ({ page }) => {
     const screen = uiScreenSchema.parse(
       JSON.parse(readFileSync(`src/fixtures/presentations/${file}`, "utf8")),
     );
-    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.setViewportSize({ width, height: 900 });
     await page.goto("/screen-check.html");
     await page.waitForFunction(() => typeof window.renderUi === "function");
     await page.evaluate((screen) => window.renderUi(screen), screen);
@@ -26,7 +27,7 @@ for (const file of files) {
       expectedAria(screen),
     );
     const unreadable = await page
-      .locator(".presentation-status")
+      .locator(".presentation-status, .presentation-table th")
       .evaluateAll((elements) => {
         const rgb = (value: string) =>
           (value.match(/[\d.]+/g) ?? []).map(Number);
@@ -64,7 +65,8 @@ for (const file of files) {
       });
     expect(unreadable).toEqual([]);
     mkdirSync("shots/realism/present", { recursive: true });
-    const name = file.replace(/\.json$/, "");
+    const name =
+      file.replace(/\.json$/, "") + (width === 1440 ? "" : `-${width}`);
     await page.screenshot({
       path: `shots/realism/present/${name}.png`,
       animations: "disabled",
@@ -74,5 +76,28 @@ for (const file of files) {
       fullPage: true,
       animations: "disabled",
     });
+    const brokenWords = await page
+      .locator(".presentation-status, .presentation-table th")
+      .evaluateAll((elements) =>
+        elements.flatMap((element) => {
+          const broken: string[] = [];
+          const walker = document.createTreeWalker(
+            element,
+            NodeFilter.SHOW_TEXT,
+          );
+          for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+            for (const word of (node.textContent ?? "").matchAll(
+              /[A-Za-z]{4,}/g,
+            )) {
+              const range = document.createRange();
+              range.setStart(node, word.index);
+              range.setEnd(node, word.index + word[0].length);
+              if (range.getClientRects().length > 1) broken.push(word[0]);
+            }
+          }
+          return broken;
+        }),
+      );
+    expect(brokenWords).toEqual([]);
   });
 }

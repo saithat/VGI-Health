@@ -5,6 +5,7 @@ import { UiChildren } from "../src/ehr/ui/nodes";
 import { clinicalTheme } from "../src/ehr/ui/theme";
 import { uiNodeSchema, type UiNode } from "../src/ehr/ui/types";
 import { suppliedTone } from "../src/ehr/ui/presentations/StructuredInfo";
+import { expectedNodeAria } from "../src/ehr/ui/fidelity";
 
 beforeAll(() => {
   window.matchMedia = vi.fn().mockImplementation(() => ({
@@ -474,6 +475,72 @@ describe("structured clinical data boundary", () => {
       ...screen.getByRole("table").querySelectorAll("tbody tr"),
     ].map((row) => row.textContent);
     dates.forEach((date, i) => expect(rows[i]).toContain(date));
+  });
+  it("retains numeric text outside the plotting range without inventing a point", () => {
+    const value = "9".repeat(400);
+    const node: UiNode = {
+      presentation: {
+        kind: "trend",
+        children: [
+          {
+            info: {
+              comp: "large",
+              label: "Source result",
+              infoId: "resultTrend",
+              display: "trend",
+              rows: [
+                [
+                  ["Test", "Example"],
+                  ["Value", value],
+                  ["Recorded", "Nov 1, 2026"],
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    };
+    paint([node]);
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.getByRole("table").textContent).toContain(value);
+    expect(expectedNodeAria(node).some((entry) => entry.role === "img")).toBe(
+      false,
+    );
+  });
+  it("keeps finite geometry for a large supplied numeric result", () => {
+    const values = ["174", "178"].map((prefix) => prefix + "0".repeat(306));
+    paint([
+      {
+        presentation: {
+          kind: "trend",
+          children: [
+            {
+              info: {
+                comp: "large-finite",
+                label: "Finite result",
+                infoId: "resultTrend",
+                display: "trend",
+                rows: values.map((value, i) => [
+                  ["Test", "Example"],
+                  ["Value", value],
+                  ["Recorded", `Nov ${i + 1}, 2026`],
+                ]),
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const circles = [...screen.getByRole("img").querySelectorAll("circle")];
+    expect(circles).toHaveLength(2);
+    expect(
+      circles.every((circle) =>
+        Number.isFinite(Number(circle.getAttribute("cy"))),
+      ),
+    ).toBe(true);
+    values.forEach((value) =>
+      expect(screen.getByRole("table").textContent).toContain(value),
+    );
   });
   it("validates the new semantic wrapper and rejects an unknown wire kind", () => {
     expect(

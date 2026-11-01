@@ -152,7 +152,8 @@ export function expectedNodeAria(
           for (const row of node.info.rows) {
             const value = (key: string) =>
               row.find(([name]) => name === key)?.[1] ?? "";
-            const numeric = (s: string) => /^-?\d+(?:\.\d+)?$/.test(s.trim());
+            const numeric = (s: string) =>
+              /^-?\d+(?:\.\d+)?$/.test(s.trim()) && Number.isFinite(Number(s));
             if (presentation === "growth") {
               if (!numeric(value("Age (months)"))) continue;
               if (numeric(value("Weight (kg)")))

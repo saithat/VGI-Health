@@ -102,7 +102,9 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "procedures" => cx.disp.procedures.map fun r =>
         [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
     | "growthChart" => (cx.disp.growth.map fun r =>
-        [("Date", uiDate r.date), ("Age (months)", toString r.ageMonths),
+        [("Date", uiDate r.date), ("Age (months)",
+          if isoDateValid cx.disp.banner.dob && isoDateValid r.date && cx.disp.banner.dob ≤ r.date
+          then toString r.ageMonths else "Not recorded"),
          ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
          ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]) ++ uiPayloadRows cx i
     | "doseCheck" =>

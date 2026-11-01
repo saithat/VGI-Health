@@ -37,3 +37,7 @@ LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake env lean --run Ehr/Render/Expor
 node lean/Ehr/Render/test-wasm.mjs /tmp/vgi-present-render-api
 node scripts/presentations/check-wasm.mjs
 ```
+
+Review constrained desktop panels with `EHR_PRESENT_WIDTH=1024` or `1280` on the screenshot command; the default remains 1440×900. The review also rejects status words split across lines. Dense widgets respond to their actual container width, including when a chart sidebar consumes space.
+
+For a wider real-world-data gate, run `python3 scripts/presentations/export-persona-matrix.py --check` from the repository root, after building the app and with no build running. It exports every native screen/tab/group/alert variant for all 15 certified persona/release combinations using representative World 2 task data. Byte-identical trees are checked once, then the unchanged gate validates coverage for every original file through its exact-tree/context cache. All output and receipts stay in `/tmp`.
