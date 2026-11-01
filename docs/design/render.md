@@ -123,8 +123,9 @@ D4 filters passive/unknown modal IDs even in externally supplied malformed state
 D6 copies raw provenance/human-only/pending flags exactly; the painter may label
 the provenance but must not infer or modify it. Pending fields get a confirm button.
 
-Extra button roles `toggle`, `confirm`, and `ack` select those events; `primary`,
-`secondary`, `nav`, and `macro` use click. Tab labels are indexed by the actual
+Button roles `confirm` and `ack` select their named events. `toggle` uses the
+existing Event.click for group headers; `primary`, `secondary`, `nav`, and `macro`
+also use click. There is no Event.toggle. Tab labels are indexed by the actual
 interpreter tab number. A tab body contains only shown items from selected tabs.
 Clinical data are rows with clinical labels; alert keys, wristband transport
 payloads, artifact IDs, and serialized payload/debug objects are not displayed.
