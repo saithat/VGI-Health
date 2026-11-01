@@ -75,7 +75,8 @@ theorem completable (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) 
   change u.role = r at role
   have hc : c = "recordReview" := by
     have buttons := (List.mem_filter.mp (List.mem_filter.mp required).1).1
-    simpa [commitButtons, program, screen, field, button] using buttons
+    simpa [commitButtons, program, screen, field, button,
+      presetScreen, Program.presetOwner] using buttons
   subst c
   have hs := on_screen k r m a t f u s reachable
   obtain ⟨clear, modal, sameScreen, _⟩ := human_clear_popup (spec k r m a t) (program r) f u s
@@ -103,8 +104,8 @@ theorem completable (k : ValueKind) (r : Role) (m : ReviewMode) (a : AlertCond) 
         showsInfo, layoutShown, layoutShownAux, ownVisible, spec]
     simp only [element] at good
     simp only [spec, element, entry, review] at info
-    simp [guardBase, commitRoleOk, roleOk, encounterRolesOk, spec, Spec.commit?, role,
-      entriesOk, entryMet, entryDirectMet, entry, Spec.element?, element, good,
+    simp [guardBase, commitRoleOk, roleOk, encounterRolesOk, CommitSpec.encounterRoleAllowed, spec, Spec.commit?, role,
+      entriesOk, entryMet, entry, Spec.element?, element, good,
       reviewsOk, reviewMet, review, info, extraGuard, validationsOk, elementValueValid, nonDose,
       defaultsOk, displaysOk, actionLabelOk, whenHolds]
   have consistent : ∀ z, popupCandidates (spec k r m a t) (program r) f z "recordReview" = [] →

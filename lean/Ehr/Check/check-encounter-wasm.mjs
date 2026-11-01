@@ -8,7 +8,7 @@ import { loadEhrInterp } from '../../../app/public/ehr/interp-loader.mjs';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const read = (path) => JSON.parse(readFileSync(resolve(root, path), 'utf8'));
 const ehr = await loadEhrInterp();
-const reason = 'Pre-op orders need an attending co-signature';
+const reason = 'Pre-op orders are signed by a physician or surgeon';
 const facts = {
   patientId: 'policy-test', identity: { initials: 'AL', sex: 'F', ageYears: 6 },
   allergyVersion: 1, allergyClasses: [], medsVersion: 1, currentMedClasses: [],
@@ -26,7 +26,7 @@ function buttons(value) {
   return [...(value.button ? [value.button] : []), ...Object.values(value).flatMap(buttons)];
 }
 const results = [];
-for (const release of ['v1', 'v1.1', 'v2']) {
+for (const release of ['v1', 'v2', 'v3']) {
   const input = { spec: read(`releases/${release}/spec.json`),
     program: read(`releases/${release}/personas/P4.json`), facts,
     user: { id: 'P4', role: 'np' } };

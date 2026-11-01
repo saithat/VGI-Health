@@ -1,4 +1,4 @@
-/** Release modes (v1.1 surface-feature, v2 migrate) and try-to-break-it, on a compressed calendar. */
+/** Release modes (v2 surface-feature, v3 migrate) and try-to-break-it, on a compressed calendar. */
 import { readFileSync } from 'node:fs';
 import { existsSync } from 'node:fs';
 import { rerunNight } from '../src/adhoc.js';
@@ -23,28 +23,28 @@ const rec = (night: number, persona: string): DecisionRecord =>
 
 beforeAll(async () => {
   const world = await fakeWorld(3);
-  // v1.1 takes effect on day 2 (night 1 = surface-feature), v2 on day 3 (night 2 = migrate).
-  run = await runDays({ days: 3, llm: new ScriptedLlm(), worldDir: world, runsRoot: await tmp('runs'), runId: 'releases', releaseDays: { v1_1: 2, v2: 3 } });
+  // v2 takes effect on day 2 (night 1 = surface-feature), v3 on day 3 (night 2 = migrate).
+  run = await runDays({ days: 3, llm: new ScriptedLlm(), worldDir: world, runsRoot: await tmp('runs'), runId: 'releases', releaseDays: { v2: 2, v3: 3 } });
 });
 
-describe('surface-feature (v1.1)', () => {
+describe('surface-feature (v2)', () => {
   it('decides per persona from its own traces and records why', () => {
     const p1 = rec(1, 'P1');
     expect(p1.mode).toBe('surface-feature');
     expect(p1.outcome).toBe('surfaced');
-    expect(p1.release).toMatchObject({ id: 'v1.1', surfaced: true });
+    expect(p1.release).toMatchObject({ id: 'v2', surfaced: true });
     expect(p1.release?.recheck.status).toBe('pass');
-    expect(p1.specVersion).toBe('v1.1');
+    expect(p1.specVersion).toBe('v2');
     const p2 = rec(1, 'P2');
     expect(p2.outcome).toBe('not-surfaced');
     expect(p2.release?.surfaced).toBe(false);
     expect(p2.hypothesis).toMatch(/prior auth/);
     // Not surfacing still recertifies the unchanged program under the new spec.
-    expect(p2.certificate?.specVersion).toBe('v1.1');
+    expect(p2.certificate?.specVersion).toBe('v2');
   });
 });
 
-describe('migrate (v2)', () => {
+describe('migrate (v3)', () => {
   it('every customized program fails the re-check against the new spec', () => {
     for (const p of ['P1', 'P2', 'P3', 'P4', 'P5']) expect(rec(2, p).release?.recheck.status).toBe('fail');
   });
@@ -59,11 +59,11 @@ describe('migrate (v2)', () => {
     expect(second?.check.status).toBe('pass');
     expect(r.outcome).toBe('migrated');
     expect(r.release?.items).toContain('R2-3');
-    expect(r.certificate?.specVersion).toBe('v2');
+    expect(r.certificate?.specVersion).toBe('v3');
     expect(r.userResponse.response).toBe('not-offered');
   });
 
-  it('P5: failed migrations fall back to canonical v2 plus still-passing customizations, and flag the user', () => {
+  it('P5: failed migrations fall back to canonical v3 plus still-passing customizations, and flag the user', () => {
     const r = rec(2, 'P5');
     expect(r.outcome).toBe('migration-fallback');
     expect(r.release).toMatchObject({ fallback: true, flaggedUser: true });

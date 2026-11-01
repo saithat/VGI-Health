@@ -7,13 +7,13 @@ import { fakeSpec } from '../src/fake/fixtures.js';
 import { toCheckResult } from '../src/night.js';
 
 describe('fake ehr fixtures', () => {
-  it('canonical programs pass their own spec; the old canonical fails v2 with a counterexample', () => {
-    for (const v of ['v1', 'v1.1', 'v2']) {
+  it('canonical programs pass their own spec; the old canonical fails v3 with a counterexample', () => {
+    for (const v of ['v1', 'v2', 'v3']) {
       const c = fakeCanonical(v);
       expect(fakeCheck({ specVersion: v, program: c, prev: c, canonical: c })).toBe('ok');
     }
     const v1 = fakeCanonical('v1');
-    const verdict = fakeCheck({ specVersion: 'v2', program: v1, prev: v1, canonical: fakeCanonical('v2') });
+    const verdict = fakeCheck({ specVersion: 'v3', program: v1, prev: v1, canonical: fakeCanonical('v3') });
     expect(verdict).not.toBe('ok');
     expect(toCheckResult(verdict).counterexample?.length).toBeGreaterThan(0);
   });

@@ -37,7 +37,7 @@ theorem hasComponent_pair {p : Program} {c : Component} (h : HasComponent p c) :
 /-- Persona projection preserves every authorized non-macro component,
 independently of the size and contents of its macro library. -/
 theorem hasComponent_forPersona (sp : Spec) (p : Program) (owner : String) (role : Role)
-    (c : Component) (h : HasComponent p c)
+    (c : Component) (h : HasComponent (presetProgram owner p) c)
     (allowed : roleComponentAllowed sp role c = true) (nonmacro : macroOf? c.kind = none) :
     HasComponent (forPersona sp p owner role) c := by
   obtain ⟨s, hs, hc⟩ := h
@@ -175,21 +175,6 @@ theorem canonical_keeps_plain_field (c : Component)
     HasComponent canonicalV1 c := by
   obtain ⟨s, hs, hc⟩ := member
   refine ⟨_, List.mem_map.mpr ⟨s, hs, rfl⟩, ?_⟩
-  have original : c ∈ (withAttendingCosign s).components := by
-    unfold withAttendingCosign
-    split
-    · exact hc
-    · have split : c ∈ (s.components.takeWhile fun c => match c.kind with
-          | .button (.commit _) | .field "patientIdReentry" _ _ => false | _ => true) ∨
-          c ∈ s.components.dropWhile (fun c => match c.kind with
-          | .button (.commit _) | .field "patientIdReentry" _ _ => false | _ => true) := by
-        rw [← List.mem_append, List.takeWhile_append_dropWhile]
-        exact hc
-      rcases split with h | h
-      · exact List.mem_append_left _ (List.mem_append_left _ h)
-      · exact List.mem_append_right _ h
-  let s := withAttendingCosign s
-  have hc : c ∈ s.components := original
   have split : c ∈ s.components.take 1 ∨ c ∈ s.components.drop 1 := by
     rw [← List.mem_append, List.take_append_drop]
     exact hc

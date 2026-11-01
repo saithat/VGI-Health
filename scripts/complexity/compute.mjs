@@ -1,3 +1,4 @@
+import { archivedReleaseId, releaseLabel } from '../historical-releases.mjs';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { readFile, writeFile, readdir, mkdir, mkdtemp, rm, access } from 'node:fs/promises';
@@ -8,7 +9,10 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const exec = promisify(execFile);
-const run = (bin, args, options = {}) => exec(bin, args, { timeout: 180000, ...options });
+// Limit Lean children while allowing Node's WebAssembly runtime to reserve its address space.
+const run = (bin, args, options = {}) => bin === 'lake'
+  ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], { timeout: 180000, ...options })
+  : exec(bin, args, { timeout: 180000, ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');
 const write = (p, data) => writeFile(p, JSON.stringify(data, null, 2) + '\n');
@@ -51,7 +55,10 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
     const objects = [...rsp.matchAll(/"([^"\n]+\.o\.export)"/g)].map(x => x[1]).filter(p => !p.endsWith('/Main.c.o.export'));
     if (!objects.length) throw new Error('Missing native CLI link objects; rebuild ehr');
     await run('lake', ['env', 'leanc', '-O2', '-o', helper, c, ...objects], { cwd: lean, maxBuffer: 8e6 });
+    const archive = releaseSource.directory === suite.releaseSource.directory;
+    const releasePath = id => archive ? archivedReleaseId(id) : id;
     const provenance = {
+      releaseNaming: 'integer',
       suite: suite.id, releaseSource, suiteSha256: hash(suiteBytes), ehrSha256: hash(await readFile(binary)),
       adapterSha256: hash(await readFile(source)),
       search: 'Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.',
@@ -101,21 +108,21 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
         return { workflow, metrics: sum(ts.map(t => t.metrics)), floor: sum(ts.map(t => t.floor)) };
       });
       console.log(`${program.owner} v${version} (${specVersion}): ${sum(tasks.map(t => t.metrics)).clicks} clicks · ${workflows.map(w => w.workflow).join(', ')}`);
-      return { version, label: `v${version}`, specVersion, day, night, source: sourcePath, programSha256: hash(JSON.stringify(program)), tasks, skipped, workflows, total: sum(workflows.map(w => w.metrics)), floor: sum(workflows.map(w => w.floor)) };
+      return { version, label: `v${version}`, specVersion: archive ? releaseLabel(specVersion, 'run1-P3') : specVersion, day, night, source: sourcePath, programSha256: hash(JSON.stringify(program)), tasks, skipped, workflows, total: sum(workflows.map(w => w.metrics)), floor: sum(workflows.map(w => w.floor)) };
     }
     if (canonical) {
       const iterations = [];
-      for (const [version, release] of ['v1', 'v1.1', 'v2'].entries()) {
+      for (const [version, release] of ['v1', 'v2', 'v3'].entries()) {
         const tasks = [];
         // One instance of each workflow, using its representative authorized role.
         for (const [persona, workflows] of Object.entries({ P1: ['W1', 'W2', 'W7'], P2: ['W3'], P3: ['W4'], P4: ['W5'], P5: ['W6'] })) {
-          const full = await read(path.join(releaseRoot, release, 'canonical.json'));
+          const full = await read(path.join(releaseRoot, releasePath(release), 'canonical.json'));
           const projection = { role: { P1: 'physician', P2: 'physician', P3: 'rn', P4: 'np', P5: 'surgeon' }[persona] };
           const selected = { ...full, role: projection.role, owner: persona, id: persona };
           // Keep a single workflow for canonical union accounting; no duplicate persona workflows.
           const saved = suite.cases;
           suite.cases = saved.filter(b => workflows.includes(b.workflow));
-          try { tasks.push(...(await iteration(selected, release, version, `${releaseSource.directory}/${release}/canonical.json`, path.join(root, suite.world))).tasks); }
+          try { tasks.push(...(await iteration(selected, releasePath(release), version, `${releaseSource.directory}/${releasePath(release)}/canonical.json`, path.join(root, suite.world))).tasks); }
           finally { suite.cases = saved; }
         }
         const workflows = suite.cases.map(b => ({ workflow: b.workflow, metrics: sum(tasks.filter(t => t.workflow === b.workflow).map(t => t.metrics)), floor: sum(tasks.filter(t => t.workflow === b.workflow).map(t => t.floor)) }));
@@ -160,7 +167,7 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
         for (const d of decisions) {
           const rejected = d.candidates.filter(c => c.check.status === 'fail');
           if (rejected.length) markers.push({ kind: 'rejection', version: d.versionAfter, night: d.night, label: `Night ${d.night}: rejected proposals`, properties: [...new Set(rejected.map(c => c.check.property ?? 'unspecified'))] });
-          if (d.release) markers.push({ kind: 'release', version: d.versionAfter, night: d.night, label: d.release.id, properties: [] });
+          if (d.release) markers.push({ kind: 'release', version: d.versionAfter, night: d.night, label: releaseLabel(d.release.id, manifest.runId), properties: [] });
         }
         people.push({ persona, iterations, markers });
       }

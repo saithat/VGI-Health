@@ -1,3 +1,4 @@
+import Ehr.Canonical.PresetTests
 import Ehr.Basic
 import Ehr.Core.Types
 import Ehr.Core.Json
@@ -40,5 +41,4 @@ import Ehr.Canonical.CoreReleaseTests
 import Ehr.Check.SimAudit
 import Ehr.Check.ProfileGoalsTests
 import Ehr.Check.DoseTests
-import Ehr.Check.AttendingSimTests
 import Ehr.Check.EncounterRoleTests

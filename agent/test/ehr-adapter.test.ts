@@ -51,8 +51,8 @@ describe('ehr CLI adapter (stub binary)', () => {
     expect(await ehr.runBatch([{ spec: {}, program: {}, facts: {}, user: {}, events: [] }])).toEqual([{ case: 0, index: 0 }, { case: 0, index: 1 }]);
     expect((await ehr.specExport('tiny')).version).toBe('tiny-1');
     const lines = (await readFile(log, 'utf8')).trim().split('\n');
-    expect(lines[0]).toMatch(/^check --spec \S+\/releases\/v1\/spec\.json --program \S+program\.json --prev \S+prev\.json --canonical \S+canonical\.json$/);
-    expect(lines[1]).toMatch(/^deploy --spec \S+\/releases\/v1\/spec\.json --program \S+ --prev \S+ --canonical \S+ --out /);
+    expect(lines[0]).toMatch(/^check --spec \S+releases\/v1\/spec\.json --program \S+program\.json --prev \S+prev\.json --canonical \S+canonical\.json$/);
+    expect(lines[1]).toMatch(/^deploy --spec \S+releases\/v1\/spec\.json --program \S+ --prev \S+ --canonical \S+ --out /);
     expect(lines[2]).toMatch(/^simulate --spec v1 --program \S+ --persona \S+persona\.json --schedule \S+schedule\.json --world \/w --seed 3$/);
     expect(lines[3]).toMatch(/^min-clicks --spec v1 --program \S+ --schedule \S+ --world \/w$/);
     expect(lines[4]).toMatch(/^run-batch \S+batch\.jsonl$/);

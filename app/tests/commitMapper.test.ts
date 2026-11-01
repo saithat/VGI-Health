@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-// Frozen full-profile v2 spec (git 1123612:releases/v2/spec.json, before the
+// Frozen full-profile v3 spec (git 1123612:releases/v2/spec.json, before the
 // temporary core rule profile). The mapper must handle every catalog element,
 // so it stays tested while the release exports use core.
-import spec from "./fixtures/spec-v2-full.json";
+import spec from "./fixtures/spec-v3-full.json";
 import { mapCommit, systems, type CommitInput } from "../src/data/commitMapper";
 import type { Captured, Value } from "../../lean/generated/ehr-types";
 
@@ -421,23 +421,6 @@ describe("pure Lean commit → FHIR transaction", () => {
       }),
     ).toThrow("CPT");
   });
-});
-
-// The full-profile fixture stays frozen; this new base element is explicit here.
-it("records the attending as a FHIR attester on the signed order", () => {
-  const elements = [...base.elements, { id: "attendingCosign", label: "Attending co-signature (pre-op orders)",
-    fhirTarget: "Provenance.agent[attester].who" }];
-  const signed = resources({ elements, captured: [...order,
-    captured("attendingCosign", { user: { u: "attending" } })] });
-  const request = signed.find(r => r.resourceType === "MedicationRequest");
-  const provenance = signed.find(r => r.resourceType === "Provenance");
-  expect(request).toMatchObject({ requester: { reference: "Practitioner/doctor" } });
-  expect(provenance).toMatchObject({ agent: [{ type: { coding: [{ code: "attester" }] },
-    who: { reference: "Practitioner/attending" } }] });
-  expect(() => resources({ elements, captured: [...order,
-    captured("attendingCosign", { user: { u: "doctor" } })] })).toThrow("distinct human");
-  expect(() => resources({ elements, captured: [...order,
-    { ...captured("attendingCosign", { user: { u: "attending" } }), byHuman: false }] })).toThrow("distinct human");
 });
 
 it.each([

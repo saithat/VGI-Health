@@ -7,6 +7,8 @@ import Ehr.Check.HumanEventsSound
 import Ehr.Check.AlertSound
 import Ehr.Check.NavigationSound
 import Ehr.Check.ScalarCompletion
+import Ehr.Check.FixedLineCompletion
+import Ehr.Check.DoseCompletionObstruction
 
 namespace Ehr.Check
 open Ehr Ehr.Props
@@ -53,7 +55,170 @@ theorem scalar_identity_required (facts : Facts) (user : User) (role : user.role
     requiredCommitsFor (Scalar.spec .identity .physician .shownOnCommit .drugAllergy .interruptive)
       (Scalar.program .physician) (Scalar.program .physician) facts user = ["recordReview"] := by
   simp [requiredCommitsFor, requiredCommits, commitButtons, Scalar.spec, Scalar.program,
-    Scalar.screen, Scalar.field, Scalar.button, Spec.commit?, commitRolePossible, roleOk, role, List.eraseDups_cons]
+    Scalar.screen, Scalar.field, Scalar.button, presetScreen, Program.presetOwner,
+    Spec.commit?, commitRoleOk, encounterRolesOk, CommitSpec.encounterRoleAllowed, roleOk, role, List.eraseDups_cons]
+
+/-- Acceptance certifies the two-fixed-line composer, including per-line
+human entries, new-line advancement, reviews and finite alert discharge. -/
+theorem satisfies_of_checked_fixed_lines (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t) prev (FixedLine.program r) (FixedLine.program r) = .ok) :
+    Satisfies (FixedLine.spec k r m a t) prev (FixedLine.program r) (FixedLine.program r) :=
+  satisfies_of_checked_completable _ _ _ _ h (FixedLine.completable k r m a t nonDose)
+
+/-- A checked nonempty order composer satisfies all thirteen properties;
+its per-order-line requirement is a human assessment on each drug line. -/
+theorem fixed_lines_satisfies :
+    Satisfies (FixedLine.spec .flag .physician .shownOnCommit .drugAllergy .interruptive)
+      none (FixedLine.program .physician) (FixedLine.program .physician) :=
+  satisfies_of_checked_fixed_lines _ _ _ _ _ (by decide) none (by decide)
+
+/-- Two actual drug lines can be pending at once, with neither assessment
+entered. The completion theorem therefore repairs real per-line obligations. -/
+theorem fixed_lines_pending_nonempty :
+    let sp := FixedLine.spec .flag .physician .shownOnCommit .drugAllergy .interruptive
+    let p := FixedLine.program .physician
+    let s := runAll sp p Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user .human
+      (init sp p Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user)
+      [.enter (FixedLine.drugField 0).id (.code "amoxicillin"),
+       .enter (FixedLine.drugField 1).id (.code "warfarin")]
+    orderLines s = [(0, "amoxicillin"), (1, "warfarin")] ∧
+      entriesOk sp Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user s "recordReview" = false := by
+  decide
+
+/-- Receipt-aware reviews stay met when valid receipts hide the panel and
+when expiry reveals it again. Completion is proved for every reachable state. -/
+theorem satisfies_of_checked_receipt_lines (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t) prev
+      (FixedLine.program r (some m)) (FixedLine.program r (some m)) = .ok) :
+    Satisfies (FixedLine.spec k r m a t) prev
+      (FixedLine.program r (some m)) (FixedLine.program r (some m)) :=
+  satisfies_of_checked_completable _ _ _ _ h (FixedLine.completable k r m a t nonDose true)
+
+/-- A real accepted receipt-aware program satisfies all thirteen properties. -/
+theorem receipt_lines_satisfies :
+    Satisfies (FixedLine.spec .flag .physician (.shownOrReceipt 720 [.physician, .rn]) .careGap .passive)
+      none (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn])))
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn]))) :=
+  satisfies_of_checked_receipt_lines _ _ _ _ _ (by decide) none (by decide)
+
+/-- A current receipt genuinely hides the panel while meeting the review;
+after time passes beyond its window, the panel is shown and still meets it. -/
+theorem receipt_review_transition :
+    let mode := ReviewMode.shownOrReceipt 720 [.physician, .rn]
+    let sp := FixedLine.spec .flag .physician mode .careGap .passive
+    let p := FixedLine.program .physician (some mode)
+    let f := Ehr.Examples.TinyTests.factsWithReceipt 3
+    let s := init sp p f Ehr.Examples.Tiny.user
+    infoShown sp p f s "allergyList" = false ∧ reviewMet sp p f s (Scalar.review mode) = true ∧
+      infoShown sp p f { s with clock := s.clock + 1440 * 600 } "allergyList" = true ∧
+      reviewMet sp p f { s with clock := s.clock + 1440 * 600 } (Scalar.review mode) = true := by
+  decide
+
+/-- Any finite unique-ID alert family can be handled after line repair.
+The ID premise is extracted from acceptance, rather than assumed separately. -/
+theorem satisfies_of_checked_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (moreAlerts : List AlertSpec) (receiptAware : Bool)
+    (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t moreAlerts) prev
+      (FixedLine.program r (if receiptAware then some m else none))
+      (FixedLine.program r (if receiptAware then some m else none)) = .ok) :
+    Satisfies (FixedLine.spec k r m a t moreAlerts) prev
+      (FixedLine.program r (if receiptAware then some m else none))
+      (FixedLine.program r (if receiptAware then some m else none)) := by
+  apply satisfies_of_checked_completable _ _ _ _ h
+  apply FixedLine.completable_many_alerts k r m a t nonDose moreAlerts _ receiptAware
+  exact (accepted_wellFormed _ _ _ _ h).2.1.2.2.2
+
+/-- A second interruptive safety rule, with its own ID and acknowledgment. -/
+def secondSafetyAlert : AlertSpec :=
+  { id := "secondSafety", label := "Second safety check", cond := .careGap,
+    tier := .interruptive, commit := "recordReview" }
+
+/-- The generalized accepted fragment has a concrete two-interruption instance. -/
+theorem many_alerts_satisfies :
+    Satisfies (FixedLine.spec .flag .physician (.shownOrReceipt 720 [.physician, .rn])
+      .careGap .interruptive [secondSafetyAlert]) none
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn])))
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn]))) :=
+  satisfies_of_checked_many_alerts _ _ _ _ _ _ true (by decide) none (by decide)
+
+/-- Two real drug lines complete only after the human handles two distinct
+interruptive rules; both acknowledgments appear in the final state. -/
+theorem many_alerts_two_acknowledgments :
+    let sp := FixedLine.spec .flag .physician .shownOnCommit .careGap .interruptive [secondSafetyAlert]
+    let p := FixedLine.program .physician
+    let f := Ehr.Examples.Tiny.facts
+    let u := Ehr.Examples.Tiny.user
+    let s := runAll sp p f u .human (init sp p f u)
+      [.enter (FixedLine.drugField 0).id (.code "amoxicillin"),
+       .enter (FixedLine.drugField 1).id (.code "warfarin"),
+       .enter (FixedLine.assessmentField 0).id (.flag true),
+       .enter (FixedLine.assessmentField 1).id (.flag true),
+       .click Scalar.button.id, .ack "clinicalAlert", .click Scalar.button.id,
+       .ack "secondSafety", .click Scalar.button.id]
+    "recordReview" ∈ s.commits ∧ s.acked.length = 2 := by decide
+
+/-- The same completion construction covers arbitrary drug prefills and
+caller-supplied macro steps. Acceptance enforces catalog, reference and human-
+action rules; the slot invariant covers complete and stopped macro runs. -/
+theorem satisfies_of_checked_automated_lines (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (moreAlerts : List AlertSpec) (receiptAware : Bool)
+    (preset : Prefill) (automation : Option (List MacroStep))
+    (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t moreAlerts automation.isSome) prev
+      (FixedLine.program r (if receiptAware then some m else none) preset automation)
+      (FixedLine.program r (if receiptAware then some m else none) preset automation) = .ok) :
+    Satisfies (FixedLine.spec k r m a t moreAlerts automation.isSome) prev
+      (FixedLine.program r (if receiptAware then some m else none) preset automation)
+      (FixedLine.program r (if receiptAware then some m else none) preset automation) := by
+  apply satisfies_of_checked_completable _ _ _ _ h
+  apply FixedLine.completable_many_alerts k r m a t nonDose moreAlerts _ receiptAware preset automation
+  exact (accepted_wellFormed _ _ _ _ h).2.1.2.2.2
+
+/-- A concrete macro fills both drug slots through the public event interface. -/
+def orderFillSteps : List MacroStep :=
+  [.setValue (FixedLine.drugField 0).id "amoxicillin", .setValue (FixedLine.drugField 1).id "warfarin"]
+
+/-- A checked program combines prefills, a real macro button, per-line human
+entries, receipt-aware review visibility and multiple interruptive rules. -/
+theorem automated_lines_satisfies :
+    Satisfies (FixedLine.spec .flag .physician (.shownOrReceipt 720 [.physician, .rn])
+      .careGap .interruptive [secondSafetyAlert] true) none
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn]))
+        (.default "amoxicillin") (some orderFillSteps))
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn]))
+        (.default "amoxicillin") (some orderFillSteps)) :=
+  satisfies_of_checked_automated_lines _ _ _ _ _ _ true _ _ (by decide) none (by decide)
+
+/-- Prefills and the actual macro run leave two unconfirmed drug captures.
+The human then enters both required assessments, acknowledges both rules,
+and performs a real commit. -/
+theorem prefill_macro_human_completion :
+    let sp := FixedLine.spec .flag .physician (.shownOrReceipt 720 [.physician, .rn])
+      .careGap .interruptive [secondSafetyAlert] true
+    let p := FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn]))
+      (.default "amoxicillin") (some orderFillSteps)
+    let f := Ehr.Examples.TinyTests.factsWithReceipt 3
+    let u := Ehr.Examples.Tiny.user
+    let initial := init sp p f u
+    let filled := runAll sp p f u .human initial [.click FixedLine.macroButton.id]
+    let finished := runAll sp p f u .human filled
+      [.enter (FixedLine.assessmentField 0).id (.flag true),
+       .enter (FixedLine.assessmentField 1).id (.flag true),
+       .click Scalar.button.id, .ack "clinicalAlert", .click Scalar.button.id,
+       .ack "secondSafety", .click Scalar.button.id]
+    initial.captured.length = 2 ∧ initial.captured.all (fun x => !x.confirmed) = true ∧
+      orderLines filled = [(0, "amoxicillin"), (1, "warfarin")] ∧
+      filled.captured.all (fun x => !x.confirmed) = true ∧ "recordReview" ∈ finished.commits := by decide
+
+/-- The current checker has an accepted, non-completable program: the
+unrestricted completion implication needs a checker repair before proof. -/
+theorem completion_acceptance_counterexample :
+    ∃ (sp : Spec) (p : Program), check sp none p p = .ok ∧ ¬ Completable sp p p :=
+  ⟨DoseCompletionObstruction.spec, DoseCompletionObstruction.program,
+    DoseCompletionObstruction.accepted, DoseCompletionObstruction.not_completable⟩
 
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where
@@ -83,9 +248,17 @@ def emptyProgram : Program where
 theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyProgram :=
   satisfies_of_checked_completable _ _ _ _ (by decide) (by
     intro facts user _ _ s _ c hc
-    simp [requiredCommitsFor, requiredCommits, commitButtons, emptyProgram] at hc)
+    simp [requiredCommitsFor, requiredCommits, presetScreen, Program.presetOwner, commitButtons, emptyProgram] at hc)
 
 #print axioms satisfies_of_checked_completable
 #print axioms satisfies_of_checked_scalar
 #print axioms scalar_identity_satisfies
+#print axioms satisfies_of_checked_fixed_lines
+#print axioms fixed_lines_satisfies
+#print axioms satisfies_of_checked_receipt_lines
+#print axioms receipt_lines_satisfies
+#print axioms satisfies_of_checked_many_alerts
+#print axioms many_alerts_satisfies
+#print axioms satisfies_of_checked_automated_lines
+#print axioms automated_lines_satisfies
 end Ehr.Check

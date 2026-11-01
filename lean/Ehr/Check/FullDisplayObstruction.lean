@@ -29,20 +29,20 @@ theorem v1_payload_domain_not_satisfies (can p : Program)
     ¬ Satisfies Specs.V1.specV1 none can p :=
   fun h => release_payload_domain_obstruction _ can p rfl tasks h.2.2.2.2.2.1
 
-/-- The same inherited display contract blocks v1.1 in the same record domain. -/
-theorem v1_1_payload_domain_not_satisfies (can p : Program)
-    (tasks : ∃ c, c ∈ requiredCommits Specs.V1_1.specV1_1 can p) :
-    ¬ Satisfies Specs.V1_1.specV1_1 none can p :=
-  fun h => release_payload_domain_obstruction _ can p rfl tasks h.2.2.2.2.2.1
-
-/-- The v2 entry extension retains this obstruction, for every persona role. -/
+/-- The same inherited display contract blocks v2 in the same record domain. -/
 theorem v2_payload_domain_not_satisfies (can p : Program)
     (tasks : ∃ c, c ∈ requiredCommits Specs.V2.specV2 can p) :
     ¬ Satisfies Specs.V2.specV2 none can p :=
   fun h => release_payload_domain_obstruction _ can p rfl tasks h.2.2.2.2.2.1
 
+/-- The v3 entry extension retains this obstruction, for every persona role. -/
+theorem v3_payload_domain_not_satisfies (can p : Program)
+    (tasks : ∃ c, c ∈ requiredCommits Specs.V3.specV3 can p) :
+    ¬ Satisfies Specs.V3.specV3 none can p :=
+  fun h => release_payload_domain_obstruction _ can p rfl tasks h.2.2.2.2.2.1
+
 #print axioms release_payload_domain_obstruction
 #print axioms v1_payload_domain_not_satisfies
-#print axioms v1_1_payload_domain_not_satisfies
 #print axioms v2_payload_domain_not_satisfies
+#print axioms v3_payload_domain_not_satisfies
 end Ehr.Check

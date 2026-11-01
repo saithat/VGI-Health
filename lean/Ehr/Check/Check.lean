@@ -336,7 +336,7 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
                             screen? := some scr.id }) with
             | some finding => some finding
             | none => canonical.screens.findSome? fun scr =>
-                if al.targetsScreen scr && !prog.screens.any (·.workflow == scr.workflow) then
+                if presetScreen prog.presetOwner scr && al.targetsScreen scr && !prog.screens.any (·.workflow == scr.workflow) then
                   some { property := "alertsFire"
                          message := s!"A1: passive alert {al.id}'s workflow {scr.workflow} was removed" }
                 else none },

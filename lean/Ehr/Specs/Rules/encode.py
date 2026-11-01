@@ -148,7 +148,7 @@ for r in rules:
             ['entry:' + e['commit'] + ':' + e['element'] + ':' + e['when'] for e in p['entries']] +
             ['review:' + e['commit'] + ':' + e['info'] + ':' + e['when'] for e in p['reviews']]))
         r.pop('encodingSkippedReason', None)
-        r['encodingNote'] = 'Spec v1 data; v1.1/v2 inherit. Scope and backend limits documented in docs/rules/catalog.md apply.'
+        r['encodingNote'] = 'Spec v1 data; v2/v3 inherit. Scope and backend limits documented in docs/rules/catalog.md apply.'
         if r['id'] == 'ca-statutes-bpc-741-education-exceptions':
             r['encodingNote'] += ' The existing naloxoneEducation flag remains required as stricter hospital policy; the outcome enum does not replace it.'
         if any(e.get('valueSet') == 'nonempty-narrative' for e in p['elements']):

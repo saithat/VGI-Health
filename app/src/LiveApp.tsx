@@ -1,3 +1,4 @@
+import { programSpecPath } from "./browser/data";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   Alert,
@@ -98,8 +99,8 @@ exists yet, or the original canonical baseline. */
 async function liveProgram(persona: string, baseline: boolean) {
   if (baseline)
     return {
-      spec: await readArtifact("/releases/v2/spec.json"),
-      program: await readArtifact("/releases/v2/canonical.json"),
+      spec: await readArtifact("/releases/v3/spec.json"),
+      program: await readArtifact("/releases/v3/canonical.json"),
     };
   const catalog = await loadCatalog();
   const deployed = catalog.programs.find(
@@ -108,12 +109,12 @@ async function liveProgram(persona: string, baseline: boolean) {
   );
   if (deployed)
     return {
-      spec: await readArtifact(`/releases/${deployed.release}/spec.json`),
+      spec: await readArtifact(programSpecPath(deployed)),
       program: await readArtifact(`/${deployed.path}`),
     };
   return {
-    spec: await readArtifact("/releases/v2/spec.json"),
-    program: await readArtifact(`/releases/v2/personas/${persona}.json`),
+    spec: await readArtifact("/releases/v3/spec.json"),
+    program: await readArtifact(`/releases/v3/personas/${persona}.json`),
   };
 }
 

@@ -26,8 +26,8 @@
  *   ehr spec-export <name>       stdout: Spec
  *   (also init / step / view on stdin; the agent loop does not need them)
  *
- * Check/deploy/render-screens accept the committed spec JSON path. Simulation
- * commands and spec-export accept a registered release version.
+ * Check, deploy and render receive the exported release spec JSON path.
+ * Simulate and min-clicks accept release IDs (v1/v2/v3) or explicit paths.
  *
  * EHR_FAKE=1 swaps in `createFakeEhr()` (src/fake/ehr-fake.ts): plausible,
  * deterministic outputs FOR TESTS ONLY. It certifies nothing.

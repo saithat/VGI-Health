@@ -442,7 +442,6 @@ structure EncounterRoleRule where
   encounter : String
   roles : List Role
   reason : String
-  cosign? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A commit and the roles allowed to perform it. -/
@@ -493,8 +492,6 @@ structure EntryReq where
   /-- Allowed values, parsed using the element's kind. None adds no constraint;
   some [] permits no value. For numeric refills, some ["0"] permits only zero. -/
   allowed? : Option (List String) := none
-  /-- A human attestation may replace a scalar text/flag entry; never a quantity or per-line entry. -/
-  waivedBy? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- How a review requirement can be met. -/
@@ -610,7 +607,7 @@ inductive Action
   | markReviewed (info : InfoId)
   /-- Starts a new order line. -/
   | newOrderLine
-  /-- Requests prior authorization for the current order line (release v1.1).
+  /-- Requests prior authorization for the current order line (release v2).
   It captures only the `"priorAuthRequest"` element (a ServiceRequest/Task). -/
   | requestPriorAuth
   deriving DecidableEq, Repr, Inhabited
@@ -650,7 +647,7 @@ inductive Kind
   /-- A button that runs a macro. -/
   | «macro» (id : MacroId)
   | search (scope : String)
-  /-- Prior-authorization status of the current order line (release v1.1;
+  /-- Prior-authorization status of the current order line (release v2;
   catalog tag `"priorAuth"`). Counts as showing `info`, like a panel. -/
   | priorAuth (info : InfoId)
   deriving DecidableEq, Repr, Inhabited
@@ -1087,8 +1084,6 @@ structure TraceEvent where
   event : Event
   ops : List Op
   result : StepResult
-  actor? : Option String := none
-  responseDelayMinutes? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Effort counts for one task. -/

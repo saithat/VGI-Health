@@ -35,7 +35,7 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("typed decisions (%s)", (index) =>
     }
   });
 
-  it("emits P1/P5 imaging and procedures after the v1.1 release, with no medication administrations", () => {
+  it("emits P1/P5 imaging and procedures after the v2 release, with no medication administrations", () => {
     for (const persona of ["P1", "P5"]) for (const kind of ["imaging", "procedure"]) {
       expect(tasks.some((t) => t.persona === persona && t.day >= PRIOR_AUTH_RELEASE_DAY && t.choices.orders.some((o) => o.kind === kind)), `${persona} ${kind}`).toBe(true);
     }

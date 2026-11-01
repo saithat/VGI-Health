@@ -1,3 +1,4 @@
+import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type {
@@ -354,7 +355,7 @@ function Why({
         <h3>{record.hypothesis}</h3>
         <p className="dash-note">
           Backend: {record.backend.name} / {record.backend.model} ·{" "}
-          {record.mode} · spec {record.specVersion}
+          {record.mode} · spec {releaseLabel(record.specVersion, run.manifest.runId)}
         </p>
       </section>
       <section>
@@ -597,9 +598,9 @@ function Releases({
         </thead>
         <tbody>
           {personas.flatMap((p) =>
-            ["v1.1", "v2"].map((release) => {
+            ["v2", "v3"].map((release) => {
               const r = run.records.find(
-                (r) => r.persona === p.id && r.release?.id === release,
+                (r) => r.persona === p.id && r.release && releaseLabel(r.release.id, run.manifest.runId) === release,
               );
               return (
                 <tr
@@ -946,7 +947,7 @@ function VersionList({
                 <strong>
                   {deployed ? `v${r.versionAfter}` : `Kept v${r.versionAfter}`}{" "}
                   · Night {r.night}
-                  {r.release ? ` · ${r.release.id}` : ""}
+                  {r.release ? ` · ${releaseLabel(r.release.id, run.manifest.runId)}` : ""}
                 </strong>
                 <span>
                   {chosen ||
@@ -968,7 +969,7 @@ function VersionList({
               {r.certificate ? (
                 <Badge tone="pass">
                   {r.ehr.mode === "fake" ? "MOCK" : "Certified"} ·{" "}
-                  {r.certificate.specVersion}
+                  {releaseLabel(r.certificate.specVersion, run.manifest.runId)}
                 </Badge>
               ) : (
                 <Badge>{r.certification.result}</Badge>

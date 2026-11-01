@@ -34,19 +34,19 @@ def home : Screen :=
          (.panel, "coverage", "Coverage"), (.table, "importedHistory", "History")] ++
       [table s "schedule" "scheduleTasks" "Today's work",
        table s "openOrders" "openOrders" "Open orders",
-       group s "work" "Workflows" (collapsible := false)] ++
-      ([("w1Rooming", "Clinic visit: start rooming"),
-        ("w2Inbasket", "In-basket: results"),
-        ("w7Queue", "In-basket: refill requests"),
-        ("w3TrackBoard", "Emergency department: track board"),
-        ("w4Worklist", "Ward: shift worklist and MAR"),
-        ("w5Rooming", "Pediatric clinic: start rooming"),
-        ("w6Consult", "Surgery: ED consult"),
-        ("w6PreOp", "Surgery: pre-op"),
-        ("w6OpNote", "Surgery: op note"),
-        ("w6PostOp", "Surgery: post-op orders"),
-        ("w6Rounding", "Surgery: rounding"),
-        ("w6Discharge", "Surgery: discharge")].map fun (t, l) =>
+       group s "work" "Activities" (collapsible := false)] ++
+      ([("w1Rooming", "Schedule"),
+        ("w2Inbasket", "In Basket: Results"),
+        ("w7Queue", "In Basket: Rx Requests"),
+        ("w3TrackBoard", "ED Track Board"),
+        ("w4Worklist", "Unit Census & MAR"),
+        ("w5Rooming", "Child Health"),
+        ("w6Consult", "Consults"),
+        ("w6PreOp", "OR Schedule"),
+        ("w6OpNote", "Op Note"),
+        ("w6PostOp", "Post-op"),
+        ("w6Rounding", "Rounding"),
+        ("w6Discharge", "Discharge")].map fun (t, l) =>
           goto s ("work." ++ t) t l (parent := some "work")) }
 
 /-- Workflow-scoped passive reminders remain inline on every targeted screen.
@@ -88,16 +88,6 @@ def withRequiredReviews (s : Screen) : Screen :=
       ((Specs.V1.specV1.info? id).map (·.label) |>.getD id)
   { s with components := s.components.take 1 ++ panels ++ s.components.drop 1 }
 
-/-- Pending NP pre-op orders expose their attending response beside the summary. -/
-def withAttendingCosign (s : Screen) : Screen :=
-  if !s.components.any (fun c => c.kind == .button (.commit "signOrders")) then s else
-  let response := { field s.id "attendingCosign" "attendingCosign"
-    "Attending co-signature (pre-op orders)" with visibility := .encounter "preop" }
-  let before := s.components.takeWhile fun c => match c.kind with
-    | .button (.commit _) | .field "patientIdReentry" _ _ => false | _ => true
-  { s with components := before ++ [response] ++ s.components.dropWhile fun c => match c.kind with
-    | .button (.commit _) | .field "patientIdReentry" _ _ => false | _ => true }
-
 /-- **The canonical program, version 1** (spec "v1"). -/
 def canonicalV1 : Program where
   id := "canonical"
@@ -109,7 +99,7 @@ def canonicalV1 : Program where
   screens := (Blueprint.screens (let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
     W5.screens ++ W6.screens ++ W7.screens
     if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base.map CorePlacements.augment)).map
-      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews ∘ withAttendingCosign)
+      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews)
   macros := Blueprint.macros (W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros)
 

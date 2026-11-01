@@ -18,6 +18,7 @@ commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(
 def fingerprint():
     files = sorted([*p('Ehr').rglob('*.lean'), *p('Audit').rglob('*.lean'),
                     p('Solution.lean'), p('Statements.lean'), p('CompletionObligations.lean'), p('comparator.json'),
+                    p('Ehr/Check/comparator.json'), p('Ehr/Check/completion-comparator.json'),
                     p('lakefile.toml'), p('lean-toolchain'), p('lake-manifest.json')])
     return hashlib.sha256(b''.join(str(f).encode() + b'\0' + f.read_bytes() for f in files)).hexdigest()
 before = fingerprint()
@@ -61,14 +62,14 @@ assert all(set(a) <= {'propext', 'Classical.choice', 'Quot.sound'} for a in axio
 assert set(axioms) <= surfaces.keys(), 'Missing statement surface'
 assert before == fingerprint(), 'Lean sources changed during audit; rerun'
 assert commit == subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(), 'HEAD changed during audit; rerun'
+modules = {r['name']: r['module'] for r in records if r['kind'] == 'surface'}
 def source(name):
     short = name.rsplit('.', 1)[-1]
-    hits = [(f, i) for f in p('Ehr').rglob('*.lean') for i, line in enumerate(f.read_text().splitlines(), 1)
-            if re.match(r'(?:theorem|def|structure|inductive)\s+' + re.escape(short) + r'\b', line)
-            and 'ComparatorStatements' not in str(f)]
-    assert len(hits) == 1, (name, hits)
-    f, line = hits[0]
-    return f'[lean/{f}:{line}](../lean/{f}#L{line})'
+    f = p(modules[name].replace('.', '/') + '.lean')
+    hits = [i for i, line in enumerate(f.read_text().splitlines(), 1)
+            if re.match(r'(?:theorem|def|structure|inductive)\s+' + re.escape(short) + r'\b', line)]
+    assert len(hits) == 1, (name, f, hits)
+    return f'[lean/{f}:{hits[0]}](../lean/{f}#L{hits[0]})'
 groups, group_ids = [], {}
 for name, items in surfaces.items():
     key = tuple(items)

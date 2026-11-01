@@ -9,7 +9,7 @@ features have been merged; main was fetched again after those features landed.
 ## Remaining work
 
 1. **All 15 persona certifications (content).** The actual CLI rejects every
-   P1–P5 candidate in v1, v1.1 and v2. `docs/design/changes-requests.md` section
+   P1–P5 candidate in v1, v2 and v3. `docs/design/changes-requests.md` section
    CHECK-2026-10-31 enumerates all 33 missing screen/commit/review pins per
    release. First failures: anticoagulantList on w1Sign for P1/P2/P4/P5;
    currentMeds on w3SuicideAssessment for P3. The NP pre-op consent permission
@@ -42,7 +42,7 @@ features have been merged; main was fetched again after those features landed.
    Before display contracts are adopted, extend `Spec.Extends` to preserve its
    new `displays` field and extend T8 to the five extraGuard contract families;
    current T8 covers the requested original entry/review/human/unit/alert
-   projection. The concrete v1/v1.1/v2 specs have no display contracts.
+   projection. The concrete v1/v2/v3 specs have no display contracts.
    See CHECK-EXTENDS-DISPLAYS.
 
 4. **Full T7 requires a contract decision.** The existing replay and failed-rule
@@ -86,7 +86,7 @@ features have been merged; main was fetched again after those features landed.
 ## Completed in this continuation
 
 - T8 old-obligations projection, directly from actual checker acceptance:
-  `T8_checked_old_obligations`, `T8_v1_to_v1_1`, `T8_v1_1_to_v2`.
+  `T8_checked_old_obligations`, `T8_v1_to_v2`, `T8_v2_to_v3`.
   Does not assume unfinished T1. Includes the actual old static human/unit/alert
   predicates, using a proved old-element lookup preservation lemma.
   `T8_unqualified_false` is retained.

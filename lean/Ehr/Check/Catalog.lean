@@ -17,8 +17,8 @@ theorem inCatalog_iff (spec : Spec) (prog : Program) :
     obtain ⟨scr, hs, comp, hc, rfl⟩ := ht
     exact h (scr, comp) ⟨scr, hs, comp, hc, rfl⟩
 
--- Both the new panel and the request action need the v1.1 catalog tag.
-#guard !(Examples.Tiny.programV1_1.inCatalog Examples.Tiny.spec)
-#guard Examples.Tiny.programV1_1.inCatalog Examples.Tiny.specV1_1
+-- Both the new panel and the request action need the v2 catalog tag.
+#guard !(Examples.Tiny.programV2.inCatalog Examples.Tiny.spec)
+#guard Examples.Tiny.programV2.inCatalog Examples.Tiny.specV2
 #print axioms inCatalog_iff
 end Ehr.Check

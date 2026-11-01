@@ -1,3 +1,4 @@
+import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import { useEffect, useRef, useState } from "react";
 import type { RunData } from "./data";
 import {
@@ -52,8 +53,7 @@ function pointsFor(
       version,
       spec:
         iteration?.specVersion ??
-        run.programs.get(`programs/${persona}/v${version}.json`)?.specVersion ??
-        "—",
+        releaseLabel(run.programs.get(`programs/${persona}/v${version}.json`)?.specVersion ?? "—", run.manifest.runId),
       values:
         measure === "expert"
           ? (iteration?.workflows.map((w) => ({

@@ -1,3 +1,4 @@
+import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MantineProvider } from "@mantine/core";
@@ -436,7 +437,7 @@ export function Trajectories({
     let active = true;
     void readRunJson(`/runs/${runId}/trajectories/index.json`)
       .then((raw) => {
-        const data = trajectoryIndexSchema.parse(raw);
+        const data = trajectoryReleaseLabels(trajectoryIndexSchema.parse(raw));
         if (data.runId !== runId)
           throw new Error("Trajectory index belongs to another run");
         if (active) setIndex(data);

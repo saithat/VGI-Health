@@ -19,8 +19,8 @@ node lean/Ehr/Canonical/review_screens.mjs
 EHR_UI_FILES='["/home/saithat/Projects/VGI-content/programs/canonical/review/P1/w1Rooming.json","/home/saithat/Projects/VGI-content/programs/canonical/review/P1/w1Orders.json","/home/saithat/Projects/VGI-content/programs/canonical/review/P1/w1Sign.json"]' pnpm --filter app exec playwright test ui-check.spec.ts
 ```
 
-The renderer's real D5 predicate passes on all five saved personas for v1, v1.1
-and v2; use `lake env lean --run Ehr/Canonical/NavExports.lean` from lean/.
+The renderer's real D5 predicate passes on all five saved personas for v1, v2
+and v3; use `lake env lean --run Ehr/Canonical/NavExports.lean` from lean/.
 The original walkthroughs, every artifact action and all permanent bad seeds
 remain tested. This is not a deployment/checker certificate or clinical validation.
 

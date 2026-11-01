@@ -1,10 +1,10 @@
 /**
  * Release-night modes and the live "try to break it" mode.
  *
- * - surface-feature (BRIEF 9b, v1.1 before Day 4): every program still
+ * - surface-feature (BRIEF 9b, v2 before Day 4): every program still
  *   conforms; per persona, decide from that persona's train traces whether
  *   and where to surface the new optional feature.
- * - migrate (BRIEF 9a, v2 before Day 7): re-check against the new spec; if it
+ * - migrate (BRIEF 9a, v3 before Day 7): re-check against the new spec; if it
  *   fails, ask for the minimal patch that keeps the customizations (<= 3
  *   attempts with counterexamples); else fall back to the new canonical plus
  *   the customizations that still pass, and flag the user. Nothing
@@ -78,7 +78,7 @@ async function deployInto(deps: LoopDeps, rec: DecisionRecord, persona: string, 
 /** Outcome when deployInto returned false: a screen-check failure is distinguished from a refused deploy. */
 const failOutcome = (rec: DecisionRecord): DecisionRecord['outcome'] => (rec.screenCheck?.status === 'fail' ? 'screen-check-failed' : 'certification-failed');
 
-// ---------------------------------------------------------------- surface-feature (v1.1)
+// ---------------------------------------------------------------- surface-feature (v2)
 export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput): Promise<NightResult> {
   const { night, persona, next } = input;
   const evidence = summarizeTrain(persona.id, input.current, input.train, input.programs);
@@ -173,7 +173,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   return finishRecord(deps, rec, calls, ok ? certified.program : null);
 }
 
-// ---------------------------------------------------------------- migrate (v2)
+// ---------------------------------------------------------------- migrate (v3)
 export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Promise<NightResult> {
   const { night, persona, next } = input;
   const evidence = summarizeTrain(persona.id, input.current, input.train, input.programs);
@@ -246,7 +246,7 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
   }
 
   // Fallback: new canonical + the customizations that still pass; flag the user.
-  const canon = { ...personalize(next.canonical, persona.params, persona.userId), id: input.current.id, version: input.current.version + 1, specVersion: next.specVersion };
+  const canon = { ...personalize(next.personaCanonicals?.[persona.id] ?? next.canonical, persona.params, persona.userId), id: input.current.id, version: input.current.version + 1, specVersion: next.specVersion };
   const fbGate: Gate = { specVersion: next.specVersion, prev: canon, canonical: next.canonical, nextVersion: canon.version };
   let program = canon;
   for (const h of customizations) {

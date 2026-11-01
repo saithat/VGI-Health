@@ -160,7 +160,7 @@ for r in selected:
  else:
   r['encodedIn']=['Features.'+s for s in manifest[r['id']]];r['featureEncoding']=objs[r['id']];r.pop('encodingSkippedReason',None)
   notes=sorted({x.get('note','') for xs in [TEMP,PAT,VAL,EXP,DISPLAY] for x in xs if x['id']==r['id']} - {''})
-  r['encodingNote']='Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. '+ ' '.join(notes)
+  r['encodingNote']='Spec v1 closed AST; v2/v3 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. '+ ' '.join(notes)
 (ROOT/'docs/rules/catalog.json').write_text(json.dumps(rs,indent=2,ensure_ascii=False)+'\n')
 print(f'Feature pass: {len(selected)-len(SKIP)} encoded, {len(SKIP)} precise remaining language gaps; {len(TEMP)} time windows, {len(EXP)} clocks.')
 

@@ -3,8 +3,8 @@
  *
  *   for each day d, for each persona:
  *     login (load the deployed program) -> simulate the shift -> logout
- *   then, unless d is the last day, the night: vendor release v1.1 before
- *   Day 4 (surface-feature), v2 before Day 7 (migrate), else the nightly loop.
+ *   then, unless d is the last day, the night: vendor release v2 before
+ *   Day 4 (surface-feature), v3 before Day 7 (migrate), else the nightly loop.
  *   Only certified versions are deployed; they take effect at the next login.
  *
  * After the last day, each deployed change gets its TEST measurement: day
@@ -39,7 +39,7 @@ export interface RunOptions {
   personas?: string[];
   seedPolicy?: SeedPolicy;
   /** Day on which each release takes effect at login. */
-  releaseDays?: { v1_1: number; v2: number };
+  releaseDays?: { v2: number; v3: number };
   ehr?: EhrClient;
   /** Offline screen check (default: fake under EHR_FAKE=1, else render-screens + app screen-check). */
   screens?: ScreenChecker;
@@ -129,7 +129,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (!params) continue;
     const view: PersonaView = { id, userId: world.userId(id), params };
     views.set(id, view);
-    const v0 = personalize(inForce.canonical, params, view.userId);
+    const v0 = personalize(inForce.personaCanonicals?.[id] ?? inForce.canonical, params, view.userId);
     const dep = await deployVersion(deps, id, v0, { specVersion: inForce.specVersion, prev: v0, canonical: inForce.canonical, nextVersion: 0 });
     if (!dep.ok) throw new Error(`day-1 canonical program for ${id} was not deployed (${dep.reason}): ${dep.check.property ?? ''} ${dep.check.message ?? ''}`);
     programs.set(id, new Map([[0, v0]]));
@@ -155,7 +155,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (day === opts.days) break;
 
     // Night `day`: the release (if any) takes effect at the next login.
-    const nextRelease = day + 1 === releaseDays.v1_1 ? await release('v1.1') : day + 1 === releaseDays.v2 ? await release('v2') : null;
+    const nextRelease = day + 1 === releaseDays.v2 ? await release('v2') : day + 1 === releaseDays.v3 ? await release('v3') : null;
     for (const [id, view] of views) {
       const { program: current } = await store.login(id);
       const nightInput = {
@@ -164,7 +164,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         holdout: makeHoldout(deps, view, await world.schedule(day + 1, id)),
       };
       let res: NightResult;
-      if (nextRelease?.id === 'v1.1') res = await runSurfaceFeature(deps, { ...nightInput, next: nextRelease });
+      if (nextRelease?.id === 'v2') res = await runSurfaceFeature(deps, { ...nightInput, next: nextRelease });
       else if (nextRelease) res = await runMigration(deps, { ...nightInput, next: nextRelease });
       else res = await runNight(deps, nightInput);
       const r = res.record;

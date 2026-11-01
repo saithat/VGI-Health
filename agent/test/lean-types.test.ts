@@ -27,13 +27,9 @@ describe('validators vs Lean-written samples', () => {
   it('preserves optional encounter role policy and accepts legacy commits', () => {
     const reason = 'Pre-op orders are signed by a physician or surgeon';
     const withPolicy = { ...tinySpec, commits: tinySpec.commits.map((commit) => ({
-      ...commit, encounterRoles: [{ encounter: 'preop', roles: ['physician', 'surgeon'], reason, cosign: 'attendingCosign' }],
+      ...commit, encounterRoles: [{ encounter: 'preop', roles: ['physician', 'surgeon'], reason }],
     })) };
     same(specSchema.parse(withPolicy), withPolicy);
-    const withAttestation = { ...withPolicy, entries: withPolicy.entries.map(entry => ({
-      ...entry, waivedBy: 'attendingCosign',
-    })) };
-    same(specSchema.parse(withAttestation), withAttestation);
     same(specSchema.parse(tinySpec), tinySpec);
   });
 
@@ -46,7 +42,7 @@ describe('validators vs Lean-written samples', () => {
   });
 
   it('loads every committed real release and canonical program', () => {
-    for (const version of ['v1', 'v1.1', 'v2']) {
+    for (const version of ['v1', 'v2', 'v3']) {
       const base = new URL(`../../releases/${version}/`, import.meta.url);
       expect(() => specSchema.parse(JSON.parse(readFileSync(new URL('spec.json', base), 'utf8')))).not.toThrow();
       expect(() => programSchema.parse(JSON.parse(readFileSync(new URL('canonical.json', base), 'utf8')))).not.toThrow();
@@ -66,7 +62,7 @@ describe('validators vs Lean-written samples', () => {
   });
 });
 
-it.each(['v1', 'v1.1', 'v2'])('preserves the entire active %s spec, including dose and signing policies', release => {
+it.each(['v1', 'v2', 'v3'])('preserves the entire active %s spec, including dose and signing policies', release => {
   const spec = JSON.parse(readFileSync(new URL(`../../releases/${release}/spec.json`, import.meta.url), 'utf8'));
   same(specSchema.parse(spec), spec);
   expect(spec.entries.some((r: { allowed?: string[] }) => r.allowed?.includes('0'))).toBe(true);

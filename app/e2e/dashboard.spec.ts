@@ -121,7 +121,7 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
       fullPage: true,
     });
   await page
-    .getByRole("button", { name: "Inspect P3 v2 migration", exact: true })
+    .getByRole("button", { name: "Inspect P3 v3 migration", exact: true })
     .click();
   const migration = page.getByRole("dialog", {
     name: "Before / after on screen",

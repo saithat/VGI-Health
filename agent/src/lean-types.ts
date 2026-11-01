@@ -67,13 +67,13 @@ export const specSchema: z.ZodType<L.Spec> = z.object({
   infos: z.array(z.looseObject({ id: str, label: str, version: str })),
   commits: z.array(dropNulls(['encounterRoles'], z.object({
     id: str, label: str, roles: z.array(roleSchema),
-    encounterRoles: z.array(dropNulls(['cosign'], z.object({
-      encounter: str, roles: z.array(roleSchema), reason: str, cosign: str.exactOptional(),
-    }))).exactOptional(),
+    encounterRoles: z.array(z.object({
+      encounter: str, roles: z.array(roleSchema), reason: str,
+    })).exactOptional(),
   }))),
-  entries: z.array(dropNulls(['allowed', 'waivedBy'], z.object({
+  entries: z.array(dropNulls(['allowed'], z.object({
     commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(),
-    allowed: z.array(str).exactOptional(), waivedBy: str.exactOptional(),
+    allowed: z.array(str).exactOptional(),
   }))),
 
   reviews: z.array(dropNulls(['waivedBy'], z.object({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
@@ -87,7 +87,7 @@ export const specSchema: z.ZodType<L.Spec> = z.object({
 
 // ---------------------------------------------------------------- programs
 /**
- * MIRROR: a component kind added by a vendor release (e.g. v1.1
+ * MIRROR: a component kind added by a vendor release (e.g. v2
  * `priorAuthStatus`) before the generated union knows it. One constructor key.
  */
 export type FutureKind = { [ctor: string]: unknown };
@@ -113,6 +113,7 @@ const knownKindSchema: z.ZodType<L.Kind> = z.union([
   z.enum(['banner', 'tabs']),
   z.object({ field: z.object({ element: str, slot: slotSchema, prefill: prefillSchema }) }),
   z.object({ panel: z.object({ info: str }) }),
+  z.object({ priorAuth: z.object({ info: str }) }),
   z.object({ table: z.object({ info: str }) }),
   z.object({ trend: z.object({ info: str }) }),
   z.object({ alert: z.object({ alert: str, popup: z.boolean() }) }),
@@ -121,7 +122,7 @@ const knownKindSchema: z.ZodType<L.Kind> = z.union([
   z.object({ macro: z.object({ id: str }) }),
   z.object({ search: z.object({ scope: str }) }),
 ]);
-const KNOWN_KINDS = new Set(['banner', 'tabs', 'field', 'panel', 'table', 'trend', 'alert', 'button', 'group', 'macro', 'search']);
+const KNOWN_KINDS = new Set(['banner', 'tabs', 'field', 'panel', 'table', 'trend', 'alert', 'button', 'group', 'macro', 'search', 'priorAuth']);
 const futureKindSchema: z.ZodType<FutureKind> = z.record(str, z.unknown()).refine(
   (o) => Object.keys(o).length === 1 && !KNOWN_KINDS.has(Object.keys(o)[0] ?? ''),
   { message: 'not a valid component kind' },
@@ -213,7 +214,6 @@ export const dayResultSchema: z.ZodType<L.DayResult> = z.object({
   trace: z.array(z.object({
     task: str, t: nat, screen: str, event: eventSchema,
     ops: z.array(z.enum(['click', 'key', 'scroll', 'scan', 'point', 'think', 'wait'])), result: stepResultSchema,
-    actor: str.exactOptional(), responseDelayMinutes: nat.exactOptional(),
   })),
   tasks: z.array(taskMetricsSchema),
   floor: z.array(taskMetricsSchema),

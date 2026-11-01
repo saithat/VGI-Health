@@ -34,7 +34,7 @@ def doseElement : ElementId := "dose"
 def weightElement : ElementId := "weight"
 /-- The element holding an order line's frequency, e.g. `"q6h"` or `"bid"`. -/
 def freqElement : ElementId := "freq"
-/-- The element a prior-authorization request writes (release v1.1). -/
+/-- The element a prior-authorization request writes (release v2). -/
 def priorAuthElement : ElementId := "priorAuthRequest"
 /-- The info the `banner` component shows. -/
 def bannerInfo : InfoId := "patientBanner"
@@ -54,7 +54,7 @@ def UnitKind.name : UnitKind → String
 
 /-- The catalog tag of a component kind. `DesignRules.catalog` lists the tags a
 program may use. A button that requests prior authorization has the tag
-`"priorAuth"`, so it needs the release v1.1 catalog too. -/
+`"priorAuth"`, so it needs the release v2 catalog too. -/
 def Kind.catalogTag : Kind → String
   | .banner => "banner"
   | .field .. => "field"

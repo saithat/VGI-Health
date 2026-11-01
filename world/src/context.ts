@@ -14,8 +14,8 @@ import type { DayContext } from "./state";
 /** Scripted: P1 covers urgent care (BRIEF section 9). */
 export const URGENT_CARE_DAY = 5;
 /** Scripted: vendor releases (BRIEF sections 9a, 9b). The world itself does not change for them. */
-export const RELEASE_V1_1_DAY = 4;
-export const RELEASE_V2_DAY = 7;
+export const RELEASE_V2_DAY = 4;
+export const RELEASE_V3_DAY = 7;
 /** Scripted: the canonical surgical flow starts with an appendicitis consult on this day. */
 export const SCRIPTED_APPENDICITIS_DAYS: readonly number[] = [1];
 
@@ -64,9 +64,9 @@ export function computeContext(seed: number, day: number, daySeed: string): DayC
   const scriptedEvents: string[] = [];
   if (day === 1) scriptedEvents.push("day-1-canonical-ui");
   if (SCRIPTED_APPENDICITIS_DAYS.includes(day)) scriptedEvents.push("appendicitis-consult-P2-to-P5");
-  if (day === RELEASE_V1_1_DAY) scriptedEvents.push("vendor-release-v1.1-prior-auth");
+  if (day === RELEASE_V2_DAY) scriptedEvents.push("vendor-release-v2-prior-auth");
   if (day === URGENT_CARE_DAY) scriptedEvents.push("P1-covers-urgent-care");
-  if (day === RELEASE_V2_DAY) scriptedEvents.push("vendor-release-v2-antibiotic-indication");
+  if (day === RELEASE_V3_DAY) scriptedEvents.push("vendor-release-v3-antibiotic-indication");
   if (wdIdx === 0) scriptedEvents.push("monday-surge");
   if (fluWeek) scriptedEvents.push("flu-week");
 

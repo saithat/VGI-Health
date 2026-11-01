@@ -60,14 +60,14 @@ def withRequest : Program :=
         { scr with components := scr.components ++
             [{ id := "request", kind := .button .requestPriorAuth }] }
       else scr }
-#guard withRequest.inCatalog specV1_1
-#guard check specV1_1 none goodProgram withRequest == .ok
+#guard withRequest.inCatalog specV2
+#guard check specV2 none goodProgram withRequest == .ok
 
 def automatedRequest : Program :=
   { withRequest with macros := withRequest.macros ++
       [{ id := "autoRequest", label := "Auto request", steps := [.click "request"] }] }
-#guard match firstFinding (Ehr.Check.rules specV1_1 none goodProgram automatedRequest) with
-  | some f => f.property == "humanOnlyKept" && (counterexample specV1_1 automatedRequest f).2.2
+#guard match firstFinding (Ehr.Check.rules specV2 none goodProgram automatedRequest) with
+  | some f => f.property == "humanOnlyKept" && (counterexample specV2 automatedRequest f).2.2
   | none => false
 
 /-- The acceptance theorem has concrete, satisfiable hypotheses. -/
