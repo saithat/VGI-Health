@@ -188,6 +188,39 @@ made every scheduled order in the canonical sets unsignable. This does not
 remove either entry requirement or any human confirmation. Consent, VIS,
 protocol checks and education remain checked flags.
 
+## Check integration findings after content `febb477`
+
+The 14 Lean seeds have landed. They all currently fail first on their shared
+canonical template's role-permission error (except seed 10, which fails an
+unknown-alert reference). CR-5's role-specific canonical exports and linked
+prefills are still required before intended first-failure regressions can run.
+
+The intended mutation-specific checks differ from the handoff in these cases:
+
+- Seed 3 uses an undeclared `weightLb` field: the violated existing clause is
+  `DeclaredWritesInSpec` (`writesOnly`), not `QuantityPrefillsKeepUnits`.
+- Seed 4 fails both `NoAlertSuppression` and `NoAutomationAttempts`; moving
+  the human-only rule earlier will give the requested `humanOnlyKept` label.
+- Seed 9 removes an alert component, but interruptive popups are generated
+  by the spec. Its actual violation is the macro commit attempt
+  (`humanOnlyKept`), not the current `AlertsFire` property.
+- Seed 10 has an unknown alert: `ReferencesResolve` fails (`wellFormed`).
+  `NoFalseAlarms` does not prohibit unknown non-firing alerts.
+- Seed 13 removes only the W1 CURES paths. Other workflow screens still have
+  the same report, exemption field and `signOrders` buttons, so `completeFor`
+  passes. Even deleting all CURES paths may not refute the current
+  `Completable`: its existential event list may change an opioid to a
+  non-controlled drug before signing. It does not preserve clinical choices.
+
+Please coordinate content and the owner on these differences. Check will not
+claim a false mutation-specific `¬ Satisfies` proof or weaken any property.
+
+---
+
+## Core implementation status and integration requests (Oct 31)
+
+---
+
 ## Release integration requests (other lanes)
 
 - **CR-9 — service-only prior auth: resolved (`30f8ee8` plus content follow-up).**
@@ -281,6 +314,90 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
   1000 mg regimen cap remains distinct from its 2000 mg drug maximum. Any
   future need for regimen-specific dose checking needs an explicit spec model.
 
+---
+
+## Release integration requests (other lanes)
+
+- **CR-9 — medical-service prior-auth slots (core/agent).** The current
+  `requestPriorAuth` action requires a `drug` on the current slot. CMS-0057-F
+  covers medical items/services, not drugs. The shared-composer demo records
+  an optional ServiceRequest-target request but cannot yet represent an
+  imaging-only order slot. Add service-order identity to the core model before
+  claiming an imaging API implementation. Medication support anticipates
+  proposed CMS-0062-P. No content safety obligation depends on this feature.
+- **CR-10 — antibiotic indication data rows (render/app/world).** Content now
+  declares element/info `abxIndication`, the per-line coded value written to
+  `MedicationRequest.reasonCode`, and a MAR panel beside the dose. Render
+  each captured antibiotic line's indication in the sign summary, and the
+  active medication's indication from the FHIR order on the MAR. Test facts
+  use `Facts.record[("abxIndication", "surgical-prophylaxis")]`. Show the
+  actual value, not just a heading. Core's `infoShown` proves panel visibility;
+  it does not establish populated FHIR content. Preserve T11 fidelity.
+- **CR-11 — coded terminology membership (core/check).** `ValueKind.coded`
+  currently accepts any nonempty code. `abxIndicationCodes` and
+  `curesExemptionCodes` are content value sets, not a proof of membership.
+  For full terminology enforcement, provide a generic spec value-set mapping
+  and validate at entry, confirm, and guard. Do not hard-code release/seed ids.
+- **CR-12 — agent prior-auth action schema (agent).** The real exported
+  v1.1/v2 canonical programs fail `programSchema.parse`: `actionSchema` in
+  `agent/src/lean-types.ts` accepts only `back|newOrderLine`, not the core's
+  `requestPriorAuth` action. The four request buttons fail at
+  `screens[5|17|27|34].components[*].kind`. Add the real constructor to the
+  action schema (and the `priorAuth` kind to the known union if desired), then
+  parse all `releases/{v1,v1.1,v2}/{spec,canonical}.json` without dropping
+  fields. This was found with actual exports; the existing 31 agent tests pass.
+- **CR-13 — pre-op encounter context (world/app/sim).** Set
+  `Facts.encounterKind? := some "preop"` (JSON `encounterKind: "preop"`)
+  during pre-op ordering. Core passes `FactsContext.encounterKind` through
+  FHIR projection. Content no longer uses a separate `signPreOpOrders`
+  commit: W6 uses ordinary `signOrders`, with the pre-op consent/H&P/hold-meds
+  and anticoagulant requirements scoped by that episode fact. Test both
+  incomplete pre-op rejection and ordinary post-op success. World/app currently
+  have no `encounterKind` references; do not claim end-to-end pre-op enforcement
+  until callers supply this fact.
+
+## Check acceptance after content release merge (`6a47bbe`)
+
+Core's workflow-targeted passive alerts and record-source declarations are
+integrated into the checker. Tiny's corrected example now pins passive alerts
+on every W1 screen; the pin soundness proof uses `targetsScreen` too.
+
+Canonical v1 still fails the role declarations and dosingWeight links from
+check CR-5. Migrating pre-op requirements to ordinary `signOrders` adds a
+third genuine failure: W1/W3/W5/etc. signOrders screens lack
+`anticoagulantList`. For `Facts.encounterKind = preop`, those Sign buttons
+are still shown and the pre-op review applies. `CommitScreenShowsReviews`
+therefore requires the anticoagulant info on every shown signOrders screen,
+or the UI must make incompatible Sign buttons unavailable for that context.
+The checker cannot infer an encounter kind from a screen/workflow name.
+
+## T8 statement coordination (check)
+
+`Spec.Extends` preserves old prefixes while allowing new declarations and
+catalog tags. Thus full `Satisfies new ... p → Satisfies old ... p` is not
+monotone: a program using the new priorAuth kind is intentionally outside the
+old catalog. The other direction fails when new requirements are added.
+Please agree on preservation of **old safety obligations for compatible
+programs**, or strengthen the relation to preserve the vocabulary, before
+claiming a general Satisfies transport theorem. The concrete release-prefix
+proofs in content establish the additive relation only.
+
+### CR-6 checker containment
+
+The checker now conservatively rejects an **active** `requestPriorAuth`
+action under `humanOnlyKept` until its confirmed-capture preservation is
+fixed. Disabled actions (unknown element or disallowed program role) remain
+harmless; status components still use the shared catalog. This prevents a
+known counterexample to T1. Remove/refine this extra rule only after proving
+`EnteredOnce` and `HumanStepsByHuman` for the revised action. No property was
+weakened. Prior-auth request certification remains unfinished, explicitly.
+
+---
+
+
+
+---
+
 ## Content response to checker acceptance requests
 
 - The all-workflows `canonical.json` remains a source template. Deployable
@@ -305,6 +422,12 @@ The core queue is landing on `lane/lean-core`, one commit per item. See
   the preserved consent role rule. An NP supplied a `preop` episode must stay
   blocked. Completability certification must honor valid persona/episode
   assignments; do not broaden consent permissions just to make it pass.
+
+---
+
+
+---
+
 ## World integration status
 
 Core fb1ed8c supplies the requested typed fields, service order kinds and generic
@@ -337,6 +460,44 @@ only ordinary human Event.enter may create that capture. Tiny v1.1 adds that
 field and retains its never policy. This implements the existing literal
 HumanStepsByHuman/EnteredOnce requirements without weakening either property.
 Content's release program must expose the human field for such a declaration.
+
+### CR-6 integrated and containment removed (`c98cfaf`)
+
+The checker has now proved `requestPriorAuth_preserves_confirmed` and
+`requestPriorAuth_no_human_capture` in `Check/RequestSound.lean`, with axiom
+audits. The temporary active-request rejection is removed. The extended Tiny
+catalog/program acceptance regression passes with the revised action. Human
+never-policy requests use an explicit field, as core's new semantics require.
+The safety properties are unchanged.
+
+### Persona canonical diagnostic (`b366a59`)
+
+P3 (RN) passes every checker rule. P1/P2/P5 fail only the signOrders
+anticoagulant pin described above. P4 also lacks a reachable/permitted consent
+field for a preop episode. Links and role declarations now pass. These are
+facts about the current full quantified properties; check does not silently
+restrict their patient/episode domain.
+
+### Completability waiver edge case
+
+`completeVia` now checks that an unpinned review's waiver kind can always
+supply a nonempty value. Wristband/medication scan codes may be empty for
+records allowed by the current domain assumption; a matching empty scan is
+valid input but fails `waived`'s nonempty test. Such scans cannot be the sole
+waiver path. Text, code, quantity, flag, identity, cosign and other scan
+targets have nonempty witnesses. Canonical's coded CURES exemption is safe.
+
+### Content follow-up required for core `c98cfaf`
+
+The full build now fails exactly four guards in `Canonical/ReleaseTests.lean`
+(lines 14, 15, 25, 26): medication and service-order prior-auth paths still
+expect a click to create a never-policy capture. Please expose the ordinary
+`priorAuthRequest` human field in release composers and test entering it,
+then test the convenience click preserves that confirmed capture. Keep the
+never policy and safety properties; do not restore implicit capture on click.
+Checker request-action proofs now pass and the temporary rejection is gone.
+
+---
 
 
 ## Render → wasm: Lean 4.35 wasm32 string-list terminator (2026-10-31)
@@ -487,3 +648,15 @@ with a JSON verdict on stdout and document it in command usage. The app's
 `pnpm --filter app verdicts` discovers all programs, invokes that contract if
 advertised, and otherwise records “verdict not computed”. Mock certificates
 are never substituted. This request does not block live interaction.
+## Value-constraint integration in check
+
+The world reference fix brings core's `EntryReq.allowed` API into this lane.
+`EntryMetIn` now requires the **same** captured value to satisfy both its kind
+and the parsed allowed-value constraint. This strengthens the property to
+match the new guard; `entryMet_iff` is re-proved against that implementation.
+Completability also checks a common universally valid scalar value across
+constraints on the same element, with nonempty values for waiver elements.
+Empty, unparseable and conflicting allowed lists are rejected. Fixed allowed
+lists for record-dependent identity/scan/cosign values are conservatively
+rejected; no clinical permission or guard is relaxed. Zero-refill quantities
+are supported generically.
