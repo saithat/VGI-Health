@@ -156,7 +156,21 @@ function seriesFor(
     }
   return [...groups.values()].map((series) =>
     series.timeBased
-      ? series
+      ? {
+          ...series,
+          points: [...series.points].sort((a, b) => a.x - b.x),
+          references: new Map(
+            [...series.references].map(
+              ([name, curve]): [string, ReferenceCurve] => [
+                name,
+                {
+                  ...curve,
+                  points: [...curve.points].sort((a, b) => a.x - b.x),
+                },
+              ],
+            ),
+          ),
+        }
       : {
           ...series,
           points: series.points.map((point, index) => ({ ...point, x: index })),

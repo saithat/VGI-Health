@@ -66,14 +66,8 @@ def decision : Screen :=
   let s := "w7Decision"
   { id := s, title := "Rx Response", workflow := "W7"
     components := frame s ++ [
-      table s "comparison" "refillComparison" "Requested / current / proposed",
       panel s "request" "refillRequest" "Refill request",
-      { table s "labs" "relevantLabs" "Relevant labs" with tag := "present.results" },
-      panel s "lastVisit" "lastVisit" "Last visit",
-      table s "adherence" "adherence" "Fill history",
-      alertC s "alert.interaction" "interactionRefill" "Severe interaction" (popup := false),
-      alertC s "alert.activeRx" "activeRxPopup" "Active prescription exists" (popup := true),
-      alertC s "alert.careGap" "refillCareGapPopup" "Patient has care gaps" (popup := true),
+      table s "comparison" "refillComparison" "Prescription response comparison",
       clinicalSection s "decisionGroup" "Prescription response",
       field s "refillDecision" "refillDecision" "Approve / deny / modify" (parent := some "decisionGroup"),
       field s "refillDose" "refillDose" "Dose (mg)" (parent := some "decisionGroup"),
@@ -85,6 +79,12 @@ def decision : Screen :=
         (parent := some "decisionGroup"),
       field s "refillDenyReason" "refillDenyReason" "Reason for denial" (parent := some "decisionGroup"),
       field s "refillNote" "refillNote" "Note to pharmacy" (parent := some "decisionGroup"),
+      { table s "labs" "relevantLabs" "Latest available labs" with tag := "present.results" },
+      panel s "lastVisit" "lastVisit" "Last visit",
+      table s "adherence" "adherence" "Fill history",
+      alertC s "alert.interaction" "interactionRefill" "Severe interaction" (popup := false),
+      alertC s "alert.activeRx" "activeRxPopup" "Active prescription exists" (popup := true),
+      alertC s "alert.careGap" "refillCareGapPopup" "Patient has care gaps" (popup := true),
       commitBtn s "approveRefill" "Approve / Sign Rx",
       goto s "toReview" "w7Review" "Back to chart review"
     ] }

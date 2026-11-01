@@ -20,8 +20,12 @@ const generated = buildResources(world, patientRefs, practitionerRefs).map(entry
 }));
 const sourceFiles = index.patients;
 mkdirSync(out, { recursive: true });
-for (const [persona, workflow] of [['P1', 'W1'], ['P1', 'W2'], ['P1', 'W7'], ['P4', 'W5']]) {
-  const task = world.schedules[persona].tasks.find(t => t.workflow === workflow);
+const reviewCases = [
+  ['P1', 'W1', 'P1'], ['P1', 'W2', 'P1'], ['P1', 'W7', 'P1'],
+  ['P4', 'W5', 'P4'], ['P4', 'W2', 'P1'], ['P4', 'W7', 'P1'],
+].map(([persona, workflow, sourcePersona]) => ({ persona, workflow, sourcePersona, roleProbe: persona !== sourcePersona }));
+for (const { persona, workflow, sourcePersona, roleProbe } of reviewCases) {
+  const task = world.schedules[sourcePersona].tasks.find(t => t.workflow === workflow);
   if (!task) throw new Error(`No ${persona}/${workflow} task`);
   const patient = sourceFiles.find(p => p.id === task.patientId);
   if (!patient) throw new Error(`Missing patient ${task.patientId}`);
@@ -45,5 +49,7 @@ for (const [persona, workflow] of [['P1', 'W1'], ['P1', 'W2'], ['P1', 'W7'], ['P
     if (file.startsWith(`w${workflow.slice(1)}`) || (file === 'home.json' && ['W1', 'W5'].includes(workflow)))
       copyFileSync(`${temp}/${file}`, `${destination}/${file}`);
   }
-  console.log(`${persona}/${workflow}: ${task.id}; ${selected.length} seeded chart resources`);
+  console.log(`${persona}/${workflow}: ${task.id}; ${selected.length} seeded chart resources${roleProbe ? `; ${persona} permission probe on ${sourcePersona} source records` : ''}`);
 }
+
+writeFileSync(`${out}/review-cases.json`, JSON.stringify({ today: world.date, cases: reviewCases }, null, 2) + '\n');

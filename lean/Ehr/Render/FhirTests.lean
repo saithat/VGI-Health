@@ -1,5 +1,6 @@
 import Ehr.Render.Fhir
 import Ehr.Core.Basics
+import Ehr.Specs.ClinicalTables
 
 namespace Ehr.Render.Tests
 open Lean Fhir
@@ -158,6 +159,15 @@ def clinicPanelExample : Json := clinicLab.setObjVal! "component"
 #guard (Ambulatory.resultRows [clinicPanelExample]).length == 2
 #guard (Ambulatory.resultRows [clinicPanelExample]).any (fun row => row.lookup "value" == some "<5")
 
+/-- The refill evidence view preserves ties and undated results; full history stays intact. -/
+def clinicUndatedLab : Json := clinicLab.setObjVal! "effectiveDateTime" (.str "")
+def clinicLatestLabs : List Json :=
+  Ambulatory.latestResultSources [clinicPriorLab, clinicLab, clinicDuplicateLab, clinicUndatedLab]
+#guard clinicLatestLabs.length == 3
+#guard !clinicLatestLabs.contains clinicPriorLab
+#guard clinicLatestLabs.contains clinicDuplicateLab && clinicLatestLabs.contains clinicUndatedLab
+#guard (labResultRows [clinicPriorLab, clinicLab, clinicDuplicateLab, clinicUndatedLab]).length == 4
+
 #guard Ambulatory.selectedResultSources clinicResultRecords clinicPatient == [clinicLab]
 #guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).length == 2
 #guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).all fun row => row.lookup "Test" == some "Hemoglobin A1c"
@@ -181,6 +191,49 @@ def missingClinicResult : Facts := factsOf context [clinicPatient, clinicResult,
 #guard (Ambulatory.forecastRows [json r#"{"resourceType":"Immunization","status":"completed"}"#]).isEmpty
 #guard (Ambulatory.payloads context [clinicRefill] clinicPatient).all (fun p => p.info != "adherence")
 #guard (Ambulatory.payloads context [] clinicPatient).isEmpty
+/-- A complete focused request supplies quantities, explicit zero refills and a resolved pharmacy. -/
+def refillSourceExample : Json := json r#"{"resourceType":"MedicationRequest","id":"requested-rx","subject":{"reference":"Patient/clinic-patient"},"status":"active","medicationCodeableConcept":{"text":"lisinopril"},"dosageInstruction":[{"doseAndRate":[{"doseQuantity":{"value":10,"unit":"mg"}}]}],"dispenseRequest":{"quantity":{"value":30},"numberOfRepeatsAllowed":0,"performer":{"reference":"Organization/pharmacy"}}}"#
+def refillPharmacyExample : Json := json r#"{"resourceType":"Organization","id":"pharmacy","name":"Main Street Pharmacy"}"#
+def completeRefillTaskExample : Json := clinicRefill.setObjVal! "contained" (.arr #[refillSourceExample])
+def refillComparisonExample := Ambulatory.refillComparisonRows [refillPharmacyExample] completeRefillTaskExample
+#guard refillComparisonExample.length == 4
+#guard refillComparisonExample.any (fun row => row.lookup "detail" == some "Dose" && row.lookup "requested" == some "10 mg" && row.lookup "current" == some "10 mg")
+#guard refillComparisonExample.any (fun row => row.lookup "detail" == some "Refills" && row.lookup "requested" == some "0")
+#guard refillComparisonExample.any (fun row => row.lookup "requested" == some "Main Street Pharmacy")
+#guard refillComparisonExample.all (fun row => row.lookup "proposed" == some "Awaiting clinician entry")
+
+/-- A missing unit and an explicitly different patient never supply assumed dose evidence. -/
+def unitlessRefillDoseExample : Json := json r#"{"dosageInstruction":[{"doseAndRate":[{"doseQuantity":{"value":1}}]}]}"#
+#guard Ambulatory.refillPrescriptionDetail [] unitlessRefillDoseExample "Dose" == "1 (unit not recorded)"
+def otherPatientRefillExample : Json := refillSourceExample.setObjVal! "subject" (json r#"{"reference":"Patient/another-patient"}"#)
+#guard (Ambulatory.refillMedication [] (clinicRefill.setObjVal! "contained" (.arr #[otherPatientRefillExample]))).isNone
+#guard (Ambulatory.refillComparisonRows [] (clinicRefill.setObjVal! "focus" (json r#"{"reference":"MedicationRequest/missing"}"#))).isEmpty
+
+/-- A draft only compares against its explicit prior prescription for this patient. -/
+def draftRefillExample : Json := (refillSourceExample.setObjVal! "status" (.str "draft")).setObjVal!
+  "priorPrescription" (json r#"{"reference":"MedicationRequest/prior-rx"}"#)
+def priorRefillExample : Json := refillSourceExample.setObjVal! "id" (.str "prior-rx")
+#guard Ambulatory.currentRefillPrescription [priorRefillExample] clinicRefill draftRefillExample == some priorRefillExample
+#guard (Ambulatory.currentRefillPrescription [otherPatientRefillExample.setObjVal! "id" (.str "prior-rx")]
+  clinicRefill (draftRefillExample.setObjVal! "subject" .null)).isNone
+
+/-- A newer fill for another medication cannot supply this request's last-fill date. -/
+def codedRefillExample : Json := refillSourceExample.setObjVal! "medicationCodeableConcept"
+  (json r#"{"coding":[{"system":"http://www.nlm.nih.gov/research/umls/rxnorm","code":"29046"}]}"#)
+def matchingFillExample : Json := json r#"{"resourceType":"MedicationDispense","subject":{"reference":"Patient/clinic-patient"},"status":"completed","whenHandedOver":"2026-09-01","medicationCodeableConcept":{"coding":[{"system":"http://www.nlm.nih.gov/research/umls/rxnorm","code":"29046"}]}}"#
+def otherDrugFillExample : Json := (matchingFillExample.setObjVal! "whenHandedOver" (.str "2026-10-01")).setObjVal! "medicationCodeableConcept" (json r#"{"coding":[{"system":"http://www.nlm.nih.gov/research/umls/rxnorm","code":"different-drug"}]}"#)
+#guard Ambulatory.refillLastFill [matchingFillExample, otherDrugFillExample] completeRefillTaskExample codedRefillExample == "2026-09-01"
+#guard Ambulatory.refillLastFill [otherDrugFillExample] completeRefillTaskExample codedRefillExample == "Not recorded"
+#guard Ambulatory.refillLastFill [matchingFillExample.setObjVal! "status" (.str "in-progress")] completeRefillTaskExample codedRefillExample == "Not recorded"
+
+/-- The comparison satisfies its existing schema and ordinary patient/version binding. -/
+def completeRefillFactsExample : Facts := factsOf context
+  [clinicPatient, completeRefillTaskExample, refillPharmacyExample] clinicPatient
+def refillComparisonContractExample :=
+  (Ehr.Specs.ClinicalTables.infos.find? (·.id == "refillComparison")).bind (·.payload?)
+#guard refillComparisonContractExample.any (fun contract =>
+  (infoPayload completeRefillFactsExample "refillComparison").any (fun p => payloadComplete p contract))
+
 /-- Every generated supporting view passes the ordinary patient/version binding. -/
 def clinicFacts : Facts := factsOf context [clinicPatient, clinicAppointment, clinicRefill] clinicPatient
 #guard (clinicFacts.infoPayloads?.getD []).all fun payload => (infoPayload clinicFacts payload.info).isSome

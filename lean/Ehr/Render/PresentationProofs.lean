@@ -31,8 +31,28 @@ theorem administrationRows_complete (rs : List Json) (r : Json) (hr : r ∈ rs)
 /-- Every valid Observation remains in its series, including repeated timestamps. -/
 theorem observationRows_complete (rs : List Json) (r : Json) (hr : r ∈ rs)
     (hv : isObservation r = true) : observationRow r ∈ observationRows rs := by
-  simp only [observationRows, oldestFirst, List.mem_mergeSort, List.mem_map]
-  exact ⟨r, List.mem_filter.mpr ⟨hr, hv⟩, rfl⟩
+  simp only [observationRows, oldestFirst, List.mem_mergeSort, List.mem_flatMap]
+  exact ⟨r, List.mem_filter.mpr ⟨hr, hv⟩, by simp [observationRowsFor]⟩
+
+/-- Every valid observation component survives the same display boundary. -/
+theorem observationComponents_complete (rs : List Json) (r c : Json) (hr : r ∈ rs)
+    (hv : isObservation r = true) (hc : c ∈ arr r "component") :
+    observationComponentRow r c ∈ observationRows rs := by
+  simp only [observationRows, oldestFirst, List.mem_mergeSort, List.mem_flatMap]
+  exact ⟨r, List.mem_filter.mpr ⟨hr, hv⟩,
+    List.mem_cons_of_mem _ (List.mem_map.mpr ⟨c, hc, rfl⟩)⟩
+
+/-- Identical observations and their components retain their full cardinality. -/
+theorem observationRows_length (rs : List Json) :
+    (observationRows rs).length =
+      ((rs.filter isObservation).map (fun r => 1 + (arr r "component").length)).sum := by
+  have counts (xs : List Json) :
+      (xs.flatMap observationRowsFor).length =
+        (xs.map (fun r => 1 + (arr r "component").length)).sum := by
+    induction xs with
+    | nil => simp
+    | cons r xs ih => simp [observationRowsFor, ih, Nat.add_comm, Nat.add_assoc]
+  simpa only [observationRows, oldestFirst, List.length_mergeSort] using counts (rs.filter isObservation)
 
 /-- Every valid laboratory observation retains its complete per-result display row. -/
 theorem labResultRows_complete (rs : List Json) (r : Json) (hr : r ∈ rs)
@@ -89,6 +109,14 @@ theorem T11_observation (ctx : FactsContext) (b : Json) (f : Facts) (d : Display
     (hv : isObservation r = true) : observationRow r ∈ d.observations := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
   exact observationRows_complete _ r hr hv
+
+/-- Assessment components survive parsing with their own values and parent context. -/
+theorem T11_observation_component (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
+    (hp : parseBundle ctx b = .ok (f, d)) (r c : Json) (hr : r ∈ bundleResources b)
+    (hv : isObservation r = true) (hc : c ∈ arr r "component") :
+    observationComponentRow r c ∈ d.observations := by
+  obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
+  exact observationComponents_complete _ r c hr hv hc
 
 /-- Every valid laboratory observation reaches Display without substituting a later unit. -/
 theorem T11_lab_result (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)

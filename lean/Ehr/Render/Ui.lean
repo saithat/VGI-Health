@@ -67,8 +67,9 @@ def medCells (r : MedRow) : List (String × String) :=
    ("Authored", uiDate r.authored), ("Prescriber", r.prescriber)]
 def noteCells (r : NoteRow) : List (String × String) :=
   [("Date", uiDate r.date), ("Type", r.noteType), ("Author", r.author),
-   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status),
-   ("Source date", uiDate r.sourceDate), ("Shift days", uiLabel r.shiftDays "Unknown")]
+   ("Encounter", r.encounter), ("Title", r.title), ("Text", r.text), ("Status", r.status)] ++
+   (if r.sourceDate == "" then [] else [("Source date", uiDate r.sourceDate)]) ++
+   (if r.shiftDays == "" then [] else [("Shift days", r.shiftDays)])
 def historyCells (r : HistoryRow) : List (String × String) :=
   [("Kind", r.kind), ("Item", r.item), ("Detail", r.detail), ("Status", r.status), ("Source", r.source)]
 def vitalCells (r : VitalRow) : List (String × String) :=
@@ -87,6 +88,7 @@ def uiPayloadRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
 def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   if uiOrderInfo i then uiOrderRows cx ++ uiPayloadRows cx i
+  else if i == "refillComparison" then uiRefillComparisonRows cx (uiPayloadRows cx i)
   else if i == "resultTrend" && (infoPayload cx.facts i).isSome then uiPayloadRows cx i
   else match structuredRows? cx i with
   | some rows => rows

@@ -47,6 +47,26 @@ def poundsFactsExample : Facts := { uiRoomCtx.facts with weightToday? := some (1
   { poundsBannerExample.banner with weight? := none } } == "85.3 kg (from 188.0 lb)"
 #guard poundsFactsExample.weightToday? == some (1880, .lb)
 
+/-- The response preview cannot turn a requested dose into an entered response. -/
+def refillSourcePreviewExample : List (List (String × String)) :=
+  [[("Detail", "Dose"), ("Requested", "10 mg"), ("On file", "10 mg"),
+    ("Proposed", "Awaiting clinician entry"), ("Source", "Referenced prescription")]]
+#guard (uiRefillComparisonRows uiRoomCtx refillSourcePreviewExample).all
+  (fun row => row.lookup "Entered response" == some "Not entered")
+
+/-- A changed dose retains its native scale/unit and the distinct requested value. -/
+def refillEnteredPreviewCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with captured :=
+      [{ element := "refillDose", slot := 0, value := .qty 200 .mg, byHuman := true, confirmed := true }] } }
+#guard (uiRefillComparisonRows refillEnteredPreviewCtx refillSourcePreviewExample).all
+  (fun row => row.lookup "Entered response" == some "20.0 mg" && row.lookup "Requested" == some "10 mg")
+
+/-- A separately supplied draft remains visible alongside the actual entered response. -/
+def externallyProposedRefillExample : List (List (String × String)) :=
+  [[("Detail", "Dose"), ("Proposed", "15 mg draft")]]
+#guard (uiRefillComparisonRows refillEnteredPreviewCtx externallyProposedRefillExample).all
+  (fun row => row.lookup "Proposed" == some "15 mg draft" && row.lookup "Entered response" == some "20.0 mg")
+
 /-- A valid insulin dose stays in units in its daily preview and review status. -/
 def nativeUnitReviewCtx : Ctx :=
   { uiSignCtx with viewCache := ⟨_, rfl⟩, s := { uiSignCtx.s with captured :=

@@ -4,6 +4,21 @@ import Ehr.Render.PanelProofs
 
 namespace Ehr.Render
 
+/-- A response preview preserves every supplied clinical cell; only its explicit
+empty-entry marker may become the clinician's actual captured response. -/
+theorem uiRefillComparison_preservesSource (cx : Ctx) (rows : List (List (String × String)))
+    (row : List (String × String)) (hr : row ∈ rows) (cell : String × String) (hc : cell ∈ row)
+    (hs : cell.1 ≠ "Proposed" ∨ cell.2 ≠ "Awaiting clinician entry") :
+    ∃ output ∈ uiRefillComparisonRows cx rows, cell ∈ output := by
+  unfold uiRefillComparisonRows
+  refine ⟨_, List.mem_map.mpr ⟨row, hr, rfl⟩, ?_⟩
+  dsimp only
+  split
+  · refine List.mem_map.mpr ⟨cell, hc, ?_⟩
+    rcases cell with ⟨key, text⟩
+    rcases hs with h | h <;> simp_all
+  · exact List.mem_append_left _ hc
+
 /-- A presentation does not change presence of any clinical info or control. -/
 @[simp] theorem uiWrapInfo_atoms (kind node) :
     uiAtoms (uiWrapInfo kind node) = uiAtoms node := by

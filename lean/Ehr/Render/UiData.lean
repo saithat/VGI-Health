@@ -15,6 +15,8 @@ def uiClinicalHeading (key : String) : String :=
      ("context", "Context"), ("test", "Test"), ("value", "Value"), ("unit", "Unit"),
      ("flag", "Flag"), ("referenceRange", "Range"), ("collectedAt", "Collected"),
      ("resultedAt", "Resulted"), ("hpi", "HPI"), ("ros", "ROS"),
+     ("detail", "Detail"), ("requested", "Requested"), ("current", "On file"),
+     ("proposed", "Proposed"), ("source", "Source"),
      ("exam", "Exam"), ("plan", "Assessment & Plan")] : List (String × String)).lookup key).getD key
 
 /-- Format complete ISO dates/date-times for display, preserving the recorded
@@ -39,6 +41,24 @@ def uiCaptureText (x : Captured) : String :=
   match x.value with
   | .qty _ u => valueText x.value ++ if u == .none then "" else " " ++ unitName u
   | v => uiDate (valueText v)
+
+/-- Refill response previews read the same captures as the ordinary fields.
+The request projection supplies the finite detail headings; no value is copied
+into the response and an unconfirmed prefill remains visibly unconfirmed. -/
+def uiRefillComparisonRows (cx : Ctx) (rows : List (List (String × String))) :
+    List (List (String × String)) :=
+  rows.map fun row =>
+    let element := ([("Dose", "refillDose"), ("Dispense quantity", "refillQuantity"),
+      ("Refills", "refillRefills"), ("Pharmacy", "refillPharmacy")] : List (String × ElementId)).lookup
+        ((row.lookup "Detail").getD "")
+    let value := element.bind (capturedAt? cx.s · 0)
+    let entered := match value with
+      | none => "Not entered"
+      | some x => uiCaptureText x ++ if x.confirmed then "" else " (unconfirmed)"
+    if row.lookup "Proposed" == some "Awaiting clinician entry" then
+      row.map fun (key, text) =>
+        if key == "Proposed" && text == "Awaiting clinician entry" then ("Entered response", entered) else (key, text)
+    else row ++ [("Entered response", entered)]
 
 /-- Clinical columns captured on a medication-order line. Optional values are
 omitted when absent; a global prescriber capture may be shared across lines. -/

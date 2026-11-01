@@ -23,11 +23,12 @@ function nodes(tree) {
   return [tree];
 }
 const audit = [];
-for (const [persona, workflow] of [['P1', 'W1'], ['P1', 'W2'], ['P1', 'W7'], ['P4', 'W5']]) {
+const reviewCases = read(`${input}/review-cases.json`);
+for (const { persona, workflow } of reviewCases.cases) {
   const spec = read(`${root}/releases/v1/spec.json`);
   const program = read(`${root}/releases/v1/personas/${persona}.json`);
   const bundle = read(`${input}/${persona}-${workflow}-bundle.json`);
-  const projection = call('facts', { bundle, context: { today: '2026-11-02', now: 540, receipts: [], record: [] } });
+  const projection = call('facts', { bundle, context: { today: reviewCases.today, now: 540, receipts: [], record: [] } });
   const user = { id: persona, role: program.role };
   const base = { spec, program, facts: projection.facts, user };
   const initial = call('init', base);

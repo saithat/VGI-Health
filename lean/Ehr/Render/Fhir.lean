@@ -676,6 +676,8 @@ def noteRow (r : Json) : NoteRow :=
     title := let title := str r "description"
       if title != "" then title else knownText (str (attachments.headD .null) "title")
     text := if attachments.isEmpty then "Note body unavailable (no attachments)"
+      else if attachments.length == 1 && str (attachments.headD .null) "title" == "" then
+        noteAttachmentText (attachments.headD .null)
       else "\n\n".intercalate (attachments.zipIdx.map fun (a, i) =>
         "Attachment " ++ toString (i + 1) ++
         (if str a "title" == "" then "" else ": " ++ str a "title") ++ "\n" ++ noteAttachmentText a)
@@ -946,21 +948,6 @@ def administrationRows (rs : List Json) : List AdministrationRow :=
   oldestFirst (·.time) ((ofType "MedicationAdministration" rs |>.filter
     (fun r => str r "status" != "entered-in-error")).map (administrationRow rs))
 
-/-- One clinical Observation, including integer and boolean assessments. -/
-def observationRow (r : Json) : ObservationRow :=
-  let (value, unit, _) := obsValue r
-  let value := if value != "" then value else
-    match field r "valueInteger" with
-    | .num n => toString n
-    | _ => match field r "valueBoolean" with
-      | .bool b => if b then "Yes" else "No"
-      | _ => "Not recorded"
-  { measure := ccText (field r "code"), value, unit, time := obsWhen r, status := str r "status" }
-
-/-- Each clinical Observation retains its own time, unit, value and status. -/
-def observationRows (rs : List Json) : List ObservationRow :=
-  oldestFirst (·.time) ((rs.filter isObservation).map observationRow)
-
 /-- Lab flag from source interpretation, else numeric comparison in Lean.
 The existing demo reference-range policy is unchanged. -/
 def labFlag (r : Json) : String :=
@@ -1114,6 +1101,46 @@ def labResultRowsFor (r : Json) : List LabResultRow :=
 def labResultRows (rs : List Json) : List LabResultRow :=
   newestFirst (·.date) ((rs.filter isLab).flatMap labResultRowsFor)
 
+/-- Only explicitly coded BP components can form a systolic/diastolic pair.
+FHIR slices are unordered; a component's array position never supplies its meaning. -/
+def observationBpValue? (r : Json) : Option (String × String) := do
+  let loinc := fun cc code => (codings cc).any
+    (fun c => str c "system" == "http://loinc.org" && str c "code" == code)
+  let suppliedValue := ["valueQuantity", "valueCodeableConcept", "valueString", "valueBoolean",
+    "valueInteger", "valueRange", "valueRatio", "valueSampledData", "valueTime", "valueDateTime", "valuePeriod"]
+      |>.any (fun key => field r key != .null)
+  if suppliedValue || !loinc (field r "code") "85354-9" then none else do
+    let [systolic] := (arr r "component").filter (fun c => loinc (field c "code") "8480-6") | none
+    let [diastolic] := (arr r "component").filter (fun c => loinc (field c "code") "8462-4") | none
+    let s := field systolic "valueQuantity"
+    let d := field diastolic "valueQuantity"
+    if systolic == diastolic || qtyText s == "" || qtyText d == "" || qtyUnitText s == "" || qtyUnitText s != qtyUnitText d then none
+    else some (str s "comparator" ++ qtyText s ++ "/" ++ str d "comparator" ++ qtyText d, qtyUnitText s)
+
+/-- Source values include assessments, absent reasons and censored quantities. -/
+def observationRow (r : Json) : ObservationRow :=
+  let (value, unit) := (observationBpValue? r).getD
+    (labResultValue r, qtyUnitText (field r "valueQuantity"))
+  { measure := ccText (field r "code"), value, unit, time := obsWhen r,
+    status := str r "status", categories := categoryCodes r }
+
+/-- Every assessment component retains its own value/unit and report context. -/
+def observationComponentRow (parent component : Json) : ObservationRow :=
+  let row := observationRow component
+  { row with
+    measure := ccText (field parent "code") ++ " • " ++ row.measure
+    time := obsWhen parent
+    status := str parent "status"
+    categories := categoryCodes parent }
+
+/-- Parent and component records are all retained, including repeated timestamps. -/
+def observationRowsFor (r : Json) : List ObservationRow :=
+  observationRow r :: (arr r "component").map (observationComponentRow r)
+
+/-- Each valid Observation retains its own time, category, value and components. -/
+def observationRows (rs : List Json) : List ObservationRow :=
+  oldestFirst (·.time) ((rs.filter isObservation).flatMap observationRowsFor)
+
 /-! ## Ambulatory supporting views
 
 These are display projections of supplied FHIR records. They do not infer
@@ -1187,11 +1214,19 @@ def messageRows (rs : List Json) (p : Json) : List AmbulatoryMessageRow :=
       sender := str (field r "requester") "display", priority := str r "priority"
       status := str r "status", folder := taskFolder r }
 
+/-- Enclosing Task context tolerates an absent legacy fragment subject, but an
+explicitly different patient reference is never treated as the same person. -/
+def refillPatientCompatible (left right : String) : Bool :=
+  let normalize := fun (key : String) =>
+    if key.startsWith "urn:uuid:" then sub key 9 key.length
+    else if key.startsWith "Patient/" then sub key 8 key.length else key
+  left == "" || right == "" || normalize left == normalize right
+
 /-- Resolve the medication actually referenced by a refill request, including
 contained MedicationRequests. Never substitute the first active medication. -/
 def refillMedication (rs : List Json) (task : Json) : Option Json :=
   let reference := str (field task "focus") "reference"
-  if reference.startsWith "#" then
+  let candidate := if reference.startsWith "#" then
     (arr task "contained").find? fun r => resourceType r == "MedicationRequest" &&
       reference == "#" ++ str r "id"
   else (ofType "MedicationRequest" rs).find? fun r =>
@@ -1199,10 +1234,83 @@ def refillMedication (rs : List Json) (task : Json) : Option Json :=
     let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
     !id.isEmpty && (reference == raw || reference == "MedicationRequest/" ++ id ||
       reference == "urn:uuid:" ++ id)
+  candidate.filter fun r =>
+    let owner := str (field r "subject") "reference"
+    let patient := str (field task "for") "reference"
+    refillPatientCompatible owner patient
 
 /-- A pharmacy display is shown only when the prescription actually supplies it. -/
-def prescriptionPharmacy (r : Json) : String :=
-  str (field (field r "dispenseRequest") "performer") "display"
+def prescriptionPharmacy (rs : List Json) (r : Json) : String :=
+  humanRef rs (field (field r "dispenseRequest") "performer")
+
+/-- Latest dated observations per coded analyte, retaining same-time records,
+components and records whose date or identity is unknown. Full history remains
+in Chart Review and the selected-analyte trend. -/
+def latestResultSources (rs : List Json) : List Json :=
+  let labs := rs.filter isLab
+  let key := fun r =>
+    let coding := (codings (field r "code")).headD .null
+    let code := str coding "code"
+    if code == "" then ("", ccText (field r "code")) else (str coding "system", code)
+  let latest := (labs.map key).eraseDups.map fun code =>
+    (code, ((latestBy obsWhen (labs.filter (fun r => key r == code))).map obsWhen).getD "")
+  labs.filter fun r => key r == ("", "") || obsWhen r == "" || latest.lookup (key r) == some (obsWhen r)
+
+/-- An active focused prescription, or its explicitly linked active predecessor.
+The first medication with a similar name is never substituted. -/
+def currentRefillPrescription (rs : List Json) (task requested : Json) : Option Json :=
+  if str requested "status" == "active" || str requested "status" == "on-hold" then some requested
+  else (referenced? rs (field requested "priorPrescription")).filter fun r =>
+    resourceType r == "MedicationRequest" && (str r "status" == "active" || str r "status" == "on-hold") &&
+      refillPatientCompatible (str (field r "subject") "reference") (str (field requested "subject") "reference") &&
+      refillPatientCompatible (str (field r "subject") "reference") (str (field task "for") "reference")
+
+/-- Prescription detail is source text; a missing unit never becomes mg. -/
+def refillPrescriptionDetail (rs : List Json) (r : Json) (detail : String) : String :=
+  let value := match detail with
+    | "Dose" =>
+      let q := field (first (first r "dosageInstruction") "doseAndRate") "doseQuantity"
+      if qtyText q == "" then "" else
+        qtyText q ++ if qtyUnitText q == "" then " (unit not recorded)" else " " ++ qtyUnitText q
+    | "Dispense quantity" =>
+      let q := field (field r "dispenseRequest") "quantity"
+      qtyText q ++ if qtyUnitText q == "" then "" else " " ++ qtyUnitText q
+    | "Refills" => match field (field r "dispenseRequest") "numberOfRepeatsAllowed" with
+      | .num n => toString n
+      | _ => ""
+    | "Pharmacy" => prescriptionPharmacy rs r
+    | _ => ""
+  if value == "" then "Not recorded" else value
+
+/-- The response column is added later from the interpreter's actual captures.
+No proposed prescription or protocol pass is inferred from chart data. -/
+def refillComparisonRows (rs : List Json) (task : Json) : List (List (String × String)) :=
+  match refillMedication rs task with
+  | none => []
+  | some requested =>
+    let current := (currentRefillPrescription rs task requested).getD .null
+    ["Dose", "Dispense quantity", "Refills", "Pharmacy"].map fun detail =>
+      [("detail", detail), ("requested", refillPrescriptionDetail rs requested detail),
+       ("current", refillPrescriptionDetail rs current detail),
+       ("proposed", "Awaiting clinician entry"), ("source", "Referenced prescription")]
+
+/-- A last-fill date needs a completed dispensing record for this prescription
+or the same explicit medication code/system, not a reported medication statement. -/
+def refillLastFill (rs : List Json) (task requested : Json) : String :=
+  let coding := (codings (field requested "medicationCodeableConcept")).headD .null
+  let code := str coding "code"
+  let system := str coding "system"
+  let eligibleFill := fun r =>
+    let linked := (arr r "authorizingPrescription").any fun ref =>
+      (referenced? rs ref).any (fun rx => resourceType rx == "MedicationRequest" &&
+        str rx "id" != "" && str rx "id" == str requested "id")
+    let sameCode := code != "" && system != "" &&
+      (codings (field r "medicationCodeableConcept")).any fun c =>
+        str c "code" == code && str c "system" == system
+    str r "status" == "completed" && str r "whenHandedOver" != "" && (linked || sameCode) &&
+      refillPatientCompatible (str (field r "subject") "reference") (str (field task "for") "reference")
+  ((latestBy (str · "whenHandedOver") ((ofType "MedicationDispense" rs).filter eligibleFill)).map
+    (str · "whenHandedOver")).getD "Not recorded"
 
 /-- Complete raw result rows, with the original reference ranges and flags. -/
 def resultRows (rs : List Json) : List (List (String × String)) :=
@@ -1277,17 +1385,22 @@ def payloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload
   let tasks := patientTasks rs p
   let selectedResults := selectedResultSources rs p
   let refill := tasks.find? (fun r => taskFolder r == "Rx Requests")
-  let requestRows := refill.toList.map fun task =>
-    let rx := (refillMedication rs task).getD .null
-    [("Medication", medName rx), ("Sig", sigText rx),
-     ("Requested by", str (field task "requester") "display"),
-     ("Received", str task "authoredOn"), ("Prescription date", str rx "authoredOn"),
-     ("Pharmacy", prescriptionPharmacy rx),
-     ("Request", str task "description"), ("Status", str task "status")]
   let priorVisit := latestBy (fun r => str (field r "period") "start")
     ((ofType "Encounter" rs).filter fun r =>
       let date := str (field r "period") "start"
       date != "" && dayOf date < ctx.today && str r "status" != "entered-in-error")
+  let requestRows := refill.toList.map fun task =>
+    let rx := (refillMedication rs task).getD .null
+    [("Medication", medName rx), ("Sig", sigText rx),
+     ("Prescription status", let status := str rx "status"
+       if status == "" then "Not recorded" else status),
+     ("Requested by", str (field task "requester") "display"),
+     ("Received", str task "authoredOn"), ("Prescription date", str rx "authoredOn"),
+     ("Pharmacy", let name := prescriptionPharmacy rs rx
+       if name == "" then "Not recorded" else name),
+     ("Last fill", refillLastFill rs task rx),
+     ("Last encounter", (priorVisit.map (fun r => str (field r "period") "start")).getD "Not recorded"),
+     ("Request", str task "description"), ("Status", str task "status")]
   let views : List (InfoId × List (List (String × String))) :=
     [("inBasketFolders", if tasks.isEmpty then [] else ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
         [("Folder", folder), ("Count", toString (messages.filter (·.folder == folder)).length)]),
@@ -1307,11 +1420,12 @@ def payloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload
      ("messagePreview", (messages.filter (·.folder == "Results")).take 1 |>.map fun row =>
         [("subject", row.subject), ("context", row.folder ++ " — " ++ row.sender), ("received", row.received)]),
      ("refillRequest", requestRows),
+     ("refillComparison", refill.toList.flatMap (refillComparisonRows rs)),
      ("resultDetail", resultRows selectedResults), ("resultTrend", selectedTrendRows rs selectedResults),
-     ("relevantLabs", resultRows rs),
+     ("relevantLabs", resultRows (latestResultSources rs)),
      ("lastVisit", priorVisit.toList.map fun r =>
         let row := encRow r
-        [("Date", row.start), ("Visit type", row.encType), ("Reason", row.reason),
+        [("Date", row.start), ("Visit type", row.encType), ("Setting", row.encClass), ("Reason", row.reason),
          ("Provider", row.provider), ("Location", row.location)]),
      ("adherence", ((ofType "MedicationDispense" rs).filter (fun r => str r "status" != "entered-in-error")).map fun r =>
         [("Medication", medName r), ("Last fill", str r "whenHandedOver"),

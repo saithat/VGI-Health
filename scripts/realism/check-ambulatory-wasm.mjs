@@ -19,11 +19,12 @@ const descend = node => {
   return node.tabs ? [node, ...node.tabs.body.flatMap(descend)] : [node];
 };
 let screens = 0, references = 0, pickers = 0;
-for (const [persona, workflow] of [['P1', 'W1'], ['P1', 'W2'], ['P1', 'W7'], ['P4', 'W5']]) {
+const reviewCases = read(`${review}/review-cases.json`);
+for (const { persona, workflow } of reviewCases.cases) {
   const spec = read(`${root}/releases/v1/spec.json`);
   const program = read(`${root}/releases/v1/personas/${persona}.json`);
   const user = { id: persona, role: program.role };
-  const factsInput = { bundle: read(`${review}/${persona}-${workflow}-bundle.json`), context: { today: '2026-11-02', now: 540, receipts: [], record: [] } };
+  const factsInput = { bundle: read(`${review}/${persona}-${workflow}-bundle.json`), context: { today: reviewCases.today, now: 540, receipts: [], record: [] } };
   const projection = native('facts', factsInput);
   assert.deepEqual(call('facts', factsInput), projection);
   const base = { spec, program, facts: projection.facts, user };
@@ -54,9 +55,25 @@ for (const [persona, workflow] of [['P1', 'W1'], ['P1', 'W2'], ['P1', 'W7'], ['P
     const nodes = [...ui.workspace, ...ui.side].flatMap(descend);
     pickers += nodes.filter(node => node.valueSet).length;
     for (const node of nodes) references += node.chartReferences?.references.length ?? 0;
+    if (workflow === 'W7' && screen.id === 'w7Decision') {
+      const comparison = nodes.find(node => node.info?.infoId === 'refillComparison')?.info;
+      assert.equal(comparison?.rows.length, 4);
+      assert.ok(comparison.rows.every(row => row.some(([key, value]) => key === 'Entered response' && value === 'Not entered')));
+      const event = { enter: { comp: 'w7Decision.refillDose', value: { qty: { tenths: 200, unit: 'mg' } } } };
+      const entered = native('step', { ...base, state, event });
+      assert.deepEqual(call('step', { ...base, state, event }), entered);
+      assert.equal(entered.result, 'ok');
+      const previewInput = { ...input, state: entered.state };
+      const preview = native('render-ui', previewInput);
+      assert.deepEqual(call('render_ui', previewInput), preview);
+      const dose = preview.workspace.flatMap(descend).find(node => node.info?.infoId === 'refillComparison')?.info.rows.find(row => row.some(([key, value]) => key === 'Detail' && value === 'Dose'));
+      assert.ok(dose.some(([key, value]) => key === 'Requested' && value === '10 mg'));
+      assert.ok(dose.some(([key, value]) => key === 'Entered response' && value === '20.0 mg'));
+      assert.equal(entered.state.commits.length, state.commits.length, 'A preview cannot sign a refill');
+    }
     screens++;
   }
-  if (persona === 'P4') {
+  if (workflow === 'W5') {
     assert.equal(projection.display.growthReferenceSex, 'M');
     const unavailable = structuredClone(factsInput);
     const patient = unavailable.bundle.entry.find(entry => entry.resource?.resourceType === 'Patient').resource;
