@@ -95,6 +95,8 @@ Validation for the structured-renderer milestone: **15/15** persona projections 
 
 The renderer adds readable metadata and transparent structured layouts to archived programs, including a hint for any recorded non-kg weight. It does not change the archived interpreter events or state transitions. The real-WASM trajectory verification was rerun after these changes; no archived program was rewritten.
 
+Main integration through `251d9a0` preserves both the structured widgets and the runner's versioned presentation wrapper. Both independent presentation test suites are retained. With the built app in place, app build/lint/186 tests and agent 82 tests/typecheck/lint pass. The 45-state browser gate passes again with cache reuse disabled (99 pass, three fixture-dependent skips), the clinical walk passes, and the updated trajectory verifier reports zero mismatches. Lean source and the WASM fingerprint are unchanged by this merge. [Integration evidence](../audits/surg-main-integration.json).
+
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 
 ## Evidence and reuse boundary

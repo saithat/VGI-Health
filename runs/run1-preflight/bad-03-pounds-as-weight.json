@@ -1,0 +1,42 @@
+{
+  "name": "bad-03-pounds-as-weight",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "check",
+    "--spec",
+    "releases/v1/spec.json",
+    "--program",
+    "programs/bad/03-pounds-as-weight.json",
+    "--prev",
+    "programs/bad/03-pounds-as-weight.json",
+    "--canonical",
+    "releases/v1/canonical.json"
+  ],
+  "exit": 1,
+  "ms": 229,
+  "verdict": {
+    "violation": {
+      "screens": [
+        "home",
+        "w3TrackBoard",
+        "w3Triage"
+      ],
+      "property": "writesOnly",
+      "message": "field w3Triage.weight on screen w3Triage writes element weightLb, which is not in the spec",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w3TrackBoard"
+          }
+        },
+        {
+          "click": {
+            "comp": "w3TrackBoard.nav.w3Triage"
+          }
+        }
+      ]
+    }
+  },
+  "stdout": "{\"violation\":\n {\"screens\": [\"home\", \"w3TrackBoard\", \"w3Triage\"],\n  \"property\": \"writesOnly\",\n  \"message\":\n  \"field w3Triage.weight on screen w3Triage writes element weightLb, which is not in the spec\",\n  \"counterexample\":\n  [{\"click\": {\"comp\": \"home.work.w3TrackBoard\"}},\n   {\"click\": {\"comp\": \"w3TrackBoard.nav.w3Triage\"}}]}}\n",
+  "stderr": ""
+}

@@ -1,0 +1,18 @@
+{
+  "name": "P3-min-clicks",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "min-clicks",
+    "--spec",
+    "v1",
+    "--program",
+    "releases/v1/personas/P3.json",
+    "--task",
+    "/tmp/vgi-run1-task.json",
+    "--world",
+    "runs/world/1"
+  ],
+  "exit": 0,
+  "ms": 525,
+  "stderr": ""
+}

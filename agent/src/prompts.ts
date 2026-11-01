@@ -4,6 +4,7 @@
  * spec, and outcome-only decision history). Nothing here can reach a
  * validation or test DayResult; those live behind `Holdout` in night.ts.
  */
+import { promptContext } from './manual.js';
 import type { CheckResult, Component, EvaluatedCandidate, JsonPatchOp, PersonaParams, Program, Spec, TrainSummary } from './schema.js';
 
 export interface PromptParts {
@@ -44,7 +45,7 @@ Lean types; JSON uses constructor-keyed objects ({"field": {"element": "...", "s
 - Pre-fill only as the policy allows: recordConfirm (from the record with provenance, human confirms), defaultConfirm (a default the human confirms), autoLinked (entered once, then linked).
 - Units: weight is kg only; never source a value from a pound field.
 - Enter once: no element may be asked twice on one path unless the later one is a pre-filled link or copy.
-- Alerts: interruptive alerts keep popping up before their commit; passive alerts never pop up; removable-tier alerts may be made passive or removed.
+- Alerts: the interpreter opens condition-triggered interruptive alerts at the commit automatically, even when the component has popup=false. popup=true requests an immediate screen popup and is rejected for interruptive alerts by noFalseAlarms. Preserve certified interruptive alert components and their popup=false settings; passive alerts never pop up. Removable-tier alerts may be made passive or removed. Do not bundle unrelated safety or macro edits into workflow optimizations.
 - Every commit stays reachable from the start screen, and every screen keeps the patient banner.
 - Stability budget: at most N components may be moved (to a different screen, parent, or tab) per version. Copies (a new component with copyOf = the original's id) do not count, so prefer copying frequently used actions or info over moving them.
 - Do not edit the program's id, version, owner, role, or specVersion; the loop sets them.
@@ -66,7 +67,7 @@ export function formatProgram(p: Program): string {
     return `    {"id":${JSON.stringify(s.id)},"title":${JSON.stringify(s.title)},"workflow":${JSON.stringify(s.workflow)},"components":[\n${comps}\n    ]}`;
   }).join(',\n');
   const macros = p.macros.map((m) => `    ${JSON.stringify(m)}`).join(',\n');
-  return `{"id":${JSON.stringify(p.id)},"version":${p.version},"owner":${JSON.stringify(p.owner)},"role":${JSON.stringify(p.role)},"specVersion":${JSON.stringify(p.specVersion)},"start":${JSON.stringify(p.start)},\n  "screens":[\n${screens}\n  ],\n  "macros":[${macros ? `\n${macros}\n  ` : ''}]}`;
+  return `{"id":${JSON.stringify(p.id)},"version":${p.version},"owner":${JSON.stringify(p.owner)},"role":${JSON.stringify(p.role)},"specVersion":${JSON.stringify(p.specVersion)},"start":${JSON.stringify(p.start)},\n  "screens":[\n${screens}\n  ],\n  "macros":[${macros ? `\n${macros}\n  ` : ''}]${p.componentDefs ? `,"componentDefs":${JSON.stringify(p.componentDefs)}` : ''}${p.presentationComponents ? `,"presentationComponents":${JSON.stringify(p.presentationComponents)}` : ''}}`;
 }
 
 const json = (x: unknown) => JSON.stringify(x);
@@ -78,6 +79,10 @@ function header(title: string, persona: PersonaView, program: Program, spec: Spe
     '',
     '## Persona behavior parameters',
     json(persona.params),
+    '',
+    '## Capabilities manual and enforced formal rules',
+    promptContext(spec, program).manual,
+    promptContext(spec, program).rules,
     '',
     '## Hospital spec (exported from Lean)',
     json(spec),
@@ -157,6 +162,8 @@ export interface ChooseContext {
   night: number;
   persona: PersonaView;
   stabilityBudget: number;
+  spec: Spec;
+  program: Program;
   hypothesis: string;
   candidates: readonly EvaluatedCandidate[];
 }
@@ -176,7 +183,7 @@ export function choosePrompt(c: ChooseContext): PromptParts {
   return {
     system: SYSTEM_PROMPT,
     prompt: [
-      `# Night ${c.night}: choose the change for persona ${c.persona.id}`,
+      header(`Night ${c.night}: choose the change`, c.persona, c.program, c.spec),
       `Hypothesis: ${c.hypothesis}`,
       '',
       '## Candidates after pre-screening',

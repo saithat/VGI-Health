@@ -1,4 +1,4 @@
-import { programSpecPath } from "./browser/data";
+import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import {
   Alert,
@@ -16,7 +16,7 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createLiveSession, type LiveContext } from "./core/liveSession";
 import { medicationDue } from "./data/worklist";
-import { loadCatalog, readArtifact } from "./browser/data";
+import { loadCatalog, readArtifact, verifyRecordedBuild, programSpecPath } from "./browser/data";
 import {
   availableBeds,
   bundleResources,
@@ -94,7 +94,7 @@ const personaLabels: Record<string, string> = {
 /** Program shown in live mode: the persona's latest certified personalized
 version from a recorded run, the persona's canonical projection if none
 exists yet, or the original canonical baseline. */
-async function liveProgram(persona: string, baseline: boolean) {
+async function liveProgram(persona: string, baseline: boolean): Promise<{ spec: unknown; program: unknown; presentations?: PresentationBundle | null }> {
   if (baseline)
     return {
       spec: await readArtifact("/releases/v3/spec.json"),
@@ -108,11 +108,11 @@ async function liveProgram(persona: string, baseline: boolean) {
       p.run !== null &&
       p.run !== "mock",
   );
-  if (deployed)
-    return {
-      spec: await readArtifact(programSpecPath(deployed)),
-      program: await readArtifact(`/${deployed.path}`),
-    };
+  if (deployed) {
+    const program = await readArtifact(`/${deployed.path}`);
+    const presentations = await verifyRecordedBuild(deployed.path, program);
+    return { presentations, spec: await readArtifact(programSpecPath(deployed)), program };
+  }
   return {
     spec: await readArtifact("/releases/v3/spec.json"),
     program: await readArtifact(`/releases/v3/personas/${persona}.json`),
@@ -184,9 +184,11 @@ function Login({
 }
 
 function Chart({
+  presentations,
   session,
   onClose,
 }: {
+  presentations: PresentationBundle | null;
   session: Session;
   onClose: () => void;
 }) {
@@ -205,6 +207,7 @@ function Chart({
       >
         {ui ? (
           <UiScreenView
+            presentations={presentations}
             screen={ui}
             onEvent={(event) => {
               if (pending) return;
@@ -486,6 +489,7 @@ function Home({
   const [patients, setPatients] = useState<Patient[]>([]);
   const [selection, setSelection] = useState<Selection>();
   const [session, setSession] = useState<Session>();
+  const [presentations, setPresentations] = useState<PresentationBundle | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [revision, setRevision] = useState(0);
@@ -583,6 +587,7 @@ function Home({
   if (session)
     return (
       <Chart
+        presentations={presentations}
         session={session}
         onClose={() => {
           setSession(undefined);
@@ -853,16 +858,17 @@ function Home({
             setError("");
             const persona = user.persona === "RN2" ? "P3" : user.persona;
             void Promise.all([loadWasmInterp(), liveProgram(persona, baseline)])
-              .then(([interp, { spec, program }]) =>
-                createLiveSession(
+              .then(([interp, { spec, program, presentations }]) => {
+                setPresentations(presentations ?? null);
+                return createLiveSession(
                   interp,
                   spec,
                   program,
                   selection.bundle,
                   user,
                   context,
-                ),
-              )
+                );
+              })
               .then(setSession)
               .catch((e: unknown) => setError(errorText(e)))
               .finally(() => setPending(false));

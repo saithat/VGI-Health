@@ -1,0 +1,46 @@
+{
+  "capturedAt": "2026-11-01",
+  "cliVersion": "0.166.0",
+  "purpose": "One owner-authorized trivial live call; no simulation",
+  "requestedModel": "gpt-6.1-sol",
+  "servedBy": null,
+  "servedModelNote": "CLI JSON did not expose the served model; never inferred from requested model",
+  "options": {
+    "serviceTier": "fast",
+    "reasoningEffort": "high",
+    "sandbox": "read-only",
+    "isolation": "bwrap-private-request-directory",
+    "explicitModel": true
+  },
+  "events": [
+    {
+      "type": "thread.started",
+      "thread_id": "captured-thread-id"
+    },
+    {
+      "type": "turn.started"
+    },
+    {
+      "type": "item.completed",
+      "item": {
+        "id": "item_0",
+        "type": "agent_message",
+        "text": "{\"ok\":true}"
+      }
+    },
+    {
+      "type": "turn.completed",
+      "usage": {
+        "input_tokens": 11143,
+        "cached_input_tokens": 0,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 15,
+        "reasoning_output_tokens": 0
+      }
+    }
+  ],
+  "reply": {
+    "ok": true
+  },
+  "documentation": "https://learn.chatgpt.com/docs/non-interactive-mode"
+}
