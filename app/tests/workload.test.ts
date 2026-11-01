@@ -77,7 +77,7 @@ describe("simulated realistic workload", () => {
       tasks: 3,
       completed: 2,
       unclassified: 1,
-      total: { clicks: 17, keystrokes: 11, klmSeconds: 40 },
+      total: { clicks: 12, keystrokes: 10, klmSeconds: 30 },
     });
   });
   it("loads exact data independently: realistic savings can change with a flat expert minimum", () => {
@@ -90,4 +90,12 @@ describe("simulated realistic workload", () => {
     );
     expect(run.manifest.ehr.mode).toBe("real");
   });
+});
+it("uses blind days and paired active-release canonicals so vendor costs are not agent savings", () => {
+  const day=run.days[0], task=day?.tasks[0]; if(!day||!task)throw new Error('Missing fixture');
+  const sample={...run, manifest:{...run.manifest,measurementProtocol:{name:'blind'}},
+    days:[{...day,day:1,programVersion:1,tasks:[{...task,clicks:999,completed:true}]},{...day,day:4,programVersion:1,tasks:[{...task,clicks:12,completed:true}]}],
+    baselines:[{...day,day:4,tasks:[{...task,clicks:15,completed:true}]}]};
+  const point=workloadAt(sample,'P3',1);
+  expect(point.days).toEqual([4]);expect(point.total?.clicks).toBe(12);expect(point.canonical?.clicks).toBe(15);expect(point.savings?.clicks).toBe(3);
 });

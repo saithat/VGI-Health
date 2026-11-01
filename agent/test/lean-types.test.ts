@@ -1,9 +1,11 @@
+import { RELEASE_IDS } from '../src/release-config.js';
+import { readFileSync } from 'node:fs';
+import { REPO_ROOT } from '../src/util.js';
 /**
  * The hand-written validators in src/lean-types.ts against real JSON written
  * by Lean (lean/generated/ehr-samples.ts): every sample parses, and the round
  * trip is exact (so programs the agent writes back are in Lean's encoding).
  */
-import { readFileSync } from 'node:fs';
 import {
   sampleCertificate, sampleDay, sampleEvents, sampleTask, tinyProgram, tinySpec,
 } from '../../lean/generated/ehr-samples.js';
@@ -22,6 +24,17 @@ describe('validators vs Lean-written samples', () => {
     same(dayScheduleSchema.parse(sampleDay), sampleDay);
     for (const e of sampleEvents) same(eventSchema.parse(e), e);
     expect(sampleTask.id.length).toBeGreaterThan(0);
+  });
+
+  it('real vendor specs and programs round-trip without dropping constrained values or release actions', () => {
+    for (const version of [RELEASE_IDS.base, RELEASE_IDS.feature, RELEASE_IDS.migration]) {
+      const spec: unknown = JSON.parse(readFileSync(`${REPO_ROOT}/releases/${version}/spec.json`, 'utf8'));
+      same(specSchema.parse(spec), spec);
+      for (const file of ['canonical', ...['P1', 'P2', 'P3', 'P4', 'P5'].map(id => `personas/${id}`)]) {
+        const program: unknown = JSON.parse(readFileSync(`${REPO_ROOT}/releases/${version}/${file}.json`, 'utf8'));
+        same(programSchema.parse(program), program);
+      }
+    }
   });
 
   it('preserves optional encounter role policy and accepts legacy commits', () => {

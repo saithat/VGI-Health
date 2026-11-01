@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+import { buildBindingPlugin } from "./scripts/build-binding-plugin";
 import { defineConfig } from "vitest/config";
 import { catalogPlugin } from "./scripts/catalog-plugin";
 import { tryBreakPlugin } from "./scripts/try-break-plugin";
@@ -32,6 +34,13 @@ export default defineConfig({
       ).leanSourceHash,
     ),
   },
+  resolve: {
+    alias: {
+      "@ehr/presentation": fileURLToPath(
+        new URL("./src/ehr/ui/presentation-helpers.tsx", import.meta.url),
+      ),
+    },
+  },
   server: { proxy: medplumProxy },
   preview: { proxy: medplumProxy },
   build: {
@@ -40,6 +49,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    buildBindingPlugin(),
     react(),
     runsPlugin(),
     catalogPlugin(),

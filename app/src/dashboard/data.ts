@@ -27,6 +27,10 @@ export const manifestSchema = z.object({
   days: z.number().int().positive(),
   personas: z.array(z.string()),
   warning: z.string().nullable().optional(),
+  buildBindingRequired: z.boolean().optional(),
+  measurementProtocol: z.object({name:z.string()}).optional(),
+  status: z.string().optional(),
+  blockers: z.array(z.string()).optional(),
   ehr: z.object({ mode: z.enum(["real", "fake"]) }),
 });
 const sideSchema = z.object({
@@ -69,7 +73,9 @@ export interface RunData {
   manifest: z.infer<typeof manifestSchema>;
   records: DecisionRecord[];
   days: DayResult[];
+  baselines?: DayResult[];
   programs: Map<string, Program>;
+  sources?: Map<string, Program>;
   certs: Map<string, z.infer<typeof certificateSchema>>;
   replay: Replay | null;
   complexity: ComplexityData | null;
@@ -131,8 +137,9 @@ export async function loadRun(
   const run: RunData = {
     manifest,
     records: [],
-    days: [],
+    days: [], baselines: [],
     programs: new Map(),
+    sources: new Map(),
     certs: new Map(),
     replay: null,
     complexity: null,
@@ -146,8 +153,12 @@ export async function loadRun(
         run.records.push(record);
       } else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
         run.days.push(dayResultSchema.parse(await get(file)));
+      else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file))
+        run.baselines?.push(dayResultSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))
         run.programs.set(file, programSchema.parse(await get(file)));
+      else if (/^programs\/[\w-]+\/v\d+\.source\.json$/.test(file))
+        run.sources?.set(file.replace(/\.source\.json$/, '.json'), programSchema.parse(await get(file)));
       else if (/^certs\/[\w-]+\/v\d+\.json$/.test(file))
         run.certs.set(file, certificateSchema.parse(await get(file)));
       else if (file === "complexity.json") {
@@ -255,7 +266,8 @@ export function programAt(
   persona: string,
   version: number,
 ): Program {
-  const program = run.programs.get(`programs/${persona}/v${version}.json`);
+  const key = `programs/${persona}/v${version}.json`;
+  const program = run.sources?.get(key) ?? run.programs.get(key);
   if (!program)
     throw new Error(`Missing recorded program ${persona}/v${version}`);
   return program;

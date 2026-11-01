@@ -1,5 +1,6 @@
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import { navigate } from "./navigation";
+import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Alert, Button, Drawer } from "@mantine/core";
 import { UiScreenView } from "./ehr/ui/Screen";
@@ -14,6 +15,7 @@ import {
   loadCatalog,
   personas,
   readArtifact,
+  verifyRecordedBuild,
   programSpecPath,
   verdictsSchema,
   type Catalog,
@@ -23,6 +25,7 @@ import {
 
 type Session = ReturnType<typeof createSession>;
 interface Workspace {
+  presentations: PresentationBundle | null;
   session: Session;
   catalog: Catalog;
   program: ProgramEntry;
@@ -73,6 +76,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
         {ui ? (
           <UiScreenView
             screen={ui}
+            presentations={workspace.presentations}
             onEvent={dispatch}
             viewer={`${clinicianRoleNames[persona] ?? "Clinician"} · ${program.run ? `rev ${program.version}` : `${program.release} ${program.path.endsWith("/canonical.json") ? "vendor reference" : "baseline"}`}`}
           />
@@ -240,6 +244,7 @@ export function App() {
           .then((data) => verdictsSchema.parse(data))
           .catch(() => verdictsSchema.parse({ programs: {} })),
       ]);
+      const presentations = await verifyRecordedBuild(program.path, source);
       const facts = JSON.parse(
         interp.facts(
           JSON.stringify({
@@ -267,6 +272,7 @@ export function App() {
       if (active) {
         setWorkspace({
           session,
+          presentations,
           catalog,
           program: { ...program, release },
           patient,

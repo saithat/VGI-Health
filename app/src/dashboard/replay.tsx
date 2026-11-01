@@ -1,4 +1,8 @@
-import { useEffect, useMemo, useRef } from "react";
+import { expandProgram } from "../../../agent/src/composites";
+import { UiScreenView } from "../ehr/ui/Screen";
+import { uiScreenSchema } from "../ehr/ui/types";
+import type { PresentationBundle } from "../ehr/ui/presentation-types";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Event, StepOutput } from "../../../lean/generated/ehr-types";
 import { applyPatch } from "../../../agent/src/jsonpatch";
 import {
@@ -6,6 +10,7 @@ import {
   type Program,
   type JsonPatchOp,
 } from "../../../agent/src/schema";
+import { verifyRecordedBuild } from "../browser/data";
 import type { Interp } from "../core/interp";
 import { mockReplayInterp } from "../mock/replay";
 import { paint } from "../ehr/painter";
@@ -58,8 +63,20 @@ export function ReplayScreen({
   onEvent?: (event: Event) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
+  const bindingKey = `${run.manifest.runId}/${persona}/${version}`;
+  const [binding, setBinding] = useState<{ key: string; error: string; presentations: PresentationBundle | null }>({ key: "", error: "Verifying certified build…", presentations: null });
+  useEffect(() => {
+    let active = true;
+    if (!run.manifest.buildBindingRequired) return;
+    verifyRecordedBuild(`runs/${run.manifest.runId}/programs/${persona}/v${version}.json`, run.programs.get(`programs/${persona}/v${version}.json`))
+      .then((presentations) => { if (active) setBinding({ key: bindingKey, error: "", presentations }); })
+      .catch((error: unknown) => { if (active) setBinding({ key: bindingKey, error: error instanceof Error ? error.message : String(error), presentations: null }); });
+    return () => { active = false; };
+  }, [run, persona, version, bindingKey]);
   const result = useMemo(() => {
     try {
+      if (run.manifest.buildBindingRequired && (binding.key !== bindingKey || binding.error))
+        throw new Error(binding.key === bindingKey ? binding.error : "Verifying certified build…");
       if (!run.replay)
         throw new Error(
           "This run needs replay.json with spec, bundle, user and same-task traces. See app/README.md.",
@@ -76,9 +93,9 @@ export function ReplayScreen({
           (c) => c.version === undefined && c.specVersion === undefined,
         );
       if (!context) throw new Error(`No replay context for ${persona}`);
-      const program = programSchema.parse(
+      const program = expandProgram(programSchema.parse(
         applyPatch(programAt(run, persona, version), patch).doc,
-      );
+      ));
       const interp = factory
         ? factory(program)
         : run.replay.mode === "mock" && run.manifest.ehr.mode === "fake"
@@ -88,17 +105,30 @@ export function ReplayScreen({
         throw new Error(
           "WASM Interp is required for this real run. Inject an InterpFactory into Dashboard.",
         );
+      let ui = null;
+      if (binding.presentations) {
+        if (!interp.renderUi) throw new Error('Semantic renderer required for presentation components');
+        const args = [JSON.stringify(context.spec), JSON.stringify(program), JSON.stringify(context.bundle), JSON.stringify(context.user)] as const;
+        let state = interp.init(...args);
+        for (const event of events) {
+          const output: StepOutput = JSON.parse(interp.step(...args, state, JSON.stringify(event)));
+          state = JSON.stringify(output.state);
+        }
+        ui = uiScreenSchema.parse(JSON.parse(interp.renderUi(...args, state)));
+      }
       return {
-        page: renderReplay(interp, context, program, events),
+        ui,
+        page: ui ? null : renderReplay(interp, context, program, events),
         error: null,
       };
     } catch (error) {
       return {
         page: null,
+        ui: null,
         error: error instanceof Error ? error.message : "Replay failed",
       };
     }
-  }, [run, persona, version, specVersion, events, patch, factory]);
+  }, [run, persona, version, specVersion, events, patch, factory, binding, bindingKey]);
   useEffect(() => {
     const nodes = ref.current?.querySelectorAll<HTMLElement>("[data-comp-id]");
     nodes?.forEach((node) => {
@@ -111,6 +141,8 @@ export function ReplayScreen({
     <div className="replay-screen" ref={ref}>
       {result.error ? (
         <p role="alert">{result.error}</p>
+      ) : result.ui ? (
+        <UiScreenView screen={result.ui} presentations={binding.presentations} onEvent={onEvent ?? (() => {})} />
       ) : result.page ? (
         paint(result.page, onEvent ?? (() => {}))
       ) : null}

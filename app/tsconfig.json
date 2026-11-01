@@ -24,7 +24,12 @@
     "types": [
       "vite/client",
       "vitest/globals"
-    ]
+    ],
+    "paths": {
+      "@ehr/presentation": [
+        "./src/ehr/ui/presentation-helpers.tsx"
+      ]
+    }
   },
   "include": [
     "src",

@@ -84,7 +84,7 @@ interface Rejection {
 function getRejections(run: RunData): Rejection[] {
   return run.records.flatMap((record) => [
     ...record.candidates
-      .filter((c) => c.check.status !== "pass")
+      .filter((c) => c.check.status === "fail")
       .map((c) => ({
         id: `${record.mode}-${record.night}-${record.persona}-${c.candidate.id}`,
         label: `${record.persona} · Night ${record.night} · ${c.candidate.summary}`,
@@ -883,6 +883,7 @@ function VersionList({
   const records = run.records.filter(
     (r) => r.persona === persona && r.mode !== "try-to-break-it",
   );
+  const blindProtocol = !!run.manifest.measurementProtocol;
   const baseline = run.complexity?.personas.find((p) => p.persona === persona)
     ?.iterations[0];
   const exactAt = (version: number) =>
@@ -900,6 +901,15 @@ function VersionList({
     <section className="version-history" aria-label="Version history">
       <div className="section-heading">
         <h3>Revisions and decisions</h3>
+        {blindProtocol && (
+          <p>
+            One canonical EHR, with role permissions and preset views. The agent
+            evolves each persona’s fork. Odd days calibrate; even days are blind
+            measurements and never select changes. Savings compare the certified
+            canonical for that day’s release on identical schedules and seeds;
+            vendor release costs are separate.
+          </p>
+        )}
         <span>Saving: positive = less effort · exact fixed workflow union</span>
       </div>
       <div className="version-column-head" aria-hidden="true">
@@ -965,16 +975,32 @@ function VersionList({
                       ? r.release.surfaced === false
                         ? "Optional feature left out of nursing workflow"
                         : "Release migration"
-                      : "No change deployed")}
+                      : r.outcome === "llm-error"
+                        ? "LLM error — no design decision"
+                        : "No change deployed")}
                 </span>
               </span>
               <span>
                 <span className="mobile-label">vs previous: </span>
-                {deployed ? change(after, before) : "0 clicks / 0s KLM"}
+                {blindProtocol
+                  ? r.release
+                    ? "Vendor release: separate cost"
+                    : r.measured.test
+                      ? "Blind measurement recorded"
+                      : r.outcome === "llm-error"
+                        ? "LLM error"
+                        : "Not independently measured"
+                  : deployed
+                    ? change(after, before)
+                    : "0 clicks / 0s KLM"}
               </span>
               <span>
                 <span className="mobile-label">vs baseline: </span>
-                {change(after, baseline)}
+                {blindProtocol
+                  ? r.measured.test
+                    ? `${fmt(r.measured.test.saving.clicks)} clicks / ${fmt(r.measured.test.saving.klmDeciSec / 10)}s KLM vs active canonical`
+                    : "Unavailable"
+                  : change(after, baseline)}
               </span>
               {r.certificate ? (
                 <Badge tone="pass">
@@ -1153,6 +1179,11 @@ export function Dashboard({
   const record = selection?.record;
   return (
     <div className="dashboard">
+      {run?.manifest.status === "blocked" && (
+        <div role="alert">
+          Run blocked before deployment: {run.manifest.blockers?.join("; ")}
+        </div>
+      )}
       <AppHeader active="dashboard" title="UI evolution">
         <label>
           Run{" "}
@@ -1172,6 +1203,11 @@ export function Dashboard({
           Open EHR
         </a>
       </AppHeader>
+      <p className="dash-description">
+        One canonical EHR, with role permissions and a preset view. The
+        overnight agent evolves each persona’s fork; vendor releases merge into
+        every fork and are re-certified.
+      </p>
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button

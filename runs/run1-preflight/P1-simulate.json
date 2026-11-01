@@ -1,0 +1,22 @@
+{
+  "name": "P1-simulate",
+  "command": [
+    "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr",
+    "simulate",
+    "--spec",
+    "v1",
+    "--program",
+    "releases/v1/personas/P1.json",
+    "--persona",
+    "runs/world/1/personas/P1.json",
+    "--schedule",
+    "runs/world/1/schedules/day-01/P1.json",
+    "--world",
+    "runs/world/1",
+    "--seed",
+    "1000004"
+  ],
+  "exit": 0,
+  "ms": 2799,
+  "stderr": ""
+}

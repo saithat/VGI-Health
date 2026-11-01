@@ -14,12 +14,12 @@
  */
 import type { Proposal } from './agent.js';
 import { summarizeTrain } from './observe.js';
-import { applyToProgram, componentById, personalize } from './program.js';
+import { componentById, personalize } from './program.js';
 import { breakPrompt, migratePrompt, surfacePrompt, type PersonaView } from './prompts.js';
 import { specDiff, type Release } from './releases.js';
 import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from './schema.js';
 import {
-  MAX_REPAIRS, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
+  MAX_REPAIRS, completionOk, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved, minClicksByWorkflow,
   noteRejections, predictionVerdict, recordDeploy, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,
 } from './night.js';
 import { errorMessage, hash32, writeJson } from './util.js';
@@ -44,14 +44,14 @@ function releaseItems(text: string): string[] {
 }
 
 async function recheck(deps: LoopDeps, input: ReleaseNightInput): Promise<{ program: Program; check: CheckResult; gate: Gate }> {
-  const gate: Gate = { specVersion: input.next.specVersion, prev: input.current, canonical: input.next.canonical, nextVersion: input.current.version + 1 };
+  const gate: Gate = { specVersion: input.next.specVersion, prev: input.current, canonical: input.next.canonical, nextVersion: input.current.version + 1, night: input.night };
   const { program, check } = await checkPatch(deps.ehr, input.current, [], gate);
   if (!program) throw new Error('recheck: could not restamp the current program');
   return { program, check, gate };
 }
 
 function startRecord(deps: LoopDeps, input: ReleaseNightInput, mode: DecisionRecord['mode'], evidence: TrainSummary, check: CheckResult): DecisionRecord {
-  const rec = emptyRecord(deps, { night: input.night, persona: input.persona, specVersion: input.next.specVersion, current: input.current }, evidence);
+  const rec = emptyRecord(deps, { night: input.night, persona: input.persona, specVersion: input.next.specVersion, current: input.current, spec: input.next.spec }, evidence);
   rec.mode = mode;
   rec.release = {
     id: input.next.id, specVersion: input.next.specVersion, recheck: check, items: [], surfaced: null,
@@ -69,7 +69,7 @@ async function finishRecord(deps: LoopDeps, rec: DecisionRecord, calls: LlmCallR
 }
 
 async function deployInto(deps: LoopDeps, rec: DecisionRecord, persona: string, program: Program, gate: Gate): Promise<boolean> {
-  const dep = await deployVersion(deps, persona, program, gate);
+  const dep = await deployVersion(deps, persona, program, { ...gate, validation:rec.validation.replay });
   recordDeploy(rec, dep, { candidateIds: rec.chosen?.candidateIds ?? [], patch: [] });
   if (dep.ok) rec.versionAfter = program.version;
   return dep.ok;
@@ -93,8 +93,14 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   const recertify = async (reason: string): Promise<NightResult> => {
     rec.certification = { attempts: [{ attempt: 0, candidateIds: [], source: 'recertify', patch: [], check: re.check }], result: 'certified' };
     rec.validation.reason = reason;
+    const baseline = personalize(next.canonical, persona.params, persona.userId);
+    const replay = await input.holdout.validate(baseline, re.program, next.specVersion);
+    if (!completionOk(replay)) return runMigration(deps, input);
+    rec.validation = { replay, improved: false, stabilityOk: true, accepted: true, reason };
+    rec.measured.validation = replay;
     const ok = await deployInto(deps, rec, persona.id, re.program, re.gate);
-    rec.outcome = ok ? 'not-surfaced' : failOutcome(rec);
+    if (!ok) return runMigration(deps, input);
+    rec.outcome = rec.flags.some((f) => f.startsWith('llm-error')) ? 'llm-error' : ok ? 'not-surfaced' : failOutcome(rec);
     return finishRecord(deps, rec, calls, ok ? re.program : null);
   };
 
@@ -142,7 +148,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   rec.certification = { attempts: [{ attempt: 0, candidateIds: [best.candidate.id], source: 'merged', patch: best.candidate.patch, check: certified.check }], result: certified.check.status === 'pass' ? 'certified' : 'rejected' };
   if (!certified.program || certified.check.status !== 'pass') return recertify('chosen candidate failed certification');
 
-  const replay = await input.holdout.validate(input.current, certified.program, next.specVersion);
+  const replay = await input.holdout.validate(personalize(next.canonical, persona.params, persona.userId), certified.program, next.specVersion);
   rec.validation.replay = replay;
   rec.measured.validation = replay;
   rec.measured.minClicks = await minClicksByWorkflow(deps, next.specVersion, input.current, certified.program, input.train[input.train.length - 1]);
@@ -150,7 +156,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
   rec.measured.predictionHeld = pv.held;
   rec.measured.predictionNote = pv.note;
   // A feature panel may cost a little screen space; accept unless it makes the day >5% slower.
-  const tolerable = replay ? replay.after.klmDeciSec <= replay.before.klmDeciSec * 1.05 : false;
+  const tolerable = completionOk(replay) && replay ? replay.after.klmDeciSec <= replay.before.klmDeciSec * 1.05 : false;
   rec.validation.improved = replay ? improved(replay) : null;
   rec.validation.stabilityOk = true;
   if (!tolerable) {
@@ -168,6 +174,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
     return out;
   }
   const ok = await deployInto(deps, rec, persona.id, certified.program, gate);
+  if (!ok) return runMigration(deps, input);
   if (rec.release) rec.release.surfaced = ok;
   rec.outcome = ok ? 'surfaced' : failOutcome(rec);
   return finishRecord(deps, rec, calls, ok ? certified.program : null);
@@ -184,17 +191,28 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
   const label = (h: (typeof customizations)[number]) => `night ${h.night}: ${h.chosen.map((c) => c.summary).join('; ')}`;
   rec.userResponse = { response: 'not-offered', probability: 0, reason: 'regulatory migration: the user cannot keep a non-conforming version' };
 
+  const canon = { ...personalize(next.canonical, persona.params, persona.userId), id: input.current.id, version: input.current.version + 1, specVersion: next.specVersion };
+  const fbGate: Gate = { specVersion: next.specVersion, prev: canon, canonical: next.canonical, nextVersion: canon.version, night };
   const finalize = async (program: Program, gate: Gate, outcome: DecisionRecord['outcome']): Promise<NightResult> => {
-    const replay = await input.holdout.validate(input.current, program, next.specVersion);
-    rec.validation = {
-      replay, improved: replay ? improved(replay) : null, stabilityOk: true, accepted: true,
-      reason: 'conformance migration: accepted on the certificate; the validation replay is recorded, not gating',
-    };
-    rec.measured.validation = replay;
-    rec.measured.minClicks = await minClicksByWorkflow(deps, next.specVersion, input.current, program, input.train[input.train.length - 1]);
-    const ok = await deployInto(deps, rec, persona.id, program, gate);
-    rec.outcome = ok ? outcome : failOutcome(rec);
-    return finishRecord(deps, rec, calls, ok ? program : null);
+    let failure: unknown;
+    try {
+      const replay = await input.holdout.validate(canon, program, next.specVersion);
+      rec.validation = { replay, improved: replay ? improved(replay) : null, stabilityOk: true, accepted: completionOk(replay), reason: 'Release canonical comparison; full completion required on every deploy.' };
+      rec.measured.validation = replay;
+      if (!completionOk(replay)) throw new Error('release validation incomplete');
+      if (!await deployInto(deps, rec, persona.id, program, gate)) throw new Error('release check/screen/deploy gate refused');
+      rec.outcome = rec.flags.some((f) => f.startsWith('llm-error')) ? 'llm-error' : outcome;
+      return finishRecord(deps, rec, calls, program);
+    } catch (error) { failure = error; }
+    if (outcome === 'migration-fallback') {
+      rec.flags.push(`ABORT: certified canonical fallback failed: ${errorMessage(failure)}`);
+      rec.outcome = 'certification-failed';
+      await finishRecord(deps, rec, calls, null);
+      throw new Error(`ABORT ${persona.id} ${next.id}: canonical fallback failed: ${errorMessage(failure)}`);
+    }
+    rec.flags.push(`Release deployment failed; falling back to certified persona canonical: ${errorMessage(failure)}`);
+    if (rec.release) { rec.release.fallback = true; rec.release.flaggedUser = true; }
+    return finalize(canon, fbGate, 'migration-fallback');
   };
 
   if (re.check.status === 'pass') {
@@ -245,39 +263,13 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
     }
   }
 
-  // Fallback: new canonical + the customizations that still pass; flag the user.
-  const canon = { ...personalize(next.personaCanonicals?.[persona.id] ?? next.canonical, persona.params, persona.userId), id: input.current.id, version: input.current.version + 1, specVersion: next.specVersion };
-  const fbGate: Gate = { specVersion: next.specVersion, prev: canon, canonical: next.canonical, nextVersion: canon.version };
-  let program = canon;
-  for (const h of customizations) {
-    let candidate: Program;
-    try {
-      candidate = applyToProgram(program, h.patch, { version: canon.version, specVersion: next.specVersion }).program;
-    } catch {
-      rec.release?.customizationsDropped.push(`${label(h)} (no longer applies to the new canonical)`);
-      continue;
-    }
-    const check = toCheckResult(await deps.ehr.check({ specVersion: next.specVersion, program: candidate, prev: fbGate.prev, canonical: next.canonical }));
-    rec.certification.attempts.push({ attempt: rec.certification.attempts.length, candidateIds: h.chosen.map((c) => c.id), source: 'migration-fallback', patch: h.patch, check });
-    if (check.status === 'pass') {
-      program = candidate;
-      rec.release?.customizationsKept.push(label(h));
-    } else {
-      rec.release?.customizationsDropped.push(`${label(h)} (fails ${check.property ?? 'check'})`);
-    }
-  }
-  const finalCheck = toCheckResult(await deps.ehr.check({ specVersion: next.specVersion, program, prev: fbGate.prev, canonical: next.canonical }));
-  if (finalCheck.status !== 'pass') {
-    rec.certification.result = 'rejected';
-    rec.outcome = 'certification-failed';
-    rec.flags.push('migration fallback did not certify; nothing deployed');
-    return finishRecord(deps, rec, calls, null);
-  }
-  rec.certification.result = 'certified';
-  if (rec.release) { rec.release.fallback = true; rec.release.flaggedUser = true; }
-  rec.flags.push(`user flagged: migration fell back to canonical ${next.id} plus still-passing customizations`);
-  if (!rec.hypothesis) rec.hypothesis = 'Migration attempts did not certify; fell back to the new canonical program.';
-  return finalize(program, fbGate, 'migration-fallback');
+  // Fall back to the release's exact role canonical, never an unchecked customization.
+  const finalCheck = toCheckResult(await deps.ehr.check({ specVersion: next.specVersion, program: canon, prev: canon, canonical: next.canonical }));
+  rec.certification.attempts.push({ attempt: rec.certification.attempts.length, candidateIds: [], source: 'migration-fallback', patch: [], check: finalCheck });
+  rec.certification.result = finalCheck.status === 'pass' ? 'certified' : 'rejected';
+  if (rec.release) { rec.release.fallback = true; rec.release.flaggedUser = true; rec.release.customizationsDropped = customizations.map(label); }
+  rec.flags.push(`user flagged: migration fell back to certified persona canonical ${next.id}`);
+  return finalize(canon, fbGate, 'migration-fallback');
 }
 
 // ---------------------------------------------------------------- try-to-break-it

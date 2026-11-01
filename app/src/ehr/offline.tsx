@@ -1,3 +1,4 @@
+import type { PresentationBundle } from "./ui/presentation-types";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@medplum/react/styles.css";
@@ -16,7 +17,7 @@ import type { Html } from "./html";
 declare global {
   interface Window {
     renderEhr: (tree: Html) => void;
-    renderUi: (screen: UiScreen) => void;
+    renderUi: (screen: UiScreen, presentations?: PresentationBundle | null) => void;
   }
 }
 const element = document.getElementById("root");
@@ -26,11 +27,11 @@ window.renderEhr = (tree) => {
   flushSync(() => root.render(paint(tree, () => {})));
 };
 
-window.renderUi = (screen) => {
+window.renderUi = (screen, presentations) => {
   flushSync(() =>
     root.render(
       <MantineProvider theme={clinicalTheme}>
-        <UiScreenView screen={screen} onEvent={() => {}} />
+        <UiScreenView screen={screen} onEvent={() => {}} presentations={presentations ?? null} />
       </MantineProvider>,
     ),
   );
