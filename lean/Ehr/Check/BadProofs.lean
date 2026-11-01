@@ -1,4 +1,5 @@
 import Ehr.Check.GuardSound
+import Ehr.Check.MacroBadProofs
 import Ehr.Check.Graph
 import Ehr.Check.ReplayContext
 import Ehr.Canonical.BadPrograms
@@ -124,21 +125,6 @@ theorem bad07_not_satisfies : ¬ Satisfies specV1 none canonicalV1 unreachableRe
   have hz := gotoPath_closed unreachableRefill refillKept (by decide +kernel) hp (by decide +kernel)
   rw [hid] at hz
   exact (by decide +kernel : "w7Decision" ∉ refillKept) hz
-
--- The role projection and spec-driven links make elaboration of these concrete terms expensive.
-set_option maxHeartbeats 1200000 in
-theorem bad08_not_satisfies : ¬ Satisfies specV1 none canonicalV1 forgedConsent :=
-  macro_set_not_satisfies _ "badConsent" "w6PreOp.consentVerified" "w6PreOp" "true"
-    "consentVerified" (by decide +kernel) (by decide +kernel)
-    (compAt_mem _ _ _ (by decide +kernel)) (compAt_id _ _ _ (by decide +kernel))
-    ⟨.fixed 0, .none, by decide +kernel⟩ consentVerified (by decide +kernel) (by decide +kernel)
-
--- The role projection and spec-driven links make elaboration of these concrete terms expensive.
-set_option maxHeartbeats 1200000 in
-theorem bad09_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergyAlert :=
-  macro_click_not_satisfies _ "badQuickAmox" "w1Sign.commit.signOrders" "w1Sign" "signOrders"
-    (by decide +kernel) (by decide +kernel)
-    (compAt_mem _ _ _ (by decide +kernel)) (compAt_id _ _ _ (by decide +kernel)) (by decide +kernel)
 
 -- The role projection and spec-driven links make elaboration of these concrete terms expensive.
 set_option maxHeartbeats 1200000 in
