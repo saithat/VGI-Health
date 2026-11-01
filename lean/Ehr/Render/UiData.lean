@@ -81,20 +81,30 @@ def uiDoseRows (cx : Ctx) : List (List (String × String)) :=
       else recorded.map uiDate |>.getD "Measurement time not supplied")]
   summary :: (orderLines cx.s).map fun (slot, drug) =>
     let capture := fun element => capturedAt? cx.s element slot
-    let enteredDose := lineDoseMgTenths? cx.s slot
+    let enteredDose := (capture "dose").bind fun value => match value.value with
+      | .qty amount unit => some (amount, unit) | _ => none
     let mgPerKg := (capture "doseMgPerKg").bind fun value => match value.value with
       | .qty n .mgPerKg => some n | _ => none
     let reference := lookupDrug drug
+    let nativeRange := enteredDose.bind fun (_, unit) =>
+      (drugDoseUnits drug).find? (fun rule => rule.unit == unit)
+    let hasMgBasis := mgPerKg.isSome || enteredDose.any (fun (_, unit) => unit == .mg)
     [("Medication", drug)] ++ summary ++
     [("Basis", mgPerKg.map (fun value => uiTenths value ++ " mg/kg/dose") |>.getD "Entered dose"),
-     ("Calculated dose (mg)", (mgPerKg.bind fun basis => weight.map fun kg => uiTenths (basis * kg / 10)).getD "Not available"),
      ("Entered dose", (capture "dose").map uiCaptureText |>.getD "Not entered"),
      ("Frequency", (capture "freq").map uiCaptureText |>.getD "Not entered"),
-     ("At entered frequency (mg/day)", (enteredDose.bind fun dose =>
-       (lineFreqPerDay? cx.s slot).map fun frequency => uiTenths (dose * frequency)).getD "Not available"),
-     ("Configured range", reference.map (fun d => if d.minMgPerKgTenths == 0 && d.maxMgPerKgTenths == 0
+     ("At entered frequency", (enteredDose.bind fun (dose, unit) =>
+       (lineFreqPerDay? cx.s slot).map fun frequency => uiTenths (dose * frequency) ++ " " ++ unitName unit ++ "/day").getD "Not available"),
+     ("Dose range", nativeRange.map (fun rule =>
+       if rule.minTenths == 0 && rule.maxTenths == 0 then "No numeric limits supplied" else
+       "Minimum: " ++ (if rule.minTenths == 0 then "not supplied" else uiTenths rule.minTenths) ++
+       "; maximum: " ++ (if rule.maxTenths == 0 then "not supplied" else uiTenths rule.maxTenths) ++ " " ++ rule.unit.name)
+       |>.getD "Select medication and dose unit")] ++
+    (if !hasMgBasis then [] else [
+     ("Calculated dose (mg)", (mgPerKg.bind fun basis => weight.map fun kg => uiTenths (basis * kg / 10)).getD "No mg/kg basis entered"),
+     ("Weight-based range", reference.map (fun d => if d.minMgPerKgTenths == 0 && d.maxMgPerKgTenths == 0
        then "No weight-based range configured" else uiTenths d.minMgPerKgTenths ++ "–" ++ uiTenths d.maxMgPerKgTenths ++ " mg/kg/dose") |>.getD "Not configured"),
-     ("Maximum per dose", reference.bind (fun d => if d.maxDoseMgTenths == 0 then none else some (uiTenths d.maxDoseMgTenths ++ " mg")) |>.getD "Not configured"),
+     ("Maximum per dose", reference.bind (fun d => if d.maxDoseMgTenths == 0 then none else some (uiTenths d.maxDoseMgTenths ++ " mg")) |>.getD "Not configured")]) ++ [
      ("Dose check", if doseOutOfRange cx.facts cx.s slot drug then "OUT OF RANGE" else
        if enteredDose.isNone || weight.isNone then "Incomplete — enter dose and current kg weight" else "No out-of-range flag")]
 

@@ -73,7 +73,6 @@ def growth : Screen :=
   { id := s, title := "Growth Charts", workflow := "W5"
     components := frame s ++ [
       { trend s "growth" "growthChart" "Growth measurements over time" with tag := "present.growth" },
-      table s "percentiles" "growthChart" "Dated measurements and available percentiles",
       panel s "lastVisit" "lastVisit" "Last visit",
       goto s "next" "w5Note" "Visit Note"
     ] }

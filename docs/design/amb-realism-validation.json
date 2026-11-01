@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "d271ef925e3c1f6272ae80a2e3ee9952bd305aba",
+  "sourceRevisionAtValidation": "6b148a71ed168355b1b804cc47f9260b8a32e162",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "5f5eeb0bd9a1052cef83ad86970a0b98f5247709a20e65cc2bd26e5136856e3d",
-  "nativeBinarySha256": "674c2a74e3a3b63bcfab603f9955bdffb4212cfb4262c963aee2724616c66f79",
+  "leanSourceHash": "61f50acbf45da099904441812ace627066652abd9784325b7f4d226cc11a078c",
+  "nativeBinarySha256": "79809a46aaa774ffd2dfd6997f364d61fc647d9f705084eb5670f4e9e229f8f4",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -12,14 +12,15 @@
     "nativeButtons": "node scripts/realism/audit-ambulatory-buttons.mjs /tmp/amb-review /tmp/amb-button-audit.json",
     "screens": "EHR_AMB_UI_ROOT=/tmp/amb-review/ui APP_TEST_PORT=<free-port> pnpm --filter app exec playwright test ambulatory-realism.spec.ts --project=desktop --workers=1",
     "fidelity": "EHR_SCREEN_WORKERS=1 pnpm --filter app screen-check --ui <native-ui-files>",
-    "archived": "pnpm trajectories --run run1-P3 --verify-only"
+    "archived": "pnpm trajectories --run run1-P3 --verify-only",
+    "fixtures": "node scripts/realism/ambulatory-fixtures.mjs --out /tmp/amb-review"
   },
   "certification": {
     "personas": 15,
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "f22857dd018cbe1118e5ff14e01fdeb7318d2b5faefa443afdfce7b9171c0132"
+    "reportSha256": "1517093ad5c09c9efb4e6668ccf853a54c3d56dfd107d7c50b765c51b6376dbb"
   },
   "world2": {
     "world": "runs/world/2",
@@ -513,11 +514,18 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 165,
+    "appTests": 171,
     "agentTests": 41,
     "agentTypecheck": true,
     "agentLint": true,
     "seedTests": 7
   },
-  "specChange": "Three optional supporting info declarations only; no entry, review, permission, alert, clinical guard, D-rule or theorem statement weakened."
+  "specChange": "Three optional supporting info declarations only; no entry, review, permission, alert, clinical guard, D-rule or theorem statement weakened.",
+  "structuredPresentations": {
+    "upstream": "eb6703e",
+    "nativeWasmFixtures": 13,
+    "renderTheoremsCompared": 43,
+    "frozenStatementSha256": "a6f077a5991c17f5a39b312748c886233ad8fefc70382a36002a78a06c78f80d",
+    "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change."
+  }
 }

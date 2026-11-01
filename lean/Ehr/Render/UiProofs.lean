@@ -4,6 +4,11 @@ import Ehr.Render.PanelProofs
 
 namespace Ehr.Render
 
+/-- A presentation does not change presence of any clinical info or control. -/
+@[simp] theorem uiWrapInfo_atoms (kind node) :
+    uiAtoms (uiWrapInfo kind node) = uiAtoms node := by
+  cases kind <;> simp [uiWrapInfo, uiAtoms, uiAtomsList]
+
 @[simp] theorem uiAtomsList_nil : uiAtomsList [] = [] := by simp [uiAtomsList]
 @[simp] theorem uiAtomsList_cons (n ns) : uiAtomsList (n :: ns) = uiAtoms n ++ uiAtomsList ns := by simp [uiAtomsList]
 @[simp] theorem uiAtomsList_append (xs ys) :
@@ -256,7 +261,7 @@ theorem uiItem_info (cx : Ctx) (it : ItemView) (i : InfoId)
   cases hk : it.comp.kind <;> simp [showsInfo, hk, bannerInfo] at hi
   all_goals subst i
   · exact ⟨"", "Patient banner", "summary", [uiClinicalBanner cx.facts cx.disp],
-      by simp [uiItem, hk, uiAtoms], Or.inl (by simp [uiRows, uiOrderInfo])⟩
+      by simp [uiItem, hk, uiAtoms], Or.inl (by simp [uiRows, uiOrderInfo, structuredRows?])⟩
   all_goals
     simp [uiItem, hk, uiItemInfo, uiAtoms]
     unfold uiItemRows

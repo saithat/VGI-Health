@@ -53,7 +53,7 @@ def json (s : String) : Json := (Json.parse s).toOption.getD .null
 #guard (noteAttachmentText .null).startsWith "Note body unavailable"
 def note : Json := json r#"{"resourceType":"DocumentReference","id":"n","status":"superseded","docStatus":"amended","date":"2026-01-02","author":[{"display":"A"},{"display":"B"}],"context":{"encounter":[{"reference":"Encounter/1"},{"display":"Clinic"}]},"extension":[{"url":"urn:vgi:synthetic-hospital:original-date","valueDate":"2020-01-01"},{"url":"urn:vgi:synthetic-hospital:shift-days","valueInteger":-12}],"content":[{"attachment":{"title":"First","contentType":"text/plain","data":"YQ=="}},{"attachment":{"title":"Second","contentType":"text/plain","data":"Yg=="}}]}"#
 #guard (noteRow note).author == "A, B"
-#guard (noteRow note).encounter == "Encounter/1, Clinic"
+#guard (noteRow note).encounter == "Not recorded, Clinic"
 #guard (noteRow note).text == "Attachment 1: First\na\n\nAttachment 2: Second\nb"
 #guard (noteRow note).status == "superseded / amended"
 #guard (noteRow note).sourceDate == "2020-01-01"
@@ -108,6 +108,9 @@ def clinicResultRecords : List Json := [clinicResult, clinicReport, clinicLab, c
 #guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).length == 2
 #guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).all fun row => row.lookup "Test" == some "Hemoglobin A1c"
 #guard (Ambulatory.selectedResultSources [clinicResult] clinicPatient).isEmpty
+/-- Missing selected-report records remain empty even when unrelated labs exist. -/
+def missingClinicResult : Facts := factsOf context [clinicPatient, clinicResult, clinicOtherLab] clinicPatient
+#guard ((infoPayload missingClinicResult "resultTrend").map (·.rows)) == some []
 
 #guard (Ambulatory.scheduleRows context [clinicAppointment, otherAppointment] clinicPatient).length == 1
 #guard (Ambulatory.scheduleRows context [clinicAppointment] (clinicPatient.setObjVal! "id" (.str "urn:uuid:clinic-patient"))).length == 1
@@ -117,6 +120,8 @@ def clinicResultRecords : List Json := [clinicResult, clinicReport, clinicLab, c
 #guard (Ambulatory.patientTasks [clinicRefill.setObjVal! "status" (.str "completed")] clinicPatient).isEmpty
 #guard (Ambulatory.patientTasks [clinicRefill] (clinicPatient.setObjVal! "id" (.str "other-patient"))).isEmpty
 #guard ((Ambulatory.refillMedication [] clinicRefill).map medName) == some "lisinopril"
+#guard ((Ambulatory.refillMedication [json r#"{"resourceType":"MedicationRequest","id":"urn:uuid:requested-rx","medicationCodeableConcept":{"text":"lisinopril"}}"#]
+  (clinicRefill.setObjVal! "focus" (json r#"{"reference":"MedicationRequest/requested-rx"}"#))).map medName) == some "lisinopril"
 #guard (Ambulatory.refillMedication [homeMed] (clinicRefill.setObjVal! "focus" (json r#"{"reference":"MedicationRequest/missing"}"#))).isNone
 #guard (Ambulatory.forecastRows [clinicForecast]).any fun row => row.lookup "Status" == some "Due" && row.lookup "Source" == some "State immunization registry"
 #guard (Ambulatory.forecastRows [json r#"{"resourceType":"Immunization","status":"completed"}"#]).isEmpty

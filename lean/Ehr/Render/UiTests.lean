@@ -28,6 +28,16 @@ def focusedClinicUi : UiScreen :=
   renderUi uiRoomCtx.sp focusedClinicProgram uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 #guard focusedClinicUi.side.isEmpty
 
+/-- A valid insulin dose stays in units in its daily preview and review status. -/
+def nativeUnitReviewCtx : Ctx :=
+  { uiSignCtx with viewCache := ⟨_, rfl⟩, s := { uiSignCtx.s with captured :=
+      [{ element := "drug", slot := 0, value := .code "insulin lispro", byHuman := true, confirmed := true },
+       { element := "dose", slot := 0, value := .qty 20 .units, byHuman := true, confirmed := true },
+       { element := "freq", slot := 0, value := .code "daily", byHuman := true, confirmed := true }] } }
+#guard (uiDoseRows nativeUnitReviewCtx).any fun row =>
+  row.lookup "At entered frequency" == some "2.0 units/day" &&
+  row.lookup "Dose check" == some "No out-of-range flag"
+
 -- A narrative editor keeps the original interpreter's human-entry marker.
 #guard match uiField uiRoomCtx uiWeightItem "hpi" with
   | .field _ _ kind _ _ _ _ human _ => kind == "textarea" && human == uiWeightItem.humanOnly

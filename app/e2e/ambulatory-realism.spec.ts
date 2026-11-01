@@ -11,6 +11,8 @@ const root = process.env.EHR_AMB_UI_ROOT;
 const phase = process.env.EHR_AMB_SHOT_PHASE ?? "after";
 const output = "shots/realism/amb";
 function descendants(node: UiNode): UiNode[] {
+  if ("presentation" in node)
+    return [node, ...node.presentation.children.flatMap(descendants)];
   if ("section" in node)
     return [node, ...node.section.children.flatMap(descendants)];
   if ("columns" in node)
