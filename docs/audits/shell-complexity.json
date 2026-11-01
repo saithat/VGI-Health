@@ -2,7 +2,7 @@
   "command": "pnpm complexity --release-root releases (includes native ehr min-clicks per task)",
   "sameSemanticPrograms": true,
   "identicalReports": false,
-  "ehrSha256": "df2428e619551db340e0c399a402cc31a64aca2dcd047320fb709f95d4a333f2",
+  "ehrSha256": "c7f7b42c4a47161dd217e91bf227832a5b11f5b29c55acfc22d07437cea37ec0",
   "adapterSha256": "fcfc4777c8dd1514a447378303321714eda404b75eeccc06ab413ab0c9ca6e3a",
   "releaseSource": {
     "directory": "releases",
@@ -449,5 +449,5 @@
   ],
   "beforeEhrSha256": "61bc65be80d5f95cb354bca8cc4d16ad1d56369833f31a4d341e06c4b738e891",
   "identicalMetrics": true,
-  "measurementNote": "The integrated main checker changed the native binary hash; release programs, fixed task inputs and every workflow metric are unchanged."
+  "measurementNote": "The integrated checker, component-addressed search and typed banner projections change the binary hash. Fixed clinical task/program inputs and all workflow metrics remain unchanged; legacy search events retain frozen behavior."
 }

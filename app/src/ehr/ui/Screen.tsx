@@ -20,6 +20,14 @@ import "./clinical.css";
 function bannerValue(banner: Pair[], pattern: RegExp) {
   return banner.find(([label]) => pattern.test(label))?.[1];
 }
+function isolationPrecaution(label: string, value: string) {
+  return (
+    /isolation/i.test(label) &&
+    !/^(not recorded|not documented|unknown|none|no isolation(?: precautions)?|standard(?: precautions)?)?$/i.test(
+      value.trim(),
+    )
+  );
+}
 function modalTitle(node: UiNode): string | undefined {
   if ("section" in node) return node.section.title;
   if ("alert" in node) return node.alert.label;
@@ -122,9 +130,14 @@ export function PatientBanner({
               ) : (
                 <span
                   key={label}
-                  className={`banner-detail${/code|isolation|weight/i.test(label) ? " banner-pill" : ""}${/isolation/i.test(label) ? " banner-precaution" : ""}`}
+                  className={`banner-detail${/code|isolation|weight/i.test(label) ? " banner-pill" : ""}${isolationPrecaution(label, value) ? " banner-precaution" : ""}`}
                 >
-                  <span className="banner-label">{label}</span>
+                  <span className="banner-label">
+                    {isolationPrecaution(label, value) && (
+                      <ClinicalIcon name="warning" size={12} />
+                    )}{" "}
+                    {label}
+                  </span>
                   <strong>
                     <DisplayValue value={value || "Not recorded"} />
                   </strong>

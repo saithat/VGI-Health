@@ -20,6 +20,8 @@ test("canonical search returns semantic results and retains complete commit revi
     .fill("lisinopril");
   const results = page.locator('[data-info-id="searchResults"]');
   await expect(results).toContainText(/lisinopril/i);
+  await expect(results).not.toContainText("urn:uuid:");
+  await expect(results).toContainText("Excerpt:");
   if (process.env.REALISM_SHOTS) {
     const folder = `shots/realism/shell/${process.env.REALISM_SHOTS}`;
     mkdirSync(folder, { recursive: true });

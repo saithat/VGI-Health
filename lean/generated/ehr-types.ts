@@ -1832,7 +1832,7 @@ export interface BannerInfo {
    */
   name: string;
   /**
-   * Medical record number (Patient.identifier of type `MR`; else the id).
+   * Medical record number (Patient.identifier of type `MR`), empty if absent.
    */
   mrn: string;
   /**
@@ -1865,6 +1865,10 @@ export interface BannerInfo {
    * Location or service provider of the latest encounter.
    */
   location: string;
+  /**
+   * Latest body-weight Observation: tenths, recorded unit and date.
+   */
+  weight?: [number, [UnitKind, string]];
 }
 
 /**

@@ -307,4 +307,15 @@ def uiSearchEntered : State × StepResult :=
   | .ok state => state == uiSearchCtx.s
   | .error _ => false
 
+/-- Search snippets omit source plumbing and preserve matching clinical text. -/
+def uiSearchNoteSummary := uiSearchSummary
+  [("Date", "2026-10-31"), ("Type", "Progress note"), ("Encounter", "urn:uuid:opaque"),
+   ("Title", "Unknown"), ("Text", "Current medications include lisinopril daily."),
+   ("Source date", "2020-03-15"), ("Shift days", "Unknown")] "lisinopril"
+#guard uiSearchNoteSummary.any (fun pair => (pair.2.splitOn "Excerpt: ").length > 1)
+#guard uiSearchNoteSummary.all (fun pair => (pair.2.splitOn "urn:uuid:").length == 1)
+#guard uiSearchNoteSummary.all (fun pair => (pair.2.splitOn "Shift days").length == 1)
+#guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Weight" != none
+#guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Isolation" == some "Not recorded"
+
 end Ehr.Render

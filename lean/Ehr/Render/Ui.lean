@@ -17,6 +17,15 @@ def uiBanner (d : Display) : List (String × String) :=
    ("Language", d.banner.language), ("PCP", d.banner.pcp), ("Coverage", d.banner.coverage),
    ("Encounter", d.banner.encounterClass), ("Attending", d.banner.attending), ("Location", d.banner.location)]
 
+/-- Recorded banner weight is distinct from a human-confirmed dosing weight. -/
+def uiBannerWeight (facts : Facts) (d : Display) : String :=
+  let weight := d.banner.weight?.orElse fun _ =>
+    facts.weightToday?.map fun (value, unit) => (value, unit, d.asOf)
+  match weight with
+  | none => "Not recorded"
+  | some (value, unit, date) => s!"{value / 10}.{value % 10} {unit.name}" ++
+      (if date == "" then "" else " · " ++ uiDate date)
+
 /-- Clinical banner content comes from Lean, so the painter need not infer it.
 An unavailable code status is explicit, never silently treated as full code. -/
 def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
@@ -25,7 +34,9 @@ def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
       else "; ".intercalate (d.allergies.map (fun r => r.substance ++
         (if r.reaction == "" then "" else " — " ++ r.reaction) ++
         (if r.status == "" then "" else " (" ++ r.status ++ ")")))),
-     ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded")]
+     ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded"),
+     ("Weight", uiBannerWeight facts d),
+     ("Isolation", uiLabel ((facts.record.lookup "isolation").getD "") "Not recorded")]
 
 /-- Overview uses public activities and navigator sections, retaining every screen. -/
 def uiOverviewNav (prog : Program) : List (String × List (String × String)) :=
@@ -248,14 +259,38 @@ def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) 
       | .panel info | .table info | .trend info => uiRows cx info
       | _ => []
 
-/-- Case-insensitive matching retains the supplied record values. An empty
-result is explicit rather than an input echo. Full source panels remain intact. -/
+/-- A bounded excerpt is centered near the matching text. Ellipses mark omitted
+text; the full note remains in Chart Review and required review panels. -/
+def uiSearchExcerpt (text query : String) : String :=
+  let before := ((text.toLower.splitOn query.toLower).headD "").toList.length
+  let start := before - 60
+  let chars := text.toList
+  (if start > 0 then "…" else "") ++ String.ofList ((chars.drop start).take 200) ++
+    (if chars.length > start + 200 then "…" else "")
+
+/-- Search is a summary view. Opaque encounter references and converter metadata
+stay out of the result list; existing full source panels remain unchanged. -/
+def uiSearchSummary (row : List (String × String)) (query : String) : List (String × String) :=
+  let pairs := row.filter fun pair =>
+    pair.2 != "" && pair.2 != "Unknown" && pair.2 != "Not recorded" &&
+      !["Source", "Source date", "Shift days"].contains pair.1 &&
+      !pair.2.startsWith "urn:uuid:"
+  match pairs with
+  | [] => [("Record", "Matching record")]
+  | first :: rest =>
+      [("Record", first.1 ++ ": " ++ first.2)] ++
+      if rest.isEmpty then [] else [("Details", " · ".intercalate (rest.map fun pair =>
+        if pair.1 == "Text" then "Excerpt: " ++ uiSearchExcerpt pair.2 query
+        else pair.1 ++ ": " ++ pair.2))]
+
+/-- Case-insensitive matching reads full supplied values and displays concise
+summaries. Empty results are explicit. Full source panels are never filtered. -/
 def uiSearchRows (cx : Ctx) (scope query : String) : List (List (String × String)) :=
   let needle := query.toLower
   let rows := (uiSearchSource cx scope).filter fun row =>
     row.any fun pair => (pair.2.toLower.splitOn needle).length > 1
   if rows.isEmpty then [[("Search", "No matching records")]]
-  else rows.map fun row => [("Match", " · ".intercalate (row.map (fun pair => pair.1 ++ ": " ++ pair.2)))]
+  else rows.map fun row => uiSearchSummary row query
 
 /-- Render one shown item and its already-visible children. No visibility test
 is repeated here. Confirm buttons retain the field's id for Event.confirm. -/

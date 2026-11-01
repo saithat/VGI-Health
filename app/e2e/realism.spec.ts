@@ -26,24 +26,24 @@ test("shared shell and browser visual review", async ({ page }) => {
       animations: "disabled",
     });
   }
-  for (const [persona, screen] of [
-    ["P1", "w1Orders"],
-    ["P2", "w3Triage"],
-    ["P3", "w4Mar"],
+  for (const [persona, entry, screen] of [
+    ["P1", "w1Rooming", "w1Orders"],
+    ["P2", "w3TrackBoard", "w3Triage"],
+    ["P3", "w4Worklist", "w4Mar"],
+    ["P4", "w5Rooming", "w5Growth"],
+    ["P5", "w6PreOp", "w6PreOp"],
   ] as const) {
     await page.goto(
       `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
     await expect(page.locator(".clinical-app")).toBeVisible();
     await page
-      .locator(
-        `[data-comp-id="home.work.${persona === "P1" ? "w1Rooming" : persona === "P2" ? "w3TrackBoard" : "w4Worklist"}"][data-event]`,
-      )
+      .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
       .click();
     const destination = page.locator(
       `button[data-comp-id$=".nav.${screen}"][data-event]`,
     );
-    await destination.click();
+    if (screen !== entry) await destination.click();
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );
