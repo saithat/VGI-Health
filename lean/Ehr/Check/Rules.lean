@@ -109,7 +109,7 @@ def passivePinned (spec : Spec) (prog : Program) : Bool :=
 def passiveScreensKept (spec : Spec) (canonical prog : Program) : Bool :=
   spec.alerts.all fun al =>
     al.tier != .passive || canonical.screens.all fun scr =>
-      !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
+      !presetScreen prog.owner scr || !al.targetsScreen scr || prog.screens.any (·.workflow == scr.workflow)
 
 /-- Every record prefill names the source declared by that spec element. -/
 def recordSourcesDeclared (spec : Spec) (prog : Program) : Bool :=
@@ -243,7 +243,9 @@ def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : Scre
     | some rule => some (s, s!"commit {c}: no reachable human cosign field for {rule.encounter}")
     | none =>
     let reqs := spec.entries.filter (fun rq => rq.commit == c && entryRelevantForRole spec prog.role rq)
-    match reqs.find? (fun rq => !rq.perOrderLine && !openFieldOn prog fromS rq.element (fun _ => true)) with
+    match reqs.find? (fun rq => !rq.perOrderLine && !(match rq.when with
+        | .encounter kind => openEncounterField prog fromS rq.element kind
+        | _ => openFieldOn prog fromS rq.element (fun _ => true))) with
     | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
     | none =>
     let scrComps := prog.compsOf s

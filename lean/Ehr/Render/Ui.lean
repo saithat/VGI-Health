@@ -1,3 +1,4 @@
+import Ehr.Core.Navigation
 import Ehr.Render.UiData
 
 /-! Semantic EHR rendering. This module and its imports use only Init.
@@ -26,22 +27,16 @@ def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
         (if r.status == "" then "" else " (" ++ r.status ++ ")")))),
      ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded")]
 
-def workflowLabel : String → String
-  | "W1" => "Outpatient visit" | "W2" => "Results" | "W3" => "Emergency"
-  | "W4" => "Inpatient MAR" | "W5" => "Pediatric visit" | "W6" => "Surgical day"
-  | "W7" => "Refills" | "chart" | "shell" => "Chart review"
-  | s => uiLabel s "Chart review"
-
-/-- Group once by workflow, retaining every screen in declared program order. -/
+/-- Overview uses public activities and navigator sections, retaining every screen. -/
 def uiOverviewNav (prog : Program) : List (String × List (String × String)) :=
-  ((prog.screens.map (·.workflow)).eraseDups).map fun w =>
-    (workflowLabel w, (prog.screens.filter (·.workflow == w)).map fun sc =>
-      (sc.id, uiLabel sc.title "Untitled screen"))
+  ((prog.screens.map (fun sc => (navigatorNames sc).1)).eraseDups).map fun activity =>
+    (activity, (prog.screens.filter (fun sc => (navigatorNames sc).1 == activity)).map fun sc =>
+      (sc.id, uiLabel (navigatorNames sc).2 "Untitled screen"))
 
 def uiSteps (cx : Ctx) : List (String × String) :=
   let workflow := ((cx.prog.screen? cx.s.screen).map (·.workflow)).getD ""
   (cx.prog.screens.filter (·.workflow == workflow)).map fun sc =>
-    (sc.id, uiLabel sc.title "Untitled screen")
+    (sc.id, uiLabel (navigatorNames sc).2 "Untitled screen")
 
 /-- Fixed-point results retain their two decimal places (e.g. 4.05, not 4.5). -/
 def uiHundredths (n : Nat) : String :=

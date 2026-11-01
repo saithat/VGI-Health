@@ -36,7 +36,7 @@ theorem hasComponent_pair {p : Program} {c : Component} (h : HasComponent p c) :
 /-- Persona projection preserves every authorized non-macro component,
 independently of the size and contents of its macro library. -/
 theorem hasComponent_forPersona (sp : Spec) (p : Program) (owner : String) (role : Role)
-    (c : Component) (h : HasComponent p c)
+    (c : Component) (h : HasComponent (presetProgram owner p) c)
     (allowed : roleComponentAllowed sp role c = true) (nonmacro : macroOf? c.kind = none) :
     HasComponent (forPersona sp p owner role) c := by
   obtain ⟨s, hs, hc⟩ := h

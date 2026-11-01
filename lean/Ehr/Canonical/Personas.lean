@@ -1,4 +1,5 @@
 import Ehr.Canonical.Releases
+import Ehr.Core.Navigation
 namespace Ehr.Canonical
 
 /-- Keep field and commit declarations within the intended clinician's role.
@@ -11,9 +12,36 @@ def roleComponentAllowed (sp : Spec) (role : Role) (c : Component) : Bool :=
   | .button .requestPriorAuth => (sp.element? "priorAuthRequest").any fun el => el.enteredBy.contains role
   | _ => true
 
+/-- Apply the pre-set view before permissions, removing links to absent screens. -/
+def presetProgram (owner : String) (p : Program) : Program :=
+  if !["P1", "P2", "P3", "P4", "P5"].contains owner then p else
+  let screens := p.screens.filter (presetScreen owner)
+  let host := if screens.any (fun s => s.workflow == "W6") then none else
+    (screens.find? (fun s => s.components.any (fun c => c.kind == .button (.commit "signOrders")))).map (·.id)
+  let screens := screens.map fun s => if host != some s.id then s else
+    let fields := ["consentVerified", "hpUpdate", "medsToHold"].filterMap fun e =>
+      (p.screens.flatMap (·.components)).findSome? fun c => match c.kind with
+        | .field id _ _ => if id == e then some { c with id := s.id ++ ".preop." ++ e, parent? := none, copyOf? := none, visibility := .encounter "preop" } else none
+        | _ => none
+    { s with components := fields ++ s.components }
+  let available := screens.map (·.id)
+  { p with screens := screens.map fun s =>
+      { s with title := if s.id == "home" then ((presetLandings owner).head?).map (·.2) |>.getD s.title
+                        else (navigatorNames s).2
+               components := s.components.filterMap fun c =>
+                 match c.kind with
+                 | .button (.goto target) =>
+                   if !available.contains target then none else
+                   if s.id == "home" && c.id.startsWith "home.work." then
+                     ((presetLandings owner).find? (·.1 == target)).map (fun landing => { c with label := landing.2 })
+                   else some c
+                 | .group _ _ => some (if c.id == "home.work" then { c with label := "Activities" } else c)
+                 | _ => some c } }
+
 /-- Produce a role-safe canonical, dropping macros that target removed fields
 or buttons and dropping their macro buttons. No clinical rule is changed. -/
 def forPersona (sp : Spec) (p : Program) (owner : String) (role : Role) : Program :=
+  let p := presetProgram owner p
   let screens := p.screens.map fun s =>
     { s with components := s.components.filter (roleComponentAllowed sp role) }
   let kept := screens.flatMap (·.components)
@@ -34,7 +62,7 @@ outside that role's permissions. These are executable regression checks, not
 a substitute for checker certification. -/
 def roleProjectionValid (sp : Spec) (p : Program) : Bool :=
   referencesValid sp p && macroTargetsValid p && recordSourcesValid sp p &&
-  (components p).all (roleComponentAllowed sp p.role)
+  (components p).all (roleComponentAllowed sp p.role) && p.screens.all (presetScreen p.owner)
 
 #guard personaRoles.all fun (id, role) => roleProjectionValid Specs.V1.specV1
   (forPersona Specs.V1.specV1 canonicalV1 id role)

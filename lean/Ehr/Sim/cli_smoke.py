@@ -26,6 +26,9 @@ def check_schedule(job, args):
     schedule_path = args.world / f"day-{day}-{persona}.json"
     schedule = json.loads(schedule_path.read_text())
     program_path = ROOT / "releases" / version / "personas" / f"{persona}.json"
+    program = json.loads(program_path.read_text())
+    visible_workflows = {screen["workflow"] for screen in program["screens"]}
+    assert all(task["workflow"] in visible_workflows for task in schedule["tasks"]), "task outside persona pre-set view"
     persona_path = args.world / "personas" / f"{persona}.json"
     cmd = [binary, "simulate", "--spec", version, "--program", str(program_path),
            "--persona", str(persona_path), "--schedule", str(schedule_path), "--world", str(args.world), "--seed", str(args.seed)]
@@ -76,6 +79,7 @@ def main():
     parser.add_argument("--seed", type=int, default=7)
     parser.add_argument("--days", type=int, default=1)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--selected-days", type=int, nargs="+")
     parser.add_argument("--require-complete", action="store_true")
     parser.add_argument("--personas", nargs="+", default=["P1", "P2", "P3", "P4", "P5"])
     parser.add_argument("--jobs", type=int, default=1, help="independent native schedule workers (never Lake workers)")
@@ -89,7 +93,7 @@ def main():
               "binarySha256": hashlib.sha256(args.binary.read_bytes()).hexdigest(),
               "releaseDays": json.loads((ROOT / "world/releases.json").read_text()),
               "schedules": [], "incomplete": [], "floorViolations": [], "interruptionViolations": [], "determinism": True}
-    jobs = [(day, persona) for day in range(1, args.days + 1) for persona in args.personas]
+    jobs = [(day, persona) for day in (args.selected_days or range(1, args.days + 1)) for persona in args.personas]
     # Threads only orchestrate independent native subprocesses; no worker runs
     # Lake or writes the report. map retains deterministic day/persona ordering.
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:

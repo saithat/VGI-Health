@@ -34,6 +34,35 @@ A later world may select from this cohort's index/flags/persona fits after its
 loader supports these FHIR types and text-only codes; do not modify world 2 or
 infer active orders/admissions from historical narrative.
 
+## Role pre-set views (owner decision 2026-10-31)
+
+The vendor master keeps all screens. `Core/Navigation.lean` defines each persona's
+pre-set workflows and public activity/navigator names; `forPersona` removes other
+screens, broken links and unusable macros, then applies role permissions.
+P1 has Schedule, Results and Rx Requests (16 screens); P2 ED Track Board (8);
+P3 Unit Census & MAR (6); P4 Schedule, Results and Rx Requests (13); P5 OR Schedule,
+Consults and Results (22). P4 keeps results and refill work because the NP role
+has those commits and both are routine pediatric follow-up activities. Its actual
+world-2 tasks remain W5. P5 Consults opens the surgical-clinic encounter (W1);
+the OR navigator also reaches the inpatient consult section (W6).
+
+Internal W1–W7 IDs remain unchanged. D5 groups the overview by public activity,
+with unique navigator sections, the same twelve-item limits, and no orphans.
+The actual sidebar stays the open encounter's navigator. A default Lean test
+rejects workflow display names in all fifteen projections' visible labels.
+
+Completion and passive-alert preservation compare against the owner's fixed
+pre-set view of the vendor reference, never a scope inferred from candidate
+screens. Removing an expected activity still fails certification. All safety
+rules remain active. Physician pre-op attestations remain available, conditionally,
+on the retained signing screen; an NP still needs the human attending route.
+The three shared masters remain references; all fifteen role views certify.
+
+Default build after merging the chart-note lane: 44.36 seconds. The fifteen
+world-2 simulations on days 1, 4 and 7 complete all 407 tasks; the smoke script
+also verifies each task belongs to its persona's pre-set view. Evidence:
+`lean/Ehr/Check/preset-sim-report.json`. No simulation policy uses the activity labels.
+
 ## Rule profile: core (temporary, owner decision 2026-10-31)
 
 Core keeps the hand-written workflows: CURES (including the seven-day procedure

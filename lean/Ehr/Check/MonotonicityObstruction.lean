@@ -22,7 +22,7 @@ assume the unfinished general T1 or any hidden completion hypothesis. -/
 theorem vocabulary_satisfies : Satisfies vocabularyRelease none emptyProgram vocabularyProgram :=
   satisfies_of_checked_completable _ _ _ _ (by decide) (by
     intro facts user _ _ s _ c hc
-    simp [requiredCommitsFor, requiredCommits, commitButtons, vocabularyProgram, emptyProgram] at hc)
+    simp [requiredCommitsFor, requiredCommits, presetScreen, commitButtons, vocabularyProgram, emptyProgram] at hc)
 
 theorem vocabulary_not_old_satisfies : ¬ Satisfies emptySpec none emptyProgram vocabularyProgram := by
   intro h
