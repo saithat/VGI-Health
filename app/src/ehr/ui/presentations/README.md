@@ -26,7 +26,7 @@ Then, from `app/`, with no build running:
 EHR_PRESENT_SHOTS=1 APP_TEST_PORT=4387 pnpm exec playwright test presentation-review.spec.ts --project=desktop --workers=1
 ```
 
-The source fixture generator is offline unless `--refresh-reference` is explicitly supplied or the committed CDC reference file is missing. Screenshots are local review artifacts in `app/shots/realism/present/`.
+The source fixture generator is offline unless `--refresh-reference` is explicitly supplied or the committed CDC reference file is missing. The sixteen 1440×900 before/after pairs are committed in `app/shots/realism/present/`, with dimensions and hashes in `docs/audits/presentation-screenshots.json`. Additional width and full-page captures remain local review artifacts.
 
 Use a lane-local output directory for the broader differential corpus; the shared `/tmp/vgi-render-api` default may contain another checkout's generated samples:
 

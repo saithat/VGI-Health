@@ -456,10 +456,10 @@
   font-size: 13px;
   line-height: 18px;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 3px;
 }
 .mar-medication-name dt {
-  flex-basis: 100%;
+  flex-basis: auto;
   font-size: 12px;
 }
 .mar-medication-detail {
