@@ -34,7 +34,9 @@ def abxIndicationInfo : InfoSpec :=
 R2-1/R2-4: every antibiotic line needs its own confirmed indication on
 ordinary signing, including pre-op encounters. -/
 def antibioticEntries : List EntryReq :=
-  [requiresPerLine signOrders abxIndication (.orderClass "antibiotic")]
+  [requiresPerLine signOrders abxIndication (.orderClass "antibiotic")] ++
+  issuanceCommits.map (fun c =>
+    { commit := c, element := "abxIndication", when := .orderClass "antibiotic", perOrderLine := true })
 
 /-- Hospital policy (not law): local antibiotic indication policy modeled on CDC stewardship guidance; 42 CFR 482.42(b) and CA H&S 1288.85 require stewardship programs, not these per-order fields.
 R2-3: nurses see the antibiotic indication while administering. A prior
@@ -54,7 +56,9 @@ def specV2 : Spec :=
 
 -- The finite prefix check traverses the hospital element declarations and needs more
 -- elaborator recursion depth; the proof still uses kernel-checked decide.
-set_option maxRecDepth 2048 in
+-- The complete catalog adds inherited artifact contracts to this finite check.
+set_option maxRecDepth 16384 in
+set_option maxHeartbeats 2000000 in
 /-- Product design property.
 Every v1.1 rule remains unchanged in v2. New obligations still need checking. -/
 theorem specV2_extends_specV1_1 : specV2.Extends specV1_1 := by decide
