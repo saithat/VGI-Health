@@ -1,13 +1,5 @@
 import { useLayoutEffect } from "react";
-import {
-  Accordion,
-  AppShell,
-  Badge,
-  Group,
-  Modal,
-  Text,
-  Title,
-} from "@mantine/core";
+import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue } from "./display";
@@ -128,49 +120,47 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
 export function WorkflowNav({
   groups,
   active,
+  onEvent,
 }: {
   groups: UiScreen["nav"];
   active: string | undefined;
+  onEvent: Emit;
 }) {
   return (
     <AppShell.Navbar
       component="nav"
-      aria-label="Clinical workflows"
+      aria-label="Clinical navigation"
       className="clinical-navbar"
       p="sm"
     >
       <Text className="nav-eyebrow" size="xs" fw={700} c="dimmed" mb="sm">
         PATIENT WORKSPACE
       </Text>
-      <Accordion
-        multiple
-        defaultValue={groups.flatMap(([, items], index) =>
-          items.some(([id]) => id === active) ? [String(index)] : [],
-        )}
-        chevronPosition="right"
-        chevron={<ClinicalIcon name="chevron" />}
-        variant="default"
-        className="workflow-groups"
-      >
-        {groups.map(([group, items], index) => (
-          <Accordion.Item key={group} value={String(index)}>
-            <Accordion.Control>{group}</Accordion.Control>
-            <Accordion.Panel>
-              <ul className="workflow-links" aria-label={`${group} screens`}>
-                {items.map(([id, label]) => (
-                  <li
-                    key={id}
-                    aria-current={id === active ? "page" : undefined}
+      <div className="workflow-groups">
+        {groups.map(([group, items]) => (
+          <div key={group}>
+            <Text component="h2" size="sm" fw={700}>
+              {group}
+            </Text>
+            <ul className="workflow-links" aria-label={`${group} screens`}>
+              {items.map(([id, label]) => (
+                <li key={id} aria-current={id === active ? "page" : undefined}>
+                  <button
+                    type="button"
+                    className="clinical-nav-link"
+                    data-comp-id={id}
+                    data-event="click"
+                    onClick={() => onEvent({ click: { comp: id } })}
                   >
                     <span aria-hidden="true" className="nav-dot" />
                     {label}
-                  </li>
-                ))}
-              </ul>
-            </Accordion.Panel>
-          </Accordion.Item>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
-      </Accordion>
+      </div>
       <div className="nav-footer">
         <span className="status-dot" aria-hidden="true" />
         <Text size="xs">Encounter workspace</Text>
@@ -212,7 +202,12 @@ export function UiScreenView({
         }}
       >
         <PatientBanner fields={bannerFields(screen)} />
-        <WorkflowNav key={active} groups={screen.nav} active={active} />
+        <WorkflowNav
+          key={active}
+          groups={screen.nav}
+          active={active}
+          onEvent={onEvent}
+        />
         <AppShell.Main>
           <div className="clinical-workspace-heading">
             <div>

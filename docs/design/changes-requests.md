@@ -1990,3 +1990,46 @@ actual overnight agent run. Native `ehr simulate` reads the spec successfully.
 Resolved by the check lane: the generated-type boundary now accepts and preserves
 `drugClass`, `allowed`, encounter/cosign/waiver fields and `medicationDose`.
 All three active specs round-trip exactly; agent tests and typecheck pass.
+
+## AMB realism integration (2026-11-01)
+
+- Ambulatory screens select `present.schedule/messages/folderList/growth/table`
+  per `origin/lane/present:docs/design/presentation-contract.md`.
+- `Fhir.Ambulatory` is a separated supporting projection section. It emits
+  patient/version-bound InfoPayloads for `scheduleTasks`, `inbasketItems`,
+  `inBasketFolders`, `inBasketResults`, `inBasketRxRequests`, `messagePreview`,
+  `refillRequest`, selected `resultDetail`/`resultTrend`, `relevantLabs`,
+  `lastVisit`, `adherence` and supplied vaccine forecasts.
+  Three optional In Basket info declarations were added to ClinicalTables;
+  no safety requirement changed. Please retain these payloads when integrating
+  presentation FHIR projection helpers; explicit caller payloads take precedence.
+- The pediatric Visit Note is now `w5Note`, before prescribing. Sign Visit keeps
+  charges, follow-up, instructions and the note signature. Macro targets and
+  walkthroughs follow the real relocated fields; P4 gains one screen.
+- `ambulatoryShell` retains a real navigator through Blueprint migration, with
+  existing goto event IDs. It omits the optional second full-chart rail to leave
+  room for documentation; chart tabs and required commit reviews remain.
+  The Chart Review component carries `layout.focusedWorkspace`, which suppresses
+  only generated fallback summaries in Lean. Explicit side components, imported
+  reported medications and required commit reviews remain. The renderer proof's
+  new case preserves the same statements; there is no React visibility rule.
+  Global shell changes should preserve the clinical section list and avoid
+  duplicating its workspace links.
+- Seeded Appointment descriptions now use Office visit / Pediatric office visit,
+  instead of internal persona/workflow/goal names. No schedule or choices change.
+- The old painter treated `UiScreen.nav` pairs as noninteractive overview text.
+  Retaining the semantic encounter navigator exposed that gap. AMB now paints
+  each pair as a button dispatching its exact supplied component ID, with no
+  inferred destination or React clinical state. ARIA expectation and a dispatch
+  regression test were updated together. Shell integration should keep this.
+- Narrative controls now use Lean's `field.kind = "textarea"` for HPI, ROS,
+  exam, Assessment & Plan, anticipatory guidance, AVS instructions, patient
+  messages and refill notes. The painter draws the specified editor and emits
+  the same complete text Value, including newlines. Unit wires remain unchanged;
+  the `mgPerKg` suffix is printed as `mg/kg`.
+- Shared-shell visual follow-up: the current top bar lacks signed-in role, the
+  banner lacks current kg weight/isolation, and the horizontal numbered overview
+  duplicates the section rail. AMB retains semantic clinical navigation and
+  ordinary order-review/signing actions for integration with the shell lane.
+  Order signing is not a direct section shortcut; In Basket navigation lists
+  folders rather than processing stages.

@@ -16,6 +16,7 @@ import {
   Tabs,
   Text,
   TextInput,
+  Textarea,
   Tooltip,
 } from "@mantine/core";
 import type { Event } from "../../../../lean/generated/ehr-types";
@@ -178,7 +179,7 @@ export function FieldNode({
   );
   return (
     <Box
-      className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}`}
+      className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}${kind === "textarea" ? " field-narrative" : ""}`}
     >
       <Group
         gap={6}
@@ -225,7 +226,7 @@ export function FieldNode({
           rightSection={
             node.unit && node.unit !== "none" ? (
               <Text size="xs" c="dimmed">
-                {node.unit}
+                {node.unit === "mgPerKg" ? "mg/kg" : node.unit}
               </Text>
             ) : null
           }
@@ -250,6 +251,15 @@ export function FieldNode({
             if (options.length === 0) send(event.currentTarget.value);
           }}
           nothingFoundMessage="Enter a code"
+        />
+      ) : kind === "textarea" ? (
+        <Textarea
+          {...common}
+          value={node.value ?? ""}
+          onChange={(e) => send(e.currentTarget.value)}
+          minRows={4}
+          autosize
+          autoComplete="off"
         />
       ) : (
         <TextInput

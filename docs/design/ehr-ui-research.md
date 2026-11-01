@@ -162,3 +162,105 @@ so it is not used for the cosigner.
 [FHIR Provenance](https://hl7.org/fhir/R4/provenance-definitions.html),
 [FHIR attester participant](https://hl7.org/fhir/R4B/valueset-provenance-participant-type.html),
 [FHIR MedicationRequest](https://hl7.org/fhir/R4/medicationrequest-definitions.html).
+
+## Canonical realism: P1 PCP and P4 pediatric NP (ambulatory)
+
+Research and implementation pass: 2026-11-01, AMB lane. This is one vendor
+baseline with role projections, not a separate pediatric product. No vendor
+assets or screenshot pixels are included. The public guides describe particular
+installations; the layouts below are our synthesis. The hospital rulebook and
+all human entry, review, alert and signature requirements remain authoritative.
+
+### References inspected
+
+- [Mount Sinai EHHOP student guide (2019), printed pp.9–12, 19–25](https://ehhapp.org/uploads/Student-Guide-to-Epic-for-EHHOP.pdf): schedule selection opens the visit navigator; reason for visit, vitals, allergies, medication review, history, orders and patient instructions have distinct sections. The navigator screenshot on printed p.12 was visually inspected. Adopt its separation of chart activities from encounter sections, with our own visual design.
+- [Washington Regional, WRMS Provider Musts, pp.2–3, 6–8, 11–12](https://www.wregional.com/Uploads/Public/Documents/MedStaff/Epic%20Resources/WRMS%20Provider%20Musts.pdf): folder list, message list and preview/action pane are separate. Request handling supports approval, rejection and editing, with recent-visit, medication and lab reports nearby. The general-layout and request-context screenshots were visually inspected. Retain a review-to-response path and explicit signing, without copying its artwork.
+- [Iowa, Rooming / Check In–Check Out](https://epicsupport.sites.uiowa.edu/epic-resources/check-incheck-out): rooming status is a schedule operation; merely opening a visit must not change a booked appointment to roomed.
+- [Iowa, Growth Chart](https://epicsupport.sites.uiowa.edu/epic-resources/growth-chart): growth is a chart activity with age/measure-specific CDC or WHO reference datasets. A raw measurement series is not a percentile calculation.
+- [Iowa, Immunizations](https://epicsupport.sites.uiowa.edu/epic-resources/immunizations): history reconciliation and determining vaccines due are distinct tasks; outside registry information matters. Only supplied `ImmunizationRecommendation` data is called a forecast here.
+- [Iowa, After Visit Summary](https://epicsupport.sites.uiowa.edu/epic-resources/after-visit-summary-avs): patient instructions contribute to the AVS at visit completion. Keep instructions, follow-up, charges and signing as separately named sections.
+- [Johns Hopkins, In Basket QuickActions](https://medicine-matters.blogs.hopkinsmedicine.org/2019/04/epic-tip-of-the-week-10/): result-note actions and refill approval/denial are message-type-specific; personalized shortcuts can reduce clicks. This supports retaining ordinary multi-step baseline paths for the overnight agent to improve.
+- [Epic public e-refill export definition](https://open.epic.com/EHITables/GetTable/RX_EREFILL_RQST.htm): a refill request has its own medication, follow-up status and pharmacy-comment context. Request and current prescription must be distinguishable.
+- [AHRQ alert fatigue](https://psnet.ahrq.gov/primer/alert-fatigue): preserve clinically consequential warnings while distinguishing passive reminders. No alert tier or clinical guard changes are made in this pass.
+
+### Target layouts and clinical paths
+
+| Screen | Target layout and terminology | Initial review / intended change |
+| --- | --- | --- |
+| P1/P4 Schedule (`home`) | Day-list table: time, patient, age/sex, visit type, source status, chief complaint, provider/location; normal adjacent encounter action. In Basket remains an activity, not a labeled clinical workflow. | The former “Today's work” panel was empty on ordinary chart fixtures. Use supplied Appointment rows and the `present.schedule` contract. A chart-scoped bundle is explicitly only that chart's appointments. |
+| `w1Rooming` | Reason for visit, compact metric vitals with units, allergy table + Mark reviewed, screenings/pharmacy, PHQ-2, health maintenance. | Before: vitals came before the complaint; collapse controls competed with form inputs. Open clinical sections and an actual left visit navigator establish the normal rooming order. |
+| `w1MedRec` | Medication table, reconciliation decisions, Mark reviewed, optional fill-history/prior-plan reports. | Before: abbreviated “Med rec” and generic reconciliation grouping. Use Medication Review and preserve each existing capture/receipt. |
+| `w1Hpi` | Medical/surgical/family/social history, prior-note tools, HPI, ROS. | Before: “History” meant only an HPI/ROS form. Put real history context here and name the note sections explicitly. |
+| `w1Exam` | Exam/template, problem list, encounter diagnoses, problem-based Assessment & Plan. | Before: ungrouped exam and plan fields. Keep distinct clinical sections, with the diagnosis as the source of linked order/claim diagnoses. |
+| `w1Orders` | Search/catalog, preference list, dosing, medication/dispense/pharmacy/diagnosis, pending orders, Review and sign. | Preserve the long baseline composer and per-field confirmations; no quick-sign macro. |
+| `w1Labs` | Test search, order details/associated diagnosis, recent results, pended orders. | Clarify Lab Orders and keep the diagnosis linked rather than retranscribed. |
+| `w1Verify` | Pended order table, allergies, baseline reconfirmation, then Sign Orders. | Keep the extra Order Review step as documented baseline friction. |
+| `w1Sign` | Full order summary and required chart reviews, dose check, applicable alerts, human identity directly before signature. | Preserve all required reviews outside optional tabs and the exact signing guard. |
+| `w1Close` | Note review, Level of Service, Follow-up, Patient Instructions / AVS, health maintenance, Sign Visit. | Before: a single closing form. Named sections match the visit navigator and retain billing/instruction captures. |
+| `w2Inbasket` | Folder counts, searchable result list, selected-message context, Review result; Rx Requests is a genuine destination. | Before: generic “Messages” with no meaningful message-type hierarchy. Use actual Task rows and `present.folderList` / `present.messages`. Counts are chart-scoped unless an explicit department payload is supplied. |
+| `w2Result` | Result values, units, flags and reference ranges; dated trend; clinical action/follow-up test; Result Note; Reviewed / Done. | Before: result detail was an empty fallback despite available lab data. Project the real result rows; preserve result and abnormal trend at acknowledgment. |
+| `w2Message` | Result context, result-note templates, patient communication draft, return to review. | Before: generic message screen. Use Result Note terminology. Return uses the entered message; it does not independently claim delivery. The acknowledgment writer persists the communication. |
+| `w5Rooming` | Complaint, dated metric growth measurements, allergies and medications with review actions. | Before: growth chart duplicated the dedicated Growth screen and the complaint followed measurements. Keep rooming focused and retain the separate Growth activity. |
+| `w5Growth` | Dated measurements/series, available source percentiles, last visit. | Before: a raw measurement table was labeled “Percentiles.” Never imply a percentile or normal curve without a named reference. |
+| `w5Note` (new) | History context, HPI, ROS, exam, encounter diagnoses, Assessment & Plan, anticipatory guidance. | Previously all documentation first appeared during visit close. A dedicated Visit Note section precedes prescribing; the same required captures and template confirmations remain. |
+| `w5Orders` | Current kg dosing weight, mg/kg basis, calculated check, entered mg dose, prescription details and pending orders. | Keep the separate mg entry and explicit pharmacy confirmation. Do not replace clinician-entered dose with an automatic acceptance. |
+| `w5Sign` | Every order, current kg weight/dose check, allergies/medications and other required reviews, identity, Sign Orders. | Preserve stale-weight, lb and range guards; weight-based review has no receipt substitute. |
+| `w5Immunizations` | History and supplied forecast, allergies, product/manufacturer/lot/site/route/provider, separate VIS section, Record immunization. | Before: vaccine and VIS fields were mixed in one group. The new grouping preserves every required field and the separate vaccine signature. |
+| `w5Close` | Note review, Level of Service, Follow-up, family AVS instructions, Edit visit note, Sign Visit. | The clinical note is now composed before orders and reviewed here; no duplicate human entry is added. |
+| `w7Queue` | Rx Request folder counts, message list and selected prescription request, Review request. | Before: a generic refill table without source context. Retain actual request status and medication identity. |
+| `w7Review` | Request, last visit/labs/fills/meds/prior-note reports, review receipts, Respond to request. | Keep the baseline's optional report tabs and separate response step. Fills are sourced from MedicationDispense; an active prescription does not prove a fill or adherence. |
+| `w7Decision` | Requested/current/proposed comparison, relevant labs, last visit and fill history, protocol check, response fields, Approve / Sign Rx and the existing separate denial action. | Required reviews stay expanded on the response screen. Modification uses the existing semantic prescription path; no label may turn a Schedule II refill into a valid renewal. |
+
+### Data and presentation integration
+
+The presentation lane's [contract](presentation-contract.md) is selected by
+`present.schedule`, `present.messages`, `present.folderList`, `present.growth`
+and `present.table` tags. Worklists are read-only; adjacent real goto controls
+open the selected encounter. An “Open” string in a table is never a fake control.
+
+The separated `Fhir.Ambulatory` projections add source Appointment rows, Task
+rows/counts, actual refill-focus resolution (including contained resources),
+result details/ranges/flags, prior visits, MedicationDispense fill history and
+supplied immunization forecasts. Result Task inputs/report references select
+the current report; its trend includes historical observations of those same
+analytes, without pulling unrelated tests into the selected report. Relative and
+transaction-bundle UUID references are matched without exposing IDs as cells.
+Missing records stay absent. The three new optional info declarations are
+`inBasketFolders`, `inBasketResults` and `inBasketRxRequests`; they add no entry, review,
+permission, alert or D rule. `V1.lean`, properties and trusted statements are
+unchanged. The live adapter combines these Lean projections with explicit
+version-bound context, giving an explicit payload precedence for the same info.
+
+Review inputs use the existing world-2 seeder and Synthea cohort via
+`scripts/realism/ambulatory-fixtures.mjs`, without a backend or new clinical
+choices. Screenshots are 1440×900 in `app/shots/realism/amb/`.
+
+### Baseline effort before this pass
+
+Measured with `ehr min-clicks` through `pnpm complexity --release-root releases`
+on the existing fixed benchmark cases, before ambulatory program changes.
+These are certified minima **within the reported directed search spaces**, not
+global UI optima. KLM estimates effort on the minimum-click path, not elapsed
+clinical time or a separate time minimum. Keystrokes are minimized separately.
+
+| Release | Workflow | Clicks | Keystrokes | KLM seconds |
+| --- | --- | ---: | ---: | ---: |
+| v1/v2 | W1 | 39 | 202 | 143.20 |
+| v1/v2 | W2 | 7 | 40 | 21.45 |
+| v1/v2 | W5 | 48 | 245 | 175.45 |
+| v1/v2 | W7 | 12 | 12 | 27.50 |
+| v3 | W1 | 39 | 202 | 143.20 |
+| v3 | W2 | 7 | 40 | 21.45 |
+| v3 | W5 | 49 | 250 | 179.80 |
+| v3 | W7 | 12 | 12 | 27.50 |
+
+The measurement adapter now explicitly uses `lean -j4`; its 8 GB address-space
+limit also needs `LEAN_STACK_SIZE_KB=8192` in this environment. This corrects a
+thread-creation failure without changing the search, choices or KLM model.
+After metrics, visual findings and gate results are recorded below as completed.
+
+The FHIR distinction between prescription, dispensing and administration is
+also checked against the [HL7 R4 MedicationDispense specification](https://hl7.org/fhir/R4/medicationdispense.html).
+Forecast fields follow [HL7 R4 ImmunizationRecommendation](https://hl7.org/fhir/R4/immunizationrecommendation.html),
+including its point-in-time status and recommendation authority. No forecasting
+algorithm or clinical protocol thresholds are added by this UI work.

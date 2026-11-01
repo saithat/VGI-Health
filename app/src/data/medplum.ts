@@ -287,6 +287,7 @@ const patientQueries: [ResourceType, string][] = [
   ["Observation", "patient"],
   ["Condition", "patient"],
   ["Immunization", "patient"],
+  ["ImmunizationRecommendation", "patient"],
   ["Encounter", "patient"],
   ["Appointment", "patient"],
   ["ServiceRequest", "patient"],

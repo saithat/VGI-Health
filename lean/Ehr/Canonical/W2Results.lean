@@ -17,53 +17,60 @@ open Ehr.Canonical
 
 /-- The W2 navigator. -/
 def nav : List (ScreenId × String) :=
-  [("w2Inbasket", "In-basket"), ("w2Result", "Result"), ("w2Message", "Message patient")]
+  [("w2Inbasket", "Results"), ("w7Queue", "Rx Requests")]
 
 /-- The chart-review tabs on W2 screens. -/
 def chart : List Block :=
-  [(.table, "labResults", "All results"), (.panel, "priorNotes", "Notes"),
-   (.table, "encounterHistory", "Encounters"), (.table, "imaging", "Imaging")]
+  [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
+   (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
+   (.table, "problemList", "Problems"), (.table, "allergyList", "Allergies"),
+   (.table, "imaging", "Imaging")]
 
 /-- The shell for a W2 screen. -/
-def frame (s : ScreenId) : List Component := shell s nav clinicSidebar chart
+def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart "In Basket"
 
 /-- The in-basket: results, messages, and refill requests in one list. -/
 def inbasket : Screen :=
   let s := "w2Inbasket"
-  { id := s, title := "In-basket", workflow := "W2"
+  { id := s, title := "In Basket: Results", workflow := "W2"
     components := frame s ++ [
-      searchC s "basketSearch" "inbasket" "Search in-basket",
-      table s "items" "inbasketItems" "Messages",
-      panel s "preview" "messagePreview" "Selected message",
-      goto s "openResult" "w2Result" "Open result",
-      goto s "refills" "w7Queue" "Refill requests folder"
+      { table s "folders" "inBasketFolders" "In Basket folders" with tag := "present.folderList" },
+      searchC s "basketSearch" "inbasket" "Search In Basket",
+      { table s "items" "inBasketResults" "Results messages" with tag := "present.messages" },
+      clinicalSection s "selected" "Selected result message",
+      panel s "preview" "messagePreview" "Message details" (parent := some "selected"),
+      goto s "openResult" "w2Result" "Review result" (parent := some "selected"),
+      goto s "refills" "w7Queue" "Rx Requests"
     ] }
 
 /-- The result: detail and trend on screen, the decision, an optional follow-up
 test, and Acknowledge. -/
 def result : Screen :=
   let s := "w2Result"
-  { id := s, title := "Result", workflow := "W2"
+  { id := s, title := "Result Review", workflow := "W2"
     components := frame s ++ [
-      table s "detail" "resultDetail" "Result",
-      trend s "trend" "resultTrend" "Trend",
-      table s "trendValues" "resultTrend" "Dated values",
-      field s "resultAction" "resultAction" "Action",
-      field s "resultFollowUpOrder" "resultFollowUpOrder" "Follow-up test",
-      goto s "message" "w2Message" "Message patient",
-      commitBtn s "ackResult" "Acknowledge and mark done"
+      { table s "detail" "resultDetail" "Result details and reference ranges" with tag := "present.results" },
+      { trend s "trend" "resultTrend" "Result trend" with tag := "present.trend" },
+      { table s "trendValues" "resultTrend" "Dated values" with tag := "present.table" },
+      clinicalSection s "followup" "Result follow-up",
+      field s "resultAction" "resultAction" "Clinical action" (parent := some "followup"),
+      field s "resultFollowUpOrder" "resultFollowUpOrder" "Follow-up test (LOINC)" (parent := some "followup"),
+      goto s "message" "w2Message" "Result Note / Message to patient" (parent := some "followup"),
+      commitBtn s "ackResult" "Reviewed / Done"
     ] }
 
 /-- The patient message composer, with letter templates. -/
 def message : Screen :=
   let s := "w2Message"
-  { id := s, title := "Message patient", workflow := "W2"
+  { id := s, title := "Result Note", workflow := "W2"
     components := frame s ++ [
       panel s "detail" "resultDetail" "Result",
-      macroBtn s "normalLetter" "w2NormalLetter" "Template: normal result",
-      macroBtn s "repeatLetter" "w2RepeatLetter" "Template: repeat the test",
-      field s "patientMessage" "patientMessage" "Message to patient",
-      goto s "return" "w2Result" "Return to result"
+      clinicalSection s "templates" "Result note templates",
+      macroBtn s "normalLetter" "w2NormalLetter" "Normal result" (parent := some "templates"),
+      macroBtn s "repeatLetter" "w2RepeatLetter" "Repeat test" (parent := some "templates"),
+      clinicalSection s "draft" "Patient communication",
+      field s "patientMessage" "patientMessage" "Message to patient" (parent := some "draft"),
+      goto s "return" "w2Result" "Use message and return to result"
     ] }
 
 /-- The W2 macros: letter templates. -/

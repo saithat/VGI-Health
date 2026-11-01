@@ -166,7 +166,10 @@ theorem uiSide_source (cx : Ctx) (n : UiNode) (hn : n ∈ uiAtomsList (uiSide cx
   · right
     split at hn <;> simp [uiAtoms] at hn
     subst n; trivial
-  · generalize ([("allergyList", "Allergies"), ("currentMeds", "Active medications"),
+  · split at hn
+    · simp at hn
+    rename_i hFocused
+    generalize ([("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals")] : List (String × String)) = pairs at hn
     right
     induction pairs with

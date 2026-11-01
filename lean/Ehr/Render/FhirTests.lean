@@ -85,3 +85,44 @@ def surgery : Json := json r#"{"resourceType":"Procedure","code":{"text":"Append
 #guard (Lean.fromJson? (json r#"{"patientId":"old","identity":{"initials":"AB","sex":"F","ageYears":40},"allergyVersion":0,"allergyClasses":[],"medsVersion":0,"currentMedClasses":[],"careGaps":[],"abnormalResult":false,"now":0,"receipts":[],"record":[]}"#) : Except String Facts).toOption.any (fun f => f.notesVersion == 0 && f.historyVersion == 0)
 #guard (Lean.fromJson? ((Lean.toJson parsed.facts).setObjVal! "notesVersion" (.str "bad")) : Except String Facts).isOk == false
 end Ehr.Render.Tests
+
+namespace Ehr.Render.Tests
+open Lean Fhir
+
+/-- Named clinic examples use only explicit source status, dates and references. -/
+def clinicPatient : Json := json r#"{"resourceType":"Patient","id":"clinic-patient","name":[{"given":["Alex"],"family":"Morgan"}],"birthDate":"2020-01-01","gender":"female"}"#
+def clinicAppointment : Json := json r#"{"resourceType":"Appointment","id":"appointment","status":"booked","start":"2026-10-31T09:00:00-07:00","appointmentType":{"text":"Office visit"},"participant":[{"actor":{"reference":"Patient/clinic-patient"}},{"actor":{"reference":"Practitioner/doctor","display":"Dr Morgan"}}]}"#
+def otherAppointment : Json := json r#"{"resourceType":"Appointment","status":"arrived","start":"2026-10-31T10:00:00-07:00","participant":[{"actor":{"reference":"Patient/other-patient"}}]}"#
+def clinicRefill : Json := json r##"{"resourceType":"Task","id":"request","for":{"reference":"Patient/clinic-patient"},"status":"requested","authoredOn":"2026-10-31T08:00:00-07:00","code":{"text":"Refill request"},"focus":{"reference":"#requested-rx"},"contained":[{"resourceType":"MedicationRequest","id":"requested-rx","medicationCodeableConcept":{"text":"lisinopril"},"dosageInstruction":[{"text":"10 mg by mouth daily"}]}]}"##
+def clinicForecast : Json := json r#"{"resourceType":"ImmunizationRecommendation","date":"2026-10-31","authority":{"display":"State immunization registry"},"recommendation":[{"vaccineCode":[{"text":"Influenza"}],"forecastStatus":{"text":"Due"},"dateCriterion":[{"code":{"text":"Recommended"},"value":"2026-10-31"}]}]}"#
+
+/-- Result selection follows the Task's report, while its trend retains earlier
+measurements of that analyte without pulling in unrelated tests. -/
+def clinicResult : Json := json r#"{"resourceType":"Task","id":"result-message","for":{"reference":"Patient/clinic-patient"},"status":"requested","code":{"text":"Result review"},"focus":{"reference":"DiagnosticReport/result-report"}}"#
+def clinicReport : Json := json r#"{"resourceType":"DiagnosticReport","id":"urn:uuid:result-report","result":[{"reference":"Observation/current-result"}]}"#
+def clinicLab : Json := json r#"{"resourceType":"Observation","id":"urn:uuid:current-result","status":"final","category":[{"coding":[{"code":"laboratory"}]}],"code":{"coding":[{"code":"4548-4","display":"Hemoglobin A1c"}]},"effectiveDateTime":"2026-10-31","valueQuantity":{"value":7.2,"unit":"%"}}"#
+def clinicPriorLab : Json := (clinicLab.setObjVal! "id" (.str "prior-result")).setObjVal! "effectiveDateTime" (.str "2026-07-31")
+def clinicOtherLab : Json := (clinicLab.setObjVal! "id" (.str "other-result")).setObjVal! "code" (json r#"{"coding":[{"code":"6299-2","display":"Urea nitrogen"}]}"#)
+def clinicResultRecords : List Json := [clinicResult, clinicReport, clinicLab, clinicPriorLab, clinicOtherLab]
+#guard Ambulatory.selectedResultSources clinicResultRecords clinicPatient == [clinicLab]
+#guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).length == 2
+#guard (Ambulatory.selectedTrendRows clinicResultRecords [clinicLab]).all fun row => row.lookup "Test" == some "Hemoglobin A1c"
+#guard (Ambulatory.selectedResultSources [clinicResult] clinicPatient).isEmpty
+
+#guard (Ambulatory.scheduleRows context [clinicAppointment, otherAppointment] clinicPatient).length == 1
+#guard (Ambulatory.scheduleRows context [clinicAppointment] (clinicPatient.setObjVal! "id" (.str "urn:uuid:clinic-patient"))).length == 1
+#guard ((Ambulatory.scheduleRows context [clinicAppointment] clinicPatient).head?).any (fun row => row.status == "booked" && row.provider == "Dr Morgan")
+#guard (Ambulatory.scheduleRows { context with today := "2026-11-01" } [clinicAppointment] clinicPatient).isEmpty
+#guard (Ambulatory.patientTasks [clinicRefill] clinicPatient).length == 1
+#guard (Ambulatory.patientTasks [clinicRefill.setObjVal! "status" (.str "completed")] clinicPatient).isEmpty
+#guard (Ambulatory.patientTasks [clinicRefill] (clinicPatient.setObjVal! "id" (.str "other-patient"))).isEmpty
+#guard ((Ambulatory.refillMedication [] clinicRefill).map medName) == some "lisinopril"
+#guard (Ambulatory.refillMedication [homeMed] (clinicRefill.setObjVal! "focus" (json r#"{"reference":"MedicationRequest/missing"}"#))).isNone
+#guard (Ambulatory.forecastRows [clinicForecast]).any fun row => row.lookup "Status" == some "Due" && row.lookup "Source" == some "State immunization registry"
+#guard (Ambulatory.forecastRows [json r#"{"resourceType":"Immunization","status":"completed"}"#]).isEmpty
+#guard (Ambulatory.payloads context [clinicRefill] clinicPatient).all (fun p => p.info != "adherence")
+#guard (Ambulatory.payloads context [] clinicPatient).isEmpty
+/-- Every generated supporting view passes the ordinary patient/version binding. -/
+def clinicFacts : Facts := factsOf context [clinicPatient, clinicAppointment, clinicRefill] clinicPatient
+#guard (clinicFacts.infoPayloads?.getD []).all fun payload => (infoPayload clinicFacts payload.info).isSome
+end Ehr.Render.Tests

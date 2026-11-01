@@ -803,6 +803,214 @@ def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
     attending := encProvider
     location := (encRow enc).location }
 
+/-! ## Ambulatory supporting views
+
+These are display projections of supplied FHIR records. They do not infer
+protocol eligibility, delivery, adherence, percentiles or vaccine due dates.
+The ordinary InfoPayload boundary keeps patient/version binding intact. -/
+
+namespace Ambulatory
+
+/-- A typed appointment row; opening its encounter remains an ordinary UI goto. -/
+structure ScheduleRow where
+  time : String
+  patient : String
+  ageSex : String
+  visitType : String
+  status : String
+  complaint : String
+  provider : String
+  location : String
+  deriving Inhabited
+
+/-- A typed message row, preserving the Task's actual status and received time. -/
+structure MessageRow where
+  received : String
+  patient : String
+  subject : String
+  sender : String
+  priority : String
+  status : String
+  folder : String
+  deriving Inhabited
+
+/-- References are used only for matching; internal resource IDs are never cells. -/
+def referenceMatches (reference : String) (p : Json) : Bool :=
+  let raw := str p "id"
+  let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
+  !id.isEmpty && (reference == raw || reference == "Patient/" ++ id || reference == "urn:uuid:" ++ id)
+
+/-- Select only tasks explicitly bound to the current chart. -/
+def patientTasks (rs : List Json) (p : Json) : List Json :=
+  newestFirst (str · "authoredOn") ((ofType "Task" rs).filter fun r =>
+    referenceMatches (str (field r "for") "reference") p &&
+    !["entered-in-error", "cancelled", "completed", "failed"].contains (str r "status"))
+
+/-- Folder names describe the supplied message type, not a made-up workflow. -/
+def taskFolder (r : Json) : String :=
+  let code := (ccText (field r "code") ++ " " ++ str r "description").toLower
+  if (code.splitOn "refill").length > 1 || (code.splitOn "rx request").length > 1 then "Rx Requests"
+  else if (code.splitOn "result").length > 1 then "Results" else "Patient Messages"
+
+/-- Project every current-chart appointment on the requested day. -/
+def scheduleRows (ctx : FactsContext) (rs : List Json) (p : Json) : List ScheduleRow :=
+  ((ofType "Appointment" rs).filter fun r =>
+    dayOf (str r "start") == ctx.today && (arr r "participant").any fun participant =>
+      referenceMatches (str (field participant "actor") "reference") p).map fun r =>
+    let participants := (arr r "participant").map (field · "actor")
+    let displayFor := fun referenceType =>
+      ", ".intercalate ((participants.filter (fun actor => (str actor "reference").startsWith referenceType)).map (str · "display"))
+    { time := str r "start", patient := displayName p
+      ageSex := s!"{ageYears (str p "birthDate") ctx.today} / {sexOf p}"
+      visitType := ccText (field r "appointmentType"), status := str r "status"
+      complaint := let reason := "; ".intercalate ((arr r "reasonCode").map ccText)
+        if reason == "" then str r "description" else reason
+      provider := displayFor "Practitioner/", location := displayFor "Location/" }
+
+/-- The supplied Task list, without guessed unread or completion flags. -/
+def messageRows (rs : List Json) (p : Json) : List MessageRow :=
+  (patientTasks rs p).map fun r =>
+    { received := str r "authoredOn", patient := displayName p
+      subject := let description := str r "description"
+        if description == "" then ccText (field r "code") else description
+      sender := str (field r "requester") "display", priority := str r "priority"
+      status := str r "status", folder := taskFolder r }
+
+/-- Resolve the medication actually referenced by a refill request, including
+contained MedicationRequests. Never substitute the first active medication. -/
+def refillMedication (rs : List Json) (task : Json) : Option Json :=
+  let reference := str (field task "focus") "reference"
+  if reference.startsWith "#" then
+    (arr task "contained").find? fun r => resourceType r == "MedicationRequest" &&
+      reference == "#" ++ str r "id"
+  else (ofType "MedicationRequest" rs).find? fun r =>
+    reference == str r "id" || reference == "MedicationRequest/" ++ str r "id" ||
+      reference == "urn:uuid:" ++ str r "id"
+
+/-- A pharmacy display is shown only when the prescription actually supplies it. -/
+def prescriptionPharmacy (r : Json) : String :=
+  str (field (field r "dispenseRequest") "performer") "display"
+
+/-- Complete raw result rows, with the original reference ranges and flags. -/
+def resultRows (rs : List Json) : List (List (String × String)) :=
+  (labRows rs).map fun lab =>
+    let source := ((rs.filter isLab).find? fun r =>
+      firstCode (field r "code") == lab.code && obsWhen r == lab.date).getD .null
+    [("test", lab.name), ("value", lab.value), ("unit", lab.unit),
+     ("flag", "; ".intercalate ((arr source "interpretation").map ccText)),
+     ("referenceRange", lab.refRange), ("collectedAt", lab.date),
+     ("resultedAt", str source "issued"), ("status", str source "status")]
+
+/-- Match relative or transaction-bundle references without showing them. -/
+def resolveReference (rs : List Json) (reference : String) : Option Json :=
+  if reference.isEmpty then none else rs.find? fun r =>
+    let raw := str r "id"
+    let id := if raw.startsWith "urn:uuid:" then sub raw 9 raw.length else raw
+    !id.isEmpty && (reference == raw || reference == resourceType r ++ "/" ++ id ||
+      reference == "urn:uuid:" ++ id)
+
+/-- The selected result Task owns its report/Observation references. Older
+unrelated analytes remain in Chart Review, not the selected-result report. -/
+def selectedResultSources (rs : List Json) (p : Json) : List Json :=
+  match (patientTasks rs p).find? (fun task => taskFolder task == "Results") with
+  | none => rs.filter isLab
+  | some task =>
+    let inputs := (arr task "input").filterMap fun input =>
+      resolveReference rs (str (field input "valueReference") "reference")
+    let focus := resolveReference rs (str (field task "focus") "reference")
+    let fromReport := focus.toList.flatMap fun report =>
+      if resourceType report == "Observation" then [report]
+      else (arr report "result").filterMap fun reference => resolveReference rs (str reference "reference")
+    (inputs ++ fromReport).filter isLab |>.eraseDups
+
+/-- All dated observations of the selected analytes, with units kept separate
+by the presentation contract. No current-value row is duplicated. -/
+def selectedTrendRows (rs selected : List Json) : List (List (String × String)) :=
+  let codes := selected.map fun r => firstCode (field r "code")
+  (oldestFirst obsWhen ((rs.filter isLab).filter fun r => codes.contains (firstCode (field r "code")))).map fun r =>
+    let (value, unit, _) := obsValue r
+    [("Test", ccText (field r "code")), ("Recorded", obsWhen r),
+     ("Value", value), ("Unit", unit)]
+
+/-- Forecast rows are read from ImmunizationRecommendation, never calculated
+from age or an incomplete immunization history. -/
+def forecastRows (rs : List Json) : List (List (String × String)) :=
+  (ofType "ImmunizationRecommendation" rs).flatMap fun r =>
+    (arr r "recommendation").map fun recommendation =>
+      [("Vaccine", "; ".intercalate ((arr recommendation "vaccineCode").map ccText)),
+       ("Status", ccText (field recommendation "forecastStatus")),
+       ("Forecast date", str r "date"),
+       ("Due dates", "; ".intercalate ((arr recommendation "dateCriterion").map fun date =>
+         ccText (field date "code") ++ ": " ++ str date "value")),
+       ("Source", str (field r "authority") "display")]
+
+/-- Add a view only when source records exist. Empty data stays visibly absent. -/
+def payload (p : Json) (rs : List Json) (info : InfoId)
+    (rows : List (List (String × String))) : Option InfoPayload :=
+  if rows.isEmpty then none else
+  let version := listVersion rs
+  some {
+    info := info
+    patient := patientIdOf p
+    artifactKey := "ambulatory:" ++ info
+    artifact := "FHIR bundle projection:" ++ toString version
+    version := version
+    rows := rows.zipIdx.map fun (fields, slot) => { id := toString slot, slot, fields } }
+
+/-- Supporting clinic/inbox data, kept separate from all clinical guard logic. -/
+def payloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload :=
+  if !(rs.any fun r => ["Appointment", "Task", "Encounter", "MedicationDispense",
+      "ImmunizationRecommendation"].contains (resourceType r) || isLab r) then [] else
+  let messages := messageRows rs p
+  let tasks := patientTasks rs p
+  let selectedResults := selectedResultSources rs p
+  let refill := tasks.find? (fun r => taskFolder r == "Rx Requests")
+  let requestRows := refill.toList.map fun task =>
+    let rx := (refillMedication rs task).getD .null
+    [("Medication", medName rx), ("Sig", sigText rx),
+     ("Requested by", str (field task "requester") "display"),
+     ("Received", str task "authoredOn"), ("Prescription date", str rx "authoredOn"),
+     ("Pharmacy", prescriptionPharmacy rx),
+     ("Request", str task "description"), ("Status", str task "status")]
+  let priorVisit := latestBy (fun r => str (field r "period") "start")
+    ((ofType "Encounter" rs).filter fun r =>
+      let date := str (field r "period") "start"
+      date != "" && dayOf date < ctx.today && str r "status" != "entered-in-error")
+  let views : List (InfoId × List (List (String × String))) :=
+    [("inBasketFolders", if tasks.isEmpty then [] else ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
+        [("Folder", folder), ("Count", toString (messages.filter (·.folder == folder)).length),
+         ("Status", "Open tasks in this chart")]),
+     ("scheduleTasks", (scheduleRows ctx rs p).map fun row =>
+        [("time", row.time), ("patient", row.patient), ("Age / sex", row.ageSex),
+         ("Visit type", row.visitType), ("status", row.status), ("Chief complaint", row.complaint),
+         ("Provider", row.provider), ("Location", row.location)]),
+     ("inbasketItems", messages.map fun row =>
+        [("received", row.received), ("patient", row.patient), ("subject", row.subject),
+         ("sender", row.sender), ("priority", row.priority), ("status", row.status), ("Folder", row.folder)]),
+     ("inBasketResults", (messages.filter (·.folder == "Results")).map fun row =>
+        [("received", row.received), ("patient", row.patient), ("subject", row.subject),
+         ("sender", row.sender), ("priority", row.priority), ("status", row.status)]),
+     ("inBasketRxRequests", (messages.filter (·.folder == "Rx Requests")).map fun row =>
+        [("received", row.received), ("patient", row.patient), ("subject", row.subject),
+         ("sender", row.sender), ("priority", row.priority), ("status", row.status)]),
+     ("messagePreview", (messages.filter (·.folder == "Results")).take 1 |>.map fun row =>
+        [("subject", row.subject), ("context", row.folder ++ " — " ++ row.sender), ("received", row.received)]),
+     ("refillRequest", requestRows),
+     ("resultDetail", resultRows selectedResults), ("resultTrend", selectedTrendRows rs selectedResults),
+     ("relevantLabs", resultRows rs),
+     ("lastVisit", priorVisit.toList.map fun r =>
+        let row := encRow r
+        [("Date", row.start), ("Visit type", row.encType), ("Reason", row.reason),
+         ("Provider", row.provider), ("Location", row.location)]),
+     ("adherence", ((ofType "MedicationDispense" rs).filter (fun r => str r "status" != "entered-in-error")).map fun r =>
+        [("Medication", medName r), ("Last fill", str r "whenHandedOver"),
+         ("Quantity", qtyText (field r "quantity")), ("Days supply", qtyText (field r "daysSupply")),
+         ("Status", str r "status"), ("Source", "MedicationDispense")]),
+     ("immunizationHistory", forecastRows rs)]
+  views.filterMap fun (info, rows) => payload p rs info rows
+
+end Ambulatory
+
 /-! ## Facts and display -/
 
 /-- The facts the spec needs. -/
@@ -829,6 +1037,9 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     medToGive? := ctx.medToGive?
     encounterKind? := ctx.encounterKind?
     receipts := ctx.receipts
+    infoPayloads? := some (Ambulatory.payloads ctx rs p)
+    artifactBindings? := some ((Ambulatory.payloads ctx rs p).map fun payload =>
+      { key := payload.artifactKey, artifact := payload.artifact, version := payload.version })
     record := (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++ ctx.record }
 
 /-- The display rows. -/

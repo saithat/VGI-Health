@@ -12,11 +12,12 @@ import type { UiScreen } from "./ui/types";
 import { clinicalTheme } from "./ui/theme";
 import { paint } from "./painter";
 import type { Html } from "./html";
+import type { Event } from "../../../lean/generated/ehr-types";
 
 declare global {
   interface Window {
     renderEhr: (tree: Html) => void;
-    renderUi: (screen: UiScreen) => void;
+    renderUi: (screen: UiScreen, onEvent?: (event: Event) => void) => void;
   }
 }
 const element = document.getElementById("root");
@@ -26,11 +27,11 @@ window.renderEhr = (tree) => {
   flushSync(() => root.render(paint(tree, () => {})));
 };
 
-window.renderUi = (screen) => {
+window.renderUi = (screen, onEvent = () => {}) => {
   flushSync(() =>
     root.render(
       <MantineProvider theme={clinicalTheme}>
-        <UiScreenView screen={screen} onEvent={() => {}} />
+        <UiScreenView screen={screen} onEvent={onEvent} />
       </MantineProvider>,
     ),
   );

@@ -99,17 +99,32 @@ export function projectLive(
       : /Orders|Labs|Sign|Verify|PreOp|PostOp|Rx|Refill/.test(screen)
         ? "order-entry"
         : screen;
+  const external = fhirDisplayContext(
+    bundle,
+    context.patient.id ?? "",
+    projection.facts.patientId,
+    context.encounter.id,
+  );
   return {
     ...projection,
     facts: {
       ...projection.facts,
       ...(drug ? { medToGive: drug } : {}),
-      ...fhirDisplayContext(
-        bundle,
-        context.patient.id ?? "",
-        projection.facts.patientId,
-        context.encounter.id,
-      ),
+      ...external,
+      artifactBindings: [
+        ...(projection.facts.artifactBindings ?? []).filter(
+          (binding) =>
+            !external.artifactBindings.some((item) => item.key === binding.key),
+        ),
+        ...external.artifactBindings,
+      ],
+      infoPayloads: [
+        ...(projection.facts.infoPayloads ?? []).filter(
+          (payload) =>
+            !external.infoPayloads.some((item) => item.info === payload.info),
+        ),
+        ...external.infoPayloads,
+      ],
       phase: { workflow, phase },
       episodeId: context.encounter.id ?? "",
       epochMinute: Math.floor(Date.parse(now) / 60000),

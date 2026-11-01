@@ -172,6 +172,26 @@ def shell (s : ScreenId) (nav : List (ScreenId × String)) (side : List Block)
    button s "back" .back "Back", goto s "home" "home" "Patient workspace"] ++
   navigator s nav ++ sidebar s side ++ tabStrip s "chart" "Chart review" chart
 
+/-- Ambulatory encounters keep their section list as real navigation through
+blueprint migration. Chart review stays in the workspace, so a second full chart
+rail does not compete with the encounter editor. Component IDs stay stable. -/
+def ambulatoryShell (s : ScreenId) (nav : List (ScreenId × String))
+    (chart : List Block) (navTitle : String := "Visit navigator") : List Component :=
+  ((shell s nav [] chart).filter (fun c => c.id != cid s "sidebar")).map fun c =>
+    if c.id == cid s "nav" then
+      { c with id := cid s "encounterNavigator", tag := "navigator", label := navTitle }
+    else if c.parent? == some (cid s "nav") then
+      { c with parent? := some (cid s "encounterNavigator") }
+    else if c.id == cid s "chart" then
+      { c with tag := "layout.focusedWorkspace" }
+    else c
+
+/-- An open clinical section. No extra collapse action is needed for ordinary
+rooming and documentation fields; optional history can still use `group`. -/
+def clinicalSection (s : ScreenId) (name label : String)
+    (parent : Option String := none) : Component :=
+  group s name label (collapsible := false) (parent := parent)
+
 /-! ## Medication order lines -/
 
 /-- The fields of one medication order line, in three sections (medication,

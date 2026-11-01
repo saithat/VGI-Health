@@ -64,7 +64,7 @@ def uiPayloadRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match infoPayload cx.facts i with
   | none => []
   | some p => ((if p.fields.isEmpty then [] else [p.fields]) ++ p.rows.map (·.fields)).map
-      (fun row => row.map (fun (label, value) => (label, uiDate value)))
+      (fun row => row.map (fun (label, value) => (uiClinicalHeading label, uiDate value)))
 
 /-- All clinical records, without truncation. Payload contracts contribute their
 clinical fields/rows, never a serialized payload, artifact key, or debug object. -/
@@ -80,15 +80,22 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
   | "vitals" => cx.disp.vitals.map vitalCells
   | "problemList" => cx.disp.problems.map problemCells
-  | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
+  | "resultTrend" => if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
+      cx.disp.labs.flatMap fun r =>
+        [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
+         ("Recorded", uiDate r.date), ("Abnormal", toString r.abnormal)] ::
+        r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
+          ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
+  | "labs" | "labResults" => cx.disp.labs.flatMap fun r =>
       [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
        ("Recorded", uiDate r.date), ("Abnormal", toString r.abnormal)] ::
       r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
         ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
   | "anticoagulants" | "anticoagulantList" =>
       (cx.disp.meds.filter fun r => inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet").map medCells
-  | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
-      [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
+  | "immunizations" | "immunizationHistory" => (cx.disp.immunizations.map fun r =>
+      [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)])
+      ++ uiPayloadRows cx i
   | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
       [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
        ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
@@ -99,10 +106,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
        ("Weight (kg)", (r.weightTenths?.map valueTextQty).getD ""),
        ("Height (cm)", (r.heightTenths?.map valueTextQty).getD "")]
   | "doseCheck" =>
-      [("Weight for dose check", (weightKgTenths? cx.facts cx.s).map (fun w => valueTextQty w ++ " kg")
-        |>.getD "No confirmed kg weight available")] ::
-      (orderLines cx.s).map fun (n, drug) => [("Line", toString (n + 1)), ("Drug", drug),
-        ("Dose check", if doseOutOfRange cx.facts cx.s n drug then "OUT OF RANGE" else "No out-of-range flag")]
+      uiDoseRows cx
   | "careGaps" => cx.facts.careGaps.map fun g => [("Care gap", g)]
   | "priorAuthStatus" => [[("Prior authorization", if (capturedAt? cx.s priorAuthElement cx.s.currentSlot).isSome
       then "Requested" else "Not requested")]]
@@ -132,6 +136,12 @@ def uiFieldKind : ValueKind → String
   | .text => "text" | .flag => "flag" | .identity => "identity"
   | .scan _ => "scan" | .cosign => "cosign"
 
+/-- Narrative captures use multiline editors. This is only the control's
+presentation; the same text Value, entry event and confirmations are retained. -/
+def uiNarrativeElement (e : ElementId) : Bool :=
+  ["hpi", "ros", "exam", "assessmentPlan", "anticipatoryGuidance",
+   "patientInstructions", "patientMessage", "refillNote", "refillDenyReason"].contains e
+
 /-- Preserve the clinical title once. A field repeats it as an entry prompt;
 a child info panel beneath the same heading uses a neutral record label. -/
 def uiTitledLabel (cx : Ctx) (it : ItemView) (label duplicate fallback : String) : String :=
@@ -145,6 +155,7 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
   let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
     "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
+    else if kind == .text && uiNarrativeElement e then "textarea"
     else uiFieldKind kind
   let unit := if kind == .medicationDose then want else
     match it.value? with | some (.qty _ u) => u | _ => want
@@ -286,17 +297,19 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
   it.comp.kind != .banner && !uiNavButton cx it && !uiSideAt cx it.comp.id
 
 
-/-- Fallback summaries are read-only and are emitted only for information not
-already present in the program's side column. -/
+/-- Fallback summaries are read-only. A program can request a focused workspace
+because its own Chart Review provides the reports. Explicit side components and
+reported home medications are retained; required commit reviews are unaffected. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
     (if (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
       [.info "" "Home medications (reported)" "importedHistory" "list"
         ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
+    (if cx.v.items.any (fun it => it.shown && it.comp.tag == "layout.focusedWorkspace") then [] else
     ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
        ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)
-      then none else some (.info "" label i "list" (uiSummaryRows cx i))
+      then none else some (.info "" label i "list" (uiSummaryRows cx i)))
 
 /-- Passive/unknown alerts cannot become modals, even in a malformed state.
 Only the matching Event.ack is accepted by the interpreter while a popup is open. -/

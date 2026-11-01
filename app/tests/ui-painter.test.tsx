@@ -42,6 +42,29 @@ beforeAll(() => {
   window.scrollTo = vi.fn();
 });
 afterEach(cleanup);
+
+it("dispatches the exact Lean component ID from a clinical navigator link", () => {
+  const onEvent = vi.fn();
+  const value: UiScreen = {
+    banner: [
+      ["Patient", "Alex Morgan"],
+      ["MRN", "123456"],
+    ],
+    title: "Rooming",
+    nav: [["Visit navigator", [["rooming.nav.note", "Visit Note"]]]],
+    workspace: [],
+    side: [],
+    modal: null,
+  };
+  render(
+    <MantineProvider>
+      <UiScreenView screen={value} onEvent={onEvent} />
+    </MantineProvider>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Visit Note" }));
+  expect(onEvent).toHaveBeenCalledWith({ click: { comp: "rooming.nav.note" } });
+});
+
 const field: NodeOf<"field"> = {
   comp: "entry",
   label: "Clinical value",
@@ -53,6 +76,29 @@ const field: NodeOf<"field"> = {
   humanOnly: false,
   required: false,
 };
+
+it("paints a semantic narrative editor and dispatches its complete multiline text", () => {
+  const onEvent = vi.fn();
+  render(
+    <MantineProvider>
+      <UiNodeView
+        node={{ field: { ...field, kind: "textarea", label: "HPI" } }}
+        onEvent={onEvent}
+      />
+    </MantineProvider>,
+  );
+  const editor = screen.getByRole("textbox", { name: "HPI" });
+  expect(editor.tagName).toBe("TEXTAREA");
+  fireEvent.change(editor, {
+    target: { value: "First paragraph.\nSecond paragraph." },
+  });
+  expect(onEvent).toHaveBeenCalledWith({
+    enter: {
+      comp: field.comp,
+      value: { text: { s: "First paragraph.\nSecond paragraph." } },
+    },
+  });
+});
 const button: NodeOf<"button"> = {
   comp: "action",
   label: "Continue",
@@ -465,8 +511,21 @@ describe("semantic EHR painter", () => {
   it("shows the encounter-role refusal on the disabled signing action", () => {
     const reason = "Pre-op orders are signed by a physician or surgeon";
     const onEvent = vi.fn();
-    paint([{ button: { ...button, comp: "signOrders", label: "Sign orders",
-      role: "primary", enabled: false, blockedReason: reason } }], onEvent);
+    paint(
+      [
+        {
+          button: {
+            ...button,
+            comp: "signOrders",
+            label: "Sign orders",
+            role: "primary",
+            enabled: false,
+            blockedReason: reason,
+          },
+        },
+      ],
+      onEvent,
+    );
     const action = screen.getByRole("button", { name: "Sign orders" });
     expect(action.getAttribute("disabled")).not.toBeNull();
     expect(action.getAttribute("title")).toBe(reason);

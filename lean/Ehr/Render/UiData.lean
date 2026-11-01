@@ -6,6 +6,17 @@ namespace Ehr.Render
 
 def uiChars (cs : List Char) : String := cs.foldl String.push ""
 
+/-- Public clinical headings for structured adapter fields. Unrecognized
+headings remain intact, so this presentation step never discards source data. -/
+def uiClinicalHeading (key : String) : String :=
+  (([("time", "Time"), ("patient", "Patient"), ("task", "Visit type"),
+     ("status", "Status"), ("received", "Received"), ("subject", "Subject"),
+     ("sender", "From"), ("owner", "Owner"), ("priority", "Priority"),
+     ("context", "Context"), ("test", "Test"), ("value", "Value"), ("unit", "Unit"),
+     ("flag", "Flag"), ("referenceRange", "Range"), ("collectedAt", "Collected"),
+     ("resultedAt", "Resulted"), ("hpi", "HPI"), ("ros", "ROS"),
+     ("exam", "Exam"), ("plan", "Assessment & Plan")] : List (String × String)).lookup key).getD key
+
 /-- Format complete ISO dates/date-times for display, preserving the recorded
 wall time. No timezone conversion or invented timestamp is performed. -/
 def uiDate (s : String) : String :=
@@ -54,6 +65,38 @@ def uiOrderInfo (i : InfoId) : Bool :=
       "controlledSigningStrength", "controlledSigningDosageForm", "controlledSigningQuantity",
       "controlledSigningDirections", "controlledSigningRefills", "controlledSigningEarliestFill",
       "controlledSigningPrescriberName", "controlledSigningPrescriberAddress", "controlledSigningDea"] : List String).contains i
+
+/-- Format the interpreter's fixed-point values without changing their units. -/
+def uiTenths (n : Nat) : String := s!"{n / 10}.{n % 10}"
+
+/-- Display the same current weight, dose, frequency and range used by the
+guard. Calculations remain previews; this function never captures a dose. -/
+def uiDoseRows (cx : Ctx) : List (List (String × String)) :=
+  let weight := weightKgTenths? cx.facts cx.s
+  let recorded := ((cx.disp.vitals.filter (fun row => row.code == "29463-7" && row.unit == "kg" &&
+    row.hundredths? == weight.map (· * 10))).head?).map (·.date)
+  let humanWeight := (capturedAt? cx.s "weight" 0).any (fun value => value.byHuman && value.provenance?.isNone)
+  let summary := [("Weight (kg)", weight.map uiTenths |>.getD "No confirmed kg weight"),
+    ("Measured", if humanWeight then "Entered this encounter; measurement time not supplied"
+      else recorded.map uiDate |>.getD "Measurement time not supplied")]
+  summary :: (orderLines cx.s).map fun (slot, drug) =>
+    let capture := fun element => capturedAt? cx.s element slot
+    let enteredDose := lineDoseMgTenths? cx.s slot
+    let mgPerKg := (capture "doseMgPerKg").bind fun value => match value.value with
+      | .qty n .mgPerKg => some n | _ => none
+    let reference := lookupDrug drug
+    [("Medication", drug)] ++ summary ++
+    [("Basis", mgPerKg.map (fun value => uiTenths value ++ " mg/kg/dose") |>.getD "Entered dose"),
+     ("Calculated dose (mg)", (mgPerKg.bind fun basis => weight.map fun kg => uiTenths (basis * kg / 10)).getD "Not available"),
+     ("Entered dose", (capture "dose").map uiCaptureText |>.getD "Not entered"),
+     ("Frequency", (capture "freq").map uiCaptureText |>.getD "Not entered"),
+     ("At entered frequency (mg/day)", (enteredDose.bind fun dose =>
+       (lineFreqPerDay? cx.s slot).map fun frequency => uiTenths (dose * frequency)).getD "Not available"),
+     ("Configured range", reference.map (fun d => if d.minMgPerKgTenths == 0 && d.maxMgPerKgTenths == 0
+       then "No weight-based range configured" else uiTenths d.minMgPerKgTenths ++ "–" ++ uiTenths d.maxMgPerKgTenths ++ " mg/kg/dose") |>.getD "Not configured"),
+     ("Maximum per dose", reference.bind (fun d => if d.maxDoseMgTenths == 0 then none else some (uiTenths d.maxDoseMgTenths ++ " mg")) |>.getD "Not configured"),
+     ("Dose check", if doseOutOfRange cx.facts cx.s slot drug then "OUT OF RANGE" else
+       if enteredDose.isNone || weight.isNone then "Incomplete — enter dose and current kg weight" else "No out-of-range flag")]
 
 /-- Replace internal identifiers using the spec's own clinical labels. Keep the
 reason's constraints (units, allowed values, receipt windows) intact. -/

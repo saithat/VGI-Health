@@ -18,6 +18,21 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- Focused documentation uses the program's reports instead of a duplicate
+generated rail. The ordinary field and commit-review proofs still apply. -/
+def focusedClinicProgram : Program :=
+  { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
+      { screen with components := screen.components.map fun c =>
+          if c.kind == .banner then { c with tag := "layout.focusedWorkspace" } else c } }
+def focusedClinicUi : UiScreen :=
+  renderUi uiRoomCtx.sp focusedClinicProgram uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
+#guard focusedClinicUi.side.isEmpty
+
+-- A narrative editor keeps the original interpreter's human-entry marker.
+#guard match uiField uiRoomCtx uiWeightItem "hpi" with
+  | .field _ _ kind _ _ _ _ human _ => kind == "textarea" && human == uiWeightItem.humanOnly
+  | _ => false
+
 -- Input updates rebuild the dependent cache; a rooming view cannot leak
 -- into a sign state. The equality also holds for every arbitrary context.
 #guard uiRoomCtx.v.screen == uiRoomCtx.s.screen

@@ -23,13 +23,13 @@ def presetScreen (owner : String) (screen : Screen) : Bool :=
 /-- Public activity and navigator names. Internal task categories never label the UI. -/
 def navigatorNames (s : Screen) : String × String :=
   let stepName := match s.id with
-    | "w1Hpi" => "History" | "w1Exam" => "Exam" | "w1Close" | "w5Close" => "Sign Visit"
+    | "w1Hpi" => "History / ROS" | "w1Exam" => "Exam / Assessment & Plan" | "w1Close" | "w5Close" => "Sign Visit"
     | "w3TrackBoard" => "ED Track Board" | "w4Worklist" => "Unit Census & MAR"
     | "w5Rooming" => "Rooming" | "w6Consult" => "Consults" | "w6ConsultClose" => "Sign Consult"
     | _ => s.title
   let activity := match s.workflow with
     | "W1" => "Schedule" | "W2" => "In Basket: Results" | "W3" => "ED Track Board"
-    | "W4" => "Unit Census & MAR" | "W5" => "Child Health"
+    | "W4" => "Unit Census & MAR" | "W5" => "Schedule"
     | "W6" => if ["w6Consult", "w6ConsultClose"].contains s.id then "Consults" else "OR Schedule"
     | "W7" => "In Basket: Rx Requests" | _ => "Chart Review"
   (activity, stepName)
