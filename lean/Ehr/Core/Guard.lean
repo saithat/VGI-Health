@@ -4,7 +4,7 @@ import Ehr.Core.Alerts
 # The commit guard
 
 A commit `c` happens only if, in the current state:
-1. the user's role may perform `c`;
+1. the user's role may perform `c` in this encounter;
 2. every entry requirement for `c` that applies is met: the element is
    captured, confirmed, valid (the right unit, a checked flag, a matching
    identity, a different cosigner, a matching scan), and, for a human-only
@@ -60,7 +60,7 @@ def whenHolds (facts : Facts) (s : State) : When → Bool
     | none => false
   | .highAlertMed => (drugsInPlay facts s).any isHighAlert
   | .abnormalResult => facts.abnormalResult
-  | .encounter kind => facts.encounterKind? == some kind
+  | .encounter kind => encounterMatches facts.encounterKind? kind
   | .weightBased => (orderLines s).any (fun p => weightBasedDrug p.2)
   | .naloxoneRisk => (orderLines s).any (fun p => naloxoneLine facts s p.1 p.2)
 
@@ -77,7 +77,7 @@ def lineMatches (facts : Facts) (s : State) (w : When) (slot : Nat) (d : String)
     | none => false
   | .highAlertMed => isHighAlert d
   | .abnormalResult => facts.abnormalResult
-  | .encounter kind => facts.encounterKind? == some kind
+  | .encounter kind => encounterMatches facts.encounterKind? kind
   | .weightBased => weightBasedDrug d
   | .naloxoneRisk => naloxoneLine facts s slot d
 
@@ -145,6 +145,28 @@ def roleOk (sp : Spec) (user : User) (c : CommitId) : Bool :=
   | some cs => cs.roles.contains user.role
   | none => false
 
+/-- The encounter's role restrictions permit this user to commit. -/
+def encounterRolesOk (sp : Spec) (facts : Facts) (user : User) (c : CommitId) : Bool :=
+  (sp.commit? c).any fun cs => cs.encounterRoleAllowed facts.encounterKind? user.role
+
+/-- Both the ordinary role list and the encounter's role restrictions permit the commit. -/
+def commitRoleOk (sp : Spec) (facts : Facts) (user : User) (c : CommitId) : Bool :=
+  roleOk sp user c && encounterRolesOk sp facts user c
+
+/-- The first matching encounter rule that forbids this user, for the blocked reason. -/
+def encounterRoleFailure? (sp : Spec) (facts : Facts) (user : User)
+    (c : CommitId) : Option EncounterRoleRule :=
+  (sp.commit? c).bind fun cs => (cs.encounterRoles?.getD []).find? fun rule =>
+    encounterMatches facts.encounterKind? rule.encounter && !rule.roles.contains user.role
+
+/-- A requirement scoped to a forbidden encounter never applies to this role.
+Other conditions remain conservatively relevant. Unknown commits are not exempt. -/
+def entryRelevantForRole (sp : Spec) (role : Role) (rq : EntryReq) : Bool :=
+  match rq.when with
+  | .encounter kind => (sp.commit? rq.commit).all fun cs =>
+      cs.encounterRoleAllowed (some kind) role
+  | _ => true
+
 /-- All entry requirements for `c` are met. -/
 def entriesOk (sp : Spec) (facts : Facts) (user : User) (s : State) (c : CommitId) : Bool :=
   sp.entries.all fun rq => rq.commit != c || entryMet sp facts user s rq
@@ -156,7 +178,7 @@ def reviewsOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : Comm
 /-- Guard items 1–3: role, entries, reviews. -/
 def guardBase (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : Bool :=
-  roleOk sp user c && entriesOk sp facts user s c && reviewsOk sp prog facts s c &&
+  commitRoleOk sp facts user c && entriesOk sp facts user s c && reviewsOk sp prog facts s c &&
     extraGuard sp prog facts s c
 
 /-- The full commit guard: role, entries, reviews, and interruptive alerts
@@ -190,6 +212,7 @@ def entryReason (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : Entr
 def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : String :=
   if !roleOk sp user c then s!"role: {user.role.name} may not perform {c}"
+  else if let some rule := encounterRoleFailure? sp facts user c then rule.reason
   else if !validationsOk sp facts s then "value validation failed"
   else if !defaultsOk sp prog then "required default missing or incorrect"
   else if !displaysOk sp prog facts s c then "structured display or action label required"

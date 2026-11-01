@@ -27,7 +27,7 @@ trusted payload, regardless of how many editable fields the program supplies. -/
 theorem missing_payload_not_completable (sp : Spec) (can p : Program)
     (facts : Facts) (user : User) (role : user.role = p.role)
     (scans : RecordAllowsScans sp facts) (c : CommitId)
-    (required : c ∈ requiredCommits sp can p) (rq : DisplayReq)
+    (required : c ∈ requiredCommitsFor sp can p facts user) (rq : DisplayReq)
     (member : rq ∈ sp.displays?.getD []) (missing : infoPayload facts rq.info = none)
     (active : ∀ s c, displayActive facts s (some c) rq = true) :
     ¬ Completable sp can p := by

@@ -20,9 +20,9 @@ private theorem accepted_depth (sp prev can p) (h : check sp prev can p = .ok) :
   have hall := (check_ok_iff sp prev can p).mp h
   simp only [rules, List.mem_cons, forall_eq_or_imp, List.not_mem_nil] at hall
   rcases hall with ⟨_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, hd, _, _, _⟩
-  intro cm hcm rq hrq heq
+  intro cm hcm rq hrq heq relevant
   have hr := List.all_eq_true.mp (List.all_eq_true.mp hd cm hcm) rq hrq
-  simp only [heq, bne_self_eq_false, Bool.false_or, List.any_eq_true, Bool.and_eq_true] at hr
+  simp only [heq, relevant, Bool.not_true, bne_self_eq_false, Bool.false_or, List.any_eq_true, Bool.and_eq_true] at hr
   obtain ⟨sc, hsc, hf, hp⟩ := hr
   cases hfield : fieldOf? sc.2.kind with
   | none => simp [hfield] at hf

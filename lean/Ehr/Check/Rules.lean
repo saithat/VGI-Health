@@ -228,7 +228,7 @@ def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : Scre
   | some x => some (x.id, s!"commit {c}: from screen {x.id} the user cannot get back to the {c} button on screen {s}")
   | none =>
     let fromS := reach s
-    let reqs := spec.entries.filter (·.commit == c)
+    let reqs := spec.entries.filter (fun rq => rq.commit == c && entryRelevantForRole spec prog.role rq)
     match reqs.find? (fun rq => !rq.perOrderLine && !openFieldOn prog fromS rq.element (fun _ => true)) with
     | some rq => some (s, s!"commit {c}: no field the user can reach for required element {rq.element}")
     | none =>
@@ -265,8 +265,9 @@ def universallyValid : ValueKind → Value → Bool
 /-- Allowed-value constraints for one element share a valid completion value.
 A sole waiver must also be nonempty. Checking intersections prevents two
 requirements on the same capture from demanding incompatible values. -/
-def entryValuesPossible (spec : Spec) (c : CommitId) : Bool :=
-  let reqs := spec.entries.filter (·.commit == c)
+def entryValuesPossible (spec : Spec) (c : CommitId) (role? : Option Role := none) : Bool :=
+  let reqs := spec.entries.filter fun rq => rq.commit == c &&
+    role?.all (fun role => entryRelevantForRole spec role rq)
   reqs.all fun rq =>
     match spec.element? rq.element with
     | none => false
@@ -321,7 +322,7 @@ def additionalCompletionIssue (spec : Spec) (prog : Program) (c : CommitId) : Op
 def completeForWithReach (spec : Spec) (prog : Program) (c : CommitId)
     (reach : ScreenId → List ScreenId) : Option (Option ScreenId × String) :=
   if let some issue := additionalCompletionIssue spec prog c then some (none, issue)
-  else if !entryValuesPossible spec c then
+  else if !entryValuesPossible spec c (some prog.role) then
     some (none, s!"commit {c}: allowed entry values have no common context-independent completion value")
   else match commitScreens prog c with
   | [] => some (none, s!"commit {c}: no button for it that the user can always see")
