@@ -3,19 +3,18 @@
  * with EHR_BIN). Inputs go to JSON files in a temp dir; outputs are read from
  * stdout and validated against the Lean-format mirrors.
  *
- * ASSUMED command lines (the Lean lane has not published the CLI yet; keep
- * this block in sync with agent/STATUS.md):
+ * Native command lines (JSON spec files for check, deploy and render):
  *
- *   ehr check     --spec <ver> --program P.json --prev PREV.json --canonical C.json
+ *   ehr check     --spec <spec.json> --program P.json --prev PREV.json --canonical C.json
  *                 stdout: Verdict              exit 0 = ok, 1 = violation
- *   ehr simulate  --spec <ver> --program P.json --persona PP.json --schedule DAY.json
+ *   ehr simulate  --spec <spec.json> --program P.json --persona PP.json --schedule DAY.json
  *                 --world <worldDir> --seed <n>
  *                 stdout: DayResult
- *   ehr min-clicks --spec <ver> --program P.json --schedule DAY.json --world <worldDir>
+ *   ehr min-clicks --spec <spec.json> --program P.json --schedule DAY.json --world <worldDir>
  *                 stdout: { tasks: [{ task, workflow?, clicks, keystrokes }] }
- *   ehr deploy    --spec <ver> --program P.json --prev PREV.json --canonical C.json --out <dir>
- *                 stdout: Certificate (exit 0) | Verdict (exit 1, refused; T4)
- *   ehr render-screens --spec <ver> --program P.json --fhir <bundle.json> --out <dir>
+ *   ehr deploy    --spec <spec.json> --program P.json --prev PREV.json --canonical C.json --out <dir>
+ *                 stdout: Certificate (exit 0 published, exit 1 refused; T4)
+ *   ehr render-screens --spec <spec.json> --program P.json --fhir <bundle.json> --out <dir>
  *                 writes one page-tree JSON (Html) per screen/state into <dir>,
  *                 named <screenId>.json or <screenId>__<state>.json; exit 0 = ok
  *                 (input to the offline screen check, src/screencheck.ts)
@@ -26,8 +25,8 @@
  *   ehr spec-export <name>       stdout: Spec
  *   (also init / step / view on stdin; the agent loop does not need them)
  *
- * `--spec` names a Lean spec module version ("v1", "v1.1", "v2"); the spec
- * itself is compiled into the checker, never passed in as JSON.
+ * The adapter resolves release versions to releases/<version>/spec.json.
+ * Simulator also accepts release version names; spec-export uses names.
  *
  * EHR_FAKE=1 swaps in `createFakeEhr()` (src/fake/ehr-fake.ts): plausible,
  * deterministic outputs FOR TESTS ONLY. It certifies nothing.
@@ -133,9 +132,13 @@ class CliEhr implements EhrClient {
     }
   }
 
+  private specPath(version: string): string {
+    return version.endsWith('.json') ? path.resolve(version) : path.join(REPO_ROOT, 'releases', version, 'spec.json');
+  }
+
   check(i: CheckInput): Promise<Verdict> {
     return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
-      const res = await run(this.binary, ['check', '--spec', i.specVersion, '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
+      const res = await run(this.binary, ['check', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
       return parseOut('check', res, verdictSchema);
     });
   }
@@ -143,7 +146,7 @@ class CliEhr implements EhrClient {
   simulate(i: SimulateInput): Promise<DayResult> {
     return this.withFiles({ program: i.program, persona: i.persona, schedule: i.schedule }, async (p) => {
       const res = await run(this.binary, [
-        'simulate', '--spec', i.specVersion, '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
+        'simulate', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
         '--schedule', p['schedule'] ?? '', '--world', i.worldDir, '--seed', String(i.seed),
       ]);
       if (res.code !== 0) throw new Error(`ehr simulate: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
@@ -154,7 +157,7 @@ class CliEhr implements EhrClient {
   minClicks(i: MinClicksInput): Promise<MinClicksResult> {
     return this.withFiles({ program: i.program, schedule: i.schedule }, async (p) => {
       const res = await run(this.binary, [
-        'min-clicks', '--spec', i.specVersion, '--program', p['program'] ?? '', '--schedule', p['schedule'] ?? '', '--world', i.worldDir,
+        'min-clicks', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--schedule', p['schedule'] ?? '', '--world', i.worldDir,
       ]);
       if (res.code !== 0) throw new Error(`ehr min-clicks: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       return parseOut('min-clicks', res, minClicksResultSchema);
@@ -164,18 +167,19 @@ class CliEhr implements EhrClient {
   deploy(i: DeployInput): Promise<DeployResult> {
     return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
       const res = await run(this.binary, [
-        'deploy', '--spec', i.specVersion, '--program', p['program'] ?? '', '--prev', p['prev'] ?? '',
+        'deploy', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '',
         '--canonical', p['canonical'] ?? '', '--out', i.outDir,
       ]);
-      if (res.code === 0) return { deployed: true, certificate: parseOut('deploy', res, certificateSchema) };
-      return { deployed: false, verdict: parseOut('deploy', res, verdictSchema) };
+      const certificate = parseOut('deploy', res, certificateSchema);
+      if (res.code === 0 && certificate.verdict === 'ok') return { deployed: true, certificate };
+      return { deployed: false, verdict: certificate.verdict };
     });
   }
 
   renderScreens(i: RenderInput): Promise<string[]> {
     return this.withFiles({ program: i.program }, async (p) => {
       await mkdir(i.outDir, { recursive: true });
-      const res = await run(this.binary, ['render-screens', '--spec', i.specVersion, '--program', p['program'] ?? '', '--fhir', i.fhir, '--out', i.outDir]);
+      const res = await run(this.binary, ['render-screens', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--out', i.outDir]);
       if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
     });

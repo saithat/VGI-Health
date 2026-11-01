@@ -1,8 +1,7 @@
 # Agent lane status (`agent/`, branch `lane/agent`)
 
-The overnight loop is built, tested, and verified against live Claude and Codex. Until the Lean
-`ehr` CLI has `check`, `simulate`, `min-clicks`, and `deploy`, every run needs `EHR_FAKE=1`.
-Runs made that way certify nothing; the run manifest and every certificate say so.
+The overnight loop is built, tested, and verified against live Claude and Codex. The integration adapter now uses the native checker, simulator, renderer and deploy commands.
+`EHR_FAKE=1` remains for unit tests only; fake certificates certify nothing.
 
 ## What is built
 
@@ -64,6 +63,8 @@ Environment variables: `ANTHROPIC_API_KEY`, `AGENT_MODEL`, `AGENT_EFFORT`, `CODE
 ## Assumed formats (please confirm or correct; the Lean, world, and content lanes own them)
 
 ### `ehr` CLI
+
+Integration update: release version arguments resolve to absolute `releases/<version>/spec.json` paths. Deploy prints a Certificate on both success and refusal; the adapter extracts its verdict on refusal. The stub adapter tests pin this native contract. The historical assumptions below are superseded by this update.
 The real CLI (`lean/Main.lean`, M3) has `init`, `step`, `view`, `run-batch <file.jsonl>`, and `spec-export <name>`. The adapter matches `run-batch` (JSONL `BatchCase` in, JSONL `BatchStep` out) and `spec-export <name>`. The commands below are **assumptions**. `test/ehr-adapter.test.ts` pins them; edit `src/ehr.ts` when the real ones land.
 
 | Command | Assumed output |

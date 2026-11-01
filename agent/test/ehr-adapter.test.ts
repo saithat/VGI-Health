@@ -1,5 +1,5 @@
 /**
- * The real `ehr` adapter against a stub binary: pins the ASSUMED command
+ * The real `ehr` adapter against a stub binary: pins the native command
  * lines and output handling (documented in src/ehr.ts and STATUS.md) so the
  * Lean lane can diff its CLI against them.
  */
@@ -21,7 +21,7 @@ async function stub(dir: string, verdictOk: boolean): Promise<{ bin: string; log
 echo "$@" >> ${log}
 case "$1" in
   check) ${verdictOk ? "echo '\"ok\"'" : `echo '${JSON.stringify(VIOLATION)}'; exit 1`} ;;
-  deploy) ${verdictOk ? `echo '${JSON.stringify(CERT)}'` : `echo '${JSON.stringify(VIOLATION)}'; exit 1`} ;;
+  deploy) ${verdictOk ? `echo '${JSON.stringify(CERT)}'` : `echo '${JSON.stringify({ ...CERT, verdict: VIOLATION })}'; exit 1`} ;;
   simulate) echo '${JSON.stringify(DAY)}' ;;
   min-clicks) echo '{"tasks":[{"task":"t1","workflow":"W1","clicks":6,"keystrokes":2}]}' ;;
   run-batch) printf '{"case":0,"index":0}\n{"case":0,"index":1}\n' ;;
@@ -51,10 +51,10 @@ describe('ehr CLI adapter (stub binary)', () => {
     expect(await ehr.runBatch([{ spec: {}, program: {}, facts: {}, user: {}, events: [] }])).toEqual([{ case: 0, index: 0 }, { case: 0, index: 1 }]);
     expect((await ehr.specExport('tiny')).version).toBe('tiny-1');
     const lines = (await readFile(log, 'utf8')).trim().split('\n');
-    expect(lines[0]).toMatch(/^check --spec v1 --program \S+program\.json --prev \S+prev\.json --canonical \S+canonical\.json$/);
-    expect(lines[1]).toMatch(/^deploy --spec v1 --program \S+ --prev \S+ --canonical \S+ --out /);
-    expect(lines[2]).toMatch(/^simulate --spec v1 --program \S+ --persona \S+persona\.json --schedule \S+schedule\.json --world \/w --seed 3$/);
-    expect(lines[3]).toMatch(/^min-clicks --spec v1 --program \S+ --schedule \S+ --world \/w$/);
+    expect(lines[0]).toMatch(/^check --spec \S+\/releases\/v1\/spec\.json --program \S+program\.json --prev \S+prev\.json --canonical \S+canonical\.json$/);
+    expect(lines[1]).toMatch(/^deploy --spec \S+\/releases\/v1\/spec\.json --program \S+ --prev \S+ --canonical \S+ --out /);
+    expect(lines[2]).toMatch(/^simulate --spec \S+\/releases\/v1\/spec\.json --program \S+ --persona \S+persona\.json --schedule \S+schedule\.json --world \/w --seed 3$/);
+    expect(lines[3]).toMatch(/^min-clicks --spec \S+\/releases\/v1\/spec\.json --program \S+ --schedule \S+ --world \/w$/);
     expect(lines[4]).toMatch(/^run-batch \S+batch\.jsonl$/);
     expect(lines[5]).toBe('spec-export tiny');
   });
