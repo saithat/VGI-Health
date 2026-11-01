@@ -5,6 +5,11 @@ import type { Event } from "../../lean/generated/ehr-types";
 import { UiScreenView } from "../src/ehr/ui/Screen";
 import { UiChildren, UiNodeView } from "../src/ehr/ui/nodes";
 import { entryEvent } from "../src/ehr/ui/events";
+import {
+  formatDisplayValue,
+  severityTone,
+  statusTone,
+} from "../src/ehr/ui/display";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import { clinicalTheme } from "../src/ehr/ui/theme";
 import {
@@ -188,6 +193,130 @@ describe("semantic EHR painter", () => {
       screen.getByRole("combobox", { name: "Clinical value" }),
     ).toBeTruthy();
     expect(screen.getByText("No records on file")).toBeTruthy();
+  });
+  it("renders list records as compact inline values without record tables", () => {
+    const { container } = paint([
+      {
+        info: {
+          comp: "history",
+          infoId: "history",
+          label: "History",
+          display: "list",
+          rows: [
+            [
+              ["Problem", "Hypertension"],
+              ["Status", "active"],
+              ["Onset", "2026-10-31T09:14:00Z"],
+            ],
+            [
+              ["Problem", "Diabetes"],
+              ["Status", "resolved"],
+            ],
+          ],
+        },
+      },
+    ]);
+    const list = screen.getByRole("list", { name: "History" });
+    expect(list.querySelectorAll("li")).toHaveLength(2);
+    expect(list.querySelector(".record-primary")?.textContent).toBe(
+      "Hypertension",
+    );
+    expect(list.querySelector(".record-secondary")?.textContent).toBe(
+      "Status: active",
+    );
+    expect(list.textContent).toContain("Diabetes");
+    expect(container.querySelector("table, dl")).toBeNull();
+    expect(list.querySelector("time")?.getAttribute("datetime")).toBe(
+      "2026-10-31T09:14:00Z",
+    );
+  });
+  it("formats ISO display dates without normalizing invalid dates or touching clinical text", () => {
+    expect(formatDisplayValue("1968-07-03")).toBe("03 Jul 1968");
+    expect(formatDisplayValue("2024-02-29")).toBe("29 Feb 2024");
+    const stamp = "2026-10-31T09:14:00-07:00";
+    expect(formatDisplayValue(stamp)).toBe(
+      new Intl.DateTimeFormat("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(new Date(stamp)),
+    );
+    for (const value of [
+      "2026-02-29",
+      "2026-02-31T09:00:00Z",
+      "2026-10-31T25:00:00Z",
+      "2026-13-01",
+      "2026-10-31T09:00:00+99:00",
+      "Recorded 2026-10-31T09:00:00Z",
+      "0.5 mg",
+      "unknown",
+      "",
+    ]) {
+      expect(formatDisplayValue(value)).toBe(value);
+    }
+  });
+  it("styles only explicit medication statuses and never infers severity from interruption tier", () => {
+    expect(
+      [
+        "Scheduled 12:00",
+        "Due 09:00",
+        "Overdue 09:00",
+        "Given 09:12",
+        "Held",
+        "Refused",
+        "Stopped",
+        "Not charted",
+      ].map(statusTone),
+    ).toEqual([
+      "gray",
+      "blue",
+      "red",
+      "green",
+      "yellow",
+      "violet",
+      "gray",
+      "gray",
+    ]);
+    expect(statusTone("unknown")).toBeUndefined();
+    expect(statusTone("active")).toBeUndefined();
+    expect(["interruptive", "passive", "removable"].map(severityTone)).toEqual([
+      "blue",
+      "blue",
+      "blue",
+    ]);
+    expect(severityTone("severe")).toBe("red");
+    expect(severityTone("warning")).toBe("yellow");
+    const { container } = paint([
+      {
+        info: {
+          comp: "mar",
+          infoId: "mar",
+          label: "Medication administration",
+          display: "table",
+          rows: [
+            [
+              ["Medication", "Medicine A 250 mg"],
+              ["Status", "Given 09:12"],
+            ],
+            [
+              ["Medication", "Medicine B 10 mg"],
+              ["Status", "Overdue 09:00"],
+            ],
+            [
+              ["Medication", "Medicine C 5 mg"],
+              ["Status", "unknown"],
+            ],
+          ],
+        },
+      },
+    ]);
+    expect(container.querySelector(".status-green")?.textContent).toBe(
+      "Given 09:12",
+    );
+    expect(container.querySelector(".status-red")?.textContent).toBe(
+      "Overdue 09:00",
+    );
+    expect(container.querySelectorAll(".clinical-status")).toHaveLength(2);
   });
   it.each([
     ["text", "abc", null, { text: { s: "abc" } }],

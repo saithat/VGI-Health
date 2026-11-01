@@ -44,7 +44,7 @@ required alongside the new human outcome enum, preserving the stricter policy.
 
 There are 24 permanent bad programs, including eight new legal-content/display
 mutations. The human-event walkthroughs exercise every new artifact action.
-`STATS.md` reports source/basis counts. `catalog.json` records each rule's
+`programs/canonical/STATS.md` reports source/basis counts. `catalog.json` records each rule's
 `encodedIn`, or an explicit reason where it requires core features or lies
 outside the checker boundary.
 

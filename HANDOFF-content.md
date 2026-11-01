@@ -70,8 +70,8 @@ python lean/Ehr/Canonical/replay_features.py
 
 Never run two Lake processes at once. The original exporter console still says
 16 seeds; its actual loop exports all 32. The audit asserts the actual corpus.
-The old `encoding-plan.md` describes pass 1; the executable second-pass mapping
-is `feature_data.py`. Running the rules-research catalog builder can overwrite
+`docs/rules/catalog.md` retains the first-pass scope and backend limits; the
+executable second-pass mapping is `feature_data.py`. Running the rules-research catalog builder can overwrite
 content encoding metadata; rerun `encode.py` afterward.
 
 Validation on the expanded exports:

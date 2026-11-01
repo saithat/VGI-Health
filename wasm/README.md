@@ -16,7 +16,7 @@ The build emits `dist/ehr.mjs`, `ehr.wasm`, and the `ehr.js` wrapper. Await
 `loadEhr()` once; subsequent `ehr.step(jsonString)` calls return synchronously.
 The Init-only comparison is `ehr-init.mjs` / `ehr-init.wasm`.
 
-See [the spike report](../docs/design/wasm-spike.md) for exact pins, measured
+See [the WASM integration report](../docs/design/wasm.md) for exact pins, measured
 sizes/latency, native equivalence tests, memory ownership, and the Lean 4.35
 runtime-initializer constraint that the main interpreter must handle.
 

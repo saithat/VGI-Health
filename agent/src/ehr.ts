@@ -4,7 +4,7 @@
  * stdout and validated against the Lean-format mirrors.
  *
  * ASSUMED command lines (the Lean lane has not published the CLI yet; keep
- * this block in sync with agent/STATUS.md):
+ * this block in sync with docs/STATUS.md):
  *
  *   ehr check     --spec <ver> --program P.json --prev PREV.json --canonical C.json
  *                 stdout: Verdict              exit 0 = ok, 1 = violation

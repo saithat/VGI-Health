@@ -9,6 +9,9 @@ import {
   Title,
 } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
+import { ClinicalIcon } from "./Icons";
+import { DisplayValue } from "./display";
+import { clinicalCssVariables } from "./theme";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
 
@@ -46,13 +49,6 @@ function bannerFields(screen: UiScreen): Pair[] {
 }
 export function PatientBanner({ fields }: { fields: Pair[] }) {
   const name = bannerValue(fields, /^(patient|name|patient name)$/i);
-  const initial =
-    name
-      ?.split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0])
-      .join("") ?? "PT";
   return (
     <AppShell.Header
       component="header"
@@ -61,7 +57,7 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
     >
       <div className="clinical-brand">
         <span className="brand-mark" aria-hidden="true">
-          ✚
+          <ClinicalIcon name="pill" />
         </span>
         <strong>
           VGI <span>HEALTH</span>
@@ -72,19 +68,21 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
       </div>
       <div className="clinical-banner-content">
         <div className="patient-avatar" aria-hidden="true">
-          {initial}
+          <ClinicalIcon name="user" size={20} />
         </div>
         <div className="patient-identity">
           <Text component="span" className="patient-name">
             {name ?? "Patient chart"}
           </Text>
-          <Group gap={14} mt={3}>
+          <Group gap={12} mt={4}>
             {fields
               .filter(([label]) => /^(dob|mrn|age.*sex)$/i.test(label))
               .map(([label, value]) => (
                 <span key={label}>
                   <span className="banner-label">{label} </span>
-                  <strong>{value || "Not recorded"}</strong>
+                  <strong>
+                    <DisplayValue value={value || "Not recorded"} />
+                  </strong>
                 </span>
               ))}
           </Group>
@@ -100,22 +98,25 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
                 <Badge
                   key={label}
                   color={
-                    !value.trim() || /not recorded/i.test(value)
+                    !value.trim() ||
+                    /not recorded|no allergy records|not reviewed/i.test(value)
                       ? "yellow"
                       : /no known|nkda/i.test(value)
                         ? "gray"
                         : "red"
                   }
-                  variant="filled"
+                  variant="light"
                   className="allergy-badge"
                   size="lg"
                 >
-                  {label}: {value || "Not recorded"}
+                  {label}: <DisplayValue value={value || "Not recorded"} />
                 </Badge>
               ) : (
                 <span key={label} className="banner-detail">
                   <span className="banner-label">{label}</span>
-                  <strong>{value || "Not recorded"}</strong>
+                  <strong>
+                    <DisplayValue value={value || "Not recorded"} />
+                  </strong>
                 </span>
               ),
             )}
@@ -147,7 +148,7 @@ export function WorkflowNav({
           items.some(([id]) => id === active) ? [String(index)] : [],
         )}
         chevronPosition="right"
-        chevron={<span aria-hidden="true">⌄</span>}
+        chevron={<ClinicalIcon name="chevron" />}
         variant="default"
         className="workflow-groups"
       >
@@ -198,11 +199,13 @@ export function UiScreenView({
   return (
     <AppShell
       className="clinical-app"
-      header={{ height: 144 }}
-      navbar={{ width: 208, breakpoint: 0 }}
+      style={{ ...clinicalCssVariables }}
+      header={{ height: 104 }}
+      navbar={{ width: 224, breakpoint: 0 }}
       padding="md"
     >
       <div
+        className="clinical-shell"
         aria-hidden={modal ? true : undefined}
         ref={(element) => {
           if (element) element.inert = Boolean(modal);
@@ -218,21 +221,21 @@ export function UiScreenView({
               </Text>
               <Title order={1}>{screen.title}</Title>
             </div>
-            <Badge variant="dot" color="teal" size="md">
+            <Badge color="gray" size="md">
               Active encounter
             </Badge>
           </div>
           <div
             className={`clinical-workspace${screen.side.length ? " with-side" : ""}`}
           >
-            <div className="clinical-workspace-body">
-              <UiChildren nodes={screen.workspace} onEvent={onEvent} />
-            </div>
             {screen.side.length > 0 && (
               <aside aria-label="Clinical summary" className="clinical-side">
                 <UiChildren nodes={screen.side} onEvent={onEvent} />
               </aside>
             )}
+            <div className="clinical-workspace-body">
+              <UiChildren nodes={screen.workspace} onEvent={onEvent} />
+            </div>
           </div>
           <div className="workspace-footer">
             VGI Health <span aria-hidden="true">·</span> Clinical encounter
@@ -252,8 +255,8 @@ export function UiScreenView({
         }}
         transitionProps={{ duration: 0 }}
       >
-        <Modal.Overlay backgroundOpacity={0.42} blur={2} />
-        <Modal.Content>
+        <Modal.Overlay backgroundOpacity={0.24} />
+        <Modal.Content style={{ ...clinicalCssVariables }}>
           <Modal.Header role="presentation">
             <Modal.Title>
               {modal
@@ -263,7 +266,7 @@ export function UiScreenView({
           </Modal.Header>
           <Modal.Body>
             {modal && (
-              <div className="clinical-modal-body">
+              <div className="clinical-modal-body" data-autofocus tabIndex={-1}>
                 <UiChildren nodes={[modal]} onEvent={onEvent} />
               </div>
             )}

@@ -113,7 +113,7 @@ def initializer_body(code, name):
         end += 1
     body = code[start:end - 1]
     if "lean_initialize();" in body:
-        raise RuntimeError(f"{name} calls the full Lean initializer. See wasm-spike.md module naming constraint.")
+        raise RuntimeError(f"{name} calls the full Lean initializer. See wasm.md module naming constraint.")
     return body
 
 

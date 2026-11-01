@@ -140,13 +140,13 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
       ]),
     ),
     ...nest(entry("main"), [
-      ...expectedChildrenAria(screen.workspace),
       ...(screen.side.length
         ? nest(
             entry("complementary", "Clinical summary"),
             expectedChildrenAria(screen.side),
           )
         : []),
+      ...expectedChildrenAria(screen.workspace),
     ]),
   ];
 }
