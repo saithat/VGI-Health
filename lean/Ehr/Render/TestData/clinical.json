@@ -69,7 +69,10 @@
             ],
             "severity": "severe"
           }
-        ]
+        ],
+        "patient": {
+          "reference": "urn:uuid:0"
+        }
       }
     },
     {
@@ -118,7 +121,10 @@
             ],
             "severity": "severe"
           }
-        ]
+        ],
+        "patient": {
+          "reference": "urn:uuid:0"
+        }
       }
     },
     {
@@ -167,7 +173,10 @@
             ],
             "severity": "severe"
           }
-        ]
+        ],
+        "patient": {
+          "reference": "urn:uuid:0"
+        }
       }
     },
     {
@@ -190,7 +199,10 @@
           {
             "text": "250 mg twice daily"
           }
-        ]
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
       }
     },
     {
@@ -213,7 +225,10 @@
           {
             "text": "250 mg twice daily"
           }
-        ]
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
       }
     },
     {
@@ -236,7 +251,10 @@
           {
             "text": "250 mg twice daily"
           }
-        ]
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
       }
     },
     {
@@ -267,6 +285,9 @@
           "value": 99,
           "code": "kg",
           "unit": "kg"
+        },
+        "subject": {
+          "reference": "urn:uuid:0"
         }
       }
     },
@@ -298,6 +319,9 @@
           "value": 72.5,
           "code": "kg",
           "unit": "kg"
+        },
+        "subject": {
+          "reference": "urn:uuid:0"
         }
       }
     },
@@ -356,7 +380,10 @@
               ]
             }
           }
-        ]
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
       }
     },
     {
@@ -406,7 +433,10 @@
               }
             ]
           }
-        ]
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
       }
     }
   ]

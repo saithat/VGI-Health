@@ -51,6 +51,9 @@
           "value": 160,
           "code": "[lb_av]",
           "unit": "[lb_av]"
+        },
+        "subject": {
+          "reference": "urn:uuid:0"
         }
       }
     },
@@ -82,6 +85,9 @@
           "value": 100,
           "code": "unknown",
           "unit": "unknown"
+        },
+        "subject": {
+          "reference": "urn:uuid:0"
         }
       }
     }

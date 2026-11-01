@@ -44,7 +44,7 @@ theorem T11_med_panel (cx : Ctx) (r : MedRow) (hr : r ∈ cx.disp.meds)
 /-- T11 end to end: every active bundle allergy is in its shown component. -/
 theorem T11_allergy_fhir_page (cx : Ctx) (ctx : FactsContext) (b r : Json)
     (hp : Fhir.parseBundle ctx b = .ok (cx.facts, cx.disp))
-    (hr : r ∈ Fhir.bundleResources b) (ha : Fhir.isAllergy r = true) (active : Fhir.allergyActive r = true)
+    (hr : r ∈ Fhir.chartResourcesOfBundle b) (ha : Fhir.isAllergy r = true) (active : Fhir.allergyActive r = true)
     (hi : infoShown cx.sp cx.prog cx.facts cx.s "allergyList" = true) :
     ∃ n, Within n (page cx) ∧ (∃ id, n.HasCompId id) ∧ Within (allergyTr (Fhir.allergyRow r)).toHtml n :=
   T11_allergy_panel cx _ (Fhir.T11_allergy ctx b _ _ hp r hr ha active) hi
@@ -52,7 +52,7 @@ theorem T11_allergy_fhir_page (cx : Ctx) (ctx : FactsContext) (b r : Json)
 /-- T11 end to end: every active bundle medication is in its shown component. -/
 theorem T11_med_fhir_page (cx : Ctx) (ctx : FactsContext) (b r : Json)
     (hp : Fhir.parseBundle ctx b = .ok (cx.facts, cx.disp))
-    (hr : r ∈ Fhir.bundleResources b) (hm : Fhir.isMedRequest r = true) (active : Fhir.medActive r = true)
+    (hr : r ∈ Fhir.chartResourcesOfBundle b) (hm : Fhir.isMedRequest r = true) (active : Fhir.medActive r = true)
     (hi : infoShown cx.sp cx.prog cx.facts cx.s "currentMeds" = true) :
     ∃ n, Within n (page cx) ∧ (∃ id, n.HasCompId id) ∧ Within (medTr (Fhir.medRow r)).toHtml n :=
   T11_med_panel cx _ (Fhir.T11_med ctx b _ _ hp r hr hm active) hi
