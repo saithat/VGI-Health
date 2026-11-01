@@ -1,4 +1,4 @@
-Catalog-module rules are encoded but switched off under the core profile.
+Catalog-module rules are encoded; core keeps only denyRefill for W7 denial tasks.
 
 # Rules catalog and classification
 

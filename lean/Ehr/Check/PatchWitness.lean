@@ -159,7 +159,7 @@ theorem blueprint_keeps_field (source : List Screen) (s : Screen) (c : Component
 def canonicalSource : List Screen :=
   let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++
     W4.screens ++ W5.screens ++ W6.screens ++ W7.screens
-  if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base
+  if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base.map CorePlacements.augment
 
 /-- Alerts and link annotation retain a field with no declared source/link. -/
 theorem canonical_keeps_plain_field (c : Component)

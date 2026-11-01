@@ -760,7 +760,7 @@ def write_outputs(catalog, files, excluded):
     counts = collections.Counter(fit_base(r) for r in catalog)
     group_counts = collections.Counter(r['needsCoreFeature'] for r in catalog if r['needsCoreFeature'])
     basis = collections.Counter(r['basis'] for r in catalog)
-    lines = ['Catalog-module rules are encoded but switched off under the core profile.\n',
+    lines = ['Catalog-module rules are encoded; core keeps only denyRefill for W7 denial tasks.\n',
         '# Rules catalog and classification\n',
         'Generated from reviewed decisions in `scripts/rules/build_catalog.py`. Baseline: the checked-in `lean/Ehr/Specs/V1.lean` and `lean/Ehr/Core/Types.lean`, not pending content-lane work. Research input digests are pinned so a reorder/update cannot silently reuse the wrong indexed decision. The deliverable is a classification and implementation plan; it does not change the Lean spec.\n',
         f"Read {sum(f['rows'] for f in files)} source rows; excluded {len(excluded)} nonqualifying rows; retained {len(catalog)} unique rules after citation + atomic-requirement de-duplication. Basis: {basis['law']} law, {basis['entrenched']} entrenched. Distinct citations remain distinct legal rules even when their encodings can share a field. The two guidance-lane files are compatibility mirrors, not twice as many rules. `sourceIds` keeps every distinct source id, and `sourceLocations` keeps every file occurrence, including identical ids in mirrors.\n",
@@ -897,8 +897,11 @@ if __name__=='__main__':
     if '--profile-note-only' in sys.argv:
         # Preserve encoding metadata added by encode.py and feature_encode.py.
         path = RULES / 'catalog.md'
-        note = 'Catalog-module rules are encoded but switched off under the core profile.\n\n'
+        note = 'Catalog-module rules are encoded; core keeps only denyRefill for W7 denial tasks.\n\n'
         text = path.read_text()
+        previous = 'Catalog-module rules are encoded but switched off under the core profile.\n\n'
+        if text.startswith(previous):
+            text = text[len(previous):]
         if not text.startswith(note):
             path.write_text(note + text)
         sys.exit(0)

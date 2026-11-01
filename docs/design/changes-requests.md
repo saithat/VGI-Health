@@ -1839,13 +1839,18 @@ release/persona for each of 15 runs. Completed/incomplete counts:
 
 | Release | P1 | P2 | P3 | P4 | P5 |
 |---|---:|---:|---:|---:|---:|
-| v1 | 36/6 | 22/0 | 38/0 | 22/0 | 14/4 |
-| v1.1 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
-| v2 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
+| v1 | 39/3 | 22/0 | 38/0 | 22/0 | 14/4 |
+| v1.1 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
+| v2 | 42/0 | 22/0 | 38/0 | 22/0 | 18/0 |
 
-All three releases leave P1 refill-denial tasks `d01-P1-W7-027`, `028`, `033`
-incomplete: core has no `denyRefill` commit, and the simulator reports
-"no commit in spec ... for workflow Ehr.Workflow.W7". The v1-only incomplete
+The W7 denial gap is resolved: core explicitly keeps `denyRefill`, its two
+Federal entries and the action on `w7Decision`, reusing both base inputs. P1
+refill-denial tasks `d01-P1-W7-027`, `028`, `033` now complete in all releases.
+The actual simulator goal function reports zero core/full differences across
+1,284 world tasks (115 W7 tasks, including 20 denials in the current files).
+No `Sim/**` changes were needed. See `lean/Ehr/Check/profile-goals-report.json`.
+
+The v1-only incomplete
 W1 tasks are P1 `006`, `010`, `015` and P5 `008`, `010`, `016`, `018`; complaints
 include absent `orderKind`/`orderCode` (introduced in v1.1). P1 `010` makes one
 navigation click before giving up; the other listed W1 tasks make none.
