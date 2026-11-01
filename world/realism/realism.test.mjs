@@ -62,12 +62,13 @@ test('all ten day graphs have full lists, role assignments, standing orders, sen
     assert.equal(find('P5','consults').entry.length,3);
     for(const e of resources.filter(r=>r.resourceType==='Encounter')) {
       assert.ok(e.location.length&&e.participant.length>=2);
+      if(/influenza/i.test(e.reasonCode?.[0]?.text??''))assert.ok(resources.some(r=>r.resourceType==='ServiceRequest'&&r.encounter?.reference===`Encounter/${e.id}`&&codes(r).includes('droplet-precautions')));
       if(e.class.code!=='EMER'||e.extension?.some(x=>x.url===EXT+'disposition'&&x.valueString==='Admit')) {
         const orders=resources.filter(r=>r.resourceType==='ServiceRequest'&&r.encounter?.reference===`Encounter/${e.id}`);
         const statusOrder=orders.find(r=>codes(r).some(c=>['full-code','dnr'].includes(c)));
         assert.ok(statusOrder);
         assert.ok(!/RN/.test(byKey.get(statusOrder.requester.reference).name[0].text),'Code status order must have a physician requester');
-        assert.ok(orders.some(r=>codes(r).some(c=>['no-isolation','contact-precautions'].includes(c))));
+        assert.ok(orders.some(r=>codes(r).some(c=>['no-isolation','contact-precautions','droplet-precautions'].includes(c))));
       }
     }
     dnr+=resources.filter(r=>codes(r).includes('dnr')).length;

@@ -103,8 +103,10 @@ export function reconcileBundle(source, { date = '2026-11-02' } = {}) {
   }
   for (const r of resources) if (r.resourceType === 'Encounter') {
     const cls = r.class?.code;
-    const department = text(r.serviceType) || (cls === 'EMER' ? 'Emergency Medicine' : cls === 'IMP' ? 'Hospital Medicine' : age<18 ? 'Pediatrics' : 'Internal Medicine');
-    r.type = [{text:`${cls==='EMER'?'Emergency Visit':cls==='IMP'?'Inpatient Stay':cls==='SS'?'Surgical Visit':'Office Visit'} – ${department}`}];
+    const originalType=(r.type??[]).map(text).join(' ');
+    const prenatal=/prenatal|antenatal|postnatal|obstetric/i.test(originalType);
+    const department = text(r.serviceType) || (prenatal?'Obstetrics':cls==='SS'?'General Surgery':null) || (cls === 'EMER' ? 'Emergency Medicine' : cls === 'IMP' ? 'Hospital Medicine' : age<18 ? 'Pediatrics' : 'Internal Medicine');
+    r.type = [{text:`${cls==='EMER'?'Emergency Visit':cls==='IMP'?'Inpatient Stay':cls==='SS'?'Surgical Visit':prenatal?'Prenatal Visit':/well child/i.test(originalType)?'Well Child Visit':'Office Visit'} – ${department}`}];
     r.serviceType = {text:department};
     if (r.serviceProvider?.display) r.serviceProvider.display = title(r.serviceProvider.display);
     for (const l of r.location ?? []) if (l.location?.display) l.location.display = title(l.location.display);

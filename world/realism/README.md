@@ -37,3 +37,9 @@ Select collections by their List and day/persona tags, rather than combining
 all seeded days into one census. Source clinical changes are shared across days.
 The fixed original simulator episodes remain single-patient tasks. The overlay
 is an authored synthetic chart review, not inferred treatment recommendations.
+
+Known baseline issue: the additional scripts/synthetic-hospital cohort test has
+a stale formulary-source parser that assumes rxnorm immediately follows name.
+Current Lean doseUnits fields break that guard at the unchanged baseline too.
+The failure and baseline hashes are recorded in realism-verification.json; no
+source fixture, converter, Lean file or test expectation was altered to hide it.

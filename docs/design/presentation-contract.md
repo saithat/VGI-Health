@@ -257,8 +257,13 @@ are cross-coverage work.
   Codes full-code / dnr display Full Code / Do Not Resuscitate (DNR).
   DNR has a synthetic goals-of-care note, limited to a few deterministic
   patients aged 80+ outside surgery. Isolation codes no-isolation /
-  contact-precautions display No isolation / Contact precautions.
-  Read orders for the selected encounter.
+  contact-precautions / droplet-precautions display No isolation / Contact
+  precautions / Droplet precautions (suspected influenza/respiratory virus).
+  Isolation is also stated for nonadmitted ED encounters; code-status orders
+  remain limited to admitted ED, inpatient and surgical encounters. Read orders
+  for the selected encounter.
+  [CDC influenza precautions](https://www.cdc.gov/flu/hcp/infection-control/healthcare-settings.html)
+  inform the synthetic influenza examples.
 - Surgical ServiceRequest: code.text procedure, occurrencePeriod times,
   locationReference room, performer surgeon, active/completed status,
   note[].text case progress. Linked Procedure has R4 status preparation,
@@ -332,3 +337,13 @@ Human references also carry display names, allowing sender, pharmacy and provide
 captions without another lookup. Original world refill fill-ages use business-day
 indices; the new MedicationDispense records use calendar dates and the recorded
 supply when available, otherwise the scenario's monthly 30-day fill.
+
+Surgical rounding encounters also carry postoperative-day (valueInteger) under
+the same extension root, with procedure and POD in reasonCode; pre-op encounters
+use type.text Preoperative Visit – General Surgery. Pending ED ServiceRequests
+use local coded human labels matching the pending-labs/pending-imaging text.
+Supporting Organization and Location resources supply name, active/status,
+physicalType and partOf/managingOrganization; Practitioners carry identifier,
+active and name. Some resources also retain the existing worklist tag system
+https://vgi-health.example/fhir/CodeSystem/worklist. New views should select the
+explicit List membership, dated realism tags and referenced graph.

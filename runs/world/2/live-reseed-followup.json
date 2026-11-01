@@ -4,11 +4,11 @@
   "patients": 324,
   "patientCountBefore": 327,
   "created": 0,
-  "updated": 30,
-  "unchanged": 5593,
+  "updated": 5,
+  "unchanged": 5636,
   "nkaWithdrawn": 0,
   "sourceSha256": "e53f616be443eef82227b6dfba25a7dab573c4d2f5ef2a4d01f6484d43355e34",
-  "contextSha256": "45211b3d07b329013d76b9702b97f3e30da3eb0f91a01b80c923df4347a98d22",
+  "contextSha256": "5a3338c003bbba8076c6593af1424c00f7c15c878880da57ac0b088e03c7c5fb",
   "byType": {
     "Patient": {
       "created": 0,
@@ -17,13 +17,13 @@
     },
     "Encounter": {
       "created": 0,
-      "updated": 0,
-      "unchanged": 3356
+      "updated": 5,
+      "unchanged": 3351
     },
     "MedicationRequest": {
       "created": 0,
-      "updated": 10,
-      "unchanged": 413
+      "updated": 0,
+      "unchanged": 423
     },
     "AllergyIntolerance": {
       "created": 0,
@@ -73,7 +73,7 @@
     "ServiceRequest": {
       "created": 0,
       "updated": 0,
-      "unchanged": 86
+      "unchanged": 104
     },
     "Procedure": {
       "created": 0,
@@ -97,8 +97,8 @@
     },
     "Task": {
       "created": 0,
-      "updated": 20,
-      "unchanged": 22
+      "updated": 0,
+      "unchanged": 42
     },
     "Communication": {
       "created": 0,
@@ -109,55 +109,33 @@
   "retiredContextResources": 0,
   "changedFields": [
     {
-      "type": "MedicationRequest",
+      "type": "Encounter",
       "fields": [
-        "dispenseRequest"
+        "reasonCode"
       ]
     },
     {
-      "type": "Task",
+      "type": "Encounter",
       "fields": [
-        "description",
-        "contained"
+        "reasonCode"
       ]
     },
     {
-      "type": "MedicationRequest",
+      "type": "Encounter",
       "fields": [
-        "dispenseRequest"
+        "reasonCode"
       ]
     },
     {
-      "type": "Task",
+      "type": "Encounter",
       "fields": [
-        "description",
-        "contained"
+        "reasonCode"
       ]
     },
     {
-      "type": "MedicationRequest",
+      "type": "Encounter",
       "fields": [
-        "dispenseRequest"
-      ]
-    },
-    {
-      "type": "Task",
-      "fields": [
-        "description",
-        "contained"
-      ]
-    },
-    {
-      "type": "MedicationRequest",
-      "fields": [
-        "dispenseRequest"
-      ]
-    },
-    {
-      "type": "Task",
-      "fields": [
-        "description",
-        "contained"
+        "reasonCode"
       ]
     }
   ],

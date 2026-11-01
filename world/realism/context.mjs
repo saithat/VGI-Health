@@ -7,7 +7,7 @@ const LABELS = {P1:'Internal Medicine',P2:'Emergency Medicine',P3:'Hospital Medi
 function workDate(day) { const idx=day-1,weeks=Math.floor(idx/5); return new Date(Date.UTC(2026,10,2)+(weeks*7+idx-weeks*5)*86400000).toISOString().slice(0,10); }
 const SHIFTS = {P1:450,P2:420,P3:420,P4:480,P5:390};
 const SHORT = {'718-7':'Hemoglobin','6690-2':'WBC','2823-3':'Potassium','2160-0':'Creatinine','4548-4':'Hemoglobin A1c','18262-6':'LDL','6301-6':'INR','2345-7':'Glucose','2951-2':'Sodium','3016-3':'TSH','600-7':'Blood culture','22637-3':'Pathology'};
-const COMPLAINTS = {pneumonia:'Cough and shortness of breath','musculoskeletal-injury':'Ankle pain after fall','chest-pain':'Chest pain', 'abdominal-pain':'Abdominal pain', 'appendicitis':'Right lower quadrant pain', 'cholecystitis':'Right upper quadrant pain', 'asthma':'Wheezing and shortness of breath', 'pyelonephritis':'Fever and flank pain', 'hyperglycemia':'High blood glucose', 'copd':'Shortness of breath', 'cellulitis':'Redness and swelling of leg'};
+const COMPLAINTS = {'pulmonary-embolism':'Pleuritic chest pain and shortness of breath','syncope':'Fainting','chronic-pain-flare':'Flare of chronic back pain','migraine':'Severe headache','influenza-like-illness':'Fever and cough – influenza-like illness','renal-colic':'Flank pain','peds-gastroenteritis':'Vomiting and diarrhea','copd-asthma-exacerbation':'Wheezing and shortness of breath','peds-fever-otitis':'Fever and ear pain','panic-attack':'Anxiety and palpitations','acute-low-back-pain':'Low back pain','laceration':'Hand laceration','peds-asthma':'Wheezing','fracture':'Forearm pain after fall','acute-cholecystitis':'Right upper abdominal pain',pneumonia:'Cough and shortness of breath','musculoskeletal-injury':'Ankle pain after fall','chest-pain':'Chest pain', 'abdominal-pain':'Abdominal pain', 'appendicitis':'Right lower quadrant pain', 'cholecystitis':'Right upper quadrant pain', 'asthma':'Wheezing and shortness of breath', 'pyelonephritis':'Fever and flank pain', 'hyperglycemia':'High blood glucose', 'copd':'Shortness of breath', 'cellulitis':'Redness and swelling of leg'};
 function pendingWork(scenario,index) {
   const labs=/pneumonia|embolism|cellulitis|abdominal|appendicitis|syncope|chest-pain|renal-colic|pyelonephritis|hyperglycemia|cholecystitis/.test(scenario);
   const labText=/chest-pain|embolism/.test(scenario)?'CBC, BMP, troponin':/pyelonephritis|renal-colic/.test(scenario)?'CBC, BMP, urinalysis':/hyperglycemia/.test(scenario)?'BMP, venous blood gas, ketones':'CBC, BMP';
@@ -82,12 +82,12 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
   const units = {};
   for(const p of Object.keys(LABELS)) units[p] = make('Location',`unit-${p}`,{status:'active',mode:'instance',name:p==='P3'?'4 West Medical-Surgical Unit':LABELS[p],managingOrganization:ref(hospital),physicalType:cc('wa','Ward','http://terminology.hl7.org/CodeSystem/location-physical-type')},p);
   const list = (p,key,name,rows) => make('List',`${p}-${key}`,{status:'current',mode:'snapshot',title:name,code:cc(key,name),date:stamp(date,420),source:ref(providers[p]),entry:rows.map(r=>({item:ref(r)}))},p);
-  function orders(enc,pid,p,clinical={}) {
+  function orders(enc,pid,p,clinical={},includeCode=true) {
     const older = (pmap.get(pid)?.age??0)>=80;
     const dnr = older && (Number.parseInt(id(pid,'goals').slice(-4),16)%5===0) && p!=='P5';
-    make('ServiceRequest',`${enc.id}-code`,{status:'active',intent:'order',code:cc(dnr?'dnr':'full-code',dnr?'Do Not Resuscitate (DNR)':'Full Code'),subject:patient(pid),encounter:ref(enc),requester:ref(providers[p==='P3'?'P1':p]),authoredOn:enc.period.start,note:[{text:dnr?'Goals of care reviewed with patient and family; DNR documented for this synthetic admission.':'Full resuscitation confirmed at admission.'}]},p,'patient-context');
-    const isolation = /c[.]? difficile/i.test(clinical.diagnosis??'') ? 'Contact precautions' : 'No isolation';
-    make('ServiceRequest',`${enc.id}-isolation`,{status:'active',intent:'order',code:cc(isolation==='No isolation'?'no-isolation':'contact-precautions',isolation),subject:patient(pid),encounter:ref(enc),requester:ref(providers[p==='P3'?'P1':p]),authoredOn:enc.period.start},p,'patient-context');
+    if(includeCode) make('ServiceRequest',`${enc.id}-code`,{status:'active',intent:'order',code:cc(dnr?'dnr':'full-code',dnr?'Do Not Resuscitate (DNR)':'Full Code'),subject:patient(pid),encounter:ref(enc),requester:ref(providers[p==='P3'?'P1':p]),authoredOn:enc.period.start,note:[{text:dnr?'Goals of care reviewed with patient and family; DNR documented for this synthetic admission.':'Full resuscitation confirmed at admission.'}]},p,'patient-context');
+    const isolation = /c[.]? difficile/i.test(clinical.diagnosis??'') ? 'Contact precautions' : /influenza|flu-like/i.test(clinical.diagnosis??'') ? 'Droplet precautions' : 'No isolation';
+    make('ServiceRequest',`${enc.id}-isolation`,{status:'active',intent:'order',code:cc(isolation==='No isolation'?'no-isolation':isolation==='Droplet precautions'?'droplet-precautions':'contact-precautions',isolation),subject:patient(pid),encounter:ref(enc),requester:ref(providers[p==='P3'?'P1':p]),authoredOn:enc.period.start},p,'patient-context');
   }
   function antiplateletPlan(pid,enc,key,urgent=false) {
     if([...entries.values()].some(r=>r.resourceType==='CarePlan'&&r.encounter?.reference===ref(enc).reference))return;
@@ -96,7 +96,7 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
   }
   function encounter(pid,p,key,cls,start,diagnosis,bed,extra={}) {
     const e = make('Encounter',key,{status:'in-progress',class:{system:ACT,code:cls,display:cls==='EMER'?'Emergency':cls==='IMP'?'Inpatient':'Surgical'},type:[{text:`${cls==='EMER'?'Emergency Visit':cls==='IMP'?'Inpatient Stay':'Surgical Visit'} – ${LABELS[p]}`}],serviceType:{text:LABELS[p]},subject:patient(pid),period:{start},serviceProvider:ref(hospital),participant:[{type:[cc('ATND','Attending',PARTICIPATION)],individual:ref(providers[p==='P3'?'P1':p])},{type:[cc('PPRF','Registered nurse',PARTICIPATION)],individual:ref(providers[p==='P3'?'P3':'RN2'])}],reasonCode:[{text:diagnosis}],location:[{location:ref(bed??units[p]),status:'active'}],...extra},p);
-    if(cls!=='EMER'||extra.extension?.some(x=>x.url===EXT+'disposition'&&x.valueString==='Admit')) orders(e,pid,p,{diagnosis});
+    orders(e,pid,p,{diagnosis},cls!=='EMER'||extra.extension?.some(x=>x.url===EXT+'disposition'&&x.valueString==='Admit'));
     return e;
   }
   for(const p of ['P1','P4']) {
