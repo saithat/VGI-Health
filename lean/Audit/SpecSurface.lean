@@ -225,3 +225,16 @@ end VerificationAudit
 #audit_axioms Ehr.Check.receipt_lines_satisfies
 #spec_surface Ehr.Check.receipt_review_transition
 #audit_axioms Ehr.Check.receipt_review_transition
+
+#spec_surface Ehr.Check.alertsAcked_of_no_candidates
+#audit_axioms Ehr.Check.alertsAcked_of_no_candidates
+#spec_surface Ehr.Check.human_finish_ready_unique
+#audit_axioms Ehr.Check.human_finish_ready_unique
+#spec_surface Ehr.Check.FixedLine.completable_many_alerts
+#audit_axioms Ehr.Check.FixedLine.completable_many_alerts
+#spec_surface Ehr.Check.satisfies_of_checked_many_alerts
+#audit_axioms Ehr.Check.satisfies_of_checked_many_alerts
+#spec_surface Ehr.Check.many_alerts_satisfies
+#audit_axioms Ehr.Check.many_alerts_satisfies
+#spec_surface Ehr.Check.many_alerts_two_acknowledgments
+#audit_axioms Ehr.Check.many_alerts_two_acknowledgments

@@ -231,3 +231,20 @@ This supplies receipt-sensitive presentation, not an arbitrary multi-screen
 receipt-collection route. General navigation/reveal, arbitrary entry/allowed-value
 combinations and dynamic current-slot archival remain outside this family;
 the dose dependency counterexample to unrestricted T1 remains unchanged.
+
+## Arbitrary finite alert-family completion extension
+
+`alert_lookup_unique` and `alertsAcked_of_no_candidates` prove that the native
+unique-alert-ID condition supplies the lookup consistency needed for finite
+popup discharge. `human_finish_ready_unique` handles every alert condition and
+tier for any finite unique-ID rule list, through actual click/ack events.
+`FixedLine.completable_many_alerts` composes this with the line repair and
+receipt-aware review constructions. `satisfies_of_checked_many_alerts` obtains
+unique IDs from checker acceptance and supplies all thirteen properties without
+assuming completion. `many_alerts_satisfies` discharges acceptance, and
+`many_alerts_two_acknowledgments` runs a two-line clinical instance through two
+distinct required acknowledgments before a real commit.
+
+The alert-family cardinality restriction is closed for this structural family.
+General state/navigation and entry-dependency construction remain open, including
+the accepted dose-only counterexample; the general target has not been weakened.

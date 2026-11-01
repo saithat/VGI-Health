@@ -4,7 +4,8 @@
   "theorem_names": [
     "Ehr.Check.satisfies_of_checked_fixed_lines",
     "Ehr.Check.completion_acceptance_counterexample",
-    "Ehr.Check.satisfies_of_checked_receipt_lines"
+    "Ehr.Check.satisfies_of_checked_receipt_lines",
+    "Ehr.Check.satisfies_of_checked_many_alerts"
   ],
   "definition_names": [],
   "permitted_axioms": [

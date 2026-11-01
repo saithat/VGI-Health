@@ -115,6 +115,50 @@ theorem receipt_review_transition :
       reviewMet sp p f { s with clock := s.clock + 1440 * 600 } (Scalar.review mode) = true := by
   decide
 
+/-- Any finite unique-ID alert family can be handled after line repair.
+The ID premise is extracted from acceptance, rather than assumed separately. -/
+theorem satisfies_of_checked_many_alerts (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (moreAlerts : List AlertSpec) (receiptAware : Bool)
+    (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t moreAlerts) prev
+      (FixedLine.program r (if receiptAware then some m else none))
+      (FixedLine.program r (if receiptAware then some m else none)) = .ok) :
+    Satisfies (FixedLine.spec k r m a t moreAlerts) prev
+      (FixedLine.program r (if receiptAware then some m else none))
+      (FixedLine.program r (if receiptAware then some m else none)) := by
+  apply satisfies_of_checked_completable _ _ _ _ h
+  apply FixedLine.completable_many_alerts k r m a t nonDose moreAlerts _ receiptAware
+  exact (accepted_wellFormed _ _ _ _ h).2.1.2.2.2
+
+/-- A second interruptive safety rule, with its own ID and acknowledgment. -/
+def secondSafetyAlert : AlertSpec :=
+  { id := "secondSafety", label := "Second safety check", cond := .careGap,
+    tier := .interruptive, commit := "recordReview" }
+
+/-- The generalized accepted fragment has a concrete two-interruption instance. -/
+theorem many_alerts_satisfies :
+    Satisfies (FixedLine.spec .flag .physician (.shownOrReceipt 720 [.physician, .rn])
+      .careGap .interruptive [secondSafetyAlert]) none
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn])))
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn]))) :=
+  satisfies_of_checked_many_alerts _ _ _ _ _ _ true (by decide) none (by decide)
+
+/-- Two real drug lines complete only after the human handles two distinct
+interruptive rules; both acknowledgments appear in the final state. -/
+theorem many_alerts_two_acknowledgments :
+    let sp := FixedLine.spec .flag .physician .shownOnCommit .careGap .interruptive [secondSafetyAlert]
+    let p := FixedLine.program .physician
+    let f := Ehr.Examples.Tiny.facts
+    let u := Ehr.Examples.Tiny.user
+    let s := runAll sp p f u .human (init sp p f u)
+      [.enter (FixedLine.drugField 0).id (.code "amoxicillin"),
+       .enter (FixedLine.drugField 1).id (.code "warfarin"),
+       .enter (FixedLine.assessmentField 0).id (.flag true),
+       .enter (FixedLine.assessmentField 1).id (.flag true),
+       .click Scalar.button.id, .ack "clinicalAlert", .click Scalar.button.id,
+       .ack "secondSafety", .click Scalar.button.id]
+    "recordReview" ∈ s.commits ∧ s.acked.length = 2 := by decide
+
 /-- The current checker has an accepted, non-completable program: the
 unrestricted completion implication needs a checker repair before proof. -/
 theorem completion_acceptance_counterexample :
@@ -159,4 +203,6 @@ theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyPro
 #print axioms fixed_lines_satisfies
 #print axioms satisfies_of_checked_receipt_lines
 #print axioms receipt_lines_satisfies
+#print axioms satisfies_of_checked_many_alerts
+#print axioms many_alerts_satisfies
 end Ehr.Check
