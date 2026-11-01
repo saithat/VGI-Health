@@ -231,6 +231,147 @@ still requires a separate proof. Current releases use the **core** rule profile.
 Browser drawing, record adapters and clinical rule completeness are outside
 these proofs. Allowed proof axioms are propext, Quot.sound and Classical.choice.
 
+## Frontend and backend
+
+The stack has no application server with business logic of its own. The
+screen logic runs in the browser as the Lean interpreter compiled to
+WebAssembly. Medplum is the only backend, and it stores FHIR resources. The
+React app does two jobs: it moves JSON between the two, and it draws the tree
+that Lean returns.
+
+### Lean in the browser
+
+- **Build.** `make wasm` runs `lake build <root>:c` for the API roots
+  (`Ehr.Api`, `Ehr.Render.Api`). It compiles the emitted C, together with the
+  pinned Lean 4.35 runtime, using Emscripten 6.0.13. It then patches the
+  module initializers so that only the runtime half of `Init`/`Std` starts.
+  The result is `app/public/ehr/ehr-interp.wasm` (~3 MB) plus a loader.
+- **Exports.** `wasm/interp-bridge.cpp` exposes one entry point,
+  `ehr_call_string(name, json) → json`. The names are the Lean `@[export]`
+  functions `ehr_facts`, `ehr_init_envelope`, `ehr_step_envelope`,
+  `ehr_view_envelope`, `ehr_render` and `ehr_render_ui`.
+- **Stateless calls.** Every call takes the spec, program, facts and user as
+  JSON, plus the state and event where needed. `app/src/core/session.ts`
+  stores the state string between calls but never reads it.
+- **Shared types.** The TypeScript types for these payloads are generated
+  from the Lean types by `lake exe gents` (`lean/generated/ehr-types.ts`).
+  Changing a Lean constructor therefore breaks the TypeScript build until the
+  painter handles it.
+- **Staleness check.** `manifest.json` stores a hash of every Lean source.
+  `make wasm-check` fails when the WASM is older than the Lean;
+  `make install` and `make run` both run it. The same hash goes into the
+  loader URL (`interp-loader.mjs?v=<hash>`), so a browser cannot keep a
+  stale interpreter from its cache.
+
+### One screen, step by step
+
+1. **Facts.** `ehr_facts` takes a FHIR Bundle and a context (user, role,
+   clinical date). It returns the Lean `Facts` that the guards read and the
+   display rows that the screens show (`Render/Fhir.lean`). The TypeScript
+   code fetches and forwards FHIR; it does no clinical interpretation.
+2. **Render.** `init` gives a state. `renderUi(spec, program, facts, user,
+   state)` turns it into a `UiScreen`: a tree of semantic nodes such as the
+   banner, alerts, result grids, order composers, worklists and navigators
+   (13 presentation kinds). A disabled control carries the reason Lean gives
+   for it.
+3. **Paint.** `app/src/ehr/ui` draws the tree with Mantine, through an
+   exhaustive switch over the generated node union. The painter holds no
+   clinical state. Each input sends a Lean `Event` with a typed `Value`:
+   text, code, flag, user, or a number with tenths and a unit.
+4. **Step.** The event goes to `step`, then the new state goes back to
+   `renderUi`.
+
+The screen gate (below) checks that the painted accessibility tree equals
+the `UiScreen`. That check is what connects step 3 to the D-theorems about
+step 2.
+
+### Live mode (`/`, against Medplum)
+
+- **Transport.** All FHIR calls go to the same-origin path `/medplum`, which
+  Vite proxies to the Medplum API on `:8103`.
+- **Sign-in.** Each persona button signs in as a seeded Practitioner,
+  using Medplum's password login from the browser (`data/medplum.ts`). The
+  password comes from the same-origin `/__dev/persona-password` endpoint,
+  which reads `.env`, so no credential is in the built assets. The
+  practitioner id and role become Lean's `user`.
+- **Landing lists.** The Schedule, In Basket, worklists and patient lookup
+  are Medplum searches (Appointment, Encounter, Task, Communication,
+  ServiceRequest) for the seeded clinical date (2026‑11‑02; `?date=`
+  overrides it). They go through `ehr_facts` in directory mode.
+- **Opening a chart.** Patients are selected inside the Lean screen. Opening
+  a row sends a `workspace.open` event. The app then loads that patient's
+  bundle (`loadPatientBundle`) and projects the facts again. It also checks
+  that the projected patient is the selected one before it updates the state.
+- **Writes: Lean decides, TypeScript stores.** Each event is first stepped
+  into a *staged* state:
+  - If the staged state adds no commit or review receipt, the app accepts it
+    locally.
+  - If it adds exactly one, `data/commitMapper.ts` maps the captured values
+    to one FHIR `transaction` Bundle (MedicationRequest, Observation,
+    DocumentReference, Condition, Immunization, MedicationAdministration,
+    ChargeItem, Encounter updates, …). Medplum applies the bundle atomically,
+    and the app accepts the staged state only after it succeeds. It then
+    fetches the chart again and projects new facts, so the next screen
+    reflects stored data.
+  - If a step adds more than one write, the app rejects it, so nothing is
+    partly saved.
+  - If the transaction succeeds but the refetch fails, the app reports
+    "Saved" and asks the user to reopen the chart. It never reports a
+    retryable failure for data that was already stored.
+- **Not proved.** The commit mapper is tested, not proved, so it is part of
+  the trusted surface.
+- **Client-side guard.** The commit guard runs in the client. Medplum
+  accepts any write that the signed-in user's access policy allows. Running
+  the same Lean guard on the server (as a proxy or Medplum Bot) is not done;
+  see gap G3.
+
+### Replay mode (`/ehr`, `/browse`, `/dashboard`)
+
+Replay mode does not use Medplum. It loads the facts recorded for each task,
+and Vite plugins in `app/scripts/` serve the artifacts:
+
+| Plugin | Serves |
+|---|---|
+| `runs-plugin` | `/runs/index.json`, `/runs/default.json`, and run files, with ETags and compression |
+| `catalog-plugin` | `/catalog.json`: releases, persona revisions, certificates |
+| `build-binding-plugin` | `/build.json`: SHA-256 of the emitted app code, styles and WASM |
+| `try-break-plugin` | `/__dev/try-to-break-it`: runs the native `ehr check` on a pasted program |
+
+- **Build binding.** Each published run records the `appSha256` and
+  `wasmSha256` it was checked against. The app refuses to replay it on a
+  different build, because a different painter or interpreter could draw
+  something other than what was checked. After a rebuild, `make rebind
+  RUN=<id>` re-validates the run and binds it again. It fails if any
+  certification input has changed.
+- **Trajectories.** These are event sequences recorded by the native
+  simulator. Playback runs them through the browser WASM.
+  `scripts/trajectories/index.mjs` also replays every trajectory through the
+  WASM build in Node and records the first divergent event, if any. This is
+  the native-versus-WASM differential test.
+
+### Backend and data
+
+- **Services.** `infra/docker-compose.yml` runs Postgres 16, Redis 7,
+  `medplum-server` 5.2.13 (API on `:8103`) and `medplum-app` 5.2.13 (admin
+  UI). Medplum runs no custom code: there are no Bots or subscriptions.
+- **`make install`** does the following, in order:
+  1. builds the Lean;
+  2. installs the pnpm workspace;
+  3. checks the WASM;
+  4. starts the stack;
+  5. creates the project and practitioners (`setup`);
+  6. loads the Synthea and Synthetic Hospital patients (`load`);
+  7. seeds the world/2 clinical days (`seed`): appointments, tasks,
+     messages and orders.
+- **The `ehr` binary** (`lean/.lake/build/bin/ehr`) is the same Lean
+  compiled natively. These offline tools use it:
+  - the agent: `check`, `deploy`, `simulate`, `min-clicks`;
+  - the screen gate: `render-screens` exports every reachable state, then
+    Playwright loads each one in the built app and compares the
+    accessibility tree with the `UiScreen`;
+  - the held-out conformance suite;
+  - trajectory recording.
+
 ## Run it
 
 Install Node 22.18+, pnpm 11.8.0, [elan](https://github.com/leanprover/elan),
