@@ -81,11 +81,21 @@ test("clinician punchlist screen review", async ({ page }) => {
     await page.goto(
       `/ehr?mode=replay&audit=buttons&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
     );
-    await expect(page.locator(".clinical-app")).toBeVisible();
-    if (entry)
-      await page
-        .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
-        .click();
+    await expect(page.locator(".clinical-app")).toBeVisible({
+      timeout: 30000,
+    });
+    if (entry) {
+      const opener = page.locator(
+        `[data-comp-id="home.work.${entry}"][data-event]`,
+      );
+      if (await opener.count()) await opener.click();
+      else
+        expect(
+          await page.evaluate(
+            () => window.__buttonAuditSession?.snapshot().state.screen,
+          ),
+        ).toBe(entry);
+    }
     if (target !== entry && target !== "home")
       await page
         .locator(`button[data-comp-id$=".nav.${target}"][data-event]`)

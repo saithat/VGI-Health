@@ -45,6 +45,8 @@ function walk(nodes) {
   return nodes.flatMap((node) => {
     if (node.section) return [node, ...walk(node.section.children)];
     if (node.presentation) return [node, ...walk(node.presentation.children)];
+    if (node.valueSet) return [node, ...walk(node.valueSet.children)];
+    if (node.chartReferences) return [node, ...walk(node.chartReferences.children)];
     if (node.rowAction) return [node, ...walk(node.rowAction.children)];
     if (node.columns) return [node, ...walk(node.columns.children)];
     if (node.tabs) return [node, ...walk(node.tabs.body)];
@@ -63,9 +65,17 @@ function checkUi(ui, view, program, display, name) {
     }
   }
   const screen = program.screens.find((sc) => sc.id === view.screen);
-  // navigatorNames supplies clinical labels; screen IDs and order remain authoritative.
-  assert.deepEqual(ui.workspace[0].stepper.steps.map(([id]) => id), program.screens.filter((sc) => sc.workflow === screen.workflow).map((sc) => sc.id));
-  assert.ok(ui.workspace[0].stepper.steps.every(([, label]) => label.length > 0));
+  // A usable source navigator or an explicit clinical activity replaces the
+  // generated overview. Both cases retain their exact shown source controls.
+  const activityLayout = ui.nav.some(([, entries]) => entries.length) || view.items.some(item =>
+    item.shown && (item.comp.tag === 'layout.clinicalActivity' || item.comp.tag.endsWith('.layout.clinicalActivity')));
+  if (activityLayout) {
+    assert.ok(!ui.workspace.some(node => node.stepper), `${name}: clinical activity omits a redundant progress strip`);
+  } else {
+    assert.ok(ui.workspace[0]?.stepper, `${name}: overview remains when no clinical activity is supplied`);
+    assert.deepEqual(ui.workspace[0].stepper.steps.map(([id]) => id), program.screens.filter(sc => sc.workflow === screen.workflow).map(sc => sc.id));
+    assert.ok(ui.workspace[0].stepper.steps.every(([, label]) => label.length > 0));
+  }
   const nodes = walk([...ui.workspace, ...ui.side]);
   const sourceKind = (kind) => {
     if (kind === 'banner') return 'info';
@@ -103,10 +113,22 @@ function checkUi(ui, view, program, display, name) {
     }
   }
   const side = walk(ui.side).flatMap((n) => n.info ? [n.info] : []);
-  assert.equal(side.find((n) => n.infoId === 'allergyList')?.rows.length, display.allergies.length);
-  assert.equal(side.find((n) => n.infoId === 'currentMeds')?.rows.length, display.meds.length);
-  assert.equal(side.find((n) => n.infoId === 'problemList')?.rows.length, display.problems.filter((r) => r.status !== 'resolved' && r.status !== 'inactive' && !r.abatement).length);
-  assert.equal(side.find((n) => n.infoId === 'vitals')?.rows.length, new Set(display.vitals.map((r) => r.code)).size);
+  const overview = view.items.some((item) => {
+    if (!item.shown) return false;
+    const parts = item.comp.tag.split('.');
+    return parts.includes('wideWorkspace') || parts.some((part, i) => part === 'layout' && parts[i + 1] === 'overview');
+  });
+  const focused = view.items.some(item => item.shown && item.comp.tag === 'layout.focusedWorkspace');
+  if (overview || focused) {
+    // Only generated supplements are omitted. Every authored component is still
+    // required exactly once by the independent source-key comparison above.
+    assert.ok(side.every(info => info.comp !== '' || (focused && info.infoId === 'importedHistory')), `${name}: dedicated activity omits automatic clinical summaries; a focused view may retain reported medication history`);
+  } else {
+    assert.equal(side.find((n) => n.infoId === 'allergyList')?.rows.length, display.allergies.length);
+    assert.equal(side.find((n) => n.infoId === 'currentMeds')?.rows.length, display.meds.length);
+    assert.equal(side.find((n) => n.infoId === 'problemList')?.rows.length, display.problems.filter((r) => r.status !== 'resolved' && r.status !== 'inactive' && !r.abatement).length);
+    assert.equal(side.find((n) => n.infoId === 'vitals')?.rows.length, new Set(display.vitals.map((r) => r.code)).size);
+  }
   for (const info of side.filter((n) => ['allergyList', 'currentMeds', 'problemList', 'vitals'].includes(n.infoId))) assert.equal(info.display, 'list');
   for (const info of side.filter((n) => ['allergyList', 'currentMeds', 'problemList', 'vitals'].includes(n.infoId))) {
     assert.ok(info.rows.every((row) => row.length <= 2 && row[0]?.[0] === 'Record'));

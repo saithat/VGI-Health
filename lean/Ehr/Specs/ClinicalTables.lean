@@ -21,6 +21,7 @@ def infos : List InfoSpec :=
    { id := "inBasketMessages", label := "Patient Messages", version := "inbasketVersion" },
    { id := "orSchedule", label := "OR Schedule", version := "scheduleVersion" },
    { id := "consultList", label := "Surgical consults", version := "caseVersion" },
+   { id := "shiftTasks", label := "Selected patient shift tasks", version := "" },
    { id := "unitCensus", label := "Unit Census", version := "encounterVersion" },
    { id := "inBasketFolders", label := "In Basket folders", version := "inbasketVersion" },
    { id := "inBasketResults", label := "Results messages", version := "inbasketVersion" },

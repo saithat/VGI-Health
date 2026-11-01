@@ -65,9 +65,10 @@ def uiFieldChoices (cx : Ctx) : List (CompId × UiCodeChoices) :=
 
 def uiBanner (d : Display) : List (String × String) :=
   [("Patient", d.banner.name), ("DOB", uiDate d.banner.dob), ("MRN", d.banner.mrn),
-   ("Age / sex", s!"{d.banner.ageYears} / {d.banner.sex}"),
+   ("Age / sex", (if d.banner.dob == "" then "Age not recorded" else toString d.banner.ageYears) ++ " / " ++ d.banner.sex),
    ("Language", d.banner.language), ("PCP", d.banner.pcp), ("Coverage", d.banner.coverage),
    ("Last encounter", d.banner.encounterClass), ("Last provider", d.banner.attending), ("Last location", d.banner.location)]
+
 
 /-- Recorded banner weight is distinct from a human-confirmed dosing weight. -/
 def uiBannerWeight (facts : Facts) (d : Display) : String :=
@@ -97,10 +98,17 @@ def uiEncounterBanner (facts : Facts) (d : Display) : List (String × String) :=
     ((uiBanner d).filter fun pair => !["Encounter", "Attending", "Location"].contains pair.1) ++
       [("Encounter context", "Preoperative chart review"),
        ("Planned OR", uiCaseValue facts "Room"), ("Surgeon", uiCaseValue facts "Surgeon")]
-  else uiBanner d ++ [("Encounter", (facts.record.lookup "encounterName").getD ""),
-    ("Department", (facts.record.lookup "department").getD "")] ++
-    (let pod := (facts.record.lookup "postoperativeDay").getD ""
-     if pod == "" then [] else [("Postoperative day", "POD #" ++ pod)])
+  else
+    let base := if facts.encounterKind? == some "emergency" || facts.encounterKind? == some "inpatient" then
+      (uiBanner d).map fun (key, value) =>
+        if key == "Last encounter" then ("Encounter", uiEncounterClass value)
+        else if key == "Last provider" then ("Attending", value)
+        else if key == "Last location" then ("Location", value) else (key, value)
+      else uiBanner d
+    base ++ [("Encounter type", (facts.record.lookup "encounterName").getD ""),
+      ("Department", (facts.record.lookup "department").getD "")] ++
+      (let pod := (facts.record.lookup "postoperativeDay").getD ""
+       if pod == "" then [] else [("Postoperative day", "POD #" ++ pod)])
 
 /-- Human-readable clinical roles never expose a user ID. -/
 def uiViewer : Role → String
@@ -163,6 +171,15 @@ def historyCells (r : HistoryRow) : List (String × String) :=
   [("Kind", r.kind), ("Item", r.item), ("Detail", r.detail), ("Status", r.status), ("Source", r.source)]
 def vitalCells (r : VitalRow) : List (String × String) :=
   [("Vital sign", r.name), ("Value", r.value), ("Unit", r.unit), ("Recorded", uiDate r.date)]
+
+/-- Latest dated vital per measure. Safety panels below retain all records tied
+at that latest timestamp, including conflicting values. -/
+def uiLatestVitals (d : Display) : List VitalRow :=
+  ((d.vitals.map (·.code)).eraseDups).filterMap fun code =>
+    (d.vitals.filter (·.code == code)).foldl (fun current r =>
+      match current with
+      | none => some r
+      | some prev => some (if prev.date < r.date then r else prev)) none
 def problemCells (r : ProblemRow) : List (String × String) :=
   [("Problem", r.name), ("Code", r.code), ("Onset", uiDate r.onset), ("Abatement", uiDate r.abatement), ("Status", r.status)]
 
@@ -214,11 +231,14 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "familyHistory" => (cx.disp.history.filter (·.kind == "Family history")).map historyCells
     | "socialHistory" => (cx.disp.history.filter (·.kind == "Social history")).map historyCells
     | "surgicalHistory" => (cx.disp.history.filter (·.kind == "Surgical history")).map historyCells
-    | "vitals" => cx.disp.vitals.map vitalCells
+    | "vitals" => if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
+      (cx.disp.vitals.filter fun r => (uiLatestVitals cx.disp).any fun latest =>
+        latest.code == r.code && latest.date == r.date).map vitalCells
     | "problemList" =>
       let includeResolved := cx.s.expanded.any (fun id => id.endsWith ".includeResolved")
       (cx.disp.problems.filter (fun r => includeResolved || (r.status != "resolved" && r.status != "inactive" && r.abatement == ""))).map problemCells
     | "labs" | "labResults" | "resultTrend" =>
+      if (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
       if !cx.disp.labResults.isEmpty then
         let labels := (cx.disp.labResults.map (fun r => (r.name, r.code))).eraseDups
         cx.disp.labResults.map (labResultCells labels)
@@ -232,7 +252,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
     | "immunizations" | "immunizationHistory" => (cx.disp.immunizations.map fun r =>
         [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]) ++ uiPayloadRows cx i
     | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
-        [("Encounter", r.encType), ("Class", r.encClass), ("Start", uiDate r.start),
+        [("Encounter", r.encType), ("Class", uiEncounterClass r.encClass), ("Start", uiDate r.start),
          ("End", uiDate r.stop), ("Reason", r.reason), ("Provider", r.provider), ("Location", r.location)]
     | "procedures" => cx.disp.procedures.map fun r =>
         [("Procedure", r.name), ("Code", r.code), ("Date", uiDate r.date), ("Status", r.status)]
@@ -268,6 +288,8 @@ section 10's open kind string. The painter does not reconstruct value sets. -/
 def uiFieldKind : ValueKind → String
   | .quantity _ | .medicationDose => "qty"
   | .coded "formulary" => "code:" ++ "|".intercalate (formulary.map (·.name))
+  | .coded "esi" => "code:1|2|3|4|5"
+  | .coded "pain-0-10" => "code:0|1|2|3|4|5|6|7|8|9|10"
   | .coded _ => "code"
   | .text => "text" | .flag => "flag" | .identity => "identity"
   | .scan _ => "scan" | .cosign => "cosign"
@@ -302,7 +324,8 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
   let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
     "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
-    else if kind == .text && (it.comp.tag.endsWith ".multiline" || uiNarrativeElement e) then "textarea"
+    else if kind == .text && (it.comp.tag.endsWith ".narrative" || it.comp.tag.endsWith ".multiline" || uiNarrativeElement e) then "textarea"
+
     else uiFieldKind kind
   let metricWeight := kind == .quantity .kg
   let unit := if kind == .medicationDose || metricWeight then want else
@@ -373,13 +396,6 @@ def uiMedSummary (r : MedRow) : List (String × String) :=
     (if r.status == "" || r.status == "active" then "" else " (" ++ r.status ++ ")"))]
 def uiProblemSummary (r : ProblemRow) : List (String × String) :=
   [("Record", r.name ++ (if r.status == "" then "" else " (" ++ r.status ++ ")"))]
-def uiLatestVitals (d : Display) : List VitalRow :=
-  ((d.vitals.map (·.code)).eraseDups).filterMap fun code =>
-    (d.vitals.filter (·.code == code)).foldl (fun current r =>
-      match current with
-      | none => some r
-      | some prev => some (if prev.date < r.date then r else prev)) none
-
 def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match i with
   | "scheduleTasks" | "consultRequest" => uiRows cx i
@@ -413,7 +429,11 @@ def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
 /-- Search reads typed chart rows or the supplied code catalog. It never replaces
 required reviews, captures clinical evidence, or selects an order. -/
 def uiSearchLabs (cx : Ctx) : List (List (String × String)) :=
-  cx.disp.labs.map fun row => [("Test", row.name), ("Value", row.value), ("Unit", row.unit),
+  if (infoPayload cx.facts "resultTrend").isSome then uiPayloadRows cx "resultTrend" else
+  if !cx.disp.labResults.isEmpty then
+    let labels := (cx.disp.labResults.map (fun row => (row.name, row.code))).eraseDups
+    cx.disp.labResults.map (labResultCells labels)
+  else cx.disp.labs.map fun row => [("Test", row.name), ("Value", row.value), ("Unit", row.unit),
     ("Range", row.refRange), ("Recorded", uiDate row.date), ("Abnormal", toString row.abnormal)]
 
 def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) :=
@@ -427,7 +447,7 @@ def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) 
       if table.system == "LOINC" then table.codes.map (fun code => [("Code", code), ("System", table.system)]) else [])
   else if scope == "chart" then
     (["currentMeds", "allergyList", "problemList", "vitals", "encounterNotes",
-      "importedHistory", "immunizations", "encounterHistory", "procedures"] : List String).flatMap (uiRows cx) ++ uiSearchLabs cx
+      "importedHistory", "immunizations", "encounterHistory", "procedures", "imaging"] : List String).flatMap (uiRows cx) ++ uiSearchLabs cx
   else
     (cx.v.items.filter (·.shown)).flatMap fun item => match item.comp.kind with
       | .panel info | .table info | .trend info =>
@@ -570,19 +590,28 @@ def uiInWorkspace (cx : Ctx) (it : ItemView) : Bool :=
 def uiOverview (cx : Ctx) : Bool :=
   cx.v.items.any (fun it => it.shown && uiOverviewTag it.comp.tag)
 
+/-- The program can dedicate its workspace to a wide grid. -/
+def uiWideWorkspace (cx : Ctx) : Bool :=
+  cx.v.items.any fun it => it.shown && (it.comp.tag.splitOn ".").contains "wideWorkspace"
+
+/-- Automatic summaries are optional layout supplements. Authored panels are separate. -/
+def uiSummaryPairs (cx : Ctx) : List (String × String) :=
+  if uiWideWorkspace cx || uiOverview cx || cx.v.items.any (fun it => it.shown && it.comp.tag == "layout.focusedWorkspace") then [] else
+    [("allergyList", "Allergies"), ("currentMeds", "Active medications"),
+     ("problemList", "Problems"), ("vitals", "Recent vitals")]
+
 /-- Fallback summaries are read-only and are emitted only for information not
 already present in the program's side column. Overview screens omit these
 automatic supplements; every explicit source component remains present. -/
 def uiSide (cx : Ctx) : List UiNode :=
   uiComponentsWhere cx (fun it => it.comp.kind != .banner && !uiNavButton cx it && uiSideAt cx it.comp.id) ++
-    (if uiOverview cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
+    (if uiWideWorkspace cx || uiOverview cx || (cx.disp.history.filter (·.kind == "Home medications (reported)")).isEmpty then [] else
       [.info "" "Home medications (reported)" "importedHistory" "list"
         ((cx.disp.history.filter (·.kind == "Home medications (reported)")).map historyCells)]) ++
-    (if uiOverview cx || cx.v.items.any (fun it => it.shown && it.comp.tag == "layout.focusedWorkspace") then [] else
-    ([ ("allergyList", "Allergies"), ("currentMeds", "Active medications"),
-       ("problemList", "Problems"), ("vitals", "Recent vitals") ] : List (String × String)).filterMap fun (i, label) =>
+    (uiSummaryPairs cx).filterMap fun (i, label) =>
+
       if cx.v.items.any (fun it => it.shown && uiSideAt cx it.comp.id && showsInfo i it.comp.kind)
-      then none else some (.info "" label i "list" (uiSummaryRows cx i)))
+      then none else some (.info "" label i "list" (uiSummaryRows cx i))
 
 /-- Passive/unknown alerts cannot become modals, even in a malformed state.
 Only the matching Event.ack is accepted by the interpreter while a popup is open. -/
@@ -611,7 +640,7 @@ def uiMissingReviews (cx : Ctx) : List UiNode :=
 read-only progress overview remains available to other source programs. -/
 def uiProgress (cx : Ctx) : List UiNode :=
   let steps := uiSteps cx
-  if !(uiNav cx).isEmpty || cx.v.items.any (fun it => it.shown && uiTagIs it.comp.tag "layout.clinicalActivity") then []
+  if (uiNav cx).any (fun (_, entries) => !entries.isEmpty) || cx.v.items.any (fun it => it.shown && uiTagIs it.comp.tag "layout.clinicalActivity") then []
   else [.stepper steps ((steps.map (·.1)).idxOf cx.s.screen)]
 
 /-- Root return controls opt into footer placement through source metadata. -/
@@ -665,6 +694,7 @@ def uiFieldSources (cx : Ctx) : List (CompId × String) :=
     if !it.shown then none else match it.comp.kind with
     | .field .. => it.provenance?.map fun source => (it.comp.id, uiFieldSourceText cx source)
     | _ => none
+
 
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/

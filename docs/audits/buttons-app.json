@@ -9,7 +9,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+    "effect": "POST /__dev/persona-password"
   },
   {
     "route": "/?audit=buttons&inspect=1",
@@ -177,7 +177,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons&inspect=1",
@@ -357,7 +357,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons&inspect=1",
@@ -693,7 +693,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons&inspect=1",
@@ -861,7 +861,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons&inspect=1",
@@ -1029,7 +1029,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
+    "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
   },
   {
     "route": "/?audit=buttons&inspect=1",
@@ -1137,7 +1137,7 @@
     "kind": "button",
     "owner": "app",
     "status": "works",
-    "effect": "Lean state changed; result null"
+    "effect": "DOM changed"
   },
   {
     "route": "/?audit=buttons&inspect=1",
@@ -1953,7 +1953,7 @@
     "kind": "a",
     "owner": "app",
     "status": "works",
-    "effect": "URL → /dashboard"
+    "effect": "URL → /dashboard?run=run1-P3&view=Evolution&persona=P3"
   },
   {
     "route": "/ehr?mode=replay&release=v1&program=releases%2Fv1%2Fpersonas%2FP1.json&persona=P1&patient=4966bd28-61bc-8f51-3aab-1328a32ea2e7&inspect=1&audit=buttons",
@@ -2205,7 +2205,7 @@
     "kind": "a",
     "owner": "app",
     "status": "works",
-    "effect": "URL → /ehr?mode=replay&release=v3&program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv7.json&persona=P3&patient=50d2c695-5faa-dfae-da75-4b182154a1ea; real EHR rendered"
+    "effect": "URL → /ehr?mode=replay&persona=P3&run=run1-P3; real EHR rendered"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Evolution&persona=P3",
@@ -3273,7 +3273,7 @@
     "kind": "click",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Back · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3285,7 +3285,7 @@
     "kind": "click",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Patient workspace · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3657,7 +3657,7 @@
     "kind": "click",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Mark allergies reviewed · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",
@@ -3669,7 +3669,7 @@
     "kind": "click",
     "owner": "app",
     "status": "disabled-with-reason",
-    "effect": "Recorded replay; use the playback controls above this EHR"
+    "effect": "Next: medication reconciliation · Recorded replay; use the playback controls above this EHR"
   },
   {
     "route": "/dashboard?run=run1-P3&view=Trajectories&persona=P3",

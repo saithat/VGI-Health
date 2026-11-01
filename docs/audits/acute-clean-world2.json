@@ -1,0 +1,408 @@
+{
+  "schedules": 50,
+  "tasks": 1284,
+  "completed": 1284,
+  "binarySha256": "7d1c745d54014d950fc1aae2678fa7435d52498f96968f77defce6e61c38a777",
+  "results": [
+    {
+      "day": 1,
+      "persona": "P1",
+      "release": "v1",
+      "tasks": 42,
+      "completed": 42,
+      "incomplete": []
+    },
+    {
+      "day": 1,
+      "persona": "P2",
+      "release": "v1",
+      "tasks": 22,
+      "completed": 22,
+      "incomplete": []
+    },
+    {
+      "day": 1,
+      "persona": "P3",
+      "release": "v1",
+      "tasks": 38,
+      "completed": 38,
+      "incomplete": []
+    },
+    {
+      "day": 1,
+      "persona": "P4",
+      "release": "v1",
+      "tasks": 22,
+      "completed": 22,
+      "incomplete": []
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "release": "v1",
+      "tasks": 18,
+      "completed": 18,
+      "incomplete": []
+    },
+    {
+      "day": 2,
+      "persona": "P1",
+      "release": "v1",
+      "tasks": 40,
+      "completed": 40,
+      "incomplete": []
+    },
+    {
+      "day": 2,
+      "persona": "P2",
+      "release": "v1",
+      "tasks": 18,
+      "completed": 18,
+      "incomplete": []
+    },
+    {
+      "day": 2,
+      "persona": "P3",
+      "release": "v1",
+      "tasks": 51,
+      "completed": 51,
+      "incomplete": []
+    },
+    {
+      "day": 2,
+      "persona": "P4",
+      "release": "v1",
+      "tasks": 20,
+      "completed": 20,
+      "incomplete": []
+    },
+    {
+      "day": 2,
+      "persona": "P5",
+      "release": "v1",
+      "tasks": 14,
+      "completed": 14,
+      "incomplete": []
+    },
+    {
+      "day": 3,
+      "persona": "P1",
+      "release": "v1",
+      "tasks": 35,
+      "completed": 35,
+      "incomplete": []
+    },
+    {
+      "day": 3,
+      "persona": "P2",
+      "release": "v1",
+      "tasks": 18,
+      "completed": 18,
+      "incomplete": []
+    },
+    {
+      "day": 3,
+      "persona": "P3",
+      "release": "v1",
+      "tasks": 44,
+      "completed": 44,
+      "incomplete": []
+    },
+    {
+      "day": 3,
+      "persona": "P4",
+      "release": "v1",
+      "tasks": 19,
+      "completed": 19,
+      "incomplete": []
+    },
+    {
+      "day": 3,
+      "persona": "P5",
+      "release": "v1",
+      "tasks": 19,
+      "completed": 19,
+      "incomplete": []
+    },
+    {
+      "day": 4,
+      "persona": "P1",
+      "release": "v2",
+      "tasks": 40,
+      "completed": 40,
+      "incomplete": []
+    },
+    {
+      "day": 4,
+      "persona": "P2",
+      "release": "v2",
+      "tasks": 13,
+      "completed": 13,
+      "incomplete": []
+    },
+    {
+      "day": 4,
+      "persona": "P3",
+      "release": "v2",
+      "tasks": 41,
+      "completed": 41,
+      "incomplete": []
+    },
+    {
+      "day": 4,
+      "persona": "P4",
+      "release": "v2",
+      "tasks": 17,
+      "completed": 17,
+      "incomplete": []
+    },
+    {
+      "day": 4,
+      "persona": "P5",
+      "release": "v2",
+      "tasks": 11,
+      "completed": 11,
+      "incomplete": []
+    },
+    {
+      "day": 5,
+      "persona": "P1",
+      "release": "v2",
+      "tasks": 23,
+      "completed": 23,
+      "incomplete": []
+    },
+    {
+      "day": 5,
+      "persona": "P2",
+      "release": "v2",
+      "tasks": 20,
+      "completed": 20,
+      "incomplete": []
+    },
+    {
+      "day": 5,
+      "persona": "P3",
+      "release": "v2",
+      "tasks": 37,
+      "completed": 37,
+      "incomplete": []
+    },
+    {
+      "day": 5,
+      "persona": "P4",
+      "release": "v2",
+      "tasks": 19,
+      "completed": 19,
+      "incomplete": []
+    },
+    {
+      "day": 5,
+      "persona": "P5",
+      "release": "v2",
+      "tasks": 17,
+      "completed": 17,
+      "incomplete": []
+    },
+    {
+      "day": 6,
+      "persona": "P1",
+      "release": "v2",
+      "tasks": 41,
+      "completed": 41,
+      "incomplete": []
+    },
+    {
+      "day": 6,
+      "persona": "P2",
+      "release": "v2",
+      "tasks": 21,
+      "completed": 21,
+      "incomplete": []
+    },
+    {
+      "day": 6,
+      "persona": "P3",
+      "release": "v2",
+      "tasks": 32,
+      "completed": 32,
+      "incomplete": []
+    },
+    {
+      "day": 6,
+      "persona": "P4",
+      "release": "v2",
+      "tasks": 18,
+      "completed": 18,
+      "incomplete": []
+    },
+    {
+      "day": 6,
+      "persona": "P5",
+      "release": "v2",
+      "tasks": 11,
+      "completed": 11,
+      "incomplete": []
+    },
+    {
+      "day": 7,
+      "persona": "P1",
+      "release": "v3",
+      "tasks": 40,
+      "completed": 40,
+      "incomplete": []
+    },
+    {
+      "day": 7,
+      "persona": "P2",
+      "release": "v3",
+      "tasks": 18,
+      "completed": 18,
+      "incomplete": []
+    },
+    {
+      "day": 7,
+      "persona": "P3",
+      "release": "v3",
+      "tasks": 54,
+      "completed": 54,
+      "incomplete": []
+    },
+    {
+      "day": 7,
+      "persona": "P4",
+      "release": "v3",
+      "tasks": 17,
+      "completed": 17,
+      "incomplete": []
+    },
+    {
+      "day": 7,
+      "persona": "P5",
+      "release": "v3",
+      "tasks": 14,
+      "completed": 14,
+      "incomplete": []
+    },
+    {
+      "day": 8,
+      "persona": "P1",
+      "release": "v3",
+      "tasks": 39,
+      "completed": 39,
+      "incomplete": []
+    },
+    {
+      "day": 8,
+      "persona": "P2",
+      "release": "v3",
+      "tasks": 15,
+      "completed": 15,
+      "incomplete": []
+    },
+    {
+      "day": 8,
+      "persona": "P3",
+      "release": "v3",
+      "tasks": 38,
+      "completed": 38,
+      "incomplete": []
+    },
+    {
+      "day": 8,
+      "persona": "P4",
+      "release": "v3",
+      "tasks": 15,
+      "completed": 15,
+      "incomplete": []
+    },
+    {
+      "day": 8,
+      "persona": "P5",
+      "release": "v3",
+      "tasks": 12,
+      "completed": 12,
+      "incomplete": []
+    },
+    {
+      "day": 9,
+      "persona": "P1",
+      "release": "v3",
+      "tasks": 39,
+      "completed": 39,
+      "incomplete": []
+    },
+    {
+      "day": 9,
+      "persona": "P2",
+      "release": "v3",
+      "tasks": 12,
+      "completed": 12,
+      "incomplete": []
+    },
+    {
+      "day": 9,
+      "persona": "P3",
+      "release": "v3",
+      "tasks": 44,
+      "completed": 44,
+      "incomplete": []
+    },
+    {
+      "day": 9,
+      "persona": "P4",
+      "release": "v3",
+      "tasks": 12,
+      "completed": 12,
+      "incomplete": []
+    },
+    {
+      "day": 9,
+      "persona": "P5",
+      "release": "v3",
+      "tasks": 11,
+      "completed": 11,
+      "incomplete": []
+    },
+    {
+      "day": 10,
+      "persona": "P1",
+      "release": "v3",
+      "tasks": 39,
+      "completed": 39,
+      "incomplete": []
+    },
+    {
+      "day": 10,
+      "persona": "P2",
+      "release": "v3",
+      "tasks": 14,
+      "completed": 14,
+      "incomplete": []
+    },
+    {
+      "day": 10,
+      "persona": "P3",
+      "release": "v3",
+      "tasks": 45,
+      "completed": 45,
+      "incomplete": []
+    },
+    {
+      "day": 10,
+      "persona": "P4",
+      "release": "v3",
+      "tasks": 16,
+      "completed": 16,
+      "incomplete": []
+    },
+    {
+      "day": 10,
+      "persona": "P5",
+      "release": "v3",
+      "tasks": 9,
+      "completed": 9,
+      "incomplete": []
+    }
+  ]
+}

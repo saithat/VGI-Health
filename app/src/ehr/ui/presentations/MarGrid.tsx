@@ -35,8 +35,14 @@ export function MarGrid({
         day: `${iso[1]}${iso[3] ? ` ${iso[3]}` : ""}`,
         label: iso[2] ?? key,
       };
-    const match = /^(.*\S)\s+(\d{2}:\d{2})$/.exec(key);
-    return { key, day: match?.[1] ?? "", label: match?.[2] ?? key };
+    const match = /^(.*\S)\s+(\d{2}:\d{2})(?:\s+(UTC|[+-]\d{2}:\d{2}))?$/.exec(
+      key,
+    );
+    return {
+      key,
+      day: match ? `${match[1]}${match[3] ? ` ${match[3]}` : ""}` : "",
+      label: match?.[2] ?? key,
+    };
   });
   const dated = hours.some((hour) => hour.day !== "");
   const groups: { day: string; key: string; count: number }[] = [];

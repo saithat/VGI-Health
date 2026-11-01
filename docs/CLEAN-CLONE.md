@@ -6,7 +6,11 @@ into a new `/tmp` directory, without dependencies or Lean outputs, runs
 External requests are blocked. It stops its own preview server, preserves the
 named **vgi-medplum** stack and its data, and never calls a reset/down target.
 
-## Recorded result
+## Current attempt — 2026-11-01
+
+The corrected harness is being run against commit `2452e68`. It explicitly requests `inspect=1` and opens the first **Open chart:** row before asserting a patient banner. This fresh attempt passed `make install` but was still completing Chromium setup at the 11:30 PDT hard stop; it is not yet a full pass; logs: `/tmp/honesty-clean.log`, clone/build logs: `/tmp/vgi-clean-clone.QfKZUw`. The result below is historical and does not validate the current landing-list integration.
+
+## Historical recorded result
 
 **PASSED**, 2026-10-31 PDT, at commit
 [`e7c4c04281f39bed0e9156c71969873c17f7c391`](https://github.com/saithat/VGI-Health/commit/e7c4c04281f39bed0e9156c71969873c17f7c391).

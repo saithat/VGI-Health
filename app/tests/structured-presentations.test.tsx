@@ -207,6 +207,8 @@ describe("structured clinical data boundary", () => {
   it("retains complete administration documentation below compact MAR cells", () => {
     const record =
       "Given · 08:12 · 500 mg · Oral · Left side · Jordan Reed, RN";
+    const instructions =
+      "Take as directed · use provided route · note administration time · assess response";
     paint([
       {
         presentation: {
@@ -221,6 +223,8 @@ describe("structured clinical data boundary", () => {
                 rows: [
                   [
                     ["Medication", "Example medication"],
+                    ["Instructions", instructions],
+                    ["PRN indication", "Pain"],
                     ["08:00", record],
                   ],
                 ],
@@ -237,6 +241,24 @@ describe("structured clinical data boundary", () => {
       screen.getByRole("list", { name: "MAR administration details" })
         .textContent,
     ).toContain(record);
+    expect(screen.getByRole("table", { name: "MAR" }).textContent).toContain(
+      instructions,
+    );
+    expect(screen.getByRole("table", { name: "MAR" }).textContent).toContain(
+      "Pain",
+    );
+    expect(
+      screen.queryByRole("columnheader", { name: "Instructions" }),
+    ).toBeNull();
+    expect(
+      screen.queryByRole("columnheader", {
+        name: "PRN indication",
+      }),
+    ).toBeNull();
+    expect(
+      screen.getByRole("list", { name: "MAR administration details" })
+        .textContent,
+    ).not.toContain(instructions);
     expect(screen.queryAllByRole("button")).toHaveLength(0);
   });
   it("keeps separate MAR day groups and preserves an undated column", () => {
@@ -285,6 +307,42 @@ describe("structured clinical data boundary", () => {
       }),
     ).toBeTruthy();
     expect(screen.getByText("Not given")).toBeTruthy();
+  });
+  it("retains the recorded offset when grouping dated MAR hours", () => {
+    paint([
+      {
+        presentation: {
+          kind: "timeGrid",
+          children: [
+            {
+              info: {
+                comp: "mar",
+                label: "MAR",
+                infoId: "mar",
+                display: "table",
+                rows: [
+                  [
+                    ["Medication", "insulin lispro"],
+                    ["Category", "Scheduled"],
+                    ["2026-11-02 08:00 -08:00", "Scheduled · 08:00"],
+                    ["2026-11-02 09:00 -08:00", "Given · 09:03 · 4 units"],
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(
+      screen
+        .getByRole("columnheader", { name: "2026-11-02 -08:00" })
+        .getAttribute("colspan"),
+    ).toBe("2");
+    expect(screen.getByRole("columnheader", { name: "08:00" })).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "09:00" })).toBeTruthy();
+    expect(screen.queryByRole("columnheader", { name: "Category" })).toBeNull();
+    expect(screen.getByText("Given · 09:03 · 4 units")).toBeTruthy();
   });
   it("keeps unlike units in separate trend images and preserves nonnumeric results", () => {
     paint([
@@ -444,6 +502,10 @@ describe("structured clinical data boundary", () => {
     expect(suppliedTone("H")).toBe("red");
     expect(suppliedTone("HH")).toBe("red");
     expect(suppliedTone("Held · Per order")).toBe("amber");
+    expect(suppliedTone("final")).toBe("green");
+    expect(suppliedTone("Report available")).toBe("green");
+    expect(suppliedTone("Preliminary report")).toBe("blue");
+    expect(suppliedTone("Images available")).toBeUndefined();
     expect(suppliedTone("6.5")).toBeUndefined();
     expect(suppliedTone("No high alert")).toBeUndefined();
   });
