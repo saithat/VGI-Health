@@ -67,7 +67,13 @@ def itemView (sp : Spec) (facts : Facts) (s : State) (comps : List Component)
     | .field e _ _ => capturedAt? s e slot
     | .priorAuth _ => capturedAt? s priorAuthElement slot
     | _ => none
-  { comp := c
+  { validationError? := match c.kind, cap with
+      | .field e _ _, some x =>
+        match sp.element? e with
+        | some el => if elementValueValid facts s el slot x.value then none else some "value validation failed"
+        | none => some "unknown element"
+      | _, _ => none
+    comp := c
     shown := compShown sp facts s comps c
     depth := depthAux comps (comps.length + 1) c
     expanded := match c.kind with

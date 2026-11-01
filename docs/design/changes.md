@@ -428,3 +428,27 @@ captured equality, actual entry applicability and alert keys. GenTS exports the
 AST, source records and examples. No property or theorem statement changed in
 this group. Adapter completeness and truth remain trusted; content must choose
 source codes, applicability and lawful refusal paths explicitly.
+
+## Rules catalog: value-validation (34 rules, M)
+
+`ElementSpec.validation` is an optional closed `Validation` AST. It supports
+nonempty narratives, exact membership in a versioned trusted code/product table,
+Gregorian ISO dates, bounded lexical tokens/decimal formatting, quantity bounds,
+formulation/unit pairs, kg weight bands, GTIN-14 checksums, a closed GS1 UDI
+human-readable grammar, and named supply-days-ceiling / capped mg-per-kg
+calculations. `and` composes constraints. Lexical rules require `Value.text` or
+`Value.code` and preserve the exact input; a numeric quantity cannot satisfy them.
+Other UDI issuer/codec formats use explicit versioned validated product tables;
+the GS1 grammar accepts (01), optionally (17)/(10)/(21) in that order, with
+20xx expiry dates. This is an explicit supported grammar, not a universal codec.
+
+Validation runs on human/macro entry, generated default/record/linked prefills,
+and again on every captured value at commit, including relational dependencies.
+Relations require unique confirmed captures on the correct slot and exact units;
+zero denominators, missing terminology and pending/wrong-unit weights fail closed.
+The fixed arithmetic functions use bounded output contracts, never arbitrary
+executable predicates. `ElementSpec.defaultValue` also requires program fields
+to declare the exact specified default; incorrect generated values are ignored.
+Views expose field validation errors and the same commit hard stop/reason. GenTS
+exports all constraints and real examples. Existing theorem statements remain
+unchanged; all original human/confirmation/unit/allowed-value checks are retained.

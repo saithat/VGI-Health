@@ -45,6 +45,9 @@ def samplePage : Ehr.Render.PageNode :=
 
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "validatedNarrative" "ElementSpec" Ehr.CoreTests.ValueValidation.narrative,
+  mk "validationExamples" "Validation[]" [Validation.isoDate, .udiGs1,
+    .supplyDaysCeil "quantity" "dose" "freq", .doseByWeight "weight" 100 5000 .mg],
   mk "minorPredicate" "ClinicalPredicate" Ehr.CoreTests.PatientPredicate.minor,
   mk "minorFacts" "Facts" Ehr.CoreTests.PatientPredicate.minorFacts,
   mk "minorEntry" "EntryReq" Ehr.CoreTests.PatientPredicate.minorEntry,

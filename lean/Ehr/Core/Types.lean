@@ -99,6 +99,34 @@ inductive ValueKind
   | cosign
   deriving DecidableEq, Repr, Inhabited
 
+/-- Closed, reviewable input/output constraints; no executable predicates. -/
+inductive Validation
+  | nonempty
+  | codeMember (system version : String)
+  | isoDate
+  | token (minLength maxLength : Nat) (alphabet : String)
+  /-- Text/code retains lexical input; leading/trailing zeros are forbidden
+  when their flags are false. Ordinary quantities retain their numeric meaning. -/
+  | decimal (maxFraction : Nat) (leadingZeros trailingZeros : Bool)
+  | quantityRange (unit : UnitKind) (minTenths maxTenths : Nat)
+  | formulationUnit (formulation : ElementId) (pairs : List (String × UnitKind))
+  | weightBand (minKgTenths maxKgTenths : Nat)
+  | gtin14
+  /-- GS1 UDI with mandatory (01), optional (17), (10), (21), in that order. -/
+  | udiGs1
+  | supplyDaysCeil (quantity dose frequency : ElementId)
+  | doseByWeight (weight : ElementId) (factorTenths capTenths : Nat) (unit : UnitKind)
+  | and (left right : Validation)
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Trusted, versioned terminology/product table. Membership is enforced,
+not inferred from a ValueKind.coded value-set name. -/
+structure CodeTable where
+  system : String
+  version : String
+  codes : List String
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A data element the spec knows about. -/
 structure ElementSpec where
   id : ElementId
@@ -116,6 +144,8 @@ structure ElementSpec where
   recordFact? : Option String := none
   /-- Where the app writes the value, e.g. `"MedicationRequest.reasonCode"`. -/
   fhirTarget : String
+  validation? : Option Validation := none
+  defaultValue? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A piece of information the UI can display. -/
@@ -571,6 +601,7 @@ structure Facts where
   eventEvidence? : Option (List EventEvidence) := none
   calendars? : Option (List BusinessCalendar) := none
   clinical? : Option ClinicalFacts := none
+  codeTables? : Option (List CodeTable) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/
@@ -659,6 +690,7 @@ inductive StepResult
 
 /-- One component as the app should paint it. -/
 structure ItemView where
+  validationError? : Option String := none
   comp : Component
   /-- Counts as shown: on screen, ancestors open, visibility holds, not tiny,
   and (for alerts) the alert condition holds. -/

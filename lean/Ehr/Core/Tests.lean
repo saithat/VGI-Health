@@ -347,4 +347,78 @@ def minorEntry : EntryReq := { commit := "signOrders", element := "patientIdReen
 #guard roundTrips minorFacts
 end PatientPredicate
 
+namespace ValueValidation
+
+def narrative : ElementSpec :=
+  { id := "narrative", label := "Narrative", kind := .text, enteredBy := [.physician]
+    prefill := .defaultConfirm, friction := .compliance, fhirTarget := "DocumentReference.description"
+    validation? := some (.and .nonempty (.token 1 30 "abcdefghijklmnopqrstuvwxyz ")) }
+def tinySpec : Spec :=
+  { EventWindow.tinySpec with
+    elements := [narrative], commits := [{ id := "signOrders", label := "Sign", roles := [.physician] }] }
+def tinyProgram : Program :=
+  { program with start := "validate", screens :=
+    [{ id := "validate", title := "Validate", workflow := "W1", components :=
+      [{ id := "narrative", kind := .field "narrative" (.fixed 0) (.default " ") },
+       { id := "sign", kind := .button (.commit "signOrders") }] }] }
+def initial : State := init tinySpec tinyProgram facts user
+#guard initial.captured == []
+#guard (step tinySpec tinyProgram facts user .human initial (.enter "narrative" (.text " "))).2 ==
+  .blocked "invalid value for narrative"
+#guard (step tinySpec tinyProgram facts user .human initial (.enter "narrative" (.text "reviewed"))).2 == .ok
+#guard !validationHolds facts atOrder 0 (.text "   ") .nonempty
+#guard validationHolds facts atOrder 0 (.text "2024-02-29") .isoDate
+#guard !validationHolds facts atOrder 0 (.text "2025-02-29") .isoDate
+#guard !validationHolds facts atOrder 0 (.text "2024-13-01") .isoDate
+#guard validationHolds facts atOrder 0 (.text "0.5") (.decimal 1 false false)
+#guard !validationHolds facts atOrder 0 (.text "01.5") (.decimal 1 false false)
+#guard !validationHolds facts atOrder 0 (.text "1.0") (.decimal 1 false false)
+#guard !validationHolds facts atOrder 0 (.qty 10 .mg) (.decimal 1 false false)
+#guard validationHolds facts atOrder 0 (.text "1.00") (.decimal 2 false true)
+#guard validationHolds facts atOrder 0 (.qty 50 .mg) (.quantityRange .mg 50 50)
+#guard !validationHolds facts atOrder 0 (.qty 50 .lb) (.quantityRange .mg 0 100)
+#guard validationHolds { facts with codeTables? := some [{ system := "ICD-10-CM", version := "2026", codes := ["J18.9"] }] }
+  atOrder 0 (.code "J18.9") (.codeMember "ICD-10-CM" "2026")
+#guard !validationHolds facts atOrder 0 (.code "J18.9") (.codeMember "ICD-10-CM" "2026")
+#guard gtinValid "09506000134352"
+#guard !gtinValid "09506000134353"
+#guard udiValid "(01)09506000134352(17)261231(10)LOT-1(21)SERIAL"
+#guard !udiValid "(01)09506000134352(17)260230"
+#guard !udiValid "(01)09506000134352(10)A(10)B"
+
+def calcState : State :=
+  { atOrder with captured :=
+    [{ element := "quantity", slot := 0, value := .qty 300 .units, byHuman := true, confirmed := true },
+     { element := "dose", slot := 0, value := .qty 10 .units, byHuman := true, confirmed := true },
+     { element := "freq", slot := 0, value := .code "bid", byHuman := true, confirmed := true },
+     { element := "weight", slot := 0, value := .qty 200 .kg, byHuman := true, confirmed := true },
+     { element := "formulation", slot := 0, value := .code "tablet", byHuman := true, confirmed := true }] }
+#guard validationHolds facts calcState 0 (.qty 150 .none) (.supplyDaysCeil "quantity" "dose" "freq")
+#guard !validationHolds facts calcState 1 (.qty 150 .none) (.supplyDaysCeil "quantity" "dose" "freq")
+#guard validationHolds facts calcState 0 (.qty 2000 .mg) (.doseByWeight "weight" 100 5000 .mg)
+#guard !validationHolds facts calcState 0 (.qty 2001 .mg) (.doseByWeight "weight" 100 5000 .mg)
+#guard validationHolds facts calcState 0 (.qty 1 .units) (.weightBand 100 300)
+#guard validationHolds facts calcState 0 (.qty 1 .units) (.formulationUnit "formulation" [("tablet", .units)])
+#guard !validationHolds facts calcState 0 (.qty 1 .mL) (.formulationUnit "formulation" [("tablet", .units)])
+def invalidCapture : State := { initial with captured :=
+  [{ element := "narrative", slot := 0, value := .text " ", byHuman := true, confirmed := true }] }
+#guard !commitGuard tinySpec tinyProgram facts user invalidCapture "signOrders"
+#guard (view tinySpec tinyProgram facts user invalidCapture).items.any (fun i => i.validationError?.isSome)
+#guard roundTrips narrative
+#guard roundTrips (.and .udiGs1 (.supplyDaysCeil "quantity" "dose" "freq") : Validation)
+-- Wrong/pending weight never falls back to a different recorded weight.
+#guard !validationHolds { facts with weightToday? := some (200, .kg) }
+  { calcState with captured := calcState.captured.map (fun x =>
+    if x.element == "weight" then { x with confirmed := false } else x) }
+  0 (.qty 1 .mg) (.weightBand 100 300)
+#guard !validationHolds facts { calcState with captured := calcState.captured.map (fun x =>
+  if x.element == "dose" then { x with value := .qty 0 .units } else x) }
+  0 (.qty 150 .none) (.supplyDaysCeil "quantity" "dose" "freq")
+#guard !defaultsOk { tinySpec with elements := [{ narrative with defaultValue? := some "reviewed" }] } tinyProgram
+#guard prefillValueValid facts atOrder { narrative with defaultValue? := some "reviewed" } 0
+  (.default "reviewed")
+#guard !prefillValueValid facts atOrder { narrative with defaultValue? := some "reviewed" } 0
+  (.default "other")
+end ValueValidation
+
 end Ehr.CoreTests

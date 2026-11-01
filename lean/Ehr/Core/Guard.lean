@@ -196,6 +196,8 @@ def entryReason (sp : Spec) (facts : Facts) (user : User) (s : State) (rq : Entr
 def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : State)
     (c : CommitId) : String :=
   if !roleOk sp user c then s!"role: {user.role.name} may not perform {c}"
+  else if !validationsOk sp facts s then "value validation failed"
+  else if !defaultsOk sp prog then "required default missing or incorrect"
   else
     match sp.entries.find? (fun rq => rq.commit == c && !entryMet sp facts user s rq) with
     | some rq => entryReason sp facts user s rq

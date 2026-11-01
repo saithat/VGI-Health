@@ -120,6 +120,36 @@ export type ValueKind =
   | "cosign";
 
 /**
+ * Closed, reviewable input/output constraints; no executable predicates.
+ */
+export type Validation =
+  | "nonempty"
+  | { codeMember: { system: string; version: string } }
+  | "isoDate"
+  | { token: { minLength: number; maxLength: number; alphabet: string } }
+  /** Text/code retains lexical input; leading/trailing zeros are forbidden when their flags are false. Ordinary quantities retain their numeric meaning. */
+  | { decimal: { maxFraction: number; leadingZeros: boolean; trailingZeros: boolean } }
+  | { quantityRange: { unit: UnitKind; minTenths: number; maxTenths: number } }
+  | { formulationUnit: { formulation: ElementId; pairs: [string, UnitKind][] } }
+  | { weightBand: { minKgTenths: number; maxKgTenths: number } }
+  | "gtin14"
+  /** GS1 UDI with mandatory (01), optional (17), (10), (21), in that order. */
+  | "udiGs1"
+  | { supplyDaysCeil: { quantity: ElementId; dose: ElementId; frequency: ElementId } }
+  | { doseByWeight: { weight: ElementId; factorTenths: number; capTenths: number; unit: UnitKind } }
+  | { and: { left: Validation; right: Validation } };
+
+/**
+ * Trusted, versioned terminology/product table. Membership is enforced,
+ * not inferred from a ValueKind.coded value-set name.
+ */
+export interface CodeTable {
+  system: string;
+  version: string;
+  codes: string[];
+}
+
+/**
  * A data element the spec knows about.
  */
 export interface ElementSpec {
@@ -148,6 +178,8 @@ export interface ElementSpec {
    * Where the app writes the value, e.g. `"MedicationRequest.reasonCode"`.
    */
   fhirTarget: string;
+  validation?: Validation;
+  defaultValue?: string;
 }
 
 /**
@@ -732,6 +764,7 @@ export interface Facts {
   eventEvidence?: EventEvidence[];
   calendars?: BusinessCalendar[];
   clinical?: ClinicalFacts;
+  codeTables?: CodeTable[];
 }
 
 /**
@@ -850,6 +883,7 @@ export type StepResult =
  * One component as the app should paint it.
  */
 export interface ItemView {
+  validationError?: string;
   comp: Component;
   /**
    * Counts as shown: on screen, ancestors open, visibility holds, not tiny,

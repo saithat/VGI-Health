@@ -345,11 +345,150 @@ def temporalStatus (facts : Facts) (s : State) (rq : TemporalReq) : ObligationSt
     | none => if overdue then .overdue else .missing
   | _, _ => .missing
 
+/-- Doses per day for a frequency code (`q4h` 6, `q6h` 4, `q8h` 3, `q12h` 2,
+`daily` 1, `bid` 2, `tid` 3, `qid` 4; case does not matter). Unknown: none.
+Written over characters so the kernel can evaluate it. -/
+def freqPerDay (f : String) : Option Nat :=
+  match f.toList.map Char.toLower with
+  | ['q', '4', 'h'] => some 6
+  | ['q', '6', 'h'] => some 4
+  | ['q', '8', 'h'] => some 3
+  | ['q', '1', '2', 'h'] => some 2
+  | ['d', 'a', 'i', 'l', 'y'] => some 1
+  | ['b', 'i', 'd'] => some 2
+  | ['t', 'i', 'd'] => some 3
+  | ['q', 'i', 'd'] => some 4
+  | _ => none
+
+/-- Lexical values are kept verbatim as text/code. Numeric fields have no
+lexical spelling and cannot satisfy a lexical constraint. -/
+def lexicalValue : Value → Option String
+  | .text t | .code t => some t
+  | _ => none
+
+def leapYear (y : Nat) : Bool := y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)
+def validDate (y m d : Nat) : Bool :=
+  let days := if m == 2 then (if leapYear y then 29 else 28)
+    else if [4, 6, 9, 11].contains m then 30 else 31
+  1 ≤ y && 1 ≤ m && m ≤ 12 && 1 ≤ d && d ≤ days
+
+def isoDateValid (t : String) : Bool :=
+  match t.toList with
+  | [a,b,c,d,'-',e,f,'-',g,h] =>
+    match digitsVal [a,b,c,d] 0, digitsVal [e,f] 0, digitsVal [g,h] 0 with
+    | some y, some m, some day => validDate y m day
+    | _, _, _ => false
+  | _ => false
+
+def decimalValid (t : String) (scale : Nat) (leading trailing : Bool) : Bool :=
+  let (whole, rest) := t.toList.span (· != '.')
+  !whole.isEmpty && (digitsVal whole 0).isSome &&
+    (leading || whole.length == 1 || whole.head? != some '0') &&
+    match rest with
+    | [] => true
+    | '.' :: fraction => !fraction.isEmpty && fraction.length ≤ scale &&
+        (digitsVal fraction 0).isSome && (trailing || fraction.getLast? != some '0')
+    | _ => false
+
+def gtinValid (t : String) : Bool :=
+  let cs := t.toList
+  cs.length == 14 && cs.all Char.isDigit &&
+    (cs.zipIdx.foldl (fun acc (c, i) => acc + digitVal c * (if i % 2 == 0 then 3 else 1)) 0) % 10 == 0
+
+/-- A deliberately closed GS1 human-readable grammar. Other issuer formats
+must use an explicitly versioned validated product table, never a loose token. -/
+def udiValid (t : String) : Bool :=
+  let parts := t.splitOn "("
+  match parts with
+  | "" :: first :: rest =>
+    let gtin := first.drop 3 |>.toString
+    first.startsWith "01)" && gtinValid gtin &&
+      rest.length ≤ 3 && rest.eraseDups.length == rest.length &&
+      (rest.map (fun p => (p.take 3).toString) ==
+        (["17)", "10)", "21)"].filter (fun ai => rest.any (·.startsWith ai)))) &&
+      rest.all (fun p =>
+        let value := (p.drop 3).toString
+        if p.startsWith "17)" then
+          match value.toList with
+          | [a,b,c,d,e,f] =>
+            match digitsVal [a,b] 0, digitsVal [c,d] 0, digitsVal [e,f] 0 with
+            | some y, some m, some day => validDate (2000 + y) m day
+            | _, _, _ => false
+          | _ => false
+        else (p.startsWith "10)" || p.startsWith "21)") &&
+          1 ≤ value.length && value.length ≤ 20 && value.toList.all (fun c => c.isAlphanum || c == '-'))
+  | _ => false
+
+/-- Relational inputs must be unique, confirmed, and on the same slot. -/
+def validationCapture (s : State) (slot : Nat) (e : ElementId) : Option Value :=
+  match s.captured.filter (fun x => x.slot == slot && x.element == e) with
+  | [x] => if x.confirmed then some x.value else none
+  | _ => none
+
+/-- Validation also re-runs at commit, so changed dependencies invalidate outputs. -/
+def validationHolds (facts : Facts) (s : State) (slot : Nat) (v : Value) : Validation → Bool
+  | .nonempty => (lexicalValue v).any (fun t => !t.trimAscii.toString.isEmpty)
+  | .codeMember system version =>
+    match (facts.codeTables?.getD []).filter (fun t => t.system == system && t.version == version), lexicalValue v with
+    | [table], some code => table.codes.contains code
+    | _, _ => false
+  | .isoDate => (lexicalValue v).any isoDateValid
+  | .token lo hi alphabet => (lexicalValue v).any fun t =>
+      lo ≤ t.length && t.length ≤ hi && t.toList.all (alphabet.toList.contains ·)
+  | .decimal scale leading trailing => (lexicalValue v).any (decimalValid · scale leading trailing)
+  | .quantityRange unit lo hi =>
+    match v with | .qty n u => u == unit && lo ≤ n && n ≤ hi | _ => false
+  | .formulationUnit e pairs =>
+    match validationCapture s slot e, v with
+    | some (.code formulation), .qty _ unit => pairs.contains (formulation, unit)
+    | _, _ => false
+  | .weightBand lo hi =>
+    let weight := if s.captured.any (fun x => x.element == "weight" && x.slot == 0) then
+      match validationCapture s 0 "weight" with
+      | some (.qty w .kg) => some w
+      | _ => none
+    else match facts.weightToday? with | some (w, .kg) => some w | _ => none
+    weight.any (fun w => 0 < w && lo ≤ w && w ≤ hi)
+  | .gtin14 => (lexicalValue v).any gtinValid
+  | .udiGs1 => (lexicalValue v).any udiValid
+  | .supplyDaysCeil quantity dose frequency =>
+    match validationCapture s slot quantity, validationCapture s slot dose,
+        validationCapture s slot frequency, v with
+    | some (.qty q u), some (.qty d u'), some (.code f), .qty days .none =>
+      match freqPerDay f with
+      | some n => u == u' && 0 < q && 0 < d &&
+          days == ((q + d * n - 1) / (d * n)) * 10
+      | none => false
+    | _, _, _, _ => false
+  | .doseByWeight weight factor cap unit =>
+    match validationCapture s 0 weight, v with
+    | some (.qty w .kg), .qty dose u =>
+      u == unit && 0 < w && 0 < factor && 0 < cap && dose == min cap (w * factor / 10)
+    | _, _ => false
+  | .and l r => validationHolds facts s slot v l && validationHolds facts s slot v r
+
+/-- Optional constraints preserve the original element contract. -/
+def elementValueValid (facts : Facts) (s : State) (el : ElementSpec) (slot : Nat) (v : Value) : Bool :=
+  el.validation?.all (validationHolds facts s slot v)
+
+def validationsOk (sp : Spec) (facts : Facts) (s : State) : Bool :=
+  sp.elements.all fun el => s.captured.all fun x =>
+    x.element != el.id || elementValueValid facts s el x.slot x.value
+
+/-- Required defaults are a program contract as well as a prefill check. -/
+def defaultsOk (sp : Spec) (prog : Program) : Bool :=
+  sp.elements.all fun el => el.defaultValue?.all fun expected =>
+    let fields := (prog.screens.flatMap (·.components)).filter fun c =>
+      match c.kind with | .field e _ _ => e == el.id | _ => false
+    !fields.isEmpty && fields.all (fun c =>
+      match c.kind with | .field _ _ pf => pf == .default expected | _ => false)
+
 /-- Additional commit contracts. Kept separate from entries/review receipts. -/
-def extraGuard (sp : Spec) (_prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
+def extraGuard (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
   match sp.commit? c with
   | none => false
-  | some cs => (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met)
+  | some cs => (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met) &&
+      validationsOk sp facts s && defaultsOk sp prog
 
 /-- All event obligations, including ones on screens without a commit button. -/
 def obligationViews (sp : Spec) (facts : Facts) (s : State) : List ObligationView :=
@@ -389,21 +528,6 @@ def serviceOrderAt (s : State) (slot : Nat) : Bool :=
 /-- Any medication or service order exists on this slot. -/
 def hasOrderAt (s : State) (slot : Nat) : Bool :=
   (orderLines s).any (·.1 == slot) || serviceOrderAt s slot
-
-/-- Doses per day for a frequency code (`q4h` 6, `q6h` 4, `q8h` 3, `q12h` 2,
-`daily` 1, `bid` 2, `tid` 3, `qid` 4; case does not matter). Unknown: none.
-Written over characters so the kernel can evaluate it. -/
-def freqPerDay (f : String) : Option Nat :=
-  match f.toList.map Char.toLower with
-  | ['q', '4', 'h'] => some 6
-  | ['q', '6', 'h'] => some 4
-  | ['q', '8', 'h'] => some 3
-  | ['q', '1', '2', 'h'] => some 2
-  | ['d', 'a', 'i', 'l', 'y'] => some 1
-  | ['b', 'i', 'd'] => some 2
-  | ['t', 'i', 'd'] => some 3
-  | ['q', 'i', 'd'] => some 4
-  | _ => none
 
 /-- The frequency (doses per day) captured on an order line, if known. -/
 def lineFreqPerDay? (s : State) (slot : Nat) : Option Nat :=

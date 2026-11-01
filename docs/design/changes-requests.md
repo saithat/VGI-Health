@@ -564,3 +564,19 @@ routes. Check: cover true/false/unknown branches, code domains, slot-specific
 captured dependencies (including unconfirmed captures) and all refusal routes.
 Agent/app validators must round-trip recursive and/or/not, optional clinical
 facts and conditional temporal requirements. Tiny: CoreTests.PatientPredicate.
+
+### Value-validation adoption (34-rule group)
+
+Use ElementSpec.validation (Validation AST), optional defaultValue, and
+Facts.codeTables [{system, version, codes}]. The table adapter must supply vetted
+terminology/product codes; a coded value-set name is still not a membership check.
+Lexically significant numbers/dates/tokens use text/code fields, preserving their
+raw spelling. Map those validated values to backend types explicitly. The closed
+GS1 grammar is documented in changes.md; other issuers/formats need versioned
+validated product tables, not weaker token validation. Content supplies clinical
+factor/cap/formulation/weight constraints and table versions; core does not invent
+clinical calculator data. Check must reject unsupported/missing tables, invalid
+defaults and unsatisfiable or cyclic relational dependencies, prove source fields
+reachable before outputs, and include stale-dependency branches in completability.
+Render/app: preserve validation/default fields and display ItemView.validationError;
+FHIR/world populate trusted versioned code tables. Examples: CoreTests.ValueValidation.
