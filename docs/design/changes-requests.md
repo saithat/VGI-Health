@@ -11,7 +11,9 @@ are read-only; no row-cell event is implied. P5's landing destinations are
 
 SURG added a separated perioperative section in `Render/Fhir.lean`. Dated
 surgical ServiceRequests (category SNOMED 387713003) project Room / Start /
-Procedure / Patient / Surgeon / Status. Consultation ServiceRequests (code
+Procedure / Indication / Patient / Surgeon / Status. Indication comes only from
+the request's `reasonCode`, not an inferred or confirmed postoperative diagnosis.
+Consultation ServiceRequests (code
 11429006) project the request list. Both codes match `infra/seed-world.mjs`.
 Selected-patient Consent and today's Procedure records supply consent-on-file
 and intra-op evidence. FHIR references resolve to display names or `Not recorded`,

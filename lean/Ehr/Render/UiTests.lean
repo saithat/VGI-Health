@@ -26,6 +26,13 @@ def uiRoomCtx : Ctx := tinyFhirCtx
 #guard uiSourceText uiRoomCtx "linked:unmappedInternalId" == "Linked value"
 #guard uiSourceText uiRoomCtx "macro" == "From template / preference list"
 #guard uiSourceText uiRoomCtx "default" == "Default value"
+/-- A compact surgical request keeps field labels and every supplied value. -/
+def uiSurgicalCaseCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, facts := Tests.periopFacts }
+#guard uiSummaryRows uiSurgicalCaseCtx "scheduleTasks" == uiRows uiSurgicalCaseCtx "scheduleTasks"
+#guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Procedure" ==
+  some "Laparoscopic appendectomy"
+#guard (uiSummaryRows uiSurgicalCaseCtx "scheduleTasks").head!.lookup "Status" == some "active"
 def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }
 def uiWeightItem : ItemView :=
   itemView uiRoomCtx.sp uiRoomCtx.facts uiRoomCtx.s (uiRoomCtx.prog.compsOf uiRoomCtx.s.screen)

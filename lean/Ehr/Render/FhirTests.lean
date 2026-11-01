@@ -97,6 +97,15 @@ def periopRows := surgicalCaseRows context.today [periopOrder, periopOtherPatien
 #guard (periopRows.head!).start == "2026-10-31"
 #guard (periopRows.head!).room == "Not recorded"
 #guard (periopRows.head!).surgeon == "Not recorded"
+#guard (periopRows.head!).indication == "Unknown"
+/-- The case request carries its own indication, independent of chart problems. -/
+def periopCholecystectomy : Json := (periopOrder.setObjVal! "code"
+  (json r#"{"text":"Laparoscopic cholecystectomy"}"#)).setObjVal! "reasonCode"
+  (json r#"[{"coding":[{"system":"http://hl7.org/fhir/sid/icd-10-cm","code":"K80.20","display":"Calculus of gallbladder without cholecystitis"}]}]"#)
+#guard ((surgicalCaseRows context.today [periopCholecystectomy] periopPatient).head!).cells.lookup
+  "Indication" == some "Calculus of gallbladder without cholecystitis"
+#guard periopIndicationText (json r#"{"text":"symptomatic-cholelithiasis"}"#) == "Symptomatic cholelithiasis"
+#guard periopIndicationText (json r#"{"text":"Unspecified abdominal pain"}"#) == "Unspecified abdominal pain"
 #guard (surgicalCaseRows "2026-11-01" [periopOrder] periopPatient).isEmpty
 #guard (surgicalConsultRows [periopConsult, periopOtherPatient] periopPatient).length == 1
 #guard (surgicalConsultRows [periopConsult.setObjVal! "status" (.str "completed")] periopPatient).isEmpty

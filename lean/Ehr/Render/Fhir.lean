@@ -978,12 +978,24 @@ def periopReferenceMatches (target ref : Json) : Bool :=
 def periopSubject (p r : Json) : Bool :=
   periopReferenceMatches p (field r "subject")
 
+/-- Expand the supplied surgical terminology labels used by the case feed.
+Other source text and codes are retained; this assigns no new diagnosis. -/
+def periopIndicationText (cc : Json) : String :=
+  match ccText cc with
+  | "appendicitis" => "Appendicitis"
+  | "acute-cholecystitis" => "Acute cholecystitis"
+  | "symptomatic-cholelithiasis" => "Symptomatic cholelithiasis"
+  | "inguinal-hernia" => "Inguinal hernia"
+  | "umbilical-hernia" => "Umbilical hernia"
+  | text => text
+
 /-- One surgical request on its actual planned date. Status is the request's
 status; this does not assert that a patient is roomed or a procedure completed. -/
 structure SurgicalCaseRow where
   room : String
   start : String
   procedure : String
+  indication : String
   patient : String
   surgeon : String
   status : String
@@ -1001,14 +1013,16 @@ def surgicalCaseRows (today : String) (rs : List Json) (p : Json) : List Surgica
       start := let exact := str r "occurrenceDateTime"
         if exact != "" then exact else str (field r "occurrencePeriod") "start"
       procedure := knownText (ccText (field r "code"))
+      indication := knownText ("; ".intercalate ((arr r "reasonCode").map periopIndicationText))
       patient := displayName p
       surgeon := periopReferenceName rs (first r "performer")
       status := knownText (str r "status") }
 
-/-- Column labels follow the shared OR-schedule presentation contract. -/
+/-- The OR-schedule contract retains the supplied indication as an extra column.
+It is the request's reason, not a confirmed operative diagnosis. -/
 def SurgicalCaseRow.cells (r : SurgicalCaseRow) : List (String × String) :=
   [("Room", r.room), ("Start", r.start), ("Procedure", r.procedure),
-   ("Patient", r.patient), ("Surgeon", r.surgeon), ("Status", r.status)]
+   ("Indication", r.indication), ("Patient", r.patient), ("Surgeon", r.surgeon), ("Status", r.status)]
 
 /-- Open consultation requests retain their request time, indication and owner. -/
 def surgicalConsultRows (rs : List Json) (p : Json) : List (List (String × String)) :=
@@ -1017,7 +1031,7 @@ def surgicalConsultRows (rs : List Json) (p : Json) : List (List (String × Stri
     !["entered-in-error", "revoked", "completed"].contains (str r "status")).map fun r =>
     [("Due", str r "authoredOn"), ("Patient", displayName p),
      ("Task", knownText (ccText (field r "code"))),
-     ("Reason", "; ".intercalate ((arr r "reasonCode").map ccText)),
+     ("Reason", "; ".intercalate ((arr r "reasonCode").map periopIndicationText)),
      ("Priority", knownText (str r "priority")), ("Status", knownText (str r "status")),
      ("Requested by", periopReferenceName rs (field r "requester")),
      ("Owner", periopReferenceName rs (first r "performer")),

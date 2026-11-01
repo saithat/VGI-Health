@@ -293,19 +293,20 @@ def dischargeScreen : Screen :=
       commitBtn s "discharge" "Discharge patient"
     ] }
 
-/-- An inpatient order line (inpatient pharmacy, no refills). -/
-def inpatientLine (drug dose route freq quantity indication : String) (prn : Bool := false) :
+/-- An inpatient order line. Procedure-specific sets supply their own diagnosis. -/
+def inpatientLine (drug dose route freq quantity indication : String) (prn : Bool := false)
+    (diagnosis : String := "") :
     OrderLine :=
   { drug, dose, route, freq, duration := "3 days", quantity, indication
-    pharmacy := "Inpatient pharmacy", prn, diagnosis := "K35.80" }
+    pharmacy := "Inpatient pharmacy", prn, diagnosis }
 
 /-- The W6 macros: the post-op order set, the preference list, and templates. -/
 def macros : List Macro := [
   orderSet "w6AppendectomySet" "Appendectomy post-op order set" "w6PostOp"
-    [inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "post-op pain",
-     inpatientLine "oxycodone" "10" "PO" "q6h" "12" "severe post-op pain" (prn := true),
-     inpatientLine "enoxaparin" "40" "SC" "daily" "3" "VTE prophylaxis",
-     inpatientLine "ondansetron" "8" "IV" "q8h" "9" "nausea" (prn := true)]
+    [inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "post-op pain" (diagnosis := "K35.80"),
+     inpatientLine "oxycodone" "10" "PO" "q6h" "12" "severe post-op pain" (prn := true) (diagnosis := "K35.80"),
+     inpatientLine "enoxaparin" "40" "SC" "daily" "3" "VTE prophylaxis" (diagnosis := "K35.80"),
+     inpatientLine "ondansetron" "8" "IV" "q8h" "9" "nausea" (prn := true) (diagnosis := "K35.80")]
     (extra := [.setValue (cid "w6PostOp" "postOpDiet") "clear-liquids",
                .setValue (cid "w6PostOp" "postOpActivity") "ambulate-tid",
                .setValue (cid "w6PostOp" "vteMechanical") "scd",
@@ -314,7 +315,7 @@ def macros : List Macro := [
                .setValue (cid "w6PostOp" "nursingOrders") "Incentive spirometry q1h while awake; dressing check daily; strict intake and output."]),
   preference "w6PrefCefazolin" "Cefazolin 2 g IV (surgical prophylaxis)" "w6Orders"
     { drug := "cefazolin", dose := "2000", route := "IV", freq := "once", duration := "1 dose"
-      quantity := "1", indication := "surgical prophylaxis", pharmacy := "", diagnosis := "K35.80" },
+      quantity := "1", indication := "surgical prophylaxis", pharmacy := "", diagnosis := "" },
   preference "w6PrefAcetaminophen" "Acetaminophen 1 g q6h" "w6Orders"
     (inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "pain"),
   preference "w6PrefOxycodone" "Oxycodone 10 mg q6h PRN" "w6Orders"

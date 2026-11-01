@@ -1,11 +1,11 @@
 {
-  "validatedAt": "2026-11-01T08:45:17.014020+00:00",
-  "scope": "P5 perioperative and surgical clinic canonical; structured presentation integration",
+  "validatedAt": "2026-11-01T09:04:28.814364+00:00",
+  "scope": "P5 perioperative and surgical clinic canonical; structured presentation and labeled case-indication review",
   "baselineCommit": "add0d2e",
-  "mainIntegratedThrough": "45a49d5",
+  "mainIntegratedThrough": "251d9a0",
   "presentationIntegratedThrough": "eb6703e",
-  "leanSourceHash": "fa6b9dfecb389814ff3a89555982904f26953fd6156e70439279a41a50ad18a7",
-  "binarySha256": "181fc2a9843ea64342b1214ef7dd46f6eb7671520f3300cf39f1d88f2a92dce6",
+  "leanSourceHash": "da4456ba130aac4722101056abf0f0027fb35bb943683b16bf5169abaaa13bc1",
+  "binarySha256": "43e72187f1487abf765b9ff01757acc12f5ca34282a5e560542b9a240fbad2ac",
   "programs": {
     "v1": "624a225061138a0c34e02c45d1e8ae699f5d928c377d8fcc5ef55189c92b5d23",
     "v2": "bc31e9f29389a5ab14d1ed67bc67f003114d3aac86fdd7ae8b13ec99f1ccc741",
@@ -66,10 +66,10 @@
   "app": {
     "build": true,
     "lint": true,
-    "tests": 170
+    "tests": 186
   },
   "agent": {
-    "tests": 41,
+    "tests": 82,
     "typecheck": true,
     "lint": true
   },
@@ -85,7 +85,7 @@
   "screenshots": [
     {
       "file": "app/shots/realism/surg/after/home-load.png",
-      "sha256": "c87b68b5f1688d7c01be75c4388265152471aa214ac174ed12973e12d8e4f46c",
+      "sha256": "0e37b17358e6ac52b31c5475310bea3d95952e907b1c64b698be819546c87d47",
       "width": 1440,
       "height": 900
     },
@@ -199,115 +199,115 @@
     },
     {
       "file": "app/shots/realism/surg/after/w6Consult-load.png",
-      "sha256": "b2d21997ff332b29fa6673863918df6f913ce2690aea573336aaa02abf585a56",
+      "sha256": "c45521b6a9dc5afb2fc443ce77c0eebdd87c76c7d0018b0d8bf8327afc9df53e",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consult-task.png",
-      "sha256": "2ed594eeb76c82552020fa361da2b6af5171560176c4bdbb3ddcb2ac4c28f300",
+      "sha256": "1471e984f687ce5494221d8d4e60defa45f4dfda4fabcb3ce11dcf0f0a4644a7",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6ConsultClose-load.png",
-      "sha256": "7359e1cf400c3e533d6845791327d7093e1a149ec428319c8fa62f702a03a805",
+      "sha256": "c1202e9054fe89b3051524d92e1ea6115c757eef19e7d92a2bbb152b490c78f1",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6ConsultClose-task.png",
-      "sha256": "7359e1cf400c3e533d6845791327d7093e1a149ec428319c8fa62f702a03a805",
+      "sha256": "c1202e9054fe89b3051524d92e1ea6115c757eef19e7d92a2bbb152b490c78f1",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Consults-load.png",
-      "sha256": "125d6894b355180f0fcc731e71039a5df7e43d9a2ec9e999ed80881da1d8bc15",
+      "sha256": "cbf8cb7a6507385a1a2d8c95a3dc23588da84604c2c2423d8034b89943cbc1b5",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Discharge-load.png",
-      "sha256": "7e74d3d6bdc97b50d7df219155b290933daaef698aa7664c34dfab38acb04be7",
+      "sha256": "69c9c1345ef9b8bd09528d40f05baf431454c17c0a12d08a50cb9862e6c8c8f0",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Discharge-task.png",
-      "sha256": "5e435c4c2a8017f83df72e28f635af4e3090f0dd3f9c9790ab9b0ce28a782b1d",
+      "sha256": "b26e0a61280eaab7fc7625f3b656bcd38742c013045982178601646d7ea52e2f",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-load.png",
-      "sha256": "892b8b132ccb8cd584aecf4bcd65bcac15a0072d7c54f54882621598657184bd",
+      "sha256": "b1d9c3d99fadab857ca033fa7b1a2abe69b94552f110e6cf6b8aefd9a5802a24",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6OpNote-task.png",
-      "sha256": "da023a03c8dda852cf2a5d4157432ef6144d821fe0981660e6c59593e6f9ada0",
+      "sha256": "8b57a6b1627da55f6d04f199be4084349dcc0150d39653328dc79bd1715cee14",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Orders-load.png",
-      "sha256": "fb700c56ae409864832085df6c927be4a5fa751b966123db206328364da1f0e2",
+      "sha256": "38d52e46f21bd1122830970cd4aec38e05eb465ea3064294d29ae85ccf0dfc0c",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Orders-task.png",
-      "sha256": "ee8a7f7c5305a93c5220c5e72cadb75df143e554c5deb8803f9665c34083d52f",
+      "sha256": "0ce33fc9c75d7b316223f6832d75260b49c348cc9c7a2a8eb895cdcffbb73d45",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PostOp-load.png",
-      "sha256": "1a5aa1b05829414eef936d6cf10f86149018a4282d7e4128ec36230c73de6be3",
+      "sha256": "0a4e05c5694ce94f5d396a358b78a1dd83dbe7cf16b9f268cfac5c54f7537324",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PostOp-task.png",
-      "sha256": "1a5aa1b05829414eef936d6cf10f86149018a4282d7e4128ec36230c73de6be3",
+      "sha256": "0a4e05c5694ce94f5d396a358b78a1dd83dbe7cf16b9f268cfac5c54f7537324",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PreOp-load.png",
-      "sha256": "45e6cc9eeb5c62493b49f7dbaeae111ec53f98ee5c044ab0a28296f1754d8721",
+      "sha256": "75326ec0ae2554d593e55d56672b6284ebb41dd0dd7ac241c1ccc3260b6b7611",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6PreOp-task.png",
-      "sha256": "e0fbd4ea89affafb653464540a74ad9ed97ce5236f429a29c9e5a35ea8a4b14c",
+      "sha256": "a607d5cd1fe9ab939aa8ea1258f3a5f75c50525d1c63f6328bb772b732a460a1",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-load.png",
-      "sha256": "2b22cb4433d811114c77d0ab3a51db1da52455a8ff443426c72dd488489bed76",
+      "sha256": "55484ae32995ed3010c14a9852a553fabaa51ef5c95d0d23f53fff4a69318460",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Rounding-task.png",
-      "sha256": "2e2e64819354d2beaeba3d37ab06f8836de50d7d5ba5883f98db09e5746afd7a",
+      "sha256": "ce12769071080d312427364885373d31ee15b73a981def70d1fa7c525b08b91a",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Schedule-load.png",
-      "sha256": "ea98392c94c9d24d7ef1ed64d7d79c4f11ef99ab793d2d08f4b05fab0ed7b62c",
+      "sha256": "a34b9ae80c20f182d9e80aec84906cd909d24a8622111a06ba0eb36e424e9ad1",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-load.png",
-      "sha256": "7455b8bb55183a3b5be9cf8034ef94228ac7d80a43b077d55ab460d10d74c524",
+      "sha256": "0b2e217999ab306705b6a8e1d57de23ec4f6a7974c1d2f6cc039d764dad96169",
       "width": 1440,
       "height": 900
     },
@@ -325,7 +325,7 @@
     },
     {
       "file": "app/shots/realism/surg/after/w6Sign-task.png",
-      "sha256": "fdc5ceba83366581160d94e680c15fc83f138f54c73e7c3d90ac424cda31b4b3",
+      "sha256": "78e34e252c81a43436aeae2ce3761751565b8ee4a7606b855d8a9f760a76c908",
       "width": 1440,
       "height": 900
     },
@@ -568,5 +568,11 @@
     "The seeded OR request supplies planned room/surgeon, not an active perioperative Encounter. Selected-encounter banner integration is recorded in docs/design/changes-requests.md.",
     "The patient-scoped canonical shows supplied records for the selected chart; it does not invent a departmental patient-switch action.",
     "KLM is a model estimate. Directed benchmark search does not establish a global minimum."
-  ]
+  ],
+  "nativeWasmSurgicalProjectionComparisons": 2,
+  "metricsProgramUnchangedSince": "b060509",
+  "appBuild": {
+    "schemaVersion": 1,
+    "appSha256": "496c5401d21507121bc6d5e0c05d498db654c02f49dd9f5a02ce6efe14f12ce4"
+  }
 }

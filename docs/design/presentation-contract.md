@@ -48,6 +48,11 @@ Research and visual review: [presentation research](ehr-ui-research.md#presentat
 
 ### Additions after first implementation
 
+SURG's OR requests also supply `Indication`, read from the same ServiceRequest's
+reason codes. It remains source request evidence, independent of an order's
+diagnosis association or a postoperative diagnosis. Compact case/consult summaries
+retain the original field labels instead of joining unlabeled values.
+
 MAR time columns use dated hours, with exact recorded administration times retained in the cells. Lean fills empty axis cells between the earliest and latest recorded hour for each date; these are not clinical events. The painter groups the existing Medication/Dose/Route/Frequency/Order status columns into one left-hand detail cell without discarding any field. No existing row key changes meaning.
 
 FHIR readers omit entered-in-error appointments, encounters and administrations. Unresolved reference displays say `Not recorded` or remain empty; transport references never substitute for clinician names in new projections or Notes. `growthChart` additionally accepts patient-bound reference rows through its ordinary info payload, appended to the measured points. The fixture references are published CDC 2000 female 2–20 year points; the renderer does not create curves when references are absent.

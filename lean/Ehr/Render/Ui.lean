@@ -260,6 +260,7 @@ def uiLatestVitals (d : Display) : List VitalRow :=
 
 def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   match i with
+  | "scheduleTasks" | "consultRequest" => uiRows cx i
   | "encounterNotes" | "priorNotes" => cx.disp.notes.map noteCells
   | "allergyList" => cx.disp.allergies.map uiAllergySummary
   | "currentMeds" => cx.disp.meds.map uiMedSummary

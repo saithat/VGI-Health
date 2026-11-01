@@ -781,6 +781,14 @@
   overflow: auto;
 }
 
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] .record-secondary {
+  display: block;
+  margin-top: 3px;
+}
+.clinical-info[data-comp-id^="w6"][data-comp-id$=".caseSummary.procedure"] li > span + span::before {
+  content: none;
+}
+
 @media (min-width: 701px) {
   .clinical-app .clinical-navbar {
     position: sticky;
