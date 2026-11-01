@@ -133,6 +133,13 @@ test("recorded changes and check-only history use actual artifacts and native ve
   await expect(card.getByRole("status")).toHaveText("Still certified · v3", {
     timeout: 60000,
   });
+  await page.locator('[data-node-key="P3-8"]').focus();
+  await expect(
+    card.getByLabel("Before and after changes", { exact: true }),
+  ).toContainText("alert display request");
+  await expect(card).toContainText(
+    "Requests inline display; alert policy still applies",
+  );
   const check = await page.request.post("/__dev/try-to-break-it", {
     headers: { Origin: "https://untrusted.example" },
     data: {

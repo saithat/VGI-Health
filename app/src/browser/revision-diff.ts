@@ -154,6 +154,74 @@ export function revisionChanges(
           before: oldPrefill ?? "No suggested entry",
           after: newPrefill,
         });
+      if (
+        JSON.stringify(old.visibility) !== JSON.stringify(component.visibility)
+      ) {
+        const visibility = (c: Component) =>
+          typeof c.visibility === "string"
+            ? "Always shown"
+            : "unlessReceipt" in c.visibility
+              ? `Shown until a valid ${words(c.visibility.unlessReceipt.info)} review is recorded`
+              : `Shown for ${words(c.visibility.encounter.kind)} encounters`;
+        changes.push({
+          label: `${label}: visibility`,
+          before: visibility(old),
+          after: visibility(component),
+        });
+      }
+      const groupKind = z.object({
+        group: z.object({
+          collapsible: z.boolean(),
+          startCollapsed: z.boolean(),
+        }),
+      });
+      const oldGroup = groupKind.safeParse(old.kind),
+        nextGroup = groupKind.safeParse(component.kind);
+      if (
+        oldGroup.success &&
+        nextGroup.success &&
+        JSON.stringify(oldGroup.data) !== JSON.stringify(nextGroup.data)
+      ) {
+        const groupText = (group: {
+          collapsible: boolean;
+          startCollapsed: boolean;
+        }) =>
+          `${group.startCollapsed ? "Starts collapsed" : "Starts expanded"}${group.collapsible ? "; can be expanded or collapsed" : "; remains open"}`;
+        changes.push({
+          label: `${label}: section display`,
+          before: groupText(oldGroup.data.group),
+          after: groupText(nextGroup.data.group),
+        });
+      }
+      const alertKind = z.object({ alert: z.object({ popup: z.boolean() }) });
+      const oldAlert = alertKind.safeParse(old.kind),
+        nextAlert = alertKind.safeParse(component.kind);
+      if (
+        oldAlert.success &&
+        nextAlert.success &&
+        oldAlert.data.alert.popup !== nextAlert.data.alert.popup
+      )
+        changes.push({
+          label: `${label}: alert display request`,
+          before: oldAlert.data.alert.popup
+            ? "Requests a pop-up dialog"
+            : "Requests inline display",
+          after: nextAlert.data.alert.popup
+            ? "Requests a pop-up dialog; alert policy still applies"
+            : "Requests inline display; alert policy still applies",
+        });
+      if (old.hotkey !== component.hotkey)
+        changes.push({
+          label: `${label}: keyboard shortcut`,
+          before: old.hotkey ?? "No shortcut",
+          after: component.hotkey ?? "No shortcut",
+        });
+      if (old.size !== component.size)
+        changes.push({
+          label: `${label}: density`,
+          before: old.size,
+          after: component.size,
+        });
       if (old.label !== component.label)
         changes.push({
           label: `${sectionCaption(screen.title)}: field or section name`,

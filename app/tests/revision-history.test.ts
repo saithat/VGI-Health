@@ -126,6 +126,22 @@ describe("read-only clinician revision comparison", () => {
     record.versionAfter = record.versionBefore;
     expect(recordedPatch(record)).toEqual([]);
   });
+  it("reports the real recorded night-eight alert change rather than claiming no change", () => {
+    const load = (version: number) =>
+      programSchema.parse(
+        JSON.parse(
+          readFileSync(`../runs/run1-P3/programs/P3/v${version}.json`, "utf8"),
+        ),
+      );
+    const changes = revisionChanges(load(6), load(7));
+    expect(changes).toContainEqual(
+      expect.objectContaining({
+        label: expect.stringContaining("alert display request"),
+        before: "Requests a pop-up dialog",
+        after: "Requests inline display; alert policy still applies",
+      }),
+    );
+  });
   it("opens a persona and chart day without selecting a patient in the URL", () => {
     const program = {
       path: "runs/run1-P3/programs/P3/v4.json",
