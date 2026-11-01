@@ -85,6 +85,36 @@ theorem fixed_lines_pending_nonempty :
       entriesOk sp Ehr.Examples.Tiny.facts Ehr.Examples.Tiny.user s "recordReview" = false := by
   decide
 
+/-- Receipt-aware reviews stay met when valid receipts hide the panel and
+when expiry reveals it again. Completion is proved for every reachable state. -/
+theorem satisfies_of_checked_receipt_lines (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t) prev
+      (FixedLine.program r (some m)) (FixedLine.program r (some m)) = .ok) :
+    Satisfies (FixedLine.spec k r m a t) prev
+      (FixedLine.program r (some m)) (FixedLine.program r (some m)) :=
+  satisfies_of_checked_completable _ _ _ _ h (FixedLine.completable k r m a t nonDose true)
+
+/-- A real accepted receipt-aware program satisfies all thirteen properties. -/
+theorem receipt_lines_satisfies :
+    Satisfies (FixedLine.spec .flag .physician (.shownOrReceipt 720 [.physician, .rn]) .careGap .passive)
+      none (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn])))
+      (FixedLine.program .physician (some (.shownOrReceipt 720 [.physician, .rn]))) :=
+  satisfies_of_checked_receipt_lines _ _ _ _ _ (by decide) none (by decide)
+
+/-- A current receipt genuinely hides the panel while meeting the review;
+after time passes beyond its window, the panel is shown and still meets it. -/
+theorem receipt_review_transition :
+    let mode := ReviewMode.shownOrReceipt 720 [.physician, .rn]
+    let sp := FixedLine.spec .flag .physician mode .careGap .passive
+    let p := FixedLine.program .physician (some mode)
+    let f := Ehr.Examples.TinyTests.factsWithReceipt 3
+    let s := init sp p f Ehr.Examples.Tiny.user
+    infoShown sp p f s "allergyList" = false ∧ reviewMet sp p f s (Scalar.review mode) = true ∧
+      infoShown sp p f { s with clock := s.clock + 1440 * 600 } "allergyList" = true ∧
+      reviewMet sp p f { s with clock := s.clock + 1440 * 600 } (Scalar.review mode) = true := by
+  decide
+
 /-- The current checker has an accepted, non-completable program: the
 unrestricted completion implication needs a checker repair before proof. -/
 theorem completion_acceptance_counterexample :
@@ -127,4 +157,6 @@ theorem empty_program_satisfies : Satisfies emptySpec none emptyProgram emptyPro
 #print axioms scalar_identity_satisfies
 #print axioms satisfies_of_checked_fixed_lines
 #print axioms fixed_lines_satisfies
+#print axioms satisfies_of_checked_receipt_lines
+#print axioms receipt_lines_satisfies
 end Ehr.Check

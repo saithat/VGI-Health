@@ -214,3 +214,20 @@ The exact theorem skeleton above is retained as a **checker-repair target**,
 not as a plausible unfinished proof for the current rules. Positive completion
 fragments continue independently; they exclude medication-dose inputs unless a
 selected-drug/native-unit construction is supplied.
+
+## Receipt-aware review completion extension
+
+`FixedLine.completable` now also covers a receipt-aware presentation mode.
+A shown-or-receipt review panel uses `unlessReceipt`; `pinnedForReview_sound`
+proves the review stays met whether a valid receipt hides it or expiry reveals
+it again. The construction handles every record, user and reachable clock.
+`satisfies_of_checked_receipt_lines` assembles all thirteen properties directly
+from acceptance. `receipt_lines_satisfies` discharges acceptance, and
+`receipt_review_transition` exhibits an actual current RN receipt hiding the
+review and its reappearance after 24 hours. The previous fixed-line theorem's
+default presentation and statement remain compatible.
+
+This supplies receipt-sensitive presentation, not an arbitrary multi-screen
+receipt-collection route. General navigation/reveal, arbitrary entry/allowed-value
+combinations and dynamic current-slot archival remain outside this family;
+the dose dependency counterexample to unrestricted T1 remains unchanged.

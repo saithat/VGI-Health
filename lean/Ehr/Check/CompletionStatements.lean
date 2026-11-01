@@ -17,4 +17,12 @@ theorem completion_acceptance_counterexample :
     ∃ (sp : Spec) (p : Program), check sp none p p = .ok ∧ ¬ Completable sp p p := by
   sorry
 
+theorem satisfies_of_checked_receipt_lines (k : ValueKind) (r : Role) (m : ReviewMode)
+    (a : AlertCond) (t : Tier) (nonDose : k ≠ .medicationDose) (prev : Option Program)
+    (h : check (FixedLine.spec k r m a t) prev
+      (FixedLine.program r (some m)) (FixedLine.program r (some m)) = .ok) :
+    Satisfies (FixedLine.spec k r m a t) prev
+      (FixedLine.program r (some m)) (FixedLine.program r (some m)) := by
+  sorry
+
 end Ehr.Check

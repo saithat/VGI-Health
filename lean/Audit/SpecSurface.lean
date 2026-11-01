@@ -218,3 +218,10 @@ end VerificationAudit
 #audit_axioms Ehr.Check.DoseCompletionObstruction.not_completable
 #spec_surface Ehr.Check.completion_acceptance_counterexample
 #audit_axioms Ehr.Check.completion_acceptance_counterexample
+
+#spec_surface Ehr.Check.satisfies_of_checked_receipt_lines
+#audit_axioms Ehr.Check.satisfies_of_checked_receipt_lines
+#spec_surface Ehr.Check.receipt_lines_satisfies
+#audit_axioms Ehr.Check.receipt_lines_satisfies
+#spec_surface Ehr.Check.receipt_review_transition
+#audit_axioms Ehr.Check.receipt_review_transition
