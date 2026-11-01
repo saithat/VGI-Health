@@ -1,0 +1,192 @@
+{
+  "sourceBuild": {
+    "revision": "e3878083d6471e7e54ad94ebc79789eebdd24c5c",
+    "mainRevision": "edd40f9aaff3e282f719aeed248edd985e04a6d0",
+    "leanHash": "90c27dfebcb599c7e8c49165ddd26b96e4dd2acea009694d49a4c9015c19584d",
+    "builtAt": "2026-11-01T15:15:02.125Z"
+  },
+  "scope": "Shared painter A1-A12; immutable native screen inputs; display only. No FHIR write or captured-value changes.",
+  "gates": {
+    "appTests": 269,
+    "agentTests": 84,
+    "desktop": 35,
+    "narrow": 30,
+    "deployedAudit": {
+      "works": 2806,
+      "disabled-with-reason": 114,
+      "dead": 0,
+      "error": 0
+    },
+    "canonicalAudit": {
+      "works": 1367,
+      "disabled-with-reason": 36,
+      "dead": 0,
+      "error": 0
+    },
+    "wasm": "fresh",
+    "recordedRun": "424 tasks / 14658 events + 3 baselines / 137 events; 0 mismatches"
+  },
+  "screenPairs": [
+    {
+      "screen": "P1-orders",
+      "fixture": "app/src/fixtures/punch/P1-orders.json",
+      "fixtureSha256": "79323ad030d413e8b11d3ec32b0ee0ecbb79f8b41220346154d413f74f4ec31f",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P1-orders.png",
+        "sha256": "05197298a05357f26dce4fb3c9267e47d4a878577e7cdcf83765bfbf54ef5d50",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P1-orders.png",
+        "sha256": "ce5f92daa33ff6ca751124269e6c64d844b4e03e5ffdd17ec94c0b3ecca4be7a",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P1-schedule",
+      "fixture": "app/src/fixtures/punch/P1-schedule.json",
+      "fixtureSha256": "91d931e0547e20b7334c03a9a60b957a89d3487782fae15adeb0343079297689",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P1-schedule.png",
+        "sha256": "d2ac87e2287ac095946f045c1c75858710038ca98c17672cbda3d10b4717c2a6",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P1-schedule.png",
+        "sha256": "f0a4f5bad15de0bd69e75b0d36d9d4b69d4afd4dd014e55abd3c7ea064cdc077",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P2-track-board",
+      "fixture": "app/src/fixtures/punch/P2-track-board.json",
+      "fixtureSha256": "41ed874a2a499ee1500e846c595107fa395d10bf08f2a0be884d18040af3d8c7",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P2-track-board.png",
+        "sha256": "bd6ee10ceb30e235ab2ff75036de1d1d3d1b8c0d1a8089986d336121c5bff990",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P2-track-board.png",
+        "sha256": "e129e4cad6fb3553dcb0682a9327875199e2a56b228e08aed15609d983848f70",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P2-triage",
+      "fixture": "app/src/fixtures/punch/P2-triage.json",
+      "fixtureSha256": "f4c2e3542257967747cbd635229c90eece092d70856cebfa2877cf3f39f69d47",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P2-triage.png",
+        "sha256": "c32f4d2a3f53e60682afa40be1d769bd7e97e4a7fd7e5c0d382fc4718ad0ea8c",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P2-triage.png",
+        "sha256": "7057615ec902b9768ad5f0527100fad1ce337c4179899ea48c42e4cebb8dce10",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P3-MAR",
+      "fixture": "app/src/fixtures/punch/P3-MAR.json",
+      "fixtureSha256": "6308296d64a3aa9630c850acceed10a79733af25d085ec5c574d46aefc5dea4d",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P3-MAR.png",
+        "sha256": "17ab402ea3349ef90233b5e50ea815346c6c70a480621a856928fd7e9e1243b4",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P3-MAR.png",
+        "sha256": "71acb8b3bf4e3fad809cdb50d1426084946723a8cf1cc9bb51dcea2e80646286",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P3-flowsheet",
+      "fixture": "app/src/fixtures/punch/P3-flowsheet.json",
+      "fixtureSha256": "01af311422dca77a32cffa294b2617eeb92fd17e0c81a60404f53468df4795a1",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P3-flowsheet.png",
+        "sha256": "fab0a210f266a5419b867acd3a40515c04ac7e023ed1af3ffde6f3361d91b6db",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P3-flowsheet.png",
+        "sha256": "0a9f8ba30826923860795863bee38513f17373bb65904dccdfd9c4c6d1269a20",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P4-growth",
+      "fixture": "app/src/fixtures/punch/P4-growth.json",
+      "fixtureSha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P4-growth.png",
+        "sha256": "cff7be617484cedd84a678fd32c258d088a7a1f6e2a03e5bad5cc568fea8b7c3",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P4-growth.png",
+        "sha256": "ff2598ff8f1b54fd195b0a0e838d99a58a1f10aeb91c52a747bcab1ae55e416a",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P5-OR-schedule",
+      "fixture": "app/src/fixtures/punch/P5-OR-schedule.json",
+      "fixtureSha256": "1534c5806695f624917e27f473d2375eb5ae22e00af02ac34f97d750de4734a8",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P5-OR-schedule.png",
+        "sha256": "d9ceec2781e1e139b9a5ffc081b67054651b160b02d82a284415a8cffb4009d1",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P5-OR-schedule.png",
+        "sha256": "61689d67a9ab92e84cf20c624c1a19f2f0605e06d8bd780bfa1e6a3be546ea23",
+        "width": 1440,
+        "height": 900
+      }
+    },
+    {
+      "screen": "P5-op-note",
+      "fixture": "app/src/fixtures/punch/P5-op-note.json",
+      "fixtureSha256": "cac26a9d3dec6b703fbe14c74c05b665fbd0564be7034e0b519fb6e459e6ede3",
+      "before": {
+        "path": "app/shots/realism/punch/before/populated/P5-op-note.png",
+        "sha256": "d2ebf2cd479e999346d87e40ef0d0529a02ebd87b3f503cc52f79fc9e194a1c4",
+        "width": 1440,
+        "height": 900
+      },
+      "after": {
+        "path": "app/shots/realism/punch/after/populated/P5-op-note.png",
+        "sha256": "db30c1384745e8cd52b6741d9eb5eafefa07001d3c6c81140b68bd74d909b220",
+        "width": 1440,
+        "height": 900
+      }
+    }
+  ],
+  "semanticFollowups": [
+    "A2 list-activity patient context",
+    "A3 semantic toolbar and Chart Review-only tabs",
+    "A5 distinct status columns",
+    "A10 explicit encounter row bindings",
+    "A11 supplied patient percentiles and semantic measure tabs"
+  ],
+  "note": "The following presentation-lane integration will be verified separately; these gates bind this exact frozen source build."
+}
