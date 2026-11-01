@@ -41,6 +41,7 @@ theorem entryDirectMet_iff (ep : Episode) (s : State) (rq : EntryReq) :
       simp [hasGoodEntry, capturedSatisfies, CountsFor, Applies, AllowedEntryValue, entryValueAllowed, ha, Bool.and_eq_true,
         List.any_eq_true, List.all_eq_true, Bool.or_eq_true, beq_iff_eq, and_assoc] <;> grind
 
+/-- The entry Boolean is true exactly when its direct-or-attested property holds. -/
 theorem entryMet_iff (ep : Episode) (s : State) (rq : EntryReq) :
     entryMet ep.spec ep.facts ep.user s rq = true ↔ EntryMetIn ep s rq := by
   simp [entryMet, EntryMetIn, Bool.or_eq_true, entryDirectMet_iff]

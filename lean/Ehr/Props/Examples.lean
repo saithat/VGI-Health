@@ -69,31 +69,31 @@ def tinyEp : Episode := ⟨spec, program, facts, user⟩
 /-! ## Property 1: well-formed -/
 
 /-- The good program uses only catalog kinds. -/
-example : CatalogOnly spec goodProgram := by decide
+theorem good_catalog_only : CatalogOnly spec goodProgram := by decide
 
 /-- A program with a component kind outside the catalog fails. -/
-example : ¬ CatalogOnly { spec with design := { spec.design with catalog := ["banner"] } } goodProgram := by
+theorem restricted_catalog_rejects : ¬ CatalogOnly { spec with design := { spec.design with catalog := ["banner"] } } goodProgram := by
   decide
 
 /-- The sign screen is two "go to" clicks from the start. -/
-example : WithinClicks goodProgram 2 "sign" :=
+theorem sign_within_two_clicks : WithinClicks goodProgram 2 "sign" :=
   ⟨["order", "sign"], .hop (by decide) (.hop (by decide) (.here _)), by decide⟩
 
 /-- IDs are unique and every reference resolves. -/
-example : IdsUnique goodProgram ∧ ReferencesResolve spec goodProgram := by decide
+theorem good_ids_and_references : IdsUnique goodProgram ∧ ReferencesResolve spec goodProgram := by decide
 
 /-! ## Property 2: captures all, once -/
 
 /-- No element of the tiny spec is auto-linked, so nothing is retyped. -/
-example : LinkedNotRetyped spec goodProgram := by decide
+theorem good_linked_not_retyped : LinkedNotRetyped spec goodProgram := by decide
 
 /-! ## Property 3: writes only -/
 
 /-- Every field, commit, and review button of the good program is in the spec. -/
-example : DeclaredWritesInSpec spec goodProgram := by decide
+theorem good_declared_writes : DeclaredWritesInSpec spec goodProgram := by decide
 
 /-- A nurse's copy of the program may not sign orders. -/
-example : ¬ DeclaredWritesInSpec spec { goodProgram with role := .rn } := by decide
+theorem nurse_cannot_declare_signing : ¬ DeclaredWritesInSpec spec { goodProgram with role := .rn } := by decide
 
 /-! ## Property 4: reviews before commit -/
 
@@ -104,8 +104,10 @@ def tinyAtSign : State :=
     [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "acetaminophen"),
      .enter "doseField" (.qty 3000 .mg), .click "toSign"]
 
-example : CommitButtonShown tinyEp tinyAtSign "signOrders" := by decide
-example : ¬ InfoShown tinyEp tinyAtSign "allergyList" := by decide
+/-- The bad program shows Sign while its allergy review is hidden. -/
+theorem hidden_review_commit_button_shown : CommitButtonShown tinyEp tinyAtSign "signOrders" := by decide
+/-- The bad program keeps allergies hidden in the closed tab. -/
+theorem closed_allergy_tab_hides_review : ¬ InfoShown tinyEp tinyAtSign "allergyList" := by decide
 
 /-- In the good program the allergy list is shown on the sign screen. -/
 def goodAtSign : State :=
@@ -113,32 +115,33 @@ def goodAtSign : State :=
     [.confirm "weightField", .click "toOrder", .enter "drugField" (.code "acetaminophen"),
      .enter "doseField" (.qty 3000 .mg), .click "toSign"]
 
-example : InfoShown goodEp goodAtSign "allergyList" := by decide
+/-- The corrected sign screen shows the allergy review. -/
+theorem good_sign_shows_allergies : InfoShown goodEp goodAtSign "allergyList" := by decide
 
 /-! ## Property 5: human-only kept -/
 
 /-- The good program never tries to automate a human step. -/
-example : NoAutomationAttempts spec goodProgram := by decide
+theorem good_no_automation : NoAutomationAttempts spec goodProgram := by decide
 
 /-- The tiny program's macro types the patient ID and clicks Sign: rejected. -/
-example : ¬ NoAutomationAttempts spec program := by decide
+theorem bad_macro_attempts_automation : ¬ NoAutomationAttempts spec program := by decide
 
 /-! ## Property 6: completable -/
 
 /-- In the good program, signing is reachable from the sign screen: type the
 patient ID, then sign. -/
-example : "signOrders" ∈
+theorem good_sign_has_one_continuation : "signOrders" ∈
     (goodEp.afterHuman goodAtSign [.enter "patientIdField" (.text "JD/F/34"), .click "signButton"]).commits := by
   decide
 
 /-! ## Property 7: units -/
 
 /-- The weight field is prefilled from `weightToday`, which keeps its unit. -/
-example : QuantityPrefillsKeepUnits spec goodProgram := by decide
+theorem good_quantity_prefills_keep_units : QuantityPrefillsKeepUnits spec goodProgram := by decide
 
 /-- A weight prefilled from a bare record number (here, yesterday's weight)
 fails. -/
-example : ¬ QuantityPrefillsKeepUnits spec
+theorem yesterday_weight_prefill_rejected : ¬ QuantityPrefillsKeepUnits spec
     { goodProgram with screens := [{ roomingScreen with components := [
         { id := "weightField", kind := .field "weight" (.fixed 0) (.fromRecord "weightYesterday") }] }] } := by
   decide
@@ -147,28 +150,28 @@ example : ¬ QuantityPrefillsKeepUnits spec
 
 /-- Going back to the tiny program moves two components (the meds table and
 the allergy panel go back into the tab container). -/
-example : movedTags goodProgram program = ["meds", "signAllergies"] := by decide
+theorem two_components_moved : movedTags goodProgram program = ["meds", "signAllergies"] := by decide
 
 /-- With a stability budget of 5, two moves are within budget. -/
-example : StabilityBudget spec (some goodProgram) program := by
+theorem two_moves_within_budget : StabilityBudget spec (some goodProgram) program := by
   intro p hp; cases hp; decide
 
 /-! ## Alerts -/
 
 /-- A1: no macro step touches an alert component. -/
-example : NoAlertSuppression goodProgram := by decide
+theorem good_no_alert_suppression : NoAlertSuppression goodProgram := by decide
 
 /-- A2: the good program never asks an interruptive alert to pop up. -/
-example : NoInterruptivePopupRequests spec goodProgram := by decide
+theorem good_no_interruptive_requests : NoInterruptivePopupRequests spec goodProgram := by decide
 
 /-- A3: no alert is asked to pop up on two screens. -/
-example : PopupRequestedOnce spec goodProgram := by decide
+theorem good_popup_requested_once : PopupRequestedOnce spec goodProgram := by decide
 
 /-- A4: the good program never asks a passive alert to pop up. -/
-example : NoPassivePopupRequests spec goodProgram := by decide
+theorem good_no_passive_requests : NoPassivePopupRequests spec goodProgram := by decide
 
 /-- A4: asking the passive care-gap alert to pop up fails. -/
-example : ¬ NoPassivePopupRequests spec
+theorem passive_popup_request_rejected : ¬ NoPassivePopupRequests spec
     { goodProgram with screens := [{ goodOrderScreen with components := [
         { id := "careGapAlert", kind := .alert "careGap" true }] }] } := by
   decide

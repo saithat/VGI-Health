@@ -350,12 +350,12 @@ section Examples
 open Ehr.Examples.Tiny Ehr.Examples.TinyTests
 
 /-- A2: on the order screen, the care-gap alert item fires and is shown. -/
-example : ∃ item ∈ (view spec program facts user atOrder).items,
+theorem tiny_care_gap_firing_and_shown : ∃ item ∈ (view spec program facts user atOrder).items,
     item.firing = true ∧ item.shown = true := by
   decide
 
 /-- A2 (popups): clicking Sign with an amoxicillin order opens a new popup. -/
-example : atSignAmox.popup? ≠ some ("drugAllergy", "amoxicillin@3") ∧
+theorem tiny_allergy_click_opens_popup : atSignAmox.popup? ≠ some ("drugAllergy", "amoxicillin@3") ∧
     (step spec program facts user .human atSignAmox (.click "signButton")).1.popup? =
       some ("drugAllergy", "amoxicillin@3") := by
   decide
@@ -367,18 +367,18 @@ def careGapRule : AlertSpec :=
 
 /-- A4's hypotheses hold on the tiny spec: the care-gap rule is passive and is
 the rule its ID names. -/
-example : spec.alert? careGapRule.id = some careGapRule ∧ careGapRule.tier = .passive := by
+theorem tiny_passive_rule_lookup : spec.alert? careGapRule.id = some careGapRule ∧ careGapRule.tier = .passive := by
   decide
 
 /-- So no run of the tiny program ever pops up the care-gap alert. -/
-example (es : List Event) (k : String) :
+theorem tiny_passive_never_popup (es : List Event) (k : String) :
     (runAll spec program facts user .human (init spec program facts user) es).popup? ≠
       some ("careGap", k) :=
   A4_passive_never_popup spec program facts user .human es careGapRule (by decide) rfl k
 
 /-- A4 rejects a bad state: a state whose popup is the passive care-gap alert
 does not satisfy `PopupNotPassive`. -/
-example : ¬ PopupNotPassive spec { s0 with popup? := some ("careGap", "colorectalScreening") } := by
+theorem tiny_passive_popup_state_rejected : ¬ PopupNotPassive spec { s0 with popup? := some ("careGap", "colorectalScreening") } := by
   intro h
   obtain ⟨al, hal, hnp⟩ := h "careGap" "colorectalScreening" rfl
   have : spec.alert? "careGap" = some careGapRule := by decide

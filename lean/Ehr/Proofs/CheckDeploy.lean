@@ -63,12 +63,12 @@ theorem T4_published_certificate (spec : Spec) (prev : Option Program) (canonica
 
 open Ehr.Examples.Tiny Ehr.Props.Examples in
 /-- The corrected tiny program passes the checker, so deploy publishes it. -/
-example : (deployPlan spec none goodProgram goodProgram "t").2.any (·.target == .current) = true := by
+theorem tiny_accepted_deploy_publishes : (deployPlan spec none goodProgram goodProgram "t").2.any (·.target == .current) = true := by
   decide
 
 open Ehr.Examples.Tiny Ehr.Props.Examples in
 /-- The original tiny program fails the checker, so deploy does not publish it. -/
-example : (deployPlan spec none goodProgram program "t").2.any (·.target.publishes) = false := by
+theorem tiny_rejected_deploy_does_not_publish : (deployPlan spec none goodProgram program "t").2.any (·.target.publishes) = false := by
   decide
 
 /-! ## Axiom audit (expected: at most `propext`, `Classical.choice`, `Quot.sound`) -/
