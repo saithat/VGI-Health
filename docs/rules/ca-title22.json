@@ -2412,7 +2412,7 @@
     "needsCoreFeature": "Patient-specific standing-order copy with date metadata",
     "confidence": "medium",
     "verified": true,
-    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This duty concerns the specific patient copy, not merely the master template revision date."
+    "notes": "Opened 2026-10-31: Cornell LII reproduction of CCR Title 22, Division 5, Chapter 1. LII says updates are quarterly but supplies no as-of date for this text; official Westlaw currency not confirmed. Verified means the quoted regulatory text was opened and matched, not a certification of currentness. This duty concerns the specific patient copy, not merely the vendor reference template revision date."
   },
   {
     "id": "ca-title22-70263-standing-signed",

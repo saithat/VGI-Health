@@ -181,9 +181,9 @@ existing `.env` before setup: setup without an existing persona password resets 
 No credentials are committed or printed by the seeder.
 
 ```sh
-make seed                                           # runs/world/1, day 1
+make seed                                           # runs/world/2, day 1
 make seed SEED_ARGS='--day 2'                        # chosen simulated day
-node infra/scripts/seed-world.mjs --world runs/world/1 --day 1
+node infra/scripts/seed-world.mjs --world runs/world/2 --day 1
 node infra/scripts/seed-world.mjs --day 1 --dry-run   # authenticate/plan, no writes
 node infra/scripts/seed-world.mjs --day 1 --verify-only
 make seed SEED_ARGS='--day 1 --reset-day'             # remove/rebuild just this seed day
@@ -291,4 +291,4 @@ ordered chunks and resolves references between them; interrupted loads resume
 on a rerun. It never resets the server or changes active worklists. All imported
 patients are searchable by every live persona. See the
 [import guide](../scripts/synthetic-hospital/README.md) and
-[Phase 2 plan](../HANDOFF-data.md).
+[Phase 2 plan](../docs/STATUS.md).

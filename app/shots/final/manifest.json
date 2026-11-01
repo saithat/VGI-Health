@@ -1,0 +1,55 @@
+{
+  "base": "http://127.0.0.1:5180",
+  "mode": "replay",
+  "release": "v3",
+  "captures": [
+    {
+      "file": "P1-landing.png",
+      "sha256": "2044d0c6faa315bdb08947a4c637a6083623b630ba0649e778cd3b72524d5bbd"
+    },
+    {
+      "file": "P1-chart.png",
+      "sha256": "9160219aef91fbfabcba0a55d090c0e48a8fbf0ea4f4ebf9e2a840da643f3e48"
+    },
+    {
+      "file": "P2-landing.png",
+      "sha256": "ec817b5ee7221de84a1fb221eaeae300113fb35b72d9b19f244429b4eda7bce0"
+    },
+    {
+      "file": "P2-chart.png",
+      "sha256": "54476511478672a39ea272348ec9629ab3c6fb5692438a2d43161420184fb121"
+    },
+    {
+      "file": "P3-landing.png",
+      "sha256": "f704ed0ea9c6ea1e1ff9836b7f22a949e9b23559a80b6d8bbf7acdb95b67cf82"
+    },
+    {
+      "file": "P3-chart.png",
+      "sha256": "49f43f58660073034db15d2006a256331b2673165cd709dd334813775b164ea7"
+    },
+    {
+      "file": "P4-landing.png",
+      "sha256": "19683aa769605d9943889de3daa75abd88e858c95b81159c43a96bee1cb43e0f"
+    },
+    {
+      "file": "P4-chart.png",
+      "sha256": "4ca6ac9d8591ce0a63c9d7c94ef44b1203dcd4a41790d8ba80034be0968a3946"
+    },
+    {
+      "file": "P5-landing.png",
+      "sha256": "54bc8ecf4961f2e8ae9c3eb8ca6eba8c6fe27f9271c9bd5142971ffe6d452041"
+    },
+    {
+      "file": "P5-chart.png",
+      "sha256": "597d1261335c00ad94916e5d1e211ce2d3fa95e37ad58a2c71a6ac375974fe9d"
+    },
+    {
+      "file": "ui-browser-timeline.png",
+      "sha256": "d30e9d48120960f2829cc258d32b11455485578018f2d9fd1ed7673ded68716d"
+    },
+    {
+      "file": "dashboard.png",
+      "sha256": "d2a975552a47a5f81cf4e1cec22ca9159508f125375beb34a39dadeae9879890"
+    }
+  ]
+}

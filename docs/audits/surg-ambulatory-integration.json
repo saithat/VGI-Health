@@ -1,4 +1,5 @@
 {
+  "captureStatus": "Earlier screenshots outside app/shots/realism/present were removed; superseded by app/shots/final/manifest.json. Historical paths and hashes below describe the removed captures.",
   "validatedAt": "2026-11-01T14:06:51.442341+00:00",
   "branch": "lane/surg",
   "surgParent": "3a24bb0b80cb4d19cd03e382f311a860eea32f6e",
