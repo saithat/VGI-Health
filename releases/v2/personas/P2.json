@@ -2139,6 +2139,7 @@
      "kind": {"table": {"info": "encounterHistory"}},
      "id": "w3Disposition.chart.encounterHistory"}]}],
  "role": "physician",
+ "patientSelection": true,
  "owner": "P2",
  "macros":
  [{"steps":

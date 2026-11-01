@@ -1015,6 +1015,7 @@
      "kind": {"button": {"action": {"goto": {"screen": "w4Worklist"}}}},
      "id": "w4Handoff.toWorklist"}]}],
  "role": "rn",
+ "patientSelection": true,
  "owner": "P3",
  "macros":
  [{"steps":

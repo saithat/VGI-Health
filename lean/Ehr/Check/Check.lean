@@ -358,7 +358,9 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
                  message := s!"{moved.length} components moved since the previous version (budget {spec.design.stabilityBudget}): {", ".intercalate moved}" }
         | none => none },
     { property := "navigation", passes := decide (NavigationSane prog)
-      explain := fun _ => navigationFinding prog }
+      explain := fun _ => navigationFinding prog },
+    { property := "patientSelection", passes := canonical.patientSelection? != some true || prog.patientSelection? == some true
+      explain := fun _ => plain "patientSelection" "Patient selection inside the workspace must be retained" }
   ]
 
 /-- The first failing rule's finding (a rule that cannot locate its failure

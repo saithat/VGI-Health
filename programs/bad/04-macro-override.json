@@ -13784,6 +13784,7 @@
      "kind": {"button": {"action": {"goto": {"screen": "w7Review"}}}},
      "id": "w7Decision.toReview"}]}],
  "role": "physician",
+ "patientSelection": true,
  "owner": "seed4",
  "macros":
  [{"steps":

@@ -1,4 +1,4 @@
-import { prepareWorldChart, worldSchedule } from "./data/worldChart";
+import { prepareWorldChart, worldDirectory, worldSchedule } from "./data/worldChart";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import { navigate } from "./navigation";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
@@ -134,7 +134,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
                     ))}
                   </select>
                 </label>
-                <details className="patient-switcher">
+                {!state.patientContext && <details className="patient-switcher">
                   <summary>
                     {patient.name} · {patient.age} · {patient.encounterClass} ·
                     Change patient
@@ -146,7 +146,7 @@ function LiveWorkspace({ workspace }: { workspace: Workspace }) {
                       navigate(ehrUrl(program, selected.id, persona))
                     }
                   />
-                </details>
+                </details>}
                 <p>
                   {program.release} · {program.path}
                 </p>
@@ -251,7 +251,7 @@ export function App() {
       ]);
       const presentations = await verifyRecordedBuild(program.path, source);
       const { bundle, worldContext } = await prepareWorldChart(rawBundle, patient.bundlePath, catalog.referenceDate, daySchedule?.tasks.find((task) => task.patientId === patient.id));
-      const facts = JSON.parse(
+      const chartProjection = JSON.parse(
         interp.facts(
           JSON.stringify({
             bundle,
@@ -270,10 +270,31 @@ export function App() {
           }),
         ),
       );
+      const patientSelection = typeof source === "object" && source !== null && "patientSelection" in source && source.patientSelection === true;
+      const context = {
+        today: catalog.referenceDate, now: 540, receipts: [],
+        record: [["viewerPersona", persona]],
+        ...(persona === "P2" ? { encounterKind: "emergency" } : persona === "P3" ? { encounterKind: "inpatient" } : {}),
+      };
+      const graph = patientSelection ? await worldDirectory(catalog.referenceDate) : undefined;
+      const extraPatients = catalog.patients.map((p) => ({ id: p.id, name: p.name, mrn: p.mrn ?? "" }));
+      const facts = patientSelection ? JSON.parse(interp.facts(JSON.stringify({
+        bundle: graph, context, directoryOnly: true, extraPatients,
+      }))) : chartProjection;
       const session = createSession(interp, spec, source, facts, {
         id: persona,
         role: roles[persona],
-      });
+      }, patientSelection ? {
+        async loadPatient(id) {
+          const chosen = catalog.patients.find((p) => p.id === id);
+          if (!chosen) throw new Error("Patient is not in the offline fixture catalog");
+          const raw = await readArtifact(`/${chosen.bundlePath}`);
+          const { bundle, worldContext } = await prepareWorldChart(raw, chosen.bundlePath, catalog.referenceDate,
+            daySchedule?.tasks.find((task) => task.patientId === id));
+          return JSON.parse(interp.facts(JSON.stringify({ bundle, worldContext, context, extraPatients })));
+        },
+        onError(error) { if (active) setError(error instanceof Error ? error.message : String(error)); },
+      } : undefined);
       if (active) {
         setWorkspace({
           session,
@@ -287,6 +308,7 @@ export function App() {
           },
         });
         const canonicalUrl = new URL(ehrUrl({ ...program, release }, patient.id, persona), window.location.href);
+        if (patientSelection) canonicalUrl.searchParams.delete("patient");
         if (query.get("inspect") === "1") canonicalUrl.searchParams.set("inspect", "1");
         if (query.get("audit") === "buttons") canonicalUrl.searchParams.set("audit", "buttons");
         window.history.replaceState(

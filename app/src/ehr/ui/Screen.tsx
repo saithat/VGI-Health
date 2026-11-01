@@ -296,10 +296,12 @@ function StockUiScreenView({
           if (element) element.inert = Boolean(modal);
         }}
       >
-        <PatientBanner
+        {screen.banner.length > 0 ? <PatientBanner
           fields={bannerFields(screen)}
           viewer={screen.viewer ?? viewer}
-        />
+        /> : <AppShell.Header component="header" aria-label="Application toolbar" className="clinical-banner">
+          <div className="clinical-brand"><strong>VGI HEALTH</strong><span>Clinical workspace</span><span>{screen.viewer ?? viewer}</span></div>
+        </AppShell.Header>}
         <WorkflowNav
           key={active}
           groups={screen.nav}
@@ -314,7 +316,7 @@ function StockUiScreenView({
           <div className="clinical-workspace-heading">
             <div>
               <Text size="xs" c="dimmed" mb={3}>
-                PATIENT CHART <span aria-hidden="true"> / </span> ENCOUNTER
+                {screen.banner.length > 0 ? <>PATIENT CHART <span aria-hidden="true"> / </span> ENCOUNTER</> : "DEPARTMENT WORKSPACE"}
               </Text>
               <Title order={1} title={screen.title}>
                 {sectionCaption(screen.title)}

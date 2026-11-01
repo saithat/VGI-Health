@@ -8,6 +8,12 @@ const taskSchema = z.object({ patientId: z.string(), workflow: z.string(), today
 const scheduleSchema = z.object({ tasks: z.array(taskSchema) });
 const dates = ["2026-11-02", "2026-11-03", "2026-11-04", "2026-11-05", "2026-11-06", "2026-11-09", "2026-11-10", "2026-11-11", "2026-11-12", "2026-11-13"];
 
+export async function worldDirectory(today: string) {
+  const day = dates.indexOf(today) + 1;
+  return day ? readArtifact(`/runs/world/2/context/day-${String(day).padStart(2, "0")}.json`)
+    : { resourceType: "Bundle", entry: [] };
+}
+
 export async function worldSchedule(persona: string, today: string) {
   const day = dates.indexOf(today) + 1;
   return day ? scheduleSchema.parse(await readArtifact(`/runs/world/2/day-${day}-${persona}.json`)) : undefined;

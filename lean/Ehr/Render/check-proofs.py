@@ -14,6 +14,9 @@ ROOT = Path(__file__).resolve().parents[3]
 LEAN = ROOT / 'lean'
 AUDIT = Path(os.environ.get('EHR_RENDER_AUDIT_DIR', ROOT / 'lean/.lake/render-proof-audit'))
 GROUPS = {
+    'WorkspaceProofs': ('Ehr.Workspace', ['opening_clears_patient_state', 'initial_not_bound', 'foreign_facts_not_bound']),
+    'WorkspaceProofs:render': ('Ehr.Render', ['unbound_has_no_chart']),
+    'WorkspaceProofs:check': ('Ehr.Check', ['accepted_patientSelection']),
     'PresentationProofs': ('Ehr.Render.Fhir', ['T11_schedule', 'T11_board', 'T11_administration', 'T11_observation', 'T11_observation_component', 'observationRows_length', 'T11_lab_result', 'T11_lab_component', 'labResultRows_length']),
     'Proofs': ('Ehr.Render', ['T10_shown', 'T10_no_tiny', 'T10_page_safe', 'T10_disabled', 'T10_only_shown', 'T10_info']),
     'CommitProofs': ('Ehr.Render', ['T10_commit_enabled']),
@@ -29,10 +32,10 @@ def run(args, **kwargs):
 
 def main():
     AUDIT.mkdir(parents=True, exist_ok=True)
-    challenge = ['import Ehr.Render.Contracts', 'import Ehr.Render.Fhir', 'import Ehr.Render.UiContracts', 'open Lean Ehr']
+    challenge = ['import Ehr.Render.Contracts', 'import Ehr.Render.Fhir', 'import Ehr.Render.UiContracts', 'import Ehr.Core.Workspace', 'import Ehr.Render.PatientWorkspace', 'import Ehr.Check.Check', 'open Lean Ehr']
     names = []
     for file, (namespace, theorems) in GROUPS.items():
-        source = (LEAN / 'Ehr/Render' / (file + '.lean')).read_text()
+        source = (LEAN / 'Ehr/Render' / (file.split(':')[0] + '.lean')).read_text()
         challenge.append('namespace ' + namespace)
         for name in theorems:
             match = re.search(r'\btheorem ' + re.escape(name) + r'\b', source)

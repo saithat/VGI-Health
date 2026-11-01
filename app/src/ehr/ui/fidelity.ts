@@ -301,7 +301,7 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
       expectedNodeAria(screen.modal),
     );
   return [
-    entry("banner", "Patient banner"),
+    entry("banner", screen.banner.length ? "Patient banner" : "Application toolbar"),
     ...(screen.nav.some(([, items]) => items.length)
       ? nest(
           entry("navigation", "Clinical navigation"),

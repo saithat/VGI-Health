@@ -11153,6 +11153,7 @@
      "kind": {"button": {"action": {"goto": {"screen": "w7Review"}}}},
      "id": "w7Decision.toReview"}]}],
  "role": "rn",
+ "patientSelection": true,
  "owner": "seed5",
  "macros":
  [{"steps":

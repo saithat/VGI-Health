@@ -612,6 +612,35 @@ function SelectEncounter({
   );
 }
 
+function PatientWorkspaceHome({ user, baseline, onLogout }: { user: LiveUser; baseline: boolean; onLogout: () => void }) {
+  const [loaded, setLoaded] = useState<{ session: Session; presentations: PresentationBundle | null }>();
+  const [legacy, setLegacy] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      const persona = user.persona === "RN2" ? "P3" : user.persona;
+      const [interp, content] = await Promise.all([loadWasmInterp(), liveProgram(persona, baseline)]);
+      const selectionEnabled = typeof content.program === "object" && content.program !== null &&
+        "patientSelection" in content.program && content.program.patientSelection === true;
+      if (!selectionEnabled) { if (active) setLegacy(true); return; }
+      const date = new Date().toLocaleDateString("en-CA");
+      const [graph, patients] = await Promise.all([loadListContext(user, date), searchPatients("")]);
+      const directory: Bundle = { ...graph, entry: [...(graph.entry ?? []).filter((e) => e.resource?.resourceType !== "Patient"),
+        ...patients.map((resource) => ({ resource }))] };
+      const session = await createLiveSession(interp, content.spec, content.program, directory, user);
+      if (active) setLoaded({ session, presentations: content.presentations ?? null });
+    }
+    void load().catch((error: unknown) => { if (active) setError(errorText(error)); });
+    return () => { active = false; };
+  }, [user, baseline]);
+  if (legacy) return <Home user={user} baseline={baseline} onLogout={onLogout} />;
+  if (error) return <Alert role="alert" color="red">{error}</Alert>;
+  if (!loaded) return <p>Loading Medplum department workspace…</p>;
+  return <Chart session={loaded.session} presentations={loaded.presentations}
+    viewer={clinicianRoleNames[user.persona] ?? "Clinician"} onClose={onLogout} />;
+}
+
 function Home({
   user,
   baseline,
@@ -1081,7 +1110,7 @@ export function LiveApp() {
         </Alert>
       )}
       {user ? (
-        <Home
+        <PatientWorkspaceHome
           user={user}
           baseline={baseline}
           onLogout={() => {

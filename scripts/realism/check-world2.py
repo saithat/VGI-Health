@@ -25,7 +25,7 @@ for persona in args.personas.split(','):
                 f'runs/world/2/personas/{persona}.json', '--schedule', str(schedule),
                 '--world', 'runs/world/2', '--seed', str(7000 + day)],
                 cwd=ROOT, stdout=stream, stderr=subprocess.PIPE, check=True, timeout=180,
-                env={**__import__('os').environ, 'LEAN_NUM_THREADS': '4'})
+                env={**__import__('os').environ, 'LEAN_NUM_THREADS': '8'})
             stream.seek(0)
             result = json.load(stream)
         completed = sum(task['completed'] for task in result['tasks'])

@@ -1698,6 +1698,7 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let supporting := (surgical.filter fun payload => payload.info != "scheduleTasks" || preop) ++
     (ambulatory.filter fun payload => payload.info != "scheduleTasks" || !preop)
   { patientId := patientIdOf p
+    sourcePatientId? := some (str p "id")
     identity := { initials := initials p, sex := sexOf p, ageYears := age }
     allergyVersion := listVersion allergies
     allergyClasses := ((allergies.filter allergyActive).flatMap allergyClassesOf).eraseDups
@@ -1850,17 +1851,49 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
       rows := payload.rows.zipIdx.map fun (row, index) =>
         if index == 0 && hasSelected then { row with id := "selected-chart" } else row }
 
+/-- The directory contains identities and dated department rows, never chart captures. -/
+def patientDirectory (ctx : FactsContext) (rs : List Json) (extra : List PatientChoice := []) : PatientDirectory :=
+  let patients := (ofType "Patient" rs).map fun p =>
+    { id := str p "id", name := displayName p, mrn := mrnOf p : PatientChoice }
+  let patients := patients ++ extra.filter (fun p => !patients.any (·.id == p.id))
+  let payloads := worldQueuePayloads ctx rs (Json.mkObj [("id", .str "")])
+  let sources : List (String × List Json) :=
+    [("scheduleTasks", (worldList ctx rs "clinic-schedule").getD []),
+     ("edTrackBoard", (worldList ctx rs "ed-census").getD []),
+     ("shiftWorklist", (worldList ctx rs "my-patients").getD []),
+     ("unitCensus", (worldList ctx rs "unit-census").getD []),
+     ("orSchedule", (worldList ctx rs "or-schedule").getD []),
+     ("consultList", (worldList ctx rs "consults").getD []),
+     ("inBasketResults", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Results")),
+     ("inBasketRxRequests", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Rx Requests"))]
+  let titles := [("scheduleTasks", "Schedule"), ("edTrackBoard", "Track Board"),
+    ("shiftWorklist", "My Patients / MAR"), ("unitCensus", "Unit Census"),
+    ("orSchedule", "OR Schedule"), ("consultList", "Consults"),
+    ("inBasketResults", "In Basket · Results"), ("inBasketRxRequests", "In Basket · Rx Requests")]
+  let activities := sources.filterMap fun (key, source) => do
+    let payload ← payloads.find? (·.info == key)
+    let rows := (source.zip payload.rows).map fun (r, row) =>
+      let patient := ((patients.find? fun p => worldRowMatches (Json.mkObj [("resourceType", .str "Patient"), ("id", .str p.id)]) r).map (·.id)).getD ""
+      { patient := patient, fields := row.fields : PatientListRow }
+    pure ({ info := key, title := (titles.lookup key).getD key, rows := rows } : PatientActivity)
+  { patients := patients, activities := activities }
+
 /-- Input of `facts`: a FHIR bundle and the context. -/
 structure FactsInput where
   bundle : Json
   context : FactsContext
   /-- Shared dated list graph; chart parsing remains patient scoped. -/
   worldContext? : Option Json := none
+  directoryOnly? : Option Bool := none
+  extraPatients? : Option (List PatientChoice) := none
   deriving Lean.ToJson, Lean.FromJson
 
 /-- `facts` on a parsed input. -/
 def runFacts (i : FactsInput) : Except String FactsOutput :=
-  match i.worldContext? with
+  if i.directoryOnly? == some true then .ok {
+    facts := { (default : Facts) with patientDirectory? := some (patientDirectory i.context
+      (bundleResources (i.worldContext?.getD i.bundle)) (i.extraPatients?.getD [])) }, display := Display.empty }
+  else match i.worldContext? with
   | none => (parseBundle i.context i.bundle).map fun (f, d) => { facts := f, display := d }
   | some graph => do
     let p ← match (bundleResources i.bundle).find? (resourceType · == "Patient") with
@@ -1885,6 +1918,7 @@ def runFacts (i : FactsInput) : Except String FactsOutput :=
     let queues := worldQueuePayloads ctx all p
     let oldPayloads := (f.infoPayloads?.getD []).filter fun q => !queues.any (fun x => x.info == q.info)
     let enriched := { f with
+      patientDirectory? := some (patientDirectory ctx all (i.extraPatients?.getD []))
       infoPayloads? := some (queues ++ oldPayloads)
       artifactBindings? := some (surgicalBindings queues ++ (f.artifactBindings?.getD []).filter (fun b => !queues.any (fun q => q.artifactKey == b.key))) }
     pure { facts := enriched, display := d }
