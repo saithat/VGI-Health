@@ -480,6 +480,27 @@
     "schedules/day-10/P4.json",
     "day-10-P5.json",
     "schedules/day-10/P5.json",
-    "manifest.json"
-  ]
+    "manifest.json",
+    "context/day-01.json",
+    "context/day-02.json",
+    "context/day-03.json",
+    "context/day-04.json",
+    "context/day-05.json",
+    "context/day-06.json",
+    "context/day-07.json",
+    "context/day-08.json",
+    "context/day-09.json",
+    "context/day-10.json"
+  ],
+  "clinicalData": {
+    "schemaVersion": 1,
+    "fixtures": "fixtures/clinical",
+    "context": "context/day-{DD}.json",
+    "sourceCohorts": [
+      "fixtures/synthea/index.json",
+      "fixtures/synthetic-hospital/index.json"
+    ],
+    "taskInputs": "unchanged imported scenario fixtures",
+    "listContextTag": "urn:vgi:world:realism|list-context"
+  }
 }

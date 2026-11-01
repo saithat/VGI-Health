@@ -1,0 +1,158 @@
+{
+  "day": 1,
+  "dryRun": false,
+  "patients": 324,
+  "created": 945,
+  "updated": 4686,
+  "unchanged": 0,
+  "nkaWithdrawn": 0,
+  "sourceSha256": "e53f616be443eef82227b6dfba25a7dab573c4d2f5ef2a4d01f6484d43355e34",
+  "contextSha256": "2bb46725119b81d5a3be11d5e719ab85b6df91b38139c2f90903bf313f06f0d8",
+  "byType": {
+    "AllergyIntolerance": {
+      "created": 269,
+      "updated": 393,
+      "unchanged": 0
+    },
+    "Practitioner": {
+      "created": 12,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "Coverage": {
+      "created": 174,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "Provenance": {
+      "created": 269,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "Organization": {
+      "created": 3,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "Location": {
+      "created": 41,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "List": {
+      "created": 12,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "ServiceRequest": {
+      "created": 94,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "Encounter": {
+      "created": 16,
+      "updated": 3340,
+      "unchanged": 0
+    },
+    "Procedure": {
+      "created": 10,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "CarePlan": {
+      "created": 5,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "Observation": {
+      "created": 10,
+      "updated": 3,
+      "unchanged": 0
+    },
+    "Task": {
+      "created": 20,
+      "updated": 22,
+      "unchanged": 0
+    },
+    "Communication": {
+      "created": 10,
+      "updated": 0,
+      "unchanged": 0
+    },
+    "Patient": {
+      "created": 0,
+      "updated": 324,
+      "unchanged": 0
+    },
+    "MedicationRequest": {
+      "created": 0,
+      "updated": 423,
+      "unchanged": 0
+    },
+    "MedicationStatement": {
+      "created": 0,
+      "updated": 142,
+      "unchanged": 0
+    },
+    "Appointment": {
+      "created": 0,
+      "updated": 36,
+      "unchanged": 0
+    },
+    "DiagnosticReport": {
+      "created": 0,
+      "updated": 3,
+      "unchanged": 0
+    }
+  },
+  "lists": [
+    {
+      "title": "Internal Medicine – Full Day",
+      "rows": 18
+    },
+    {
+      "title": "Pediatrics – Full Day",
+      "rows": 18
+    },
+    {
+      "title": "Emergency Department Census",
+      "rows": 20
+    },
+    {
+      "title": "My Patients – 4 West",
+      "rows": 5
+    },
+    {
+      "title": "4 West Unit Census",
+      "rows": 12
+    },
+    {
+      "title": "Operating Rooms – Full Day",
+      "rows": 10
+    },
+    {
+      "title": "Surgical Consults",
+      "rows": 3
+    },
+    {
+      "title": "Internal Medicine In Basket",
+      "rows": 28
+    },
+    {
+      "title": "Emergency Medicine In Basket",
+      "rows": 6
+    },
+    {
+      "title": "Hospital Medicine In Basket",
+      "rows": 6
+    },
+    {
+      "title": "Pediatrics In Basket",
+      "rows": 6
+    },
+    {
+      "title": "General Surgery In Basket",
+      "rows": 6
+    }
+  ]
+}
