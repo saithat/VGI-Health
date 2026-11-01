@@ -1,3 +1,5 @@
+import { enterPatientChart } from "./clinical-navigation";
+import { catalogSchema } from "../src/browser/data";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { uiScreenSchema } from "../src/ehr/ui/types";
@@ -53,9 +55,10 @@ test("shared shell and browser visual review", async ({ page }) => {
       `/ehr?mode=replay&audit=buttons&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
     await expect(page.locator(".clinical-app")).toBeVisible();
-    await page
-      .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
-      .click();
+    if (!(await enterPatientChart(page)))
+      await page
+        .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
+        .click();
     if (process.env.REALISM_SHOTS !== "before") {
       const navigator = page.getByRole("navigation", {
         name: "Clinical navigation",
@@ -68,7 +71,10 @@ test("shared shell and browser visual review", async ({ page }) => {
     const destination = page.locator(
       `button[data-comp-id$=".nav.${screen}"][data-event]`,
     );
-    await destination.click();
+    const state = await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().state.screen,
+    );
+    if (state !== screen) await destination.click();
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
       "Patient workspace",
     );
@@ -91,6 +97,14 @@ test("shared shell and browser visual review", async ({ page }) => {
     await page.goto(
       "/ehr?mode=replay&audit=buttons&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
     );
+    const catalog = catalogSchema.parse(
+      await (await page.request.get("/catalog.json")).json(),
+    );
+    const patient = catalog.patients.find(
+      (p) => p.id === "sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
+    );
+    if (!patient) throw new Error("Missing source note-review patient");
+    await enterPatientChart(page, patient.mrn ?? patient.name);
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
     const note = page.locator('[data-info-id="encounterNotes"] li').first();
     await expect(note).toBeVisible();
