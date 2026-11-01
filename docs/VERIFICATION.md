@@ -2,7 +2,7 @@
 
 The proofs cover the Lean interpreter that decides screen contents and handles events. The browser runs this code through WebAssembly. They do not prove that the hospital's rules are complete or that care is clinically correct.
 
-**General completion remains open.** Acceptance now proves all thirteen properties for the scalar clinical fragment (`satisfies_of_checked_scalar`): one flat screen, one unrestricted scalar entry (all kinds except medication dose), a pinned allergy review in either mode, and one alert with any condition and tier. The general assembly theorem still assumes property 6. This fragment is not the entire core profile; see the exact remaining lemma in `TODO_PROOFS.md`.
+**General completion remains open.** Acceptance now proves all thirteen properties for the scalar clinical fragment (`satisfies_of_checked_scalar`): one flat screen, one unrestricted scalar entry (all kinds except medication dose), a pinned allergy review in either mode, and one alert with any condition and tier. The general assembly theorem still assumes property 6. This fragment is not the entire core profile; see the exact remaining lemma in `TODO_PROOFS.md` and its unproved proposition in the opt-in `CompletionObligations` library.
 
 ## 1. What is proved: the short review
 
@@ -14,8 +14,8 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 |---|---|---|
 | `T0_commit_needs_guard` | Every newly added commit passed its guard in the preceding state. | U; `lean/Ehr/Proofs/T0.lean:151` |
 | `commitGuard_iff` | The guard passes exactly when the encounter permits this role, entries and reviews are met, interruptive alerts are acknowledged, and the extra checks pass. | U; `lean/Ehr/Proofs/T0.lean:162` |
-| `T0_entry_values` | A commit has a confirmed value for each applicable whole-episode entry, entered by a human when required and in the declared unit. | U; `lean/Ehr/Proofs/T0.lean:348` |
-| `T3_cosign_distinct` | An applicable whole-episode cosign names a human-entered second user, different from the signed-in user. | U; `lean/Ehr/Proofs/T0.lean:375` |
+| `T0_entry_values` | A commit has a confirmed value for each applicable whole-episode entry, entered by a human when required and in the declared unit. | U; `lean/Ehr/Proofs/T0.lean:363` |
+| `T3_cosign_distinct` | An applicable whole-episode cosign names a human-entered second user, different from the signed-in user. | U; `lean/Ehr/Proofs/T0.lean:391` |
 | `T2_receipts_sound` | An applicable review hidden at commit has a matching, timely, role-allowed receipt or a human-entered waiver. | U; `lean/Ehr/Proofs/T2.lean:52` |
 | `T2_shownOnCommit_shown` | A review that forbids receipts and has no waiver is shown when its commit happens. | U; `lean/Ehr/Proofs/T2.lean:66` |
 | `T3_macro_step` | An event sent as a macro cannot add commits, acknowledgments, receipts or human-only captures. | U; `lean/Ehr/Proofs/T3.lean:159` |
@@ -31,7 +31,7 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 | `A4_run` | Every event run from the initial state has only non-passive popups. | U; `lean/Ehr/Proofs/Alerts.lean:319` |
 | `A4_passive_never_popup` | A passive rule looked up by its ID never becomes a popup in such a run. | U; `lean/Ehr/Proofs/Alerts.lean:337` |
 
-[`Satisfies`](../lean/Ehr/Props/Properties.lean#L428) means **all** the following. These are definitions; the acceptance theorems prove the listed implications. The semantic clauses range over every patient record and user with the program's role.
+[`Satisfies`](../lean/Ehr/Props/Properties.lean#L430) means **all** the following. These are definitions; the acceptance theorems prove the listed implications. The semantic clauses range over every patient record and user with the program's role.
 
 | Property | One-sentence meaning | Definition; proof |
 |---|---|---|
@@ -41,12 +41,12 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 | 4. `ReviewsBeforeCommit` | Commits meet their reviews, and a shown commit button already has its unwaived reviews met. | `Properties.lean:181`; C, `accepted_reviewsBeforeCommit` |
 | 5. `HumanOnlyKept` | Human-only entry, signing, acknowledgment and distinct-user cosigning cannot be automated, and the program does not attempt it. | `Properties.lean:236`; C, `accepted_humanOnlyKept` |
 | 6. `Completable` | From every reachable state, each required, role-allowed unfinished commit has a human event path to completion, provided the record supplies any needed medication scan. | `Properties.lean:261`; fragment: `Scalar.completable` / `satisfies_of_checked_scalar`; general acceptance proof open |
-| 7. `UnitsRight` | Whole-episode quantity requirements use the declared unit, and record quantity prefills use `weightToday`. | `Properties.lean:288`; C, `accepted_units` |
-| 8. `WithinBudgets` | Reachable-screen popup requests do not exceed the canonical count, and moved component tags stay within the stability budget. | `Properties.lean:312`; C, `accepted_budgets` |
-| 9. A1 `AlertsFire` | Interruptive keys are acknowledged before commit, firing passive alerts are shown on targeted screens, and macros do not target alerts. | `Properties.lean:342`; C, `accepted_alertsFire` |
-| 10. A2 `NoFalseAlarms` | Reachable popups and shown alerts have true conditions, and programs cannot request interruptive popups directly. | `Properties.lean:368`; C, `accepted_noFalseAlarms` |
-| 11. A3 `NoRepeatInterruptions` | Acknowledgments persist, open popups persist until acknowledged, acknowledged keys do not return, and interruptive requests are not spread across screens. | `Properties.lean:393`; C, `accepted_noRepeatInterruptions` |
-| 12. A4 `SeverityTiers` | Passive rules cannot pop up and the program cannot request that they do. | `Properties.lean:412`; C, `accepted_severityTiers` |
+| 7. `UnitsRight` | Whole-episode quantity requirements use the declared unit, and record quantity prefills use `weightToday`. | `Properties.lean:290`; C, `accepted_units` |
+| 8. `WithinBudgets` | Reachable-screen popup requests do not exceed the canonical count, and moved component tags stay within the stability budget. | `Properties.lean:314`; C, `accepted_budgets` |
+| 9. A1 `AlertsFire` | Interruptive keys are acknowledged before commit, firing passive alerts are shown on targeted screens, and macros do not target alerts. | `Properties.lean:344`; C, `accepted_alertsFire` |
+| 10. A2 `NoFalseAlarms` | Reachable popups and shown alerts have true conditions, and programs cannot request interruptive popups directly. | `Properties.lean:370`; C, `accepted_noFalseAlarms` |
+| 11. A3 `NoRepeatInterruptions` | Acknowledgments persist, open popups persist until acknowledged, acknowledged keys do not return, and interruptive requests are not spread across screens. | `Properties.lean:395`; C, `accepted_noRepeatInterruptions` |
+| 12. A4 `SeverityTiers` | Passive rules cannot pop up and the program cannot request that they do. | `Properties.lean:414`; C, `accepted_severityTiers` |
 | 13. D5 `NavigationSane` | The workflow overview has unique group and within-group labels, at most twelve groups and entries per group, and represents every program screen. | `lean/Ehr/Props/Navigation.lean:9`; C, `accepted_navigation` |
 
 `Properties.lean` above is [`lean/Ehr/Props/Properties.lean`](../lean/Ehr/Props/Properties.lean). “Once” does not prohibit deliberate re-entry; the budget counts requests on reachable screens, not actual interruptions on every path; unit safety is not a proof of clinical dose correctness.
@@ -56,21 +56,23 @@ The renderer theorems describe the **semantic screen tree**, before browser draw
 | Rule | One-sentence meaning | Kind; file:line (`lean/Ehr/Render/`) |
 |---|---|---|
 | D1 `D1_landmark` | The shell banner includes the supplied name, formatted birth date and medical-record number. | U; `UiProofs.lean:78` |
-| D2 `D2_workspace_required` / `D2_required_info` / `D2_commit_review` | Every applicable review for a shown commit button has its full rows in the workspace, including a read-only supplement when needed. | U; `UiProofs.lean:298`, `:327`, `:430` |
-| D3 `D3_honest_actions` / `D3_all_buttons` | Buttons have labels and disabled reasons, and primary buttons correspond to shown commits with interpreter enablement, including modal buttons. | U; `UiProofs.lean:383`, `:509` |
-| D4 `D4_interruptive_modal` | An open interruptive rule renders a labeled modal with an enabled acknowledgment. | U; `UiProofs.lean:392` |
-| D4 `D4_passive_no_modal` / `D4_passive_inline` | A passive popup state makes no modal, while a shown passive alert renders inline. | U; `UiProofs.lean:402`, `:485` |
+| D2 `D2_workspace_required` / `D2_required_info` / `D2_commit_review` | Every applicable review for a shown commit button has its full rows in the workspace, including a read-only supplement when needed. | U; `UiProofs.lean:301`, `:330`, `:433` |
+| D3 `D3_honest_actions` / `D3_all_buttons` | Buttons have labels and disabled reasons, and primary buttons correspond to shown commits with interpreter enablement, including modal buttons. | U; `UiProofs.lean:386`, `:512` |
+| D4 `D4_interruptive_modal` | An open interruptive rule renders a labeled modal with an enabled acknowledgment. | U; `UiProofs.lean:395` |
+| D4 `D4_passive_no_modal` / `D4_passive_inline` | A passive popup state makes no modal, while a shown passive alert renders inline. | U; `UiProofs.lean:405`, `:488` |
 | D5 | This is the per-program overview check above, not a theorem for every renderer input. | C; `lean/Ehr/Check/NavigationSound.lean:7` |
-| D6 `D6_clear_fields` / `D6_field_labels` | Shown fields copy provenance, human-only and pending-confirmation markers, offer pending confirmation, and have nonempty labels. | U; `UiProofs.lean:410`, `:519` |
+| D6 `D6_clear_fields` / `D6_field_labels` | Shown fields copy provenance, human-only and pending-confirmation markers, offer pending confirmation, and have nonempty labels. | U; `UiProofs.lean:413`, `:522` |
 
 T4 and checker soundness:
 
 - **`T4_publish_only_if_ok`:** a planned write of the current program or certificate requires checker acceptance (`lean/Ehr/Proofs/CheckDeploy.lean:26`, U).
 - **`T4_rejected_not_published`:** a rejected candidate has no planned publishing write (`:41`, U).
 - **`T4_published_certificate`:** a planned current certificate describes this spec and program with verdict `ok` (`:51`, U).
-- **`satisfies_of_checked_completable`:** acceptance **plus a separate proof of completion** implies all thirteen properties (`lean/Ehr/Check/Sound.lean:16`, C with extra premise).
+- **`satisfies_of_checked_completable`:** acceptance **plus a separate proof of completion** implies all thirteen properties (`Check/Sound.lean`, C with extra premise).
+- **`satisfies_of_checked_scalar`:** acceptance implies all thirteen for the explicitly defined scalar clinical family, with completion proved by `Scalar.completable` (`Check/Sound.lean`, C).
 
 **T4 does not prove crash-safe atomic publication.** The CLI writes files one at a time ([`lean/Ehr/Cli/Check.lean:82`](../lean/Ehr/Cli/Check.lean#L82)); no theorem makes the program/certificate pair an atomic filesystem or Medplum transaction.
+
 
 ## 2. What the statements depend on
 
@@ -101,7 +103,7 @@ Read these definitions first:
 
 The fresh audit found **only `propext`, `Classical.choice`, `Quot.sound` in all 63 audited theorems**. These support reasoning about equal propositions, choices and quotients. Each theorem's exact output is in the generated appendix. There is no `sorryAx`, native-computation axiom, or extra assumption declared as an axiom in these proofs. Logical premises such as completion remain premises even when this axiom audit is clean.
 
-The challenge files intentionally contain `sorry` placeholders; [`Solution.lean`](../lean/Solution.lean) imports the proved implementations instead. This audit does not import the challenge files. A clean axiom list is not a new Comparator or whole-project `lake check` result; the earlier reported results are in [`docs/STATUS.md:75`](STATUS.md#L75).
+The challenge files intentionally contain `sorry` placeholders; [`Solution.lean`](../lean/Solution.lean) imports the proved implementations instead. This audit does not import the challenge files. Each verification milestone passed the default `lake build`, whole-project `lake check`, and root `lake comparator`. The final milestone also passed the checker’s separate `Ehr/Check/comparator.json` challenge (21 statements), in addition to the 18 root Comparator statements. These checks are distinct from the generated statement/axiom audit. `CompletionObligations` is an opt-in proposition with no supplied proof; its presence does not close general T1.
 
 ## 4. Can the hypotheses actually hold?
 
@@ -197,7 +199,7 @@ Two other scope decisions matter: the temporary core profile removes most catalo
 ## 8. Gaps against CLAUDE.md §§4 and 7
 
 - [x] **T1 fragment and nonempty witness:** `Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`, `scalar_identity_required`. The fragment covers scalar kinds except medication doses, both review modes, every alert condition and tier. `human_finish_ready` proves finite alert discharge for the real interpreter.
-- [ ] **General T1:** arbitrary accepted navigation/reveal, multiple compatible entry requirements, per-line/archived-line repair, and encounter/waiver routes. The precise `accepted_completable` lemma is recorded in `TODO_PROOFS.md`; no completion assumption or checker rule was weakened.
+- [ ] **General T1:** arbitrary accepted navigation/reveal, multiple compatible entry requirements, per-line/archived-line repair, and encounter/waiver routes. The precise `accepted_completable` lemma is recorded in `TODO_PROOFS.md`, and `CompletionObligations.AcceptedCompletion` records its proposition in a non-default library without assuming or proving it. No property or checker rule was weakened.
 - [x] **Complete the hypothesis examples:** all formerly partial/missing section 4 cases have named concrete applications with every premise discharged in `Proofs/HypothesisExamples.lean`; T1 has the nonempty all-records/all-reachable-states witness in `Check/Sound.lean`.
 - [x] **Name cited examples:** 47 previously anonymous property/interpreter/deploy/soundness examples now have descriptive theorem names and docstrings. Sixteen named renderer counterparts live in `Proofs/RenderExamples.lean` to preserve lane ownership. Each states its individual clause; the one-path signing witness does not claim universal completion.
 - [ ] **Restore current bad-output proofs:** repair parked witnesses, prove the current CURES mutation and intended Schedule II completion failure, and add full-profile negative proofs for feature seeds (`EhrHeavy.lean:1`, `Check/AdditionalBadProofs.lean:29`, `Canonical/BadPrograms.lean:110`, `:154`).
@@ -217,7 +219,7 @@ The following block is replaced by the script. The commit and content hash ident
 
 <!-- BEGIN GENERATED AUDIT -->
 
-Generated at `0e25697aa2b826ecb1fda7fd77a25ac95c0d2f44`. Source SHA-256: `bb1bfd9da5e91bc21ad8628610824798760621c33d314022d1f4c4717cc397c2`.
+Generated with Git HEAD `f2c347353e6f3f230a09d4a492798b9e79fde95d`. Audited source SHA-256: `09a0e315cec52b709797d79940349df3783f58be5746abe485f25c5bb561763a`. The source hash includes uncommitted source changes; HEAD identifies the checkout base.
 
 63 theorems audited; 65 statement surfaces; 46 distinct lists; 722 distinct definitions/types overall; 0–469 per statement. 76 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
 
