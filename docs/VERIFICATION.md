@@ -1324,4 +1324,4 @@ Counts include named project definitions and types. Compiler helpers, instances,
 
 ## Held-out rule conformance
 
-The held-out [conformance suite](../conformance/) is report-only and covers 195+ scenarios. It found five gap families that were subsequently closed. It supplements certification and does not alter the acceptance gate. See [conformance results](../conformance/RESULTS.md).
+The held-out [conformance suite](../conformance/) is report-only and covers 200 scenarios, including native in-UI patient selection and A→B isolation. The completed full reruns record 1,575 passes / 0 failures on 15 canonicals and 347 passes / 0 failures on eight archived revisions; non-applicable checks are recorded separately. The five earlier gap families remain at zero failures. It supplements certification and does not alter the acceptance gate. See [conformance results](../conformance/RESULTS.md).

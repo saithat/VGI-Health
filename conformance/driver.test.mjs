@@ -34,14 +34,20 @@ test('semantic driver survives complete id renaming, reordered components, close
   const d = new Driver(new Native(binary), sp, p, context('administerMed').facts);
   prepare(d, context('administerMed')); d.finish('administerMed');
   assert.ok(d.state.commits.includes('administerMed'));
+  assert.equal(d.state.patientContext.bound, d.facts.sourcePatientId);
+  // run-batch deliberately exposes the clinical projection. Replay a separate
+  // clinical-only init/step transcript; the renamed workspace path above uses
+  // public init/step/render-ui and remains covered independently.
+  const clinical = new Driver(new Native(binary), sp, { ...p, patientSelection: false }, context('administerMed').facts);
+  prepare(clinical, context('administerMed')); clinical.finish('administerMed');
   const work = mkdtempSync(path.join(tmpdir(), 'conformance-batch-'));
   try {
     const file = path.join(work, 'case.jsonl');
-    writeFileSync(file, JSON.stringify({ ...d.input, events: d.trace.map(t => t.event) }) + '\n');
+    writeFileSync(file, JSON.stringify({ ...clinical.input, events: clinical.trace.map(t => t.event) }) + '\n');
     const replay = spawnSync(binary, ['run-batch', file], { encoding: 'utf8', maxBuffer: 32e6 });
     assert.equal(replay.status, 0, replay.stderr);
     const lines = replay.stdout.trim().split('\n').map(JSON.parse);
-    assert.deepEqual(lines.at(-1).state, d.state, 'run-batch must reproduce init/step transcript');
+    assert.deepEqual(lines.at(-1).state, clinical.state, 'run-batch must reproduce clinical init/step transcript');
   } finally { rmSync(work, { recursive: true, force: true }); }
 });
 test('removing a legitimate control is a conformance failure', { skip: !existsSync(binary) }, () => {

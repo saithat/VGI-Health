@@ -20,7 +20,7 @@ test('hand-written scenarios account for every exported core entry, review and a
 });
 
 test('scenario definitions contain semantic intents rather than canonical component ids', () => {
-  const source = ['scenarios.mjs', 'refill-denial.mjs'].map(file => readFileSync(new URL(`./${file}`, import.meta.url), 'utf8')).join('\n');
+  const source = ['scenarios.mjs', 'refill-denial.mjs', 'selection.mjs'].map(file => readFileSync(new URL(`./${file}`, import.meta.url), 'utf8')).join('\n');
   const components = ['v1', 'v2', 'v3'].flatMap(v => ['P1', 'P2', 'P3', 'P4', 'P5'].flatMap(p => read(`releases/${v}/personas/${p}.json`).screens.flatMap(s => s.components.map(c => c.id))));
   for (const id of new Set(components)) {
     if (id.length > 8) assert.ok(!source.includes(`'${id}'`) && !source.includes(`"${id}"`), `Hard-coded component id ${id}`);

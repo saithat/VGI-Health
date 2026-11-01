@@ -1,5 +1,6 @@
 import { Driver, Failure, assert, field, commit, info, alert } from './driver.mjs';
 import { refillDenialScenario } from './refill-denial.mjs';
+import { selectionScenarios } from './selection.mjs';
 import { entries, roles, personaCommits, personaWorkflows, reviews, linked, orderLine, facts, context, sample, prepare, fieldsFor, qty, code, text, flag, user } from './clinical.mjs';
 
 const hasElement = (target, id) => target.spec.elements.some(e => e.id === id);
@@ -550,3 +551,4 @@ add('weight.linked-source-refresh', 'Hospital dosing weight / declared source li
   });
 
 scenarioCatalog.push(refillDenialScenario);
+scenarioCatalog.push(...selectionScenarios);
