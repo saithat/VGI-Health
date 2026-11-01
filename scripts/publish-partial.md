@@ -117,3 +117,10 @@ for a partial run. The snapshot contains only its stated completed days/nights;
 those extra visual slots do not represent measured shifts or new decisions. This
 app behavior was not changed because app source is outside this task's allowed
 edit scope. Use the manifest's completed counts and actual task/day records.
+
+A fresh FAKE-labeled fixture using each persona's actual recorded first task also
+passed the final publisher pipeline with staging outside the catalog: five tasks,
+546 events, zero native/WASM mismatches, bounded complexity output, and a second
+idempotent skip. It used the live checkout's read-only build assets in a separate
+run-tmp fixture. Reporting tasks without data were explicitly unavailable, and
+no fixture or run data was committed.
