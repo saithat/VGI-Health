@@ -160,16 +160,25 @@ def CountsFor (ep : Episode) (el : ElementSpec) (x : Captured) : Prop :=
     valueSatisfies ep.facts ep.user el.kind x.value = true ∧
     (needsHuman el = true → x.byHuman = true)
 
+/-- The same captured value meets the requirement's optional allowed-value
+list. Strings are parsed using the element's kind, so quantity constraints
+retain units (e.g. only zero refills). An empty list permits no value. -/
+def AllowedEntryValue (rq : EntryReq) (el : ElementSpec) (x : Captured) : Prop :=
+  match rq.allowed? with
+  | none => True
+  | some values => ∃ text ∈ values, parseValue el.kind text = some x.value
+
 /-- Entry requirement `rq` is met in state `s`. A per-order-line requirement
 needs a counting value on every matching order line; any other requirement
-needs one counting value (if it applies). -/
+needs one counting value (if it applies). The same value must satisfy the
+requirement's allowed-value list. -/
 def EntryMetIn (ep : Episode) (s : State) (rq : EntryReq) : Prop :=
   ∃ el, ep.spec.element? rq.element = some el ∧
     if rq.perOrderLine then
       ∀ line ∈ orderLines s, lineMatches ep.facts s rq.when line.1 line.2 = true →
-        ∃ x ∈ s.captured, x.slot = line.1 ∧ CountsFor ep el x
+        ∃ x ∈ s.captured, x.slot = line.1 ∧ CountsFor ep el x ∧ AllowedEntryValue rq el x
     else
-      Applies ep s rq.when → ∃ x ∈ s.captured, CountsFor ep el x
+      Applies ep s rq.when → ∃ x ∈ s.captured, CountsFor ep el x ∧ AllowedEntryValue rq el x
 
 /-- A human must enter this element: it is human-only (marked, or an
 identity, scan, or cosign), or its prefill policy is `never`. -/

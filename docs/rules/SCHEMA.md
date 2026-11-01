@@ -11,6 +11,8 @@ Each research lane writes `docs/rules/<area>.json`: a JSON array of rule objects
   "quote": "≤ 25 words, verbatim from the source",
   "type": "federal-regulation | federal-statute | ca-statute | ca-regulation | accreditation | guidance",
   "binding": true,                          // true only for law/regulation; false for accreditation/guidance
+  "basis": "law | entrenched",              // entrenched = not law, but a hospital is very unlikely to drop it
+  "entrenchedBecause": null,                // required when basis = entrenched: e.g. "Joint Commission accreditation (deemed status for Medicare)", "CMS-required SAFER self-assessment attestation", "Leapfrog/payer contract standard", "universal standard of care (malpractice exposure)"
   "jurisdiction": "US | CA",
   "appliesTo": "hospital | prescriber | nurse | ehr-vendor | payer",
   "workflows": ["W6"],                      // W1 adult visit, W2 results in-basket, W3 ED, W4 inpatient MAR,
@@ -31,4 +33,5 @@ Each research lane writes `docs/rules/<area>.json`: a JSON array of rule objects
 Rules:
 - Only real, public sources. Quote them verbatim. Never invent a citation. Mark anything you couldn't open as `"verified": false`.
 - `binding` is honest: Joint Commission, ISMP, CDC, and SAFER are `false`.
+- Include only `law` rules and `entrenched` rules. An entrenched rule must name a concrete reason hospitals keep it (accreditation required for deemed status, a CMS attestation, a payer/Leapfrog contract standard, or a near-universal standard of care). Plain recommendations are excluded.
 - Prefer rules that touch W1–W7. Put others in with `"encoding": "not-encodable"` only if they're clearly EHR-relevant.

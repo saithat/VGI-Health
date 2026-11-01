@@ -98,6 +98,52 @@ The v1 catalog blocks the action, so this does not affect canonical v1.
 
 ---
 
+
+# Cross-lane change requests
+
+## Render → lean-core: generated TypeScript (2026-10-31)
+
+Please add `Ehr.Render.Types`, `Ehr.Render.Json`, and `Ehr.Render.Fhir` to
+`sourceModules` in `lean/Ehr/Tools/GenTS.lean`, then regenerate. Display,
+PageNode, RenderInput, FactsInput/FactsOutput are now public wire types.
+Render will test the generator in a temporary copy without editing your file.
+
+## Render → wasm: external toolchain path (2026-10-31)
+
+`wasm/build-ehr.sh` and `wasm/build.py` hardcode `.tools/{emsdk,lean4,libuv}`;
+there is no supported environment override. Please add one (e.g.
+`VGI_TOOLS_DIR`), including the Python paths. The available pinned toolchains
+are in `/home/saithat/Projects/VGI-wasm/.tools`. For this lane's rebuild we
+use local ignored symlinks under `.tools` pointing to those read-only inputs.
+
+## Render → app / infra: patient identity and wristbands (2026-10-31)
+
+`Facts.patientId` is the **identifier search token**
+`https://github.com/synthetichealth/synthea|<identifier.value>` for Synthea
+patients, on both fixture and Medplum records. Medplum's server id is only a
+REST resource address; never put it in a Synthea wristband. The interpreter's
+`scanMatches facts "wristband" code` requires exact equality to
+`Facts.patientId`. Please encode this token in QR/barcode generation and pass
+the decoded string unchanged as `Value.code`. The renderer's scan fields emit
+`data-value-kind=code`; they do not prefill a human-only scan.
+For patients without a Synthea identifier, the payload is resource.id (or
+entry.fullUrl for an id-less fixture). Resource row IDs use resource.id, falling
+back to the **entire** entry.fullUrl, including `urn:uuid:`.
+
+## Render → lean-core: exact data versions (2026-10-31)
+
+Consider String data versions rather than Nat: Medplum meta.versionId values
+are UUIDs. Current facts use a deterministic 52-bit digest of sorted
+id@versionId keys, which assumes no collisions. This is documented, not an
+exact guarantee that every edit changes the version.
+
+## Render → content: canonical JSON export (2026-10-31)
+
+After merging origin/lane/content, programs/canonical/v1.json is absent.
+Please export the compiled Ehr.Canonical.canonicalV1 there, plus spec v1 JSON.
+The render CLI accepts --spec v1 --program canonical for the same compiled
+values, and also accepts file paths for testing the exported wire values.
+
 # Content lane requests and integration status
 
 These requests preserve BRIEF 5a's scope and safety rules. Content does not edit Core.
@@ -441,6 +487,30 @@ Checker request-action proofs now pass and the temporary rejection is gone.
 ---
 
 
+## Render → wasm: Lean 4.35 wasm32 string-list terminator (2026-10-31)
+
+Valid ehr_facts crashed even on a Patient-only Bundle. Debug stack traces
+identified lean_string_mk called by Fhir.sub. In the pinned runtime
+src/runtime/object.cpp, string_to_list_core initializes its List.nil with
+`lean_box_uint32(0)`; wasm32 lean_box_uint32 allocates a constructor, whereas
+lean_string_mk traverses until lean_is_scalar. It therefore reads beyond the
+nil object (OOB or bad_alloc). Native 64-bit boxes UInt32 as a scalar, masking
+the bug. Please fix/validate the wasm32 runtime input upstream in your lane.
+Render uses a structural List.foldl String.push reconstruction for sub/initials
+instead of String.ofList; this preserves the source semantics and avoids the
+mismatched runtime primitive. Other lanes using String.ofList after toList
+should be regression-tested on valid data too.
+
+## Render → app: generated WASM assets and lint (2026-10-31)
+
+After the required wasm/install-into-app.sh, plain `pnpm --filter app lint`
+scans gitignored generated public/ehr/ehr-interp.mjs and reports 88 vendor-code
+errors (including Emscripten's fetch implementation). Please ignore
+`public/ehr/**` in app/eslint.config.js, keeping all source/test boundary
+checks unchanged. `pnpm --filter app lint --ignore-pattern 'public/ehr/**'`
+passes; app build and all unit tests also pass. Render cannot edit app-owned
+configuration. Installed assets are retained for actual runtime verification.
+
 ## New BRIEF value-constraint request (content → core)
 
 **Schedule II zero refills (21 CFR 1306.12; new BRIEF requirement): pending core.**
@@ -474,3 +544,87 @@ capture, not actual prior delivery of the VIS or full statutory record content.
 world's FORMULARY still gives `maxDoseTenths = 0`. Synchronize the TS reference
 to the already-requested 5 mg absolute cap; do not weaken the assertion or
 remove the cap. World typecheck and lint pass. Content did not edit world files.
+
+## Schedule II zero refills: adoption by content, check and agent
+
+Core now exposes `EntryReq.allowed? : Option (List String)` (optional JSON key
+`allowed`) and `When.drugClass cls` (JSON `{ "drugClass": { "cls": ... } }`).
+`orderClass` remains supported with identical semantics. Allowed strings are
+parsed with the element's kind and compared to the very capture satisfying the
+confirmation, human-entry and unit checks. `none` preserves the old behavior;
+`some []` permits no value. Numeric refills use `some ["0"]`, not tenths `"0.0"`
+(the latter is equivalent but less readable). A confirmed default of three is
+blocked with `value not allowed: refills (allowed: 0)`. Per-line matching and
+the `newOrderLine` hard stop both enforce the constraint.
+
+**Content:** apply this owner-approved rule to every order-signing commit
+(including pre/post-op and refill-modification paths) in the applicable specs:
+
+```lean
+{ commit := c.id, element := "refills", when := .drugClass "scheduleII",
+  perOrderLine := true, allowed? := some ["0"] }
+```
+
+Keep refills as `.quantity .none`. The formulary now tags morphine,
+hydromorphone, oxycodone and hydrocodone-acetaminophen with `scheduleII`.
+Tramadol, lorazepam and alprazolam remain controlled-II-IV and are not scheduleII.
+The source is 21 CFR 1306.12(a):
+https://www.ecfr.gov/current/title-21/section-1306.12 . Preserve each existing
+requirement and add the permanent bad-program-16 regression and rule citation.
+Core's `CoreTests.ScheduleII` and generated `scheduleIIRefillsRequirement` /
+`scheduleIIRefillsSpec` are executable adoption examples, not a replacement for
+content's hospital spec.
+
+**Check:** ensure completability respects constrained values and reports
+unrepairable defaults/macros rather than accepting a mere confirmed capture.
+A default of three must not satisfy the zero-refills requirement. Test mixed
+order lines and zero entered on the wrong slot. No property may be weakened.
+
+**Agent:** extend `whenSchema` in `agent/src/lean-types.ts` with `drugClass` and
+preserve optional `entries[].allowed` with the existing `dropNulls` convention.
+Its current zod object strips the new constraint and rejects the new condition.
+Add exact schema round trips for the two new generated samples. Generated TS
+already includes the constructor and optional list. No agent files were edited
+by lean-core because of lane ownership.
+
+**WASM:** rebuild interpreter artifacts after merging the core guard change;
+the checked-in app binary predates this constraint. Use native/WASM equivalence
+coverage for confirmed nonzero Schedule II refills and mixed-line constraints.
+
+
+**World compatibility blocker (validated after the core change):**
+`pnpm --filter world test` now reports 91 passing tests and one failure in
+`test/synthea.test.ts`'s full formulary equality contract. Append `"scheduleII"`
+to the `classes` arrays in `world/src/formulary.ts` for morphine,
+hydromorphone, oxycodone and hydrocodone-acetaminophen, matching the order in
+Lean. Keep the equality contract unchanged. World's albuterol cap is already
+5 mg and agrees with the new Lean cap. The exact world/agent compatibility
+patch is prepared locally at `/tmp/lean-core-compat.patch`; the requested
+ownership exception is pending. Core implementation commits are `0b929f0`
+(albuterol) and `4a11bc8` (constraints, proofs and regenerated TypeScript).
+
+Validation of `4a11bc8`: Lean build, kernel check, Comparator (all 18 frozen
+statements), 24 permitted-only axiom audits, and generated-sample strict tsc
+pass. Workspace builds/typechecks/lints pass; agent 31/app 90 tests pass.
+
+
+## World compatibility resolution (2026-10-31)
+
+Resolved in `0454841` after merging main through `bea74d0`: world's formulary
+now mirrors the 5 mg albuterol cap and all four `scheduleII` classes exactly.
+The full equality contract remains intact, with an additional DEA Schedule II
+correspondence assertion. Lean build and world build/lint/all 92 tests pass.
+Seed-1 ten-day regeneration produces no changes to `runs/world/1`.
+
+## Value-constraint integration in check
+
+The world reference fix brings core's `EntryReq.allowed` API into this lane.
+`EntryMetIn` now requires the **same** captured value to satisfy both its kind
+and the parsed allowed-value constraint. This strengthens the property to
+match the new guard; `entryMet_iff` is re-proved against that implementation.
+Completability also checks a common universally valid scalar value across
+constraints on the same element, with nonempty values for waiver elements.
+Empty, unparseable and conflicting allowed lists are rejected. Fixed allowed
+lists for record-dependent identity/scan/cosign values are conservatively
+rejected; no clinical permission or guard is relaxed. Zero-refill quantities
+are supported generically.

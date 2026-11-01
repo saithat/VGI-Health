@@ -1,5 +1,6 @@
 import Ehr.Proofs.T3
 import Ehr.Examples.TinyTests
+import Ehr.Core.Tests
 
 /-!
 # T0: the hard stop
@@ -195,6 +196,68 @@ theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : Use
         · exact Or.inl (Or.inr ht)
       · exact Or.inl (Or.inl hc)
 
+/-- Plain-logic entry requirements, including the allowed-value check on the
+same confirmed capture. Per-line requirements use that medication line's slot. -/
+def EntryValuesMet (sp : Spec) (facts : Facts) (user : User) (s : State)
+    (rq : EntryReq) : Prop :=
+  match sp.element? rq.element with
+  | none => False
+  | some el =>
+    if rq.perOrderLine then
+      ∀ p ∈ orderLines s, lineMatches facts s rq.when p.1 p.2 = true →
+        ∃ x ∈ s.captured, x.element = el.id ∧ x.slot = p.1 ∧
+          capturedSatisfies facts user el x = true ∧ entryValueAllowed el rq.allowed? x.value = true
+    else
+      whenHolds facts s rq.when = true →
+        ∃ x ∈ s.captured, x.element = el.id ∧
+          capturedSatisfies facts user el x = true ∧ entryValueAllowed el rq.allowed? x.value = true
+
+/-- The executable entry guard is exactly its value-constrained logical form. -/
+theorem entryMet_iff_values (sp : Spec) (facts : Facts) (user : User) (s : State)
+    (rq : EntryReq) : entryMet sp facts user s rq = true ↔ EntryValuesMet sp facts user s rq := by
+  cases hel : sp.element? rq.element with
+  | none => simp [entryMet, EntryValuesMet, hel]
+  | some el =>
+    simp only [entryMet, EntryValuesMet, hel]
+    split
+    · simp only [List.all_eq_true, Bool.or_eq_true, Bool.not_eq_true', hasGoodEntry,
+        List.any_eq_true, Bool.and_eq_true, beq_iff_eq]
+      constructor
+      · intro h p hp hm
+        rcases h p hp with h | ⟨x, hx, ⟨⟨he, hs⟩, hv⟩, ha⟩
+        · simp [hm] at h
+        · exact ⟨x, hx, he, hs, hv, ha⟩
+      · intro h p hp
+        cases hm : lineMatches facts s rq.when p.1 p.2
+        · exact Or.inl rfl
+        · obtain ⟨x, hx, he, hs, hv, ha⟩ := h p hp hm
+          exact Or.inr ⟨x, hx, ⟨⟨he, hs⟩, hv⟩, ha⟩
+    · simp only [Bool.or_eq_true, Bool.not_eq_true', hasGoodEntry,
+        List.any_eq_true, Bool.and_eq_true, beq_iff_eq, and_true]
+      constructor
+      · intro h hw
+        rcases h with h | ⟨x, hx, ⟨he, hv⟩, ha⟩
+        · simp [hw] at h
+        · exact ⟨x, hx, he, hv, ha⟩
+      · intro h
+        cases hw : whenHolds facts s rq.when
+        · exact Or.inl rfl
+        · obtain ⟨x, hx, he, hv, ha⟩ := h hw
+          exact Or.inr ⟨x, hx, ⟨he, hv⟩, ha⟩
+
+/-- Stronger plain-logic T0 guard equivalence: allowed values are checked on
+all applicable entries, including every matching medication order line.
+The original Comparator statement remains available as commitGuard_iff. -/
+theorem commitGuard_iff_values (sp : Spec) (prog : Program) (facts : Facts) (user : User)
+    (s : State) (c : CommitId) :
+    commitGuard sp prog facts user s c = true ↔
+      roleOk sp user c = true ∧
+      (∀ rq ∈ sp.entries, rq.commit = c → EntryValuesMet sp facts user s rq) ∧
+      (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
+      (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
+        ∀ k ∈ alertKeys facts s al.cond, (al.id, k) ∈ s.acked) := by
+  simpa only [entryMet_iff_values] using commitGuard_iff sp prog facts user s c
+
 /-- A met entry requirement that is not per order line and applies now has a
 captured value that satisfies it. -/
 theorem entryMet_witness (sp : Spec) (facts : Facts) (user : User) (s : State)
@@ -205,7 +268,7 @@ theorem entryMet_witness (sp : Spec) (facts : Facts) (user : User) (s : State)
   simp only [entryMet, hel, hper, hwhen] at h
   simp only [Bool.false_eq_true, ↓reduceIte, Bool.not_true, Bool.false_or, hasGoodEntry,
     List.any_eq_true, Bool.and_eq_true, beq_iff_eq] at h
-  obtain ⟨x, hx, ⟨hxe, _⟩, hsat⟩ := h
+  obtain ⟨x, hx, ⟨⟨hxe, _⟩, hsat⟩, _⟩ := h
   exact ⟨x, hx, hxe, hsat⟩
 
 /-- A value that satisfies a `quantity u` requirement is in unit `u`. -/
@@ -216,6 +279,64 @@ theorem valueSatisfies_quantity (facts : Facts) (user : User) (u : UnitKind) (v 
     simp only [valueSatisfies, valueAccepted, Bool.true_and, beq_iff_eq] at h
     exact ⟨t, by rw [h]⟩
   | _ => simp [valueSatisfies, valueAccepted] at h
+
+/-- The allowed-value check means a listed string parses to this exact value. -/
+theorem entryValueAllowed_iff (el : ElementSpec) (allowed : Option (List String)) (v : Value) :
+    entryValueAllowed el allowed v = true ↔
+      ∀ values, allowed = some values → ∃ a ∈ values, parseValue el.kind a = some v := by
+  cases allowed <;> simp [entryValueAllowed, List.any_eq_true, beq_iff_eq]
+
+/-- All T0 value guarantees hold on one capture, including membership in the
+allowed values when constrained. No confirmation, human, or unit check is lost. -/
+def EntryCaptureValid (el : ElementSpec) (rq : EntryReq) (x : Captured) : Prop :=
+  x.confirmed = true ∧
+  (needsHuman el = true → x.byHuman = true) ∧
+  (∀ u, el.kind = .quantity u → ∃ t, x.value = .qty t u) ∧
+  (∀ values, rq.allowed? = some values → ∃ a ∈ values, parseValue el.kind a = some x.value)
+
+theorem capturedSatisfies_values (facts : Facts) (user : User) (el : ElementSpec)
+    (rq : EntryReq) (x : Captured) (hsat : capturedSatisfies facts user el x = true)
+    (ha : entryValueAllowed el rq.allowed? x.value = true) : EntryCaptureValid el rq x := by
+  simp only [capturedSatisfies, Bool.and_eq_true, Bool.or_eq_true, Bool.not_eq_true'] at hsat
+  obtain ⟨⟨hconf, hval⟩, hhum⟩ := hsat
+  refine ⟨hconf, ?_, ?_, (entryValueAllowed_iff el rq.allowed? x.value).1 ha⟩
+  · intro hn; rcases hhum with h | h
+    · rw [hn] at h; exact absurd h (by decide)
+    · exact h
+  · intro u hk; rw [hk] at hval; exact valueSatisfies_quantity facts user u x.value hval
+
+/-- **T0, extended with allowed values.** A new commit has a single capture
+meeting confirmation, human-entry, units, and the requirement's value constraint.
+The original T0_entry_values follows by forgetting only the added guarantee. -/
+theorem T0_entry_values_allowed (sp : Spec) (prog : Program) (facts : Facts) (user : User)
+    (actor : Actor) (s : State) (e : Event) (c : CommitId)
+    (hnew : c ∉ s.commits) (hafter : c ∈ (step sp prog facts user actor s e).1.commits)
+    (rq : EntryReq) (hrq : rq ∈ sp.entries) (hc : rq.commit = c)
+    (hper : rq.perOrderLine = false) (hwhen : whenHolds facts s rq.when = true)
+    (el : ElementSpec) (hel : sp.element? rq.element = some el) :
+    ∃ x ∈ s.captured, x.element = el.id ∧ EntryCaptureValid el rq x := by
+  have hg := T0_commit_needs_guard sp prog facts user actor s e c hnew hafter
+  have he := ((commitGuard_iff_values sp prog facts user s c).1 hg).2.1 rq hrq hc
+  simp only [EntryValuesMet, hel, hper, Bool.false_eq_true, ↓reduceIte] at he
+  obtain ⟨x, hx, hxe, hsat, ha⟩ := he hwhen
+  exact ⟨x, hx, hxe, capturedSatisfies_values facts user el rq x hsat ha⟩
+
+/-- **T0, per order line.** Every matching medication line has its own capture
+meeting every value guarantee, including the allowed-value constraint. A zero
+on another slot cannot satisfy a Schedule II line's zero-refills requirement. -/
+theorem T0_entry_values_perLine (sp : Spec) (prog : Program) (facts : Facts) (user : User)
+    (actor : Actor) (s : State) (e : Event) (c : CommitId)
+    (hnew : c ∉ s.commits) (hafter : c ∈ (step sp prog facts user actor s e).1.commits)
+    (rq : EntryReq) (hrq : rq ∈ sp.entries) (hc : rq.commit = c)
+    (hper : rq.perOrderLine = true) (slot : Nat) (d : String)
+    (hline : (slot, d) ∈ orderLines s) (hmatch : lineMatches facts s rq.when slot d = true)
+    (el : ElementSpec) (hel : sp.element? rq.element = some el) :
+    ∃ x ∈ s.captured, x.element = el.id ∧ x.slot = slot ∧ EntryCaptureValid el rq x := by
+  have hg := T0_commit_needs_guard sp prog facts user actor s e c hnew hafter
+  have he := ((commitGuard_iff_values sp prog facts user s c).1 hg).2.1 rq hrq hc
+  simp only [EntryValuesMet, hel, hper, ↓reduceIte] at he
+  obtain ⟨x, hx, hxe, hs, hsat, ha⟩ := he (slot, d) hline hmatch
+  exact ⟨x, hx, hxe, hs, capturedSatisfies_values facts user el rq x hsat ha⟩
 
 /-- **T0 (units and human-only steps).** If a step adds commit `c`, then for
 every entry requirement of `c` that is not per order line and applies, some
@@ -231,16 +352,9 @@ theorem T0_entry_values (sp : Spec) (prog : Program) (facts : Facts) (user : Use
     ∃ x ∈ s.captured, x.element = el.id ∧ x.confirmed = true ∧
       (needsHuman el = true → x.byHuman = true) ∧
       (∀ u, el.kind = .quantity u → ∃ t, x.value = .qty t u) := by
-  have hg := T0_commit_needs_guard sp prog facts user actor s e c hnew hafter
-  have hent := ((commitGuard_iff sp prog facts user s c).1 hg).2.1 rq hrq hc
-  obtain ⟨x, hx, hxe, hsat⟩ := entryMet_witness sp facts user s rq el hel hper hwhen hent
-  simp only [capturedSatisfies, Bool.and_eq_true, Bool.or_eq_true, Bool.not_eq_true'] at hsat
-  obtain ⟨⟨hconf, hval⟩, hhum⟩ := hsat
-  refine ⟨x, hx, hxe, hconf, ?_, ?_⟩
-  · intro hn; rcases hhum with h | h
-    · rw [hn] at h; exact absurd h (by decide)
-    · exact h
-  · intro u hk; rw [hk] at hval; exact valueSatisfies_quantity facts user u x.value hval
+  obtain ⟨x, hx, he, hconf, hhum, hunit, _⟩ :=
+    T0_entry_values_allowed sp prog facts user actor s e c hnew hafter rq hrq hc hper hwhen el hel
+  exact ⟨x, hx, he, hconf, hhum, hunit⟩
 
 /-- A value that satisfies a cosign requirement names a different user. -/
 theorem valueSatisfies_cosign (facts : Facts) (user : User) (v : Value)
@@ -304,6 +418,29 @@ example : let s := run atSignWarfarin [.enter "cosignField" (.user "u2")]
     "signOrders" ∈ (step spec program facts user .human s (.click "signButton")).1.commits ∧
     whenHolds facts s When.highAlertMed = true := by
   decide
+
+/-- The extended per-line theorem has a real completing witness: a Schedule II
+order with zero refills commits, and its zero is on that order's own slot. -/
+example : ∃ x ∈ CoreTests.ScheduleII.good.captured, x.element = "refills" ∧ x.slot = 0 ∧
+    EntryCaptureValid CoreTests.ScheduleII.refills CoreTests.ScheduleII.zeroRefills x :=
+  T0_entry_values_perLine CoreTests.ScheduleII.constrainedSpec CoreTests.ScheduleII.constrainedProgram
+    facts user .human CoreTests.ScheduleII.good (.click "sign") "signOrders"
+    (by decide) (by decide) CoreTests.ScheduleII.zeroRefills (by decide) rfl rfl
+    0 "hydromorphone" (by decide) (by decide) CoreTests.ScheduleII.refills (by decide)
+
+/-- The whole-episode extension is also nonvacuous on the same public step. -/
+example : let rq := { CoreTests.ScheduleII.zeroRefills with perOrderLine := false }
+    ∃ x ∈ CoreTests.ScheduleII.good.captured, x.element = "refills" ∧
+      EntryCaptureValid CoreTests.ScheduleII.refills rq x := by
+  let rq := { CoreTests.ScheduleII.zeroRefills with perOrderLine := false }
+  exact T0_entry_values_allowed { CoreTests.ScheduleII.constrainedSpec with entries := [rq] }
+    CoreTests.ScheduleII.constrainedProgram facts user .human CoreTests.ScheduleII.good
+    (.click "sign") "signOrders" (by decide) (by decide) rq (by decide) rfl rfl
+    (by decide) CoreTests.ScheduleII.refills (by decide)
+
+/-- A confirmed default of three remains blocked for a Schedule II line. -/
+example : commitGuard CoreTests.ScheduleII.constrainedSpec CoreTests.ScheduleII.constrainedProgram
+    facts user CoreTests.ScheduleII.bad "signOrders" = false := by decide
 
 end Examples
 

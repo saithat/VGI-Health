@@ -118,6 +118,7 @@ it("round-trips every Synthea schedule through Lean and checks all formulary ref
       interactsWith: local.interactsWith, mmeFactorTenths: (local.mmeFactor ?? 0) * 10, maxDoseMgTenths: local.maxDoseMg * 10,
     });
     expect(local.schedule !== undefined).toBe(local.classes.includes("controlled-II-IV"));
+    expect(local.schedule === "II").toBe(local.classes.includes("scheduleII"));
   }
   expect(lines.map((s) => JSON.parse(s))).toEqual(schedules);
 });

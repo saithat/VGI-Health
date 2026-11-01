@@ -77,20 +77,76 @@ policy; macros still leave those values awaiting human confirmation.
 - Ehr.lean: register Core.Tests. Tools/GenTS and Samples: requested generator
   work. Generated TS is regenerated, never hand-edited.
 
+## Continuation: Schedule II constraints and albuterol cap
+
+Synced `origin/main` at `7c7596b` before changes. The original queue above remains
+complete. New core work:
+
+- `0b929f0`: albuterol absolute cap, 5 mg (`maxDoseMgTenths := 50`), retaining
+  the mg/kg range. Guards cover 52.5/69.6/71.4 kg adolescent cases, doses above
+  and below the capped range, a smaller child and overdose without a weight.
+- `4a11bc8`: added `EntryReq.allowed? : Option (List String)` (optional JSON `allowed`).
+  Allowed strings parse with the element kind and must equal the same capture
+  that satisfies confirmation, human-entry, units and slot checks. Empty lists
+  allow nothing; omitted constraints preserve existing behavior.
+- Added `When.drugClass` as a compatible spelling of `orderClass`, including
+  per-line matching, and `scheduleII` on the four requested Schedule II drugs.
+  Tramadol/lorazepam/alprazolam remain outside that class.
+- Both commit and new-line guards enforce allowed values. The confirmed bad
+  default blocks with `value not allowed: refills (allowed: 0)`.
+- Strengthened T0 coverage with `entryMet_iff_values`,
+  `commitGuard_iff_values`, `T0_entry_values_allowed` and
+  `T0_entry_values_perLine`. The original `T0_entry_values` follows from the
+  stronger theorem; frozen Comparator statements are unchanged. Concrete
+  completing examples discharge the new theorems' hypotheses. All 24 audited
+  theorems use only propext, Classical.choice and Quot.sound. No unfinished
+  proofs, axioms or native_decide were added.
+- Regenerated 99 TS types and 26 real JSON samples, including the exact
+  per-line zero-refills requirement and a constrained example spec.
+- Core regressions exercise all four Schedule II drugs, Schedule IV exclusions,
+  default confirmation, zero entry, wrong units, empty/invalid allowlists,
+  mixed/wrong slots, pending/confirmed capture separation, inactive conditions,
+  public human/macro new-line stops, view reasons, and the JSON step API.
+
+### Continuation validation
+
+- `cd lean && lake build`: pass.
+- `lake exe gents`: pass; generated-sample strict tsc: pass.
+- `lake check`: pass (default kernel accepts the solution).
+- `lake comparator`: pass (`Your solution is okay!`), all 18 frozen statements.
+- Workspace build, typecheck and lint: pass.
+- Agent tests: 31 pass. App tests: 90 pass.
+- World tests: 91 pass, 1 fails because world/src/formulary.ts has not yet
+  mirrored the four new Schedule II classes (the full-field equality contract
+  correctly detects this). Never change that test or remove the core class.
+
 ## What's left
 
-**Nothing left in the assigned core changes queue or its consolidated core
-follow-ups.**
+Nothing left in the lean-core implementation/proof queue. Both implementation
+steps are committed and pushed; final build, kernel check, Comparator, 24 axiom
+audits and generated-sample typecheck pass. The full TS suite is not yet green:
+the one world mirror failure below requires an owning-lane edit.
 
-Other-lane adoption is explicitly requested in
-`docs/design/changes-requests.md`: checker workflow coverage/enter-once/source
-checks and CR-1 acceptance; content passive component coverage and optional
-condition migrations/service fields and human prior-auth fields where policy
-requires them; world/sim typed-choice and episode-context
-production/consumption. These are not silently implemented in their lanes.
-HANDOFF-sim.md was absent from main; the explicit orchestrator requests supplied
-its required core scope.
+Cross-lane adoption is requested in `docs/design/changes-requests.md`:
 
-Broader unfinished project proofs remain tracked in TODO_PROOFS.md; this core
-changes assignment did not add milestones or claim those other-lane proofs.
-See docs/design/changes.md for every semantic and format decision.
+- World: append `scheduleII` to the four corresponding class lists to restore
+  the Lean/world formulary equality test.
+- Agent: accept `When.drugClass` and preserve optional `entries[].allowed` in
+  zod; add an exact round trip of the generated constrained spec. The current
+  validator rejects drugClass and strips allowed. A concrete minimal patch for
+  world/agent is prepared at `/tmp/lean-core-compat.patch`; ownership exception
+  was requested asynchronously and has not been granted as of this handoff.
+  Apply only with that exception or in the owning lane.
+- Content: add the owner-approved per-line zero-refills requirement to every
+  applicable hospital-spec signing workflow, with rule citation and permanent
+  bad-program-16 regression. Core tests are adoption examples, not production
+  hospital-spec changes.
+- Check: account for allowed values when checking completability and rejecting
+  unsafe defaults/macros; exercise mixed order lines.
+- WASM: rebuild the interpreter assets with the new guard and add the new
+  cases to native/WASM equivalence coverage. App's checked-in binary predates it.
+
+Earlier cross-lane requests in `changes-requests.md` remain owned by their
+lanes: workflow/passive coverage, per-workflow enter-once/source checks,
+service fields and human prior-auth adoption, and typed episode/task context.
+Broader unfinished project proofs remain tracked in TODO_PROOFS.md.

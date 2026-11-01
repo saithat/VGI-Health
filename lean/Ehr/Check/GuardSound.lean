@@ -37,9 +37,9 @@ theorem entryMet_iff (ep : Episode) (s : State) (rq : EntryReq) :
   | none => simp
   | some el =>
     simp only [Option.some.injEq, exists_eq_left']
-    cases hp : rq.perOrderLine <;>
-      simp [hasGoodEntry, capturedSatisfies, CountsFor, Applies, Bool.and_eq_true,
-        List.any_eq_true, List.all_eq_true, Bool.or_eq_true, and_assoc] <;> grind
+    cases ha : rq.allowed? <;> cases hp : rq.perOrderLine <;>
+      simp [hasGoodEntry, capturedSatisfies, CountsFor, Applies, AllowedEntryValue, entryValueAllowed, ha, Bool.and_eq_true,
+        List.any_eq_true, List.all_eq_true, Bool.or_eq_true, beq_iff_eq, and_assoc] <;> grind
 
 /-- The review Boolean allows precisely shown info, a valid receipt, or a
 human waiver, whenever the requirement applies. -/

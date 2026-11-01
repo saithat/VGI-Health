@@ -10,6 +10,8 @@ import Ehr.Check.EnterOnceSound
 import Ehr.Check.HumanSound
 import Ehr.Check.HumanEventsSound
 import Ehr.Check.AlertSound
+import Ehr.Check.ValueTests
+import Ehr.Check.Sound
 import Ehr.Check.SeedTests
 import Ehr.Props.Examples
 

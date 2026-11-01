@@ -180,6 +180,8 @@ export type When =
   | "always"
   /** Some order line's drug is in this class. */
   | { orderClass: { cls: string } }
+  /** Some medication order line's drug is in this class (alias of orderClass). Per-order-line requirements test only that line's drug. */
+  | { drugClass: { cls: string } }
   /** The medication being given is in this class. */
   | { medClass: { cls: string } }
   /** A high-alert medication is involved. */
@@ -204,6 +206,11 @@ export interface EntryReq {
    * Required for each order line that matches `when`.
    */
   perOrderLine: boolean;
+  /**
+   * Allowed values, parsed using the element's kind. None adds no constraint;
+   * some [] permits no value. For numeric refills, some ["0"] permits only zero.
+   */
+  allowed?: string[];
 }
 
 /**

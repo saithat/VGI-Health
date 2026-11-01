@@ -208,10 +208,41 @@ def completeVia (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId) : O
       | some (slot, rq) => some (s, s!"commit {c}: order slot {repr slot} has no field the user can reach for {rq.element}")
       | none => none
 
+/-- A parsed scalar value that satisfies its kind for every patient and user.
+Identity, targeted scans and cosigns depend on that context and cannot use a
+fixed allowed list as a universal completion witness. -/
+def universallyValid : ValueKind → Value → Bool
+  | .quantity unit, .qty _ actual => actual == unit
+  | .coded _, .code code => !code.isEmpty
+  | .text, .text _ => true
+  | .flag, .flag checked => checked
+  | _, _ => false
+
+/-- Allowed-value constraints for one element share a valid completion value.
+A sole waiver must also be nonempty. Checking intersections prevents two
+requirements on the same capture from demanding incompatible values. -/
+def entryValuesPossible (spec : Spec) (c : CommitId) : Bool :=
+  let reqs := spec.entries.filter (·.commit == c)
+  reqs.all fun rq =>
+    match spec.element? rq.element with
+    | none => false
+    | some el =>
+      match reqs.findSome? (fun other => if other.element == rq.element then other.allowed? else none) with
+      | none => true
+      | some values => values.any fun text =>
+        match parseValue el.kind text with
+        | none => false
+        | some value =>
+          universallyValid el.kind value &&
+          (!(spec.reviews.any fun review => review.commit == c && review.waivedBy? == some rq.element) || value.nonEmpty) &&
+          reqs.all (fun other => other.element != rq.element || entryValueAllowed el other.allowed? value)
+
 /-- The completability rules for commit `c`: some commit screen passes
 `completeVia`. Returns the first failure if none does. -/
 def completeFor (spec : Spec) (prog : Program) (c : CommitId) : Option (Option ScreenId × String) :=
-  match commitScreens prog c with
+  if !entryValuesPossible spec c then
+    some (none, s!"commit {c}: allowed entry values have no common context-independent completion value")
+  else match commitScreens prog c with
   | [] => some (none, s!"commit {c}: no button for it that the user can always see")
   | s :: rest =>
     if (s :: rest).any (fun x => (completeVia spec prog c x).isNone) then none
