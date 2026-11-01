@@ -1153,3 +1153,55 @@ order declarations/composers for the 13 retained tasks, and the one-line
 `taskEpisodes facts task` adoption in Cli.Sim.minSchedule. The app inventory
 request is closed. Exact details and the final verification are in HANDOFF-sim.md
 and lean/Ehr/Sim/validation.json. No unfinished simulator proofs remain.
+# Live Medplum integration requests (lane/app, 2026-10-31)
+
+No files under `lean/` were changed for this integration. The app uses the
+canonical v2 projection, real `ehr_facts` and the actual WASM interpreter. The
+following gaps need spec/render ownership; none is handled by weakening a guard.
+
+- Add an explicit rooming/vitals commit for P1/P4. There is currently no save
+  action before prescribing. Rooming observations therefore persist with
+  `signNote`; a patient with no recorded weight must file the note first so the
+  order-entry `orderingWeight` payload can cite a real versioned Observation.
+- Export workflow phase as screen metadata, and have `ehr_facts` accept/project
+  selected Encounter, Task, MedicationRequest and structured source context.
+  `FactsContext` currently drops phase, clinical facts, artifact bindings and
+  InfoPayloads, while missing phase activates *all* phase display requirements.
+  The app supplies this documented caller context: screen workflow plus
+  order-entry for order/lab/sign/verify/pre-op/post-op/refill screens; other
+  screens use their own screen ID as phase, and chart home is shell/care.
+  Raw payloads retain actual FHIR version identities. This mapping should move
+  into exported Lean screen metadata rather than relying on screen ID names.
+- Project `Encounter.serviceType` and explicit risk-assessment Observations in
+  Lean. Until then, the data adapter copies those codes, with artifact bindings,
+  into ClinicalFacts. Risk Observation code system is
+  `https://vgi-health.example/fhir/CodeSystem/clinical-risk`; the code names the
+  risk and `valueCodeableConcept.coding.code` is the assessment. Absence is never
+  translated to a negative assessment. Without these records, conservative
+  clinical predicates can require naloxone/caregiver education and institutional
+  DEA details even for a non-controlled outpatient prescription.
+- `markReviewed` needs an exported source-resource selector per InfoSpec.
+  Allergy/medication receipts target their exact `_history/<versionId>` resources.
+  Empty lists cite the patient version as well as Lean's aggregate dataVersion;
+  a subsequent list change invalidates the Lean receipt. Other source types need
+  explicit contracts; do not treat a Patient reference as proof of a CURES report.
+- Several existing fhirTargets describe logical content rather than the actual
+  signed artifact: note fields target `Composition.section[...]`, diagnoses
+  target `Encounter.diagnosis.condition`, and billing diagnosis targets Claim.
+  The mapper deliberately files note sections as UTF-8 text DocumentReference
+  (LOINC 11506-3 / 11504-8 / 18842-5), creates ICD-10-CM Condition records linked
+  from Encounter.diagnosis, and creates ChargeItem for the six shipped CPT levels.
+  Please make these transaction-level mappings explicit in the spec surface.
+- Add explicit admission-bed, original-prescription, selected-MAR-order and
+  Task-focus bindings. The app currently captures these as operational encounter
+  context before entering the canonical EHR. Bed occupancy changes use versioned
+  Location updates in the same admission/discharge transaction. MAR drug
+  identity comes from Lean's own normalized `display.meds[].drug`, never a
+  second TypeScript formulary. Unknown formulary entries fail explicitly.
+- Add a dedicated discharge prescription composer/intent binding. The mapper
+  supports captured medication lines and `category=discharge`, but a clinician
+  currently has to compose the lines through the existing Orders workflow.
+  Avoid silently copying every inpatient drug to a discharge prescription.
+- Regulatory commit IDs beyond the mapped clinical workflow set still need
+  reviewed persistence contracts; the app throws an explicit mapping error and
+  retains inputs rather than recording an in-memory-only success.

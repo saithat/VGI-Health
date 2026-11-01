@@ -7,6 +7,17 @@ import { devPersonaPlugin } from "./scripts/dev-persona-plugin";
 
 export default defineConfig({
   envDir: "..",
-  plugins: [react(), runsPlugin(), catalogPlugin(), tailscalePlugin(), devPersonaPlugin()],
+  build: {
+    rollupOptions: {
+      input: { app: "index.html", screenCheck: "screen-check.html" },
+    },
+  },
+  plugins: [
+    react(),
+    runsPlugin(),
+    catalogPlugin(),
+    tailscalePlugin(),
+    devPersonaPlugin(),
+  ],
   test: { environment: "jsdom", include: ["tests/**/*.test.{ts,tsx,js}"] },
 });

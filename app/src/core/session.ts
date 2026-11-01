@@ -41,7 +41,8 @@ export function createSession(
     return JSON.parse(interp.step(...args, stateJson, JSON.stringify(event)));
   }
   function accept(response: StepOutput, facts?: unknown) {
-    if (facts !== undefined) args = [args[0], args[1], JSON.stringify(facts), args[3]];
+    if (facts !== undefined)
+      args = [args[0], args[1], JSON.stringify(facts), args[3]];
     stateJson = JSON.stringify(response.state);
     snapshot = readSnapshot(response.result);
     listeners.forEach((listener) => listener());
@@ -56,6 +57,8 @@ export function createSession(
     },
     preview,
     accept,
-    dispatch(event: Event) { accept(preview(event)); },
+    dispatch(event: Event) {
+      accept(preview(event));
+    },
   };
 }

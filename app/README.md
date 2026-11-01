@@ -8,12 +8,19 @@ pnpm --filter app lint
 pnpm --filter app test
 ```
 
-`make run` serves an offline clinical UI browser and recorded dashboard. It does
-not start Docker, require Medplum, or call external services. Open `/browse` for
+`make run` serves the LIVE Medplum login at `/`. Start the local backend with
+`make infra-up && make setup && make load`; use a seeded persona button or the
+Medplum sign-in form. Quick-login reads the shared password only through a
+loopback-only server endpoint; it is never included in built assets. The live
+home queries actual worklists, patient search and full charts. Select an encounter
+and optional Task, MAR order or admission bed before opening the canonical v2 EHR.
+
+The visible **Demo / replay** switch opens the offline clinical UI browser and
+recorded dashboard. These need no Docker or Medplum. Open `/browse` for
 all releases, persona projections, bad programs and recorded run versions; select
 one of the 174 committed Synthea patients by name or flags.
 
-`/?persona=P1` through P5 open v1 persona projections with workflow defaults.
+`/?mode=replay&persona=P1` through P5 open v1 persona projections with workflow defaults.
 Add `&run=mock` (or a real recorded run id) to open its deployed program instead.
 P2 selects a fixture with a latest ED encounter, P3 an inpatient encounter, P4 a
 child and P5 a surgical history. These are historical synthetic records; the app
@@ -21,7 +28,7 @@ opens a local episode with the committed reference date (2026-10-31). P5 supplie
 `preop` encounter context to Lean. Reset or switching programs/patients starts a
 fresh episode; no clinical writes occur.
 
-Explicit links use `/ehr?release=v1&program=releases/v1/personas/P1.json&persona=P1&patient=<fixture-id>`.
+Explicit replay links use `/ehr?mode=replay&release=v1&program=releases/v1/personas/P1.json&persona=P1&patient=<fixture-id>`.
 Every EHR, including a mock-authored recorded program, executes **real Lean WASM**.
 Only the labeled mock dashboard replay uses the mock interpreter. `/dashboard`
 retains recorded run selection (`VGI_RUN=mock make run` overrides its default).
@@ -47,11 +54,31 @@ CLI lands, the inspector says **verdict not computed**. It never treats authored
 mock certificates as checker results. Re-run the script after changing programs.
 
 Verify assets with `make wasm-check`; rebuild stale ones with `make wasm` before
-committing. `pnpm --filter app test:live` runs real WASM Playwright episodes on
-desktop and narrow viewports with external network requests denied, including
-W1 identity/signing, the hidden-allergy bad program, P3's MAR and the browser.
+committing. `pnpm --filter app test:live` runs real Medplum integration tests,
+skipping only when the server is down. P1 runs a full visit through real WASM,
+then queries the stored note, vitals, diagnoses, prescription/refills and CPT
+links. Other tests cover admission/bed occupancy, administration, discharge,
+results/messages, refills, immunization, op notes, consents and atomic rollback.
+Only P1 and rollback currently have full WASM click-path coverage.
+
+`pnpm --filter app test:replay` runs fixture browser episodes with external
+network requests denied. Historical fixtures without structured phase/evidence
+context stay blocked at signing; no evidence or successful write is fabricated.
+`pnpm --filter app exec playwright test live-login.spec.ts` verifies live sign-in,
+session restoration, patient search and chart opening on desktop and narrow views.
 The unit suite additionally projects all 174 bundles and renders every catalog
 program through the committed WASM.
+
+All Medplum calls remain in `src/data/medplum.ts`. `commitMapper.ts` is a pure,
+typed, unit-tested transaction builder. `liveSession.ts` previews each event in
+Lean and publishes commits only after the transaction succeeds; failed writes
+retain inputs. Success refetches and reprojects the full chart, and exposes
+resource links in the toast and **Live encounter** panel. Review receipts target
+exact FHIR `_history` versions. Explicit caller context and outstanding spec
+bindings are documented in [changes-requests.md](../docs/design/changes-requests.md).
+Rooming vitals save with `signNote`; file the note first if ordering needs a
+persisted weight. Unmapped regulatory commits fail explicitly. See the root
+README for workflow limits and the CPT code-system license note.
 
 Temporary `Html` JSON uses Lean's derived encoding:
 

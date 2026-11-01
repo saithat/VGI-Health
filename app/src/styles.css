@@ -6,13 +6,42 @@ body {
     12px/1.5 Inter,
     sans-serif;
 }
-.live-controls { position: fixed; bottom: 16px; left: 16px; z-index: 150; }
-.live-home nav { flex-wrap: wrap; align-items: center; }
-.worklist-scroll { overflow-x: auto; margin-top: 16px; }
-.worklist-table { width: 100%; border-collapse: collapse; background: white; }
-.worklist-table th, .worklist-table td { padding: 12px; text-align: left; border-bottom: 1px solid #d5dfe7; }
-.patient-search { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-top: 24px; }
-.live-home select { max-width: 100%; padding: 8px; }
+.live-controls {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 150;
+}
+.live-home nav {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.worklist-scroll {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+.worklist-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+.worklist-table th,
+.worklist-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #d5dfe7;
+}
+.patient-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin-top: 24px;
+}
+.live-home select {
+  max-width: 100%;
+  padding: 8px;
+}
 .workspace-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -159,7 +188,28 @@ body {
     width: 100%;
   }
 }
-.inspector-toggle { position: fixed; right: 14px; bottom: 10px; z-index: 110; box-shadow: 0 1px 6px #263f4d20; }
-.inspector-content { font-size: 13px; display: flex; flex-direction: column; gap: 10px; }
-.inspector-content h2 { font-size: 14px; margin: 10px 0 0; border-top: 1px solid #d6e1e8; padding-top: 12px; }
-.inspector-content pre { font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.inspector-toggle {
+  position: fixed;
+  right: 14px;
+  bottom: 10px;
+  z-index: 110;
+  box-shadow: 0 1px 6px #263f4d20;
+}
+.inspector-content {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.inspector-content h2 {
+  font-size: 14px;
+  margin: 10px 0 0;
+  border-top: 1px solid #d6e1e8;
+  padding-top: 12px;
+}
+.inspector-content pre {
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}

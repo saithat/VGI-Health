@@ -39,9 +39,9 @@ beforeEach(() => {
 });
 
 describe("single Medplum data boundary", () => {
-  it("requires no network for the default unauthenticated offline demo", async () => {
+  it("requires explicit login or replay when unauthenticated", async () => {
     calls.authenticated.mockReturnValue(false);
-    expect(await loadChart()).toEqual(offlineChart);
+    await expect(loadChart()).rejects.toThrow("Sign in");
     expect(calls.patient).not.toHaveBeenCalled();
     expect(calls.pages).not.toHaveBeenCalled();
   });
@@ -82,11 +82,10 @@ describe("single Medplum data boundary", () => {
     });
     await expect(loadChart()).rejects.toThrow();
   });
-  it("falls back to the separately identified sample patient if the backend is unavailable", async () => {
+  it("surfaces live failures without silently substituting a synthetic patient", async () => {
     calls.patient.mockRejectedValue(new Error("Connection refused"));
-    const chart = await loadChart("different-patient");
-    expect(chart.source).toBe("offline");
-    expect(chart.patient.id).toBe("sample-patient");
-    expect(chart.message).toContain("separate synthetic");
+    await expect(loadChart("different-patient")).rejects.toThrow(
+      "Connection refused",
+    );
   });
 });

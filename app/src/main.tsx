@@ -22,7 +22,8 @@ createRoot(root).render(
         <ReplayApp dashboard />
       ) : window.location.pathname.replace(/\/$/, "") === "/browse" ? (
         <Browse />
-      ) : new URLSearchParams(window.location.search).get("mode") === "replay" ? (
+      ) : new URLSearchParams(window.location.search).get("mode") ===
+        "replay" ? (
         <App />
       ) : (
         <LiveApp />
