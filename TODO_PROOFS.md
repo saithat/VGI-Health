@@ -40,3 +40,10 @@ D5 is intentionally **not** a universal renderer theorem: `NavSane spec prog`
 is decidable and ready for checker integration. P1 currently fails the 12-entry
 per-group limit; content/checker integration is requested, with no weakened rule.
 No unfinished render proof remains.
+
+Render visual-review follow-up: shell/side/nav presence is covered by T10;
+semantic T11 distinguishes the requested full and compact record projections.
+`D2_workspace_required` additionally proves full rows in workspace for every
+applicable commit review, including when a compact sidebar is counted as shown.
+All revised semantic proofs compile and are axiom-audited; no render proof hole.
+The original full HTML/FHIR theorem statements remain unchanged.

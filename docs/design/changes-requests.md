@@ -928,3 +928,24 @@ FactsInput. Official regenerated output has **141 types and 40 typed samples**;
 strict tsc passes. No Core definitions or proof statements changed. Rebuilding
 WASM after this tool-only change produces byte-for-byte identical tested assets;
 the source manifest has been refreshed and make wasm-check passes.
+
+## Render → core/content/app: visual review follow-up (Oct 31)
+
+- **Core/content:** InfoSpec has no verbatim text field. Please add optional
+  `text? : Option String` and supply the exact clinician-facing text of
+  21 CFR 1311.140(a)(3) on controlledSigningLegalNotice. Its current label is an
+  authoring instruction, not the notice. Render will display supplied text as a
+  body row, unchanged. Content owns the legal wording; render must not invent it.
+- **App:** UiScreen.nav entries will now carry real shown goto-button comp IDs,
+  not destination screen IDs. Paint entries as buttons dispatching `click` with
+  that ID. The screen-wide modal inertness also applies to nav. Static overview
+  entries must not be treated as invented interpreter events. Update fidelity
+  to check those real clickable entries. Render cannot edit the app painter.
+- **Checker/content:** retain D5 certification work from the earlier request;
+  render will not truncate groups or invent navigation actions to pass D5.
+- **App/infra:** the earlier exact Facts.patientId wristband-token request remains.
+
+Compact summary rows have one `(Record, primary text)` cell (with room for an
+optional secondary). The app's list painter currently prefixes every value with
+its key; please paint these primary cells as plain list text rather than `Record:`.
+This is a generic presentation convention, not a clinical-data inference.
