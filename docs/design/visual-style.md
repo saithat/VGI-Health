@@ -215,3 +215,11 @@ and [MAR summary](https://cstcernerhelp.healthcarebc.ca/Patient_Chart/Medication
 CST uses red overdue tasks and yellow current-time columns; its given/PRN colors
 vary by view. Our green given/amber held/yellow due-soon mapping is the owner's
 explicit VGI convention, not a claim that all vendors use identical colors.
+
+Desktop toolbar refinement: the navigator's chrome captions and declared groups
+share a wrapping row instead of three separate rows. No caption, destination or
+clinical control is removed. The chart-search heading row is 42 px where the
+source supplies search. Track Board is orange, Unit Census green, OR Schedule
+amber, In Basket purple and Schedule blue; these accents identify activities,
+not patient acuity. Status spelling variants such as `needs-action`, `on-hold`
+and `cosign-required` receive the same color as their space-separated labels.

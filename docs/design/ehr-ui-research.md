@@ -1478,7 +1478,7 @@ its own stability reference and the current role baseline as canonical. The
 current release constant is shared with live baseline login. Native `spec-export`
 must match the checked-in current spec before the checker can report a verdict.
 No migration, deployment, application, reversal or run-data write occurs; temporary
-adapter inputs are removed. The button says “Check only: nothing is changed”.
+native inputs are removed. The button says “Check only: nothing is changed”.
 Native tests verify passing/current and rejecting/historical cases, source hashes
 unchanged, path/persona restrictions and no access to authored mock revisions.
 
@@ -1488,3 +1488,9 @@ committed simulation calendar (including the weekend), independent of patient
 selection. Patient opening and list-versus-chart semantics remain owned by the
 Lean content/transport lane; the precise historical-program integration request
 is in `changes-requests.md`.
+
+The final P4 Rooming review exposed redundant vertical toolbar space. Its two
+chrome captions now remain visible alongside the source groups in one wrapping
+row; the clinical heading/search row is shorter. This recovers vertical chart
+space without removing content. The final comparison set contains the ten
+requested clinical screens and one additional interruptive-alert pair.

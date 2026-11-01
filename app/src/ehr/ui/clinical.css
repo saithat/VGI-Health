@@ -1144,3 +1144,11 @@
   .clinical-section-body > .field-narrative { flex-basis: 100%; }
 }
 .workflow-links button[aria-current="page"] { color: var(--section-accent, var(--clinical-primary)); background: white; box-shadow: inset 0 -2px var(--section-accent, var(--clinical-primary)); }
+/* Keep the source groups and both chrome captions on one compact toolbar row. */
+@media (min-width: 1100px) {
+  .clinical-app .clinical-navbar { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; }
+  .clinical-navbar .nav-eyebrow { flex: 0 1 auto; margin: 0; padding: 0 4px; }
+  .clinical-navbar .workflow-groups { flex: 1 1 auto; }
+  .clinical-navbar .nav-footer { flex: 0 1 auto; margin: 0; padding: 0 4px; }
+  .clinical-app main:has(> .clinical-workspace > .clinical-workspace-body > .clinical-field:first-child [data-comp-id$=".chartSearch"]) > .clinical-workspace-heading { min-height: 42px; }
+}
