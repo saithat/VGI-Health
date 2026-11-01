@@ -593,11 +593,12 @@ def drug : ElementSpec where
   fhirTarget := "MedicationRequest.medicationCodeableConcept"
 
 /-- Law: 22 CCR 70263(g), (h)(4).
-The dose, in milligrams. -/
+The dose, in a unit declared for the chosen drug in the formulary.
+No input unit is converted to mg. -/
 def dose : ElementSpec where
   id := "dose"
-  label := "Dose (mg)"
-  kind := .quantity .mg
+  label := "Dose"
+  kind := .medicationDose
   enteredBy := prescribers
   prefill := .defaultConfirm
   friction := .safety
@@ -1830,7 +1831,7 @@ def infos : List InfoSpec := [
 A commit changes the record. Each has the roles that may do it. -/
 
 /-- Hospital policy (not law), owner decision 2026-10-31.
-Only physicians and surgeons sign pre-op orders. -/
+Physicians and surgeons sign directly; NPs require an attending co-signature. -/
 def preopSigningRoles : EncounterRoleRule :=
   { encounter := "preop", roles := [.physician, .surgeon],
     reason := "Pre-op orders need an attending co-signature", cosign? := some "attendingCosign" }

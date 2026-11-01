@@ -1459,7 +1459,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w1Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w1Orders.dose"},
@@ -3912,7 +3912,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w3OrderSets.row10.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}}, "prefill": "none", "element": "dose"}},
@@ -4081,7 +4081,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w3OrderSets.row11.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}}, "prefill": "none", "element": "dose"}},
@@ -4436,7 +4436,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w3Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w3Orders.dose"},
@@ -6595,7 +6595,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w5Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w5Orders.dose"},
@@ -8437,7 +8437,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6Orders.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "dose"}},
      "id": "w6Orders.dose"},
@@ -8901,7 +8901,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row10.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 10}}, "prefill": "none", "element": "dose"}},
@@ -9070,7 +9070,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row11.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 11}}, "prefill": "none", "element": "dose"}},
@@ -9239,7 +9239,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row12.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 12}}, "prefill": "none", "element": "dose"}},
@@ -9408,7 +9408,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w6PostOp.row13.medication",
-     "label": "Dose (mg)",
+     "label": "Dose",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 13}}, "prefill": "none", "element": "dose"}},

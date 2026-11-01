@@ -117,3 +117,11 @@ The app still computes expected ARIA in TypeScript. A follow-up must define the
 Lean projection, prove its design contracts, and have the app fidelity gate
 consume it, including real nav click entries. No unfinished theorem declaration
 or proof hole has been added to the completed render modules.
+
+Dose-unit follow-up: `committed_dose_native` is kernel checked and ensures that
+changing a drug or selector cannot bypass the dimensional guard. Small literal
+unit and cross-slot checks are in `Check/DoseTests.lean`. `human_entry_exists`
+is the scalar construction lemma; its explicit non-dose/non-selector premises
+reflect the new relational constraint. General constructive T1 for relational
+inputs remains part of the already unfinished completion construction. No safety
+theorem is parked by this change, and Statements has no additional dose diff.

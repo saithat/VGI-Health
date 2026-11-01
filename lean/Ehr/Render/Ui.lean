@@ -120,7 +120,7 @@ def actionRole : Action → String
 /-- Preserve the control semantics and the existing formulary choices inside
 section 10's open kind string. The painter does not reconstruct value sets. -/
 def uiFieldKind : ValueKind → String
-  | .quantity _ => "qty"
+  | .quantity _ | .medicationDose => "qty"
   | .coded "formulary" => "code:" ++ "|".intercalate (formulary.map (·.name))
   | .coded _ => "code"
   | .text => "text" | .flag => "flag" | .identity => "identity"
@@ -135,9 +135,17 @@ def uiTitledLabel (cx : Ctx) (it : ItemView) (label duplicate fallback : String)
 
 def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
-  let (_, _, want) := fieldKind kind
-  let unit := match it.value? with | some (.qty _ u) => u | _ => want
-  .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") (uiFieldKind kind) (it.value?.map valueText)
+  let (_, _, baseUnit) := fieldKind kind
+  let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
+  let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
+    "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
+    else uiFieldKind kind
+  let unit := if kind == .medicationDose then want else
+    match it.value? with | some (.qty _ u) => u | _ => want
+  let value := if kind == .medicationDose &&
+    it.value?.any (fun v => match v with | .qty _ u => u != want | _ => true)
+    then none else it.value?.map valueText
+  .field it.comp.id (uiTitledLabel cx it it.comp.label ("Enter " ++ it.comp.label) "Clinical entry") inputKind value
     (if unit == .none then none else some (unitName unit))
     it.provenance? it.pendingConfirm it.humanOnly
     (cx.sp.entries.any fun r => r.element == e && whenHolds cx.facts cx.s r.when)

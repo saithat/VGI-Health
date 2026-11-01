@@ -85,6 +85,8 @@ inductive Friction
 inductive ValueKind
   /-- A number in the given unit (the unit is required). -/
   | quantity (unit : UnitKind)
+  /-- A dose in a unit declared for the selected formulary drug, on this slot. -/
+  | medicationDose
   /-- A code from a value set. -/
   | coded (valueSet : String)
   /-- Free text. -/
@@ -718,6 +720,13 @@ structure Program where
 
 /-! ## Facts (the patient record, abstracted) -/
 
+/-- Native-unit dose bounds. Zero means that no bound is specified. -/
+structure DoseUnitRule where
+  unit : UnitKind
+  minTenths : Nat := 0
+  maxTenths : Nat := 0
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A drug in the formulary. The formulary is keyed by `name`, the lowercase
 generic name (e.g. `"amoxicillin"`). -/
 structure DrugInfo where
@@ -725,6 +734,8 @@ structure DrugInfo where
   name : String
   /-- RxNorm codes for this drug (may be empty). -/
   rxnorm : List String := []
+  /-- Allowed dose units and their native-unit ranges; the first is the composer default. -/
+  doseUnits : List DoseUnitRule := [{ unit := .mg }]
   /-- Drug classes. The first is the therapeutic class used for
   duplicate-therapy checks; all are used for allergy and interaction matching. -/
   classes : List String

@@ -133,6 +133,7 @@ def provenanceText (d : Display) (p : String) : String :=
 def fieldKind (k : ValueKind) : ValueKindName × InputType × UnitKind :=
   match k with
   | .quantity u => (.qty, .number, u)
+  | .medicationDose => (.qty, .number, .none)
   | .coded _ | .scan _ => (.code, .text, .none)
   | .flag => (.flag, .checkbox, .none)
   | .cosign => (.user, .text, .none)
@@ -145,9 +146,13 @@ def panelPart (cx : Ctx) (i : InfoId) : Part :=
 
 def fieldPart (cx : Ctx) (it : ItemView) (e : ElementId) : Part :=
   let kind := ((cx.sp.element? e).map (·.kind)).getD .text
-  let (vk, ty, requiredUnit) := fieldKind kind
-  let unit := match it.value? with | some (.qty _ u) => u | _ => requiredUnit
-  let v := (it.value?.map valueText).getD ""
+  let (vk, ty, baseUnit) := fieldKind kind
+  let requiredUnit := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
+  let unit := if kind == .medicationDose then requiredUnit else
+    match it.value? with | some (.qty _ u) => u | _ => requiredUnit
+  let v := if kind == .medicationDose &&
+    it.value?.any (fun v => match v with | .qty _ u => u != requiredUnit | _ => true)
+    then "" else (it.value?.map valueText).getD ""
   let attrs := [.valueKind vk, .type ty, .unit unit, .value v,
     .ro (.aria .label it.comp.label)]
   let input := match kind with

@@ -191,12 +191,22 @@ def encounterRoleFailure? (sp : Spec) (facts : Facts) (user : User) (s : State)
     encounterMatches facts.encounterKind? rule.encounter && !rule.roles.contains user.role &&
       !(encounterRouteAvailable sp user.role rule && humanWaiverMet sp facts user s rule.cosign?)
 
-/-- A requirement scoped to a forbidden encounter never applies to this role.
-Other conditions remain conservatively relevant. Unknown commits are not exempt. -/
+/-- A forbidden encounter adds no obligation. A cosign route replaces only
+its explicitly attested scalar entries; every other entry remains required. -/
 def entryRelevantForRole (sp : Spec) (role : Role) (rq : EntryReq) : Bool :=
   match rq.when with
   | .encounter kind => (sp.commit? rq.commit).all fun cs =>
-      cs.encounterRoleAllowed (some kind) role
+      if cs.encounterRoleAllowed (some kind) role then true else
+      let routes := cs.encounterRoles?.getD []
+      let possible := routes.all fun rule =>
+        !encounterMatches (some kind) rule.encounter || rule.roles.contains role ||
+          encounterRouteAvailable sp role rule
+      let scalar := !rq.perOrderLine && (sp.element? rq.element).any (fun el =>
+        match el.kind with | .text | .flag => true | _ => false)
+      let attested := scalar && rq.waivedBy?.isSome && routes.any (fun rule =>
+        encounterMatches (some kind) rule.encounter && rule.cosign? == rq.waivedBy? &&
+          encounterRouteAvailable sp role rule)
+      possible && !attested
   | _ => true
 
 /-- All entry requirements for `c` are met. -/
@@ -245,7 +255,11 @@ def guardReason (sp : Spec) (prog : Program) (facts : Facts) (user : User) (s : 
     (c : CommitId) : String :=
   if !roleOk sp user c then s!"role: {user.role.name} may not perform {c}"
   else if let some rule := encounterRoleFailure? sp facts user s c then rule.reason
-  else if !validationsOk sp facts s then "value validation failed"
+  else if !validationsOk sp facts s then
+    if sp.elements.any (fun el => el.kind == .medicationDose && s.captured.any (fun x =>
+      x.element == el.id && !doseValueValid s x.slot x.value)) then
+      "dose unit must match the selected formulary drug and dose unit selector"
+    else "value validation failed"
   else if !defaultsOk sp prog then "required default missing or incorrect"
   else if !displaysOk sp prog facts s c then "structured display or action label required"
   else
