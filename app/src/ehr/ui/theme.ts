@@ -62,8 +62,8 @@ export const clinicalTheme = createTheme({
   white: clinicalTokens.surface,
   fontFamily:
     'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-  fontSizes: { xs: "12px", sm: "13px", md: "13px", lg: "14px", xl: "18px" },
-  lineHeights: { xs: "16px", sm: "18px", md: "18px", lg: "20px", xl: "24px" },
+  fontSizes: { xs: "12px", sm: "12px", md: "12px", lg: "13px", xl: "16px" },
+  lineHeights: { xs: "16px", sm: "16px", md: "16px", lg: "18px", xl: "22px" },
   spacing: { xs: "4px", sm: "8px", md: "12px", lg: "16px", xl: "24px" },
   radius: { xs: "3px", sm: "4px", md: "4px", lg: "4px", xl: "4px" },
   defaultRadius: "sm",

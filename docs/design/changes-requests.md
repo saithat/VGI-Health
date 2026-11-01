@@ -2725,3 +2725,8 @@ After merging `32369320` / `fc291cbe`, the patient-scope filter removes legitima
 ## DEMO-HONESTY: archived chart display names (painter owner)
 
 Archived replay panes can expose raw values `disch`, `given`, `Last encounter SS`, and `Department primary-care`. Render these as Discharged, Administered, Short stay, and Primary care respectively while retaining source codes in inspector data. Apply in the shared semantic display formatter, including dashboard/browser replay. DEMO-HONESTY leaves app/src/ehr untouched as required.
+## Dense shell integration — November 1, 10:30 local (shell → content)
+
+The shared painter now supports source `columns` containing at least three read-only `section` cards as a compact 3/2/1-column flow, leaving their DOM/accessibility order intact. `layout.chartIndex.columns` and the storyboard sections in `Density.lean` fit this contract. Icons decorate actual activity buttons; no toolbar controls are invented. Twelve-pixel type is the retained fidelity floor. CSS is isolated in `app/src/ehr/ui/dense-shell.css`.
+
+Before captures found that the first P3 replay My Patients / MAR row (Leanne Harber) has an empty `marSchedule` at the world day, while the department graph contains no MedicationRequest resources. Please check the source projection/context for representative active MAR rows when adding the dense baseline. The shell will not fabricate medications, hide the empty state, or fill clinical inputs for screenshots. A different appropriately populated patient can be selected through the native Patient Lookup / worklist for a representative screenshot.

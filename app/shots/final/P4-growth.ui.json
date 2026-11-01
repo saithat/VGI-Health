@@ -1,0 +1,2595 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Schneider, Isidro Monte"
+    ],
+    [
+      "DOB",
+      "Nov 1, 2023"
+    ],
+    [
+      "MRN",
+      "57667085"
+    ],
+    [
+      "Age / sex",
+      "3 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Grace Lin, Pediatrics"
+    ],
+    [
+      "Coverage",
+      "VGI Community Health Plan"
+    ],
+    [
+      "Last encounter",
+      "AMB"
+    ],
+    [
+      "Last provider",
+      ""
+    ],
+    [
+      "Last location",
+      "Cooley Dickinson Hospital Inc"
+    ],
+    [
+      "Encounter type",
+      "Office Visit – Pediatrics"
+    ],
+    [
+      "Department",
+      "Pediatrics"
+    ],
+    [
+      "Allergies",
+      "Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Cow's milk — Wheal (finding), Anaphylaxis (disorder) (moderate); Soy — Rash (moderate); Fish — Dyspnea (finding), Eruption of skin (disorder), Rhinoconjunctivitis (disorder) (moderate)"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "15.7 kg · Nov 2, 2026 08:20"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|scheduleTasks",
+          "Schedule"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (2)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Schedule"
+        ]
+      ]
+    ],
+    [
+      "Visit navigator",
+      [
+        [
+          "w5Growth.nav.w5Rooming",
+          "Rooming"
+        ],
+        [
+          "w5Growth.nav.w5Note",
+          "Visit Note"
+        ],
+        [
+          "w5Growth.nav.w5Orders",
+          "Orders"
+        ],
+        [
+          "w5Growth.nav.w5Immunizations",
+          "Immunizations"
+        ],
+        [
+          "w5Growth.nav.w5Close",
+          "Sign Visit"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w5Growth.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w5Growth.chartWorkspace.chartReview",
+          "Chart Review"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w5Growth",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Schneider, Isidro Monte"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 3 / M"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 57667085"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Nov 1, 2023"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · Not recorded"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Mold — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dust mites — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Animal dander — Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Grass pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Tree pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Cow's milk — Wheal (finding), Anaphylaxis (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Soy — Rash (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Fish — Dyspnea (finding), Eruption of skin (disorder), Rhinoconjunctivitis (disorder) (moderate)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Dr. Grace Lin, Pediatrics"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "primary performer · Dr. Saundra Kuphal"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Office Visit – Pediatrics"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Pediatrics"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Cooley Dickinson Hospital Inc"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Oct 14, 2026 22:23"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · 0d 0h (recorded stay)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · finished"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 15.7 kg · 2026-11-02T08:20:00-08:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body weight 15.7 kg (today)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Height 95.3 cm (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Weight-for-length Per age and sex 85.217 % (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Head Occipital-frontal circumference Percentile 59.13 % (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Head Occipital-frontal circumference 50.02 cm (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 17.15 kg/m2 (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Percentile] Per age and sex 80.927 % (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 116/75 mm[Hg] (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 74 /min (Oct 7, 2026 22:23)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 12 /min (Oct 7, 2026 22:23)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 2"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Oct 14, 2026 22:23 · History and physical note · Dr. Saundra Kuphal · Unknown · \n2026-10-14\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nIsidro is a 2 year-old hispanic white male. Patient has a history of medication review due (situation).\n\n# Social History\n Patient has never smoked.\n\n\nPatient comes from a low socioeconomic background.\n\nP… (excerpt; full note in Chart Review) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Growth.storyboard.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w5Growth.storyboard",
+        "title": "Patient Storyboard"
+      }
+    }
+  ],
+  "title": "Growth Charts",
+  "viewer": "Nurse practitioner",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w5Growth.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "chartReferences": {
+        "children": [
+          {
+            "presentation": {
+              "children": [
+                {
+                  "info": {
+                    "comp": "w5Growth.growth",
+                    "display": "trend",
+                    "infoId": "growthChart",
+                    "label": "Growth measurements over time",
+                    "rows": [
+                      [
+                        [
+                          "Date",
+                          "Nov 1, 2023"
+                        ],
+                        [
+                          "Age (months)",
+                          "0"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "4.5"
+                        ],
+                        [
+                          "Height (cm)",
+                          "53.1"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Dec 6, 2023"
+                        ],
+                        [
+                          "Age (months)",
+                          "1"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "5.4"
+                        ],
+                        [
+                          "Height (cm)",
+                          "57.1"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Feb 7, 2024"
+                        ],
+                        [
+                          "Age (months)",
+                          "3"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "7.1"
+                        ],
+                        [
+                          "Height (cm)",
+                          "62.5"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Apr 10, 2024"
+                        ],
+                        [
+                          "Age (months)",
+                          "5"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "8.4"
+                        ],
+                        [
+                          "Height (cm)",
+                          "66.6"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Jul 10, 2024"
+                        ],
+                        [
+                          "Age (months)",
+                          "8"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "10.0"
+                        ],
+                        [
+                          "Height (cm)",
+                          "71.4"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Oct 9, 2024"
+                        ],
+                        [
+                          "Age (months)",
+                          "11"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "11.1"
+                        ],
+                        [
+                          "Height (cm)",
+                          "75.4"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Jan 8, 2025"
+                        ],
+                        [
+                          "Age (months)",
+                          "14"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "12.0"
+                        ],
+                        [
+                          "Height (cm)",
+                          "78.9"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Apr 9, 2025"
+                        ],
+                        [
+                          "Age (months)",
+                          "17"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "12.7"
+                        ],
+                        [
+                          "Height (cm)",
+                          "82.0"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Oct 8, 2025"
+                        ],
+                        [
+                          "Age (months)",
+                          "23"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "13.8"
+                        ],
+                        [
+                          "Height (cm)",
+                          "87.5"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Apr 8, 2026"
+                        ],
+                        [
+                          "Age (months)",
+                          "29"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "14.7"
+                        ],
+                        [
+                          "Height (cm)",
+                          "91.3"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Oct 7, 2026"
+                        ],
+                        [
+                          "Age (months)",
+                          "35"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "15.6"
+                        ],
+                        [
+                          "Height (cm)",
+                          "95.3"
+                        ]
+                      ],
+                      [
+                        [
+                          "Date",
+                          "Nov 2, 2026"
+                        ],
+                        [
+                          "Age (months)",
+                          "36"
+                        ],
+                        [
+                          "Weight (kg)",
+                          "15.7"
+                        ],
+                        [
+                          "Height (cm)",
+                          ""
+                        ]
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "kind": "growth"
+            }
+          }
+        ],
+        "references": [
+          {
+            "measure": "Weight",
+            "percentile": "5th",
+            "points": [
+              [
+                240,
+                1064
+              ],
+              [
+                245,
+                1070
+              ],
+              [
+                255,
+                1082
+              ],
+              [
+                265,
+                1094
+              ],
+              [
+                275,
+                1105
+              ],
+              [
+                285,
+                1117
+              ],
+              [
+                295,
+                1128
+              ],
+              [
+                305,
+                1140
+              ],
+              [
+                315,
+                1151
+              ],
+              [
+                325,
+                1163
+              ],
+              [
+                335,
+                1175
+              ],
+              [
+                345,
+                1186
+              ],
+              [
+                355,
+                1198
+              ],
+              [
+                365,
+                1210
+              ],
+              [
+                375,
+                1222
+              ],
+              [
+                385,
+                1234
+              ],
+              [
+                395,
+                1246
+              ],
+              [
+                405,
+                1259
+              ],
+              [
+                415,
+                1271
+              ]
+            ],
+            "population": "Boys",
+            "source": "CDC 2000 weight-for-age (24–240 mo)",
+            "unit": "kg"
+          },
+          {
+            "measure": "Weight",
+            "percentile": "50th",
+            "points": [
+              [
+                240,
+                1267
+              ],
+              [
+                245,
+                1274
+              ],
+              [
+                255,
+                1288
+              ],
+              [
+                265,
+                1302
+              ],
+              [
+                275,
+                1315
+              ],
+              [
+                285,
+                1329
+              ],
+              [
+                295,
+                1343
+              ],
+              [
+                305,
+                1356
+              ],
+              [
+                315,
+                1370
+              ],
+              [
+                325,
+                1384
+              ],
+              [
+                335,
+                1397
+              ],
+              [
+                345,
+                1412
+              ],
+              [
+                355,
+                1426
+              ],
+              [
+                365,
+                1440
+              ],
+              [
+                375,
+                1455
+              ],
+              [
+                385,
+                1470
+              ],
+              [
+                395,
+                1485
+              ],
+              [
+                405,
+                1500
+              ],
+              [
+                415,
+                1516
+              ]
+            ],
+            "population": "Boys",
+            "source": "CDC 2000 weight-for-age (24–240 mo)",
+            "unit": "kg"
+          },
+          {
+            "measure": "Weight",
+            "percentile": "95th",
+            "points": [
+              [
+                240,
+                1519
+              ],
+              [
+                245,
+                1528
+              ],
+              [
+                255,
+                1545
+              ],
+              [
+                265,
+                1563
+              ],
+              [
+                275,
+                1580
+              ],
+              [
+                285,
+                1598
+              ],
+              [
+                295,
+                1616
+              ],
+              [
+                305,
+                1634
+              ],
+              [
+                315,
+                1653
+              ],
+              [
+                325,
+                1672
+              ],
+              [
+                335,
+                1691
+              ],
+              [
+                345,
+                1711
+              ],
+              [
+                355,
+                1731
+              ],
+              [
+                365,
+                1751
+              ],
+              [
+                375,
+                1772
+              ],
+              [
+                385,
+                1793
+              ],
+              [
+                395,
+                1815
+              ],
+              [
+                405,
+                1837
+              ],
+              [
+                415,
+                1860
+              ]
+            ],
+            "population": "Boys",
+            "source": "CDC 2000 weight-for-age (24–240 mo)",
+            "unit": "kg"
+          },
+          {
+            "measure": "Height",
+            "percentile": "5th",
+            "points": [
+              [
+                240,
+                8073
+              ],
+              [
+                245,
+                8109
+              ],
+              [
+                255,
+                8183
+              ],
+              [
+                265,
+                8256
+              ],
+              [
+                275,
+                8328
+              ],
+              [
+                285,
+                8398
+              ],
+              [
+                295,
+                8467
+              ],
+              [
+                305,
+                8535
+              ],
+              [
+                315,
+                8601
+              ],
+              [
+                325,
+                8667
+              ],
+              [
+                335,
+                8732
+              ],
+              [
+                345,
+                8795
+              ],
+              [
+                355,
+                8858
+              ],
+              [
+                365,
+                8920
+              ],
+              [
+                375,
+                8977
+              ],
+              [
+                385,
+                9033
+              ],
+              [
+                395,
+                9089
+              ],
+              [
+                405,
+                9143
+              ],
+              [
+                415,
+                9197
+              ]
+            ],
+            "population": "Boys",
+            "source": "CDC 2000 stature-for-age (24–240 mo)",
+            "unit": "cm"
+          },
+          {
+            "measure": "Height",
+            "percentile": "50th",
+            "points": [
+              [
+                240,
+                8645
+              ],
+              [
+                245,
+                8686
+              ],
+              [
+                255,
+                8765
+              ],
+              [
+                265,
+                8842
+              ],
+              [
+                275,
+                8918
+              ],
+              [
+                285,
+                8991
+              ],
+              [
+                295,
+                9063
+              ],
+              [
+                305,
+                9133
+              ],
+              [
+                315,
+                9202
+              ],
+              [
+                325,
+                9270
+              ],
+              [
+                335,
+                9336
+              ],
+              [
+                345,
+                9401
+              ],
+              [
+                355,
+                9465
+              ],
+              [
+                365,
+                9527
+              ],
+              [
+                375,
+                9591
+              ],
+              [
+                385,
+                9655
+              ],
+              [
+                395,
+                9717
+              ],
+              [
+                405,
+                9779
+              ],
+              [
+                415,
+                9840
+              ]
+            ],
+            "population": "Boys",
+            "source": "CDC 2000 stature-for-age (24–240 mo)",
+            "unit": "cm"
+          },
+          {
+            "measure": "Height",
+            "percentile": "95th",
+            "points": [
+              [
+                240,
+                9220
+              ],
+              [
+                245,
+                9263
+              ],
+              [
+                255,
+                9353
+              ],
+              [
+                265,
+                9441
+              ],
+              [
+                275,
+                9526
+              ],
+              [
+                285,
+                9608
+              ],
+              [
+                295,
+                9688
+              ],
+              [
+                305,
+                9766
+              ],
+              [
+                315,
+                9842
+              ],
+              [
+                325,
+                9916
+              ],
+              [
+                335,
+                9987
+              ],
+              [
+                345,
+                10058
+              ],
+              [
+                355,
+                10126
+              ],
+              [
+                365,
+                10193
+              ],
+              [
+                375,
+                10259
+              ],
+              [
+                385,
+                10325
+              ],
+              [
+                395,
+                10389
+              ],
+              [
+                405,
+                10454
+              ],
+              [
+                415,
+                10517
+              ]
+            ],
+            "population": "Boys",
+            "source": "CDC 2000 stature-for-age (24–240 mo)",
+            "unit": "cm"
+          },
+          {
+            "measure": "Weight",
+            "percentile": "5th",
+            "points": [
+              [
+                0,
+                260
+              ],
+              [
+                10,
+                360
+              ],
+              [
+                20,
+                450
+              ],
+              [
+                30,
+                520
+              ],
+              [
+                40,
+                580
+              ],
+              [
+                50,
+                620
+              ],
+              [
+                60,
+                660
+              ],
+              [
+                70,
+                690
+              ],
+              [
+                80,
+                720
+              ],
+              [
+                90,
+                740
+              ],
+              [
+                100,
+                770
+              ],
+              [
+                110,
+                790
+              ],
+              [
+                120,
+                810
+              ],
+              [
+                130,
+                820
+              ],
+              [
+                140,
+                840
+              ],
+              [
+                150,
+                860
+              ],
+              [
+                160,
+                880
+              ],
+              [
+                170,
+                890
+              ],
+              [
+                180,
+                910
+              ],
+              [
+                190,
+                930
+              ],
+              [
+                200,
+                940
+              ],
+              [
+                210,
+                960
+              ],
+              [
+                220,
+                980
+              ],
+              [
+                230,
+                990
+              ],
+              [
+                240,
+                1010
+              ]
+            ],
+            "population": "Boys",
+            "source": "WHO 2006 weight-for-age (0–24 mo)",
+            "unit": "kg"
+          },
+          {
+            "measure": "Weight",
+            "percentile": "50th",
+            "points": [
+              [
+                0,
+                330
+              ],
+              [
+                10,
+                450
+              ],
+              [
+                20,
+                560
+              ],
+              [
+                30,
+                640
+              ],
+              [
+                40,
+                700
+              ],
+              [
+                50,
+                750
+              ],
+              [
+                60,
+                790
+              ],
+              [
+                70,
+                830
+              ],
+              [
+                80,
+                860
+              ],
+              [
+                90,
+                890
+              ],
+              [
+                100,
+                920
+              ],
+              [
+                110,
+                940
+              ],
+              [
+                120,
+                960
+              ],
+              [
+                130,
+                990
+              ],
+              [
+                140,
+                1010
+              ],
+              [
+                150,
+                1030
+              ],
+              [
+                160,
+                1050
+              ],
+              [
+                170,
+                1070
+              ],
+              [
+                180,
+                1090
+              ],
+              [
+                190,
+                1110
+              ],
+              [
+                200,
+                1130
+              ],
+              [
+                210,
+                1150
+              ],
+              [
+                220,
+                1180
+              ],
+              [
+                230,
+                1200
+              ],
+              [
+                240,
+                1220
+              ]
+            ],
+            "population": "Boys",
+            "source": "WHO 2006 weight-for-age (0–24 mo)",
+            "unit": "kg"
+          },
+          {
+            "measure": "Weight",
+            "percentile": "95th",
+            "points": [
+              [
+                0,
+                420
+              ],
+              [
+                10,
+                550
+              ],
+              [
+                20,
+                680
+              ],
+              [
+                30,
+                770
+              ],
+              [
+                40,
+                840
+              ],
+              [
+                50,
+                900
+              ],
+              [
+                60,
+                950
+              ],
+              [
+                70,
+                990
+              ],
+              [
+                80,
+                1030
+              ],
+              [
+                90,
+                1060
+              ],
+              [
+                100,
+                1090
+              ],
+              [
+                110,
+                1120
+              ],
+              [
+                120,
+                1150
+              ],
+              [
+                130,
+                1180
+              ],
+              [
+                140,
+                1210
+              ],
+              [
+                150,
+                1230
+              ],
+              [
+                160,
+                1260
+              ],
+              [
+                170,
+                1290
+              ],
+              [
+                180,
+                1310
+              ],
+              [
+                190,
+                1340
+              ],
+              [
+                200,
+                1360
+              ],
+              [
+                210,
+                1390
+              ],
+              [
+                220,
+                1420
+              ],
+              [
+                230,
+                1440
+              ],
+              [
+                240,
+                1470
+              ]
+            ],
+            "population": "Boys",
+            "source": "WHO 2006 weight-for-age (0–24 mo)",
+            "unit": "kg"
+          },
+          {
+            "measure": "Height",
+            "percentile": "5th",
+            "points": [
+              [
+                0,
+                4680
+              ],
+              [
+                10,
+                5150
+              ],
+              [
+                20,
+                5510
+              ],
+              [
+                30,
+                5810
+              ],
+              [
+                40,
+                6050
+              ],
+              [
+                50,
+                6240
+              ],
+              [
+                60,
+                6410
+              ],
+              [
+                70,
+                6560
+              ],
+              [
+                80,
+                6700
+              ],
+              [
+                90,
+                6830
+              ],
+              [
+                100,
+                6950
+              ],
+              [
+                110,
+                7070
+              ],
+              [
+                120,
+                7180
+              ],
+              [
+                130,
+                7290
+              ],
+              [
+                140,
+                7400
+              ],
+              [
+                150,
+                7500
+              ],
+              [
+                160,
+                7600
+              ],
+              [
+                170,
+                7690
+              ],
+              [
+                180,
+                7780
+              ],
+              [
+                190,
+                7870
+              ],
+              [
+                200,
+                7960
+              ],
+              [
+                210,
+                8040
+              ],
+              [
+                220,
+                8120
+              ],
+              [
+                230,
+                8200
+              ],
+              [
+                240,
+                8280
+              ]
+            ],
+            "population": "Boys",
+            "source": "WHO 2006 length-for-age (0–24 mo)",
+            "unit": "cm"
+          },
+          {
+            "measure": "Height",
+            "percentile": "50th",
+            "points": [
+              [
+                0,
+                4990
+              ],
+              [
+                10,
+                5470
+              ],
+              [
+                20,
+                5840
+              ],
+              [
+                30,
+                6140
+              ],
+              [
+                40,
+                6390
+              ],
+              [
+                50,
+                6590
+              ],
+              [
+                60,
+                6760
+              ],
+              [
+                70,
+                6920
+              ],
+              [
+                80,
+                7060
+              ],
+              [
+                90,
+                7200
+              ],
+              [
+                100,
+                7330
+              ],
+              [
+                110,
+                7450
+              ],
+              [
+                120,
+                7570
+              ],
+              [
+                130,
+                7690
+              ],
+              [
+                140,
+                7800
+              ],
+              [
+                150,
+                7910
+              ],
+              [
+                160,
+                8020
+              ],
+              [
+                170,
+                8120
+              ],
+              [
+                180,
+                8230
+              ],
+              [
+                190,
+                8320
+              ],
+              [
+                200,
+                8420
+              ],
+              [
+                210,
+                8510
+              ],
+              [
+                220,
+                8600
+              ],
+              [
+                230,
+                8690
+              ],
+              [
+                240,
+                8780
+              ]
+            ],
+            "population": "Boys",
+            "source": "WHO 2006 length-for-age (0–24 mo)",
+            "unit": "cm"
+          },
+          {
+            "measure": "Height",
+            "percentile": "95th",
+            "points": [
+              [
+                0,
+                5300
+              ],
+              [
+                10,
+                5790
+              ],
+              [
+                20,
+                6170
+              ],
+              [
+                30,
+                6480
+              ],
+              [
+                40,
+                6730
+              ],
+              [
+                50,
+                6940
+              ],
+              [
+                60,
+                7110
+              ],
+              [
+                70,
+                7270
+              ],
+              [
+                80,
+                7420
+              ],
+              [
+                90,
+                7570
+              ],
+              [
+                100,
+                7700
+              ],
+              [
+                110,
+                7840
+              ],
+              [
+                120,
+                7970
+              ],
+              [
+                130,
+                8090
+              ],
+              [
+                140,
+                8210
+              ],
+              [
+                150,
+                8330
+              ],
+              [
+                160,
+                8450
+              ],
+              [
+                170,
+                8560
+              ],
+              [
+                180,
+                8670
+              ],
+              [
+                190,
+                8780
+              ],
+              [
+                200,
+                8880
+              ],
+              [
+                210,
+                8990
+              ],
+              [
+                220,
+                9090
+              ],
+              [
+                230,
+                9190
+              ],
+              [
+                240,
+                9280
+              ]
+            ],
+            "population": "Boys",
+            "source": "WHO 2006 length-for-age (0–24 mo)",
+            "unit": "cm"
+          }
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "w5Growth.lastVisit",
+        "display": "list",
+        "infoId": "lastVisit",
+        "label": "Last visit",
+        "rows": [
+          [
+            [
+              "Date",
+              "Oct 14, 2026 22:23"
+            ],
+            [
+              "Visit type",
+              "Office Visit – Pediatrics"
+            ],
+            [
+              "Setting",
+              "AMB"
+            ],
+            [
+              "Reason",
+              "Patient referral for dental care (procedure)"
+            ],
+            [
+              "Provider",
+              "Dr. Saundra Kuphal"
+            ],
+            [
+              "Location",
+              "Cooley Dickinson Hospital Inc"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w5Growth.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 14, 2026 22:23"
+                  ],
+                  [
+                    "End",
+                    "Oct 14, 2026 22:51"
+                  ],
+                  [
+                    "Reason",
+                    "Patient referral for dental care (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Saundra Kuphal"
+                  ],
+                  [
+                    "Location",
+                    "Cooley Dickinson Hospital Inc"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 7, 2026 22:23"
+                  ],
+                  [
+                    "End",
+                    "Oct 7, 2026 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 8, 2026 22:23"
+                  ],
+                  [
+                    "End",
+                    "Apr 8, 2026 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 8, 2025 22:23"
+                  ],
+                  [
+                    "End",
+                    "Oct 8, 2025 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 9, 2025 22:23"
+                  ],
+                  [
+                    "End",
+                    "Apr 9, 2025 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 8, 2025 21:23"
+                  ],
+                  [
+                    "End",
+                    "Jan 8, 2025 21:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 9, 2024 22:23"
+                  ],
+                  [
+                    "End",
+                    "Oct 9, 2024 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 6, 2024 20:23"
+                  ],
+                  [
+                    "End",
+                    "Sep 6, 2024 20:51"
+                  ],
+                  [
+                    "Reason",
+                    "Allergic disposition (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Saundra Kuphal"
+                  ],
+                  [
+                    "Location",
+                    "Cooley Dickinson Hospital Inc"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Aug 22, 2024 01:23"
+                  ],
+                  [
+                    "End",
+                    "Aug 22, 2024 01:38"
+                  ],
+                  [
+                    "Reason",
+                    "Cow's milk (substance)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Saundra Kuphal"
+                  ],
+                  [
+                    "Location",
+                    "Cooley Dickinson Hospital Inc"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 10, 2024 22:23"
+                  ],
+                  [
+                    "End",
+                    "Jul 10, 2024 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 10, 2024 22:23"
+                  ],
+                  [
+                    "End",
+                    "Apr 10, 2024 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 7, 2024 21:23"
+                  ],
+                  [
+                    "End",
+                    "Feb 7, 2024 21:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Dec 6, 2023 21:23"
+                  ],
+                  [
+                    "End",
+                    "Dec 6, 2023 21:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 1, 2023 22:23"
+                  ],
+                  [
+                    "End",
+                    "Nov 1, 2023 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dennis Effertz"
+                  ],
+                  [
+                    "Location",
+                    "Northampton Wellness Associates LLC"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w5Growth.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Medications",
+          "Problems",
+          "Allergies",
+          "Imaging",
+          "Immunizations"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w5Growth.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Visit Note",
+        "role": "nav"
+      }
+    },
+    {
+      "info": {
+        "comp": "w5Growth.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Office Visit – Pediatrics"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Pediatrics"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "finished"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w5Growth.contextPanels.data.chartRecentResults",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w5Growth.contextPanels.card.chartRecentResults",
+                    "title": "Recent Results"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w5Growth.contextPanels.data.chartCareGaps",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w5Growth.contextPanels.card.chartCareGaps",
+                    "title": "Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w5Growth.contextPanels.data.storyLastNote",
+                                "display": "table",
+                                "infoId": "storyLastNote",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Oct 14, 2026 22:23"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Dr. Saundra Kuphal"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-10-14\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nIsidro is a 2 year-old hispanic white male. Patient has a history of medication review due (situation).\n\n# Social History\n Patient has never smoked.\n\n\nPatient comes from a low socioeconomic background.\n\nP… (excerpt; full note in Chart Review)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w5Growth.contextPanels.card.storyLastNote",
+                    "title": "Last Note"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w5Growth.contextPanels",
+        "title": "Clinical Context"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w5Growth.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w5Growth.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    }
+  ]
+}

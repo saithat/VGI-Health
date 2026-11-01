@@ -2,6 +2,7 @@ import Ehr.Specs.V1
 import Ehr.Canonical.Rules
 import Ehr.Canonical.CorePlacements
 import Ehr.Canonical.Blueprint
+import Ehr.Canonical.Density
 import Ehr.Canonical.W1Visit
 import Ehr.Canonical.W2Results
 import Ehr.Canonical.W3Ed
@@ -15,7 +16,7 @@ import Ehr.Canonical.W7Refills
 
 The vendor's out-of-the-box UI program for spec v1. Every clinician starts with
 it on day 1; the overnight agent then personalizes it. It covers workflows
-W1–W7 (BRIEF section 5) on 46 screens, starting from the patient workspace.
+W1–W7 (BRIEF section 5) with shared Summary and Chart Review screens, starting from the department workspace.
 -/
 
 namespace Ehr.Canonical
@@ -99,10 +100,10 @@ def canonicalV1 : Program where
   role := .physician
   specVersion := "v1"
   start := "home"
-  screens := (Blueprint.screens (let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
+  screens := Density.screens ((Blueprint.screens (let base := [home] ++ W1.screens ++ W2.screens ++ W3.screens ++ W4.screens ++
     W5.screens ++ W6.screens ++ W7.screens
     if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base.map CorePlacements.augment)).map
-      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews)
+      (withRequiredLinks ∘ withWorkflowAlerts ∘ withRequiredReviews))
   macros := Blueprint.macros (W1.macros ++ W2.macros ++ W3.macros ++ W4.macros ++ W5.macros ++
     W6.macros ++ W7.macros)
 

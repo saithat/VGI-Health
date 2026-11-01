@@ -1,0 +1,1709 @@
+Resolving dependencies
+ℹ [35/371] Replayed Ehr.Specs.V2
+info: Ehr/Specs/V2.lean:67:0: 'Ehr.Specs.V2.specV2_extends_specV1' depends on axioms: [propext]
+ℹ [36/371] Replayed Ehr.Specs.V3
+info: Ehr/Specs/V3.lean:65:0: 'Ehr.Specs.V3.specV3_extends_specV2' depends on axioms: [propext]
+ℹ [67/371] Replayed Ehr.Proofs.T0
+info: Ehr/Proofs/T0.lean:460:0: 'Ehr.Proofs.T0_extra_contract' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [71/371] Replayed Ehr.Proofs.Audit
+info: Ehr/Proofs/Audit.lean:57:0: 'Ehr.Proofs.T0_commit_needs_guard' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:58:0: 'Ehr.Proofs.T0_entry_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:59:0: 'Ehr.Proofs.commitGuard_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:60:0: 'Ehr.Proofs.entryMet_iff_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:61:0: 'Ehr.Proofs.entryValueAllowed_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:62:0: 'Ehr.Proofs.capturedSatisfies_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:63:0: 'Ehr.Proofs.commitGuard_iff_values' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:64:0: 'Ehr.Proofs.T0_entry_values_allowed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:65:0: 'Ehr.Proofs.T0_entry_values_perLine' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:66:0: 'Ehr.Proofs.T2_receipts_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:67:0: 'Ehr.Proofs.T2_shownOnCommit_shown' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:68:0: 'Ehr.Proofs.T3_macro_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:69:0: 'Ehr.Proofs.T3_macro_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:70:0: 'Ehr.Proofs.T3_prefill_never_human_only' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:71:0: 'Ehr.Proofs.T3_cosign_distinct' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:72:0: 'Ehr.Proofs.T6_macro_is_fold' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:73:0: 'Ehr.Proofs.runMacro_ok_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:74:0: 'Ehr.Proofs.T6_macro_run_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:75:0: 'Ehr.Proofs.A2_view_firing' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:76:0: 'Ehr.Proofs.A2_view_shown' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:77:0: 'Ehr.Proofs.A2_popup_holds' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:78:0: 'Ehr.Proofs.A4_step' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:79:0: 'Ehr.Proofs.A4_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:80:0: 'Ehr.Proofs.A4_passive_never_popup' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/Audit.lean:84:0: [Ehr.ClinicalFacts.field,
+ Ehr.ClinicalPredicate.brecOn.go,
+ Ehr.CommitSpec.encounterRoleAllowed,
+ Ehr.Event.isAck,
+ Ehr.Kind.ctorElimType,
+ Ehr.OrderClock.anchorStamp,
+ Ehr.Program.compsOf,
+ Ehr.Program.macro?,
+ Ehr.Program.screen?,
+ Ehr.Role.name,
+ Ehr.Spec.alert?,
+ Ehr.Spec.commit?,
+ Ehr.Spec.element?,
+ Ehr.Spec.info?,
+ Ehr.State.tabOf,
+ Ehr.UnitKind.name,
+ Ehr.Validation.brecOn.go,
+ Ehr.Value.nonEmpty,
+ Ehr.ackCore,
+ Ehr.actionLabelOk,
+ Ehr.alertHolds,
+ Ehr.alertKeys,
+ Ehr.alertsAcked,
+ Ehr.allergyMatch,
+ Ehr.bannerInfo,
+ Ehr.businessLocalDay,
+ Ehr.canPopup,
+ Ehr.cappedDoseBound,
+ Ehr.capturedSatisfies,
+ Ehr.capturedWeightKg?,
+ Ehr.clickAlert,
+ Ehr.clickCommit,
+ Ehr.clickCore,
+ Ehr.clickedMacro?,
+ Ehr.clinicalApplies,
+ Ehr.clinicalCode,
+ Ehr.clinicalEval,
+ Ehr.clinicalSourceValid,
+ Ehr.commitGuard,
+ Ehr.commitRoleOk,
+ Ehr.compShown,
+ Ehr.confirmCore,
+ Ehr.curesExemptionEligible,
+ Ehr.currentLineComplete,
+ Ehr.decimalValid,
+ Ehr.defaultsOk,
+ Ehr.digitVal,
+ Ehr.digitsVal,
+ Ehr.displayActive,
+ Ehr.displayReqMet,
+ Ehr.displayScopeActive,
+ Ehr.displayShown,
+ Ehr.displaysOk,
+ Ehr.doseDrug?,
+ Ehr.doseElement,
+ Ehr.doseInputUnit?,
+ Ehr.doseOutOfRange,
+ Ehr.doseUnitValueValid,
+ Ehr.doseUnitsAt,
+ Ehr.doseValueValid,
+ Ehr.drugClasses,
+ Ehr.drugDoseUnits,
+ Ehr.drugElement,
+ Ehr.drugsInPlay,
+ Ehr.duplicate,
+ Ehr.elementValueValid,
+ Ehr.encounterMatches,
+ Ehr.encounterRoleFailure?,
+ Ehr.encounterRolesOk,
+ Ehr.enterCore,
+ Ehr.entriesOk,
+ Ehr.entryMet,
+ Ehr.entryReason,
+ Ehr.entryValueAllowed,
+ Ehr.epochNow,
+ Ehr.eventTime,
+ Ehr.expiryCutoff,
+ Ehr.expiryStatus,
+ Ehr.extraGuard,
+ Ehr.factVersion,
+ Ehr.fieldRequired,
+ Ehr.formulary,
+ Ehr.freqElement,
+ Ehr.freqPerDay,
+ Ehr.goBack,
+ Ehr.goTo,
+ Ehr.gtinValid,
+ Ehr.guardBase,
+ Ehr.guardReason,
+ Ehr.hasEntry,
+ Ehr.hasGoodEntry,
+ Ehr.hasOrderAt,
+ Ehr.hasValidReceipt,
+ Ehr.highMme,
+ Ehr.identityText,
+ Ehr.inClass,
+ Ehr.infoPayload,
+ Ehr.infoShown,
+ Ehr.infoVersion,
+ Ehr.interacts,
+ Ehr.isHighAlert,
+ Ehr.isLbWeight,
+ Ehr.isoDateValid,
+ Ehr.keyAt,
+ Ehr.layoutShown,
+ Ehr.layoutShownAux,
+ Ehr.leapYear,
+ Ehr.lexicalValue,
+ Ehr.lineDoseMgTenths?,
+ Ehr.lineFreqPerDay?,
+ Ehr.lineMatches,
+ Ehr.linkedClosure,
+ Ehr.linkedDependents,
+ Ehr.linkedSource?,
+ Ehr.lookupDrug,
+ Ehr.macroStep,
+ Ehr.macroStopReason,
+ Ehr.macroValue,
+ Ehr.markReviewed,
+ Ehr.mmeFactor,
+ Ehr.monthDays,
+ Ehr.naloxoneLine,
+ Ehr.namedClinicalCode,
+ Ehr.needsHuman,
+ Ehr.nowMin,
+ Ehr.obligationViews,
+ Ehr.orderLines,
+ Ehr.ownVisible,
+ Ehr.parentOpen,
+ Ehr.parseElementValue,
+ Ehr.parseTenths,
+ Ehr.parseTenthsChars,
+ Ehr.parseValue,
+ Ehr.payloadComplete,
+ Ehr.payloadField,
+ Ehr.payloadFieldMet,
+ Ehr.popupCandidates,
+ Ehr.prefillField,
+ Ehr.prefillRecord,
+ Ehr.prefillScreen,
+ Ehr.prefillValueValid,
+ Ehr.primaryClass,
+ Ehr.priorAuthCaptured,
+ Ehr.priorAuthElement,
+ Ehr.programPopsUp,
+ Ehr.receiptValid,
+ Ehr.recordValue,
+ Ehr.rejectReason,
+ Ehr.renewalValid,
+ Ehr.requestPriorAuth,
+ Ehr.resolveSlot,
+ Ehr.reviewMet,
+ Ehr.reviewsOk,
+ Ehr.roleOk,
+ Ehr.runMacro,
+ Ehr.scanMatches,
+ Ehr.searchShown,
+ Ehr.selectTabCore,
+ Ehr.serviceOrderAt,
+ Ehr.setCaptured,
+ Ehr.shownComp?,
+ Ehr.showsInfo,
+ Ehr.signingHasOrder,
+ Ehr.stampMinute,
+ Ehr.stampValid,
+ Ehr.step,
+ Ehr.stepCore,
+ Ehr.stepEvent,
+ Ehr.storedCapture,
+ Ehr.temporalOrdering,
+ Ehr.temporalStatus,
+ Ehr.timeDistance,
+ Ehr.toggle,
+ Ehr.udiValid,
+ Ehr.validDate,
+ Ehr.validationCapture,
+ Ehr.validationHolds,
+ Ehr.validationsOk,
+ Ehr.valueAccepted,
+ Ehr.valueSatisfies,
+ Ehr.waived,
+ Ehr.waiverEligible,
+ Ehr.weightBasedDrug,
+ Ehr.weightElement,
+ Ehr.weightKgTenths?,
+ Ehr.whenHolds]
+info: Ehr/Proofs/Audit.lean:85:0: [Ehr.ClinicalFacts.field,
+ Ehr.ClinicalPredicate.brecOn.go,
+ Ehr.CommitSpec.encounterRoleAllowed,
+ Ehr.Event.isAck,
+ Ehr.Kind.ctorElimType,
+ Ehr.OrderClock.anchorStamp,
+ Ehr.Program.compsOf,
+ Ehr.Program.macro?,
+ Ehr.Program.screen?,
+ Ehr.Props.HumanWaiverFor,
+ Ehr.Props.ValidReceiptFor,
+ Ehr.Role.name,
+ Ehr.Spec.alert?,
+ Ehr.Spec.commit?,
+ Ehr.Spec.element?,
+ Ehr.Spec.info?,
+ Ehr.State.tabOf,
+ Ehr.UnitKind.name,
+ Ehr.Validation.brecOn.go,
+ Ehr.Value.nonEmpty,
+ Ehr.ackCore,
+ Ehr.actionLabelOk,
+ Ehr.alertHolds,
+ Ehr.alertKeys,
+ Ehr.alertsAcked,
+ Ehr.allergyMatch,
+ Ehr.bannerInfo,
+ Ehr.businessLocalDay,
+ Ehr.canPopup,
+ Ehr.cappedDoseBound,
+ Ehr.capturedSatisfies,
+ Ehr.capturedWeightKg?,
+ Ehr.clickAlert,
+ Ehr.clickCommit,
+ Ehr.clickCore,
+ Ehr.clickedMacro?,
+ Ehr.clinicalApplies,
+ Ehr.clinicalCode,
+ Ehr.clinicalEval,
+ Ehr.clinicalSourceValid,
+ Ehr.commitRoleOk,
+ Ehr.compShown,
+ Ehr.confirmCore,
+ Ehr.curesExemptionEligible,
+ Ehr.currentLineComplete,
+ Ehr.decimalValid,
+ Ehr.defaultsOk,
+ Ehr.digitVal,
+ Ehr.digitsVal,
+ Ehr.displayActive,
+ Ehr.displayReqMet,
+ Ehr.displayScopeActive,
+ Ehr.displayShown,
+ Ehr.displaysOk,
+ Ehr.doseDrug?,
+ Ehr.doseElement,
+ Ehr.doseInputUnit?,
+ Ehr.doseOutOfRange,
+ Ehr.doseUnitValueValid,
+ Ehr.doseUnitsAt,
+ Ehr.doseValueValid,
+ Ehr.drugClasses,
+ Ehr.drugDoseUnits,
+ Ehr.drugElement,
+ Ehr.drugsInPlay,
+ Ehr.duplicate,
+ Ehr.elementValueValid,
+ Ehr.encounterMatches,
+ Ehr.encounterRoleFailure?,
+ Ehr.encounterRolesOk,
+ Ehr.enterCore,
+ Ehr.entriesOk,
+ Ehr.entryMet,
+ Ehr.entryReason,
+ Ehr.entryValueAllowed,
+ Ehr.epochNow,
+ Ehr.eventTime,
+ Ehr.expiryCutoff,
+ Ehr.expiryStatus,
+ Ehr.extraGuard,
+ Ehr.factVersion,
+ Ehr.fieldRequired,
+ Ehr.formulary,
+ Ehr.freqElement,
+ Ehr.freqPerDay,
+ Ehr.goBack,
+ Ehr.goTo,
+ Ehr.gtinValid,
+ Ehr.guardBase,
+ Ehr.guardReason,
+ Ehr.hasEntry,
+ Ehr.hasGoodEntry,
+ Ehr.hasOrderAt,
+ Ehr.hasValidReceipt,
+ Ehr.highMme,
+ Ehr.identityText,
+ Ehr.inClass,
+ Ehr.infoPayload,
+ Ehr.infoShown,
+ Ehr.infoVersion,
+ Ehr.interacts,
+ Ehr.isHighAlert,
+ Ehr.isLbWeight,
+ Ehr.isoDateValid,
+ Ehr.keyAt,
+ Ehr.layoutShown,
+ Ehr.layoutShownAux,
+ Ehr.leapYear,
+ Ehr.lexicalValue,
+ Ehr.lineDoseMgTenths?,
+ Ehr.lineFreqPerDay?,
+ Ehr.lineMatches,
+ Ehr.linkedClosure,
+ Ehr.linkedDependents,
+ Ehr.linkedSource?,
+ Ehr.lookupDrug,
+ Ehr.macroStep,
+ Ehr.macroStopReason,
+ Ehr.macroValue,
+ Ehr.markReviewed,
+ Ehr.mmeFactor,
+ Ehr.monthDays,
+ Ehr.naloxoneLine,
+ Ehr.namedClinicalCode,
+ Ehr.needsHuman,
+ Ehr.nowMin,
+ Ehr.obligationViews,
+ Ehr.orderLines,
+ Ehr.ownVisible,
+ Ehr.parentOpen,
+ Ehr.parseElementValue,
+ Ehr.parseTenths,
+ Ehr.parseTenthsChars,
+ Ehr.parseValue,
+ Ehr.payloadComplete,
+ Ehr.payloadField,
+ Ehr.payloadFieldMet,
+ Ehr.popupCandidates,
+ Ehr.prefillField,
+ Ehr.prefillRecord,
+ Ehr.prefillScreen,
+ Ehr.prefillValueValid,
+ Ehr.primaryClass,
+ Ehr.priorAuthCaptured,
+ Ehr.priorAuthElement,
+ Ehr.programPopsUp,
+ Ehr.receiptValid,
+ Ehr.recordValue,
+ Ehr.rejectReason,
+ Ehr.renewalValid,
+ Ehr.requestPriorAuth,
+ Ehr.resolveSlot,
+ Ehr.reviewMet,
+ Ehr.reviewsOk,
+ Ehr.roleOk,
+ Ehr.runMacro,
+ Ehr.scanMatches,
+ Ehr.searchShown,
+ Ehr.selectTabCore,
+ Ehr.serviceOrderAt,
+ Ehr.setCaptured,
+ Ehr.shownComp?,
+ Ehr.showsInfo,
+ Ehr.signingHasOrder,
+ Ehr.stampMinute,
+ Ehr.stampValid,
+ Ehr.step,
+ Ehr.stepCore,
+ Ehr.stepEvent,
+ Ehr.storedCapture,
+ Ehr.temporalOrdering,
+ Ehr.temporalStatus,
+ Ehr.timeDistance,
+ Ehr.toggle,
+ Ehr.udiValid,
+ Ehr.validDate,
+ Ehr.validationCapture,
+ Ehr.validationHolds,
+ Ehr.validationsOk,
+ Ehr.valueAccepted,
+ Ehr.valueSatisfies,
+ Ehr.waived,
+ Ehr.waiverEligible,
+ Ehr.weightBasedDrug,
+ Ehr.weightElement,
+ Ehr.weightKgTenths?,
+ Ehr.whenHolds]
+info: Ehr/Proofs/Audit.lean:86:0: [Ehr.ClinicalFacts.field,
+ Ehr.ClinicalPredicate.brecOn.go,
+ Ehr.CommitSpec.encounterRoleAllowed,
+ Ehr.Event.isAck,
+ Ehr.Kind.ctorElimType,
+ Ehr.OrderClock.anchorStamp,
+ Ehr.Program.compsOf,
+ Ehr.Program.macro?,
+ Ehr.Program.screen?,
+ Ehr.Role.name,
+ Ehr.Spec.alert?,
+ Ehr.Spec.commit?,
+ Ehr.Spec.element?,
+ Ehr.Spec.info?,
+ Ehr.Spec.isHumanOnly,
+ Ehr.State.tabOf,
+ Ehr.UnitKind.name,
+ Ehr.Validation.brecOn.go,
+ Ehr.Value.nonEmpty,
+ Ehr.ackCore,
+ Ehr.actionLabelOk,
+ Ehr.alertHolds,
+ Ehr.alertKeys,
+ Ehr.alertsAcked,
+ Ehr.allergyMatch,
+ Ehr.bannerInfo,
+ Ehr.businessLocalDay,
+ Ehr.canPopup,
+ Ehr.cappedDoseBound,
+ Ehr.capturedSatisfies,
+ Ehr.capturedWeightKg?,
+ Ehr.clickAlert,
+ Ehr.clickCommit,
+ Ehr.clickCore,
+ Ehr.clickedMacro?,
+ Ehr.clinicalApplies,
+ Ehr.clinicalCode,
+ Ehr.clinicalEval,
+ Ehr.clinicalSourceValid,
+ Ehr.commitRoleOk,
+ Ehr.compShown,
+ Ehr.confirmCore,
+ Ehr.curesExemptionEligible,
+ Ehr.currentLineComplete,
+ Ehr.decimalValid,
+ Ehr.defaultsOk,
+ Ehr.digitVal,
+ Ehr.digitsVal,
+ Ehr.displayActive,
+ Ehr.displayReqMet,
+ Ehr.displayScopeActive,
+ Ehr.displayShown,
+ Ehr.displaysOk,
+ Ehr.doseDrug?,
+ Ehr.doseElement,
+ Ehr.doseInputUnit?,
+ Ehr.doseOutOfRange,
+ Ehr.doseUnitValueValid,
+ Ehr.doseUnitsAt,
+ Ehr.doseValueValid,
+ Ehr.drugClasses,
+ Ehr.drugDoseUnits,
+ Ehr.drugElement,
+ Ehr.drugsInPlay,
+ Ehr.duplicate,
+ Ehr.elementValueValid,
+ Ehr.encounterMatches,
+ Ehr.encounterRoleFailure?,
+ Ehr.encounterRolesOk,
+ Ehr.enterCore,
+ Ehr.entriesOk,
+ Ehr.entryMet,
+ Ehr.entryReason,
+ Ehr.entryValueAllowed,
+ Ehr.epochNow,
+ Ehr.eventTime,
+ Ehr.expiryCutoff,
+ Ehr.expiryStatus,
+ Ehr.extraGuard,
+ Ehr.factVersion,
+ Ehr.fieldRequired,
+ Ehr.formulary,
+ Ehr.freqElement,
+ Ehr.freqPerDay,
+ Ehr.goBack,
+ Ehr.goTo,
+ Ehr.gtinValid,
+ Ehr.guardBase,
+ Ehr.guardReason,
+ Ehr.hasEntry,
+ Ehr.hasGoodEntry,
+ Ehr.hasOrderAt,
+ Ehr.hasValidReceipt,
+ Ehr.highMme,
+ Ehr.identityText,
+ Ehr.inClass,
+ Ehr.infoPayload,
+ Ehr.infoShown,
+ Ehr.infoVersion,
+ Ehr.interacts,
+ Ehr.isHighAlert,
+ Ehr.isLbWeight,
+ Ehr.isoDateValid,
+ Ehr.keyAt,
+ Ehr.layoutShown,
+ Ehr.layoutShownAux,
+ Ehr.leapYear,
+ Ehr.lexicalValue,
+ Ehr.lineDoseMgTenths?,
+ Ehr.lineFreqPerDay?,
+ Ehr.lineMatches,
+ Ehr.linkedClosure,
+ Ehr.linkedDependents,
+ Ehr.linkedSource?,
+ Ehr.lookupDrug,
+ Ehr.macroStep,
+ Ehr.macroStopReason,
+ Ehr.macroValue,
+ Ehr.markReviewed,
+ Ehr.mmeFactor,
+ Ehr.monthDays,
+ Ehr.naloxoneLine,
+ Ehr.namedClinicalCode,
+ Ehr.needsHuman,
+ Ehr.nowMin,
+ Ehr.obligationViews,
+ Ehr.orderLines,
+ Ehr.ownVisible,
+ Ehr.parentOpen,
+ Ehr.parseElementValue,
+ Ehr.parseTenths,
+ Ehr.parseTenthsChars,
+ Ehr.parseValue,
+ Ehr.payloadComplete,
+ Ehr.payloadField,
+ Ehr.payloadFieldMet,
+ Ehr.popupCandidates,
+ Ehr.prefillField,
+ Ehr.prefillRecord,
+ Ehr.prefillScreen,
+ Ehr.prefillValueValid,
+ Ehr.primaryClass,
+ Ehr.priorAuthCaptured,
+ Ehr.priorAuthElement,
+ Ehr.programPopsUp,
+ Ehr.receiptValid,
+ Ehr.recordValue,
+ Ehr.rejectReason,
+ Ehr.renewalValid,
+ Ehr.requestPriorAuth,
+ Ehr.resolveSlot,
+ Ehr.reviewMet,
+ Ehr.reviewsOk,
+ Ehr.roleOk,
+ Ehr.runMacro,
+ Ehr.scanMatches,
+ Ehr.searchShown,
+ Ehr.selectTabCore,
+ Ehr.serviceOrderAt,
+ Ehr.setCaptured,
+ Ehr.shownComp?,
+ Ehr.showsInfo,
+ Ehr.signingHasOrder,
+ Ehr.stampMinute,
+ Ehr.stampValid,
+ Ehr.step,
+ Ehr.stepCore,
+ Ehr.stepEvent,
+ Ehr.storedCapture,
+ Ehr.temporalOrdering,
+ Ehr.temporalStatus,
+ Ehr.timeDistance,
+ Ehr.toggle,
+ Ehr.udiValid,
+ Ehr.validDate,
+ Ehr.validationCapture,
+ Ehr.validationHolds,
+ Ehr.validationsOk,
+ Ehr.valueAccepted,
+ Ehr.valueSatisfies,
+ Ehr.waived,
+ Ehr.waiverEligible,
+ Ehr.weightBasedDrug,
+ Ehr.weightElement,
+ Ehr.weightKgTenths?,
+ Ehr.whenHolds]
+info: Ehr/Proofs/Audit.lean:87:0: [Ehr.ClinicalFacts.field,
+ Ehr.ClinicalPredicate.brecOn.go,
+ Ehr.CommitSpec.encounterRoleAllowed,
+ Ehr.Event.isAck,
+ Ehr.Kind.ctorElimType,
+ Ehr.OrderClock.anchorStamp,
+ Ehr.Program.compsOf,
+ Ehr.Program.macro?,
+ Ehr.Program.screen?,
+ Ehr.Props.foldMacro,
+ Ehr.Props.macroAct,
+ Ehr.Role.name,
+ Ehr.Spec.alert?,
+ Ehr.Spec.commit?,
+ Ehr.Spec.element?,
+ Ehr.Spec.info?,
+ Ehr.State.tabOf,
+ Ehr.UnitKind.name,
+ Ehr.Validation.brecOn.go,
+ Ehr.Value.nonEmpty,
+ Ehr.ackCore,
+ Ehr.actionLabelOk,
+ Ehr.alertHolds,
+ Ehr.alertKeys,
+ Ehr.alertsAcked,
+ Ehr.allergyMatch,
+ Ehr.bannerInfo,
+ Ehr.businessLocalDay,
+ Ehr.canPopup,
+ Ehr.cappedDoseBound,
+ Ehr.capturedSatisfies,
+ Ehr.capturedWeightKg?,
+ Ehr.clickAlert,
+ Ehr.clickCommit,
+ Ehr.clickCore,
+ Ehr.clickedMacro?,
+ Ehr.clinicalApplies,
+ Ehr.clinicalCode,
+ Ehr.clinicalEval,
+ Ehr.clinicalSourceValid,
+ Ehr.commitRoleOk,
+ Ehr.compShown,
+ Ehr.confirmCore,
+ Ehr.curesExemptionEligible,
+ Ehr.currentLineComplete,
+ Ehr.decimalValid,
+ Ehr.defaultsOk,
+ Ehr.digitVal,
+ Ehr.digitsVal,
+ Ehr.displayActive,
+ Ehr.displayReqMet,
+ Ehr.displayScopeActive,
+ Ehr.displayShown,
+ Ehr.displaysOk,
+ Ehr.doseDrug?,
+ Ehr.doseElement,
+ Ehr.doseInputUnit?,
+ Ehr.doseOutOfRange,
+ Ehr.doseUnitValueValid,
+ Ehr.doseUnitsAt,
+ Ehr.doseValueValid,
+ Ehr.drugClasses,
+ Ehr.drugDoseUnits,
+ Ehr.drugElement,
+ Ehr.drugsInPlay,
+ Ehr.duplicate,
+ Ehr.elementValueValid,
+ Ehr.encounterMatches,
+ Ehr.encounterRoleFailure?,
+ Ehr.encounterRolesOk,
+ Ehr.enterCore,
+ Ehr.entriesOk,
+ Ehr.entryMet,
+ Ehr.entryReason,
+ Ehr.entryValueAllowed,
+ Ehr.epochNow,
+ Ehr.eventTime,
+ Ehr.expiryCutoff,
+ Ehr.expiryStatus,
+ Ehr.extraGuard,
+ Ehr.factVersion,
+ Ehr.fieldRequired,
+ Ehr.formulary,
+ Ehr.freqElement,
+ Ehr.freqPerDay,
+ Ehr.goBack,
+ Ehr.goTo,
+ Ehr.gtinValid,
+ Ehr.guardBase,
+ Ehr.guardReason,
+ Ehr.hasEntry,
+ Ehr.hasGoodEntry,
+ Ehr.hasOrderAt,
+ Ehr.hasValidReceipt,
+ Ehr.highMme,
+ Ehr.identityText,
+ Ehr.inClass,
+ Ehr.infoPayload,
+ Ehr.infoShown,
+ Ehr.infoVersion,
+ Ehr.interacts,
+ Ehr.isHighAlert,
+ Ehr.isLbWeight,
+ Ehr.isoDateValid,
+ Ehr.keyAt,
+ Ehr.layoutShown,
+ Ehr.layoutShownAux,
+ Ehr.leapYear,
+ Ehr.lexicalValue,
+ Ehr.lineDoseMgTenths?,
+ Ehr.lineFreqPerDay?,
+ Ehr.lineMatches,
+ Ehr.linkedClosure,
+ Ehr.linkedDependents,
+ Ehr.linkedSource?,
+ Ehr.lookupDrug,
+ Ehr.macroStep,
+ Ehr.macroStopReason,
+ Ehr.macroValue,
+ Ehr.markReviewed,
+ Ehr.mmeFactor,
+ Ehr.monthDays,
+ Ehr.naloxoneLine,
+ Ehr.namedClinicalCode,
+ Ehr.needsHuman,
+ Ehr.nowMin,
+ Ehr.obligationViews,
+ Ehr.orderLines,
+ Ehr.ownVisible,
+ Ehr.parentOpen,
+ Ehr.parseElementValue,
+ Ehr.parseTenths,
+ Ehr.parseTenthsChars,
+ Ehr.parseValue,
+ Ehr.payloadComplete,
+ Ehr.payloadField,
+ Ehr.payloadFieldMet,
+ Ehr.popupCandidates,
+ Ehr.prefillField,
+ Ehr.prefillRecord,
+ Ehr.prefillScreen,
+ Ehr.prefillValueValid,
+ Ehr.primaryClass,
+ Ehr.priorAuthCaptured,
+ Ehr.priorAuthElement,
+ Ehr.programPopsUp,
+ Ehr.receiptValid,
+ Ehr.recordValue,
+ Ehr.rejectReason,
+ Ehr.renewalValid,
+ Ehr.requestPriorAuth,
+ Ehr.resolveSlot,
+ Ehr.reviewMet,
+ Ehr.reviewsOk,
+ Ehr.roleOk,
+ Ehr.runMacro,
+ Ehr.scanMatches,
+ Ehr.searchShown,
+ Ehr.selectTabCore,
+ Ehr.serviceOrderAt,
+ Ehr.setCaptured,
+ Ehr.shownComp?,
+ Ehr.showsInfo,
+ Ehr.signingHasOrder,
+ Ehr.stampMinute,
+ Ehr.stampValid,
+ Ehr.step,
+ Ehr.stepCore,
+ Ehr.stepEvent,
+ Ehr.storedCapture,
+ Ehr.temporalOrdering,
+ Ehr.temporalStatus,
+ Ehr.timeDistance,
+ Ehr.toggle,
+ Ehr.udiValid,
+ Ehr.validDate,
+ Ehr.validationCapture,
+ Ehr.validationHolds,
+ Ehr.validationsOk,
+ Ehr.valueAccepted,
+ Ehr.valueSatisfies,
+ Ehr.waived,
+ Ehr.waiverEligible,
+ Ehr.weightBasedDrug,
+ Ehr.weightElement,
+ Ehr.weightKgTenths?,
+ Ehr.whenHolds]
+info: Ehr/Proofs/Audit.lean:88:0: [Ehr.ClinicalFacts.field,
+ Ehr.ClinicalPredicate.brecOn.go,
+ Ehr.CommitSpec.encounterRoleAllowed,
+ Ehr.Kind.ctorElimType,
+ Ehr.OrderClock.anchorStamp,
+ Ehr.Program.compsOf,
+ Ehr.Program.macro?,
+ Ehr.Program.screen?,
+ Ehr.Role.name,
+ Ehr.Spec.alert?,
+ Ehr.Spec.commit?,
+ Ehr.Spec.element?,
+ Ehr.Spec.info?,
+ Ehr.Spec.isHumanOnly,
+ Ehr.State.tabOf,
+ Ehr.UnitKind.name,
+ Ehr.Validation.brecOn.go,
+ Ehr.Value.nonEmpty,
+ Ehr.actionLabelOk,
+ Ehr.actionStatus,
+ Ehr.alertHolds,
+ Ehr.alertKeys,
+ Ehr.allergyMatch,
+ Ehr.bannerInfo,
+ Ehr.businessLocalDay,
+ Ehr.canPopup,
+ Ehr.cappedDoseBound,
+ Ehr.capturedAt?,
+ Ehr.capturedSatisfies,
+ Ehr.capturedWeightKg?,
+ Ehr.clickAlert,
+ Ehr.clinicalApplies,
+ Ehr.clinicalCode,
+ Ehr.clinicalEval,
+ Ehr.clinicalSourceValid,
+ Ehr.commitRoleOk,
+ Ehr.compShown,
+ Ehr.curesExemptionEligible,
+ Ehr.currentLineComplete,
+ Ehr.decimalValid,
+ Ehr.defaultsOk,
+ Ehr.depthAux,
+ Ehr.digitVal,
+ Ehr.digitsVal,
+ Ehr.displayActive,
+ Ehr.displayReqMet,
+ Ehr.displayScopeActive,
+ Ehr.displayShown,
+ Ehr.displaysOk,
+ Ehr.doseDrug?,
+ Ehr.doseElement,
+ Ehr.doseOutOfRange,
+ Ehr.doseUnitValueValid,
+ Ehr.doseUnitsAt,
+ Ehr.doseValueValid,
+ Ehr.drugClasses,
+ Ehr.drugDoseUnits,
+ Ehr.drugElement,
+ Ehr.drugsInPlay,
+ Ehr.duplicate,
+ Ehr.elementValueValid,
+ Ehr.encounterMatches,
+ Ehr.encounterRoleFailure?,
+ Ehr.encounterRolesOk,
+ Ehr.entriesOk,
+ Ehr.entryMet,
+ Ehr.entryReason,
+ Ehr.entryValueAllowed,
+ Ehr.epochNow,
+ Ehr.eventTime,
+ Ehr.expiryCutoff,
+ Ehr.expiryStatus,
+ Ehr.extraGuard,
+ Ehr.factVersion,
+ Ehr.fieldRequired,
+ Ehr.formulary,
+ Ehr.freqElement,
+ Ehr.freqPerDay,
+ Ehr.gtinValid,
+ Ehr.guardBase,
+ Ehr.guardReason,
+ Ehr.hasGoodEntry,
+ Ehr.hasOrderAt,
+ Ehr.hasValidReceipt,
+ Ehr.highMme,
+ Ehr.identityText,
+ Ehr.inClass,
+ Ehr.infoPayload,
+ Ehr.infoPinned,
+ Ehr.infoShown,
+ Ehr.infoVersion,
+ Ehr.interacts,
+ Ehr.isHighAlert,
+ Ehr.isLbWeight,
+ Ehr.isoDateValid,
+ Ehr.itemView,
+ Ehr.keyAt,
+ Ehr.layoutShown,
+ Ehr.layoutShownAux,
+ Ehr.leapYear,
+ Ehr.lexicalValue,
+ Ehr.lineDoseMgTenths?,
+ Ehr.lineFreqPerDay?,
+ Ehr.lineMatches,
+ Ehr.lookupDrug,
+ Ehr.mmeFactor,
+ Ehr.monthDays,
+ Ehr.naloxoneLine,
+ Ehr.namedClinicalCode,
+ Ehr.needsHuman,
+ Ehr.nowMin,
+ Ehr.obligationViews,
+ Ehr.orderLines,
+ Ehr.ownVisible,
+ Ehr.parentOpen,
+ Ehr.parseTenths,
+ Ehr.parseTenthsChars,
+ Ehr.parseValue,
+ Ehr.payloadComplete,
+ Ehr.payloadField,
+ Ehr.payloadFieldMet,
+ Ehr.payloadView,
+ Ehr.popupCandidates,
+ Ehr.primaryClass,
+ Ehr.priorAuthCaptured,
+ Ehr.priorAuthElement,
+ Ehr.programPopsUp,
+ Ehr.receiptValid,
+ Ehr.renewalValid,
+ Ehr.resolveSlot,
+ Ehr.reviewMet,
+ Ehr.reviewsOk,
+ Ehr.roleOk,
+ Ehr.scanMatches,
+ Ehr.serviceOrderAt,
+ Ehr.showsInfo,
+ Ehr.signingHasOrder,
+ Ehr.stampMinute,
+ Ehr.stampValid,
+ Ehr.temporalOrdering,
+ Ehr.temporalStatus,
+ Ehr.timeDistance,
+ Ehr.udiValid,
+ Ehr.validDate,
+ Ehr.validationCapture,
+ Ehr.validationHolds,
+ Ehr.validationsOk,
+ Ehr.valueAccepted,
+ Ehr.valueSatisfies,
+ Ehr.view,
+ Ehr.waived,
+ Ehr.waiverEligible,
+ Ehr.weightBasedDrug,
+ Ehr.weightElement,
+ Ehr.weightKgTenths?,
+ Ehr.whenHolds]
+info: Ehr/Proofs/Audit.lean:89:0: [Ehr.ClinicalFacts.field,
+ Ehr.ClinicalPredicate.brecOn.go,
+ Ehr.CommitSpec.encounterRoleAllowed,
+ Ehr.Event.isAck,
+ Ehr.Kind.ctorElimType,
+ Ehr.OrderClock.anchorStamp,
+ Ehr.Program.compsOf,
+ Ehr.Program.macro?,
+ Ehr.Program.screen?,
+ Ehr.Props.PopupNotPassive,
+ Ehr.Role.name,
+ Ehr.Spec.alert?,
+ Ehr.Spec.commit?,
+ Ehr.Spec.element?,
+ Ehr.Spec.info?,
+ Ehr.State.tabOf,
+ Ehr.UnitKind.name,
+ Ehr.Validation.brecOn.go,
+ Ehr.Value.nonEmpty,
+ Ehr.ackCore,
+ Ehr.actionLabelOk,
+ Ehr.alertHolds,
+ Ehr.alertKeys,
+ Ehr.alertsAcked,
+ Ehr.allergyMatch,
+ Ehr.bannerInfo,
+ Ehr.businessLocalDay,
+ Ehr.canPopup,
+ Ehr.cappedDoseBound,
+ Ehr.capturedSatisfies,
+ Ehr.capturedWeightKg?,
+ Ehr.clickAlert,
+ Ehr.clickCommit,
+ Ehr.clickCore,
+ Ehr.clickedMacro?,
+ Ehr.clinicalApplies,
+ Ehr.clinicalCode,
+ Ehr.clinicalEval,
+ Ehr.clinicalSourceValid,
+ Ehr.commitRoleOk,
+ Ehr.compShown,
+ Ehr.confirmCore,
+ Ehr.curesExemptionEligible,
+ Ehr.currentLineComplete,
+ Ehr.decimalValid,
+ Ehr.defaultsOk,
+ Ehr.digitVal,
+ Ehr.digitsVal,
+ Ehr.displayActive,
+ Ehr.displayReqMet,
+ Ehr.displayScopeActive,
+ Ehr.displayShown,
+ Ehr.displaysOk,
+ Ehr.doseDrug?,
+ Ehr.doseElement,
+ Ehr.doseInputUnit?,
+ Ehr.doseOutOfRange,
+ Ehr.doseUnitValueValid,
+ Ehr.doseUnitsAt,
+ Ehr.doseValueValid,
+ Ehr.drugClasses,
+ Ehr.drugDoseUnits,
+ Ehr.drugElement,
+ Ehr.drugsInPlay,
+ Ehr.duplicate,
+ Ehr.elementValueValid,
+ Ehr.encounterMatches,
+ Ehr.encounterRoleFailure?,
+ Ehr.encounterRolesOk,
+ Ehr.enterCore,
+ Ehr.entriesOk,
+ Ehr.entryMet,
+ Ehr.entryReason,
+ Ehr.entryValueAllowed,
+ Ehr.epochNow,
+ Ehr.eventTime,
+ Ehr.expiryCutoff,
+ Ehr.expiryStatus,
+ Ehr.extraGuard,
+ Ehr.factVersion,
+ Ehr.fieldRequired,
+ Ehr.formulary,
+ Ehr.freqElement,
+ Ehr.freqPerDay,
+ Ehr.goBack,
+ Ehr.goTo,
+ Ehr.gtinValid,
+ Ehr.guardBase,
+ Ehr.guardReason,
+ Ehr.hasEntry,
+ Ehr.hasGoodEntry,
+ Ehr.hasOrderAt,
+ Ehr.hasValidReceipt,
+ Ehr.highMme,
+ Ehr.identityText,
+ Ehr.inClass,
+ Ehr.infoPayload,
+ Ehr.infoShown,
+ Ehr.infoVersion,
+ Ehr.init,
+ Ehr.interacts,
+ Ehr.isHighAlert,
+ Ehr.isLbWeight,
+ Ehr.isoDateValid,
+ Ehr.keyAt,
+ Ehr.layoutShown,
+ Ehr.layoutShownAux,
+ Ehr.leapYear,
+ Ehr.lexicalValue,
+ Ehr.lineDoseMgTenths?,
+ Ehr.lineFreqPerDay?,
+ Ehr.lineMatches,
+ Ehr.linkedClosure,
+ Ehr.linkedDependents,
+ Ehr.linkedSource?,
+ Ehr.lookupDrug,
+ Ehr.macroStep,
+ Ehr.macroStopReason,
+ Ehr.macroValue,
+ Ehr.markReviewed,
+ Ehr.mmeFactor,
+ Ehr.monthDays,
+ Ehr.naloxoneLine,
+ Ehr.namedClinicalCode,
+ Ehr.needsHuman,
+ Ehr.nowMin,
+ Ehr.obligationViews,
+ Ehr.orderLines,
+ Ehr.ownVisible,
+ Ehr.parentOpen,
+ Ehr.parseElementValue,
+ Ehr.parseTenths,
+ Ehr.parseTenthsChars,
+ Ehr.parseValue,
+ Ehr.payloadComplete,
+ Ehr.payloadField,
+ Ehr.payloadFieldMet,
+ Ehr.popupCandidates,
+ Ehr.prefillField,
+ Ehr.prefillRecord,
+ Ehr.prefillScreen,
+ Ehr.prefillValueValid,
+ Ehr.primaryClass,
+ Ehr.priorAuthCaptured,
+ Ehr.priorAuthElement,
+ Ehr.programPopsUp,
+ Ehr.receiptValid,
+ Ehr.recordValue,
+ Ehr.rejectReason,
+ Ehr.renewalValid,
+ Ehr.requestPriorAuth,
+ Ehr.resolveSlot,
+ Ehr.reviewMet,
+ Ehr.reviewsOk,
+ Ehr.roleOk,
+ Ehr.runAll,
+ Ehr.runMacro,
+ Ehr.scanMatches,
+ Ehr.searchShown,
+ Ehr.selectTabCore,
+ Ehr.serviceOrderAt,
+ Ehr.setCaptured,
+ Ehr.shownComp?,
+ Ehr.showsInfo,
+ Ehr.signingHasOrder,
+ Ehr.stampMinute,
+ Ehr.stampValid,
+ Ehr.startExpanded,
+ Ehr.step,
+ Ehr.stepCore,
+ Ehr.stepEvent,
+ Ehr.storedCapture,
+ Ehr.temporalOrdering,
+ Ehr.temporalStatus,
+ Ehr.timeDistance,
+ Ehr.toggle,
+ Ehr.udiValid,
+ Ehr.validDate,
+ Ehr.validationCapture,
+ Ehr.validationHolds,
+ Ehr.validationsOk,
+ Ehr.valueAccepted,
+ Ehr.valueSatisfies,
+ Ehr.waived,
+ Ehr.waiverEligible,
+ Ehr.weightBasedDrug,
+ Ehr.weightElement,
+ Ehr.weightKgTenths?,
+ Ehr.whenHolds]
+ℹ [80/371] Replayed Ehr.Check.PopupRequests
+info: Ehr/Check/PopupRequests.lean:39:0: 'Ehr.Check.filteredPopupRequests_iff' depends on axioms: [propext]
+ℹ [83/371] Replayed Ehr.Check.Catalog
+info: Ehr/Check/Catalog.lean:23:0: 'Ehr.Check.inCatalog_iff' depends on axioms: [propext, Quot.sound]
+ℹ [84/371] Replayed Ehr.Check.TinyRejections
+info: Ehr/Check/TinyRejections.lean:25:0: 'Ehr.Check.tiny_bad_catalog' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/TinyRejections.lean:26:0: 'Ehr.Check.tiny_bad_role' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/TinyRejections.lean:27:0: 'Ehr.Check.tiny_bad_automation' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [85/371] Replayed Ehr.Check.GuardSound
+info: Ehr/Check/GuardSound.lean:92:0: 'Ehr.Check.infoShown_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/GuardSound.lean:93:0: 'Ehr.Check.entryMet_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/GuardSound.lean:94:0: 'Ehr.Check.reviewMet_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/GuardSound.lean:95:0: 'Ehr.Check.commitCapturesAll' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/GuardSound.lean:96:0: 'Ehr.Check.commitReviewsMet' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/GuardSound.lean:97:0: 'Ehr.Check.interruptiveHandled' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/GuardSound.lean:98:0: 'Ehr.Check.commitUnitsRight' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/GuardSound.lean:99:0: 'Ehr.Check.cosignIsSecondUser' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [86/371] Replayed Ehr.Check.StructuralWitness
+info: Ehr/Check/StructuralWitness.lean:62:0: 'Ehr.Check.indexedComp_mem' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/StructuralWitness.lean:63:0: 'Ehr.Check.macroClick_violation' depends on axioms: [propext]
+info: Ehr/Check/StructuralWitness.lean:64:0: 'Ehr.Check.macroSet_violation' depends on axioms: [propext]
+info: Ehr/Check/StructuralWitness.lean:65:0: 'Ehr.Check.humanPrefill_violation' depends on axioms: [propext]
+ℹ [89/371] Replayed Ehr.Check.ViolationWitness
+info: Ehr/Check/ViolationWitness.lean:67:0: 'Ehr.Check.review_violation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/ViolationWitness.lean:68:0: 'Ehr.Check.outside_closed_no_depth' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/ViolationWitness.lean:69:0: 'Ehr.Check.required_unreachable_violation' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [90/371] Replayed Ehr.Check.MissingWitness
+warning: Ehr/Check/MissingWitness.lean:17:44: This simp argument is unused:
+  withoutElement
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [fieldOf?]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Ehr/Check/MissingWitness.lean:49:0: 'Ehr.Check.withoutElement_no_field' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/MissingWitness.lean:50:0: 'Ehr.Check.required_of_component' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/MissingWitness.lean:51:0: 'Ehr.Check.missing_required_not_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [91/371] Replayed Ehr.Check.ScreenSound
+info: Ehr/Check/ScreenSound.lean:177:0: 'Ehr.Check.reachable_screenNames' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [92/371] Replayed Ehr.Check.PinSound
+info: Ehr/Check/PinSound.lean:183:0: 'Ehr.Check.fixedShown_sound' depends on axioms: [propext]
+info: Ehr/Check/PinSound.lean:184:0: 'Ehr.Check.landmarksPinned_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/PinSound.lean:185:0: 'Ehr.Check.passivePinned_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/PinSound.lean:186:0: 'Ehr.Check.reviewsPinned_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [93/371] Replayed Ehr.Check.ReleaseChecks
+info: Ehr/Check/ReleaseChecks.lean:50:0: 'Ehr.Check.extends_entries' does not depend on any axioms
+info: Ehr/Check/ReleaseChecks.lean:51:0: 'Ehr.Check.extends_catalog' does not depend on any axioms
+info: Ehr/Check/ReleaseChecks.lean:52:0: 'Ehr.Check.expanded_extends' does not depend on any axioms
+info: Ehr/Check/ReleaseChecks.lean:53:0: 'Ehr.Check.expanded_accepted' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/ReleaseChecks.lean:54:0: 'Ehr.Check.soundness_transport_obstruction' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [95/371] Replayed Ehr.Check.ReplaySound
+info: Ehr/Check/ReplaySound.lean:85:0: 'Ehr.Check.replayOk_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/ReplaySound.lean:86:0: 'Ehr.Check.followHops_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/ReplaySound.lean:87:0: 'Ehr.Check.T7_counterexample_replays' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/ReplaySound.lean:88:0: 'Ehr.Check.OkRun.reachable' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [96/371] Replayed Ehr.Check.RuleSound
+info: Ehr/Check/RuleSound.lean:76:0: 'Ehr.Check.firstFinding_none_iff' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/RuleSound.lean:77:0: 'Ehr.Check.T7_rejection' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/RuleSound.lean:78:0: 'Ehr.Check.accepted_structural' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [97/371] Replayed Ehr.Check.RequestSound
+info: Ehr/Check/RequestSound.lean:48:0: 'Ehr.Check.requestPriorAuth_preserves_confirmed' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/RequestSound.lean:49:0: 'Ehr.Check.requestPriorAuth_no_human_capture' depends on axioms: [propext, Quot.sound]
+ℹ [98/371] Replayed Ehr.Check.PartialSound
+info: Ehr/Check/PartialSound.lean:70:0: 'Ehr.Check.accepted_wellFormed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/PartialSound.lean:71:0: 'Ehr.Check.accepted_reviewsBeforeCommit' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/PartialSound.lean:72:0: 'Ehr.Check.accepted_units' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/PartialSound.lean:73:0: 'Ehr.Check.accepted_alertsFire' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [99/371] Replayed Ehr.Check.BudgetSound
+info: Ehr/Check/BudgetSound.lean:55:0: 'Ehr.Check.popupRequestCount_mono' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/BudgetSound.lean:56:0: 'Ehr.Check.alertBudget_sound' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/BudgetSound.lean:57:0: 'Ehr.Check.accepted_budgets' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [100/371] Replayed Ehr.Check.SeveritySound
+info: Ehr/Check/SeveritySound.lean:34:0: 'Ehr.Check.reachable_popupNotPassive' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SeveritySound.lean:35:0: 'Ehr.Check.passiveNeverPopsUp' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SeveritySound.lean:36:0: 'Ehr.Check.accepted_severityTiers' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [101/371] Replayed Ehr.Check.WritesSound
+info: Ehr/Check/WritesSound.lean:276:0: 'Ehr.Check.writesAllowed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/WritesSound.lean:277:0: 'Ehr.Check.accepted_writesOnly' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [102/371] Replayed Ehr.Check.EnterOnceSound
+info: Ehr/Check/EnterOnceSound.lean:126:0: 'Ehr.Check.enteredOnce' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/EnterOnceSound.lean:127:0: 'Ehr.Check.accepted_capturesAllOnce' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [103/371] Replayed Ehr.Check.HumanSound
+info: Ehr/Check/HumanSound.lean:221:0: 'Ehr.Check.reachable_humanCaptured' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/HumanSound.lean:222:0: 'Ehr.Check.humanStepsByHuman' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [104/371] Replayed Ehr.Check.HumanEventsSound
+info: Ehr/Check/HumanEventsSound.lean:174:0: 'Ehr.Check.onlyHumanCommitsAndAcks' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/HumanEventsSound.lean:175:0: 'Ehr.Check.accepted_humanOnlyKept' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [105/371] Replayed Ehr.Check.AlertSound
+info: Ehr/Check/AlertSound.lean:180:0: 'Ehr.Check.clinicalEval_captured' depends on axioms: [propext]
+info: Ehr/Check/AlertSound.lean:181:0: 'Ehr.Check.popup_captured' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/AlertSound.lean:182:0: 'Ehr.Check.alertsOnlyWhenTrue' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/AlertSound.lean:183:0: 'Ehr.Check.interruptsOnce' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/AlertSound.lean:184:0: 'Ehr.Check.accepted_noFalseAlarms' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/AlertSound.lean:185:0: 'Ehr.Check.accepted_noRepeatInterruptions' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [106/371] Replayed Ehr.Check.NavigationSound
+info: Ehr/Check/NavigationSound.lean:14:0: 'Ehr.Check.accepted_navigation' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [107/371] Replayed Ehr.Check.ValueWitness
+info: Ehr/Check/ValueWitness.lean:42:0: 'Ehr.Check.value_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/ValueWitness.lean:43:0: 'Ehr.Check.declared_value_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [108/371] Replayed Ehr.Check.EntryConstruction
+info: Ehr/Check/EntryConstruction.lean:42:0: 'Ehr.Check.human_enter' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/EntryConstruction.lean:43:0: 'Ehr.Check.human_entry_exists' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [109/371] Replayed Ehr.Check.Completion
+info: Ehr/Check/Completion.lean:92:0: 'Ehr.Check.human_finish_ready' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [110/371] Replayed Ehr.Check.ScalarCompletion
+info: Ehr/Check/ScalarCompletion.lean:129:0: 'Ehr.Check.Scalar.completable' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [111/371] Replayed Ehr.Check.CaptureSlots
+info: Ehr/Check/CaptureSlots.lean:241:0: 'Ehr.Check.reachable_drugSlots' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [112/371] Replayed Ehr.Check.AlertCompletion
+info: Ehr/Check/AlertCompletion.lean:64:0: 'Ehr.Check.alertsAcked_of_no_candidates' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/AlertCompletion.lean:65:0: 'Ehr.Check.human_finish_ready_unique' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [113/371] Replayed Ehr.Check.FixedLineCompletion
+warning: Ehr/Check/FixedLineCompletion.lean:148:88: This simp argument is unused:
+  List.contains_iff_mem
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [s₂, s₁, setCaptured, storedCapture, capture]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Check/FixedLineCompletion.lean:178:74: This simp argument is unused:
+  waiverEligible
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [spec, Scalar.spec, Spec.commit?, extraGuard, signingHasOrder, validationsOk, elementValueValid, drug,
+    Scalar.element, nonDose, defaultsOk, displaysOk, actionLabelOk, entry, drugElement]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Ehr/Check/FixedLineCompletion.lean:202:0: 'Ehr.Check.FixedLine.completable' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/FixedLineCompletion.lean:203:0: 'Ehr.Check.FixedLine.completable_many_alerts' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [114/371] Replayed Ehr.Check.DoseSound
+info: Ehr/Check/DoseSound.lean:25:0: 'Ehr.Check.committed_dose_native' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [115/371] Replayed Ehr.Check.DoseCompletionObstruction
+info: Ehr/Check/DoseCompletionObstruction.lean:120:0: 'Ehr.Check.DoseCompletionObstruction.dependency_repaired_accepted' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+info: Ehr/Check/DoseCompletionObstruction.lean:121:0: 'Ehr.Check.DoseCompletionObstruction.rejected' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/DoseCompletionObstruction.lean:122:0: 'Ehr.Check.DoseCompletionObstruction.never_commits' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/DoseCompletionObstruction.lean:123:0: 'Ehr.Check.DoseCompletionObstruction.not_completable' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [116/371] Replayed Ehr.Check.Sound
+info: Ehr/Check/Sound.lean:251:0: 'Ehr.Check.satisfies_of_checked_completable' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:252:0: 'Ehr.Check.satisfies_of_checked_scalar' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:253:0: 'Ehr.Check.scalar_identity_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:254:0: 'Ehr.Check.satisfies_of_checked_fixed_lines' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:255:0: 'Ehr.Check.fixed_lines_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:256:0: 'Ehr.Check.satisfies_of_checked_receipt_lines' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:257:0: 'Ehr.Check.receipt_lines_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:258:0: 'Ehr.Check.satisfies_of_checked_many_alerts' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:259:0: 'Ehr.Check.many_alerts_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:260:0: 'Ehr.Check.satisfies_of_checked_automated_lines' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Sound.lean:261:0: 'Ehr.Check.automated_lines_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [117/371] Replayed Ehr.Check.MonotonicityObstruction
+info: Ehr/Check/MonotonicityObstruction.lean:40:0: 'Ehr.Check.vocabulary_extends' does not depend on any axioms
+info: Ehr/Check/MonotonicityObstruction.lean:41:0: 'Ehr.Check.vocabulary_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/MonotonicityObstruction.lean:42:0: 'Ehr.Check.vocabulary_not_old_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/MonotonicityObstruction.lean:43:0: 'Ehr.Check.T8_unqualified_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [120/371] Replayed Ehr.Check.ContractSound
+info: Ehr/Check/ContractSound.lean:28:0: 'Ehr.Check.commitContracts' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/ContractSound.lean:29:0: 'Ehr.Check.accepted_contracts' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [121/371] Replayed Ehr.Check.ReachCacheSound
+info: Ehr/Check/ReachCacheSound.lean:32:0: 'Ehr.Check.tableReach_eq' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/ReachCacheSound.lean:33:0: 'Ehr.Check.cached_completion_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [122/371] Replayed Ehr.Check.Monotonicity
+info: Ehr/Check/Monotonicity.lean:188:0: 'Ehr.Check.extends_contracts' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Monotonicity.lean:189:0: 'Ehr.Check.extends_element_lookup' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/Monotonicity.lean:190:0: 'Ehr.Check.extends_static' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/Monotonicity.lean:191:0: 'Ehr.Check.T8_checked_old_obligations' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Monotonicity.lean:192:0: 'Ehr.Check.T8_old_obligations' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Monotonicity.lean:193:0: 'Ehr.Check.T8_v1_to_v2' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/Monotonicity.lean:194:0: 'Ehr.Check.T8_v2_to_v3' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [123/371] Replayed Ehr.Check.ContractTests
+info: Ehr/Check/ContractTests.lean:25:0: 'Ehr.Check.Tests.completeFor_additional' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [125/371] Replayed Ehr.Check.RejectionObstruction
+warning: Ehr/Check/RejectionObstruction.lean:40:10: This simp argument is unused:
+  requiredCommitsFor
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [requiredCommits, presetScreen, Program.presetOwner, commitButtons, unusedWorkflowCanonical,
+    emptyProgram] at hc
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Ehr/Check/RejectionObstruction.lean:62:0: 'Ehr.Check.unusedWorkflow_satisfies' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/RejectionObstruction.lean:63:0: 'Ehr.Check.T7_semantic_rejection_false' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [126/371] Replayed Ehr.Check.DomainObstruction
+info: Ehr/Check/DomainObstruction.lean:48:0: 'Ehr.Check.newCommit_witness' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/DomainObstruction.lean:49:0: 'Ehr.Check.np_preop_never_signs' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [127/371] Replayed Ehr.Check.DisplayObstruction
+info: Ehr/Check/DisplayObstruction.lean:42:0: 'Ehr.Check.missing_payload_blocks_commit' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/DisplayObstruction.lean:43:0: 'Ehr.Check.missing_payload_not_completable' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [129/371] Replayed Ehr.Check.ValueTests
+info: Ehr/Check/ValueTests.lean:51:0: 'Ehr.Check.universallyValid_sound' depends on axioms: [propext, Quot.sound]
+ℹ [134/371] Replayed Ehr.Proofs.CheckDeploy
+info: Ehr/Proofs/CheckDeploy.lean:76:0: 'Ehr.Proofs.T4_publish_only_if_ok' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/CheckDeploy.lean:77:0: 'Ehr.Proofs.T4_rejected_not_published' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Proofs/CheckDeploy.lean:78:0: 'Ehr.Proofs.T4_published_certificate' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [137/371] Replayed Ehr.Render.Proofs
+info: Ehr/Render/Proofs.lean:286:0: 'Ehr.Render.T10_shown' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/Proofs.lean:287:0: 'Ehr.Render.T10_no_tiny' depends on axioms: [propext, Quot.sound]
+info: Ehr/Render/Proofs.lean:288:0: 'Ehr.Render.T10_page_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/Proofs.lean:289:0: 'Ehr.Render.T10_disabled' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/Proofs.lean:290:0: 'Ehr.Render.T10_only_shown' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/Proofs.lean:291:0: 'Ehr.Render.T10_info' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [138/371] Replayed Ehr.Render.CommitProofs
+info: Ehr/Render/CommitProofs.lean:76:0: 'Ehr.Render.T10_commit_enabled' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [142/371] Replayed Ehr.Render.FhirProofs
+info: Ehr/Render/FhirProofs.lean:26:0: 'Ehr.Render.Fhir.stringOfChars_eq' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/FhirProofs.lean:66:0: 'Ehr.Render.Fhir.chart_previews_preserve_clinical_facts' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/FhirProofs.lean:181:0: 'Ehr.Render.Fhir.T11_allergy' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/FhirProofs.lean:182:0: 'Ehr.Render.Fhir.T11_med' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/FhirProofs.lean:183:0: 'Ehr.Render.Fhir.T5_weight' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/FhirProofs.lean:184:0: 'Ehr.Render.Fhir.T5_allergyVersion' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/FhirProofs.lean:185:0: 'Ehr.Render.Fhir.T5_version_order_independent' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/FhirProofs.lean:198:0: 'Ehr.Render.Fhir.T11_note' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [143/371] Replayed Ehr.Render.PanelProofs
+info: Ehr/Render/PanelProofs.lean:87:0: 'Ehr.Render.T11_allergy_fhir_page' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/PanelProofs.lean:88:0: 'Ehr.Render.T11_med_fhir_page' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/PanelProofs.lean:97:0: 'Ehr.Render.T11_notes_rendered' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [144/371] Replayed Ehr.Render.UiProofs
+warning: Ehr/Render/UiProofs.lean:51:25: This simp argument is unused:
+  uiReviewStatus
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [hk] at hn
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:51:41: This simp argument is unused:
+  hk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [uiReviewStatus] at hn
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:60:25: This simp argument is unused:
+  uiReviewStatus
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [hk, uiAtomsList] at hn
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:60:41: This simp argument is unused:
+  hk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [uiReviewStatus, uiAtomsList] at hn
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:89:18: This simp argument is unused:
+  uiAtoms
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [uiAtomsList]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:89:27: This simp argument is unused:
+  uiAtomsList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [uiAtoms]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:141:19: This simp argument is unused:
+  uiAtomsList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:142:28: This simp argument is unused:
+  uiAtomsList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [ih]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:152:60: This simp argument is unused:
+  uiAtomsList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all [uiAtoms]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:185:19: This simp argument is unused:
+  uiAtomsList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:239:20: This simp argument is unused:
+  uiNavButton
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [hk] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:239:33: This simp argument is unused:
+  hk
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [uiNavButton] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:272:33: This simp argument is unused:
+  uiAtomsList
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [uiAtoms] at hn
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:348:59: This simp argument is unused:
+  uiComp
+
+Hint: Omit it from the simp argument list.
+  [apply] simp_all
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:418:48: This simp argument is unused:
+  Bool.not_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [uiInWorkspace, Bool.and_eq_true] at hw
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Render/UiProofs.lean:492:31: This simp argument is unused:
+  uiInfo
+
+Hint: Omit it from the simp argument list.
+  [apply] simp [uiItem, hk, uiAtoms, uiItemInfo, uiField, uiButton] at hn
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Ehr/Render/UiProofs.lean:694:0: 'Ehr.Render.uiNotes_complete' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [147/371] Replayed Ehr.Render.UiTests
+info: Ehr/Render/UiTests.lean:290:0: 'Ehr.Render.Ctx.v_exact' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:429:0: 'Ehr.Render.D1_landmark' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:430:0: 'Ehr.Render.D2_required_info' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:431:0: 'Ehr.Render.D2_commit_review' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:432:0: 'Ehr.Render.D3_honest_actions' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:433:0: 'Ehr.Render.D3_all_buttons' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:434:0: 'Ehr.Render.D4_interruptive_modal' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:435:0: 'Ehr.Render.D4_passive_no_modal' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:436:0: 'Ehr.Render.D4_passive_inline' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:437:0: 'Ehr.Render.D6_clear_fields' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:438:0: 'Ehr.Render.D6_field_labels' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:439:0: 'Ehr.Render.T10_ui_shown' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:440:0: 'Ehr.Render.T10_ui_only_shown' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:441:0: 'Ehr.Render.T10_ui_hidden' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:442:0: 'Ehr.Render.T11_ui_info' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:443:0: 'Ehr.Render.T11_ui_allergy_rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:444:0: 'Ehr.Render.T11_ui_med_rows' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:445:0: 'Ehr.Render.T11_ui_allergy_fhir' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:446:0: 'Ehr.Render.T11_ui_med_fhir' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:597:0: 'Ehr.Render.T11_ui_full_info' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:598:0: 'Ehr.Render.D2_workspace_required' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/UiTests.lean:599:0: 'Ehr.Render.uiNav_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [151/371] Replayed Ehr.Render.PrefillProofs
+info: Ehr/Render/PrefillProofs.lean:53:0: 'Ehr.Render.T11_pending_prefill' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [152/371] Replayed Ehr.Render.PresentationTests
+info: Ehr/Render/PresentationTests.lean:90:0: 'Ehr.Render.PresentationTests.presentation_presence_example' depends on axioms: [propext, Quot.sound]
+ℹ [153/371] Replayed Ehr.Render.PresentationProofs
+info: Ehr/Render/PresentationProofs.lean:148:0: 'Ehr.Render.Fhir.T11_schedule' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/PresentationProofs.lean:149:0: 'Ehr.Render.Fhir.T11_board' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/PresentationProofs.lean:150:0: 'Ehr.Render.Fhir.T11_administration' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/PresentationProofs.lean:151:0: 'Ehr.Render.Fhir.T11_observation' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/PresentationProofs.lean:152:0: 'Ehr.Render.Fhir.T11_lab_result' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/PresentationProofs.lean:153:0: 'Ehr.Render.Fhir.T11_lab_component' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [157/371] Replayed Ehr.Render.WorkspaceProofs
+info: Ehr/Render/WorkspaceProofs.lean:21:0: 'Ehr.Workspace.opening_clears_patient_state' depends on axioms: [propext]
+info: Ehr/Render/WorkspaceProofs.lean:22:0: 'Ehr.Workspace.initial_not_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/WorkspaceProofs.lean:39:0: 'Ehr.Workspace.foreign_facts_not_bound' depends on axioms: [propext]
+info: Ehr/Render/WorkspaceProofs.lean:51:0: 'Ehr.Render.unbound_has_no_chart' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Render/WorkspaceProofs.lean:65:0: 'Ehr.Check.accepted_patientSelection' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [164/371] Replayed Ehr.Sim.History
+warning: Ehr/Sim/History.lean:220:37: This simp argument is unused:
+  Prod.fst
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [forgetOutput, Prod.snd, forget_withHistory]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/History.lean:220:47: This simp argument is unused:
+  Prod.snd
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [forgetOutput, Prod.fst, forget_withHistory]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/History.lean:260:23: This simp argument is unused:
+  ite_false
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hh]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/History.lean:296:68: This simp argument is unused:
+  ite_false
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [show (withHistory s h).popup? = s.popup? from rfl, hp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/History.lean:348:21: This simp argument is unused:
+  ite_false
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/History.lean:399:17: This simp argument is unused:
+  hp
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/History.lean:399:21: This simp argument is unused:
+  hm
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hp]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Ehr/Sim/History.lean:420:0: 'Ehr.Sim.step_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [165/371] Replayed Ehr.Sim.Certificate
+warning: Ehr/Sim/Certificate.lean:53:67: This simp argument is unused:
+  Bool.not_eq_true
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [Bool.or_eq_true, decide_eq_true_eq, Bool.and_eq_true] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Ehr/Sim/Certificate.lean:241:0: 'Ehr.Sim.Certificate.exact_of_accept' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Sim/Certificate.lean:242:0: 'Ehr.Sim.Certificate.search_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [166/371] Replayed Ehr.Sim.MinClicks
+info: Ehr/Sim/MinClicks.lean:389:0: 'Ehr.Sim.T9_certifiedSearch' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Sim/MinClicks.lean:390:0: 'Ehr.Sim.T9_minimum_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Sim/MinClicks.lean:391:0: 'Ehr.Sim.T9_minimum' depends on axioms: [propext, Classical.choice, Quot.sound]
+⚠ [170/371] Replayed Ehr.Sim.TaskMinimum
+warning: Ehr/Sim/TaskMinimum.lean:82:19: This simp argument is unused:
+  ite_false
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hd] at he
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/TaskMinimum.lean:209:23: This simp argument is unused:
+  Option.map
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hg, Option.or, Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/TaskMinimum.lean:209:35: This simp argument is unused:
+  Option.or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hg, Option.map, Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/TaskMinimum.lean:213:23: This simp argument is unused:
+  Option.map
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hg, Option.or] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/TaskMinimum.lean:213:35: This simp argument is unused:
+  Option.or
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hg, Option.map] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+warning: Ehr/Sim/TaskMinimum.lean:217:25: This simp argument is unused:
+  Option.map
+
+Hint: Omit it from the simp argument list.
+  [apply] simp only [hn, Option.some.injEq] at h
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+info: Ehr/Sim/TaskMinimum.lean:227:0: 'Ehr.Sim.T9_taskSearch' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Sim/TaskMinimum.lean:228:0: 'Ehr.Sim.T9_jointMinimum' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [178/371] Replayed Ehr.Check.SimAudit
+info: Ehr/Check/SimAudit.lean:7:0: 'Ehr.Sim.withHistory_twice' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:8:0: 'Ehr.Sim.withHistory_self' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:9:0: 'Ehr.Sim.forget_withHistory' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:10:0: 'Ehr.Sim.layout_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:11:0: 'Ehr.Sim.shownComp_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:12:0: 'Ehr.Sim.infoShown_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:13:0: 'Ehr.Sim.guardBase_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:14:0: 'Ehr.Sim.guardReason_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:15:0: 'Ehr.Sim.resolveSlot_history' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:16:0: 'Ehr.Sim.hasEntry_history' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:17:0: 'Ehr.Sim.prefillRecord_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:18:0: 'Ehr.Sim.orderLines_history' depends on axioms: [propext]
+info: Ehr/Check/SimAudit.lean:19:0: 'Ehr.Sim.withHistory_captured' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:20:0: 'Ehr.Sim.withHistory_screen' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:21:0: 'Ehr.Sim.withHistory_popup' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:22:0: 'Ehr.Sim.withHistory_slot' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:23:0: 'Ehr.Sim.withHistory_commits' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:24:0: 'Ehr.Sim.popupCandidates_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:25:0: 'Ehr.Sim.alertsAcked_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:26:0: 'Ehr.Sim.prefillField_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:27:0: 'Ehr.Sim.prefillFold_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:28:0: 'Ehr.Sim.prefillScreen_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:29:0: 'Ehr.Sim.compsOf_mem' depends on axioms: [propext]
+info: Ehr/Check/SimAudit.lean:30:0: 'Ehr.Sim.shown_not_back' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:31:0: 'Ehr.Sim.goTo_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:32:0: 'Ehr.Sim.clickCore_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:33:0: 'Ehr.Sim.enterCore_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:34:0: 'Ehr.Sim.confirmCore_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:35:0: 'Ehr.Sim.selectTab_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:36:0: 'Ehr.Sim.stepCore_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:37:0: 'Ehr.Sim.eq_withHistory' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:38:0: 'Ehr.Sim.lift_history' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:39:0: 'Ehr.Sim.macroValue_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:40:0: 'Ehr.Sim.macroStep_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:41:0: 'Ehr.Sim.runMacro_congr' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:42:0: 'Ehr.Sim.clickedMacro_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:43:0: 'Ehr.Sim.safeEvent_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:44:0: 'Ehr.Sim.step_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:45:0: 'Ehr.Sim.scroll_state' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:46:0: 'Ehr.Sim.search_state' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:47:0: 'Ehr.Sim.Certificate.lookup_mem' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:48:0: 'Ehr.Sim.Certificate.closed_at' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:49:0: 'Ehr.Sim.Certificate.below_nonGoal' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:50:0: 'Ehr.Sim.Certificate.lower_bound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:51:0: 'Ehr.Sim.Certificate.replay_run' depends on axioms: [propext]
+info: Ehr/Check/SimAudit.lean:52:0: 'Ehr.Sim.Certificate.exact_of_accept' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:53:0: 'Ehr.Sim.T9_certifiedSearch' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:54:0: 'Ehr.Sim.fullMoves_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:55:0: 'Ehr.Sim.searchMoves_subset' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:56:0: 'Ehr.Sim.searchMoves_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:57:0: 'Ehr.Sim.searchMoves_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:58:0: 'Ehr.Sim.done_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:59:0: 'Ehr.Sim.weight_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:60:0: 'Ehr.Sim.next_forget' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:61:0: 'Ehr.Sim.abstract_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:62:0: 'Ehr.Sim.real_run' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:63:0: 'Ehr.Sim.real_run_replays' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:64:0: 'Ehr.Sim.T9_minimum_real' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:65:0: 'Ehr.Sim.T9_minimum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:66:0: 'Ehr.Sim.MinClicksTests.microSatisfiable' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:68:0: 'Ehr.Sim.Certificate.search_sound' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:69:0: 'Ehr.Sim.Certificate.map_run' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:70:0: 'Ehr.Sim.Certificate.lift_run' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:71:0: 'Ehr.Sim.taskNorm_twice' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:72:0: 'Ehr.Sim.taskNorm_index' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:73:0: 'Ehr.Sim.taskNorm_state' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:74:0: 'Ehr.Sim.taskContext_norm' depends on axioms: [propext]
+info: Ehr/Check/SimAudit.lean:75:0: 'Ehr.Sim.taskDone_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:76:0: 'Ehr.Sim.taskMoves_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:77:0: 'Ehr.Sim.taskWeight_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:78:0: 'Ehr.Sim.task_ui_safe' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:79:0: 'Ehr.Sim.task_reset_requires_goal' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:80:0: 'Ehr.Sim.taskStep_norm' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:81:0: 'Ehr.Sim.T9_taskSearch' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:82:0: 'Ehr.Sim.T9_jointMinimum' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:85:0: 'Ehr.Sim.clinicalEval_history' depends on axioms: [propext]
+info: Ehr/Check/SimAudit.lean:86:0: 'Ehr.Sim.clinicalApplies_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:87:0: 'Ehr.Sim.validationHolds_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:88:0: 'Ehr.Sim.elementValueValid_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:89:0: 'Ehr.Sim.validationsOk_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:90:0: 'Ehr.Sim.epochNow_history' does not depend on any axioms
+info: Ehr/Check/SimAudit.lean:91:0: 'Ehr.Sim.eventTime_history' depends on axioms: [propext]
+info: Ehr/Check/SimAudit.lean:92:0: 'Ehr.Sim.temporalStatus_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:93:0: 'Ehr.Sim.expiryStatus_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:94:0: 'Ehr.Sim.alertKeys_history' depends on axioms: [propext]
+info: Ehr/Check/SimAudit.lean:95:0: 'Ehr.Sim.alertHolds_history' depends on axioms: [propext, Quot.sound]
+info: Ehr/Check/SimAudit.lean:96:0: 'Ehr.Sim.whenHolds_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:97:0: 'Ehr.Sim.lineMatches_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:98:0: 'Ehr.Sim.entryMet_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:99:0: 'Ehr.Sim.entryReason_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:100:0: 'Ehr.Sim.payloadFieldMet_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:101:0: 'Ehr.Sim.payloadComplete_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:102:0: 'Ehr.Sim.displaysOk_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:103:0: 'Ehr.Sim.extraGuard_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:104:0: 'Ehr.Sim.obligationViews_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/SimAudit.lean:106:0: 'Ehr.Sim.valueGoalMet_history' depends on axioms: [propext, Classical.choice, Quot.sound]
+ℹ [179/371] Replayed Ehr.Check.ProfileGoalsTests
+info: Ehr/Check/ProfileGoalsTests.lean:19:0: 'Ehr.Check.Tests.core_denial_task_commits' depends on axioms: [propext]
+ℹ [181/371] Replayed Ehr.Check.EncounterSound
+info: Ehr/Check/EncounterSound.lean:28:0: 'Ehr.Check.commit_encounter_allowed' depends on axioms: [propext, Classical.choice, Quot.sound]
+info: Ehr/Check/EncounterSound.lean:29:0: 'Ehr.Check.entry_relevant_when_allowed' depends on axioms: [propext, Classical.choice, Quot.sound]
+Building and exporting
+Running Lean default kernel on solution
+Lean default kernel accepts the solution
+Uses axioms: propext, Quot.sound, Classical.choice

@@ -1,0 +1,2054 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Mann, Lorena"
+    ],
+    [
+      "DOB",
+      "Oct 14, 1987"
+    ],
+    [
+      "MRN",
+      "14486708"
+    ],
+    [
+      "Age / sex",
+      "39 / F"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Lena Wilson, Internal Medicine"
+    ],
+    [
+      "Coverage",
+      "VGI Community Health Plan"
+    ],
+    [
+      "Encounter",
+      "Emergency"
+    ],
+    [
+      "Attending",
+      "Dr. Marcus Okafor, MD"
+    ],
+    [
+      "Location",
+      "ED 01"
+    ],
+    [
+      "Encounter type",
+      "Emergency Visit – Emergency Medicine"
+    ],
+    [
+      "Department",
+      "Emergency Medicine"
+    ],
+    [
+      "Allergies",
+      "Bee venom — Eruption of skin (disorder) (moderate); Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Penicillin V — Rash (moderate); Cow's milk — Wheezing (finding) (moderate); Egg — Wheal (finding) (moderate)"
+    ],
+    [
+      "Code status",
+      "Full Code"
+    ],
+    [
+      "Weight",
+      "74.4 kg (from 164.0 lb) · Nov 2, 2026 07:15"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "entryHints": [
+    [
+      "w3Triage.weight",
+      "Recorded value: 164.0 lb. Enter the weight in kg."
+    ]
+  ],
+  "fieldSources": [
+    [
+      "w3Triage.weight",
+      "Source: Chart weight recorded today · chart as of 2026-11-02"
+    ]
+  ],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|edTrackBoard",
+          "Track Board"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (2)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Track Board"
+        ]
+      ]
+    ],
+    [
+      "ED Navigator",
+      [
+        [
+          "w3Triage.nav.w3TrackBoard",
+          "ED Track Board"
+        ],
+        [
+          "w3Triage.nav.w3Provider",
+          "ED Provider Note"
+        ],
+        [
+          "w3Triage.nav.w3Orders",
+          "Orders"
+        ],
+        [
+          "w3Triage.nav.w3OrderSets",
+          "Order sets"
+        ],
+        [
+          "w3Triage.nav.w3Disposition",
+          "Disposition"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w3Triage.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w3Triage.chartWorkspace.chartReview",
+          "Chart Review"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w3Triage",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Mann, Lorena"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 39 / F"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 14486708"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Oct 14, 1987"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Full Code"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · No isolation"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Bee venom — Eruption of skin (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Mold — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dust mites — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Grass pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Tree pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Penicillin V — Rash (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Cow's milk — Wheezing (finding) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Egg — Wheal (finding) (moderate)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Dr. Lena Wilson, Internal Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Dr. Marcus Okafor, MD"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Dr. Marcus Okafor, MD"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Registered nurse · Ethan Park, RN"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Emergency Visit – Emergency Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Emergency Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · ED 01"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Nov 2, 2026 07:15"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 74.4 kg · 2026-11-02T07:15:00-08:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body weight 164 lb (today)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Height 156.6 cm (Feb 11, 2026 05:12)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Feb 11, 2026 05:12)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 30.3 kg/m2 (Feb 11, 2026 05:12)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 134/72 mm[Hg] (Feb 11, 2026 05:12)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 83 /min (Feb 11, 2026 05:12)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 14 /min (Feb 11, 2026 05:12)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 3"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body mass index 30+ - obesity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Anemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Asthma (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Prediabetes (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Past pregnancy history of miscarriage (situation) (active)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Oct 15, 2026 06:12 · History and physical note · Dr. Leontine Schmeler · Unknown · \n2026-10-15\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 39 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart Review) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.storyboard.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.storyboard",
+        "title": "Patient Storyboard"
+      }
+    }
+  ],
+  "sourceLabels": [
+    [
+      "record:weightToday",
+      "From chart — Weight (kg)"
+    ]
+  ],
+  "title": "Triage summary",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w3Triage.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w3Triage.chiefComplaint",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Chief complaint",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.triageAcuity",
+              "humanOnly": false,
+              "kind": "code:1|2|3|4|5",
+              "label": "ESI acuity (1–5)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.arrivalMode",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Arrival mode",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w3Triage.arrival",
+        "title": "Arrival and presenting complaint"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w3Triage.weight",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Weight (kg)",
+              "pendingConfirm": true,
+              "provenance": "record:weightToday",
+              "required": true,
+              "unit": "kg",
+              "value": null
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.weight",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.bpSystolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP systolic (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.bpDiastolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP diastolic (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.heartRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Heart rate (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.respRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Respiratory rate (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.temperature",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Temperature (°C)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.spo2",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "SpO₂ (%)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w3Triage.painScore",
+                    "humanOnly": true,
+                    "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
+                    "label": "Pain (0–10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "0",
+                  "label": "0"
+                },
+                {
+                  "code": "1",
+                  "label": "1"
+                },
+                {
+                  "code": "2",
+                  "label": "2"
+                },
+                {
+                  "code": "3",
+                  "label": "3"
+                },
+                {
+                  "code": "4",
+                  "label": "4"
+                },
+                {
+                  "code": "5",
+                  "label": "5"
+                },
+                {
+                  "code": "6",
+                  "label": "6"
+                },
+                {
+                  "code": "7",
+                  "label": "7"
+                },
+                {
+                  "code": "8",
+                  "label": "8"
+                },
+                {
+                  "code": "9",
+                  "label": "9"
+                },
+                {
+                  "code": "10",
+                  "label": "10"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.vitalsGroup",
+        "title": "Triage vital signs"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w3Triage.isolationScreen",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Isolation screening",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w3Triage.screening",
+        "title": "Infection prevention"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w3Triage.allergies",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Substance",
+                    "Bee venom"
+                  ],
+                  [
+                    "Reaction",
+                    "Eruption of skin (disorder)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Mold"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Dust mites"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Animal dander"
+                  ],
+                  [
+                    "Reaction",
+                    "Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Grass pollen"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Tree pollen"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Penicillin V"
+                  ],
+                  [
+                    "Reaction",
+                    "Rash"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Cow's milk"
+                  ],
+                  [
+                    "Reaction",
+                    "Wheezing (finding)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Egg"
+                  ],
+                  [
+                    "Reaction",
+                    "Wheal (finding)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Oct 24, 1988 20:12"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.review.allergyList",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Mark allergies reviewed",
+              "role": "secondary"
+            }
+          }
+        ],
+        "id": "w3Triage.allergyGroup",
+        "title": "Allergy review"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w3Triage.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Nov 2, 2026 07:15"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Cough and shortness of breath"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Marcus Okafor, MD"
+                  ],
+                  [
+                    "Location",
+                    "ED 01"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 15, 2026 06:12"
+                  ],
+                  [
+                    "End",
+                    "Oct 15, 2026 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Contraception care (regime/therapy)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Aug 18, 2026 15:12"
+                  ],
+                  [
+                    "End",
+                    "Aug 18, 2026 15:27"
+                  ],
+                  [
+                    "Reason",
+                    "Asthma (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 25, 2026 05:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 25, 2026 05:27"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 19, 2026 14:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 19, 2026 14:27"
+                  ],
+                  [
+                    "Reason",
+                    "Asthma (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Feb 18, 2026 05:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 18, 2026 06:12"
+                  ],
+                  [
+                    "Reason",
+                    "Asthma (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Juana Zambrano"
+                  ],
+                  [
+                    "Location",
+                    "Hospice Services Of Massachusetts"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 11, 2026 05:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 11, 2026 05:49"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Georgeanna Schulist"
+                  ],
+                  [
+                    "Location",
+                    "Savard & Moskos Eye Health Care, LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 20, 2025 06:12"
+                  ],
+                  [
+                    "End",
+                    "Oct 20, 2025 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Contraception care (regime/therapy)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 19, 2025 05:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 19, 2025 05:45"
+                  ],
+                  [
+                    "Reason",
+                    "Patient referral for dental care (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 5, 2025 05:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 5, 2025 05:59"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Georgeanna Schulist"
+                  ],
+                  [
+                    "Location",
+                    "Savard & Moskos Eye Health Care, LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 25, 2024 06:12"
+                  ],
+                  [
+                    "End",
+                    "Oct 25, 2024 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Contraception care (regime/therapy)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 31, 2024 05:12"
+                  ],
+                  [
+                    "End",
+                    "Jan 31, 2024 06:08"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Georgeanna Schulist"
+                  ],
+                  [
+                    "Location",
+                    "Savard & Moskos Eye Health Care, LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 4, 2023 06:12"
+                  ],
+                  [
+                    "End",
+                    "Oct 4, 2023 06:27"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Sep 9, 2023 06:36"
+                  ],
+                  [
+                    "End",
+                    "Sep 9, 2023 07:36"
+                  ],
+                  [
+                    "Reason",
+                    "Injury of neck (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Juana Zambrano"
+                  ],
+                  [
+                    "Location",
+                    "Hospice Services Of Massachusetts"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Sep 9, 2023 06:36"
+                  ],
+                  [
+                    "End",
+                    "Sep 30, 2023 06:51"
+                  ],
+                  [
+                    "Reason",
+                    "Patient transfer to skilled nursing facility (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Dusty Lynch"
+                  ],
+                  [
+                    "Location",
+                    "Life Care Center Of Raynham"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Aug 2, 2023 06:12"
+                  ],
+                  [
+                    "End",
+                    "Aug 2, 2023 07:12"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Juana Zambrano"
+                  ],
+                  [
+                    "Location",
+                    "Hospice Services Of Massachusetts"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 5, 2023 06:12"
+                  ],
+                  [
+                    "End",
+                    "Jul 5, 2023 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 7, 2023 06:12"
+                  ],
+                  [
+                    "End",
+                    "Jun 7, 2023 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "May 10, 2023 06:12"
+                  ],
+                  [
+                    "End",
+                    "May 10, 2023 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 12, 2023 06:12"
+                  ],
+                  [
+                    "End",
+                    "Apr 12, 2023 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 15, 2023 06:12"
+                  ],
+                  [
+                    "End",
+                    "Mar 15, 2023 06:27"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 25, 2023 17:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 25, 2023 17:27"
+                  ],
+                  [
+                    "Reason",
+                    "Asthma (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 15, 2023 05:12"
+                  ],
+                  [
+                    "End",
+                    "Feb 15, 2023 05:27"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 25, 2023 05:12"
+                  ],
+                  [
+                    "End",
+                    "Jan 25, 2023 05:54"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Georgeanna Schulist"
+                  ],
+                  [
+                    "Location",
+                    "Savard & Moskos Eye Health Care, LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Prenatal Visit – Obstetrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 18, 2023 05:12"
+                  ],
+                  [
+                    "End",
+                    "Jan 18, 2023 05:27"
+                  ],
+                  [
+                    "Reason",
+                    "Normal pregnancy (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Leontine Schmeler"
+                  ],
+                  [
+                    "Location",
+                    "Brockton Hospital, Inc."
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 19, 2022 05:12"
+                  ],
+                  [
+                    "End",
+                    "Jan 19, 2022 05:59"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Georgeanna Schulist"
+                  ],
+                  [
+                    "Location",
+                    "Savard & Moskos Eye Health Care, LLC"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Meds",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "ED Provider Note",
+        "role": "nav"
+      }
+    },
+    {
+      "info": {
+        "comp": "w3Triage.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Emergency Visit – Emergency Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Emergency Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "in-progress"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.chartRecentResults",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.chartRecentResults",
+                    "title": "Recent Results"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.chartCareGaps",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.chartCareGaps",
+                    "title": "Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.storyLastNote",
+                                "display": "table",
+                                "infoId": "storyLastNote",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Oct 15, 2026 06:12"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Dr. Leontine Schmeler"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-10-15\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 39 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart Review)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.storyLastNote",
+                    "title": "Last Note"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.contextPanels",
+        "title": "Clinical Context"
+      }
+    }
+  ]
+}

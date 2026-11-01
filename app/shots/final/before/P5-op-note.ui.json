@@ -1,0 +1,1206 @@
+{
+  "activeNav": "w6OpNote.nav.w6OpNote",
+  "banner": [
+    [
+      "Patient",
+      "Bennett, Rowan"
+    ],
+    [
+      "DOB",
+      "Oct 31, 1999"
+    ],
+    [
+      "MRN",
+      "SH00002691"
+    ],
+    [
+      "Age / sex",
+      "27 / M"
+    ],
+    [
+      "Language",
+      ""
+    ],
+    [
+      "PCP",
+      "Dr. Lena Wilson, Internal Medicine"
+    ],
+    [
+      "Coverage",
+      "Employer-sponsored health insurance (Aetna)"
+    ],
+    [
+      "Last encounter",
+      "SS"
+    ],
+    [
+      "Last provider",
+      "Dr. Taylor Morgan"
+    ],
+    [
+      "Last location",
+      "Operating Room 1"
+    ],
+    [
+      "Encounter",
+      "Surgical Visit – General Surgery"
+    ],
+    [
+      "Department",
+      "General Surgery"
+    ],
+    [
+      "Allergies",
+      "Penicillin (rash) — Rash (moderate); Dust mites — Sneezing and itchy eyes (mild); Ragweed pollen — Sneezing and itchy eyes (mild)"
+    ],
+    [
+      "Code status",
+      "Full Code"
+    ],
+    [
+      "Weight",
+      "Not recorded"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "fieldChoices": [
+    [
+      "w6OpNote.opPreopDiagnosis",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "K35.80",
+            "Acute appendicitis, unspecified"
+          ],
+          [
+            "K80.00",
+            "Gallbladder stones with acute cholecystitis, no obstruction"
+          ],
+          [
+            "K80.20",
+            "Gallbladder stones, no cholecystitis or obstruction"
+          ],
+          [
+            "K81.0",
+            "Acute cholecystitis"
+          ],
+          [
+            "K40.90",
+            "Unilateral inguinal hernia, no obstruction or gangrene; not specified as recurrent"
+          ],
+          [
+            "K42.9",
+            "Umbilical hernia, no obstruction or gangrene"
+          ],
+          [
+            "R10.11",
+            "Pain, right upper abdomen"
+          ],
+          [
+            "R10.13",
+            "Epigastric pain"
+          ],
+          [
+            "R10.31",
+            "Pain, right lower abdomen"
+          ],
+          [
+            "R10.9",
+            "Abdominal pain, unspecified"
+          ],
+          [
+            "Z48.815",
+            "Surgical aftercare, digestive system"
+          ],
+          [
+            "Z48.89",
+            "Surgical aftercare, other specified"
+          ],
+          [
+            "Z09",
+            "Follow-up after completed treatment, nonmalignant condition"
+          ],
+          [
+            "I10",
+            "Primary hypertension"
+          ],
+          [
+            "E11.9",
+            "Type 2 diabetes, without complications"
+          ]
+        ],
+        "showCode": true
+      }
+    ],
+    [
+      "w6OpNote.opPostopDiagnosis",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "K35.80",
+            "Acute appendicitis, unspecified"
+          ],
+          [
+            "K80.00",
+            "Gallbladder stones with acute cholecystitis, no obstruction"
+          ],
+          [
+            "K80.20",
+            "Gallbladder stones, no cholecystitis or obstruction"
+          ],
+          [
+            "K81.0",
+            "Acute cholecystitis"
+          ],
+          [
+            "K40.90",
+            "Unilateral inguinal hernia, no obstruction or gangrene; not specified as recurrent"
+          ],
+          [
+            "K42.9",
+            "Umbilical hernia, no obstruction or gangrene"
+          ],
+          [
+            "R10.11",
+            "Pain, right upper abdomen"
+          ],
+          [
+            "R10.13",
+            "Epigastric pain"
+          ],
+          [
+            "R10.31",
+            "Pain, right lower abdomen"
+          ],
+          [
+            "R10.9",
+            "Abdominal pain, unspecified"
+          ],
+          [
+            "Z48.815",
+            "Surgical aftercare, digestive system"
+          ],
+          [
+            "Z48.89",
+            "Surgical aftercare, other specified"
+          ],
+          [
+            "Z09",
+            "Follow-up after completed treatment, nonmalignant condition"
+          ],
+          [
+            "I10",
+            "Primary hypertension"
+          ],
+          [
+            "E11.9",
+            "Type 2 diabetes, without complications"
+          ]
+        ],
+        "showCode": true
+      }
+    ],
+    [
+      "w6OpNote.opProcedure",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "44970",
+            "Laparoscopic appendectomy"
+          ],
+          [
+            "47562",
+            "Laparoscopic cholecystectomy"
+          ],
+          [
+            "49650",
+            "Laparoscopic inguinal hernia repair"
+          ]
+        ],
+        "showCode": true
+      }
+    ],
+    [
+      "w6OpNote.opAnesthesia",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "general",
+            "General anesthesia"
+          ],
+          [
+            "regional",
+            "Regional anesthesia"
+          ],
+          [
+            "spinal",
+            "Spinal anesthesia"
+          ],
+          [
+            "epidural",
+            "Epidural anesthesia"
+          ],
+          [
+            "local",
+            "Local anesthesia"
+          ],
+          [
+            "mac",
+            "Monitored anesthesia care"
+          ],
+          [
+            "other",
+            "Other anesthesia"
+          ]
+        ],
+        "showCode": false
+      }
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|orSchedule",
+          "OR Schedule"
+        ],
+        [
+          "workspace.activity|consultList",
+          "Consults"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (2)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to OR Schedule"
+        ]
+      ]
+    ],
+    [
+      "Surgical navigator",
+      [
+        [
+          "w6OpNote.nav.w6Schedule",
+          "Case list"
+        ],
+        [
+          "w6OpNote.nav.w6Consults",
+          "Consult list"
+        ],
+        [
+          "w6OpNote.nav.w6Consult",
+          "Consult note"
+        ],
+        [
+          "w6OpNote.nav.w6ConsultClose",
+          "Sign Consult"
+        ],
+        [
+          "w6OpNote.nav.w6PreOp",
+          "Preprocedure"
+        ],
+        [
+          "w6OpNote.nav.w6Orders",
+          "Orders"
+        ],
+        [
+          "w6OpNote.nav.w6Sign",
+          "Sign Orders"
+        ],
+        [
+          "w6OpNote.nav.w6OpNote",
+          "Brief Op Note"
+        ],
+        [
+          "w6OpNote.nav.w6PostOp",
+          "Postprocedure Orders"
+        ],
+        [
+          "w6OpNote.nav.w6Rounding",
+          "Rounding"
+        ],
+        [
+          "w6OpNote.nav.w6Discharge",
+          "Discharge"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w6OpNote",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w6OpNote.caseSummary.procedure",
+              "display": "list",
+              "infoId": "scheduleTasks",
+              "label": "Case request",
+              "rows": [
+                [
+                  [
+                    "Room",
+                    "Operating Room 1"
+                  ],
+                  [
+                    "Start",
+                    "Nov 2, 2026 07:30"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic cholecystectomy"
+                  ],
+                  [
+                    "Indication",
+                    "Unknown"
+                  ],
+                  [
+                    "Patient",
+                    "Bennett, Rowan"
+                  ],
+                  [
+                    "Surgeon",
+                    "Dr. Taylor Morgan"
+                  ],
+                  [
+                    "Status",
+                    "completed"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w6OpNote.caseSummary",
+        "title": "Surgical case"
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "importedHistory",
+        "label": "Home medications (reported)",
+        "rows": [
+          [
+            [
+              "Kind",
+              "Home medications (reported)"
+            ],
+            [
+              "Item",
+              "Albuterol sulfate inhaler"
+            ],
+            [
+              "Detail",
+              "Reported home medication; 90 mcg, 2 puffs every 4-6 hours as needed for wheezing; date: Unknown"
+            ],
+            [
+              "Status",
+              "active"
+            ],
+            [
+              "Source",
+              "MedicationStatement (reported history); Not recorded"
+            ]
+          ],
+          [
+            [
+              "Kind",
+              "Home medications (reported)"
+            ],
+            [
+              "Item",
+              "Fluticasone propionate nasal spray"
+            ],
+            [
+              "Detail",
+              "Reported home medication; 50 mcg per nostril once daily; date: Unknown"
+            ],
+            [
+              "Status",
+              "active"
+            ],
+            [
+              "Source",
+              "MedicationStatement (reported history); Not recorded"
+            ]
+          ],
+          [
+            [
+              "Kind",
+              "Home medications (reported)"
+            ],
+            [
+              "Item",
+              "Sumatriptan"
+            ],
+            [
+              "Detail",
+              "Reported home medication; 50 mg oral as needed for migraine (maximum 2 tablets per day); date: Unknown"
+            ],
+            [
+              "Status",
+              "active"
+            ],
+            [
+              "Source",
+              "MedicationStatement (reported history); Not recorded"
+            ]
+          ],
+          [
+            [
+              "Kind",
+              "Home medications (reported)"
+            ],
+            [
+              "Item",
+              "Cetirizine"
+            ],
+            [
+              "Detail",
+              "Reported home medication; 10 mg oral once daily as needed for allergies; date: Unknown"
+            ],
+            [
+              "Status",
+              "active"
+            ],
+            [
+              "Source",
+              "MedicationStatement (reported history); Not recorded"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "allergyList",
+        "label": "Allergies",
+        "rows": [
+          [
+            [
+              "Record",
+              "Penicillin (rash) — Rash (moderate)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Dust mites — Sneezing and itchy eyes (mild)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Ragweed pollen — Sneezing and itchy eyes (mild)"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "currentMeds",
+        "label": "Active medications",
+        "rows": []
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "problemList",
+        "label": "Problems",
+        "rows": [
+          [
+            [
+              "Record",
+              "Asthma, mild intermittent (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Allergic rhinitis, seasonal (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Migraine without aura (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Carbon monoxide poisoning"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "vitals",
+        "label": "Recent vitals",
+        "rows": []
+      }
+    }
+  ],
+  "title": "Brief Op Note",
+  "viewer": "General surgeon",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w6OpNote.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w6OpNote.chart.includeResolved",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Expand section",
+              "role": "toggle"
+            }
+          }
+        ],
+        "id": "w6OpNote.chart.includeResolved",
+        "title": "Include resolved problems"
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "w6OpNote.phases",
+              "display": "table",
+              "infoId": "surgicalChecklist",
+              "label": "Before leaving the OR",
+              "rows": []
+            }
+          }
+        ],
+        "kind": "table"
+      }
+    },
+    {
+      "info": {
+        "comp": "w6OpNote.intraop",
+        "display": "list",
+        "infoId": "intraopRecord",
+        "label": "Intra-op record",
+        "rows": [
+          [
+            [
+              "Procedure",
+              "laparoscopic cholecystectomy"
+            ],
+            [
+              "Status",
+              "completed"
+            ],
+            [
+              "Start",
+              "Nov 2, 2026 07:30"
+            ],
+            [
+              "End",
+              "Nov 2, 2026 08:45"
+            ],
+            [
+              "Location",
+              "Operating Room 1"
+            ],
+            [
+              "Team",
+              "Dr. Taylor Morgan"
+            ],
+            [
+              "Recorded findings",
+              ""
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.template",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Brief operative note",
+        "role": "macro"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w6OpNote.opPreopDiagnosis",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Pre-op diagnosis (ICD-10-CM)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "I10",
+                  "label": "I10 — Essential (primary) hypertension"
+                },
+                {
+                  "code": "E11.9",
+                  "label": "E11.9 — Type 2 diabetes mellitus without complications"
+                },
+                {
+                  "code": "E78.5",
+                  "label": "E78.5 — Hyperlipidemia, unspecified"
+                },
+                {
+                  "code": "J06.9",
+                  "label": "J06.9 — Acute upper respiratory infection, unspecified"
+                },
+                {
+                  "code": "H66.90",
+                  "label": "H66.90 — Otitis media, unspecified, unspecified ear"
+                },
+                {
+                  "code": "J02.9",
+                  "label": "J02.9 — Acute pharyngitis, unspecified"
+                },
+                {
+                  "code": "Z00.00",
+                  "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings"
+                },
+                {
+                  "code": "Z00.129",
+                  "label": "Z00.129 — Encounter for routine child health examination without abnormal findings"
+                },
+                {
+                  "code": "R05.9",
+                  "label": "R05.9 — Cough, unspecified"
+                },
+                {
+                  "code": "R50.9",
+                  "label": "R50.9 — Fever, unspecified"
+                },
+                {
+                  "code": "R10.9",
+                  "label": "R10.9 — Unspecified abdominal pain"
+                },
+                {
+                  "code": "M54.50",
+                  "label": "M54.50 — Low back pain, unspecified"
+                },
+                {
+                  "code": "F41.9",
+                  "label": "F41.9 — Anxiety disorder, unspecified"
+                },
+                {
+                  "code": "F32.A",
+                  "label": "F32.A — Depression, unspecified"
+                },
+                {
+                  "code": "N39.0",
+                  "label": "N39.0 — Urinary tract infection, site not specified"
+                },
+                {
+                  "code": "R51.9",
+                  "label": "R51.9 — Headache, unspecified"
+                },
+                {
+                  "code": "J45.909",
+                  "label": "J45.909 — Unspecified asthma, uncomplicated"
+                },
+                {
+                  "code": "K21.9",
+                  "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w6OpNote.opPostopDiagnosis",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Post-op diagnosis (ICD-10-CM)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "I10",
+                  "label": "I10 — Essential (primary) hypertension"
+                },
+                {
+                  "code": "E11.9",
+                  "label": "E11.9 — Type 2 diabetes mellitus without complications"
+                },
+                {
+                  "code": "E78.5",
+                  "label": "E78.5 — Hyperlipidemia, unspecified"
+                },
+                {
+                  "code": "J06.9",
+                  "label": "J06.9 — Acute upper respiratory infection, unspecified"
+                },
+                {
+                  "code": "H66.90",
+                  "label": "H66.90 — Otitis media, unspecified, unspecified ear"
+                },
+                {
+                  "code": "J02.9",
+                  "label": "J02.9 — Acute pharyngitis, unspecified"
+                },
+                {
+                  "code": "Z00.00",
+                  "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings"
+                },
+                {
+                  "code": "Z00.129",
+                  "label": "Z00.129 — Encounter for routine child health examination without abnormal findings"
+                },
+                {
+                  "code": "R05.9",
+                  "label": "R05.9 — Cough, unspecified"
+                },
+                {
+                  "code": "R50.9",
+                  "label": "R50.9 — Fever, unspecified"
+                },
+                {
+                  "code": "R10.9",
+                  "label": "R10.9 — Unspecified abdominal pain"
+                },
+                {
+                  "code": "M54.50",
+                  "label": "M54.50 — Low back pain, unspecified"
+                },
+                {
+                  "code": "F41.9",
+                  "label": "F41.9 — Anxiety disorder, unspecified"
+                },
+                {
+                  "code": "F32.A",
+                  "label": "F32.A — Depression, unspecified"
+                },
+                {
+                  "code": "N39.0",
+                  "label": "N39.0 — Urinary tract infection, site not specified"
+                },
+                {
+                  "code": "R51.9",
+                  "label": "R51.9 — Headache, unspecified"
+                },
+                {
+                  "code": "J45.909",
+                  "label": "J45.909 — Unspecified asthma, uncomplicated"
+                },
+                {
+                  "code": "K21.9",
+                  "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis"
+                }
+              ]
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opProcedure",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Procedure (CPT)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opSurgeons",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Surgeon / assistants",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.note",
+        "title": "Diagnoses and procedure"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opAnesthesia",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Anesthesia",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opEbl",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Estimated blood loss (mL)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": "mL",
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.anesthesia",
+        "title": "Anesthesia and blood loss"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opFindings",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Findings / operative details",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.findings",
+        "title": "Operative findings"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opSpecimens",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Specimens to pathology",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opDrains",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Drains",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opImplants",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Implants",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.devices",
+        "title": "Specimens, drains and implants"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opComplications",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Complications",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opCondition",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Condition on transfer",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.outcome",
+        "title": "Complications and disposition"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": "entry required: Pre-op diagnosis",
+        "comp": "w6OpNote.commit.signOpNote",
+        "enabled": false,
+        "hotkey": "Ctrl+Enter",
+        "label": "Sign op note",
+        "role": "primary"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "presentation": {
+              "children": [
+                {
+                  "info": {
+                    "comp": "w6OpNote.chart.encounterHistory",
+                    "display": "table",
+                    "infoId": "encounterHistory",
+                    "label": "Encounters",
+                    "rows": [
+                      [
+                        [
+                          "Encounter",
+                          "Surgical Visit – General Surgery"
+                        ],
+                        [
+                          "Class",
+                          "SS"
+                        ],
+                        [
+                          "Start",
+                          "Nov 2, 2026 06:30"
+                        ],
+                        [
+                          "End",
+                          ""
+                        ],
+                        [
+                          "Reason",
+                          "laparoscopic cholecystectomy"
+                        ],
+                        [
+                          "Provider",
+                          "Dr. Taylor Morgan"
+                        ],
+                        [
+                          "Location",
+                          "Operating Room 1"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Emergency Visit – Emergency Medicine"
+                        ],
+                        [
+                          "Class",
+                          "EMER"
+                        ],
+                        [
+                          "Start",
+                          "Apr 6, 2026"
+                        ],
+                        [
+                          "End",
+                          "Apr 6, 2026"
+                        ],
+                        [
+                          "Reason",
+                          "Found unconscious in garage with car engine running"
+                        ],
+                        [
+                          "Provider",
+                          "Dr. Marcus Johnson"
+                        ],
+                        [
+                          "Location",
+                          ""
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Emergency Visit – Emergency Medicine"
+                        ],
+                        [
+                          "Class",
+                          "EMER"
+                        ],
+                        [
+                          "Start",
+                          "Apr 5, 2025"
+                        ],
+                        [
+                          "End",
+                          "Apr 5, 2025"
+                        ],
+                        [
+                          "Reason",
+                          "Found unconscious in his apartment in midwinter; roommate reports dog lethargic since morning"
+                        ],
+                        [
+                          "Provider",
+                          "Dr. Sarah Chen"
+                        ],
+                        [
+                          "Location",
+                          ""
+                        ]
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "kind": "table"
+            }
+          }
+        ],
+        "id": "w6OpNote.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Medications",
+          "Problems",
+          "Allergies",
+          "Imaging",
+          "Surgical history"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Postprocedure orders",
+        "role": "nav"
+      }
+    }
+  ]
+}

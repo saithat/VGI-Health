@@ -1,0 +1,52 @@
+$ vitest run
+
+ RUN  v3.2.7 /home/saithat/Projects/VGI-content2/app
+
+ ✓ tests/tailscale.test.ts (5 tests) 10ms
+ ✓ tests/run-selection.test.ts (4 tests) 34ms
+ ✓ tests/compression.test.ts (2 tests) 166ms
+ ✓ tests/clinical-date.test.ts (3 tests) 75ms
+ ✓ tests/clinical-display.test.ts (20 tests) 9ms
+ ✓ tests/css.test.ts (22 tests) 24ms
+ ✓ tests/fhirContext.test.ts (6 tests) 19ms
+ ✓ tests/worldChart.test.ts (3 tests) 12ms
+ ✓ tests/screen-cache.test.js (1 test) 7ms
+ ✓ tests/clinical-formatters.test.ts (12 tests) 18ms
+ ✓ tests/commitMapper.test.ts (14 tests) 34ms
+ ✓ tests/worklist.test.ts (2 tests) 5ms
+ ✓ tests/data.test.ts (4 tests) 32ms
+ ✓ tests/build-binding.test.ts (3 tests) 411ms
+   ✓ follows immutable rebind history pointers and refuses rejected versions  364ms
+ ✓ tests/rule-conformance.test.tsx (3 tests) 94ms
+ ✓ tests/dense-layout.test.ts (3 tests) 4ms
+ ✓ tests/patientDirectory.test.ts (3 tests) 5ms
+ ✓ tests/lazy-run.test.ts (5 tests) 127ms
+ ✓ tests/try-break.test.ts (2 tests) 6ms
+ ✓ tests/clinical-colors.test.ts (3 tests) 9ms
+ ✓ tests/revision-history.test.ts (5 tests) 433ms
+   ✓ read-only clinician revision comparison > reports the real recorded night-eight alert change rather than claiming no change  367ms
+ ✓ tests/interp.test.ts (11 tests) 193ms
+ ✓ tests/presentation-lint.test.js (8 tests) 785ms
+   ✓ versioned presentation lint sandbox > accepts the declarative component used by the typecheck harness  735ms
+ ✓ tests/live-projection.test.ts (1 test) 11ms
+ ✓ tests/lint.test.js (17 tests) 845ms
+   ✓ enforced TypeScript and network boundaries > rejects const x: any = 1;  781ms
+ ✓ tests/workload.test.ts (6 tests) 101ms
+ ✓ tests/painter.test.tsx (24 tests) 362ms
+ ✓ tests/clinical-presentations.test.tsx (6 tests) 192ms
+ ✓ tests/presentations.test.tsx (2 tests) 200ms
+ ✓ tests/structured-presentations.test.tsx (19 tests) 406ms
+ ✓ tests/presentation-composites.test.tsx (2 tests) 177ms
+ ✓ tests/dashboard.test.tsx (9 tests) 207ms
+ ✓ tests/ui-painter.test.tsx (66 tests) 1131ms
+ ✓ tests/recheck-revision.test.ts (2 tests) 8418ms
+   ✓ real native check-only history > checks a current baseline and an old revision without changing recorded artifacts  6595ms
+   ✓ real native check-only history > refuses arbitrary files, another persona and authored mock revisions  1822ms
+ ✓ tests/app.test.tsx (3 tests) 99288ms
+   ✓ offline live UI catalog > renders a nonempty chart search for every committed patient without runtime exceptions  68400ms
+   ✓ offline live UI catalog > projects every committed bundle and renders every program with real Lean WASM  30885ms
+
+ Test Files  35 passed (35)
+      Tests  301 passed (301)
+   Start at  11:08:22
+   Duration  102.36s (transform 7.16s, setup 0ms, collect 28.57s, tests 113.85s, environment 12.13s, prepare 5.01s)

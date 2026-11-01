@@ -1,0 +1,1452 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Carter, Zulma Tricia"
+    ],
+    [
+      "DOB",
+      "Mar 4, 1943"
+    ],
+    [
+      "MRN",
+      "13761514"
+    ],
+    [
+      "Age / sex",
+      "83 / F"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Amir Hassan, Internal Medicine"
+    ],
+    [
+      "Coverage",
+      "VGI Medicare Advantage"
+    ],
+    [
+      "Last encounter",
+      "AMB"
+    ],
+    [
+      "Last provider",
+      "Dr. Tracy Wilderman"
+    ],
+    [
+      "Last location",
+      "Mass General Brigham Urgent Care LLC"
+    ],
+    [
+      "Encounter",
+      "Office Visit – Internal Medicine"
+    ],
+    [
+      "Department",
+      "Internal Medicine"
+    ],
+    [
+      "Allergies",
+      "No Known Allergies"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "80.9 kg · Oct 22, 2026 01:46"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|scheduleTasks",
+          "Schedule"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (5)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (21)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Schedule"
+        ]
+      ]
+    ],
+    [
+      "Visit navigator",
+      [
+        [
+          "w1Rooming.nav.w1MedRec",
+          "Medications"
+        ],
+        [
+          "w1Rooming.nav.w1Hpi",
+          "History / ROS"
+        ],
+        [
+          "w1Rooming.nav.w1Exam",
+          "Exam / Assessment & Plan"
+        ],
+        [
+          "w1Rooming.nav.w1Orders",
+          "Orders"
+        ],
+        [
+          "w1Rooming.nav.w1Labs",
+          "Lab Orders"
+        ],
+        [
+          "w1Rooming.nav.w1Close",
+          "Sign Visit"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w1Rooming",
+  "side": [],
+  "title": "Rooming",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w1Rooming.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Rooming.chart.includeResolved",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Expand section",
+              "role": "toggle"
+            }
+          }
+        ],
+        "id": "w1Rooming.chart.includeResolved",
+        "title": "Include resolved problems"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w1Rooming.chiefComplaint",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Chief complaint",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w1Rooming.reason",
+        "title": "Reason for visit"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w1Rooming.weight",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Weight (kg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": "kg",
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.height",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Height (cm)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.bpSystolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Systolic BP (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.bpDiastolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Diastolic BP (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.heartRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Pulse (beats/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.respRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Respirations (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.temperature",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Temperature (°C)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.spo2",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "SpO₂ (%)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Rooming.painScore",
+                    "humanOnly": true,
+                    "kind": "code",
+                    "label": "Pain (0–10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "0",
+                  "label": "0"
+                },
+                {
+                  "code": "1",
+                  "label": "1"
+                },
+                {
+                  "code": "2",
+                  "label": "2"
+                },
+                {
+                  "code": "3",
+                  "label": "3"
+                },
+                {
+                  "code": "4",
+                  "label": "4"
+                },
+                {
+                  "code": "5",
+                  "label": "5"
+                },
+                {
+                  "code": "6",
+                  "label": "6"
+                },
+                {
+                  "code": "7",
+                  "label": "7"
+                },
+                {
+                  "code": "8",
+                  "label": "8"
+                },
+                {
+                  "code": "9",
+                  "label": "9"
+                },
+                {
+                  "code": "10",
+                  "label": "10"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Rooming.vitalsGroup",
+        "title": "Vitals"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w1Rooming.allergies",
+              "display": "table",
+              "infoId": "allergyList",
+              "label": "Allergy review",
+              "rows": [
+                [
+                  [
+                    "Substance",
+                    "No Known Allergies"
+                  ],
+                  [
+                    "Reaction",
+                    ""
+                  ],
+                  [
+                    "Severity",
+                    ""
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Rooming.review.allergyList",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Mark allergies reviewed",
+              "role": "secondary"
+            }
+          }
+        ],
+        "id": "w1Rooming.allergyGroup",
+        "title": "Allergies"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Rooming.tobaccoUse",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Tobacco use",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "never",
+                  "label": "Never"
+                },
+                {
+                  "code": "former",
+                  "label": "Former"
+                },
+                {
+                  "code": "current",
+                  "label": "Current"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Rooming.fallRiskScreen",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Fall in the past year?",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "yes",
+                  "label": "Yes"
+                },
+                {
+                  "code": "no",
+                  "label": "No"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Rooming.travelScreen",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Travel in the past 30 days?",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "yes",
+                  "label": "Yes"
+                },
+                {
+                  "code": "no",
+                  "label": "No"
+                }
+              ]
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.advanceDirectiveAsked",
+              "humanOnly": false,
+              "kind": "flag",
+              "label": "Advance directive discussed",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Rooming.interpreterNeeded",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Interpreter needed?",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "yes",
+                  "label": "Yes"
+                },
+                {
+                  "code": "no",
+                  "label": "No"
+                }
+              ]
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Rooming.pharmacyConfirmedRooming",
+              "humanOnly": false,
+              "kind": "flag",
+              "label": "Preferred pharmacy confirmed",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w1Rooming.intake",
+        "title": "Screenings and pharmacy"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Rooming.depressionScreen",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "PHQ-2 score",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "0",
+                  "label": "0"
+                },
+                {
+                  "code": "1",
+                  "label": "1"
+                },
+                {
+                  "code": "2",
+                  "label": "2"
+                },
+                {
+                  "code": "3",
+                  "label": "3"
+                },
+                {
+                  "code": "4",
+                  "label": "4"
+                },
+                {
+                  "code": "5",
+                  "label": "5"
+                },
+                {
+                  "code": "6",
+                  "label": "6"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Rooming.phq",
+        "title": "Depression screening"
+      }
+    },
+    {
+      "info": {
+        "comp": "w1Rooming.healthMaintenance",
+        "display": "table",
+        "infoId": "careGapList",
+        "label": "Health maintenance",
+        "rows": []
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w1Rooming.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Oct 22, 2026 02:44"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Oct 1, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Oct 1, 2026 02:46"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Sep 17, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Sep 17, 2026 02:20"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Sep 10, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Sep 10, 2026 02:39"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 27, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 27, 2026 02:20"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 9, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 9, 2026 02:16"
+                  ],
+                  [
+                    "Reason",
+                    "Chronic congestive heart failure (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Gabriel Reilly"
+                  ],
+                  [
+                    "Location",
+                    "Fitchburg Outpatient Clinic"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jun 11, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Jun 11, 2026 02:21"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "May 28, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "May 28, 2026 02:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "May 14, 2026 02:21"
+                  ],
+                  [
+                    "End",
+                    "May 14, 2026 03:53"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "May 7, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "May 7, 2026 02:32"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "IMP"
+                  ],
+                  [
+                    "Start",
+                    "Apr 17, 2026 09:10"
+                  ],
+                  [
+                    "End",
+                    "Apr 23, 2026 09:10"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 9, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Apr 9, 2026 02:21"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Mar 26, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Mar 26, 2026 02:28"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Feb 12, 2026 00:46"
+                  ],
+                  [
+                    "End",
+                    "Feb 12, 2026 01:10"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Feb 10, 2026 00:46"
+                  ],
+                  [
+                    "End",
+                    "Feb 10, 2026 01:16"
+                  ],
+                  [
+                    "Reason",
+                    "Chronic congestive heart failure (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Gabriel Reilly"
+                  ],
+                  [
+                    "Location",
+                    "Fitchburg Outpatient Clinic"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jan 29, 2026 00:46"
+                  ],
+                  [
+                    "End",
+                    "Jan 29, 2026 01:29"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Dec 12, 2025 00:46"
+                  ],
+                  [
+                    "End",
+                    "Dec 12, 2025 01:01"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Dec 11, 2025 00:46"
+                  ],
+                  [
+                    "End",
+                    "Dec 11, 2025 01:21"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Nov 27, 2025 00:46"
+                  ],
+                  [
+                    "End",
+                    "Nov 27, 2025 01:19"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Oct 30, 2025 01:46"
+                  ],
+                  [
+                    "End",
+                    "Oct 30, 2025 02:42"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Sep 4, 2025 01:46"
+                  ],
+                  [
+                    "End",
+                    "Sep 4, 2025 02:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 20, 2025 07:40"
+                  ],
+                  [
+                    "End",
+                    "Aug 20, 2025 09:10"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 29, 2024 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 29, 2024 02:34"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 24, 2023 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 24, 2023 02:36"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 18, 2022 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 18, 2022 02:37"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w1Rooming.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Medications",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Rooming.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Review medications",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Rooming.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Rooming.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    }
+  ]
+}

@@ -19,6 +19,11 @@ import {sumMetrics} from './observe.js';
 import {REPO_ROOT,writeJson} from './util.js';
 import {ScriptedLlm} from '../test/scripted.js';
 const mode=process.argv[2]??'canonicals';
+// Optional independent capture shards use the same real geometry and simulation path.
+const selectedPersona=process.env.EHR_GEOMETRY_PERSONA;
+const selectedRelease=process.env.EHR_GEOMETRY_RELEASE;
+if(selectedPersona&&!['P1','P2','P3','P4','P5'].includes(selectedPersona))throw new Error('Invalid geometry persona');
+if(selectedRelease&&!['v1','v2','v3'].includes(selectedRelease))throw new Error('Invalid geometry release');
 const output=process.argv[3]??await mkdtemp(path.join(tmpdir(),'vgi-geometry-'));
 if(path.resolve(output).startsWith(path.join(REPO_ROOT,'runs')+path.sep))throw new Error('Verification data must be outside runs');
 await mkdir(output,{recursive:true});
@@ -31,6 +36,7 @@ try{
  if(mode==='canonicals'){
   const world=await loadWorld(path.join(REPO_ROOT,'runs/world/2')),measured=geometryEhr(ehr,browser.provider,output),rows=[];
   for(const [release,day]of [['v1',2],['v2',4],['v3',8]] as const)for(const persona of ['P1','P2','P3','P4','P5']){
+   if((selectedPersona&&persona!==selectedPersona)||(selectedRelease&&release!==selectedRelease))continue;
    const params=world.personas.get(persona);if(!params)throw new Error('Persona missing');
    const role=await releaseForPersona(await loadRelease(release,ehr),persona),program=personalize(role.canonical,params,world.userId(persona));
    const check=await ehr.check({specVersion:release,program,prev:program,canonical:role.canonical});if(check!=='ok')throw new Error(`Canonical check refused ${persona}/${release}`);

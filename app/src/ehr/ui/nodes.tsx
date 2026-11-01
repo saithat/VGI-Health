@@ -1,5 +1,6 @@
 import { useContext, useId, useState } from "react";
 import { usePresentation } from "./presentations";
+import { isCardColumns } from "./layout";
 import {
   Alert,
   Badge,
@@ -191,11 +192,16 @@ export function SectionNode({ node, onEvent }: Props<"section">) {
   );
 }
 export function ColumnsNode({ node, onEvent }: Props<"columns">) {
+  const cards = isCardColumns(node.children);
   return (
     <SimpleGrid
-      cols={{ base: 1, lg: Math.min(2, Math.max(1, node.children.length)) }}
-      spacing="md"
-      className="clinical-columns"
+      cols={{
+        base: 1,
+        sm: Math.min(2, Math.max(1, node.children.length)),
+        xl: Math.min(3, Math.max(1, node.children.length)),
+      }}
+      spacing="xs"
+      className={`clinical-columns${cards ? " clinical-card-grid" : ""}`}
     >
       <UiChildren nodes={node.children} onEvent={onEvent} />
     </SimpleGrid>
@@ -479,7 +485,7 @@ export function FieldNode({
           {...common}
           value={node.value ?? ""}
           onChange={(e) => send(e.currentTarget.value)}
-          minRows={4}
+          minRows={3}
           autosize
 
           autoComplete="off"
@@ -686,6 +692,7 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
   return (
     <div
       className={`clinical-info info-${node.display}`}
+      data-section-tone={sectionTone(node.label)}
       data-comp-id={node.comp || undefined}
       data-info-id={node.infoId}
     >

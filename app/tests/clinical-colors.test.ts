@@ -64,6 +64,7 @@ describe("meaningful clinical palette", () => {
     expect(severityTone("interruptive")).toBe("red");
   });
   it("uses clinical section categories rather than alternating decoration", () => {
+    expect(sectionTone("Code Status / Precautions")).toBe("orange");
     expect(
       [
         "Allergies",
