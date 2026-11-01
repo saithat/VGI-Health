@@ -17,6 +17,10 @@ Worktree `/home/saithat/Projects/VGI-render`, branch `lane/render`.
   manifest conflict by rebuilding WASM.
 - `1108805`: bounded differential-worker memory and added coverage/hash audits.
 - `1f3ebe0`: merged main's final visible-control acceptance criterion.
+- `badeb5c`: committed the complete verification receipt and exact owner blockers.
+- `f313bab`: merged main checkpoint `1123612` (dashboard trajectories). No Lean,
+  WASM or corpus input changed; app build/lint/152 tests, trajectory tests and the
+  15 P1 browser checks passed again.
 - Final verification is recorded in `lean/Ehr/Render/validation.json`.
 
 No Core/Specs/Canonical/Props/Check/Sim/app implementation was edited. App
@@ -60,6 +64,10 @@ README, as requested. All other-lane source changes arrived through main merges.
   All 174 Synthea bundles match; RN wristband acceptance/rejection is exercised.
 - App build/lint/**152 tests**, agent typecheck/lint/**31 tests**, world
   build/lint/**92 tests**, infra **7 tests**, generated-sample strict tsc: passed.
+- Dashboard trajectory replay also passes 2 node tests and 1 browser smoke test
+  on main checkpoint `1123612` (all 424 saved tasks remain available). Its test
+  screenshot is preserved at `/tmp/render-final-trajectories.png`; the app-owned
+  tracked image was restored after the test.
 - The three populated P1 samples pass **15 browser checks** (3 intentional skips)
   and **3 screenshot checks** (6 PNGs). Rooming/orders/sign images were reviewed,
   including the populated signing table. Screenshots are under `app/shots/`.

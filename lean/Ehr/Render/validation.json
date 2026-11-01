@@ -1,7 +1,7 @@
 {
-  "verifiedAtUtc": "2026-11-01T04:20:01.212650+00:00",
+  "verifiedAtUtc": "2026-11-01T04:30:56.024318+00:00",
   "runtimeChangeCommit": "dadb423",
-  "mainIntegrationCommit": "1f3ebe0",
+  "mainIntegrationCommit": "f313bab",
   "leanRenderBuild": {
     "result": "passed",
     "jobs": 32
@@ -136,5 +136,13 @@
     "lean/Ehr/Render/prepare-shards.py": "24aa2f5e7419bbe9b39f5030fdf2ec77823abdf709ffda221b68512c5de9fe4d",
     "lean/Ehr/Render/audit-shards.py": "e31935bf826bfd93c8f9d36490e42b5fd654d832d769fd53266db74852028045",
     "lean/Ehr/Render/build-native-test.sh": "67c32f7b0c4b8083744d903a38db7eef38194b4fa735773d2b809505d75f780e"
+  },
+  "mainCheckpoint": "1123612",
+  "dashboardTrajectory": {
+    "result": "passed",
+    "unitTests": 2,
+    "browserTests": 1,
+    "savedTasks": 424,
+    "screenshot": "/tmp/render-final-trajectories.png"
   }
 }
