@@ -6,7 +6,13 @@ commit=$(git -C "$repo" rev-parse HEAD)
 test_root=$(mktemp -d "${TMPDIR:-/tmp}/vgi-clean-clone.XXXXXX")
 clone="$test_root/repo"
 port=${CLEAN_CLONE_PORT:-5189}
+# Keep this check independent of unwritable/shared package stores. Lean must
+# stay at four workers even if the invoking lane uses a larger default.
+export LEAN_NUM_THREADS=4
+export pnpm_config_store_dir=${pnpm_config_store_dir:-$test_root/pnpm-store}
+export PLAYWRIGHT_BROWSERS_PATH=${PLAYWRIGHT_BROWSERS_PATH:-$test_root/browsers}
 server_pid=
+now_ms() { node -p 'Date.now()'; }
 cleanup() {
   result=$?
   trap - EXIT
@@ -55,9 +61,13 @@ else
 fi
 cd "$clone"
 # No build outputs, dependencies, Emscripten installation or gitignored runs copied.
+install_start=$(now_ms)
 timeout --kill-after=10s "${INSTALL_TIMEOUT:-900}" make install >"$test_root/install.log" 2>&1
+install_ms=$(( $(now_ms) - install_start ))
+echo "make install wall time: ${install_ms} ms (fresh build/dependencies; shared Medplum)." | tee "$test_root/timings.log"
 pnpm --filter app exec playwright install chromium
 echo "Install passed; starting make run without API keys on :$port"
+run_start=$(now_ms)
 setsid timeout --kill-after=10s "${RUN_TIMEOUT:-180}" env ANTHROPIC_API_KEY= OPENAI_API_KEY= make run APP_PORT="$port" >"$test_root/run.log" 2>&1 &
 server_pid=$!
 ready=0
@@ -66,9 +76,11 @@ for ((attempt=0; attempt<120; attempt++)); do
     echo 'make run exited before the app became ready.' >&2
     exit 1
   fi
-  if curl -fsS "http://127.0.0.1:$port/" >/dev/null; then ready=1; break; fi
+  if curl -fsS "http://127.0.0.1:$port/" >/dev/null 2>&1; then ready=1; break; fi
   sleep 1
 done
 [[ $ready == 1 ]] || { echo 'Timed out waiting for the app.' >&2; exit 1; }
-pnpm --filter app exec node scripts/clean-clone-smoke.mjs "http://127.0.0.1:$port"
+run_ms=$(( $(now_ms) - run_start ))
+echo "make run wall time to first HTTP 200: ${run_ms} ms (includes production build)." | tee -a "$test_root/timings.log"
+node scripts/clean-clone-smoke.mjs "http://127.0.0.1:$port"
 echo "Clean-clone test PASSED at $commit: make install, make run, five EHR banners, dashboard, WASM and local-only replay."
