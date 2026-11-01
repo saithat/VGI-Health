@@ -21,7 +21,7 @@ run:
 	$(MAKE) wasm-check
 	pnpm --filter app build
 	node scripts/demo-urls.mjs $(APP_PORT)
-	pnpm --filter app exec vite preview --host 0.0.0.0 --port $(APP_PORT) --strictPort
+	pnpm --filter app exec vite preview --host 127.0.0.1 --port $(APP_PORT) --strictPort
 
 # Generate a real local world, then run agent nights with an online LLM backend.
 run-live:
