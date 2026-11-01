@@ -19,6 +19,8 @@ test("world content screenshots and ARIA", async ({ page }) => {
     await page.evaluate(() => document.fonts.ready);
     await expect(page.getByRole("main")).toBeVisible();
     expect(observedAria(await page.locator(".clinical-shell").ariaSnapshot())).toEqual(expectedAria(screen));
+    if (name === "problem-list.json")
+      await page.locator('[data-info-id="problemList"]').first().scrollIntoViewIfNeeded();
     await page.screenshot({ path: `${folder}/${name.replace(".json", ".png")}`, animations: "disabled" });
   }
 });

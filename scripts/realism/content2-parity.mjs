@@ -22,6 +22,12 @@ for(const file of readdirSync(`${root}/.cache/content2/after`).filter(f=>f.endsW
     assert.equal(confirmed.result,'ok');
     assert.ok(confirmed.state.captured.some(c=>c.element==='weight'&&c.confirmed&&c.value.qty.tenths===157));
     assert.ok(!confirmed.state.captured.some(c=>c.element==='patientIdReentry'));
+    const opener=input.program.screens.find(s=>s.id===input.state.screen).components.find(c=>c.kind.button?.action.goto?.screen==='w5Orders');
+    const orders=native('step',{...input,state:confirmed.state,event:{click:{comp:opener.id}}});
+    assert.equal(orders.result,'ok');
+    const ordersUi=native('render-ui',{...input,state:orders.state});
+    const dosing=ordersUi.workspace.flatMap(descend).find(n=>n.field?.comp==='w5Orders.dosingWeight').field;
+    assert.equal(dosing.value,'15.7');assert.equal(dosing.provenance,'linked:weight');assert.equal(dosing.pendingConfirm,false);
   }
   const ui=native('render-ui',input);
   if(['p1-schedule','p2-track-board','p3-census'].includes(name))assert.ok(ui.workspace.flatMap(descend).some(n=>n.rowAction),'Selected source row retains its ordinary encounter opener');
@@ -35,6 +41,6 @@ for(const file of readdirSync(`${root}/.cache/content2/after`).filter(f=>f.endsW
   }
   cases++;
 }
-const report={cases,nativeWasmFactComparisons:cases,nativeWasmUiComparisons:cases,weightConfirmation:'Recorded kg weight requires human confirmation; identity stays human-only',mismatches:0};
+const report={cases,nativeWasmFactComparisons:cases,nativeWasmUiComparisons:cases,weightConfirmation:'Human-confirmed measured kg weight supplies the declared dosing-weight link; identity stays human-only',rowActionCases:3,resolvedProblemToggle:true,mismatches:0};
 writeFileSync(`${root}/docs/measurements/content2/native-wasm.json`,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report));

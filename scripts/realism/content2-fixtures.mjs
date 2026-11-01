@@ -20,13 +20,20 @@ const cases = [
   ['p3-census', 'P3', 1, 'W4', 'w4Worklist'], ['p5-or-schedule', 'P5', 2, 'W6', 'w6Schedule'],
   ['p5-rounding', 'P5', 1, 'W6', 'w6Rounding'], ['p4-rooming', 'P4', 1, 'W5', 'w5Rooming'],
   ['problem-list', 'P1', 1, 'W1', 'w1Rooming'], ['in-basket', 'P1', 1, 'W2', 'w2Inbasket'],
+  ['p5-chole-op-note', 'P5', 2, 'W6', 'w6OpNote'],
   ['refill', 'P1', 1, 'W7', 'w7Queue'], ['p5-consults', 'P5', 2, 'W6', 'w6Consults'],
 ];
 const descend = n => [n, ...['presentation','rowAction','section','columns','valueSet','chartReferences'].flatMap(k => n[k]?.children?.flatMap(descend) ?? []), ...(n.tabs?.body?.flatMap(descend) ?? [])];
 const summary = [];
 for (const [name, persona, day, workflow, screen] of cases) {
   const schedule = read(`runs/world/2/day-${day}-${persona}.json`);
-  const task = schedule.tasks.find(t => t.workflow === workflow && (name !== 'p5-or-schedule' || t.choices.w6Step === 'preop')) ?? schedule.tasks.find(t => t.workflow === workflow);
+  let task = schedule.tasks.find(t => t.workflow === workflow && (name !== 'p5-or-schedule' || t.choices.w6Step === 'preop')) ?? schedule.tasks.find(t => t.workflow === workflow);
+  if (name === 'p5-chole-op-note') {
+    const graph = read(`runs/world/2/context/day-${String(day).padStart(2,'0')}.json`);
+    const patients = graph.entry.map(e=>e.resource).filter(r=>r.resourceType==='ServiceRequest' && /cholecystectomy/i.test(r.code?.text??'')).map(r=>r.subject?.reference);
+    task = schedule.tasks.find(t=>t.workflow==='W6' && patients.includes(`Patient/${t.patientId}`));
+    assert.ok(task, 'A real cholecystectomy task supplies the operative-note review');
+  }
   const patient = [...index, ...hospital].find(p => p.id === task.patientId);
   assert.ok(patient, `${name}: source chart`);
   const bundle = read(patient.source);
@@ -82,6 +89,7 @@ for (const [name, persona, day, workflow, screen] of cases) {
     if(counts)assert.ok(rows.some(r=>r.info===counts[0]&&r.rows>=counts[1]),`${name}: full List membership; ${JSON.stringify(rows)}`);
     if(name==='p3-census')assert.equal(projection.facts.infoPayloads.find(p=>p.info==='unitCensus').rows.length,12);
     if(name==='p5-rounding')assert.ok(!ui.banner.some(([k,v])=>v==='Preoperative chart review'));
+    if(name==='p5-chole-op-note'){assert.ok(nodes.some(n=>n.info?.rows.some(row=>row.some(([,value])=>/cholecystectomy/i.test(value)))));assert.ok(nodes.filter(n=>n.button).every(n=>!/appendectomy/i.test(n.button.label)));}
     if(name==='in-basket'){assert.ok(projection.facts.infoPayloads.find(p=>p.info==='inBasketFolders').rows.every(r=>Number(new Map(r.fields).get('Count'))>=2));assert.ok(rows.some(r=>r.info==='inBasketResults'&&r.rows>=3));assert.ok(rows.some(r=>r.info==='inBasketFolders'&&r.rows===3));}
   }
   console.log(`${name}: ${rows.map(r=>`${r.info}=${r.rows}`).join(', ')}`);
