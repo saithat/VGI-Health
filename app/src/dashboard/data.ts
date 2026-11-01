@@ -70,6 +70,7 @@ export interface RunData {
   records: DecisionRecord[];
   days: DayResult[];
   baselines?: DayResult[];
+  noAgentDays?:DayResult[];
   programs: Map<string, Program>;
   sources?: Map<string, Program>;
   certs: Map<string, z.infer<typeof certificateSchema>>;
@@ -115,7 +116,7 @@ export async function loadRun(
   const run: RunData = {
     manifest,
     records: [],
-    days: [], baselines: [],
+    days: [], baselines: [], noAgentDays:[],
     programs: new Map(),
     sources: new Map(),
     certs: new Map(),
@@ -131,6 +132,8 @@ export async function loadRun(
         run.records.push(record);
       } else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
         run.days.push(dayResultSchema.parse(await get(file)));
+      else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file))
+        run.noAgentDays?.push(dayResultSchema.parse(await get(file)));
       else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file))
         run.baselines?.push(dayResultSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))

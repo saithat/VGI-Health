@@ -293,9 +293,11 @@ export function emptyRecord(deps: LoopDeps, input: { night: number; persona: Per
   };
 }
 
+export class InfrastructureError extends Error {}
+
 export type DeployOutcome =
   | { ok: true; certificate: NonNullable<DecisionRecord['certificate']>; deployed: NonNullable<DecisionRecord['deployed']>; screenCheck: ScreenCheckResult }
-  | { ok: false; reason: 'screen-check' | 'deploy-refused'; check: CheckResult; screenCheck: ScreenCheckResult };
+  | { ok: false; reason: 'infrastructure-error' | 'screen-check' | 'deploy-refused'; check: CheckResult; screenCheck: ScreenCheckResult | null; stage?:string };
 
 /**
  * The ONLY deploy path. Order (owner principle: everything verified before
@@ -304,24 +306,31 @@ export type DeployOutcome =
  * (T4) and publishes. A version failing either gate is never deployed.
  */
 export async function deployVersion(deps: LoopDeps, persona: string, program: Program, gate: Gate): Promise<DeployOutcome> {
+  let stage='validation',screenCheck:ScreenCheckResult|null=null;
   try {
   if (gate.night !== undefined && !completionOk(gate.validation ?? null)) throw new Error('Full validation completion required before deploy');
+  stage='build';
   const build = deps.ehr.mode === 'real' ? await installedBuild(undefined, deps.ehr.binary ?? undefined) : undefined;
-  const screenCheck = await deps.screens.check({ specVersion: gate.specVersion, program });
+  stage='screen-check';
+  screenCheck = await deps.screens.check({ specVersion: gate.specVersion, program });
   if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
+  stage='native-deploy';
   const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: path.join(deps.store.dir, 'native', persona, `v${program.version}`) });
   if (!res.deployed) return { ok: false, reason: 'deploy-refused', check: toCheckResult(res.verdict), screenCheck };
+  stage='snapshot';
   const specFile = gate.specVersion.endsWith('.json') ? gate.specVersion : path.join((await import('./util.js')).REPO_ROOT, 'releases', gate.specVersion, 'spec.json');
   const spec = deps.ehr.mode === 'real' ? JSON.parse(await (await import('node:fs/promises')).readFile(specFile, 'utf8')) : await deps.ehr.specExport(gate.specVersion);
   const inputsDir = path.join(deps.store.dir, 'certifications', persona, `v${program.version}`);
   await (await import('./util.js')).writeJson(path.join(inputsDir, 'spec.json'), spec);
   const inputs = { specVersion: res.certificate.specVersion, prev: expandProgram(gate.prev), canonical: expandProgram(gate.canonical), program, night: gate.night ?? null };
   await (await import('./util.js')).writeJson(path.join(inputsDir, 'inputs.json'), inputs);
+  stage='publication';
   const deployed = await deps.store.deploy(persona, program, res.certificate, build ? { ...bindBuild(build, program, res.certificate), certificationInputsSha256: (await import('./program.js')).sha256((await import('./program.js')).stableStringify({spec,inputs})) } : undefined, gate.night);
   return { ok: true, certificate: res.certificate, deployed, screenCheck };
   } catch (error) {
-    const screenCheck: ScreenCheckResult = { status:'error', mode:deps.screens.mode, bundles:[], pages:0, failingScreens:[], failingFiles:[], message:`Deployment infrastructure error: ${errorMessage(error)}` };
-    return { ok:false, reason:'screen-check', check:screenCheckRejection(screenCheck), screenCheck };
+    const message=`infrastructure-error [${stage}]: ${errorMessage(error)}`;
+    if(stage==='screen-check')screenCheck={status:'error',mode:deps.screens.mode,bundles:[],pages:0,failingScreens:[],failingFiles:[],message};
+    return {ok:false,reason:'infrastructure-error',stage,check:{status:'error',property:'DeploymentInfrastructure',message,counterexample:null,screens:null,verdict:null},screenCheck};
   }
 }
 
@@ -333,7 +342,10 @@ export function recordDeploy(rec: DecisionRecord, dep: DeployOutcome, attempt: {
     rec.deployed = dep.deployed;
     return;
   }
-  if (dep.reason === 'screen-check') {
+  if (dep.reason === 'infrastructure-error') {
+    rec.flags.push(dep.check.message??'infrastructure-error');
+  } else if (dep.reason === 'screen-check' && dep.screenCheck) {
+    if(dep.screenCheck?.status==='error')rec.flags.push(`infrastructure-error [screen-check]: ${dep.screenCheck.message}`);
     rec.certification.attempts.push({ attempt: rec.certification.attempts.length, candidateIds: attempt.candidateIds, source: 'screen-check', patch: attempt.patch, check: dep.check });
     rec.certification.result = 'rejected';
     rec.flags.push(`screen check failed on ${dep.screenCheck.failingScreens.join(', ') || 'unknown screens'}; not deployed`);
@@ -538,7 +550,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   const dep = await deployVersion(deps, persona.id, finalProgram, { ...gate, validation: replay });
   recordDeploy(rec, dep, { candidateIds: chosen.map((c) => c.id), patch: chosen.flatMap((c) => c.patch) });
   if (!dep.ok) {
-    rec.outcome = dep.reason === 'screen-check' ? 'screen-check-failed' : 'certification-failed';
+    rec.outcome = dep.reason==='infrastructure-error'?(dep.stage==='screen-check'?'error':'infrastructure-error'):dep.screenCheck?.status==='error'?'error':dep.reason === 'screen-check' ? 'screen-check-failed' : 'certification-failed';
     return finish(null);
   }
   rec.versionAfter = finalProgram.version;
