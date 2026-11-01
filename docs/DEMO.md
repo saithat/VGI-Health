@@ -22,7 +22,7 @@ history, and all the paperwork. Let's actually save a visit.”
 
 1. At **http://localhost:5173/** click **P1 · Primary care**. The local persona
    button logs in; no password needs to appear on the projector.
-2. Set **Worklist date** to **2026-11-02**. Select a clinic patient, or enter
+2. Keep `?inspect=1` in the URL. Set **Worklist date** to **2026-11-02**. Select a clinic patient, or enter
    **Aaron** in **Patient search**, click **Search Medplum**, then the Aaron
    Ankunding result. Use **Start new encounter** for a fresh rehearsal; select
    that **in-progress** encounter in **Live encounter**, then **Open EHR**.

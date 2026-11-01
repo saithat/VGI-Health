@@ -359,58 +359,78 @@ function Timeline({
             />
             <div className="timeline-measure">
               <strong>
-                Measured change vs{" "}
+                Observed workload change (after − before), vs{" "}
                 {run?.manifest.measurementProtocol
                   ? "active canonical"
                   : "rev 0"}
               </strong>
               {delta ? (
-                <dl>
-                  {(delta.scrollPx === null || delta.mouseTravelPx === null) && <div><dt>Pixel metrics</dt><dd>not measured for archived runs</dd></div>}
-                  <div>
-                    <dt>Clicks</dt>
-                    <dd>
-                      {delta.clicks > 0 ? "+" : ""}
-                      {delta.clicks.toFixed(1)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>Scrolls</dt>
-                    <dd>
-                      {delta.scrolls > 0 ? "+" : ""}
-                      {delta.scrolls.toFixed(1)}
-                    </dd>
-                  </div>
-                  {delta.scrollPx !== null && <div>
-                    <dt>Scroll distance</dt>
-                    <dd>
-                      {delta.scrollPx !== null && delta.scrollPx > 0 ? "+" : ""}
-                      {delta.scrollPx === null
-                        ? "—"
-                        : delta.scrollPx.toFixed(1)}{" "}
-                      px
-                    </dd>
-                  </div>}
-                  <div>
-                    <dt>Keys (secondary)</dt>
-                    <dd>
-                      {delta.keys > 0 ? "+" : ""}
-                      {delta.keys.toFixed(1)}
-                    </dd>
-                  </div>
-                  {delta.mouseTravelPx !== null && <div>
-                    <dt>Mouse travel</dt>
-                    <dd>
-                      {delta.mouseTravelPx !== null && delta.mouseTravelPx > 0
-                        ? "+"
-                        : ""}
-                      {delta.mouseTravelPx === null
-                        ? "—"
-                        : delta.mouseTravelPx.toFixed(1)}{" "}
-                      px
-                    </dd>
-                  </div>}
-                </dl>
+                <>
+                  <p className="browser-muted">
+                    Mean workload per workflow; differs from the fixed-case
+                    exact minimum on Evolution. Negative means fewer
+                    interactions.
+                  </p>
+                  <dl>
+                    {(delta.scrollPx === null ||
+                      delta.mouseTravelPx === null) && (
+                      <div>
+                        <dt>Pixel metrics</dt>
+                        <dd>not measured for archived runs</dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt>Clicks</dt>
+                      <dd>
+                        {delta.clicks > 0 ? "+" : ""}
+                        {delta.clicks.toFixed(1)}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>Scrolls</dt>
+                      <dd>
+                        {delta.scrolls > 0 ? "+" : ""}
+                        {delta.scrolls.toFixed(1)}
+                      </dd>
+                    </div>
+                    {delta.scrollPx !== null && (
+                      <div>
+                        <dt>Scroll distance</dt>
+                        <dd>
+                          {delta.scrollPx !== null && delta.scrollPx > 0
+                            ? "+"
+                            : ""}
+                          {delta.scrollPx === null
+                            ? "—"
+                            : delta.scrollPx.toFixed(1)}{" "}
+                          px
+                        </dd>
+                      </div>
+                    )}
+                    <div>
+                      <dt>Keys (secondary)</dt>
+                      <dd>
+                        {delta.keys > 0 ? "+" : ""}
+                        {delta.keys.toFixed(1)}
+                      </dd>
+                    </div>
+                    {delta.mouseTravelPx !== null && (
+                      <div>
+                        <dt>Mouse travel</dt>
+                        <dd>
+                          {delta.mouseTravelPx !== null &&
+                          delta.mouseTravelPx > 0
+                            ? "+"
+                            : ""}
+                          {delta.mouseTravelPx === null
+                            ? "—"
+                            : delta.mouseTravelPx.toFixed(1)}{" "}
+                          px
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                </>
               ) : (
                 <p className="browser-muted">
                   {selected.baseline

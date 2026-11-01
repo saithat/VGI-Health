@@ -1,5 +1,12 @@
 # Project status
 
+## DEMO-HONESTY verification — 2026-11-01, 11:29 PDT
+
+Merged origin/main. Corrected the clean-clone Inspector URL and chart-opening sequence; current clean-clone attempt at `2452e68` is still running, not a pass. The previous Inspector failure is historical. App build and lint passed. Full unit and browse/dashboard browser gates are running with `EHR_BIN` pointing to the built native checker in the main worktree; the first unit attempt failed because this fresh worktree has no native binary. Current logs: `/tmp/honesty-{build,lint,tests2,e2e2,clean}.log`.
+
+The served port-5180 P1 chart was checked for Review medications, History / ROS, Exam / Assessment & Plan, Sign Visit, E/M service level, Return in and After-visit instructions. Resource receipts are presenter-only under `?inspect=1`. Archived paired replay is explicitly labeled as independent traces with cross-persona navigation; it is not a synchronized task comparison.
+
+
 ## Imported patient reference aliases — 2026-11-01
 
 Chart scoping resolves the selected Patient's resource ID, declared bundle
