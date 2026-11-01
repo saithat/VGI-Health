@@ -11,7 +11,7 @@ async function openClinic(
   await page.getByRole("button", { name: /^P5 · / }).click();
   await page.getByLabel("Patient search", { exact: true }).fill(name);
   await page
-    .getByRole("button", { name: "Search Medplum", exact: true })
+    .getByRole("button", { name: "Search patients", exact: true })
     .click();
   await page
     .getByRole("button", {

@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-01T13:02:06.072Z",
-  "revision": "da228479eaf063f904a30daa02c7aee80ec0395e",
+  "generatedAt": "2026-11-01T13:23:32.308Z",
+  "revision": "fe62927be25180e0e9b1312891974987ed4b80a2",
   "mainRevision": "062a4ef83519772f5a4ea0feba95ce09339c4239",
-  "builtAt": "2026-11-01T12:45:51.634Z",
+  "builtAt": "2026-11-01T13:03:12.437Z",
   "leanHash": "82f2f766d410130c23576c997979c839c49a78b10d802ca5c5c51350753042a5",
   "counts": {
     "works": 2704,
@@ -78,7 +78,7 @@
       "persona": "P1",
       "program": "\u2014",
       "screen": "worklist",
-      "label": "Search Medplum",
+      "label": "Search patients",
       "comp": null,
       "kind": "button",
       "owner": "app",
@@ -234,7 +234,7 @@
       "persona": "P2",
       "program": "\u2014",
       "screen": "worklist",
-      "label": "Search Medplum",
+      "label": "Search patients",
       "comp": null,
       "kind": "button",
       "owner": "app",
@@ -359,7 +359,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
     },
     {
       "route": "/?audit=buttons&inspect=1",
@@ -402,7 +402,7 @@
       "persona": "P3",
       "program": "\u2014",
       "screen": "worklist",
-      "label": "Search Medplum",
+      "label": "Search patients",
       "comp": null,
       "kind": "button",
       "owner": "app",
@@ -515,7 +515,7 @@
       "kind": "button",
       "owner": "app",
       "status": "works",
-      "effect": "POST /__dev/persona-password; POST /medplum/auth/login"
+      "effect": "POST /__dev/persona-password; POST /medplum/auth/login; POST /medplum/oauth2/token"
     },
     {
       "route": "/?audit=buttons&inspect=1",
@@ -546,7 +546,7 @@
       "persona": "P4",
       "program": "\u2014",
       "screen": "worklist",
-      "label": "Search Medplum",
+      "label": "Search patients",
       "comp": null,
       "kind": "button",
       "owner": "app",
@@ -702,7 +702,7 @@
       "persona": "P5",
       "program": "\u2014",
       "screen": "worklist",
-      "label": "Search Medplum",
+      "label": "Search patients",
       "comp": null,
       "kind": "button",
       "owner": "app",
@@ -858,7 +858,7 @@
       "persona": "RN2",
       "program": "\u2014",
       "screen": "worklist",
-      "label": "Search Medplum",
+      "label": "Search patients",
       "comp": null,
       "kind": "button",
       "owner": "app",
@@ -1014,7 +1014,7 @@
       "persona": "baseline",
       "program": "\u2014",
       "screen": "worklist",
-      "label": "Search Medplum",
+      "label": "Search patients",
       "comp": null,
       "kind": "button",
       "owner": "app",
@@ -33834,7 +33834,7 @@
   "sourceDirtyAtBuild": true,
   "appBuild": {
     "schemaVersion": 1,
-    "appSha256": "d4fc68d73c3e121ed9c2c69135b30a364ed7d09ad760474cae92a20e21d8ea41"
+    "appSha256": "3dd893d8ea4d612a7e7719d2a0bb582e58e784346d6ada2366bab260ccc7b548"
   },
   "scope": "App shell and Lean EHR; six roles, at most 48 configurations per role. Explicit inspect=1 for technical controls. Separate live-agent API attempt not included.",
   "configurationCoverage": [

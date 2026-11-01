@@ -277,6 +277,16 @@ pass. The refreshed six-role control audit and regression pass: 2,704 working co
 [projection evidence](../audits/surg-controls.json) retain the source/artifact
 bindings and exact caption changes.
 
+
+The final app-shell wording pass renames the existing patient-search action to
+`Search patients`, uses `Searching patients` while pending, and correctly says
+`1 patient found` for a single result. Its search callback, permissions and clinical
+context are unchanged. The live picker/save screenshots are refreshed. The
+20-test clinical/live-login/search/contrast walk passes, along with app
+build/lint/226 tests and agent typecheck/lint/84 tests. Native proof, certification,
+simulation and measurement evidence is reused only for the identical Lean/WASM
+fingerprint `82f2f766`; `wasm-check` confirms it remains current. The final 46-state browser gate passes 101 checks with three fixture-dependent skips. The six-role control audit and regression pass with 2,704 working controls, 113 explained disabled states, zero dead controls and zero errors. A shared temporary-filesystem quota interrupted the first audit before completion; completed SURG proof scratch was removed and a fresh audit/regression passed against the identical app artifact. The report preserves bounded coverage and remaining checkpoints.
+
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 
 ## Evidence and reuse boundary

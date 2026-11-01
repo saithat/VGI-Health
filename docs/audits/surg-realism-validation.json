@@ -1,6 +1,6 @@
 {
-  "validatedAt": "2026-11-01T13:02:15.144600+00:00",
-  "scope": "P5 perioperative and surgical clinic canonical; source-bound clinician identity, selected encounter context, conservative LOINC display aliases and readable live receipts",
+  "validatedAt": "2026-11-01T13:24:10.979211+00:00",
+  "scope": "P5 perioperative and surgical clinic canonical; source-bound clinician identity, selected encounter context, conservative LOINC display aliases, readable live receipts and patient-search language polish",
   "baselineCommit": "add0d2e",
   "mainIntegratedThrough": "062a4ef",
   "presentationIntegratedThrough": "6062379",
@@ -58,7 +58,7 @@
       "persistence": true,
       "keyboardHighlightContrastAtLeast": 4.5
     },
-    "sharedVisualSearchContrastTests": 17,
+    "sharedVisualSearchContrastTests": 20,
     "sharedControlAudit": {
       "report": "docs/audits/surg-browser-controls.json",
       "working": 2704,
@@ -115,6 +115,17 @@
       "missingOrAmbiguousProfileKeepsRole": true,
       "nativeWasmExactUiComparisons": 3,
       "captionMatchesSemanticScreen": true
+    },
+    "patientSearchLanguage": {
+      "humanCaption": true,
+      "singularResult": true,
+      "actionUnchanged": true
+    },
+    "infrastructureRestart": {
+      "reason": "Shared temporary-filesystem quota interrupted the initial control audit before completion",
+      "cleanup": "Completed SURG temporary proof exports and aborted benchmark scratch only",
+      "appArtifactUnchanged": true,
+      "freshAuditAndRegressionPassed": true
     }
   },
   "controls": {
@@ -177,25 +188,25 @@
     },
     {
       "file": "app/shots/realism/surg/after/live-encounter-details.png",
-      "sha256": "200071b5e6e6c854371e12b9591788d7f814c97ad13b9f7ab50e9fd39cac800a",
+      "sha256": "ec44ecfb51ca01e8c0318f450733d885785b22ddd4b52fe22266ae0e079afdbf",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/live-encounter-picker.png",
-      "sha256": "ebb90122ed3b54abc6daa3917c6b0c2775e99765220314974d72069d300d8ab8",
+      "sha256": "dbb2e36f99c9ab95db276a5a45a270b5d49a00e1fa6b307ed3a9080b042ac9d5",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/live-review-save-normal.png",
-      "sha256": "bea441f1f6ba03599f07bc900fb3643ee2e4b9ae188c90a19fb5720390d2140c",
+      "sha256": "414c7d6f335ac31e786604e4a67c7d869b07e1a32183603b3f9bd470b22b6a01",
       "width": 1440,
       "height": 900
     },
     {
       "file": "app/shots/realism/surg/after/live-review-save.png",
-      "sha256": "efbaf0e2e53e476e516d605b4113e86f3f779ab2581d691d3531d5f05d60306d",
+      "sha256": "629c4b5da06ca484888ddca767347a59d539dcd6e774d799e8d98992745465e4",
       "width": 1440,
       "height": 900
     },
@@ -725,7 +736,7 @@
   "nativeWasmSurgicalProjectionComparisons": 2,
   "appBuild": {
     "schemaVersion": 1,
-    "appSha256": "d4fc68d73c3e121ed9c2c69135b30a364ed7d09ad760474cae92a20e21d8ea41"
+    "appSha256": "3dd893d8ea4d612a7e7719d2a0bb582e58e784346d6ada2366bab260ccc7b548"
   },
   "metricsRerun": true,
   "shellIntegratedThrough": "062a4ef",
@@ -776,5 +787,9 @@
         }
       ]
     }
-  ]
+  ],
+  "nativeEvidenceReusedForUnchangedLeanHash": {
+    "commit": "fe62927",
+    "leanSourceHash": "82f2f766d410130c23576c997979c839c49a78b10d802ca5c5c51350753042a5"
+  }
 }

@@ -173,7 +173,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         );
       }
       await audit.click(
-        page.getByRole("button", { name: "Search Medplum", exact: true }),
+        page.getByRole("button", { name: "Search patients", exact: true }),
         undefined,
         "app",
       );
@@ -682,7 +682,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         .getByLabel("Patient search", { exact: true })
         .fill(names[0] ?? "");
       await page
-        .getByRole("button", { name: "Search Medplum", exact: true })
+        .getByRole("button", { name: "Search patients", exact: true })
         .click();
       await page
         .locator(".patient-search + ul button")

@@ -959,7 +959,7 @@ function Home({
             .then((results) => {
               setPatients(results);
               notifications.show({
-                message: `${results.length} patients found`,
+                message: `${results.length} patient${results.length === 1 ? "" : "s"} found`,
               });
             })
             .catch((e: unknown) => setError(errorText(e)))
@@ -975,9 +975,9 @@ function Home({
         <Button
           type="submit"
           loading={pending}
-          title={pending ? "Searching Medplum" : undefined}
+          title={pending ? "Searching patients" : undefined}
         >
-          Search Medplum
+          Search patients
         </Button>
       </form>
       <ul>
