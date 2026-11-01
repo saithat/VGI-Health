@@ -1,8 +1,8 @@
 {
-  "sourceRevisionAtValidation": "5fe0598bccb4eae9e7c30a61a5d43af95901538e",
+  "sourceRevisionAtValidation": "44427573d4a6d94b8c57518d7c5e6e562ffb5c05",
   "sourceDirtyAtValidation": true,
-  "leanSourceHash": "5951ba1b513bb6a939a02cba53607e83b01ce19282d249f956ea2abf0d3320ff",
-  "nativeBinarySha256": "0a9148e3bfe935ae85d103b1cfe3fd8fadb8ab69d71193876168dcea213892c6",
+  "leanSourceHash": "bfc6ac982ad4f421a6ca4f19a02e5699c20696989c355c3185d036b54ba54a47",
+  "nativeBinarySha256": "1a892ecdd6c980dc510a829752e0fb48dff1a626c53d8a346ff9e142872fdcde",
   "commands": {
     "build": "LEAN_NUM_THREADS=4 lake build",
     "kernel": "COMPARATOR_BWRAP=../scripts/lean-bwrap.py LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536 lake check",
@@ -21,7 +21,7 @@
     "certified": 15,
     "bad": 18,
     "rejected": 18,
-    "reportSha256": "196b4e82fb957fa2480fdf0982af8e27d8789dce878219853329a5e17ec1f621"
+    "reportSha256": "028b893550b84b8b2b79c04bbbdc7481cb59d6395d32b5eaf94e2edefa982445"
   },
   "world2": {
     "world": "runs/world/2",
@@ -521,7 +521,7 @@
     "wasmCurrent": true,
     "appBuild": true,
     "appLint": true,
-    "appTests": 220,
+    "appTests": 238,
     "agentTests": 84,
     "agentTypecheck": true,
     "agentLint": true,
@@ -531,11 +531,12 @@
   "structuredPresentations": {
     "upstream": "da01a57",
     "nativeWasmFixtures": 16,
-    "renderTheoremsCompared": 53,
-    "frozenStatementSha256": "568f4a0dacecf6582ae0e77cc3cd3335440bbbe4c1ff20012b4274c8a59b57a4",
+    "renderTheoremsCompared": 56,
+    "frozenStatementSha256": "093dc289e11b847f5f80a9c71478bc6a7cdefc09161d8799c2f6298f95557b28",
     "scope": "Unchanged frozen theorem statement text compiled against the current implementation; only implementation/layout definitions change.",
-    "originalHeadersUnchanged": 137,
-    "mainIntegration": "924425f"
+    "originalHeadersUnchanged": 154,
+    "mainIntegration": "062a4ef",
+    "headerScope": "Render modules and the existing PatchWitness module, compared with d79f3de."
   },
   "ambulatoryMetadata": {
     "nativeWasmScreens": 34,
@@ -550,7 +551,8 @@
       "P4/W2",
       "P4/W7"
     ],
-    "codedBloodPressureOrderRegression": true
+    "codedBloodPressureOrderRegression": true,
+    "sourceMedicationCaptionEntries": 6
   },
   "clinicalFrame": {
     "sourceProgressOptOut": true,
@@ -584,5 +586,15 @@
     "wrongRoleScope": "Only when the source requirement set excludes a modeled role; all modeled roles may review allergies under some requirement.",
     "corePredicateUnchanged": true,
     "newSoundnessAndReadOnlyTheorems": 2
+  },
+  "semanticFooter": {
+    "sourceMetadata": true,
+    "programOrderStable": true,
+    "sourceNodeAndAtomMembershipProved": true,
+    "allWorkflowEffortGroupsUnchanged": 21
+  },
+  "displayPreservation": {
+    "noRouteOrDoseUnitInferredFromProductName": true,
+    "verbatimNoteBodies": true
   }
 }

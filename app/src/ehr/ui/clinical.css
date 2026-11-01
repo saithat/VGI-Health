@@ -352,7 +352,7 @@
   gap: 8px;
   display: flex;
   flex-flow: row wrap;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 .clinical-section-body > * {
   min-width: 0;

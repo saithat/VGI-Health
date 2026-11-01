@@ -130,9 +130,12 @@ export function fieldPlaceholder(label: string, kind: string): string {
   if (/antibiotic indication/i.test(label)) return "Select indication";
   if (/^as needed/i.test(label)) return "Select PRN status";
   if (/substitution/i.test(label)) return "Select substitution";
-  return `${kind === "search" ? "Search" : "Select"} ${fieldCaption(label)
+  const subject = fieldCaption(label)
     .replace(/\s*\([^)]*\)/g, "")
-    .toLowerCase()}`;
+    .toLowerCase();
+  if (subject.length > 32)
+    return kind === "search" ? "Search" : "Select an option";
+  return `${kind === "search" ? "Search" : "Select"} ${subject}`;
 }
 export function emptyInfoText(infoId: string): string {
   if (infoId === "orderCatalog") return "Search to add orders";
