@@ -232,6 +232,31 @@ def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
     (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
     (uiItemRows cx it.comp.id i)
 
+/-- Search reads typed chart rows or the supplied code catalog. It never replaces
+required reviews, captures clinical evidence, or selects an order. -/
+def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) :=
+  if scope == "formulary" then
+    formulary.map fun drug => [("Medication", drug.name), ("RxNorm", ", ".intercalate drug.rxnorm)]
+  else if scope == "loinc" then
+    uiRows cx "labResults" ++ (cx.facts.codeTables?.getD []).flatMap (fun table =>
+      if table.system == "LOINC" then table.codes.map (fun code => [("Code", code), ("System", table.system)]) else [])
+  else if scope == "chart" then
+    (["currentMeds", "allergyList", "problemList", "vitals", "encounterNotes",
+      "importedHistory", "labResults", "immunizations", "encounterHistory", "procedures"] : List String).flatMap (uiRows cx)
+  else
+    (cx.v.items.filter (·.shown)).flatMap fun item => match item.comp.kind with
+      | .panel info | .table info | .trend info => uiRows cx info
+      | _ => []
+
+/-- Case-insensitive matching retains the supplied record values. An empty
+result is explicit rather than an input echo. Full source panels remain intact. -/
+def uiSearchRows (cx : Ctx) (scope query : String) : List (List (String × String)) :=
+  let needle := query.toLower
+  let rows := (uiSearchSource cx scope).filter fun row =>
+    row.any fun pair => (pair.2.toLower.splitOn needle).length > 1
+  if rows.isEmpty then [[("Search", "No matching records")]]
+  else rows.map fun row => [("Match", " · ".intercalate (row.map (fun pair => pair.1 ++ ": " ++ pair.2)))]
+
 /-- Render one shown item and its already-visible children. No visibility test
 is repeated here. Confirm buttons retain the field's id for Event.confirm. -/
 def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
@@ -246,7 +271,12 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   | .trend i => [uiItemInfo cx it i "trend"]
   | .button a => [uiButton cx it (actionRole a)]
   | .«macro» _ => [uiButton cx it "macro"]
-  | .search _ => [.field it.comp.id (uiLabel it.comp.label "Search chart") "search" none none none false false false]
+  | .search scope =>
+      let query := ((cx.s.searchQueries?.getD []).lookup it.comp.id).getD ""
+      .field it.comp.id (uiLabel it.comp.label "Search chart") "search"
+        (if query == "" then none else some query) none none false false false ::
+      if query == "" then [] else
+        [.info it.comp.id s!"Search results for “{query}”" "searchResults" "list" (uiSearchRows cx scope query)]
   | .alert a _ => [.alert it.comp.id a
       (uiLabel (((cx.sp.alert? a).map (·.label)).getD it.comp.label) "Clinical alert")
       (match (cx.sp.alert? a).map (·.tier) with

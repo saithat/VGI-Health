@@ -278,6 +278,13 @@ def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
                 { element := e, slot := resolveSlot s slot, value := v, byHuman := true
                   confirmed := true, provenance? := none }
               ({ s with captured := setCaptured s.captured x }, .ok)
+    | .search _ =>
+      match v with
+      | .text query =>
+        let prior := (s.searchQueries?.getD []).filter (fun pair => pair.1 != cid)
+        let queries := if query == "" then prior else prior ++ [(cid, query)]
+        ({ s with searchQueries? := if queries.isEmpty then none else some queries }, .ok)
+      | _ => (s, .ignored)
     | _ => (s, .ignored)
 
 /-- Confirm a prefilled value in a shown field (human only). Ignored if there

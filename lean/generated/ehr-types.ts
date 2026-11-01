@@ -1091,6 +1091,10 @@ export interface State {
    */
   tabSel: [CompId, number][];
   /**
+   * Queries entered into shown search components. Absent in legacy episodes.
+   */
+  searchQueries?: [CompId, string][];
+  /**
    * The alert popup currently shown, with its key.
    */
   popup?: [AlertId, string];

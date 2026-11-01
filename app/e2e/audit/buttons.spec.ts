@@ -721,7 +721,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             );
         }
       const leanSelector =
-        'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], input[placeholder="Search the patient chart"], input[role="combobox"]';
+        'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], .field-search input, input[role="combobox"]';
       const queue = [
         await page.evaluate(
           () => window.__buttonAuditSession?.checkpoint() ?? -1,
@@ -1033,7 +1033,9 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               .filter(
                 (node): node is HTMLInputElement =>
                   node instanceof HTMLInputElement &&
-                  !node.closest(".field-identity, .field-scan, .field-cosign"),
+                  !node.closest(
+                    ".field-identity, .field-scan, .field-cosign, .field-search",
+                  ),
               )
               .map((input) => {
                 return {

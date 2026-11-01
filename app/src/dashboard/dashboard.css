@@ -556,3 +556,10 @@
 .dashboard table tbody tr:nth-child(even) {
   background: var(--clinical-hover);
 }
+
+.dash-description {
+  margin: 12px 20px;
+  color: var(--clinical-secondary, #526171);
+  font-size: 13px;
+  line-height: 1.5;
+}

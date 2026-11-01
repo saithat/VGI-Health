@@ -422,7 +422,7 @@ describe("semantic EHR painter", () => {
       });
     },
   );
-  it("refuses invalid quantities and preserves the search event", () => {
+  it("refuses invalid quantities and addresses search entry by component", () => {
     for (const value of ["", "-1", "abc", "Infinity"])
       expect(
         entryEvent({ ...field, kind: "qty", unit: "kg" }, value),
@@ -431,7 +431,7 @@ describe("semantic EHR painter", () => {
       entryEvent({ ...field, kind: "qty", unit: "bogus" }, "5"),
     ).toBeUndefined();
     expect(entryEvent({ ...field, kind: "search" }, "metformin")).toEqual({
-      search: { query: "metformin" },
+      enter: { comp: "entry", value: { text: { s: "metformin" } } },
     });
   });
   it("maps DOM text, number, checkbox and confirm events once, by comp id", () => {

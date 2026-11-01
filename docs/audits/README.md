@@ -9,7 +9,7 @@ pnpm --filter app test:buttons
 pnpm --filter app audit:performance
 ```
 
-The audit starts `vite preview` itself. It uses one Chromium worker and closes the previous page before opening a new screen. The fast regression gates the generated app report and exercises dashboard controls; the separate Lean test traverses observed live episodes breadth first. `APP_TEST_PORT` overrides port 4186. Local Medplum must be available through `/medplum` and persona login must be configured in the gitignored root `.env`.
+The audit starts `vite preview` itself. It uses one Chromium worker and closes the previous page before opening a new screen. The fast regression gates all dead/error observations in the generated report and exercises dashboard controls; the separate Lean test traverses observed live episodes breadth first. `APP_TEST_PORT` overrides port 4186. Local Medplum must be available through `/medplum` and persona login must be configured in the gitignored root `.env`.
 
 `buttons.json` and `buttons.md` contain every observation, including repeated controls in different persona/version contexts. `buttons-app.json` and `buttons-ehr.json` are the writer's inputs. `buttons-before-app.json` preserves the complete pre-fix app pass. Counts are observations, not distinct labels. `ehr-dead-controls.md` identifies content/render findings without changing Lean.
 

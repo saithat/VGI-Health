@@ -180,7 +180,7 @@ export function FieldNode({
     required: node.required,
     size: "xs" as const,
     "data-comp-id": node.comp,
-    "data-event": node.kind === "search" ? "search" : "enter",
+    "data-event": "enter",
     className: "clinical-control",
   };
   const options = node.kind
@@ -194,7 +194,7 @@ export function FieldNode({
   );
   return (
     <Box
-      className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}`}
+      className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}${kind === "search" ? " field-search" : ""}`}
     >
       <Group
         gap={6}
@@ -275,7 +275,7 @@ export function FieldNode({
           autoComplete="off"
           placeholder={
             kind === "search"
-              ? "Search the patient chart"
+              ? node.label
               : special === "identity"
                 ? "Re-enter patient identifiers"
                 : special === "scan"

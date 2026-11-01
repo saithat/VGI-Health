@@ -111,6 +111,7 @@ private theorem enterCore_macro_noHuman (sp p f u s cid v) :
                 subst el
                 simp only [Bool.or_eq_true, beq_iff_eq, not_or] at hnot
                 exact False.elim (hh.elim hnot.1 hnot.2)
+    · cases v <;> exact fun _ hx _ _ _ => hx
     · exact .refl _ _
 
 private theorem enterCore_human_quality (sp p f u s cid v) (hi : HumanCaptured sp s) :

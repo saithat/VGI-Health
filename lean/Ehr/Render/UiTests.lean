@@ -274,4 +274,37 @@ def uiNotesCtx : Ctx :=
 #guard uiRows uiNotesCtx "currentMeds" == uiRows uiRoomCtx "currentMeds"
 #guard uiNotesCtx.facts.receipts == uiRoomCtx.facts.receipts
 
+/-- A real shown search input, independent from clinical capture. -/
+def uiSearchCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, prog := { uiRoomCtx.prog with
+      screens := uiRoomCtx.prog.screens.map fun screen =>
+        if screen.id == uiRoomCtx.s.screen then { screen with components := screen.components ++
+          [{ id := "chartSearch", label := "Search chart", kind := .search "chart", tag := "search" }] }
+        else screen } }
+
+def uiSearchEntered : State × StepResult :=
+  enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+    uiSearchCtx.s "chartSearch" (.text "Acetaminophen")
+
+#guard uiSearchEntered.2 == .ok
+#guard uiSearchEntered.1.captured == uiSearchCtx.s.captured
+#guard uiSearchEntered.1.commits == uiSearchCtx.s.commits
+#guard uiSearchEntered.1.receipts == uiSearchCtx.s.receipts
+#guard uiSearchEntered.1.searchQueries? == some [("chartSearch", "Acetaminophen")]
+#guard (uiSearchRows uiSearchCtx "formulary" "METFORMIN").any (fun row =>
+  row.any (fun pair => (pair.2.splitOn "metformin").length > 1))
+#guard uiSearchRows uiSearchCtx "chart" "no-such-record-xxxxxxxx" == [[("Search", "No matching records")]]
+#guard (enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchEntered.1 "chartSearch" (.text "")).1.searchQueries? == none
+#guard (enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchCtx.s "hiddenSearch" (.text "metformin")).2 == .ignored
+#guard (stepEvent uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchCtx.s (.search "legacy abstract search")).1 == uiSearchCtx.s
+#guard match (Lean.toJson uiSearchCtx.s).getObjVal? "searchQueries" with
+  | .error _ => true
+  | .ok _ => false
+#guard match (Lean.fromJson? (Lean.toJson uiSearchCtx.s) : Except String State) with
+  | .ok state => state == uiSearchCtx.s
+  | .error _ => false
+
 end Ehr.Render
