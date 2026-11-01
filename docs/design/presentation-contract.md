@@ -36,7 +36,7 @@ Existing info IDs keep their meanings. New queue info IDs supported by the prese
 
 Clinical cells are read-only data. Every action must exist as a normal `UiNode.button`, field, tab or navigator event in the Lean tree. An ordinary goto button may be adjacent to the selected work item or placed in its row through the additive row-action contract below; an `Open` text column, pointer cursor or decorative filter must not masquerade as a control. Do not encode component IDs into clinical rows. The presentation lane will not make read-only grid cells editable.
 
-Status tints map only supplied text: due/pending (blue), overdue/critical (red), given/complete (green), held (amber), refused (violet), future/unknown/stopped (neutral). Always retain the words. Lab flags H/L/HH/LL/A come from Lean's FHIR reading or explicit payload; React never compares a result to a reference range. The painter may calculate coordinates from supplied numeric values solely for drawing, never dosing, percentiles, trends across unlike units, or clinical thresholds.
+Status tints map only supplied text through the shared shell palette: due/in-progress/booked (blue), pending/held/arrived/roomed (amber), overdue/critical (red), given/complete (green), refused (violet), future/scheduled/unknown/stopped (neutral). Always retain the words. Lab flags H/L/HH/LL/A come from Lean's FHIR reading or explicit payload; React never compares a result to a reference range. The painter may calculate coordinates from supplied numeric values solely for drawing, never dosing, percentiles, trends across unlike units, or clinical thresholds.
 
 ## Verification and ownership
 

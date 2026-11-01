@@ -22,27 +22,27 @@
     ],
     [
       "PCP",
-      "Dr. Aisha Patel"
+      ""
     ],
     [
       "Coverage",
       "Private PPO through employer"
     ],
     [
-      "Encounter",
+      "Last encounter",
       "EMER"
     ],
     [
-      "Attending",
+      "Last provider",
       "Dr. Aisha Patel"
     ],
     [
-      "Location",
+      "Last location",
       ""
     ],
     [
       "Allergies",
-      "NKDA (active)"
+      "NKDA"
     ],
     [
       "Code status",
@@ -57,8 +57,10 @@
       "Not recorded"
     ]
   ],
+  "fieldSources": [],
   "modal": null,
   "nav": [],
+  "screen": "home",
   "side": [
     {
       "info": {
@@ -218,18 +220,8 @@
     }
   ],
   "title": "Schedule",
+  "viewer": "Physician",
   "workspace": [
-    {
-      "stepper": {
-        "current": 0,
-        "steps": [
-          [
-            "home",
-            "Schedule"
-          ]
-        ]
-      }
-    },
     {
       "field": {
         "comp": "home.chartSearch",
@@ -244,36 +236,8 @@
       }
     },
     {
-      "info": {
-        "comp": "home.schedule",
-        "display": "table",
-        "infoId": "scheduleTasks",
-        "label": "Today's work",
-        "rows": []
-      }
-    },
-    {
-      "info": {
-        "comp": "home.openOrders",
-        "display": "table",
-        "infoId": "openOrders",
-        "label": "Open orders",
-        "rows": []
-      }
-    },
-    {
       "section": {
         "children": [
-          {
-            "button": {
-              "blockedReason": null,
-              "comp": "home.work.w1Rooming",
-              "enabled": true,
-              "hotkey": null,
-              "label": "Schedule",
-              "role": "nav"
-            }
-          },
           {
             "button": {
               "blockedReason": null,
@@ -295,8 +259,66 @@
             }
           }
         ],
-        "id": "home.work",
+        "id": "home.activityTabs",
         "title": "Activities"
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "section": {
+              "children": [
+                {
+                  "presentation": {
+                    "children": [
+                      {
+                        "info": {
+                          "comp": "home.schedule",
+                          "display": "table",
+                          "infoId": "scheduleTasks",
+                          "label": "Appointments",
+                          "rows": []
+                        }
+                      }
+                    ],
+                    "kind": "schedule"
+                  }
+                },
+                {
+                  "rowAction": {
+                    "children": [
+                      {
+                        "button": {
+                          "blockedReason": null,
+                          "comp": "home.work.w1Rooming",
+                          "enabled": true,
+                          "hotkey": null,
+                          "label": "Open encounter",
+                          "role": "nav"
+                        }
+                      }
+                    ],
+                    "row": 0,
+                    "target": "home.schedule"
+                  }
+                }
+              ],
+              "id": "home.work",
+              "title": "Scheduled visits"
+            }
+          }
+        ],
+        "kind": "schedule"
+      }
+    },
+    {
+      "info": {
+        "comp": "home.openOrders",
+        "display": "table",
+        "infoId": "openOrders",
+        "label": "Open orders",
+        "rows": []
       }
     },
     {
