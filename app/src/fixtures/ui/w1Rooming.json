@@ -10,17 +10,6 @@
     "humanOnly": false,
     "comp": "w1Rooming.chartSearch"}},
   {"section":
-   {"title": "Include resolved problems",
-    "id": "w1Rooming.chart.includeResolved",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Expand section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Rooming.chart.includeResolved",
-       "blockedReason": null}}]}},
-  {"section":
    {"title": "Reason for visit",
     "id": "w1Rooming.reason",
     "children":

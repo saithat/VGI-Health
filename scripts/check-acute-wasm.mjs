@@ -81,6 +81,14 @@ try {
     const base = { spec: read(join(root, 'releases/v1/spec.json')), program,
       user: read(join(fixtures, `${persona}-user.json`)), ...source };
     const initial = equal('init', base);
+    const walkNodes = nodes => nodes.flatMap(node => [node, ...walkNodes(node.section?.children ?? node.columns?.children ?? node.presentation?.children ?? node.valueSet?.children ?? node.chartReferences?.children ?? node.rowAction?.children ?? node.tabs?.body ?? [])]);
+    const initialUi = equal('render-ui', { ...base, state: initial });
+    const resolvedControl = node => node.section?.id === `${initial.screen}.chart.includeResolved`;
+    assert.ok(!walkNodes(initialUi.workspace).some(resolvedControl), 'resolved-problem controls stay out of unrelated activities');
+    const problems = equal('step', { ...base, state: initial, event: { selectTab: { comp: `${initial.screen}.chart`, idx: 4 } } });
+    assert.equal(problems.result, 'ok');
+    const problemsUi = equal('render-ui', { ...base, state: problems.state });
+    assert.ok(walkNodes(problemsUi.workspace).some(resolvedControl), 'the existing resolved-problem control remains available in Problems');
     const states = new Map([[initial.screen, initial]]), pending = [initial.screen];
     while (pending.length) {
       const screen = pending.shift(), state = states.get(screen);

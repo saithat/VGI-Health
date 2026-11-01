@@ -97,8 +97,15 @@ test("shared shell and browser visual review", async ({ page }) => {
     await page.goto(
       "/ehr?mode=replay&audit=buttons&release=v3&program=releases/v3/personas/P1.json&persona=P1&patient=sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d",
     );
+    await page
+      .locator('[data-comp-id="home.work.w1Rooming"][data-event]')
+      .click();
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
-    const note = page.locator('[data-info-id="encounterNotes"] li').first();
+    const note = page
+      .locator(
+        '[data-info-id="priorNotes"] li, [data-info-id="encounterNotes"] li',
+      )
+      .first();
     await expect(note).toBeVisible();
     const semantic = await page.evaluate(
       () => window.__buttonAuditSession?.snapshot().ui,
@@ -112,14 +119,14 @@ test("shared shell and browser visual review", async ({ page }) => {
       observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
     ).toEqual(expectedAria(semantic));
     const expectedBodies = infoNodes([...semantic.side, ...semantic.workspace])
-      .filter((info) => info.infoId === "encounterNotes")
+      .filter((info) => ["priorNotes", "encounterNotes"].includes(info.infoId))
       .flatMap((info) =>
         info.rows.map((row) => row.find(([key]) => key === "Text")?.[1] ?? ""),
       );
     expect(
       await page
         .locator(
-          '[data-info-id="encounterNotes"] .presentation-note-body dd, [data-info-id="encounterNotes"] .clinical-note-body',
+          '[data-info-id="priorNotes"] .presentation-note-body dd, [data-info-id="priorNotes"] .clinical-note-body, [data-info-id="encounterNotes"] .presentation-note-body dd, [data-info-id="encounterNotes"] .clinical-note-body',
         )
         .allTextContents(),
     ).toEqual(expectedBodies);

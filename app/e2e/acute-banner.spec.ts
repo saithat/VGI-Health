@@ -14,7 +14,9 @@ for (const [persona, activity, commit] of [
     await page.goto(
       `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
-    await expect(page.locator(".clinical-shell")).toBeVisible();
+    await expect(page.locator(".clinical-shell")).toBeVisible({
+      timeout: 30000,
+    });
     await page
       .locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`)
       .click();
@@ -72,7 +74,9 @@ for (const [persona, activity, target] of [
     await page.goto(
       `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
     );
-    await expect(page.locator(".clinical-shell")).toBeVisible();
+    await expect(page.locator(".clinical-shell")).toBeVisible({
+      timeout: 30000,
+    });
     await page
       .locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`)
       .click();

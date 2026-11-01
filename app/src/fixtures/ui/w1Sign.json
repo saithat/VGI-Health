@@ -15,17 +15,6 @@
     "kind": "search",
     "humanOnly": false,
     "comp": "w1Sign.chartSearch"}},
-  {"section":
-   {"title": "Include resolved problems",
-    "id": "w1Sign.chart.includeResolved",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Expand section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Sign.chart.includeResolved",
-       "blockedReason": null}}]}},
   {"info":
    {"rows":
     [[["Line", "1"],

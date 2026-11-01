@@ -110,5 +110,6 @@
     }
   ],
   "rendererTheoremStatementsUnchanged": 59,
-  "leanSourceHash": "07ee5a3e6abea9c2cbfa8c0eb287ccf1bd004b0a5d101e2286fca5a3776de0a3"
+  "leanSourceHash": "ebacbbfc942c71f1dba53ae1a797b392f9d677fcd7c3e973b191979563ea235e",
+  "layoutCorrection": "The existing includeResolved group keeps its ID, kind and behavior, with parent/tab placement under Problems in Canonical.Builders.tabStrip. No clinical rule or required display changes."
 }

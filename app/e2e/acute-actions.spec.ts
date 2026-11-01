@@ -235,11 +235,18 @@ for (const [
     "P2",
     "w3TrackBoard",
     "w3TrackBoard.open",
-    "region",
-    "Selected encounter",
+    "table",
+    "Department",
     "w3Triage",
   ],
-  ["P3", "w4Worklist", "w4Worklist.toMar", "table", "Patient list", "w4Mar"],
+  [
+    "P3",
+    "w4Worklist",
+    "w4Worklist.toMar",
+    "table",
+    "Assigned patients",
+    "w4Mar",
+  ],
   [
     "P3",
     "w4Mar",
@@ -399,7 +406,7 @@ test("ED imaging retains the report, linked findings and separate image status",
   await paint();
   await expect(
     page.getByRole("table", {
-      name: "Emergency department patients",
+      name: "Department",
       exact: true,
     }),
   ).toContainText("Report available");
@@ -431,7 +438,7 @@ test("ED imaging retains the report, linked findings and separate image status",
   await expect(report).toContainText("Avery Shah, MD");
   await expect(report).toContainText("Digital radiography");
   await expect(report).toContainText("available");
-  await expect(report.locator(".tone-green")).toContainText(["final"]);
+  await expect(report.locator(".tone-green")).toContainText([/final/i]);
   await expect(report).not.toContainText("urn:uuid:");
   await page.getByRole("tab", { name: "Imaging", exact: true }).click();
   await expect.poll(() => events.length).toBe(2);

@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "07ee5a3e6abea9c2cbfa8c0eb287ccf1bd004b0a5d101e2286fca5a3776de0a3",
+  "leanSourceHash": "ebacbbfc942c71f1dba53ae1a797b392f9d677fcd7c3e973b191979563ea235e",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "72476834fa5384ee3210a86198497c9c227feea88d01568509e8f1c7c75c235b",
@@ -11,7 +11,7 @@
     "lean/Ehr/Canonical/BadTests.lean": "357690a6adf3ee927400feffae94678dc959abfb2c2132bfab411757a7da4ff8",
     "lean/Ehr/Canonical/Blueprint.lean": "ec3a81e16059b461c8388eb0b09b2b1f78d6846f5edbf25300bca8af29f1ecaa",
     "lean/Ehr/Canonical/BlueprintTests.lean": "e680d844e7fc3072eec8eb565bcf0451d0fdb1fd9d3e375762f098ff251537c7",
-    "lean/Ehr/Canonical/Builders.lean": "01cb17b8b2dc7a5a859dce3fbd27813e0a3a17d2be8db52b6f001288eddf2a10",
+    "lean/Ehr/Canonical/Builders.lean": "bbd1effcdf7dcf4cf5e623fc3b541a45a965c7d0cd0c8f4c6d4d36eb5a044b17",
     "lean/Ehr/Canonical/CoreBadTests.lean": "e8df3cc9eb0a714f0483b36b3c145f66abc48c36dfbbf94146d3c367e30b52fc",
     "lean/Ehr/Canonical/CorePlacements.lean": "2201134f20eed5b890dfe40e0fb3383c55e9101b0364ea239895904562abc6be",
     "lean/Ehr/Canonical/CoreReleaseTests.lean": "d5af82d30ec59773793c700e41073ad44d7deb0c12b60becb18e428c27507139",

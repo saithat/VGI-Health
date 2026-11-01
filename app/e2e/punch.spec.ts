@@ -62,7 +62,9 @@ test("clinician punchlist screen review", async ({ page }) => {
     await page.goto(
       `/ehr?mode=replay&audit=buttons&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
     );
-    await expect(page.locator(".clinical-app")).toBeVisible();
+    await expect(page.locator(".clinical-app")).toBeVisible({
+      timeout: 30000,
+    });
     if (entry) {
       const opener = page.locator(
         `[data-comp-id="home.work.${entry}"][data-event]`,

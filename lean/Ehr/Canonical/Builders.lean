@@ -194,8 +194,11 @@ def tabStrip (s : ScreenId) (name : String) (label : String) (blocks : List Bloc
   tabsC s name label ::
     (((List.range blocks.length).zip blocks).map fun (i, look, info, lbl) =>
       showInfo s (name ++ "." ++ info) look info lbl (parent := some name) (tab := i)) ++
-    (if blocks.any (fun (_, info, _) => info == "problemList") then
-      [group s (name ++ ".includeResolved") "Include resolved problems" (startCollapsed := true)] else [])
+    (match blocks.findIdx? (fun (_, info, _) => info == "problemList") with
+     | some index =>
+       [group s (name ++ ".includeResolved") "Include resolved problems"
+         (startCollapsed := true) (parent := some name) (tab := index)]
+     | none => [])
 
 /-- A visit navigator: one button per screen of the workflow, except `s` itself. -/
 def navigator (s : ScreenId) (steps : List (ScreenId × String)) : List Component :=
