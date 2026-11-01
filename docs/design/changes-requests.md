@@ -824,3 +824,12 @@ choices in the kind string, and supplies allergy/code-status banner fields.
 The app's remaining navigation Event request belongs to lean-core. Source
 labels that contain legal authoring instructions belong to content: render
 must show the interpreter's clinical text rather than fabricate legal text.
+
+## Render → lean-core: previous GenTS request completed
+
+The user-authorized minimal GenTS addition now imports Render.Fhir, includes
+Render.Json/Fhir in sourceModules, and fail-fast checks UiNode, UiScreen, and
+FactsInput. Official regenerated output has **141 types and 40 typed samples**;
+strict tsc passes. No Core definitions or proof statements changed. Rebuilding
+WASM after this tool-only change produces byte-for-byte identical tested assets;
+the source manifest has been refreshed and make wasm-check passes.

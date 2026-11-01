@@ -560,8 +560,9 @@ comparisons pass with this implementation.
   `confirm`, and `ack` identify the existing interpreter events without adding
   fields to the owner-approved node types. `nav` and `macro` retain their specified
   roles. Tab labels occupy actual indexes, including sparse tab indexes.
-- The official GenTS generator already exports Render.Types after main's merge;
-  no core generator change was necessary. Generated output is regenerated.
+- Minimal allowed GenTS addition: import Render.Fhir, include Render.Json and
+  Render.Fhir in sourceModules, and require UiNode/UiScreen/FactsInput exports.
+  Regenerated output includes 141 types and 40 typed JSON samples.
 - Shown items are retained exactly once, with no semantic deduplication. Groups
   and selected tab bodies nest children in component order; malformed orphan or
   out-of-order components remain visible at workspace level. A component banner
