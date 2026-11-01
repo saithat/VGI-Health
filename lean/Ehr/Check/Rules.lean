@@ -264,10 +264,32 @@ def entryValuesPossible (spec : Spec) (c : CommitId) : Bool :=
           (!(spec.reviews.any fun review => review.commit == c && review.waivedBy? == some rq.element) || value.nonEmpty) &&
           reqs.all (fun other => other.element != rq.element || entryValueAllowed el other.allowed? value)
 
+/-- Additional contracts can depend on trusted evidence that no UI event
+creates. Until a total collection/refusal-path construction is proved, the
+checker must not certify universal completion from one sample record. This
+conservative failure is kept separate from a semantic counterexample claim. -/
+def additionalCompletionIssue (spec : Spec) (prog : Program) (c : CommitId) : Option String :=
+  match spec.commit? c with
+  | none => some s!"commit {c}: no declared commit"
+  | some cs =>
+    if !(cs.temporal?.getD []).isEmpty then
+      some s!"commit {c}: temporal evidence may be missing or overdue; universal collection/exception route is not established"
+    else if !(cs.expiry?.getD []).isEmpty then
+      some s!"commit {c}: durable order clock may be missing or expired; universal renewal/stop route is not established"
+    else if (spec.displays?.getD []).any (fun rq => match rq.scope with
+        | .commit target => target == c | .phase _ _ => true) then
+      some s!"commit {c}: structured payload may be absent; universal payload collection/phase coverage is not established"
+    else if spec.elements.any (fun el => el.validation?.isSome) then
+      some s!"commit {c}: validated values and relational dependencies need a universal repair construction"
+    else if !defaultsOk spec prog then
+      some s!"commit {c}: required default declarations do not match the program"
+    else none
+
 /-- The completability rules for commit `c`: some commit screen passes
 `completeVia`. Returns the first failure if none does. -/
 def completeFor (spec : Spec) (prog : Program) (c : CommitId) : Option (Option ScreenId × String) :=
-  if !entryValuesPossible spec c then
+  if let some issue := additionalCompletionIssue spec prog c then some (none, issue)
+  else if !entryValuesPossible spec c then
     some (none, s!"commit {c}: allowed entry values have no common context-independent completion value")
   else match commitScreens prog c with
   | [] => some (none, s!"commit {c}: no button for it that the user can always see")

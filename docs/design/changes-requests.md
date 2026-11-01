@@ -1103,3 +1103,22 @@ run no Lake commands, and the report asserts disjoint full coverage and identica
 WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
 setup; preserve every event and the same byte comparisons. Renderer/FHIR also
 passes 174 Synthea bundles and 694 canonical page variants with current assets.
+
+## CHECK-CORE-CONTRACT-DOMAIN (new features)
+
+`Completable` quantifies over all records satisfying only `RecordAllowsScans`. Missing event evidence, absent code tables/payloads, and expired durable clocks are in that domain. UI events cannot create trusted external evidence. Therefore sample-based success cannot certify universal completion of an unconditional evidence-dependent commit. The checker now returns an explicit conservative `completable` finding for temporal/expiry/payload/validation contracts pending a total collection/refusal/repair construction. Core's hard stops and all five contract safety guarantees remain enforced and formally proved by `commitContracts`. Coordinate lawful completion goals/refusal commits and the evidence-domain contract before claiming general T1 for those constructs; do not pretend an expired original commit completed by taking a different commit.
+
+App regression after expanded content merge: `app/tests/app.test.tsx` expects 16 bad programs, but the permanent corpus is now 24. App build and lint pass; 89/90 tests pass with that sole stale-count failure. Update the owning-lane assertion to 24.
+
+## CHECK-T7: conservative rejection is not semantic falsity
+
+The existing `passiveScreensKept` safety rule rejects removal of even an unused,
+unreachable canonical workflow with no required commits. All twelve `Satisfies`
+properties can still hold: candidate screens are unchanged, no task disappears,
+and passive alerts target no candidate screen. `RejectionObstruction.lean`
+formalizes this example and the impossibility of unqualified semantic rejection
+soundness for the current checker. Preserve the safety rule. The public verdict
+needs to distinguish conservative certification failures from demonstrated
+semantic violations, or the trusted property must explicitly include workflow
+retention with owner approval. A replayable path alone proves neither. This is
+independent of the existing seed-13 escape and patient-witness API gap.

@@ -1,4 +1,7 @@
 import Ehr.Check.ReplayTypes
+import Ehr.Props.OldObligations
+import Ehr.Props.Contracts
+import Ehr.Specs.V2
 
 /-! Comparator challenge statements for the completed semantic checker clauses.
 The `sorry` bodies are intentional challenge placeholders, exactly as in the
@@ -63,6 +66,18 @@ theorem T7_rejection (sp : Spec) (prev : Option Program) (can p : Program)
     (property message : String) (es : List Event) (screens : List ScreenId)
     (h : check sp prev can p = .violation property message es screens) :
     (∃ r ∈ rules sp prev can p, r.passes = false) ∧ ValidCounterexample sp p es := by
+  sorry
+
+
+theorem T8_old_obligations {new old : Spec} {prev : Option Program}
+    {canonical p : Program} (he : new.Extends old)
+    (hs : Satisfies new prev canonical p) :
+    ∀ facts user, user.role = p.role → OldObligations old ⟨new, p, facts, user⟩ := by
+  sorry
+
+theorem accepted_contracts (sp : Spec) (prev : Option Program) (can p : Program)
+    (h : check sp prev can p = .ok) :
+    ∀ facts user, user.role = p.role → CommitContracts ⟨sp, p, facts, user⟩ := by
   sorry
 
 end Ehr.Check
