@@ -275,6 +275,7 @@ function Chart({
         </Button>
       </div>
       <Drawer
+        transitionProps={{ duration: 0 }}
         zIndex={1100}
         opened={panel}
         onClose={() => setPanel(false)}
@@ -318,6 +319,7 @@ function Chart({
         </Stack>
       </Drawer>
       <Modal
+        transitionProps={{ duration: 0 }}
         opened={resourceOpen}
         onClose={() => setResourceOpen(false)}
         title="Saved Medplum resource"

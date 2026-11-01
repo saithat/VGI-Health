@@ -14,8 +14,16 @@ test("app shell: every shell control has an effect or an explained disabled stat
   const audit = new Audit(page);
   const freshGoto = async (url: string) => {
     const context = page.context();
+    const baseline = page.url().startsWith("http")
+      ? await page.evaluate(() => sessionStorage.getItem("vgi.baseline"))
+      : null;
     await page.close();
     page = await context.newPage();
+    if (baseline !== null)
+      await page.addInitScript(
+        (value) => sessionStorage.setItem("vgi.baseline", value),
+        baseline,
+      );
     page.setDefaultTimeout(15000);
     audit.setPage(page);
     await page.goto(url);
@@ -543,8 +551,16 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
   const audit = new Audit(page);
   const freshGoto = async (url: string) => {
     const context = page.context();
+    const baseline = page.url().startsWith("http")
+      ? await page.evaluate(() => sessionStorage.getItem("vgi.baseline"))
+      : null;
     await page.close();
     page = await context.newPage();
+    if (baseline !== null)
+      await page.addInitScript(
+        (value) => sessionStorage.setItem("vgi.baseline", value),
+        baseline,
+      );
     page.setDefaultTimeout(15000);
     audit.setPage(page);
     await page.goto(url);
@@ -844,6 +860,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
               undefined,
               "app",
             );
+            await viewer.waitFor({ state: "hidden" });
           }
           const component = programComponents.screens
             .find((s) => s.id === screen)
