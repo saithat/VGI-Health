@@ -1,133 +1,167 @@
 # Content handoff
 
-## Content-owned work remaining
+## Completed work
 
-**Nothing left.** Owner-requested catalog encoding is complete in `387e51c`
-(source rules, canonical support and eight new permanent mutations) and
-`6334088` (release coverage, exports, source map and statistics). Both commits
-were pushed to `origin/lane/content`. Main and `origin/lane/rules-encode` were
-merged first at `c0a6541`.
+Merged `origin/main` first at `601991a`. Pushed implementation `a61afc6`
+and integration/exports/replays `74984a8` to `origin/lane/content`.
 
-- All **124** `fit: spec-data` catalog rules are represented in v1: CMS 24,
-  Title 22 42, California statutes 23, federal Rx/vaccine 31, entrenched 4.
-  The five modules under `lean/Ehr/Specs/Rules/` contribute the lists v1
-  concatenates. Every new source item has Law/Entrenched labels, citations
-  and catalog ids. Shared encodings carry every citation. `catalog.json`
-  records actual `encodedIn` ids, or an explicit reason for the 264
-  core-feature and 139 out-of-scope rules. It also records pending renderer
-  bindings and dormant Schedule V/GHB branches instead of implying coverage.
-- All previous v1 declarations, requirements, alerts and design rules remain
-  exact prefixes of the new exports. No property or safety rule was changed.
-  The stricter old `naloxoneEducation` flag remains required alongside the
-  new human education-outcome enum; this intentional deviation from the
-  plan's replacement suggestion is documented in CR-15 and the catalog.
-- Canonical content now has 82 screens, 224 elements, 58 infos, 45 commits,
-  grouped expanded artifact/prescription sections and required review panels
-  before commit buttons. Shared service links preserve patient/episode and
-  Back navigation. Fixed order-set rows receive their own prescription fields.
-  Each dedicated medication issuance/authorization inherits all ordinary
-  signing entries, pre-op guards, reviews and signing alerts. Existing friction
-  remains. These are content/visibility declarations, not payload certificates.
-- W7 captures the requested drug and human notScheduleII eligibility before
-  approval, adds a distinct denial action requiring a denial decision/reason,
-  and routes new prescriptions through w7Orders → w7Sign/signOrders. The human
-  attestation is not an automatic determination of legal eligibility.
-- V1_1 imports V1 and V2 imports V1_1. Both `Extends` proofs still use
-  `decide`; `#print axioms` reports only permitted `propext`. No unfinished
-  content proofs. V2 indication captures and sign summaries also cover the new
-  prescribing variants; all new artifact actions have completing human walks
-  in each release, including an old-release-negative/new-release-positive
-  antibiotic example.
-- All 24 permanent seeds are exported and covered by interpreter/structural
-  regressions. New seeds 17–24 remove restraint care-plan, op technique,
-  vaccine-provider address, MAR time and controlled-product strength; hide the
-  signing notice; omit telehealth consent; or default human refill eligibility.
-  Prohibited standing/PRN restraint values also have hard-stop regressions.
-  These are not the check lane's semantic rejection lemmas or certificates.
-- The previous seven-day CURES correction, vaccine/VIS fields, Schedule II
-  zero-refill rule, human signing and all sixteen original seeds remain intact.
+All **181** newly qualifying catalog rows are accounted for: **155** have
+concrete v1 spec representations; **26** still require language/adapter
+capabilities that the five new feature families do not provide. Each has its
+precise reason in `catalog.json` and below. This is not a claim that all 181
+are implemented. The existing 29 plus pass-1's 124 rules remain represented,
+for **308** catalog rules with representations overall.
 
-## Reproduction and validation
+| New family | Represented | Examined |
+|---|---:|---:|
+| event-time-window | 66 | 67 |
+| patient-predicate | 57 | 59 |
+| value-validation | 12 | 34 |
+| order-expiry-clock | 10 | 11 |
+| structured-display | 10 | 10 |
 
-From the root, run `python lean/Ehr/Specs/Rules/encode.py`. Then run, sequentially:
+- `feature_data.py` is the reviewed mapping; `feature_encode.py` emits
+  `Specs/Rules/Features.lean`, placements and catalog provenance. Every source
+  item carries Law/Entrenched labels, citations and catalog ids. V1 appends
+  clinical entries, time windows, durable clocks, validation and payload contracts.
+  Validators conjoin with existing rules. All issuance variants inherit old
+  signing/pre-op/review/alert requirements and new pre-op timing; actual signing
+  controls have a semantic label. No core, Props, Check or statements files changed.
+- V1.1/V2 inherit the rebuilt V1. Both Extends proofs use `decide`, with only
+  `propext` in their axiom audits. The relation additionally preserves display
+  obligations. There are no unfinished content proofs or new axioms.
+- Canonical: **132 screens, 283 elements, 65 infos, 95 commits**, 90 attached
+  temporal obligations, 10 durable expiry obligations, 13 display contracts.
+  All original W1–W7 paths and 50 new artifact actions have completing human
+  walks; all new artifacts complete in v1, v1.1 and v2. Required reviews are
+  always-visible root components before commit controls (`commitReviewsPinned`).
+  Phase payloads follow workflows; missing phase evidence conservatively blocks.
+  Separate decline/release/stop/expired-prescription actions remain available.
+- All **32** permanent seeds are exported. Seeds 25–32 exercise expired
+  restraint, stale interval H&P, expired Schedule III–V Rx, underage consent,
+  invalid birth date, daily methotrexate default, hidden grouped results and
+  misleading signing labels. Their eight generated manifests under
+  `programs/replays/` carry typed external facts and real human events, referencing
+  the actual exported spec/program. `replay_features.py` confirms the intended
+  native-API reason and no commits. The earlier 24 regressions remain intact.
+- Qualitative source deadlines and extra numeric lookbacks are explicitly
+  labeled stricter hospital policies. The adult restraint condition has no
+  artificial upper age limit (age 151 is a regression). Unknown age/clinical
+  facts cannot bypass eligibility. Original issue/start/first-fill anchors and
+  actual six-calendar-month anniversaries are used. No typed field fabricates
+  trusted event, clinical, clock or payload evidence.
+
+## Reproduction
+
+From the worktree root:
 
 ```sh
+python -B lean/Ehr/Specs/Rules/encode.py
 cd lean
 lake build
 lake check
 lake comparator
 lake exe export-content
+lake env lean --run Ehr/Canonical/FeatureReplays.lean ../programs/replays
 cd ..
-python lean/Ehr/Canonical/export_rules.py
+python -B lean/Ehr/Canonical/export_rules.py
+python lean/Ehr/Canonical/replay_features.py
 ```
 
-The last script audits every proposed entry (scope, allowed values), every
-review (shownOnCommit/no waiver), item references, release prefix inheritance
-and catalog status against the actual Lean JSON. It regenerates root `STATS.md`,
-`programs/canonical/STATS.md` and the source map in `docs/regulations.md`.
-The older export executable's console message still says 16 seeds; its actual
-export loop writes all 24, which the audit checks.
+Never run two Lake processes at once. The original exporter console still says
+16 seeds; its actual loop exports all 32. The audit asserts the actual corpus.
+The old `encoding-plan.md` describes pass 1; the executable second-pass mapping
+is `feature_data.py`. Running the rules-research catalog builder can overwrite
+content encoding metadata; rerun `encode.py` afterward.
 
-Validation:
+Validation on the expanded exports:
 
-- Full `lake build` passes all canonical, 24-seed, new-artifact and release guards.
-- Final `lake check` passes: the default kernel accepts the complete solution,
-  with only `propext`, `Quot.sound` and `Classical.choice`.
-- Comparator accepts all 18 frozen statements; no statements or properties edited.
-- Both extension theorems and the existing main theorems have axiom audits;
-  no new axioms, sorry, admit or native_decide were introduced.
-- Lean exports round-trip every spec/program. A fresh `/tmp` export plus the
-  audit yields **48 byte-identical artifacts**. Native `ehr spec-export` agrees
-  with all three specs; the separate CURES-code export agrees with its saved file.
-- All **309** new source-item docstrings have source-class and catalog-id labels.
-- App build/lint/tests pass (**90**); agent typecheck/lint/tests pass (**31**);
-  world build/lint/tests pass (**92**). Tests were rerun after regenerating exports.
-- `git diff --check` passes.
+- Full `lake build`: passes, including original regressions, all 50 new artifact
+  walks, release walks, eight new failures, pinned reviews, dependency edits,
+  unknown/underage eligibility and selected/grouped payload tests.
+- `lake check`: default kernel accepts; only `propext`, `Quot.sound` and
+  `Classical.choice`. Comparator accepts all 18 current statements. Its trusted
+  challenge's `sorry` warnings are expected; no solution/content proof uses them.
+- Export tool round-trips every spec/program. Export audit verifies 279 added
+  catalog representations, all release prefixes/displays, labels, pinning,
+  32 seeds and eight replay inputs. Fresh `/tmp` generation gives **64 byte-identical
+  artifacts**; native `ehr spec-export` agrees with all three saved specs. Source
+  generation reproduces ten generated source/catalog artifacts exactly.
+- All eight new replay manifests pass through the native `run-batch` JSON API,
+  with the expected hard stops and no committed effects.
+- App build/lint pass; app tests **89/90 pass**. The complete-corpus real Lean
+  WASM rendering test passes. The single failure is the existing app-owned
+  `app/tests/app.test.tsx:25` assertion expecting 16 bad programs (main already
+  had 24; now 32). No seed or test requirement was removed to conceal it.
+- Agent typecheck/lint and **31 tests** pass; world build/lint and **92 tests**
+  pass. All were rerun after regeneration. `git diff --check` passes.
 
 Use `pnpm --config.store-dir=/tmp/vgi-content-pnpm-store --filter <pkg> run <script>`.
-Never run two Lake processes at once.
 
-## Exactly what remains in other lanes
+## Exactly what remains
 
-The actionable consolidated request is **CR-15** in
-`docs/design/changes-requests.md`; earlier CR-10–14 remain where noted.
+**Content coding for the currently expressible scope: nothing left.** Full
+coverage remains blocked by the following **26** precise gaps. These are
+explicitly not encoded, rather than replaced by extra checkboxes:
 
-- **Render/app:** implement actual live payload bindings for all 13
-  controlledSigning* panels and resultAbnormalFlags, including every selected
-  prescription/result row, actual issue date, full identity, strength/form,
-  directions and DEA details; render the exact legal notice immediately above
-  Sign. The merged `infoContent` still falls back to an empty message for these
-  ids. Existing orderSummary fidelity (CR-14) and actual v2 abxIndication rows
-  (CR-10) also remain. Abstract visibility alone does not establish any of this.
-- **Core/world formulary owners:** introduce correct controlled-V and ghb
-  tags only when actual supported products exist, with mirrored reference data.
-  Today's finite formulary has neither class, so those encoded branches are
-  dormant. Existing Schedule II tags and albuterol caps are already synchronized.
-- **App/world/sim adapters:** map the new CommitSpec ids to exclusive artifact
-  effects and persist every field's FHIR target; supply trusted dates/provider/
-  inventory data; preserve separate refill-denial and prescription-issuance
-  effects. Start/reset a fresh artifact episode for later physical events.
-  Existing captured flags are not proof of all doses, shifts or restraint
-  episodes. ISO labels do not validate dates, deadlines or expiry. Pass true
-  encounterKind=preop in surgical episodes (CR-13).
-- **Core/check:** preserve the guard semantics while considering artifact
-  scoping for currentLineComplete, which currently checks every per-line
-  requirement across commits. Content exposes earliestFillDate and controlled
-  readiness on composers to keep that stricter stop completable. Terminology
-  membership and CURES exemption eligibility still need CR-11 work.
-- **Check:** certify all 15 persona canonicals against the matching release,
-  reject all 24 seeds with replayable counterexamples/semantic lemmas, and
-  preserve human steps, allowed values, source constraints, enter-once and
-  workflow-scoped passive alerts. No production checker exists in this worktree;
-  content does not claim checker soundness, general T8, or certification.
-- **Agent:** preserve drugClass, EntryReq.allowed and requestPriorAuth, then
-  round-trip every actual release/persona export. Current real-release parsing
-  fails at entries[16].when; v1.1/v2 programs fail at prior-auth action kinds,
-  despite the existing 31-test suite passing (CR-12/14). Do not remove constraints
-  or panels to satisfy the older validator.
-- **WASM/app:** rebuild the interpreter assets and exercise the actual expanded
-  specs/programs, native/WASM equivalence, legal hard stops and rendered panels.
+- `cms-482.25-b5-automatic-stop`: ExpiryReq blocks actions for a known durable order, but cannot choose policy-dependent defaults when duration/dose-count is absent or run an automatic-stop scheduler. A fixed expiry on a new manual action would not implement this source rule. Needs default-policy selection plus backend auto-stop scheduling.
 
-`releases/<version>/personas/P1.json` … `P5.json` are the deployment candidates.
-The all-workflows canonical is an authoring template; none of these exports is
-a production checker certificate.
+- `ca-statutes-fam-6929-parent-initiated-disclosure`: Clinical predicates can scope UI requirements but cannot enforce requester identity, disclosure destinations or independently applicable federal confidentiality law. Requires release-access-policy; a disclosure checkbox would not enforce it.
+
+- `ca-statutes-hsc-123115-protected-minor-proxy`: ClinicalPredicate can identify age/service/capacity but cannot filter record resources returned to a proxy or authorize that proxy. Requires release-access-policy over resource and requester identities.
+
+- `ca-statutes-civ-56-11-authorization-expiration`: TemporalReq compares two event timestamps, but cannot authorize a future release up to a civil-year expiration/date-or-event, evaluate revocation, or enforce requested-later/research exceptions. A deadline on documenting authorization would not enforce release access. Needs release-access-policy and civil-year/event expiry.
+
+- `federal-rx-1306-11-emergency-quantity`: supplyDaysCeil computes days supplied, but Validation has no comparison to a patient-specific emergency-period duration. An arbitrary fixed ceiling would misstate the emergency rule. Needs bounded relational comparison to trusted emergency-period evidence.
+
+- `federal-rx-170-315-implant-lot`, `federal-rx-170-315-implant-serial`, `federal-rx-170-315-implant-expiry`: udiGs1 validates a supported UDI string but exposes no parser output/extraction into lot, serial or expiration fields. Other issuer formats need trusted product tables. Accepting a valid UDI is not the required production-identifier parsing capability; needs a typed parser/projection and persistence binding.
+
+- `entrenched-ismp-dosing-weight-category`: The AST can restrict kg ranges but cannot select wet/dry/dosing weight by indication, fluid status and precedence or attest the selected source. A category enum would not define the required selection rules.
+
+- `entrenched-leapfrog-bcma-wrong-dose`: Validation has no scanned-product-strength times administered-count comparison against the active administration order. drug-name scan matching is not dose matching. Requires product identity/strength relational validation.
+
+- `entrenched-tjc-prohibited-list`, `entrenched-ismp-abbrev-iu`, `entrenched-ismp-abbrev-qd`, `entrenched-ismp-abbrev-qod`, `entrenched-ismp-abbrev-cc`, `entrenched-ismp-abbrev-microgram`, `entrenched-ismp-abbrev-dc`, `entrenched-ismp-abbrev-units`, `entrenched-ismp-abbrev-ms`, `entrenched-ismp-abbrev-mso4`, `entrenched-ismp-abbrev-mgso4`: Validation.token constrains a whole-string alphabet/length, not forbidden tokens, case/punctuation variants or context-sensitive abbreviation replacement across narratives and rendered medication communication. A vocabulary on an additional field would leave existing text unprotected; needs token-aware text/output validation.
+
+- `entrenched-safer-allergy-synonyms`, `entrenched-safer-environmental-allergy`: codeMember validates exact membership but cannot normalize synonym aliases or route environmental allergens into Condition rather than AllergyIntolerance. Needs terminology normalization and category-specific record routing.
+
+- `entrenched-safer-pediatric-dose-rounding`: Fixed tenths and decimal lexical validation cannot implement weight-dependent rounding precision below 0.1 units.
+
+- `entrenched-safer-pediatric-concentration`: No validated concentration-to-volume relation or available-product selection exists; membership alone does not calculate a safe volume.
+
+- `entrenched-safer-maximum-daily-dose`: doseByWeight caps one dose, not the sum of dose times frequency across all active/new administrations. Requires daily aggregate arithmetic with product/unit normalization.
+
+The **83 L-group** record-level-completeness, qualified-authorization and
+release-access-policy rows retain their individual unencoded reasons; the
+139 out-of-scope rows remain documented. No remaining catalog row is silently
+omitted or relabeled as complete.
+
+Cross-lane actions are consolidated in **CR-16**, with **CR-15** and earlier
+requests retained:
+
+- **App:** repair the stale 16-seed assertion to cover the actual exported
+  corpus. Keep all 32 programs. This is the sole current TS suite failure.
+- **App/world/render:** supply coherent current patient/episode/artifact-version
+  events, clinical snapshots, source code tables, local business calendars,
+  durable clocks/month cutoffs, actual workflow phase and actual InfoPayloads.
+  Paint groups/selection/pinning and bind every new/old panel to real data.
+  Missing clinical/phase/evidence inputs intentionally block; no permissive
+  fallback is authorized. `FeatureExamples` and replay facts are test-only.
+  Preserve the exact controlled legal notice and all selected prescription rows;
+  the old 13 controlledSigning* payload bindings and CR-10/14 fidelity work remain.
+- **App/world/sim:** implement exclusive effects/FHIR writes for new artifact
+  actions; preserve distinct completion/filing events and separate refusal,
+  expiry, stop and release effects. Reset artifact episodes at real new events,
+  never reset durable original clocks through navigation or transfer.
+- **Core/check:** enforce coverage of all source rows/slots, not merely fields
+  on supplied payload rows, before claiming complete prescription/result fidelity.
+  Practitioner credentials and external evidence truth remain trusted adapter
+  responsibilities. Preserve strict current-line/per-slot guard semantics.
+- **Core/world:** actual controlled-V/GHB formulary support remains needed;
+  don't create fictitious products or dilute Schedule II constraints.
+- **Check/agent/sim/WASM:** consume the actual expanded releases/persona programs,
+  validate all added ASTs and policy fields, certify the actual layouts and reject
+  all 32 seeds with replayable semantic counterexamples. Use the supplied replay
+  inputs for the new cases. Preserve existing CR-12/14 parser requests and
+  native/WASM equivalence/fidelity coverage. No production checker certificate,
+  T1/T4/general T8 proof or physical-care/record-completeness certificate is
+  claimed by content.

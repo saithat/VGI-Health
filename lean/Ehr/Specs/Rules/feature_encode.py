@@ -164,4 +164,4 @@ print(f'Feature pass: {len(selected)-len(SKIP)} encoded, {len(SKIP)} precise rem
 
 import subprocess
 import sys
-subprocess.run([sys.executable, str(Path(__file__).with_name("feature_fixtures.py"))], check=True)
+subprocess.run([sys.executable, "-B", str(Path(__file__).with_name("feature_fixtures.py"))], check=True)

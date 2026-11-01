@@ -799,3 +799,12 @@ other local lookbacks and checklist/administration windows are likewise labeled.
 The ordinary access/summary deadlines are retained even where law permits an
 extension. Exception/refusal/release documentation remains a separate action;
 no old entry, review, alert, property or safety rule was removed.
+
+CR-16 validation update: the expanded corpus has 32 bad programs; the app suite
+is 89/90 (only its stale 16-seed assertion fails). Actual real-WASM rendering of
+the full corpus passes. New seeds 25–32 additionally have exported trusted-fact /
+human-event replay manifests in `programs/replays/`; run
+`python lean/Ehr/Canonical/replay_features.py` after content export. All eight
+replay through the native JSON API with the intended hard stops and no commits.
+The original content exporter console's hardcoded "16 bad programs" message is
+also stale; please update that owning-tools diagnostic to `Bad.programs.length`.

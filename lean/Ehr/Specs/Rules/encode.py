@@ -156,4 +156,4 @@ print(f'Generated {len(selected)} rule encodings in five source modules and cano
 # The owner-requested second pass uses the now-available closed feature ASTs.
 import subprocess
 import sys
-subprocess.run([sys.executable, str(Path(__file__).with_name("feature_encode.py"))], check=True)
+subprocess.run([sys.executable, "-B", str(Path(__file__).with_name("feature_encode.py"))], check=True)
