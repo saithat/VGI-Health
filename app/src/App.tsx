@@ -1,10 +1,21 @@
-import { useEffect, useState, useSyncExternalStore } from 'react';
-import { loadWasmInterp } from './core/wasmInterp';
-import { createSession } from './core/session';
-import type { Interp } from './core/interp';
-import { paint } from './ehr/painter';
-import { PatientPicker } from './browser/Browse';
-import { currentProgram, defaultPatient, ehrUrl, loadCatalog, personas, readArtifact, verdictsSchema, type Catalog, type ProgramEntry, type Patient } from './browser/data';
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { loadWasmInterp } from "./core/wasmInterp";
+import { createSession } from "./core/session";
+import type { Interp } from "./core/interp";
+import { paint } from "./ehr/painter";
+import { PatientPicker } from "./browser/Browse";
+import {
+  currentProgram,
+  defaultPatient,
+  ehrUrl,
+  loadCatalog,
+  personas,
+  readArtifact,
+  verdictsSchema,
+  type Catalog,
+  type ProgramEntry,
+  type Patient,
+} from "./browser/data";
 
 type Session = ReturnType<typeof createSession>;
 interface Workspace {
@@ -16,89 +27,231 @@ interface Workspace {
   verdict: { status: string; output?: unknown };
 }
 let interpreter: Promise<Interp> | undefined;
-const roles: Record<string, string> = { P1: 'physician', P2: 'physician', P3: 'rn', P4: 'np', P5: 'surgeon' };
+const roles: Record<string, string> = {
+  P1: "physician",
+  P2: "physician",
+  P3: "rn",
+  P4: "np",
+  P5: "surgeon",
+};
 const pretty = (value: unknown) => JSON.stringify(value, null, 2);
 function LiveWorkspace({ workspace }: { workspace: Workspace }) {
   const { session, catalog, program, patient, persona, verdict } = workspace;
-  const { page, state, view, result } = useSyncExternalStore(session.subscribe, session.getSnapshot);
-  const [error, setError] = useState('');
-  return <>
-    <header className="workspace-toolbar">
-      <a href={`/browse?patient=${patient.id}&persona=${persona}`}>← UI browser</a>
-      <label>Persona <select aria-label="Persona" value={persona} onChange={event => {
-        const id = event.currentTarget.value;
-        window.location.assign(ehrUrl(currentProgram(catalog, id, program.run), defaultPatient(catalog, id).id, id));
-      }}>{personas.map(id => <option key={id}>{id}</option>)}</select></label>
-      <span>LIVE · Lean WASM · {program.release} · {program.label}</span>
-      <button onClick={() => window.location.reload()}>Reset episode</button>
-      <a href={program.run ? `/dashboard?run=${encodeURIComponent(program.run)}` : '/dashboard'}>Dashboard</a>
-    </header>
-    <details className="patient-switcher"><summary>{patient.name} · {patient.age} · {patient.encounterClass} · Change patient</summary>
-      <PatientPicker catalog={catalog} value={patient.id} onChange={selected => window.location.assign(ehrUrl(program, selected.id, persona))} />
-    </details>
-    <p className="workspace-source">{program.path}{program.mock ? ' · MOCK-authored program, executed by real Lean WASM' : ''} · Offline episode · no clinical writes</p>
-    {error && <p role="alert">{error}</p>}
-    <div className="live-workspace">
-      <div className="live-page">{paint(page, event => {
-        try { session.dispatch(event); setError(''); }
-        catch (error) { setError(error instanceof Error ? error.message : String(error)); }
-      })}</div>
-      <details className="inspector" open>
-        <summary>Inspector · {state.screen}</summary>
-        <h2>Current screen</h2><p>{view.title} · <code>{state.screen}</code></p>
-        <p aria-live="polite">Last step: {result === null ? 'initialized' : pretty(result)}</p>
-        <h2>Checker verdict</h2><p>{verdict.status}</p>{verdict.output !== undefined && <pre>{pretty(verdict.output)}</pre>}
-        <h2>Enabled actions</h2><pre>{pretty(view.enabled)}</pre>
-        <h2>Blocked reasons</h2><pre>{pretty(view.blocked)}</pre>
-        <h2>Captured values · provenance</h2><pre data-testid="captured">{pretty(state.captured)}</pre>
-        <h2>Pending confirms</h2><pre>{pretty(view.items.filter(item => item.pendingConfirm).map(item => ({ component: item.comp.id, value: item.value, provenance: item.provenance })))}</pre>
-        <h2>Receipts</h2><pre>{pretty(state.receipts)}</pre>
-        <h2>Acknowledged alerts</h2><pre>{pretty(state.acked)}</pre>
-        <h2>Commit log</h2><pre data-testid="commits">{pretty(state.commits)}</pre>
+  const { page, state, view, result } = useSyncExternalStore(
+    session.subscribe,
+    session.getSnapshot,
+  );
+  const [error, setError] = useState("");
+  return (
+    <>
+      <header className="workspace-toolbar">
+        <a href={`/browse?patient=${patient.id}&persona=${persona}`}>
+          ← UI browser
+        </a>
+        <label>
+          Persona{" "}
+          <select
+            aria-label="Persona"
+            value={persona}
+            onChange={(event) => {
+              const id = event.currentTarget.value;
+              window.location.assign(
+                ehrUrl(
+                  currentProgram(catalog, id, program.run),
+                  defaultPatient(catalog, id).id,
+                  id,
+                ),
+              );
+            }}
+          >
+            {personas.map((id) => (
+              <option key={id}>{id}</option>
+            ))}
+          </select>
+        </label>
+        <span>
+          LIVE · Lean WASM · {program.release} · {program.label}
+        </span>
+        <button onClick={() => window.location.reload()}>Reset episode</button>
+        <a
+          href={
+            program.run
+              ? `/dashboard?run=${encodeURIComponent(program.run)}`
+              : "/dashboard"
+          }
+        >
+          Dashboard
+        </a>
+      </header>
+      <details className="patient-switcher">
+        <summary>
+          {patient.name} · {patient.age} · {patient.encounterClass} · Change
+          patient
+        </summary>
+        <PatientPicker
+          catalog={catalog}
+          value={patient.id}
+          onChange={(selected) =>
+            window.location.assign(ehrUrl(program, selected.id, persona))
+          }
+        />
       </details>
-    </div>
-  </>;
+      <p className="workspace-source">
+        {program.path}
+        {program.mock
+          ? " · MOCK-authored program, executed by real Lean WASM"
+          : ""}{" "}
+        · Offline episode · no clinical writes
+      </p>
+      {error && <p role="alert">{error}</p>}
+      <div className="live-workspace">
+        <div className="live-page">
+          {paint(page, (event) => {
+            try {
+              session.dispatch(event);
+              setError("");
+            } catch (error) {
+              setError(error instanceof Error ? error.message : String(error));
+            }
+          })}
+        </div>
+        <details className="inspector" open>
+          <summary>Inspector · {state.screen}</summary>
+          <h2>Current screen</h2>
+          <p>
+            {view.title} · <code>{state.screen}</code>
+          </p>
+          <p aria-live="polite">
+            Last step: {result === null ? "initialized" : pretty(result)}
+          </p>
+          <h2>Checker verdict</h2>
+          <p>{verdict.status}</p>
+          {verdict.output !== undefined && <pre>{pretty(verdict.output)}</pre>}
+          <h2>Enabled actions</h2>
+          <pre>{pretty(view.enabled)}</pre>
+          <h2>Blocked reasons</h2>
+          <pre>{pretty(view.blocked)}</pre>
+          <h2>Captured values · provenance</h2>
+          <pre data-testid="captured">{pretty(state.captured)}</pre>
+          <h2>Pending confirms</h2>
+          <pre>
+            {pretty(
+              view.items
+                .filter((item) => item.pendingConfirm)
+                .map((item) => ({
+                  component: item.comp.id,
+                  value: item.value,
+                  provenance: item.provenance,
+                })),
+            )}
+          </pre>
+          <h2>Receipts</h2>
+          <pre>{pretty(state.receipts)}</pre>
+          <h2>Acknowledged alerts</h2>
+          <pre>{pretty(state.acked)}</pre>
+          <h2>Commit log</h2>
+          <pre data-testid="commits">{pretty(state.commits)}</pre>
+        </details>
+      </div>
+    </>
+  );
 }
 
 /** Every EHR route loads real Lean; mock interpreters are confined to dashboard recordings. */
 export function App() {
   const [workspace, setWorkspace] = useState<Workspace>();
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
     async function load() {
       const query = new URLSearchParams(window.location.search);
       const catalog = await loadCatalog();
-      const persona = query.get('persona') ?? 'P1';
-      if (!personas.some(id => id === persona)) throw new Error('Unknown persona');
-      const path = query.get('program');
-      const program = path ? catalog.programs.find(program => program.path === path) : currentProgram(catalog, persona, query.get('run'));
-      if (!program) throw new Error('Program is not in the committed UI catalog');
-      const release = query.get('release') ?? program.release;
-      if (!['v1', 'v1.1', 'v2'].includes(release)) throw new Error('Unknown release');
-      const patientId = query.get('patient');
-      const patient = patientId ? catalog.patients.find(patient => patient.id === patientId) : defaultPatient(catalog, persona);
-      if (!patient) throw new Error('Patient is not in the committed Synthea fixtures');
+      const persona = query.get("persona") ?? "P1";
+      if (!personas.some((id) => id === persona))
+        throw new Error("Unknown persona");
+      const path = query.get("program");
+      const program = path
+        ? catalog.programs.find((program) => program.path === path)
+        : currentProgram(catalog, persona, query.get("run"));
+      if (!program)
+        throw new Error("Program is not in the committed UI catalog");
+      const release = query.get("release") ?? program.release;
+      if (!["v1", "v1.1", "v2"].includes(release))
+        throw new Error("Unknown release");
+      const patientId = query.get("patient");
+      const patient = patientId
+        ? catalog.patients.find((patient) => patient.id === patientId)
+        : defaultPatient(catalog, persona);
+      if (!patient)
+        throw new Error("Patient is not in the committed Synthea fixtures");
       const [interp, spec, source, bundle, verdicts] = await Promise.all([
-        interpreter ??= loadWasmInterp(), readArtifact(`/releases/${release}/spec.json`),
-        readArtifact(`/${program.path}`), readArtifact(`/fixtures/synthea/${patient.file}`),
-        readArtifact('/verdicts.json').then(data => verdictsSchema.parse(data)).catch(() => verdictsSchema.parse({ programs: {} })),
+        (interpreter ??= loadWasmInterp()),
+        readArtifact(`/releases/${release}/spec.json`),
+        readArtifact(`/${program.path}`),
+        readArtifact(`/fixtures/synthea/${patient.file}`),
+        readArtifact("/verdicts.json")
+          .then((data) => verdictsSchema.parse(data))
+          .catch(() => verdictsSchema.parse({ programs: {} })),
       ]);
-      const facts = JSON.parse(interp.facts(JSON.stringify({ bundle, context: {
-        today: catalog.referenceDate, now: 540, receipts: [], record: [],
-        ...(persona === 'P2' ? { encounterKind: 'emergency' } : persona === 'P3' ? { encounterKind: 'inpatient' } : persona === 'P5' ? { encounterKind: 'preop' } : {}),
-      } })));
-      const session = createSession(interp, spec, source, facts, { id: persona, role: roles[persona] });
+      const facts = JSON.parse(
+        interp.facts(
+          JSON.stringify({
+            bundle,
+            context: {
+              today: catalog.referenceDate,
+              now: 540,
+              receipts: [],
+              record: [],
+              ...(persona === "P2"
+                ? { encounterKind: "emergency" }
+                : persona === "P3"
+                  ? { encounterKind: "inpatient" }
+                  : persona === "P5"
+                    ? { encounterKind: "preop" }
+                    : {}),
+            },
+          }),
+        ),
+      );
+      const session = createSession(interp, spec, source, facts, {
+        id: persona,
+        role: roles[persona],
+      });
       if (active) {
-        setWorkspace({ session, catalog, program: { ...program, release }, patient, persona,
-          verdict: verdicts.programs[program.path] ?? { status: 'verdict not computed' } });
-        window.history.replaceState(null, '', ehrUrl({ ...program, release }, patient.id, persona));
+        setWorkspace({
+          session,
+          catalog,
+          program: { ...program, release },
+          patient,
+          persona,
+          verdict: verdicts.programs[program.path] ?? {
+            status: "verdict not computed",
+          },
+        });
+        window.history.replaceState(
+          null,
+          "",
+          ehrUrl({ ...program, release }, patient.id, persona),
+        );
       }
     }
-    load().catch((error: unknown) => { if (active) setError(error instanceof Error ? error.message : String(error)); });
-    return () => { active = false; };
+    load().catch((error: unknown) => {
+      if (active)
+        setError(error instanceof Error ? error.message : String(error));
+    });
+    return () => {
+      active = false;
+    };
   }, []);
-  if (error) return <main className="browser-page"><a href="/browse">← UI browser</a><h1>Unable to open this program</h1><p role="alert">{error}</p></main>;
-  if (!workspace) return <p>Loading real Lean WASM and committed patient bundle…</p>;
+  if (error)
+    return (
+      <main className="browser-page">
+        <a href="/browse">← UI browser</a>
+        <h1>Unable to open this program</h1>
+        <p role="alert">{error}</p>
+      </main>
+    );
+  if (!workspace)
+    return <p>Loading real Lean WASM and committed patient bundle…</p>;
   return <LiveWorkspace workspace={workspace} />;
 }

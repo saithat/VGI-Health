@@ -29,7 +29,9 @@ try {
   });
   for (const persona of ["P1", "P2", "P3", "P4", "P5"]) {
     await page.goto(`${base}/?persona=${persona}`);
-    await expect(page.getByLabel("Replay persona")).toHaveValue(persona);
+    await expect(page.getByLabel("Persona", { exact: true })).toHaveValue(
+      persona,
+    );
     const banner = page.locator(".ehr-banner").first();
     await expect(banner).toBeVisible();
     await expect(banner).toContainText(/MRN|DOB|born/i);

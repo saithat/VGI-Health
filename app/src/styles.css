@@ -1,28 +1,154 @@
-body { margin: 0; background: #e9eef3; color: #20354a; font: 12px/1.5 Inter, sans-serif; }
-.workspace-toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 20px; background: #142c42; color: #edf5fa; }
-.persona-control { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.signin-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 25px; background: #e9eef3; }
-.signin-brand { font-size: 25px; font-weight: 800; }
-.signin-brand span { font-size: 12px; margin-left: 7px; }
-.subtle { color: #526e7b; }
-.workspace-toolbar a { color: #e2f6ff; }
-.browser-page { max-width: 1280px; margin: auto; padding: 24px; font-size: 14px; }
-.browser-page nav { display: flex; gap: 30px; }
-.browser-page h1 { font-size: 30px; }
-.patient-picker { border: 1px solid #b8cbd5; padding: 16px; margin: 16px 0; background: white; }
-.patient-picker label { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.patient-picker select { max-width: 100%; }
-.patient-filters { display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0; }
-.program-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr)); gap: 20px; }
-.program-groups section { background: white; padding: 20px; border: 1px solid #cbd8e3; border-radius: 6px; }
-.program-groups li { margin: 10px 0; overflow-wrap: anywhere; }
-.program-groups small { display: block; color: #526e7b; }
-.patient-switcher, .workspace-source { margin: 12px 20px; }
-.live-workspace { display: flex; align-items: flex-start; }
-.live-page { flex: 1; min-width: 0; }
-.inspector { flex: 0 0 340px; box-sizing: border-box; padding: 16px; background: #f8fbfd; border: 1px solid #b8cbd5; max-height: 90vh; overflow: auto; position: sticky; top: 0; }
-.inspector:not([open]) { flex-basis: auto; }
-.inspector summary { font-weight: 700; cursor: pointer; }
-.inspector h2 { font-size: 14px; border-top: 1px solid #cbd8e3; padding-top: 12px; }
-.inspector pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 11px; }
-@media (max-width: 900px) { .live-workspace { flex-direction: column-reverse; } .inspector { position: static; flex-basis: auto; width: 100%; max-height: 35vh; } .live-page { width: 100%; } }
+body {
+  margin: 0;
+  background: #e9eef3;
+  color: #20354a;
+  font:
+    12px/1.5 Inter,
+    sans-serif;
+}
+.workspace-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: #142c42;
+  color: #edf5fa;
+}
+.persona-control {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.signin-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 25px;
+  background: #e9eef3;
+}
+.signin-brand {
+  font-size: 25px;
+  font-weight: 800;
+}
+.signin-brand span {
+  font-size: 12px;
+  margin-left: 7px;
+}
+.subtle {
+  color: #526e7b;
+}
+.workspace-toolbar a {
+  color: #e2f6ff;
+}
+.browser-page {
+  max-width: 1280px;
+  margin: auto;
+  padding: 24px;
+  font-size: 14px;
+}
+.browser-page nav {
+  display: flex;
+  gap: 30px;
+}
+.browser-page h1 {
+  font-size: 30px;
+}
+.patient-picker {
+  border: 1px solid #b8cbd5;
+  padding: 16px;
+  margin: 16px 0;
+  background: white;
+}
+.patient-picker label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.patient-picker select {
+  max-width: 100%;
+}
+.patient-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 12px 0;
+}
+.program-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
+  gap: 20px;
+}
+.program-groups section {
+  background: white;
+  padding: 20px;
+  border: 1px solid #cbd8e3;
+  border-radius: 6px;
+}
+.program-groups li {
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.program-groups small {
+  display: block;
+  color: #526e7b;
+}
+.patient-switcher,
+.workspace-source {
+  margin: 12px 20px;
+}
+.live-workspace {
+  display: flex;
+  align-items: flex-start;
+}
+.live-page {
+  flex: 1;
+  min-width: 0;
+}
+.inspector {
+  flex: 0 0 340px;
+  box-sizing: border-box;
+  padding: 16px;
+  background: #f8fbfd;
+  border: 1px solid #b8cbd5;
+  max-height: 90vh;
+  overflow: auto;
+  position: sticky;
+  top: 0;
+}
+.inspector:not([open]) {
+  flex-basis: auto;
+}
+.inspector summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+.inspector h2 {
+  font-size: 14px;
+  border-top: 1px solid #cbd8e3;
+  padding-top: 12px;
+}
+.inspector pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+}
+@media (max-width: 900px) {
+  .live-workspace {
+    flex-direction: column-reverse;
+  }
+  .inspector {
+    position: static;
+    flex-basis: auto;
+    width: 100%;
+    max-height: 35vh;
+  }
+  .live-page {
+    width: 100%;
+  }
+}

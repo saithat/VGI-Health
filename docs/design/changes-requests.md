@@ -474,3 +474,16 @@ Content's Schedule II rule is implemented and regenerated in all three release s
 **Check/app/WASM:** certify matching persona canonicals from `releases/<version>/personas/`, reject all sixteen permanent seeds with replayable counterexamples, and rebuild/test WASM against the allowed-value guard. Seed 16 confirms a default of three and strands that value on a sign screen with no navigation or correction field. Tests verify there are no outgoing navigation edges and attempts to edit the hidden composer field are ignored. Restoring canonical navigation allows human correction to zero; the guard is never relaxed. No checker implementation exists in this merged worktree, so content does not claim a `¬ Satisfies` theorem or production certificate.
 
 **W7 scope clarification:** the original W7 `approveRefill` decision uses `refillRefills` and the requested drug in `Facts.medToGive?`, not the `refills`/`orderLines` signing representation requested for the owner-approved Schedule II addition. Do not claim that the new per-line rule alone certifies the separate refill decision. Any adapter that creates a modified controlled prescription must route it through the ordinary `signOrders` requirements (or request an explicit equivalent workflow rule); this prevents bypassing the controlled-detail and zero-refill gates. No new refill-decision rule has been inferred from guidance.
+
+## App UI browser integration request (2026-10-31)
+
+The live offline EHR now uses the actual `ehr_facts`, init/step/view envelopes and
+`ehr_render` exports; all committed programs render through WASM. No Lean source
+was changed in this lane.
+
+**Checker CLI owner:** the current `lean/.lake/build/bin/ehr` usage has no `check`
+command. Please expose `ehr check --spec <spec.json> --program <program.json>`
+with a JSON verdict on stdout and document it in command usage. The app's
+`pnpm --filter app verdicts` discovers all programs, invokes that contract if
+advertised, and otherwise records “verdict not computed”. Mock certificates
+are never substituted. This request does not block live interaction.

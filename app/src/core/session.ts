@@ -1,4 +1,9 @@
-import type { Event, StepOutput, State, ScreenView } from "../../../lean/generated/ehr-types";
+import type {
+  Event,
+  StepOutput,
+  State,
+  ScreenView,
+} from "../../../lean/generated/ehr-types";
 import type { Html } from "../ehr/html";
 import type { Interp } from "./interp";
 
