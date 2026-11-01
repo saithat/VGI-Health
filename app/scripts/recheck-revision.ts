@@ -86,6 +86,31 @@ export async function recheckRevision(
       baseline = resolve(temporary, "baseline.json");
     await writeFile(source, JSON.stringify(expandProgram(program)));
     await writeFile(baseline, JSON.stringify(expandProgram(canonical)));
+    if ("patientSelection" in canonical && canonical.patientSelection === true) {
+      const probeFile = resolve(temporary, "workspace-rule-probe.json");
+      const probe = { ...canonical, patientSelection: false };
+      await writeFile(probeFile, JSON.stringify(expandProgram(probe)));
+      const checkedProbe = verdictSchema.parse(
+        await nativeJson(executable, [
+          "check",
+          "--spec",
+          specFile,
+          "--program",
+          probeFile,
+          "--prev",
+          baseline,
+          "--canonical",
+          baseline,
+        ]),
+      );
+      if (
+        checkedProbe === "ok" ||
+        checkedProbe.violation.property !== "patientSelection"
+      )
+        throw new Error(
+          "The server checker does not support the current patient-workspace rule. Rebuild it before checking history.",
+        );
+    }
     verdict = verdictSchema.parse(
       await nativeJson(executable, [
         "check",
