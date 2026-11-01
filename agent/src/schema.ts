@@ -339,7 +339,7 @@ export const decisionRecordSchema = z.object({
   certificate: certificateSchema.nullable(),
   /** Offline screen check of the version that was about to deploy (null if none got that far). */
   screenCheck: screenCheckResultSchema.nullable(),
-  deployed: z.object({ version: nat, program: str, certificate: str }).nullable(),
+  deployed: z.object({ version: nat, program: str, certificate: str, build: str.optional() }).nullable(),
   outcome: outcomeSchema,
   release: z.object({
     id: str,

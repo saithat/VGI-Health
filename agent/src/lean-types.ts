@@ -84,7 +84,7 @@ export type FutureKind = { [ctor: string]: unknown };
 export type Kind = L.Kind | FutureKind;
 export type Component = Omit<L.Component, 'kind'> & { kind: Kind };
 export type Screen = Omit<L.Screen, 'components'> & { components: Component[] };
-export type Program = Omit<L.Program, 'screens'> & { screens: Screen[] };
+export type Program = Omit<L.Program, 'screens' | 'componentDefs'> & { screens: Screen[]; componentDefs?: { name: string; params: string[]; body: Component[] }[] };
 
 const slotSchema: z.ZodType<L.Slot> = z.union([z.literal('current'), z.object({ fixed: z.object({ n: nat }) })]);
 const prefillSchema: z.ZodType<L.Prefill> = z.union([
@@ -145,6 +145,7 @@ export const programSchema: z.ZodType<Program> = z.object({
   start: str,
   screens: z.array(z.object({ id: str.min(1), title: str, workflow: str, components: z.array(componentSchema) })),
   macros: z.array(z.object({ id: str.min(1), label: str, steps: z.array(macroStepSchema) })),
+  componentDefs: z.array(z.object({ name: str.min(1), params: z.array(str), body: z.array(componentSchema) })).exactOptional(),
 });
 
 // ---------------------------------------------------------------- events

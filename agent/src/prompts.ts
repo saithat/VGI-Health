@@ -67,7 +67,7 @@ export function formatProgram(p: Program): string {
     return `    {"id":${JSON.stringify(s.id)},"title":${JSON.stringify(s.title)},"workflow":${JSON.stringify(s.workflow)},"components":[\n${comps}\n    ]}`;
   }).join(',\n');
   const macros = p.macros.map((m) => `    ${JSON.stringify(m)}`).join(',\n');
-  return `{"id":${JSON.stringify(p.id)},"version":${p.version},"owner":${JSON.stringify(p.owner)},"role":${JSON.stringify(p.role)},"specVersion":${JSON.stringify(p.specVersion)},"start":${JSON.stringify(p.start)},\n  "screens":[\n${screens}\n  ],\n  "macros":[${macros ? `\n${macros}\n  ` : ''}]}`;
+  return `{"id":${JSON.stringify(p.id)},"version":${p.version},"owner":${JSON.stringify(p.owner)},"role":${JSON.stringify(p.role)},"specVersion":${JSON.stringify(p.specVersion)},"start":${JSON.stringify(p.start)},\n  "screens":[\n${screens}\n  ],\n  "macros":[${macros ? `\n${macros}\n  ` : ''}]${p.componentDefs ? `,"componentDefs":${JSON.stringify(p.componentDefs)}` : ''}}`;
 }
 
 const json = (x: unknown) => JSON.stringify(x);

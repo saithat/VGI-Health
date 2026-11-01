@@ -12,6 +12,7 @@ import {
   loadCatalog,
   personas,
   readArtifact,
+  verifyRecordedBuild,
   verdictsSchema,
   type Catalog,
   type ProgramEntry,
@@ -227,6 +228,7 @@ export function App() {
           .then((data) => verdictsSchema.parse(data))
           .catch(() => verdictsSchema.parse({ programs: {} })),
       ]);
+      await verifyRecordedBuild(program.path, source);
       const facts = JSON.parse(
         interp.facts(
           JSON.stringify({

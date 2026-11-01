@@ -1,3 +1,4 @@
+import { assertBuildBinding, buildBindingSchema, contentHash } from "../core/buildBinding";
 import { z } from "zod";
 
 const programEntrySchema = z.object({
@@ -39,7 +40,7 @@ export const personas = ["P1", "P2", "P3", "P4", "P5"] as const;
 /** Same-origin committed artifacts only. No Medplum or remote service calls. */
 export async function readArtifact(path: string): Promise<unknown> {
   if (
-    !/^\/(?:catalog\.json|verdicts\.json|(?:releases|programs|fixtures|runs)\/(?:[\w.-]+\/)*[\w.-]+\.json)$/.test(
+    !/^\/(?:catalog\.json|verdicts\.json|build\.json|ehr\/manifest\.json|(?:releases|programs|fixtures|runs)\/(?:[\w.-]+\/)*[\w.-]+\.json)$/.test(
       path,
     ) ||
     path.split("/").includes("..")
@@ -103,3 +104,19 @@ export const verdictsSchema = z.object({
     z.object({ status: z.string(), output: z.unknown().optional() }),
   ),
 });
+
+/** New run certificates bind their complete program and installed build; old recordings retain historical provenance. */
+export async function verifyRecordedBuild(programPath: string, program: unknown): Promise<void> {
+  const match = /^runs\/([\w-]+)\/programs\/(P[1-5])\/v(\d+)\.json$/.exec(programPath);
+  if (!match) return;
+  const [, run, persona, version] = match;
+  const manifest = z.object({ buildBindingRequired: z.boolean().optional() }).parse(await readArtifact(`/runs/${run}/manifest.json`));
+  if (!manifest.buildBindingRequired) return;
+  const [binding, certificate, build, wasm] = await Promise.all([
+    readArtifact(`/runs/${run}/certs/${persona}/v${version}.build.json`).then((v) => buildBindingSchema.parse(v)),
+    readArtifact(`/runs/${run}/certs/${persona}/v${version}.json`),
+    readArtifact("/build.json").then((v) => z.object({ appSha256: z.string() }).parse(v)),
+    readArtifact("/ehr/manifest.json").then((v) => z.object({ assets: z.record(z.string(), z.string()) }).parse(v)),
+  ]);
+  await assertBuildBinding(binding, { appSha256: build.appSha256, wasmSha256: wasm.assets["ehr-interp.wasm"] ?? "", componentsSha256: await contentHash([]) }, program, certificate);
+}

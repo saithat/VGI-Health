@@ -45,11 +45,11 @@ export class CodexLlm implements JsonLlm {
       const outFile = path.join(dir, 'out.json');
       await writeFile(schemaFile, JSON.stringify(req.schema));
       const args = [
-        'exec', '-c', `model_reasoning_effort="${process.env['CODEX_REASONING_EFFORT'] ?? 'high'}"`, '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
+        'exec', '--json', '-c', `model_reasoning_effort="${process.env['CODEX_REASONING_EFFORT'] ?? 'high'}"`, '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
         '--skip-git-repo-check', '-C', dir, ...(this.explicitModel ? ['-m', this.explicitModel] : []), '-',
       ];
       const stdin = `${req.system}\n\n---\n\n${req.prompt}\n\nReply with only the JSON object described by the output schema.`;
-      await this.run(args, stdin, dir);
+      const transcript = await this.run(args, stdin, dir);
       const text = await readFile(outFile, 'utf8');
       let json: unknown;
       try {
@@ -57,23 +57,24 @@ export class CodexLlm implements JsonLlm {
       } catch {
         throw new Error(`codex backend: last message for ${req.callId} is not JSON`);
       }
-      return { json, backend: 'codex', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: null };
+      return { json, backend: 'codex', model: this.model, servedBy: null, replayOf: null, promptMatched: null, usage: { reasoningEffort: process.env['CODEX_REASONING_EFFORT'] ?? 'high' }, transcript };
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
   }
 
-  private run(args: string[], stdin: string, cwd: string): Promise<void> {
+  private run(args: string[], stdin: string, cwd: string): Promise<{ stdout: string; stderr: string }> {
     return new Promise((resolve, reject) => {
       const child = spawn(this.binary, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
       let stderr = '';
-      child.stderr.on('data', (d: Buffer) => { stderr = (stderr + d.toString()).slice(-4000); });
-      child.stdout.on('data', () => undefined);
+      let stdout = '';
+      child.stderr.on('data', (d: Buffer) => { stderr = (stderr + d.toString()).slice(-2_000_000); });
+      child.stdout.on('data', (d: Buffer) => { stdout = (stdout + d.toString()).slice(-10_000_000); });
       const timer = setTimeout(() => { child.kill('SIGTERM'); reject(new Error('codex backend: timed out')); }, this.timeoutMs);
       child.on('error', (e) => { clearTimeout(timer); reject(new Error(`codex backend: ${e.message}`)); });
       child.on('close', (code) => {
         clearTimeout(timer);
-        if (code === 0) resolve();
+        if (code === 0) resolve({ stdout, stderr });
         else reject(new Error(`codex backend: exit ${String(code)}: ${stderr}`));
       });
       child.stdin.end(stdin);

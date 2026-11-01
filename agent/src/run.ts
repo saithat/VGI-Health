@@ -98,7 +98,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const store = new RunStore(dir);
   const recorder = new RecordingLlm(opts.llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
-  const screens = opts.screens ?? createScreenChecker(ehr, opts.fhirBundles ? { bundles: opts.fhirBundles } : {});
+  const screens = opts.screens ?? createScreenChecker(ehr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), artifactsDir: path.join(dir, 'reports/screens') });
   const deps: LoopDeps = {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed,
@@ -110,6 +110,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     releaseDays: z.object({ v1_1: z.number(), v2: z.number() }), seedPolicy: z.string(),
   });
   let previous: z.infer<typeof resumeManifestSchema> | null = null;
+  if (!opts.resume && existsSync(manifestFile)) throw new Error('Run already exists; use --resume or a new run id');
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
@@ -120,6 +121,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   await writeJson(manifestFile, {
+    buildBindingRequired: ehr.mode === 'real',
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
     resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
     worldIsFake: world.manifest.fake ?? false, backend: opts.llm.name, model: opts.llm.model, ehr: { mode: ehr.mode, binary: ehr.binary },
@@ -137,6 +139,21 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   };
   let inForce = await release('v1');
 
+  // Fail with every initial obstruction before spending browser/model time. No bypass.
+  if (ehr.mode === 'real') {
+    const blocked: string[] = [];
+    for (const id of personaIds) {
+      const params = world.personas.get(id);
+      if (!params) continue;
+      const initial = await releaseForPersona(inForce, id);
+      const program = personalize(initial.canonical, params, world.userId(id));
+      const verdict = await ehr.check({ specVersion: inForce.specVersion, program, prev: program, canonical: initial.canonical });
+      await writeJson(path.join(dir, 'preflight', `${id}.json`), { program, verdict });
+      if (verdict !== 'ok') blocked.push(`${id}: ${verdict.violation.property}: ${verdict.violation.message}`);
+    }
+    if (blocked.length) throw new Error(`Initial certification blocked (nothing deployed):\n${blocked.join('\n')}`);
+  }
+
   // Day-1 programs: the canonical program personalized per user (version 0), deployed with a certificate.
   const views = new Map<string, PersonaView>();
   const programs = new Map<string, Map<number, Program>>();
@@ -149,7 +166,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (!params) continue;
     const view: PersonaView = { id, userId: world.userId(id), params };
     views.set(id, view);
-    if (opts.resume) {
+    if (opts.resume && existsSync(path.join(dir, 'programs', id, 'deployed.json'))) {
       const versions = new Map<number, Program>();
       for (const file of await readdir(path.join(dir, 'programs', id))) {
         if (!/^v\d+\.json$/.test(file)) continue;

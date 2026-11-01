@@ -1,3 +1,5 @@
+import path from 'node:path';
+import { bindBuild, installedBuild } from './build-binding.js';
 import { promptContext } from './manual.js';
 /**
  * The nightly loop for one persona (BRIEF section 9):
@@ -282,11 +284,12 @@ export type DeployOutcome =
  * (T4) and publishes. A version failing either gate is never deployed.
  */
 export async function deployVersion(deps: LoopDeps, persona: string, program: Program, gate: Gate): Promise<DeployOutcome> {
+  const build = deps.ehr.mode === 'real' ? await installedBuild() : undefined;
   const screenCheck = await deps.screens.check({ specVersion: gate.specVersion, program });
   if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
-  const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: deps.store.dir });
+  const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: path.join(deps.store.dir, 'native', persona, `v${program.version}`) });
   if (!res.deployed) return { ok: false, reason: 'deploy-refused', check: toCheckResult(res.verdict), screenCheck };
-  const deployed = await deps.store.deploy(persona, program, res.certificate);
+  const deployed = await deps.store.deploy(persona, program, res.certificate, build ? bindBuild(build, program, res.certificate) : undefined);
   return { ok: true, certificate: res.certificate, deployed, screenCheck };
 }
 

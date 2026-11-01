@@ -116,3 +116,37 @@ The real CLI (`lean/Main.lean`, M3) has `init`, `step`, `view`, `run-batch <file
 - **Claude, release nights** (P1 and P3). v1.1 was not surfaced for either, with persona-specific reasons. v2 migrations certified on the first attempt, mapped to R2-1…R2-4.
 - **Codex,** `try-to-break-it` ("hide the allergy box"): implemented, rejected with `ReviewsBeforeCommit` plus a click path.
 - **Replay** of the Claude run with `ANTHROPIC_API_KEY` unset: identical decisions, `promptMatched: true`.
+
+## Core-profile preparation (lane/run, 2026-10-31)
+
+Merge milestone `3b5aa9b`; manual/rule-context milestone `cb41564`.
+The merged default Lean build (311 jobs), app production build and 152 app tests,
+and agent typecheck/lint/37 tests passed. `run1-P3` remains unchanged historical
+full-profile evidence. New prompts receive the generated capabilities manual,
+formal property docstrings, active persona obligations with source labels/citations,
+and the full active exported spec. Both context hashes are in new decisions.
+Codex explicitly requests high reasoning; request/error journals and raw JSONL
+transcripts preserve failures as well as successful responses.
+
+The first browser smoke was interrupted after a Vite config reload invalidated
+its gate; no version was deployed. Subsequent gates use the built app in preview,
+one browser worker, semantic UiScreen ARIA fidelity plus visibility/legibility/
+no-cover checks over every distinct exported tree. Identical tree hashes retain
+coverage for every exported state. Build sidecars bind WASM bytes, emitted app/
+painter build, component bundle, program and native certificate. Per-persona
+publication replaces one pointer atomically after all artifacts are written.
+
+**Protected-core dependency:** the current P4 canonical fails `completable` on
+`consentVerified`. Owner requires a human-only attending co-signature for NP
+pre-op. No protected Lean source is changed here. See
+`docs/design/changes-requests.md`; all-five smoke/full-run readiness remains
+blocked until the owning lane lands the fix and regenerated releases.
+
+**Components:** preserve `componentDefs` through validation/prompt formatting.
+Main only declares the source template structure; `Kind.use`/`Program.expand`
+and certified expansion are absent. Composite deployment waits for that formal
+support. Sandboxed per-version TSX proposal/manifest, static allowlist enforcement,
+and atomic component bundle deployment are still unfinished. The manual says so;
+no presentation component can currently enter a deployed version. The empty
+component bundle is explicitly hashed in build sidecars. These are remaining
+Step 2 items, not evidence of completed component support.

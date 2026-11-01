@@ -15,7 +15,7 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createLiveSession, type LiveContext } from "./core/liveSession";
 import { medicationDue } from "./data/worklist";
-import { loadCatalog, readArtifact } from "./browser/data";
+import { loadCatalog, readArtifact, verifyRecordedBuild } from "./browser/data";
 import {
   availableBeds,
   bundleResources,
@@ -107,11 +107,11 @@ async function liveProgram(persona: string, baseline: boolean) {
       p.run !== null &&
       p.run !== "mock",
   );
-  if (deployed)
-    return {
-      spec: await readArtifact(`/releases/${deployed.release}/spec.json`),
-      program: await readArtifact(`/${deployed.path}`),
-    };
+  if (deployed) {
+    const program = await readArtifact(`/${deployed.path}`);
+    await verifyRecordedBuild(deployed.path, program);
+    return { spec: await readArtifact(`/releases/${deployed.release}/spec.json`), program };
+  }
   return {
     spec: await readArtifact("/releases/v2/spec.json"),
     program: await readArtifact(`/releases/v2/personas/${persona}.json`),

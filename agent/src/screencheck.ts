@@ -18,10 +18,11 @@
  */
 import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { mkdtemp, rm } from 'node:fs/promises';
+import { mkdtemp, rm, mkdir, writeFile, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import type { EhrClient } from './ehr.js';
+import { sha256 } from './program.js';
 import { isRecord } from './jsonpatch.js';
 import type { CheckResult, Program, ScreenCheckResult } from './schema.js';
 
@@ -50,10 +51,10 @@ export function bundlesFromEnv(): string[] {
   return (process.env['EHR_SAMPLE_FHIR'] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 }
 
-export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string } = {}): ScreenChecker {
+export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string; artifactsDir?: string } = {}): ScreenChecker {
   const fake = opts.fake ?? ehr.mode === 'fake';
   const bundles = opts.bundles ?? bundlesFromEnv();
-  return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm');
+  return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir);
 }
 
 function run(cmd: string, args: string[], cwd: string): Promise<{ code: number; output: string }> {
@@ -80,7 +81,7 @@ export function failingFilesFromOutput(output: string, files: readonly string[])
 
 class CliScreenChecker implements ScreenChecker {
   readonly mode = 'real' as const;
-  constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string) {}
+  constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string) {}
 
   async check(input: { specVersion: string; program: Program }): Promise<ScreenCheckResult> {
     const base = { mode: this.mode, bundles: this.bundles };
@@ -92,13 +93,29 @@ class CliScreenChecker implements ScreenChecker {
       const files: string[] = [];
       for (const [i, bundle] of this.bundles.entries()) {
         try {
-          files.push(...await this.ehr.renderScreens({ specVersion: input.specVersion, program: input.program, fhir: bundle, outDir: path.join(dir, `b${i}`) }));
+          files.push(...await this.ehr.renderScreens({ specVersion: input.specVersion, program: input.program, fhir: bundle, ui: true, outDir: path.join(dir, `b${i}`) }));
         } catch (e) {
           return { ...base, status: 'fail', pages: files.length, failingScreens: [], failingFiles: [], message: `render-screens failed for ${bundle}: ${errorMessage(e)}` };
         }
       }
       if (files.length === 0) return { ...base, status: 'fail', pages: 0, failingScreens: [], failingFiles: [], message: 'render-screens produced no page trees' };
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', ...files], REPO_ROOT);
+      // Exactly equal semantic trees have exactly equal fidelity/visibility obligations.
+      // Keep a coverage hash for every exported state, checking each distinct tree once.
+      const representatives = new Map<string, string>();
+      const coverage: { file: string; sha256: string; representative: string }[] = [];
+      for (const file of files) {
+        const hash = sha256(await readFile(file, 'utf8'));
+        const representative = representatives.get(hash) ?? file;
+        representatives.set(hash, representative);
+        coverage.push({ file: path.basename(file), sha256: hash, representative: path.basename(representative) });
+      }
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT);
+      if (this.artifactsDir) {
+        const reportDir = path.join(this.artifactsDir, input.program.owner, `v${input.program.version}`);
+        await mkdir(reportDir, { recursive: true });
+        await writeFile(path.join(reportDir, 'output.txt'), res.output);
+        await writeFile(path.join(reportDir, 'coverage.json'), JSON.stringify({ pages: files.length, distinct: representatives.size, coverage }, null, 2));
+      }
       if (res.code === 0) return { ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
       const failingFiles = failingFilesFromOutput(res.output, files);
       return {

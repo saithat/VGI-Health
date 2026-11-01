@@ -1,3 +1,4 @@
+import { buildBindingPlugin } from "./scripts/build-binding-plugin";
 import { defineConfig } from "vitest/config";
 import { catalogPlugin } from "./scripts/catalog-plugin";
 import react from "@vitejs/plugin-react";
@@ -27,6 +28,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    buildBindingPlugin(),
     react(),
     runsPlugin(),
     catalogPlugin(),

@@ -30,7 +30,7 @@ const result = spawnSync(
     resolve(appDir, "node_modules/@playwright/test/cli.js"),
     "test",
     ui ? "ui-check.spec.ts" : "screen-check.spec.ts",
-    "--output", output, "--fully-parallel", "--workers", process.env.EHR_SCREEN_WORKERS ?? "4",
+    "--output", output, "--max-failures=1", "--workers", "1",
     "--config",
     resolve(appDir, "playwright.config.ts"),
   ],
@@ -38,7 +38,7 @@ const result = spawnSync(
     cwd: appDir,
     stdio: "inherit",
     env: {
-      ...process.env, APP_TEST_PORT: port,
+      ...process.env, APP_TEST_PORT: port, APP_TEST_PREVIEW: "1",
       [ui ? "EHR_UI_FILES" : "EHR_SCREEN_FILES"]: JSON.stringify(files),
     },
   },

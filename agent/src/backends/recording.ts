@@ -24,6 +24,7 @@ export const llmRecordSchema = z.object({
   prompt: z.string(),
   response: z.unknown(),
   usage: z.unknown(),
+  transcript: z.unknown().optional(),
   createdAt: z.string(),
 });
 export type LlmRecord = z.infer<typeof llmRecordSchema>;
@@ -51,7 +52,14 @@ export class RecordingLlm implements JsonLlm {
       return { json: old.response, backend: this.inner.name, model: old.model, servedBy: old.servedBy,
         replayOf: { backend: old.backend, model: old.model, source: file }, promptMatched: true, usage: old.usage };
     }
-    const res = await this.inner.complete(req);
+    await writeJson(file.replace(/\.json$/, '.request.json'), { ...req, backend: this.inner.name, model: this.inner.model, startedAt: new Date().toISOString() });
+    let res: JsonResponse;
+    try {
+      res = await this.inner.complete(req);
+    } catch (error) {
+      await writeJson(file.replace(/\.json$/, '.error.json'), { callId: req.callId, error: error instanceof Error ? error.message : String(error), time: new Date().toISOString() });
+      throw error;
+    }
     const record: LlmRecord = {
       callId: req.callId,
       purpose: req.purpose,
@@ -65,6 +73,7 @@ export class RecordingLlm implements JsonLlm {
       prompt: req.prompt,
       response: res.json,
       usage: res.usage ?? null,
+      ...(res.transcript ? { transcript: res.transcript } : {}),
       createdAt: new Date().toISOString(),
     };
     await writeJson(llmRecordPath(this.runDir, req.callId), record);
