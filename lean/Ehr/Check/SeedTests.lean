@@ -1,9 +1,11 @@
 import Ehr.Canonical.BadPrograms
 import Ehr.Check.Check
 
-/-! Permanent seeded regressions. Until content's template passes on its own,
-rejection and replay tests are paired with mutation-specific rule tests and
-negative property proofs. A shared template failure alone is not sufficient. -/
+/-!
+Seeded rejection and replay tests, paired with checks of each mutation.
+A failure shared by the original and mutated program does not establish
+that the checker detected the mutation.
+-/
 namespace Ehr.Check.Tests
 open Ehr Ehr.Check Ehr.Canonical Ehr.Specs.V1
 

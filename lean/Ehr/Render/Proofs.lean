@@ -2,13 +2,9 @@ import Ehr.Render.Contracts
 import Ehr.Examples.Tiny
 
 /-!
-# T10: the page agrees with the interpreter
-
-These theorems concern the executable renderer, not a second model. Every
-shown item has its labeled wrapper in the page. Every component id in the page
-belongs to a shown item, and every component action is disabled exactly when
-the view does not enable that id. Classes cannot express tiny text or hiding.
-The fixed stylesheet and browser paint/hit-testing are checked offline.
+T10: the page agrees with the actual interpreter view.
+Shown items have labeled wrappers, and component actions have the correct
+disabled state. The stylesheet and browser drawing are checked separately.
 -/
 namespace Ehr.Render
 

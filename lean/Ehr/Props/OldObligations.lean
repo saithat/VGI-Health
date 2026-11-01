@@ -1,11 +1,15 @@
 import Ehr.Props.Properties
 import Ehr.Specs.Extends
 
+/-!
+Rules retained from an older hospital release while the installed release runs.
+These requirements preserve old safety duties without restricting new catalog items.
+-/
+
 namespace Ehr.Props
 open Ehr
 
-/-- The older release's structural human-entry, unit and alert policies.
-These are the actual old-spec predicates, not their new-spec substitutes. -/
+/-- The older release's human-entry, unit and alert rules on the given program. -/
 def OldStaticObligations (old : Spec) (p : Program) : Prop :=
   NoAutomationAttempts old p ∧ QuantityPrefillsKeepUnits old p ∧
   NoAlertSuppression p ∧ NoInterruptivePopupRequests old p ∧
@@ -27,13 +31,10 @@ def OldCommitContracts (old : Spec) (ep : Episode) : Prop :=
         !displayActive ep.facts s (some c) rq || displayReqMet ep.spec ep.prog ep.facts s rq = true) ∧
       actionLabelOk ep.spec ep.prog ep.facts s c = true
 
-/-- The older hospital's obligations, projected onto executions of the installed
-release. The interpreter remains the installed release's interpreter: upgrading
-does not run the old interpreter, discard new guards, or require old catalog
-membership. `Extends` preserves old declarations exactly, including human-entry
-policies and units. Entry/review/alert quantifiers below range over OLD rules.
-Human actions and alert truth/acknowledgment invariants retain their full strength.
-This is the owner-approved T8 projection, not full `Satisfies` for the old catalog. -/
+/-- The older hospital's entry, review, human-action, unit, alert and extra rules
+must still hold while the installed release runs. Extends preserves the old
+rules exactly. This does not require the program to use only the old catalog
+or satisfy every part of the older Satisfies statement. -/
 def OldObligations (old : Spec) (ep : Episode) : Prop :=
   ep.spec.Extends old ∧ OldStaticObligations old ep.prog ∧
   (EveryStep ep fun s actor e => ∀ c, CommitHappens ep s actor e c →

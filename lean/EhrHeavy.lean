@@ -1,5 +1,7 @@
-/-! Parked for iteration speed. Build with `ruleProfile := .full`.
-Known-unfinished modules are listed in TODO_PROOFS.md. -/
+/-!
+Opt-in whole-program proofs and full-catalog regression tests.
+Build with ruleProfile set to full.
+-/
 
 import Ehr.Check.AdditionalBadProofs
 import Ehr.Check.BadProofs

@@ -1,20 +1,10 @@
 import Ehr.Props.Basics
 
 /-!
-# The screen graph
-
-Screens are nodes; a "go to" button is an edge. The checker searches this
-graph breadth-first, so each path it finds is a shortest one. A path found by
-the search is not trusted: `isGotoPath` re-checks it hop by hop, and
-`isGotoPath_sound` proves that a re-checked path is a real `GotoPath`.
-
-Two edge sets are used:
-- `allGotoEdges`: every "go to" button whose target exists (for the depth
-  bound and the alert budget, as in the properties);
-- `openGotoEdges`: only buttons the user can always make shown by opening
-  groups and tabs: not tiny, visibility `always`, and every ancestor a group
-  or tab container that is itself not tiny and always visible (for
-  completability and counterexamples).
+Screen navigation and shortest paths through go-to buttons.
+Every reported path is checked again, and isGotoPath_sound proves it is valid.
+allGotoEdges includes all existing targets; openGotoEdges includes only
+buttons that opening groups and tabs can make visible.
 -/
 
 namespace Ehr.Check

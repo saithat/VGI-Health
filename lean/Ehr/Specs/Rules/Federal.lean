@@ -771,27 +771,27 @@ def review26 : ReviewReq where
   mode := .shownOnCommit
   when := .orderClass "controlled-V"
 
-/-- Product design property. Federal contributions, with source labels on each item. -/
+/-- Federal elements, with source labels on each item. -/
 def elements : List ElementSpec :=
   [controlledMedicalPurpose, controlledProductStrength, controlledDosageForm, controlledPrescriberName, controlledPrescriberAddress, ghbMedicalNeed, emergencyAuthorizationNotation, refillScheduleEligibility, earliestFillDate, seriesDiversionRiskAssessed, controlledReadyToSign, vaccineAdministrationDate, vaccineProviderAddress, vaccineProviderTitle]
 
-/-- Product design property. Federal contributions, with source labels on each item. -/
+/-- Federal infos, with source labels on each item. -/
 def infos : List InfoSpec :=
   [controlledSigningIssueDate, controlledSigningPatientName, controlledSigningDrugName, controlledSigningStrength, controlledSigningDosageForm, controlledSigningQuantity, controlledSigningDirections, controlledSigningRefills, controlledSigningEarliestFill, controlledSigningPrescriberName, controlledSigningPrescriberAddress, controlledSigningDea, controlledSigningLegalNotice]
 
-/-- Product design property. Federal contributions, with source labels on each item. -/
+/-- Federal commits, with source labels on each item. -/
 def commits : List CommitSpec :=
   [signEmergencyRxFollowup, denyRefill, signScheduleIISeries]
 
-/-- Product design property. Federal contributions, with source labels on each item. -/
+/-- Federal entries, with source labels on each item. -/
 def entries : List EntryReq :=
   [entrie98, entrie99, entrie100, entrie101, entrie102, entrie103, entrie104, entrie105, entrie106, entrie107, entrie108, entrie109, entrie110, entrie111, entrie112, entrie113, entrie114, entrie115, entrie116, entrie117, entrie118, entrie119, entrie120, entrie121, entrie122, entrie123, entrie124, entrie125, entrie126, entrie127, entrie128, entrie129]
 
-/-- Product design property. Federal contributions, with source labels on each item. -/
+/-- Federal reviews, with source labels on each item. -/
 def reviews : List ReviewReq :=
   [review1, review2, review3, review4, review5, review6, review7, review8, review9, review10, review11, review12, review13, review14, review15, review16, review17, review18, review19, review20, review21, review22, review23, review24, review25, review26]
 
-/-- Product design property. Federal contributions, with source labels on each item. -/
+/-- Federal alerts, with source labels on each item. -/
 def alerts : List AlertSpec :=
   []
 

@@ -1,20 +1,11 @@
 import Ehr.Canonical.Builders
 
 /-!
-# W4: inpatient medication administration (P3, ward nurse)
-
-Shift worklist (allergy review at the start of the shift) → MAR → open the due
-medication → administration (scans, double check, pain score, status) →
-flowsheet (vitals, pain reassessment, assessment) → handoff.
-
-Deliberate friction: the MAR is a separate screen from the worklist; glucose,
-coagulation labs, and PRN history are also on MAR tabs; a removable
-"interaction information" popup at administration; status and reason are
-asked even for a routine dose; copy-forward assessment text.
-Kept: wristband and medication scans, the second-nurse double check for
-high-alert drugs, the pain score before a pain medication, the dose details
-and allergies on the administration screen, glucose before insulin, and
-coagulation labs before an anticoagulant.
+W4: nursing worklist, MAR, administration, flowsheet and SBAR report.
+Administration retains patient and medication scans, any second-nurse check,
+pain assessment, dose and allergy review, and applicable glucose/coagulation review.
+The baseline separates the worklist and MAR and keeps optional popup noise.
+Report templates supply unconfirmed outlines for the nurse to complete.
 -/
 
 namespace Ehr.Canonical.W4

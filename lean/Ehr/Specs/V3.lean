@@ -1,4 +1,9 @@
 import Ehr.Specs.V2
+/-!
+Release v3 adds hospital antibiotic-indication requirements.
+It preserves v2 rules and requires new checks for the added duties.
+-/
+
 namespace Ehr.Specs.V3
 open V1 V2
 
@@ -44,8 +49,7 @@ receipt cannot replace its display. This is hospital policy, not law. -/
 def antibioticReviews : List ReviewReq :=
   [mustShow administerMed abxIndicationInfo (.medClass "antibiotic")]
 
-/-- Product design property.
-Release v3 preserves all v2 rules and adds stewardship obligations. -/
+/-- Release v3 preserves all v2 rules and adds stewardship obligations. -/
 def specV3 : Spec :=
   { specV2 with
     version := "v3"
@@ -59,8 +63,7 @@ def specV3 : Spec :=
 -- The complete catalog adds inherited artifact contracts to this finite check.
 set_option maxRecDepth 16384 in
 set_option maxHeartbeats 2000000 in
-/-- Product design property.
-Every v2 rule remains unchanged in v3. New obligations still need checking. -/
+/-- Every v2 rule remains unchanged in v3. New obligations still need checking. -/
 theorem specV3_extends_specV2 : specV3.Extends specV2 := by decide
 #print axioms specV3_extends_specV2
 example : specV3.Extends specV2 := specV3_extends_specV2

@@ -48,12 +48,9 @@ mutations. The human-event walkthroughs exercise every new artifact action.
 `encodedIn`, or an explicit reason where it requires core features or lies
 outside the checker boundary.
 
-These exports do not certify actual panel contents or artifact effects.
-[CR-15](../../docs/design/changes-requests.md#cr-15-full-catalog-content-adoption-content--renderappworldsimcheckwasm)
-requests the 14 renderer payload bindings, actual Schedule V/GHB formulary
-support, adapter writes/reset, checker certificates and WASM adoption. The
-current agent validator also still needs the actual-release schema fixes in
-CR-12/14. See [the source map](../../docs/regulations.md#full-catalog-encoding-map).
+These exports do not certify external record effects or all legal duties.
+See [verification scope](../../docs/VERIFICATION.md) for current certification
+and full-catalog limits.
 
 Regenerate with `python lean/Ehr/Specs/Rules/encode.py`, then
 `cd lean && lake exe export-content`, then from the root

@@ -96,7 +96,7 @@ for s, chunks in out.items():
     for k in items:
         typ = {'elements': 'ElementSpec', 'infos': 'InfoSpec', 'commits': 'CommitSpec',
                'entries': 'EntryReq', 'reviews': 'ReviewReq', 'alerts': 'AlertSpec'}[k]
-        chunks.append(f'\n/-- Product design property. {s} contributions, with source labels on each item. -/\ndef {k} : List {typ} :=\n  ' + ls(names[s][k]) + '\n')
+        chunks.append(f'\n/-- {s} {k}, with source labels on each item. -/\ndef {k} : List {typ} :=\n  ' + ls(names[s][k]) + '\n')
     chunks.append(f'\nend Ehr.Specs.Rules.{s}\n')
     (ROOT / f'lean/Ehr/Specs/Rules/{s}.lean').write_text(''.join(chunks))
 

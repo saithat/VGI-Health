@@ -1,9 +1,10 @@
 import Ehr.Canonical.RulePlacements
 import Ehr.Core.Basics
 
-/-! Shared legal-content builders. All existing components, safety steps and
-friction remain. Required review panels are in open, noncollapsible sections.
-The renderer/backend bindings are tracked separately in changes-requests.md. -/
+/-!
+Shared builders for legal-content fields, reviews and actions.
+Required review panels occupy open sections beside their commit controls.
+-/
 namespace Ehr.Canonical.Rules
 open Ehr.Specs.V1
 

@@ -24,9 +24,9 @@ adoption is tracked in CR-11.
 
 The updated baseline requires controlled-order details shown during signing (21 CFR 1311.140), plus vaccine manufacturer, administering provider and VIS edition date. Schedule II prescriptions require confirmed zero refills on every matching order line, using core's generic allowed-value constraint (21 CFR 1306.12(a)). Seed 16's confirmed default of three is blocked. The constraint is inherited unchanged by v2 and v3. VIS edition date is required compliance data.
 
-Every spec rule docstring is labeled `Law`, `Entrenched` (with a reason/source), `Hospital policy (not law)`, or `Product design property`. Existing barcode scans are entrenched under the Leapfrog BCMA standard; two identifiers support Joint Commission accreditation. Patient-ID re-entry, second-nurse checks and kg-only weight remain local policies. No guidance or accreditation rule was added.
+Rule docstrings identify `Law`, `Entrenched` practice and `Hospital policy (not law)`. Existing barcode scans are entrenched under the Leapfrog BCMA standard; two identifiers support Joint Commission accreditation. Patient-ID re-entry, second-nurse checks and kg-only weight remain local policies. No guidance or accreditation rule was added.
 
-Content tests establish capture and visibility gates, not actual VIS delivery or full legal compliance. The rendered EPCS order-summary data and production checker certificates remain separate integration work tracked in `docs/design/changes-requests.md`.
+Content tests establish capture and visibility gates. They do not establish actual VIS delivery or full legal compliance. See the [verification scope](../../docs/VERIFICATION.md) for certification and rendering limits.
 
 ## Owner-approved full catalog baseline
 
@@ -51,12 +51,9 @@ mutations. The human-event walkthroughs exercise every new artifact action.
 `encodedIn`, or an explicit reason where it requires core features or lies
 outside the checker boundary.
 
-These exports do not certify actual panel contents or artifact effects.
-[CR-15](../../docs/design/changes-requests.md#cr-15-full-catalog-content-adoption-content--renderappworldsimcheckwasm)
-requests the 14 renderer payload bindings, actual Schedule V/GHB formulary
-support, adapter writes/reset, checker certificates and WASM adoption. The
-current agent validator also still needs the actual-release schema fixes in
-CR-12/14. See [the source map](../../docs/regulations.md#full-catalog-encoding-map).
+These exports do not certify external record effects or all legal duties.
+See [verification scope](../../docs/VERIFICATION.md) for current certification
+and full-catalog limits.
 
 Regenerate with `python lean/Ehr/Specs/Rules/encode.py`, then
 `cd lean && lake exe export-content`, then from the root

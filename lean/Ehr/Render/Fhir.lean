@@ -4,32 +4,12 @@ import Ehr.Formulary
 import Ehr.Core.Basics
 
 /-!
-# FHIR bundle → facts and display
-
-`parseBundle ctx bundle` reads a FHIR R4 Bundle (Synthea output, or a Medplum
-search result) and returns
-- `Facts`: the few facts the spec and the interpreter need, and
-- `Display`: the patient's records as table rows for the page.
-
-Every reader here is total: a missing field reads as `""`, `[]`, or `none`.
-A row is never dropped because a field is missing. `parseBundle` fails only
-when the input is not a Bundle or has no Patient.
-
-Reading rules (the trusted surface of T5 and T11):
-- the resources of a bundle are `entry[].resource`, in order (`bundleResources`);
-- an AllergyIntolerance is **active** unless its clinical status is
-  `inactive` or `resolved`, or it was entered in error (`allergyActive`); a
-  missing status counts as active, the safe reading;
-- a MedicationRequest is **active** when its status is `active`;
-- a body-weight Observation has LOINC code `29463-7`, is not entered in error
-  or cancelled, and is **dated today** when its `effectiveDateTime` starts
-  with `ctx.today`; its unit is read from the UCUM code (`kg`, `[lb_av]`, `g`);
-- the allergy (and meds) data version is a 52-bit digest of the sorted
-  `id@versionId` keys of all AllergyIntolerance (MedicationRequest) resources.
-  It changes whenever a resource is added, removed, or updated (up to digest
-  collisions). See `docs/design/render.md` for why this is not a sum.
-
-Reference ranges and care-gap rules here are demo data, not clinical advice.
+Read FHIR bundles into patient facts and clinical display rows.
+Patient and encounter checks exclude records outside the selected chart.
+Missing fields stay blank or absent; source records supply the clinical values.
+FhirProofs proves the named allergy, medication, weight and version claims.
+Versions use a 52-bit digest of sorted resource IDs and versions; collisions
+are possible. Reference ranges and care-gap rules are demo data.
 -/
 
 namespace Ehr.Render.Fhir

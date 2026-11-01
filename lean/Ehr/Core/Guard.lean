@@ -1,20 +1,9 @@
 import Ehr.Core.Alerts
 
 /-!
-# The commit guard
-
-A commit `c` happens only if, in the current state:
-1. the user's role may perform `c` in this encounter;
-2. every entry requirement for `c` that applies is met: the element is
-   captured, confirmed, valid (the right unit, a checked flag, a matching
-   identity, a different cosigner, a matching scan), and, for a human-only
-   element, entered by a human;
-3. every review requirement for `c` that applies is met: the info is shown on
-   the current screen, or (for `shownOrReceipt`) a valid receipt covers it;
-4. every interruptive alert concerning `c` is acknowledged for each key.
-
-Items 1–3 are `guardBase`; item 4 is `alertsAcked`. Theorem T0 says a commit
-happens only when `commitGuard` (all four) holds.
+The commit guard checks role permission, required entries and reviews,
+alert acknowledgments, and the extra display, timing and value rules.
+T0 proves that every new commit passes this guard before the step.
 -/
 
 namespace Ehr

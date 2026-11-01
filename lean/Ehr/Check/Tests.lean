@@ -39,7 +39,7 @@ example : NavigationSane goodProgram := accepted_navigation spec none goodProgra
   | some f => f.property == "noFalseAlarms" && (counterexample spec program f).2.2
   | none => false
 
-/-- CR-1 lets a current-slot composer add lines without stranding unfinished ones. -/
+/-- A current-slot composer can add lines without stranding unfinished ones. -/
 def withAddLine : Program :=
   { goodProgram with screens := [roomingScreen, orderScreen, goodSignScreen].map pinTinyAlerts }
 
@@ -53,7 +53,7 @@ def mismatchedSlots : Program :=
           else c } }
 #guard (completeFor spec mismatchedSlots "signOrders").isSome
 
-/-- CR-6 is integrated: the extended catalog and safe request action certify. -/
+/-- The extended catalog and safe request action pass the checker. -/
 def withRequest : Program :=
   { goodProgram with screens := goodProgram.screens.map fun scr =>
       if scr.id == "order" then

@@ -5,19 +5,9 @@ import Ehr.Cli.Sim
 import Ehr.Render.Cli
 
 /-!
-# `ehr` command-line tool (native)
-
-Subcommands (JSON over files, stdin, and stdout):
-- `ehr init`        stdin `InitInput`  → stdout `State`
-- `ehr step`        stdin `StepInput`  → stdout `StepOutput`
-- `ehr view`        stdin `ViewInput`  → stdout `ScreenView`
-- `ehr run-batch <file.jsonl>`: each line is a `BatchCase`
-  `{spec, program, facts, user, events}`; prints one `BatchStep`
-  `{case, index, state, result, view}` per event, as JSON lines.
-- `ehr spec-export <name>`: prints a registered spec as JSON.
-- `ehr cures-exemptions-export`: prints the shared CURES exemption codes.
-
-All subcommands call the same functions as the WASM exports (`Ehr.Api`).
+Native command-line entry point for interpreter, checker and simulator calls.
+init, step and view exchange JSON; run-batch processes JSON-lines events.
+Spec and CURES exports expose the same data used by the app's WASM API.
 -/
 
 open Ehr

@@ -1,21 +1,9 @@
 import Ehr.Core.Json
 
 /-!
-# A tiny example
-
-A small spec and a 3-screen program (rooming → order → sign), used by tests
-and as a JSON sample for the other lanes.
-
-The spec has:
-- weight in kg (copied from the record; a human confirms it);
-- patient-ID re-entry (`identity`, human-only, never prefilled);
-- an order line: drug and dose (defaults allowed; a human confirms them);
-- a cosign for high-alert drugs;
-- the allergy list, reviewed on the sign screen or with a receipt;
-- the dose check, shown on the sign screen (no receipt);
-- one interruptive drug–allergy alert and one passive care-gap alert.
-
-This is test data, not clinical advice.
+A three-screen test program: rooming, orders and signing.
+It includes patient identity, weight, drug/dose lines, cosign and review rules.
+Its deliberate safety failures are tested in TinyTests and Props.Examples.
 -/
 
 namespace Ehr.Examples.Tiny

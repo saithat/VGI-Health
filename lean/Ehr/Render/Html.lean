@@ -1,15 +1,9 @@
 import Ehr.Render.Types
 
 /-!
-# Page-tree utilities
-
-- `Ro.toHtml` and `Part.toHtmls` turn read-only content and component parts
-  into page-tree nodes. `Part.toHtmls` is the only place that writes
-  `data-comp-id`, `data-event`, and `disabled` on component nodes.
-- `Within x h`: node `x` occurs in tree `h` (the statements of the render
-  theorems use it).
-- `Html.toPage` is the wire form; `PageNode.toHtmlString` is HTML text for
-  previews and tests.
+Build page-tree nodes for read-only content and component actions.
+Part.toHtmls supplies component IDs, events and disabled states.
+Within describes where nodes occur; the wire and HTML forms support previews.
 -/
 
 namespace Ehr.Render

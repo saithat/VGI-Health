@@ -3,17 +3,9 @@ import Ehr.JsonCompat
 import Ehr.Render.Types
 
 /-!
-# JSON for the page tree and the display
-
-Derived `ToJson`/`FromJson` (same conventions as `Ehr.Core.Json`):
-- a constructor without arguments is a string (`"div"`);
-- `PageNode.text s` is `{"text": {"s": s}}`; `PageNode.node` is
-  `{"node": {"tag", "attrs", "children"}}`;
-- an attribute is `{"name": …, "value": …}`;
-- an `Option` field named `foo?` is written as `foo` and left out when `none`.
-
-The typed tree (`Html`, `Attr`, `Cls`) is not sent; it is converted to the
-wire form (`Html.toPage`) first.
+JSON readers and writers for display data and the page tree.
+Typed internal nodes become PageNode values before they are sent to the app.
+Optional fields follow the same naming rules as Ehr.Core.Json.
 -/
 
 namespace Ehr.Render

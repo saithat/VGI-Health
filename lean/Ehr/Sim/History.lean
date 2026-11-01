@@ -1,11 +1,9 @@
 import Ehr.Sim.Interaction
 
 /-!
-Minimum-action search forgets Back history, but preserves the complete captured
-list (including its order), receipts, clock, tab and expansion lists. Preserving
-more state than the proposed per-element key avoids a larger trusted quotient.
-Back clicks, including those inside macros, are excluded. The lemmas below
-show that forgetting history is exact for every remaining transition.
+Minimum-action search forgets Back history and excludes Back clicks.
+It keeps captures in order, receipts, time, tabs and group expansion state.
+The proofs show the remaining transitions agree after history is removed.
 -/
 namespace Ehr.Sim
 open Ehr

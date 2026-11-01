@@ -2,23 +2,9 @@ import Ehr.Proofs.T3
 import Ehr.Examples.TinyTests
 
 /-!
-# T6: macros are their expansion
-
-A macro gets no special powers. Running a macro (what a human click on a macro
-button does) gives exactly the same state as this reference:
-
-> for each step in order, do what the step says through the public `step`
-> function with `actor := macro` (`setValue` sends an `enter` event, `click` a
-> `click` event; `goto` moves to the screen like a navigation button), and stop
-> at the first step whose result is not `ok`.
-
-The macro's result is `ok` exactly when the reference does not stop; when it
-stops at step `j` with result `r`, the macro's result is
-`blocked (macroStopReason j r)`.
-
-Since every reference step is a `step` with `actor := macro`, T3 applies to
-each one, so no macro run commits, acknowledges an alert, creates a receipt,
-or captures a human-only value (`T6_macro_run_safe`).
+T6: macros run their steps in order and stop at the first failure.
+Their state and result match the reference in Ehr.Props.Defs.
+T3 also gives the whole macro run the same human-only action limits.
 -/
 
 namespace Ehr.Proofs
@@ -36,8 +22,8 @@ theorem macroStep_eq_macroAct (sp : Spec) (prog : Program) (facts : Facts) (user
   cases st <;> simp [macroStep, macroAct, step_macro]
 
 /-- **T6 (macros are their expansion).** Running a macro's steps gives the
-same state as the reference fold; its result is `ok` exactly when the fold does
-not stop; and when the fold stops at step `j` with result `r`, the macro's
+same state as the reference run; its result is `ok` exactly when the reference does
+not stop; and when the reference stops at step `j` with result `r`, the macro's
 result is `blocked (macroStopReason j r)`. -/
 theorem T6_macro_is_fold (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (steps : List MacroStep) : ∀ (i : Nat) (s : State),
@@ -69,7 +55,7 @@ theorem T6_macro_is_fold (sp : Spec) (prog : Program) (facts : Facts) (user : Us
       obtain ⟨rfl, rfl⟩ := hj
       rfl
 
-/-- The macro's result is `ok` only if the fold does not stop. -/
+/-- The macro result is `ok` exactly when the reference run does not stop. -/
 theorem runMacro_ok_iff (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (steps : List MacroStep) (i : Nat) (s : State) :
     (runMacro sp prog facts user i s steps).2 = .ok ↔
@@ -102,7 +88,7 @@ theorem macroAct_safe (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     · exact MacroSafe.refl _ _
     · exact goTo_safe ..
 
-/-- The reference fold is safe. -/
+/-- The reference run is safe. -/
 theorem foldMacro_safe (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (steps : List MacroStep) : ∀ (i : Nat) (s : State),
     MacroSafe sp s (foldMacro sp prog facts user i s steps).1 := by
@@ -142,7 +128,7 @@ theorem T6_macro_run_safe (sp : Spec) (prog : Program) (facts : Facts) (user : U
 section Examples
 open Ehr.Examples.Tiny Ehr.Examples.TinyTests
 
-/-- On the tiny example, the amoxicillin macro's reference fold stops at step 3
+/-- On the tiny example, the amoxicillin macro's reference run stops at step 3
 (typing the patient ID), and the click's result is the matching message. -/
 theorem tiny_macro_stops_at_identity : (foldMacro spec program facts user 0 atOrder amoxMacro.steps).2 =
       some (3, .blocked "human only: patientIdReentry") ∧

@@ -1,18 +1,9 @@
 import Ehr.Proofs.T0
 
 /-!
-# T2: receipts are sound
-
-If a commit happens while a review item it requires is **not** shown on the
-screen, then one of these holds in the state before the commit:
-- the requirement allows receipts (`shownOrReceipt window roles`), and there is
-  a receipt for the same info, with the current data version, not from the
-  future, at most `window` minutes old, from one of `roles`; or
-- the requirement names a waiver element (`waivedBy`), and a human entered a
-  confirmed, non-empty value for it in this episode (CA H&S Code §11165.4).
-
-So a `shownOnCommit` requirement without a waiver is never skipped: its info
-must be shown (`T2_shownOnCommit_shown`).
+T2: a required review that is hidden at commit has an allowed, current
+receipt or a confirmed, nonempty human waiver (CA H&S Code §11165.4).
+Without a permitted receipt or waiver, the information must be shown.
 -/
 
 namespace Ehr.Proofs

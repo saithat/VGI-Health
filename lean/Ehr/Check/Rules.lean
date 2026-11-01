@@ -2,20 +2,9 @@ import Ehr.Check.Graph
 import Ehr.Props.Properties
 
 /-!
-# Checker rules that go beyond the property text
-
-Some properties quantify over every reachable state (for example "whenever the
-sign button is shown, the allergy list is shown too"). The checker cannot run
-every state, so it tests a simple fact about the program text that is enough:
-the information is *pinned* on the screen, meaning no click can hide it. T1
-proves that each such rule implies its property.
-
-- `fixedShown`: a component no click can hide: not tiny, always visible, and
-  every ancestor a non-collapsible group with the same property.
-- `pinnedForReview`: a component that keeps a review requirement met on its
-  screen: it displays the info, is not tiny, every ancestor is a
-  non-collapsible group that is fixed-shown, and it is either always visible,
-  or hidden only by a receipt that also counts for this requirement.
+Checks on program structure used to prove the run-time properties.
+A fixed-shown component cannot be hidden by navigation within its screen.
+A pinned review remains visible, or has a receipt allowed by that requirement.
 -/
 
 namespace Ehr.Check
@@ -257,7 +246,7 @@ the completability rules for `c` with commit screen `s`:
 - each review requirement of `c` with a waiver has its info pinned on `s`, or
   a field for the waiver element reachable from `s`;
 - per-order-line requirements: every drug slot has a matching reachable field
-  for each per-line element. CR-1 prevents leaving an unfinished current line. -/
+  for each per-line element. An unfinished current line cannot be left behind. -/
 def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : ScreenId)
     (reach : ScreenId → List ScreenId) : Option (ScreenId × String) :=
   match prog.screens.find? (fun x => !(reach x.id).contains s) with

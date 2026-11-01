@@ -310,15 +310,18 @@ def clinicalSourceValid (facts : Facts) (o : ClinicalObservation) : Bool :=
   | [b] => !o.code.isEmpty && !o.artifact.isEmpty && b.artifact == o.artifact && b.version == o.version
   | _ => false
 
+/-- Read the code only when its clinical source is valid. -/
 def clinicalCode (facts : Facts) (o : Option ClinicalObservation) : Option String := do
   let o ← o
   if clinicalSourceValid facts o then some o.code else none
 
+/-- Look up one named clinical fact; missing facts remain unknown. -/
 def ClinicalFacts.field (f : ClinicalFacts) : ClinicalField → Option ClinicalObservation
   | .service => f.service? | .payer => f.payer? | .setting => f.setting?
   | .homelessness => f.homelessness? | .pregnancy => f.pregnancy?
   | .capacity => f.capacity? | .consent => f.consent?
 
+/-- Read a valid clinical code only when its name has one matching source. -/
 def namedClinicalCode (facts : Facts) (xs : List (String × ClinicalObservation))
     (name : String) : Option String :=
   match xs.filter (·.1 == name) with
@@ -408,7 +411,9 @@ def lexicalValue : Value → Option String
   | .text t | .code t => some t
   | _ => none
 
+/-- Use Gregorian leap-year rules. -/
 def leapYear (y : Nat) : Bool := y % 400 == 0 || (y % 4 == 0 && y % 100 != 0)
+/-- Accept a positive year and a valid month and day in that year. -/
 def validDate (y m d : Nat) : Bool :=
   let days := if m == 2 then (if leapYear y then 29 else 28)
     else if [4, 6, 9, 11].contains m then 30 else 31
@@ -425,6 +430,7 @@ def isoDateValid (t : String) : Bool :=
       | _, _, _ => false
   | _ => false
 
+/-- Check decimal digits, fraction length and the permitted zero formats. -/
 def decimalValid (t : String) (scale : Nat) (leading trailing : Bool) : Bool :=
   let (whole, rest) := t.toList.span (· != '.')
   !whole.isEmpty && (digitsVal whole 0).isSome &&
@@ -435,6 +441,7 @@ def decimalValid (t : String) (scale : Nat) (leading trailing : Bool) : Bool :=
         (digitsVal fraction 0).isSome && (trailing || fraction.getLast? != some '0')
     | _ => false
 
+/-- Check a 14-digit GTIN and its weighted checksum. -/
 def gtinValid (t : String) : Bool :=
   let cs := t.toList
   cs.length == 14 && cs.all Char.isDigit &&
@@ -556,6 +563,7 @@ def parseElementValue (s : State) (el : ElementSpec) (slot : Nat) (raw : String)
     pure (.qty amount unit)
   else parseValue el.kind raw
 
+/-- Every captured value for a declared element passes its value checks. -/
 def validationsOk (sp : Spec) (facts : Facts) (s : State) : Bool :=
   sp.elements.all fun el => s.captured.all fun x =>
     x.element != el.id || elementValueValid facts s el x.slot x.value
@@ -568,6 +576,7 @@ def defaultsOk (sp : Spec) (prog : Program) : Bool :=
     !fields.isEmpty && fields.all (fun c =>
       match c.kind with | .field _ _ pf => pf == .default expected | _ => false)
 
+/-- Days in the given month, including leap-year February. -/
 def monthDays (year month : Nat) : Nat :=
   if month == 2 then (if leapYear year then 29 else 28)
   else if [4, 6, 9, 11].contains month then 30 else 31
@@ -581,8 +590,10 @@ def stampMinute (t : ClockStamp) : Option Int :=
       ((List.range (t.month - 1)).foldl (fun acc m => acc + monthDays t.year (m + 1)) 0) + t.day - 1
     some ((Int.ofNat days - 719162) * 1440 + Int.ofNat t.minuteOfDay - t.utcOffsetMinutes)
 
+/-- The supplied UTC minute matches the validated local date and offset. -/
 def stampValid (t : ClockStamp) : Bool := stampMinute t == some t.time
 
+/-- Read the original issue, start or first-fill timestamp. -/
 def OrderClock.anchorStamp (o : OrderClock) : ClockAnchor → Option ClockStamp
   | .issued => some o.issued | .started => o.started? | .firstFill => o.firstFill?
 
@@ -600,6 +611,8 @@ def expiryCutoff (o : OrderClock) (a : ClockAnchor) (stamp : ClockStamp) : Expir
         t.day == min stamp.day (monthDays y m) && t.minuteOfDay == stamp.minuteOfDay
     then some t.time else none
 
+/-- Find current-version renewal evidence from a named actor, within its
+validity period and no earlier than issue or later than now. -/
 def renewalValid (o : OrderClock) (version : Nat) (now : Int) (p : RenewalPolicy) : Bool :=
   o.renewals.any fun r => r.event == p.event && !r.actor.isEmpty && r.version == version &&
     o.issued.time ≤ r.time && r.time ≤ now && now < r.time + Int.ofNat p.validForMinutes
@@ -758,11 +771,13 @@ def infoPayload (facts : Facts) (i : InfoId) : Option InfoPayload := do
   if p.patient == facts.patientId && !p.artifact.isEmpty && p.artifact == b.artifact &&
       p.version == b.version then some p else none
 
+/-- Read a field only when it occurs once and is not blank. -/
 def payloadField (fields : List (String × String)) (id : String) : Option String :=
   match fields.filter (·.1 == id) with
   | [(_, value)] => if value.trimAscii.toString.isEmpty then none else some value
   | _ => none
 
+/-- Require the field unless its conditional rule has explicit unavailable evidence. -/
 def fieldRequired (availability : List (String × Bool)) (r : PayloadFieldReq) : Bool :=
   !r.ifAvailable || (match availability.filter (·.1 == r.field) with
     | [(_, false)] => false | _ => true)
@@ -794,6 +809,7 @@ def displayScopeActive (facts : Facts) (commit : Option CommitId) : DisplayScope
   | .commit c => commit == some c
   | .phase workflow name => facts.phase?.all (fun p => p.workflow == workflow && p.phase == name)
 
+/-- The display requirement matches this commit or phase and its clinical condition. -/
 def displayActive (facts : Facts) (s : State) (commit : Option CommitId) (r : DisplayReq) : Bool :=
   displayScopeActive facts commit r.scope && r.when?.all (clinicalApplies facts s)
 
@@ -804,11 +820,15 @@ def showsInfo (i : InfoId) : Kind → Bool
   | .banner => i == bannerInfo
   | _ => false
 
+/-- The information is visible; a pinned requirement also needs an always-visible,
+top-level component. -/
 def displayShown (sp : Spec) (prog : Program) (facts : Facts) (s : State) (r : DisplayReq) : Bool :=
   let comps := prog.compsOf s.screen
   comps.any fun c => showsInfo r.info c.kind && layoutShown sp facts s comps c &&
     (!r.pinned || (c.parent?.isNone && c.visibility == .always))
 
+/-- The information is shown and its data meets the payload contract.
+Row slots are unique when the requirement allows row selection. -/
 def displayReqMet (sp : Spec) (prog : Program) (facts : Facts) (s : State) (r : DisplayReq) : Bool :=
   displayShown sp prog facts s r &&
     match sp.info? r.info, infoPayload facts r.info with
@@ -828,6 +848,7 @@ def actionLabelOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : 
     let buttons := comps.filter (fun b => b.kind == .button (.commit c) && layoutShown sp facts s comps b)
     !expected.isEmpty && !buttons.isEmpty && buttons.all (·.label == expected)
 
+/-- Every active display requirement and the commit action label are satisfied. -/
 def displaysOk (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
   (sp.displays?.getD []).all (fun r => !displayActive facts s (some c) r || displayReqMet sp prog facts s r) &&
     actionLabelOk sp prog facts s c
@@ -847,6 +868,7 @@ def payloadView (sp : Spec) (facts : Facts) (s : State) (i : InfoId) : Option Pa
   pure { source := payload, groups := keys.map fun key =>
     { key, rows := (payload.rows.filter (fun r => groupKey r == key)).map (fun row => { row, selected := selected row }) } }
 
+/-- An active requirement asks to keep this information fixed in place. -/
 def infoPinned (sp : Spec) (facts : Facts) (s : State) (i : InfoId) : Bool :=
   (sp.displays?.getD []).any fun r => r.info == i && r.pinned &&
     (displayActive facts s none r || match r.scope with

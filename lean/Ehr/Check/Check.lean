@@ -4,24 +4,10 @@ import Ehr.Check.PopupRequests
 import Ehr.Check.ReplayContext
 
 /-!
-# The checker
-
-`check spec prev canonical prog` certifies a candidate UI program before it is
-deployed. It runs a fixed list of rules, in order. Each rule is fast and
-structural: it reads the program's lists, and searches the screen graph
-breadth-first. The verdict is `ok` only if every rule passes (the completed safety implications and the remaining completeness obligation
-are assembled in `Ehr.Check.Sound`).
-
-If a rule fails, the verdict names the property, says what is wrong in plain
-words, and gives a **counterexample**: a click path from the start screen to
-the screen that shows the problem, then the click that triggers it (for
-example "Sign"). The path is replayed through the real interpreter before it
-is returned; a path that does not replay is cut at the first step that fails.
-
-Property names in verdicts: `wellFormed`, `writesOnly`, `alertsFire` (A1),
-`noFalseAlarms` (A2), `noRepeatInterruptions` (A3), `severityTiers` (A4),
-`humanOnlyKept`, `units`, `capturesAllOnce`, `reviewsBeforeCommit`,
-`completable`, `budgets`.
+The checker accepts a UI program only when every listed rule passes.
+Failures name the property and include a replay-checked path when available.
+Ehr.Check.Sound assembles the proved properties; general completion still
+requires a separate proof.
 -/
 
 namespace Ehr.Check

@@ -1,20 +1,10 @@
 import Ehr.Canonical.Builders
 
 /-!
-# W5: pediatric visit (P4, pediatric NP)
-
-Rooming (today's weight in kg, growth chart, allergies, medication
-reconciliation) → growth review → visit note → weight-based (mg/kg) orders with a dose
-check → sign orders → immunizations → visit close with anticipatory guidance
-(sign note).
-
-Deliberate friction: the dosing weight is displayed again in the composer (linked from weight); the
-dose is typed in mg after the mg/kg (the composer shows the calculation but
-does not fill it); the growth chart is reviewed on its own screen; the visit
-diagnosis is typed again for billing.
-Kept: today's weight in kg; the dose check on the sign screen; the allergy list
-and immunization history on the immunization screen (or a receipt); vaccine,
-lot, site, route, and VIS recorded every time.
+W5: pediatric rooming, growth review, note, orders, vaccines and visit close.
+The baseline separates growth review and repeats the billing diagnosis.
+Prescribing retains today's kilogram weight and the sign-screen dose check.
+Vaccination retains the required review and vaccine record fields.
 -/
 
 namespace Ehr.Canonical.W5

@@ -10,91 +10,31 @@ import Ehr.Specs.Rules.Entrenched
 import Ehr.Specs.Rules.Features
 
 /-!
-# Hospital spec, version "v1"
-
-This file is the hospital's rulebook for the EHR. It says:
-- which **data elements** exist, who may enter them, and how they may be
-  filled in before a human touches them;
-- which **information** the screens can show;
-- which **commits** (sign, give, acknowledge, discharge, …) exist, and who may
-  do them;
-- what each commit **requires**: elements that must be captured first
-  (entry requirements) and information that must be seen first (review
-  requirements);
-- the **alerts**, with their trigger and tier;
-- the **design rules** every screen layout must follow.
-
-Every UI program, the canonical one and every personalized one, is checked
-against this file. Anything this file does not require may change.
-
-How to read the words used below:
-- *Pre-fill policy.* `never`: a human types it. `recordConfirm`: copied from
-  the record, with its source shown, and a human confirms it. `defaultConfirm`:
-  a default is allowed, and a human confirms it. `autoLinked`: copied from
-  another element, so it is entered only once.
-- *Friction class.* `safety`: a clinical decision or a safety check; a human
-  does it. `compliance`: needed for law, policy, billing, or the record; where
-  the pre-fill policy allows, a pre-fill, a link, or a valid receipt may
-  satisfy it. `accidental`: no rule needs it; it may be removed.
-- *Human-only.* Done by a human, every time. Never pre-filled, never done by a
-  macro.
-- *Per order line.* Needed once for every medication order being signed.
-- *Shown on the commit screen.* On the same screen as the commit button, not
-  in a closed group or an unopened tab, and at a readable size.
-- *Receipt.* A record that an allowed clinician reviewed the same version of
-  the information within the time window.
-
-Elements that no commit requires are optional. The canonical UI still asks for
-some of them, as real EHRs do.
-
-Owner-approved California rules:
-- **CURES** (CA Health and Safety Code §11165.4): before prescribing a
-  Schedule II–IV controlled substance, the prescriber checks the patient's
-  CURES report (the state's controlled-substance history), or records which
-  legal exemption applies.
-- **Naloxone** (CA Business and Professions Code §741): when an opioid
-  prescription puts the patient at higher overdose risk (90 or more morphine
-  milligram equivalents a day, or an opioid with a benzodiazepine), the
-  prescriber offers naloxone and gives overdose-prevention education.
-
-Owner-approved federal rules require controlled-prescription details shown
-while signing (21 CFR 1311.140), zero Schedule II refills (21 CFR 1306.12),
-and vaccine record/VIS entries (42 USC 300aa-25/26). Each rule docstring starts
-with Law, Entrenched (with a reason/source), Hospital policy (not law), or
-Product design property. Labels classify the existing rules, not new duties.
-
-Source audit: `docs/regulations.md` (2026-10-31). Unless a docstring says
-otherwise, roles, optional fields, workflow gates, receipt windows and UI
-placement are hospital design choices, not claims of legal necessity. CURES
-and naloxone have statutory exceptions and schedules that this demo simplifies.
-Rules intentionally stricter than law are retained and labeled below.
-
-This is demo content for a hackathon, not clinical advice.
+Hospital rulebook: fields, displays, commit requirements, alerts and layout.
+Every candidate program is checked against the selected rule profile.
+Law citations and Hospital policy (not law) labels identify the rule basis.
+CURES, naloxone, prescription and vaccine rules are simplified for this demo;
+see docs/regulations.md for sources, exceptions and hospital choices.
 -/
 
 namespace Ehr.Specs.V1
 
 /-! ## Roles -/
 
-/-- Product design property.
-Roles that write medication orders: physicians, nurse practitioners, and
+/-- Roles that write medication orders: physicians, nurse practitioners, and
 surgeons. -/
 def prescribers : List Role := [.physician, .np, .surgeon]
 
-/-- Product design property.
-Every clinical role, including nurses. -/
+/-- Every clinical role, including nurses. -/
 def allClinicians : List Role := [.physician, .np, .surgeon, .rn]
 
-/-- Product design property.
-Registered nurses only. -/
+/-- Registered nurses only. -/
 def nurses : List Role := [.rn]
 
-/-- Product design property.
-Roles that may give and record vaccines. -/
+/-- Roles that may give and record vaccines. -/
 def vaccinators : List Role := [.np, .physician, .rn]
 
-/-- Product design property.
-Surgeons only. -/
+/-- Surgeons only. -/
 def surgeons : List Role := [.surgeon]
 
 /-! ## Data elements: safety checks
@@ -360,8 +300,7 @@ def depressionScreen : ElementSpec where
   friction := .compliance
   fhirTarget := "QuestionnaireResponse.item.answer"
 
-/-- Product design property.
-Recent-travel screening question. No rule needs it. -/
+/-- Recent-travel screening question. No rule needs it. -/
 def travelScreen : ElementSpec where
   id := "travelScreen"
   label := "Travel outside the country in the past 30 days?"
@@ -371,8 +310,7 @@ def travelScreen : ElementSpec where
   friction := .accidental
   fhirTarget := "QuestionnaireResponse.item.answer"
 
-/-- Product design property.
-"Has the patient been asked about an advance directive?" No rule needs it
+/-- "Has the patient been asked about an advance directive?" No rule needs it
 at every visit. -/
 def advanceDirectiveAsked : ElementSpec where
   id := "advanceDirectiveAsked"
@@ -383,8 +321,7 @@ def advanceDirectiveAsked : ElementSpec where
   friction := .accidental
   fhirTarget := "QuestionnaireResponse.item.answer"
 
-/-- Product design property.
-"Does the patient need an interpreter?" The preferred language is already in
+/-- "Does the patient need an interpreter?" The preferred language is already in
 the patient banner, so asking again is accidental. -/
 def interpreterNeeded : ElementSpec where
   id := "interpreterNeeded"
@@ -395,8 +332,7 @@ def interpreterNeeded : ElementSpec where
   friction := .accidental
   fhirTarget := "QuestionnaireResponse.item.answer"
 
-/-- Product design property.
-"Is the pharmacy on file correct?" asked during rooming. The pharmacy is
+/-- "Is the pharmacy on file correct?" asked during rooming. The pharmacy is
 asked again on each prescription, so this is accidental. -/
 def pharmacyConfirmedRooming : ElementSpec where
   id := "pharmacyConfirmedRooming"
@@ -407,8 +343,7 @@ def pharmacyConfirmedRooming : ElementSpec where
   friction := .accidental
   fhirTarget := "Patient.extension.preferredPharmacy"
 
-/-- Product design property.
-A second "I reviewed the allergies" checkbox in the order composer. The
+/-- A second "I reviewed the allergies" checkbox in the order composer. The
 allergy list is already a review requirement, so this is accidental. -/
 def allergyReconfirmOrdering : ElementSpec where
   id := "allergyReconfirmOrdering"
@@ -419,8 +354,7 @@ def allergyReconfirmOrdering : ElementSpec where
   friction := .accidental
   fhirTarget := "AuditEvent.entity"
 
-/-- Product design property.
-A third "I reviewed the allergies" checkbox before signing. Accidental, for
+/-- A third "I reviewed the allergies" checkbox before signing. Accidental, for
 the same reason. -/
 def allergyReconfirmSigning : ElementSpec where
   id := "allergyReconfirmSigning"
@@ -750,8 +684,7 @@ def doseMgPerKg : ElementSpec where
   friction := .safety
   fhirTarget := "MedicationRequest.dosageInstruction.extension.weightBasedDose"
 
-/-- Product design property.
-A free-text note to the pharmacy. No rule needs it. -/
+/-- A free-text note to the pharmacy. No rule needs it. -/
 def orderComment : ElementSpec where
   id := "orderComment"
   label := "Note to pharmacy"
@@ -763,8 +696,7 @@ def orderComment : ElementSpec where
 
 /-! ## Data elements: controlled substances (California) -/
 
-/-- Product design property.
-The supported exemption categories a prescriber may record instead of checking CURES
+/-- The supported exemption categories a prescriber may record instead of checking CURES
 (CA Health and Safety Code §11165.4(c)). Codes of the `"cures-exemption"`
 value set:
 - `"admin-in-facility"`: prescribed, ordered, or furnished for administration
@@ -865,8 +797,7 @@ def labPriority : ElementSpec where
   friction := .compliance
   fhirTarget := "ServiceRequest.priority"
 
-/-- Product design property.
-"Patient should be fasting." No rule needs it. -/
+/-- "Patient should be fasting." No rule needs it. -/
 def labFasting : ElementSpec where
   id := "labFasting"
   label := "Fasting required"
@@ -1571,8 +1502,7 @@ def refillDenyReason : ElementSpec where
   friction := .compliance
   fhirTarget := "Task.statusReason"
 
-/-- Product design property.
-A free-text note to the pharmacy on a refill. No rule needs it. -/
+/-- A free-text note to the pharmacy on a refill. No rule needs it. -/
 def refillNote : ElementSpec where
   id := "refillNote"
   label := "Note to pharmacy"
@@ -1608,8 +1538,7 @@ def vaccineProvider : ElementSpec where
   friction := .compliance
   fhirTarget := "Immunization.performer.actor"
 
-/-- Product design property.
-Every data element in spec v1. -/
+/-- Every data element in spec v1. -/
 def elements : List ElementSpec := [
   -- safety checks
   patientIdReentry, wristbandScan, medScan, highAlertCosign, consentVerified,
@@ -1663,144 +1592,100 @@ valid only for the same version. `""` means not versioned. -/
 The patient banner: name, date of birth, MRN (two identifiers), age and
 sex, allergy badge, code status. A landmark: it is on every screen. -/
 def patientBanner : InfoSpec := { id := "patientBanner", label := "Patient banner", version := "" }
-/-- Product design property.
-The allergy list. Versioned: a new or changed allergy makes old receipts invalid. -/
+/-- The allergy list. Versioned: a new or changed allergy makes old receipts invalid. -/
 def allergyList : InfoSpec := { id := "allergyList", label := "Allergies", version := "allergyVersion" }
-/-- Product design property.
-The current medication list. Versioned like the allergy list. -/
+/-- The current medication list. Versioned like the allergy list. -/
 def currentMeds : InfoSpec := { id := "currentMeds", label := "Current medications", version := "medsVersion" }
-/-- Product design property.
-Anticoagulants and antiplatelet drugs the patient takes (a view of the
+/-- Anticoagulants and antiplatelet drugs the patient takes (a view of the
 medication list, so it has the same version). -/
 def anticoagulantList : InfoSpec := { id := "anticoagulantList", label := "Anticoagulants and antiplatelets", version := "medsVersion" }
-/-- Product design property.
-The dose check for each order line: the dose per kg against the usual
+/-- The dose check for each order line: the dose per kg against the usual
 range, using today's weight in kg. -/
 def doseCheck : InfoSpec := { id := "doseCheck", label := "Weight-based dose check", version := "" }
-/-- Product design property.
-The orders about to be signed: patient, drug, dose, quantity, directions and
+/-- The orders about to be signed: patient, drug, dose, quantity, directions and
 refills for each line. The controlled-prescription display obligation is
 classified separately in `controlledRxReview`. -/
 def orderSummary : InfoSpec := { id := "orderSummary", label := "Orders to sign", version := "" }
-/-- Product design property.
-The result being acknowledged: value, reference range, flag. -/
+/-- The result being acknowledged: value, reference range, flag. -/
 def resultDetail : InfoSpec := { id := "resultDetail", label := "Result detail", version := "" }
-/-- Product design property.
-The trend of the same test over time. -/
+/-- The trend of the same test over time. -/
 def resultTrend : InfoSpec := { id := "resultTrend", label := "Result trend", version := "" }
-/-- Product design property.
-The latest vital signs. -/
+/-- The latest vital signs. -/
 def vitals : InfoSpec := { id := "vitals", label := "Vital signs", version := "" }
-/-- Product design property.
-The pediatric growth chart (weight, height, head circumference percentiles). -/
+/-- The pediatric growth chart (weight, height, head circumference percentiles). -/
 def growthChart : InfoSpec := { id := "growthChart", label := "Growth chart", version := "" }
-/-- Product design property.
-The last visit with this clinic: date, clinician, plan. -/
+/-- The last visit with this clinic: date, clinician, plan. -/
 def lastVisit : InfoSpec := { id := "lastVisit", label := "Last visit", version := "" }
-/-- Product design property.
-The labs that matter for this drug (for example potassium and creatinine for lisinopril). -/
+/-- The labs that matter for this drug (for example potassium and creatinine for lisinopril). -/
 def relevantLabs : InfoSpec := { id := "relevantLabs", label := "Relevant labs", version := "" }
-/-- Product design property.
-Pharmacy fill history, used to judge adherence. -/
+/-- Pharmacy fill history, used to judge adherence. -/
 def adherence : InfoSpec := { id := "adherence", label := "Fill history / adherence", version := "" }
-/-- Product design property.
-Imaging studies and reports. -/
+/-- Imaging studies and reports. -/
 def imaging : InfoSpec := { id := "imaging", label := "Imaging", version := "" }
-/-- Product design property.
-The lab results table. -/
+/-- The lab results table. -/
 def labResults : InfoSpec := { id := "labResults", label := "Lab results", version := "" }
-/-- Product design property.
-Events since the last round (nursing notes, pages, new results). -/
+/-- Events since the last round (nursing notes, pages, new results). -/
 def overnightEvents : InfoSpec := { id := "overnightEvents", label := "Overnight events", version := "" }
-/-- Product design property.
-The active problem list. -/
+/-- The active problem list. -/
 def problemList : InfoSpec := { id := "problemList", label := "Problem list", version := "" }
-/-- Product design property.
-Immunization history and the vaccines due today. -/
+/-- Immunization history and the vaccines due today. -/
 def immunizationHistory : InfoSpec := { id := "immunizationHistory", label := "Immunizations and forecast", version := "" }
-/-- Product design property.
-The medication administration record grid. -/
+/-- The medication administration record grid. -/
 def marSchedule : InfoSpec := { id := "marSchedule", label := "MAR", version := "" }
-/-- Product design property.
-The order details of the dose being given: drug, dose, route, time due. -/
+/-- The order details of the dose being given: drug, dose, route, time due. -/
 def marDoseDetails : InfoSpec := { id := "marDoseDetails", label := "Dose details", version := "" }
-/-- Product design property.
-Recent blood glucose values (shown before insulin). -/
+/-- Recent blood glucose values (shown before insulin). -/
 def glucoseTrend : InfoSpec := { id := "glucoseTrend", label := "Blood glucose", version := "" }
-/-- Product design property.
-Recent coagulation labs (shown before anticoagulants). -/
+/-- Recent coagulation labs (shown before anticoagulants). -/
 def coagLabs : InfoSpec := { id := "coagLabs", label := "Coagulation labs", version := "" }
-/-- Product design property.
-The nurse's shift worklist: due and overdue meds and tasks. -/
+/-- The nurse's shift worklist: due and overdue meds and tasks. -/
 def shiftWorklist : InfoSpec := { id := "shiftWorklist", label := "Shift worklist", version := "" }
-/-- Product design property.
-Orders placed since the last shift. -/
+/-- Orders placed since the last shift. -/
 def newOrders : InfoSpec := { id := "newOrders", label := "New orders since last shift", version := "" }
-/-- Product design property.
-The last handoff summary. -/
+/-- The last handoff summary. -/
 def handoffSummary : InfoSpec := { id := "handoffSummary", label := "Handoff summary", version := "" }
-/-- Product design property.
-The intra-operative record: times, counts, anesthesia events. -/
+/-- The intra-operative record: times, counts, anesthesia events. -/
 def intraopRecord : InfoSpec := { id := "intraopRecord", label := "Intra-op record", version := "" }
-/-- Product design property.
-Earlier notes (the source for copy-forward). -/
+/-- Earlier notes (the source for copy-forward). -/
 def priorNotes : InfoSpec := { id := "priorNotes", label := "Prior notes", version := "" }
-/-- Product design property.
-Past encounters. -/
+/-- Past encounters. -/
 def encounterHistory : InfoSpec := { id := "encounterHistory", label := "Encounters", version := "" }
-/-- Product design property.
-Upcoming appointments. -/
+/-- Upcoming appointments. -/
 def upcomingAppointments : InfoSpec := { id := "upcomingAppointments", label := "Upcoming appointments", version := "" }
-/-- Product design property.
-Open (active, unsigned, or pending) orders. -/
+/-- Open (active, unsigned, or pending) orders. -/
 def openOrders : InfoSpec := { id := "openOrders", label := "Open orders", version := "" }
-/-- Product design property.
-The refill request: drug, dose, last fill, pharmacy, who asked. -/
+/-- The refill request: drug, dose, last fill, pharmacy, who asked. -/
 def refillRequest : InfoSpec := { id := "refillRequest", label := "Refill request", version := "" }
-/-- Product design property.
-The in-basket list (results, messages, refill requests). -/
+/-- The in-basket list (results, messages, refill requests). -/
 def inbasketItems : InfoSpec := { id := "inbasketItems", label := "In-basket", version := "" }
-/-- Product design property.
-The triage summary (acuity, vitals, complaint). -/
+/-- The triage summary (acuity, vitals, complaint). -/
 def triageSummary : InfoSpec := { id := "triageSummary", label := "Triage summary", version := "" }
-/-- Product design property.
-The consult request from the ED. -/
+/-- The consult request from the ED. -/
 def consultRequest : InfoSpec := { id := "consultRequest", label := "Consult request", version := "" }
-/-- Product design property.
-The signed consent form on file. -/
+/-- The signed consent form on file. -/
 def consentDocument : InfoSpec := { id := "consentDocument", label := "Consent on file", version := "" }
-/-- Product design property.
-Social history. -/
+/-- Social history. -/
 def socialHistory : InfoSpec := { id := "socialHistory", label := "Social history", version := "" }
-/-- Product design property.
-Family history. -/
+/-- Family history. -/
 def familyHistory : InfoSpec := { id := "familyHistory", label := "Family history", version := "" }
-/-- Product design property.
-Past surgical history. -/
+/-- Past surgical history. -/
 def surgicalHistory : InfoSpec := { id := "surgicalHistory", label := "Surgical history", version := "" }
-/-- Product design property.
-Insurance coverage. -/
+/-- Insurance coverage. -/
 def coverage : InfoSpec := { id := "coverage", label := "Coverage", version := "" }
-/-- Product design property.
-Recent as-needed (PRN) doses and pain scores. -/
+/-- Recent as-needed (PRN) doses and pain scores. -/
 def prnHistory : InfoSpec := { id := "prnHistory", label := "PRN history", version := "" }
-/-- Product design property.
-Results ordered but not back yet. -/
+/-- Results ordered but not back yet. -/
 def pendingResults : InfoSpec := { id := "pendingResults", label := "Pending results", version := "" }
-/-- Product design property.
-The ED track board (all patients in the department). -/
+/-- The ED track board (all patients in the department). -/
 def edTrackBoard : InfoSpec := { id := "edTrackBoard", label := "ED track board", version := "" }
-/-- Product design property.
-Open care gaps (screenings and vaccines due). -/
+/-- Open care gaps (screenings and vaccines due). -/
 def careGapList : InfoSpec := { id := "careGapList", label := "Care gaps", version := "" }
-/-- Product design property.
-The patient's CURES report: Schedule II–V prescriptions filled in
+/-- The patient's CURES report: Schedule II–V prescriptions filled in
 California, from the state's prescription drug monitoring program (CA Health
 and Safety Code §11165.4). -/
 def curesReport : InfoSpec := { id := "curesReport", label := "CURES report", version := "" }
 
-/-- Product design property.
-Every piece of information in spec v1. -/
+/-- Every piece of information in spec v1. -/
 def infos : List InfoSpec := [
   patientBanner, allergyList, currentMeds, anticoagulantList, doseCheck, orderSummary,
   resultDetail, resultTrend, vitals, growthChart, lastVisit, relevantLabs, adherence,
@@ -1816,7 +1701,7 @@ def infos : List InfoSpec := [
 
 A commit changes the record. Each has the roles that may do it. -/
 
-/-- Hospital policy (not law), owner decision 2026-10-31.
+/-- Hospital policy (not law).
 Our stand-in for security-class order privileges. -/
 def preopSigningRoles : EncounterRoleRule :=
   { encounter := "preop", roles := [.physician, .surgeon],
@@ -1826,36 +1711,26 @@ def preopSigningRoles : EncounterRoleRule :=
 def signOrders : CommitSpec :=
   { id := "signOrders", label := "Sign orders", roles := prescribers,
     encounterRoles? := some [preopSigningRoles] }
-/-- Product design property.
-Sign a visit or consult note. -/
+/-- Sign a visit or consult note. -/
 def signNote : CommitSpec := { id := "signNote", label := "Sign note", roles := prescribers }
-/-- Product design property.
-Acknowledge a result in the in-basket. -/
+/-- Acknowledge a result in the in-basket. -/
 def ackResult : CommitSpec := { id := "ackResult", label := "Acknowledge result", roles := prescribers }
-/-- Product design property.
-Approve (or deny, or modify) a refill request. -/
+/-- Approve (or deny, or modify) a refill request. -/
 def approveRefill : CommitSpec := { id := "approveRefill", label := "Approve refill", roles := [.physician, .np] }
-/-- Product design property.
-Give a medication and record it on the MAR. -/
+/-- Give a medication and record it on the MAR. -/
 def administerMed : CommitSpec := { id := "administerMed", label := "Administer medication", roles := nurses }
-/-- Product design property.
-File the nurse's flowsheet vitals and assessment. -/
+/-- File the nurse's flowsheet vitals and assessment. -/
 def chartAssessment : CommitSpec := { id := "chartAssessment", label := "File assessment", roles := nurses }
-/-- Product design property.
-Record a vaccine given today. -/
+/-- Record a vaccine given today. -/
 def recordImmunization : CommitSpec := { id := "recordImmunization", label := "Record immunization", roles := vaccinators }
-/-- Product design property.
-Sign the brief operative note. -/
+/-- Sign the brief operative note. -/
 def signOpNote : CommitSpec := { id := "signOpNote", label := "Sign op note", roles := surgeons }
-/-- Product design property.
-Discharge the patient from the hospital. -/
+/-- Discharge the patient from the hospital. -/
 def discharge : CommitSpec := { id := "discharge", label := "Discharge", roles := [.surgeon, .physician, .np] }
-/-- Product design property.
-Set the ED disposition (admit, discharge, transfer, …). -/
+/-- Set the ED disposition (admit, discharge, transfer, …). -/
 def disposition : CommitSpec := { id := "disposition", label := "Set disposition", roles := [.physician, .np] }
 
-/-- Product design property.
-Every commit in spec v1. -/
+/-- Every commit in spec v1. -/
 def commits : List CommitSpec := [
   signOrders, signNote, ackResult, approveRefill, administerMed,
   chartAssessment, recordImmunization, signOpNote, discharge, disposition
@@ -1863,19 +1738,16 @@ def commits : List CommitSpec := [
 
 /-! ## Entry requirements: what must be captured before each commit -/
 
-/-- Product design property.
-`requires c e`: commit `c` needs element `e` captured (and confirmed, if it
+/-- `requires c e`: commit `c` needs element `e` captured (and confirmed, if it
 was pre-filled) first. -/
 def requires (c : CommitSpec) (e : ElementSpec) (when : When := .always) : EntryReq :=
   { commit := c.id, element := e.id, when }
 
-/-- Product design property.
-`requiresPerLine c e`: commit `c` needs element `e` on every order line. -/
+/-- `requiresPerLine c e`: commit `c` needs element `e` on every order line. -/
 def requiresPerLine (c : CommitSpec) (e : ElementSpec) (when : When := .always) : EntryReq :=
   { commit := c.id, element := e.id, when, perOrderLine := true }
 
-/-- Product design property.
-The elements every medication order line carries. -/
+/-- The elements every medication order line carries. -/
 def orderLineElements : List ElementSpec :=
   [drug, dose, doseUnit, route, freq, duration, quantity, refills, indication, pharmacy,
    substitution, prn, orderDiagnosis]
@@ -1968,7 +1840,7 @@ def chartAssessmentEntries : List EntryReq :=
 /-- Law: 42 USC 300aa-25(a), 300aa-26(d); site/route gating is hospital policy.
 Recording a vaccine needs the vaccine, lot, site, route, and the VIS.
 
-42 USC 300aa-25(a) covers record content and 300aa-26(d) VIS before administration. Site/route gating is our policy. The VIS edition date, manufacturer and provider are now required; this demo still does not model every statutory field or establish actual VIS delivery timing (docs/regulations.md E11). -/
+42 USC 300aa-25(a) covers record content and 300aa-26(d) VIS before administration. Site/route gating is our policy. The VIS edition date, manufacturer and provider are required; this demo still does not model every statutory field or establish actual VIS delivery timing (docs/regulations.md E11). -/
 def recordImmunizationEntries : List EntryReq :=
   [requires recordImmunization vaccine, requires recordImmunization vaccineLot,
    requires recordImmunization vaccineSite, requires recordImmunization vaccineRoute,
@@ -2005,8 +1877,7 @@ def dispositionEntries : List EntryReq :=
   [requires disposition dispositionChoice, requires disposition visitDiagnosis,
    requires disposition dispositionCondition]
 
-/-- Product design property.
-Every entry requirement in spec v1. -/
+/-- Every entry requirement in spec v1. -/
 def entries : List EntryReq :=
   orderSigningEntries signOrders ++
   preOpExtraEntries ++ signNoteEntries ++ ackResultEntries ++ approveRefillEntries ++
@@ -2015,14 +1886,12 @@ def entries : List EntryReq :=
 
 /-! ## Review requirements: what must be seen before each commit -/
 
-/-- Product design property.
-`mustShow c i`: info `i` must be shown on the screen where commit `c` is
+/-- `mustShow c i`: info `i` must be shown on the screen where commit `c` is
 done. No receipt counts. -/
 def mustShow (c : CommitSpec) (i : InfoSpec) (when : When := .always) : ReviewReq :=
   { commit := c.id, info := i.id, mode := .shownOnCommit, when }
 
-/-- Product design property.
-`showOrReceipt c i minutes roles`: info `i` must be shown on the commit
+/-- `showOrReceipt c i minutes roles`: info `i` must be shown on the commit
 screen, unless one of `roles` reviewed the same version within `minutes`. -/
 def showOrReceipt (c : CommitSpec) (i : InfoSpec) (minutes : Nat) (roles : List Role)
     (when : When := .always) : ReviewReq :=
@@ -2133,8 +2002,7 @@ Our commit-screen display policy, not a statutory UI requirement (docs/regulatio
 def dispositionReviews : List ReviewReq :=
   [mustShow disposition vitals]
 
-/-- Product design property.
-Every review requirement in spec v1. -/
+/-- Every review requirement in spec v1. -/
 def reviews : List ReviewReq :=
   orderSigningReviews signOrders ++
   preOpExtraReviews ++ ackResultReviews ++ approveRefillReviews ++
@@ -2154,105 +2022,89 @@ kg and high-alert warnings follow ISMP best practice, not law. See
 Removable alerts are accidental friction: a program may pop them up, show them
 inline, or drop them. Every alert appears only when its trigger holds. -/
 
-/-- Product design property.
-Interruptive: an ordered drug matches one of the patient's allergies. -/
+/-- Interruptive: an ordered drug matches one of the patient's allergies. -/
 def drugAllergyOrderAlert : AlertSpec :=
   { id := "drugAllergyOrder", label := "Drug–allergy match", cond := .drugAllergy,
     tier := .interruptive, commit := signOrders.id }
 
-/-- Product design property.
-Interruptive: the drug about to be given matches one of the patient's allergies. -/
+/-- Interruptive: the drug about to be given matches one of the patient's allergies. -/
 def drugAllergyAdminAlert : AlertSpec :=
   { id := "drugAllergyAdmin", label := "Drug–allergy match (administration)",
     cond := .drugAllergy, tier := .interruptive, commit := administerMed.id }
 
-/-- Product design property.
-Interruptive: an ordered drug has a severe interaction with a current medication. -/
+/-- Interruptive: an ordered drug has a severe interaction with a current medication. -/
 def interactionOrderAlert : AlertSpec :=
   { id := "interactionOrder", label := "Severe drug–drug interaction", cond := .interaction,
     tier := .interruptive, commit := signOrders.id }
 
-/-- Product design property.
-Interruptive: the refilled drug has a severe interaction with a current medication. -/
+/-- Interruptive: the refilled drug has a severe interaction with a current medication. -/
 def interactionRefillAlert : AlertSpec :=
   { id := "interactionRefill", label := "Severe drug–drug interaction (refill)",
     cond := .interaction, tier := .interruptive, commit := approveRefill.id }
 
-/-- Product design property.
-Interruptive: an ordered dose is outside the usual range for today's weight. -/
+/-- Interruptive: an ordered dose is outside the usual range for today's weight. -/
 def doseRangeOrderAlert : AlertSpec :=
   { id := "doseRangeOrder", label := "Dose out of range for weight", cond := .doseOutOfRange,
     tier := .interruptive, commit := signOrders.id }
 
-/-- Product design property.
-Interruptive: the weight was entered in pounds. It must be re-entered in kg. -/
+/-- Interruptive: the weight was entered in pounds. It must be re-entered in kg. -/
 def weightInLbAlert : AlertSpec :=
   { id := "weightInLb", label := "Weight entered in pounds", cond := .weightInLb,
     tier := .interruptive, commit := signOrders.id }
 
-/-- Product design property.
-Interruptive: a high-alert medication (insulin, heparin, …) is about to be
+/-- Interruptive: a high-alert medication (insulin, heparin, …) is about to be
 given; an independent double check is required. -/
 def highAlertAdminAlert : AlertSpec :=
   { id := "highAlertAdmin", label := "High-alert medication: double check required",
     cond := .highAlertMed, tier := .interruptive, commit := administerMed.id }
 
-/-- Product design property.
-Passive: the patient has care gaps (screenings due). Shown inline throughout the adult workflow. -/
+/-- Passive: the patient has care gaps (screenings due). Shown inline throughout the adult workflow. -/
 def careGapsInlineAlert : AlertSpec :=
   { id := "careGapsInline", label := "Care gaps due", cond := .careGap, tier := .passive,
     commit := signNote.id, screens := ["W1"] }
 
-/-- Product design property.
-Passive: an ordered drug duplicates a current therapy (low severity).
+/-- Passive: an ordered drug duplicates a current therapy (low severity).
 Shown inline throughout the adult workflow. -/
 def duplicateTherapyInlineAlert : AlertSpec :=
   { id := "duplicateTherapyInline", label := "Possible duplicate therapy",
     cond := .duplicateTherapy, tier := .passive, commit := signOrders.id,
     screens := ["W1"] }
 
-/-- Product design property.
-Passive: vaccines are due. Shown inline throughout the pediatric workflow. -/
+/-- Passive: vaccines are due. Shown inline throughout the pediatric workflow. -/
 def immunizationsDueInlineAlert : AlertSpec :=
   { id := "immunizationsDueInline", label := "Immunizations due", cond := .careGap,
     tier := .passive, commit := recordImmunization.id, screens := ["W5"] }
 
-/-- Product design property.
-Removable: a "health maintenance reminder" popup when closing a visit with
+/-- Removable: a "health maintenance reminder" popup when closing a visit with
 care gaps. The same gaps are already shown inline. -/
 def healthMaintenancePopupAlert : AlertSpec :=
   { id := "healthMaintenancePopup", label := "Health maintenance reminder",
     cond := .careGap, tier := .removable, commit := signNote.id }
 
-/-- Product design property.
-Removable: a "high-alert medication ordered, review policy" notice when
+/-- Removable: a "high-alert medication ordered, review policy" notice when
 signing orders. The nurse's double check is the real safeguard. -/
 def highAlertOrderNoticeAlert : AlertSpec :=
   { id := "highAlertOrderNotice", label := "High-alert medication ordered: review policy",
     cond := .highAlertMed, tier := .removable, commit := signOrders.id }
 
-/-- Product design property.
-Removable: "patient already has an active prescription for this drug" when
+/-- Removable: "patient already has an active prescription for this drug" when
 refilling. A refill always matches an active prescription. -/
 def activeRxPopupAlert : AlertSpec :=
   { id := "activeRxPopup", label := "Active prescription exists for this drug",
     cond := .duplicateTherapy, tier := .removable, commit := approveRefill.id }
 
-/-- Product design property.
-Removable: a care-gap reminder popup during a refill. -/
+/-- Removable: a care-gap reminder popup during a refill. -/
 def refillCareGapPopupAlert : AlertSpec :=
   { id := "refillCareGapPopup", label := "Patient has care gaps", cond := .careGap,
     tier := .removable, commit := approveRefill.id }
 
-/-- Product design property.
-Removable: a minor-interaction information popup at administration. The
+/-- Removable: a minor-interaction information popup at administration. The
 prescriber already handled interactions when ordering. -/
 def minorInteractionPopupAlert : AlertSpec :=
   { id := "minorInteractionPopup", label := "Interaction information",
     cond := .interaction, tier := .removable, commit := administerMed.id }
 
-/-- Product design property.
-Every alert in spec v1. -/
+/-- Every alert in spec v1. -/
 def alerts : List AlertSpec := [
   -- interruptive
   drugAllergyOrderAlert, drugAllergyAdminAlert,
@@ -2267,14 +2119,12 @@ def alerts : List AlertSpec := [
 
 /-! ## Design rules -/
 
-/-- Product design property.
-The component kinds a program may use (the catalog). -/
+/-- The component kinds a program may use (the catalog). -/
 def catalog : List String :=
   ["banner", "field", "panel", "table", "trend", "alert", "button", "group", "tabs",
    "macro", "search"]
 
-/-- Product design property.
-Design rules for v1:
+/-- Design rules for v1:
 - every required element is at most 8 navigation steps from the start screen;
 - text smaller than 12 pt does not count as shown;
 - at most 8 components move per accepted version (copies are free);
@@ -2304,7 +2154,7 @@ def specialtyCommits : List CommitId :=
    "signNewbornOxygenOrder", "signAnesthesiaRecord", "signPostAnesthesiaNote",
    "signProgressNote", "signSuicideRiskAssessment"]
 
-/-- Product design property. New artifact paths cannot bypass ordinary signing. -/
+/-- New artifact paths cannot bypass ordinary signing. -/
 def inheritedEntries : List EntryReq :=
   issuanceCommits.flatMap (fun c =>
     (orderSigningEntries { id := c, label := c, roles := prescribers }) ++
@@ -2313,7 +2163,7 @@ def inheritedEntries : List EntryReq :=
   specialtyCommits.map (fun c => { commit := c, element := "patientIdReentry" }) ++
   [{ commit := "signProgressNote", element := "progressNote" }]
 
-/-- Product design property. Inherited reviews keep their exact modes and waivers. -/
+/-- Inherited reviews keep their exact modes and waivers. -/
 def inheritedReviews : List ReviewReq :=
   issuanceCommits.flatMap (fun c =>
     (orderSigningReviews { id := c, label := c, roles := prescribers }) ++
@@ -2322,29 +2172,29 @@ def inheritedReviews : List ReviewReq :=
     [ { commit := c, info := "allergyList", mode := .shownOnCommit },
       { commit := c, info := "currentMeds", mode := .shownOnCommit }])
 
-/-- Product design property. All issuance variants retain each signing alert;
+/-- All issuance variants retain each signing alert;
 only ids and commit bindings differ. Triggers and tiers remain unchanged. -/
 def inheritedAlerts : List AlertSpec :=
   issuanceCommits.flatMap fun c => (alerts.filter (·.commit == "signOrders")).map fun a =>
     { a with id := a.id ++ "." ++ c, commit := c }
 
-/-- Product design property. All catalog additions, grouped by legal source. -/
+/-- All catalog additions, grouped by legal source. -/
 def ruleEntries : List EntryReq :=
   Rules.Cms.entries ++ Rules.Title22.entries ++ Rules.CaStatutes.entries ++
   Rules.Federal.entries ++ Rules.Entrenched.entries
 
-/-- Product design property. All catalog panels have shown-on-commit guards. -/
+/-- All catalog panels have shown-on-commit guards. -/
 def ruleReviews : List ReviewReq :=
   Rules.Cms.reviews ++ Rules.Title22.reviews ++ Rules.CaStatutes.reviews ++
   Rules.Federal.reviews ++ Rules.Entrenched.reviews
 
-/-- Product design property. Specialist issuance also inherits every new
+/-- Specialist issuance also inherits every new
 prescription-content gate and every controlled-prescription display rule. -/
 def inheritedRuleEntries : List EntryReq :=
   issuanceCommits.flatMap fun c => (ruleEntries.filter (·.commit == "signOrders")).map fun r =>
     { r with commit := c }
 
-/-- Product design property. No specialist signing action bypasses controlled details. -/
+/-- No specialist signing action bypasses controlled details. -/
 def inheritedRuleReviews : List ReviewReq :=
   issuanceCommits.flatMap fun c => (ruleReviews.filter (·.commit == "signOrders")).map fun r =>
     { r with commit := c }
@@ -2392,8 +2242,7 @@ def specV1 : Spec := specForProfile ruleProfile
 These run at build time. They check that the spec is consistent: no duplicate
 names, and every requirement and alert points at something the spec declares. -/
 
-/-- Product design property.
-`true` when the list has no repeated entries. -/
+/-- `true` when the list has no repeated entries. -/
 def allDistinct (xs : List String) : Bool :=
   xs.length == xs.eraseDups.length
 

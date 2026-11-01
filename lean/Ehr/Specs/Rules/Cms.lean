@@ -599,27 +599,27 @@ def entrie29 : EntryReq where
   when := .always
   perOrderLine := false
 
-/-- Product design property. Cms contributions, with source labels on each item. -/
+/-- Cms elements, with source labels on each item. -/
 def elements : List ElementSpec :=
   [restraintCarePlanChange, restraintOrderMode, restraintPrn, restraintBehavior, restraintIntervention, restraintAlternatives, restraintCondition, restraintResponse, restraintContinuationReason, selfAdministrationOrder, selfAdministrationCapacity, selfAdministrationTeaching, selfAdministrationSecurity, patientOwnedMedicationIdentity, patientOwnedMedicationIntegrity, admittingDiagnosis, hospitalizationOutcome, postHospitalNeeds, postHospitalServiceAvailability, postHospitalServiceAccess, dischargePlanningEvaluation, dischargeEvaluationDiscussion, opTechnique, opTissuesRemovedAltered]
 
-/-- Product design property. Cms contributions, with source labels on each item. -/
+/-- Cms infos, with source labels on each item. -/
 def infos : List InfoSpec :=
   []
 
-/-- Product design property. Cms contributions, with source labels on each item. -/
+/-- Cms commits, with source labels on each item. -/
 def commits : List CommitSpec :=
   [signRestraintOrder, chartRestraintEpisode, authorizeSelfAdministration, documentSelfAdministration, recordAdmission]
 
-/-- Product design property. Cms contributions, with source labels on each item. -/
+/-- Cms entries, with source labels on each item. -/
 def entries : List EntryReq :=
   [entrie1, entrie2, entrie3, entrie4, entrie5, entrie6, entrie7, entrie8, entrie9, entrie10, entrie11, entrie12, entrie13, entrie14, entrie15, entrie16, entrie17, entrie18, entrie19, entrie20, entrie21, entrie22, entrie23, entrie24, entrie25, entrie26, entrie27, entrie28, entrie29]
 
-/-- Product design property. Cms contributions, with source labels on each item. -/
+/-- Cms reviews, with source labels on each item. -/
 def reviews : List ReviewReq :=
   []
 
-/-- Product design property. Cms contributions, with source labels on each item. -/
+/-- Cms alerts, with source labels on each item. -/
 def alerts : List AlertSpec :=
   []
 

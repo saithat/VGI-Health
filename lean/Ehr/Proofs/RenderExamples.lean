@@ -1,8 +1,9 @@
 import Ehr.Render.UiTests
 
-/-! Named counterparts of the renderer examples cited by the verification
-audit. They use the original public fixtures and theorems; Render/** is left
-to its owning lane. These examples state their individual clauses precisely. -/
+/-!
+Named examples for the renderer claims in the verification audit.
+Each uses the public fixtures and states the particular claim it proves.
+-/
 namespace Ehr.Proofs.RenderExamples
 open Ehr Ehr.Render
 

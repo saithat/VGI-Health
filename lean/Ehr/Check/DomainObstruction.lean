@@ -26,7 +26,7 @@ private theorem signingPolicy :
     (specV1.commit? "signOrders").map (·.encounterRoles?) = some (some [preopSigningRoles]) := by
   decide
 
-/-- Hospital policy (not law), owner decision 2026-10-31.
+/-- Hospital policy (not law).
 No event can add a pre-op order signature for an NP, on any program or state. -/
 theorem np_preop_never_signs (p : Program) (facts : Facts) (user : User)
     (encounter : facts.encounterKind? = some "preop") (role : user.role = .np)

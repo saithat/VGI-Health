@@ -1,13 +1,9 @@
 import Ehr.Core.Basics
 
 /-!
-# Alerts
-
-Each alert condition is computed from the facts, the captured values, and the
-formulary. A condition yields a list of *keys*: one per thing it fires for
-(e.g. a drug name plus the data version). The alert holds when the list is not
-empty. An acknowledged `(alert, key)` pair never pops up again in the episode;
-a new data version gives a new key, so the alert may fire again (A3).
+Alert conditions use patient facts, captured values and the formulary.
+Each result key identifies a reason to fire. Acknowledged alert/key pairs
+cannot open another popup; changed data may produce a new key.
 -/
 
 namespace Ehr

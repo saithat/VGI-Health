@@ -583,27 +583,27 @@ def entrie97 : EntryReq where
   when := .always
   perOrderLine := false
 
-/-- Product design property. CaStatutes contributions, with source labels on each item. -/
+/-- CaStatutes elements, with source labels on each item. -/
 def elements : List ElementSpec :=
   [prescriptionPatientName, prescriptionPatientAddress, prescriptionDirections, prescriberLicenseClassification, prescriberFederalRegistration, controlledTransmissionAgentName, noFurtherControlledNeedExpected, telehealthConsentRecord, naloxoneEducationOutcome, mentalHealthAccessRequestDate, mentalHealthAccessDenialConsequences, minorMentalHealthParentContactDecision, minorAssaultParentContactTime, minorSubstanceParentInvolvementDecision, holdApplicationCircumstances, holdApplicationProbableCause, holdHistoryConsidered, holdAdvisementPerformer, holdAdvisementDate, holdAdvisementCompletion, holdAdvisementLanguage, primaryLanguage, patientDialect]
 
-/-- Product design property. CaStatutes contributions, with source labels on each item. -/
+/-- CaStatutes infos, with source labels on each item. -/
 def infos : List InfoSpec :=
   []
 
-/-- Product design property. CaStatutes contributions, with source labels on each item. -/
+/-- CaStatutes commits, with source labels on each item. -/
 def commits : List CommitSpec :=
   [recordDelegatedControlledTransmission, authorizeDirectDispensing, recordTelehealthConsent, documentMentalHealthAccessDenial, documentMinorMentalHealthConsent, documentMinorAssaultCareConsent, documentMinorSubstanceCareConsent, documentHoldApplication, recordHoldAdvisement, recordCommunicationNeeds]
 
-/-- Product design property. CaStatutes contributions, with source labels on each item. -/
+/-- CaStatutes entries, with source labels on each item. -/
 def entries : List EntryReq :=
   [entrie74, entrie75, entrie76, entrie77, entrie78, entrie79, entrie80, entrie81, entrie82, entrie83, entrie84, entrie85, entrie86, entrie87, entrie88, entrie89, entrie90, entrie91, entrie92, entrie93, entrie94, entrie95, entrie96, entrie97]
 
-/-- Product design property. CaStatutes contributions, with source labels on each item. -/
+/-- CaStatutes reviews, with source labels on each item. -/
 def reviews : List ReviewReq :=
   []
 
-/-- Product design property. CaStatutes contributions, with source labels on each item. -/
+/-- CaStatutes alerts, with source labels on each item. -/
 def alerts : List AlertSpec :=
   []
 

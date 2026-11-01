@@ -28,8 +28,8 @@ theorem vocabulary_not_old_satisfies : ¬ Satisfies emptySpec none emptyProgram 
   intro h
   exact (by decide : ¬ CatalogOnly emptySpec vocabularyProgram) h.1.1
 
-/-- A direct counterexample to unqualified full-Satisfies T8 under the
-content lane's current Extends relation. It does not rely on general T1. -/
+/-- The Extends relation alone cannot carry all of Satisfies back to an older spec.
+The added catalog item is rejected by the older spec. -/
 theorem T8_unqualified_false :
     ¬ (∀ (new old : Spec) (prev : Option Program) (can p : Program),
       new.Extends old → Satisfies new prev can p → Satisfies old prev can p) := by

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { loadEhrInterp } from '../../app/public/ehr/interp-loader.mjs';
@@ -42,5 +42,6 @@ for(const file of readdirSync(`${root}/.cache/content2/after`).filter(f=>f.endsW
   cases++;
 }
 const report={cases,nativeWasmFactComparisons:cases,nativeWasmUiComparisons:cases,weightConfirmation:'Human-confirmed measured kg weight supplies the declared dosing-weight link; identity stays human-only',rowActionCases:3,resolvedProblemToggle:true,mismatches:0};
+mkdirSync(resolve(root,'docs/measurements/content2'), {recursive:true});
 writeFileSync(`${root}/docs/measurements/content2/native-wasm.json`,JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify(report));

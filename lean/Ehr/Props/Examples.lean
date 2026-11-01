@@ -2,15 +2,9 @@ import Ehr.Props.Properties
 import Ehr.Examples.Tiny
 
 /-!
-# Examples for the properties
-
-Concrete instances that show each property means what it says, on the tiny
-example spec. `Ehr.Examples.Tiny.program` is a *bad* program on purpose: its
-sign screen keeps the allergy list in a closed tab, and its macro tries to
-type the patient ID and to sign. `goodProgram` below fixes both.
-
-Every example here is checked by Lean's kernel (`decide`), not by running
-compiled code.
+Concrete property examples checked by Lean's kernel.
+The tiny bad program hides allergies and automates human-only actions.
+goodProgram corrects those choices.
 -/
 
 namespace Ehr.Props.Examples

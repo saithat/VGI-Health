@@ -1,14 +1,9 @@
 import Ehr.Canonical.Builders
 
 /-!
-# W2: results in-basket (P1)
-
-In-basket → open the result (detail and trend) → message the patient (a
-separate screen) → acknowledge and mark done.
-
-Deliberate friction: the patient message is on its own screen and the user
-must come back to acknowledge; all prior results and notes are one tab away.
-Kept: the result and, when abnormal, its trend are on the acknowledge screen.
+W2: results in-basket, result review, patient message and acknowledgment.
+The baseline puts the message on a separate screen and prior records in tabs.
+The result and any required abnormal-result trend remain at acknowledgment.
 -/
 
 namespace Ehr.Canonical.W2

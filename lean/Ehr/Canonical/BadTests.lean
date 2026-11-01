@@ -52,7 +52,7 @@ def benzoFacts : Facts := { adult with currentMedClasses := ["benzodiazepine"] }
      .click "w1Verify.continue"] (f := benzoFacts)) "w1Sign" "signOrders" (f := benzoFacts)).commits == ["signOrders"]
 
 /-! Each permanent seed has an explicit regression. Structural predicates here
-are test oracles, not substitutes for the check lane's certification theorem. -/
+are expected test outcomes; they do not replace the checker safety proof. -/
 /-- A prefill on a never/human-only element is structurally forbidden. -/
 def illegalHumanPrefill (sp : Spec) (p : Program) : Bool := (components p).any fun c =>
   match c.kind with

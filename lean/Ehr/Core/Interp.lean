@@ -1,19 +1,10 @@
 import Ehr.Core.Guard
 
 /-!
-# The interpreter
-
-`step spec program facts user actor state event` returns the next state and a
-`StepResult`. The safety rules hold for every program:
-- a commit happens only if `commitGuard` holds (T0);
-- a macro runs as `Actor.macro` and is refused anything only a human may do:
-  entering a human-only or `never`-prefill element, confirming, reviewing,
-  acknowledging, committing, or running another macro (T3);
-- prefill never fills a `never` or human-only element, and a prefilled value
-  needs a human confirm (unless it is auto-linked from a confirmed value);
-- while a popup is open, only its acknowledgment is accepted.
-
-All functions use structural recursion and are computable.
+The interpreter applies events to the current patient state.
+Every new commit must pass the guard. Macros cannot perform human-only actions.
+Prefills obey the element policy; an open popup blocks other actions.
+The app and native command-line tool call these same functions.
 -/
 
 namespace Ehr
@@ -52,6 +43,8 @@ def storedCapture (l : List Captured) (x : Captured) : Captured :=
       l.any (fun y => y.element == x.element && y.slot == x.slot && y.provenance? == some "linked-source-changed")
     then some "linked-source-changed" else x.provenance? }
 
+/-- Replace the capture at this element and slot, and discard linked values
+whose source was changed. -/
 def setCaptured (l : List Captured) (x : Captured) : List Captured :=
   let superseded := l.any (fun old => old.element == x.element &&
     (old.value != x.value || old.confirmed != x.confirmed))

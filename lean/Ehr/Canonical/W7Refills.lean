@@ -1,16 +1,10 @@
 import Ehr.Canonical.Builders
 
 /-!
-# W7: refill requests (P1)
-
-Refill folder → open the request (chart review with last visit, labs, fill
-history, and the last note on separate tabs) → decision screen → Approve.
-
-Deliberate friction: the review screen buries each item one tab away, with its
-own "mark reviewed" button; then a separate decision screen; a refill protocol
-checkbox; two removable popups ("active prescription exists", "care gaps").
-Kept: the relevant labs are on the decision screen; the last visit and fill
-history are there too (or covered by a receipt).
+W7: refill queue, chart review and decision.
+The baseline separates review tabs and the decision screen, repeats review
+actions and includes removable popups. Required labs remain at the decision;
+last-visit and fill-history review may use an allowed receipt.
 -/
 
 namespace Ehr.Canonical.W7

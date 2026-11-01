@@ -2,20 +2,10 @@ import Ehr.Check.Check
 import Ehr.Core.Json
 
 /-!
-# Deploy: publish a program only with an ok verdict
-
-`deployPlan` is the whole decision, as a pure function: it runs the checker
-and lists the files to write. The command-line tool only carries out the
-plan. T4 (`Ehr.Proofs.CheckDeploy`) proves that the plan publishes
-(writes `current.json`) only when the verdict is `ok`.
-
-Files, under `<out>/<owner>/`:
-- `v<N>.json`, the program, and `v<N>.cert.json`, its certificate: always
-  written, so a rejected candidate leaves a record with its counterexample;
-- `current.json`, the program, and `current.cert.json`, its certificate: the
-  published version the app loads. Written only if the verdict is `ok`.
-
-Hashes are FNV-1a (64-bit) over the compact JSON text (keys sorted).
+Deployment plans always retain the candidate program and its certificate.
+They update current.json and current.cert.json only after checker acceptance.
+T4 proves this rule for the plan; file writes are carried out by the CLI.
+Certificates use 64-bit FNV-1a hashes of compact JSON with sorted keys.
 -/
 
 namespace Ehr.Check

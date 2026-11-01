@@ -2,30 +2,10 @@ import Ehr.Core.Json
 import Ehr.Core.Guard
 
 /-!
-# Task goals
-
-What a clinician must achieve in one task, derived from the task's clinical
-choices and the spec. The choices are fixed per scenario, so the goals do not
-depend on the UI program: the same goals are used for every program version.
-
-A task's goals are:
-- the **commits** to perform (e.g. `signOrders`), chosen from the workflow and
-  the choices, keeping only commits the spec knows;
-- the **values** to capture: one `ValueGoal` per required element (per order
-  line for order elements such as drug, dose, route, frequency, indication).
-  Required means: an entry requirement of a goal commit that applies when the
-  chosen orders are in place. Patient-ID re-entry, scans, and cosigns are
-  values too (their correct value comes from the facts and the user);
-- the **expected acknowledgments**: interruptive alerts that will fire at the
-  goal commits with the chosen values (used by the floor; acks are obstacles,
-  not goals);
-- **problems**: choices that do not fit the spec (reported as complaints).
-
-Element-ID conventions (agreed names; unknown names fall back to "any value"):
-order elements `drug`, `dose`, `doseUnit`/`unit`, `route`, `freq`/`frequency`,
-`indication`/`abxIndication`; task elements `weight`, `refillDecision`,
-`disposition`, note sections (element ID = section name in `noteSections`),
-and `vaccine`/`immunization`/`cvx` (one slot per immunization).
+Task goals come from clinical choices and hospital requirements.
+The same commits and required values are used for every UI version.
+Expected alert acknowledgments contribute to the action floor;
+choices that conflict with the spec are reported as problems.
 -/
 
 namespace Ehr.Sim
@@ -414,7 +394,7 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
   let checkedWaivers := (dedupGoals waiver).map (checkFit sp facts user)
   let values := checked.map (·.1)
   -- Final alerts use the values actually required by this task, not uncaptured
-  -- order choices. Refill approval now explicitly requires the requested drug.
+  -- order choices. Refill approval requires the requested drug.
   let hyp := hypothetical [] (values.map fun g =>
     { g with value? := some (goalValue sp facts user g) })
   let acks := sp.alerts.flatMap fun al =>

@@ -1,5 +1,11 @@
 import Ehr.Render.Ui
 
+/-!
+Reviewable requirements for the EHR tree sent to the browser.
+They describe which controls and information are present and which actions
+are allowed, independently of browser styling.
+-/
+
 namespace Ehr.Render
 
 /-- Read-only additions are clinical info or the visit-progress overview. -/

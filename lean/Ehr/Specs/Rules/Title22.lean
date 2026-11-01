@@ -941,27 +941,27 @@ def entrie73 : EntryReq where
   when := .always
   perOrderLine := false
 
-/-- Product design property. Title22 contributions, with source labels on each item. -/
+/-- Title22 elements, with source labels on each item. -/
 def elements : List ElementSpec :=
   [treatmentOrder, progressWorkingDiagnosis, nursingCareProvided, nursingObservations, nursingIncidents, nursingInterpretation, administeredDrug, administeredDose, actualAdministrationTime, actualAdministrationRoute, restraintType, restraintApplicationTime, restraintRemovalTime, anesthesiaPreopDiagnosis, hospitalCourse, futureCareRecommendations, futureCareArrangements, nursingDiagnosis, nursingPlan, nursingIntervention, nursingEvaluation, verbalOrderGiver, standingOrderCircumstances, standingOrderConditions, bedsideMedicationOrder, patientOwnedMedicationOrder, anesthesiaChoiceRationale, anesthesiaBloodAmount, anesthesiaBloodDuration, postAnesthesiaComplications, edArrivalTime, edArrivalComplaint, edDepartureTime, newbornOxygenTarget, consentRiskDisclosure, consentAlternativesDisclosure, continuingCareInformationGiven]
 
-/-- Product design property. Title22 contributions, with source labels on each item. -/
+/-- Title22 infos, with source labels on each item. -/
 def infos : List InfoSpec :=
   []
 
-/-- Product design property. Title22 contributions, with source labels on each item. -/
+/-- Title22 commits, with source labels on each item. -/
 def commits : List CommitSpec :=
   [signTreatmentOrder, signDietOrder, signProgressNote, recordRestraintStart, recordRestraintEnd, signAnesthesiaRecord, recordVerbalOrder, signStandingOrder, authorizeBedsideMedication, authorizePatientOwnedMedication, recordAnesthesiaBloodAdministration, signPostAnesthesiaNote, recordEdArrival, signNewbornOxygenOrder, documentTreatmentConsent]
 
-/-- Product design property. Title22 contributions, with source labels on each item. -/
+/-- Title22 entries, with source labels on each item. -/
 def entries : List EntryReq :=
   [entrie30, entrie31, entrie32, entrie33, entrie34, entrie35, entrie36, entrie37, entrie38, entrie39, entrie40, entrie41, entrie42, entrie43, entrie44, entrie45, entrie46, entrie47, entrie48, entrie49, entrie50, entrie51, entrie52, entrie53, entrie54, entrie55, entrie56, entrie57, entrie58, entrie59, entrie60, entrie61, entrie62, entrie63, entrie64, entrie65, entrie66, entrie67, entrie68, entrie69, entrie70, entrie71, entrie72, entrie73]
 
-/-- Product design property. Title22 contributions, with source labels on each item. -/
+/-- Title22 reviews, with source labels on each item. -/
 def reviews : List ReviewReq :=
   []
 
-/-- Product design property. Title22 contributions, with source labels on each item. -/
+/-- Title22 alerts, with source labels on each item. -/
 def alerts : List AlertSpec :=
   []
 

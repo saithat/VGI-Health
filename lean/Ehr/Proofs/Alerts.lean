@@ -1,19 +1,9 @@
 import Ehr.Proofs.T0
 
 /-!
-# Alert properties A2 and A4
-
-- **A2 (no false alarms).** In the screen view, an alert component is marked
-  as firing, or counts as shown, only if its condition holds. A step opens a
-  new popup `(a, k)` only if some alert rule `a` fires for key `k` in the state
-  before the step.
-- **A4 (severity tiers).** A passive alert never pops up: in every state
-  reached from `init`, the open popup (if any) belongs to an alert rule that is
-  interruptive or removable.
-
-(A3, "no repeat interruptions", holds because a popup is only chosen from
-`popupCandidates`, which leave out acknowledged `(alert, key)` pairs; see the
-`mem_popupCandidates` lemma and the tiny tests.)
+A2: shown or firing alerts have a true condition; new popups have a firing key.
+A4: passive alerts never open popups in states reached from init.
+Acknowledged alert/key pairs are excluded from popupCandidates (A3).
 -/
 
 namespace Ehr.Proofs

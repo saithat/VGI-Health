@@ -1,8 +1,11 @@
-# Project status
+# Current status
 
-## DEMO-HONESTY verification — 2026-11-01, 11:29 PDT
+Active releases are v1, v2 and v3, using the **core** rule profile. The full
+regulation catalog is opt-in. v1.1 appears only in archived recordings.
 
-Merged origin/main. Corrected the clean-clone Inspector URL and chart-opening sequence; current clean-clone attempt at `2452e68` passed make install and is still completing browser setup, not a full pass. The previous Inspector failure is historical. App build and lint passed. Browse/dashboard smoke passed: 10 passed, 2 screenshot checks skipped. Full unit gate remains pending at the hard stop, running with `EHR_BIN` pointing to the built native checker in the main worktree; the first unit attempt failed because this fresh worktree has no native binary. Current logs: `/tmp/honesty-{build,lint,tests2,e2e2,clean}.log`.
+The native app and browser run the same Lean interpreter. Clinicians start
+from role presets and select patients inside the EHR. The AI agent proposes
+UI program changes; each deployed change must pass the checker.
 
 Raw archived chart-code display remains an owning-painter request in docs/design/changes-requests.md; no all-green claim is made.
 
@@ -1764,70 +1767,41 @@ T9's original single/joint contracts and real-interpreter replay remain intact.
 Exactness is within the reported full, goalDirected or navigationDirected
 space, per joint task. Search time stays fixed; there is no global/day-wide
 optimality or missing-external-event scheduling claim. See `lean/Ehr/Sim/README.md`.
+The five role views cover primary care, emergency care, inpatient nursing,
+pediatrics and surgery. Medplum stores synthetic charts, encounters and clinical
+writes. Imported Synthetic Hospital notes and history retain patient binding;
+records explicitly belonging to another patient are excluded.
 
 ## Verification
 
-- Full `cd lean && lake build`: passes, 189 jobs.
-- `lake check`: passes; only propext, Quot.sound, Classical.choice.
-- `lake comparator`: passes all 18 trusted core statements.
-- `python3 lean/Ehr/Sim/verify_proofs.py`: passes the explicit single/joint T9
-  contracts. Proof holes occur only in Comparator reference challenges.
-- Fresh native ten-day sweep with `--jobs 10 --timeout-seconds 240`:
-  50 schedules, all 1284 tasks retained, 1271 complete. Exactly the same 13 baseline service tasks remain
-  incomplete. Zero violations across all eight floor metrics for completed
-  tasks; zero interruption-retention violations. All five day-one replays are
-  byte-identical at seed 123 and match the serial reports, including complaints.
-  All 50 reports also match the earlier full sweep exactly. The report pins the
-  actual merged-main commit; it never uses the moving origin/main reference.
-  Compact results and refreshed minimum examples: `lean/Ehr/Sim/validation.json`.
-  Reproduce: `python3 lean/Ehr/Sim/cli_smoke.py --days 10 --jobs 10 --timeout-seconds 240 --report /tmp/sim.json`.
-  `09008cb` adds the optional per-process wall budget (serial default stays
-  120 seconds). Twenty workers exceeded that budget on a busy RN schedule;
-  the final ten-worker run passed with an explicit 240-second process budget.
-  Clinical clocks, deadlines, goals and validation checks were unchanged.
-  Workers never invoke Lake or write the shared report. `--require-complete`
-  remains an intentional failure until the 13 baseline service scenarios work.
-- World build/lint/tests pass (92 tests); agent typecheck/lint/tests pass (31).
-- App build/lint and all 129 tests pass after the second main merge, including
-  inventory, real-WASM rendering and the new semantic painter. The app owner's
-  16-to-24 inventory fix is integrated; this handoff item is resolved.
-- Fresh native minimum examples: day-one P1 W1-001 is 44 clicks / 223 keys;
-  P3 W4-001 is 38 / 104 over two receipt-carry episodes. Both report certified
-  navigationDirected exactness for each objective.
-- Fresh unchanged-renewal CLI minimum `d01-P1-W7-022` still fails safely with
-  no completion, reproducing the owner integration request below.
+The main safety proofs cover commit guards, human-only actions, review receipts,
+macros, alerts and rendering. Checker acceptance proves 12 of 13 properties.
+General completion remains an explicit extra assumption; named restricted
+programs have completion proofs. See [VERIFICATION](VERIFICATION.md) for the
+exact statements, trusted definitions and remaining limits.
 
-## Exactly what remains
+Required gates are the default Lean build, kernel replay, the main and checker
+Comparators, certification of all 15 persona baselines, rejection of the 23 bad
+programs, and exact replay of archived run1-P3. The completion Comparator checks
+the proved restricted cases separately. Application, agent and world tests and
+the [clean-clone check](CLEAN-CLONE.md) cover the surrounding software.
 
-1. **The original 13 baseline service scenarios remain incomplete:** v1 still
-   lacks orderKind/orderCode declarations and composers. Content/world must provide the applicable UI or
-   align release timing while retaining all requested service work. Optional
-   declarations/composers exist in v2/v3; sim retains the unmet goals.
-2. **CLI owner integration:** in `lean/Ehr/Cli/Sim.lean:minSchedule`, replace
-   `let eps := episodes facts task.workflow task.choices` with
-   `let eps := taskEpisodes facts task`. It is already imported through Policy.
-   Persona simulation uses focused request context; minimum search still needs
-   this adoption for unchanged renewals whose choices.orders is empty.
+The held-out [conformance suite](../conformance/RESULTS.md) is report-only;
+it supplements certification. It does not change the acceptance rules.
 
-The app inventory item from the original handoff is resolved by main `b26f772`.
-The two remaining owning-lane changes are requested in `docs/design/changes-requests.md`,
-including the section "Sim revalidation after five-feature Core merge".
-Production rule/FHIR-source adoption for the new language remains under Core's
-existing owning-lane requests; sim's typed Facts path and all five feature
-fixtures are integrated. No production spec or safety rule was changed here.
+## Runs and metrics
 
-No unfinished simulator proofs remain. Do not call the project all-green while
-the owning-lane items above remain.
+New simulations use world/2. The archived run1-P3 contains ten recorded days;
+verification checks 424 tasks, 14,658 events and three baselines with 137 events.
+Authored mock examples are labeled separately.
 
+Optimization compares clicks, scroll count/distance and mouse travel.
+Keystrokes are secondary; timing estimates do not decide acceptance.
+Completion and screen fidelity must be preserved before savings count.
 
-## Archived run1 findings
+## Review and demo
 
-Run `run1-P3` completed 424/424 tasks over ten days with a real Codex agent, ending at certified v7 after five optimization deployments. Nineteen candidate checks passed and thirteen were rejected. Its early preflight exposed missing anticoagulant review placement in other personas; the current fifteen persona views certify. The obsolete preflight outputs and duplicate sanity scripts were removed. The immutable run retains original release labels and machine paths. Timing in its raw logs is historical evidence, not the current objective.
-
-## Cleanup verification — 2026-11-01
-
-Removed 463 stale files (66,849,966 bytes): obsolete screenshots, old UI videos, preflight outputs, six handoffs after consolidation, duplicate scripts and duplicate audit. Kept the realism/present evidence. Twelve curated replay captures and an integrated-build walkthrough now appear in DEMO.
-
-Fresh default Lean build: 365 jobs passed. WASM source manifest current. Certification: 15/15 personas; 23/23 bad programs rejected. Verification audit: 84 theorems, no unexpected axioms. World: 95 tests passed. Agent: 95 tests passed after building native/app artifacts. Trajectories: 424 tasks, 14,658 events plus three baselines, zero mismatches. Terminology gate leaves only the SQLite system-table name.
-
-Clean-clone make install passed in 81.440 seconds with fresh dependencies/build and the existing Medplum stack; make run reached HTTP 200 in 10.141 seconds, including the production build. Browser verification reaches clinician sign-in but retains the obsolete Inspector expectation. Standalone smoke fails because its Inspector control expectation predates the landing-list integration. Comparator passes (the Lean default kernel accepts the solution). App suite and lake check results were still pending at the hard stop. The app/src/browser/data.ts preflight ID remains for its owning lane under the source exclusion. A full-run recording and final-run re-include remain pending until the full run is chosen.
+Start with [the Lean reading order](../README.md#read-the-lean), then use
+[DEMO](DEMO.md) for the walkthrough. [Rule sources](regulations.md) distinguish
+law from hospital policy. The proof scope does not establish clinical
+correctness, all legal duties, browser painting or external record effects.

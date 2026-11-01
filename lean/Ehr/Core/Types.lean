@@ -1,17 +1,8 @@
 /-!
-# Core types
-
-The data formats every lane builds against: the hospital spec, the UI program,
-the facts taken from the patient record, the interpreter state, events, and the
-screen view. See `docs/design/core-model.md` (sections 2, 3, 4, 7, 8) for the
-meaning of each field.
-
-This module imports only `Init`, so the WASM build stays small. JSON instances
-live in `Ehr.Core.Json`.
-
-Naming rule for optional fields: an `Option` field whose name ends in `?`
-(for example `parent?`) is written to JSON under the name without `?`
-(`"parent"`) and is left out of the JSON object when it is `none`.
+Core data formats: hospital rules, UI programs, patient facts, state and events.
+Imports only Init; JSON readers and writers live in Ehr.Core.Json.
+Optional fields ending in `?` omit that suffix in JSON and are absent when none.
+See docs/design/core-model.md for field meanings.
 -/
 
 namespace Ehr
@@ -163,6 +154,7 @@ structure ClinicalObservation where
   version : Nat
   deriving DecidableEq, Repr, Inhabited
 
+/-- Age in years with the record source used to establish it. -/
 structure ClinicalAge where
   years : Nat
   source : ClinicalObservation
@@ -200,6 +192,7 @@ inductive IdentifierCategory
   | patient | encounter | order | drug | product | prescriber | pharmacy
   deriving DecidableEq, Repr, Inhabited
 
+/-- A required payload field, with optional value and availability checks. -/
 structure PayloadFieldReq where
   field : String
   /-- False availability explicitly skips this field; absent/unknown requires it. -/
@@ -217,12 +210,14 @@ structure PayloadContract where
   groupBy? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
+/-- A categorized identifier with its system and value. -/
 structure PayloadIdentifier where
   category : IdentifierCategory
   system : String
   value : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- One identified payload row, its order slot, values and availability evidence. -/
 structure PayloadRow where
   id : String
   slot : Nat
@@ -243,11 +238,13 @@ structure InfoPayload where
   rows : List PayloadRow := []
   deriving DecidableEq, Repr, Inhabited
 
+/-- The current named phase of a workflow. -/
 structure WorkflowPhase where
   workflow : String
   phase : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- The commit or workflow phase where a display requirement applies. -/
 inductive DisplayScope
   | commit (id : CommitId)
   | phase (workflow name : String)
@@ -263,16 +260,19 @@ structure DisplayReq where
   selectionElement? : Option ElementId := none
   deriving DecidableEq, Repr, Inhabited
 
+/-- A payload row and whether a confirmed selection marks it. -/
 structure SelectedPayloadRow where
   row : PayloadRow
   selected : Bool
   deriving DecidableEq, Repr, Inhabited
 
+/-- Rows sharing a display grouping key. -/
 structure PayloadGroup where
   key : String
   rows : List SelectedPayloadRow
   deriving DecidableEq, Repr, Inhabited
 
+/-- The source payload and its grouped rows for display. -/
 structure PayloadView where
   source : InfoPayload
   groups : List PayloadGroup
@@ -362,6 +362,7 @@ inductive ObligationStatus
   | met | missing | invalid | overdue
   deriving DecidableEq, Repr, Inhabited
 
+/-- A requirement status for one commit, reported to the screen view. -/
 structure ObligationView where
   commit : CommitId
   requirement : String
@@ -370,6 +371,7 @@ structure ObligationView where
 
 /-- Durable order/detention identity, independent of UI slots and episodes. -/
 abbrev OrderInstanceId := String
+/-- The original order timestamp from which expiry is measured. -/
 inductive ClockAnchor
   | issued | started | firstFill
   deriving DecidableEq, Repr, Inhabited
@@ -394,6 +396,7 @@ structure MonthCutoff where
   stamp : ClockStamp
   deriving DecidableEq, Repr, Inhabited
 
+/-- A renewal event with actor, time and record version. -/
 structure ClockRenewal where
   event : EventId
   time : Int
@@ -413,11 +416,13 @@ structure OrderClock where
   renewals : List ClockRenewal := []
   deriving DecidableEq, Repr, Inhabited
 
+/-- An expiry interval measured in minutes or calendar months. -/
 inductive ExpiryDuration
   | minutes (duration : Nat)
   | calendarMonths (months : Nat)
   deriving DecidableEq, Repr, Inhabited
 
+/-- The renewal event required and how long its evidence remains valid. -/
 structure RenewalPolicy where
   event : EventId
   validForMinutes : Nat

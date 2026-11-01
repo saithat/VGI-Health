@@ -2,18 +2,9 @@ import Lean.Data.Json
 import Ehr.Core.Types
 
 /-!
-# JSON encoding
-
-Derived `ToJson`/`FromJson` instances for every core type. The encoding is
-Lean's derived one:
-- a constructor without arguments is a JSON string (`"physician"`);
-- a constructor with named arguments is `{"ctor": {"arg": value, …}}`;
-- a structure is a JSON object; an `Option` field named `foo?` is written as
-  `"foo"` and left out when it is `none`;
-- `A × B` is a two-element array; `List` is an array.
-
-This module also holds the two simulation types that carry raw FHIR JSON
-(`Task`, `DaySchedule`), because they need `Lean.Json`.
+JSON readers and writers for core types, plus raw-FHIR task records.
+The encoding uses Lean's derived instances: records become objects,
+lists become arrays, and optional fields ending in `?` omit absent values.
 -/
 
 namespace Ehr
