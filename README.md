@@ -54,11 +54,11 @@ Offline persona defaults: **http://localhost:5173/?mode=replay&persona=P1** (cha
 Add `&run=mock` or another recorded run id for its latest deployed program;
 without a run, the v1 projection opens. P2 defaults to an ED fixture, P3 to an
 inpatient fixture, P4 to a child and P5 to a surgical fixture. The inspector shows
-live state, blockers and commits; checker verdicts remain “verdict not computed”
-until the native checker CLI is available (`pnpm --filter app verdicts`).
+live state, blockers and commits; committed `verdicts.json` supplies recorded checker verdicts; regenerate with
+`pnpm --filter app verdicts` when the native checker CLI is available.
 
 Dashboard: **http://localhost:5173/dashboard**. Its recorded run selection prefers
-the longest replayable real run, then newest timestamp; the committed
+replayable real runs by newest timestamp, then recording length and ID; the committed
 `run1-P3` is a real ten-day recording. Labeled authored `runs/mock` examples
 remain available. Only mock dashboard replay uses a fixture interpreter. Override selection with `VGI_RUN=mock make run`.
 Use `make run APP_PORT=5187` if 5173 is occupied.
@@ -95,8 +95,7 @@ After sign-in, the home worklist queries today's assigned appointments and open
 Tasks (including refills), the ED board, ward census/medication schedule, pediatric
 appointments, or OR cases and consults. Empty worklists mean no matching current
 FHIR records; the app does not invent appointments. Search patients, select the
-encounter and optional Task/MAR order/available admission bed, then **Open canonical
-EHR**. **Start new encounter** creates a real encounter for the selected patient.
+encounter and optional Task/MAR order/available admission bed, then **Open EHR**. **Start new encounter** creates a real encounter for the selected patient.
 LIVE uses a recorded deployed persona version when available, otherwise
 the canonical v3 persona projection. The Lean WASM interpreter owns every
 clinical screen, guard and alert.
