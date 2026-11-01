@@ -1,0 +1,48 @@
+$ vitest run
+
+ RUN  v3.2.7 /home/saithat/Projects/VGI-content2/app
+
+ ✓ tests/tailscale.test.ts (5 tests) 6ms
+ ✓ tests/run-selection.test.ts (4 tests) 42ms
+ ✓ tests/compression.test.ts (2 tests) 204ms
+ ✓ tests/css.test.ts (22 tests) 25ms
+ ✓ tests/screen-cache.test.js (1 test) 7ms
+ ✓ tests/clinical-display.test.ts (20 tests) 9ms
+ ✓ tests/fhirContext.test.ts (6 tests) 20ms
+ ✓ tests/clinical-formatters.test.ts (12 tests) 20ms
+ ✓ tests/patientDirectory.test.ts (3 tests) 6ms
+ ✓ tests/worldChart.test.ts (2 tests) 9ms
+ ✓ tests/commitMapper.test.ts (14 tests) 28ms
+ ✓ tests/data.test.ts (4 tests) 19ms
+ ✓ tests/build-binding.test.ts (3 tests) 160ms
+ ✓ tests/live-projection.test.ts (1 test) 14ms
+ ✓ tests/revision-history.test.ts (5 tests) 291ms
+ ✓ tests/rule-conformance.test.tsx (3 tests) 92ms
+ ✓ tests/try-break.test.ts (2 tests) 5ms
+ ✓ tests/interp.test.ts (11 tests) 156ms
+ ✓ tests/worklist.test.ts (2 tests) 4ms
+ ✓ tests/lazy-run.test.ts (5 tests) 105ms
+ ✓ tests/workload.test.ts (6 tests) 38ms
+ ✓ tests/clinical-colors.test.ts (3 tests) 7ms
+ ✓ tests/presentation-lint.test.js (8 tests) 557ms
+   ✓ versioned presentation lint sandbox > accepts the declarative component used by the typecheck harness  528ms
+ ✓ tests/painter.test.tsx (24 tests) 265ms
+ ✓ tests/lint.test.js (17 tests) 568ms
+   ✓ enforced TypeScript and network boundaries > rejects const x: any = 1;  525ms
+ ✓ tests/clinical-presentations.test.tsx (6 tests) 183ms
+ ✓ tests/dashboard.test.tsx (9 tests) 151ms
+ ✓ tests/structured-presentations.test.tsx (18 tests) 327ms
+ ✓ tests/presentations.test.tsx (2 tests) 150ms
+ ✓ tests/ui-painter.test.tsx (64 tests) 1240ms
+ ✓ tests/recheck-revision.test.ts (2 tests) 3805ms
+   ✓ real native check-only history > checks a current baseline and an old revision without changing recorded artifacts  2287ms
+   ✓ real native check-only history > refuses arbitrary files, another persona and authored mock revisions  1516ms
+ ✓ tests/app.test.tsx (3 tests) 66390ms
+   ✓ offline live UI catalog > renders a nonempty chart search for every committed patient without runtime exceptions  45088ms
+   ✓ offline live UI catalog > projects every committed bundle and renders every program with real Lean WASM  21299ms
+
+ Test Files  32 passed (32)
+      Tests  289 passed (289)
+   Start at  09:10:05
+   Duration  68.47s (transform 3.63s, setup 0ms, collect 16.33s, tests 74.90s, environment 9.94s, prepare 3.66s)
+

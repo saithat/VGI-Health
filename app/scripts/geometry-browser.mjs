@@ -34,7 +34,8 @@ try{
       if(tree.screen&&tree.modal){await page.evaluate(({tree,bundle})=>window.renderUi({...tree,modal:null},bundle),{tree,bundle:req.bundle??null});geometry.push(await captureGeometry(page,screen,`${path.basename(file)}:background:${state}`));}
       await writeFile(cached,JSON.stringify(geometry));
     }
-    states.push(...geometry);
+    const sample=/^(workspace-d\d+)-/.exec(path.basename(file))?.[1];
+    states.push(...geometry.map(state=>sample?{...state,sample}:state));
    }
    process.stdout.write(JSON.stringify({id:req.id,appSha256:app.appSha256,states})+'\n');
   }catch(error){process.stdout.write(JSON.stringify({id:req.id,error:String(error)})+'\n');}

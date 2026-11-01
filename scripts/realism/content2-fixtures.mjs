@@ -55,16 +55,32 @@ for (const [name, persona, day, workflow, screen] of cases) {
   const user = {id: persona, role: program.role};
   const base = {spec, program, user, facts: projection.facts};
   let state = native('init', base);
+  const landing = { 'p1-schedule': 'scheduleTasks', 'p2-track-board': 'edTrackBoard', 'p3-census': 'shiftWorklist',
+    'p5-or-schedule': 'orSchedule', 'in-basket': 'inBasketResults', 'refill': 'inBasketRxRequests', 'p5-consults': 'consultList' }[name];
+  if (program.patientSelection) {
+    if (landing) {
+      if (state.patientContext.activity !== landing)
+        state = native('step', {...base, state, event: {click: {comp: `workspace.activity|${landing}`}}}).state;
+    } else {
+      state = native('step', {...base, state, event: {search: {query: projection.display.banner.mrn}}}).state;
+      const list = native('render-ui', {...base, display: projection.display, state});
+      const open = list.workspace.flatMap(descend).find(n => n.button?.comp.startsWith(`workspace.open|${task.patientId}|`));
+      assert.ok(open, `${name}: selected patient is found through Patient Lookup`);
+      state = native('step', {...base, state, event: {click: {comp: open.button.comp}}}).state;
+      state = native('step', {...base, state, event: {scroll: {screen: state.screen}}}).state;
+    }
+  }
   // Find actual goto paths; no hidden state/screen mutation is used.
-  const queue = [[program.start, []]], seen = new Set([program.start]);
+  const queue = [[state.screen, []]], seen = new Set([state.screen]);
   let path;
-  for (const [at, events] of queue) {
+  for (const [at, events] of (program.patientSelection && landing ? [] : queue)) {
     if (at === screen) {path=events;break;}
     for (const c of program.screens.find(s => s.id === at).components) {
       const target = c.kind.button?.action.goto?.screen;
       if (target && !seen.has(target)) { seen.add(target); queue.push([target,[...events,{click:{comp:c.id}}]]); }
     }
   }
+  if (program.patientSelection && landing) path = [];
   assert.ok(path, `${name}: reachable`);
   for (const event of path) { const step = native('step',{...base,state,event});assert.equal(step.result,'ok');state=step.state; }
   if (name === 'problem-list') {

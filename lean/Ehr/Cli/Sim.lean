@@ -116,8 +116,11 @@ leak backward from later tasks in the schedule. Missing patients are errors. -/
 def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List (String × Facts)) := do
   let index ← fixtureIndex root world
   let mut paths : List (String × System.FilePath) := []
+  let mut identities : List PatientChoice := []
   if let some p := index then
     let j ← readJson p
+    identities := (Render.Fhir.arr j "patients").map fun patient =>
+      { id := Render.Fhir.str patient "id", name := Render.Fhir.str patient "name", mrn := Render.Fhir.str patient "mrn" }
     paths := (Render.Fhir.arr j "patients").map fun patient =>
       (Render.Fhir.str patient "id", p.parent.getD root / Render.Fhir.str patient "file")
   let mut bundles : List (String × Json) := []
@@ -133,6 +136,11 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
         let id := Render.Fhir.str patient "id"
         if (bundles.lookup id).isSome then throw (IO.userError s!"duplicate patient Bundle {id}; merge its resources first")
         bundles := (id, b) :: bundles
+  let contextPath := world / "context" / s!"day-{if schedule.day < 10 then "0" else ""}{schedule.day}.json"
+  let directoryResources ← if ← contextPath.pathExists then
+      pure (Render.Fhir.bundleResources (← readJson contextPath)) else pure []
+  let directoryContext : Render.FactsContext := { today := dateOf schedule.day, now := 0, record := [("viewerPersona", schedule.persona)] }
+  let directory := Render.Fhir.patientDirectory directoryContext directoryResources
   let mut extras : List (String × List Json) := []
   let mut out := []
   for task in schedule.tasks do
@@ -166,7 +174,15 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
         pure f
     if f.patientId != task.patientId && !(bundle.any (bundlePatientMatches · task.patientId)) then
       throw (IO.userError s!"{task.id}: patient ID mismatch")
-    out := out ++ [(task.id, f)]
+    let choice : PatientChoice := {
+      id := f.sourcePatientId?.getD task.patientId,
+      name := (bundle.map fun b => Render.Fhir.displayName
+        (((bundleResourcesWithIds b).find? (Render.Fhir.resourceType · == "Patient")).getD .null)).getD task.patientId,
+      mrn := f.patientId }
+    let choice := (identities.find? (·.id == choice.id)).getD choice
+    let choices := directory.patients ++ (if directory.patients.any (·.id == choice.id) then [] else [choice])
+    let directory := { directory with patients := choices }
+    out := out ++ [(task.id, { f with sourcePatientId? := some choice.id, patientDirectory? := some directory })]
   return out
 
 structure TaskMinimum where

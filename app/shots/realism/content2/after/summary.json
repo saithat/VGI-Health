@@ -8,78 +8,9 @@
       {
         "info": "scheduleTasks",
         "rows": 18
-      },
-      {
-        "info": "openOrders",
-        "rows": 0
       }
     ],
-    "banner": [
-      [
-        "Patient",
-        "Carter, Zulma Tricia"
-      ],
-      [
-        "DOB",
-        "Mar 4, 1943"
-      ],
-      [
-        "MRN",
-        "13761514"
-      ],
-      [
-        "Age / sex",
-        "83 / F"
-      ],
-      [
-        "Language",
-        "English (United States)"
-      ],
-      [
-        "PCP",
-        "Dr. Amir Hassan, Internal Medicine"
-      ],
-      [
-        "Coverage",
-        "VGI Medicare Advantage"
-      ],
-      [
-        "Last encounter",
-        "AMB"
-      ],
-      [
-        "Last provider",
-        "Dr. Tracy Wilderman"
-      ],
-      [
-        "Last location",
-        "Mass General Brigham Urgent Care LLC"
-      ],
-      [
-        "Encounter",
-        "Office Visit – Internal Medicine"
-      ],
-      [
-        "Department",
-        "Internal Medicine"
-      ],
-      [
-        "Allergies",
-        "No Known Allergies"
-      ],
-      [
-        "Code status",
-        "Not recorded"
-      ],
-      [
-        "Weight",
-        "80.9 kg · Oct 22, 2026 01:46"
-      ],
-      [
-        "Isolation",
-        "Not recorded"
-      ]
-    ]
+    "banner": []
   },
   {
     "name": "p2-track-board",
@@ -90,78 +21,9 @@
       {
         "info": "edTrackBoard",
         "rows": 20
-      },
-      {
-        "info": "labResults",
-        "rows": 60
       }
     ],
-    "banner": [
-      [
-        "Patient",
-        "Mann, Lorena"
-      ],
-      [
-        "DOB",
-        "Oct 14, 1987"
-      ],
-      [
-        "MRN",
-        "14486708"
-      ],
-      [
-        "Age / sex",
-        "39 / F"
-      ],
-      [
-        "Language",
-        "English (United States)"
-      ],
-      [
-        "PCP",
-        "Dr. Lena Wilson, Internal Medicine"
-      ],
-      [
-        "Coverage",
-        "VGI Community Health Plan"
-      ],
-      [
-        "Last encounter",
-        "EMER"
-      ],
-      [
-        "Last provider",
-        "Dr. Marcus Okafor, MD"
-      ],
-      [
-        "Last location",
-        "ED 01"
-      ],
-      [
-        "Encounter",
-        "Emergency Visit – Emergency Medicine"
-      ],
-      [
-        "Department",
-        "Emergency Medicine"
-      ],
-      [
-        "Allergies",
-        "Bee venom — Eruption of skin (disorder) (moderate); Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Penicillin V — Rash (moderate); Cow's milk — Wheezing (finding) (moderate); Egg — Wheal (finding) (moderate)"
-      ],
-      [
-        "Code status",
-        "Full Code"
-      ],
-      [
-        "Weight",
-        "74.4 kg (from 164.0 lb) · Nov 2, 2026 07:15"
-      ],
-      [
-        "Isolation",
-        "No isolation"
-      ]
-    ]
+    "banner": []
   },
   {
     "name": "p3-census",
@@ -172,90 +34,9 @@
       {
         "info": "shiftWorklist",
         "rows": 5
-      },
-      {
-        "info": "newOrders",
-        "rows": 0
-      },
-      {
-        "info": "handoffSummary",
-        "rows": 0
-      },
-      {
-        "info": "allergyList",
-        "rows": 1
-      },
-      {
-        "info": "newOrders",
-        "rows": 0
       }
     ],
-    "banner": [
-      [
-        "Patient",
-        "Harber, Leanne"
-      ],
-      [
-        "DOB",
-        "Jul 28, 1973"
-      ],
-      [
-        "MRN",
-        "28255014"
-      ],
-      [
-        "Age / sex",
-        "53 / F"
-      ],
-      [
-        "Language",
-        "English (United States)"
-      ],
-      [
-        "PCP",
-        "Dr. Amir Hassan, Internal Medicine"
-      ],
-      [
-        "Coverage",
-        "VGI Community Health Plan"
-      ],
-      [
-        "Last encounter",
-        "IMP"
-      ],
-      [
-        "Last provider",
-        "Dr. Maya Chen, MD"
-      ],
-      [
-        "Last location",
-        "4W-01-A"
-      ],
-      [
-        "Encounter",
-        "Inpatient Stay – Hospital Medicine"
-      ],
-      [
-        "Department",
-        "Hospital Medicine"
-      ],
-      [
-        "Allergies",
-        "No Known Allergies"
-      ],
-      [
-        "Code status",
-        "Full Code"
-      ],
-      [
-        "Weight",
-        "71.5 kg · Oct 17, 2026 00:31"
-      ],
-      [
-        "Isolation",
-        "No isolation"
-      ]
-    ]
+    "banner": []
   },
   {
     "name": "p5-or-schedule",
@@ -266,98 +47,9 @@
       {
         "info": "orSchedule",
         "rows": 10
-      },
-      {
-        "info": "encounterHistory",
-        "rows": 27
-      },
-      {
-        "info": "scheduleTasks",
-        "rows": 1
-      },
-      {
-        "info": "allergyList",
-        "rows": 1
-      },
-      {
-        "info": "currentMeds",
-        "rows": 3
-      },
-      {
-        "info": "problemList",
-        "rows": 1
-      },
-      {
-        "info": "vitals",
-        "rows": 7
       }
     ],
-    "banner": [
-      [
-        "Patient",
-        "Wolff, Providencia Karena"
-      ],
-      [
-        "DOB",
-        "Jan 22, 1990"
-      ],
-      [
-        "MRN",
-        "93017203"
-      ],
-      [
-        "Age / sex",
-        "36 / F"
-      ],
-      [
-        "Language",
-        "English (United States)"
-      ],
-      [
-        "PCP",
-        "Dr. Lena Wilson, Internal Medicine"
-      ],
-      [
-        "Coverage",
-        "VGI Community Health Plan"
-      ],
-      [
-        "Last encounter",
-        "SS"
-      ],
-      [
-        "Last provider",
-        "Dr. James Whitaker, MD, FACS"
-      ],
-      [
-        "Last location",
-        "Operating Room 1"
-      ],
-      [
-        "Encounter",
-        "Surgical Visit – General Surgery"
-      ],
-      [
-        "Department",
-        "General Surgery"
-      ],
-      [
-        "Allergies",
-        "No Known Allergies"
-      ],
-      [
-        "Code status",
-        "Full Code"
-      ],
-      [
-        "Weight",
-        "82.9 kg · Nov 3, 2026 06:30"
-      ],
-      [
-        "Isolation",
-        "No isolation"
-      ]
-    ]
+    "banner": []
   },
   {
     "name": "p5-rounding",
@@ -662,86 +354,9 @@
       {
         "info": "inBasketResults",
         "rows": 5
-      },
-      {
-        "info": "inBasketMessages",
-        "rows": 2
-      },
-      {
-        "info": "messagePreview",
-        "rows": 1
-      },
-      {
-        "info": "encounterHistory",
-        "rows": 4
       }
     ],
-    "banner": [
-      [
-        "Patient",
-        "Schiller, Ahmad Fredrick"
-      ],
-      [
-        "DOB",
-        "Jul 18, 1991"
-      ],
-      [
-        "MRN",
-        "87733192"
-      ],
-      [
-        "Age / sex",
-        "35 / M"
-      ],
-      [
-        "Language",
-        "English (United States)"
-      ],
-      [
-        "PCP",
-        "Dr. Sophia Nguyen, Internal Medicine"
-      ],
-      [
-        "Coverage",
-        "VGI Community Health Plan"
-      ],
-      [
-        "Last encounter",
-        "AMB"
-      ],
-      [
-        "Last provider",
-        "Dr. Francisco Gusikowski"
-      ],
-      [
-        "Last location",
-        "Whitley Wellness LLC"
-      ],
-      [
-        "Encounter",
-        "Office Visit – Internal Medicine"
-      ],
-      [
-        "Department",
-        "Internal Medicine"
-      ],
-      [
-        "Allergies",
-        "No Known Allergies"
-      ],
-      [
-        "Code status",
-        "Not recorded"
-      ],
-      [
-        "Weight",
-        "62.8 kg · Oct 8, 2026 14:11"
-      ],
-      [
-        "Isolation",
-        "Not recorded"
-      ]
-    ]
+    "banner": []
   },
   {
     "name": "p5-chole-op-note",
@@ -866,82 +481,9 @@
       {
         "info": "inBasketRxRequests",
         "rows": 21
-      },
-      {
-        "info": "refillRequest",
-        "rows": 1
-      },
-      {
-        "info": "encounterHistory",
-        "rows": 26
       }
     ],
-    "banner": [
-      [
-        "Patient",
-        "Kshlerin, Gino Andrew"
-      ],
-      [
-        "DOB",
-        "Sep 23, 1950"
-      ],
-      [
-        "MRN",
-        "90268894"
-      ],
-      [
-        "Age / sex",
-        "76 / M"
-      ],
-      [
-        "Language",
-        "English (United States)"
-      ],
-      [
-        "PCP",
-        "Dr. Rachel Green, Internal Medicine"
-      ],
-      [
-        "Coverage",
-        "VGI Medicare Advantage"
-      ],
-      [
-        "Last encounter",
-        "EMER"
-      ],
-      [
-        "Last provider",
-        "Dr. Marcus Okafor, MD"
-      ],
-      [
-        "Last location",
-        "ED 03"
-      ],
-      [
-        "Encounter",
-        "Emergency Visit – Emergency Medicine"
-      ],
-      [
-        "Department",
-        "Emergency Medicine"
-      ],
-      [
-        "Allergies",
-        "No Known Allergies"
-      ],
-      [
-        "Code status",
-        "Full Code"
-      ],
-      [
-        "Weight",
-        "84.7 kg · Aug 15, 2026 02:45"
-      ],
-      [
-        "Isolation",
-        "No isolation"
-      ]
-    ]
+    "banner": []
   },
   {
     "name": "p5-consults",
@@ -952,97 +494,8 @@
       {
         "info": "consultList",
         "rows": 3
-      },
-      {
-        "info": "encounterHistory",
-        "rows": 27
-      },
-      {
-        "info": "consultRequest",
-        "rows": 0
-      },
-      {
-        "info": "allergyList",
-        "rows": 1
-      },
-      {
-        "info": "currentMeds",
-        "rows": 3
-      },
-      {
-        "info": "problemList",
-        "rows": 1
-      },
-      {
-        "info": "vitals",
-        "rows": 7
       }
     ],
-    "banner": [
-      [
-        "Patient",
-        "Wolff, Providencia Karena"
-      ],
-      [
-        "DOB",
-        "Jan 22, 1990"
-      ],
-      [
-        "MRN",
-        "93017203"
-      ],
-      [
-        "Age / sex",
-        "36 / F"
-      ],
-      [
-        "Language",
-        "English (United States)"
-      ],
-      [
-        "PCP",
-        "Dr. Lena Wilson, Internal Medicine"
-      ],
-      [
-        "Coverage",
-        "VGI Community Health Plan"
-      ],
-      [
-        "Last encounter",
-        "SS"
-      ],
-      [
-        "Last provider",
-        "Dr. James Whitaker, MD, FACS"
-      ],
-      [
-        "Last location",
-        "Operating Room 1"
-      ],
-      [
-        "Encounter",
-        "Surgical Visit – General Surgery"
-      ],
-      [
-        "Department",
-        "General Surgery"
-      ],
-      [
-        "Allergies",
-        "No Known Allergies"
-      ],
-      [
-        "Code status",
-        "Full Code"
-      ],
-      [
-        "Weight",
-        "82.9 kg · Jun 29, 2026 08:26"
-      ],
-      [
-        "Isolation",
-        "No isolation"
-      ]
-    ]
+    "banner": []
   }
 ]

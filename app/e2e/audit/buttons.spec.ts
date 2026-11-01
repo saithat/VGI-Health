@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import type { ButtonAuditSession } from "../../src/core/buttonAudit";
 import type { UiNode } from "../../src/ehr/ui/types";
 import type { Control } from "./report";
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { z } from "zod";
 import { Audit, selector } from "./driver";
 import { writeLiveAttempt, writeReport } from "./report";
@@ -34,41 +34,6 @@ const sampleIndices = (count: number, limit = 3) => [
     ),
   ),
 ];
-
-/** Open a source-declared patient row when the Lean workspace is available. */
-async function openWorkspacePatient(
-  page: Page,
-  query: string,
-  audit?: Audit,
-): Promise<boolean> {
-  await page
-    .getByLabel("Patient search by name or MRN", { exact: true })
-    .or(page.getByLabel("Patient search", { exact: true }))
-    .waitFor({ timeout: 60000 });
-  if (!(await page.locator('[data-comp-id="workspace.search"]').count()))
-    return false;
-  const lookup = page.getByRole("button", {
-    name: "Patient Lookup",
-    exact: true,
-  });
-  if (await lookup.count()) {
-    if (audit) await audit.click(lookup, undefined, "lean");
-    else await lookup.click();
-  }
-  const search = page.getByLabel("Patient search by name or MRN", {
-    exact: true,
-  });
-  if (audit) await audit.click(search, () => search.fill(query), "lean");
-  else await search.fill(query);
-  const open = page.getByRole("button", { name: /^Open chart:/ }).first();
-  await open.waitFor({ timeout: 30000 });
-  if (audit) await audit.click(open, undefined, "lean");
-  else await open.click();
-  await expect(
-    page.getByRole("banner", { name: "Patient banner", exact: true }),
-  ).toBeVisible({ timeout: 30000 });
-  return true;
-}
 
 function controlShape(nodes: UiNode[]): unknown[] {
   return nodes.flatMap<unknown>((node) => {
@@ -175,94 +140,122 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       });
       await login.waitFor();
       console.log("login", await audit.click(login, undefined, "app"));
-      const semanticWorkspace = await openWorkspacePatient(page, "a", audit);
-      if (!semanticWorkspace) {
-        await page
+      await Promise.race([
+        page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .waitFor({ timeout: 60000 }),
+        page
           .getByLabel("Patient search", { exact: true })
+          .waitFor({ timeout: 60000 }),
+      ]);
+      const semanticSearch = page.getByLabel("Patient search by name or MRN", {
+        exact: true,
+      });
+      if (await semanticSearch.isVisible()) {
+        audit.screen = "patient workspace";
+        await audit.click(
+          page.getByRole("button", { name: "Patient Lookup", exact: true }),
+          undefined,
+          "lean",
+        );
+        await audit.click(
+          semanticSearch,
+          () => semanticSearch.fill("Carter"),
+          "lean",
+        );
+        await audit.click(
+          page.getByRole("button", { name: /^Open chart:/ }).first(),
+          undefined,
+          "lean",
+        );
+        await page
+          .getByRole("banner", { name: "Patient banner", exact: true })
           .waitFor({ timeout: 30000 });
-        audit.screen = "worklist";
-        const date = page.getByLabel("Worklist date", { exact: true });
-        await audit.click(date, () => date.fill("2026-11-02"), "app");
-        await page
-          .getByText("Loading Medplum worklist…", { exact: true })
-          .waitFor({ state: "hidden" });
         await audit.click(
-          page.getByRole("button", { name: "Refresh worklist", exact: true }),
+          page.getByRole("button", { name: /^Return to / }),
           undefined,
-          "app",
+          "lean",
         );
-        await page
-          .getByText("Loading Medplum worklist…", { exact: true })
-          .waitFor({ state: "hidden" });
-        const workButtons = await page
-          .locator(
-            '.worklist-table button, [aria-label="Medications due"] button',
-          )
-          .count();
-        for (const w of sampleIndices(workButtons, 1)) {
-          // Each work item starts with an unselected patient in a fresh document.
-          if (w) {
-            await freshGoto("/?audit=buttons&inspect=1");
-            await page.getByLabel("Patient search", { exact: true }).waitFor();
-            await page
-              .getByLabel("Worklist date", { exact: true })
-              .fill("2026-11-02");
-            await page
-              .getByText("Loading Medplum worklist…", { exact: true })
-              .waitFor({ state: "hidden" });
-          }
-          await audit.click(
-            page
-              .locator(
-                '.worklist-table button, [aria-label="Medications due"] button',
-              )
-              .nth(w),
-            undefined,
-            "app",
-          );
-        }
-        await audit.click(
-          page.getByRole("button", { name: "Search patients", exact: true }),
-          undefined,
-          "app",
-        );
-        const patient = page.locator(".patient-search + ul button").first();
-        await patient.waitFor();
-        await audit.click(patient, undefined, "app");
-        audit.screen = "encounter picker";
-        const selects = page.locator("select");
-        for (const control of await selects.all()) {
-          if (!(await control.isVisible())) continue;
-          const values = await control
-            .locator("option")
-            .evaluateAll((nodes) =>
-              nodes.map((n) => (n instanceof HTMLOptionElement ? n.value : "")),
-            );
-          const current = await control.inputValue();
-          const value = values.find((v) => v && v !== current);
-          if (value)
-            await audit.click(
-              control,
-              () => control.selectOption(value),
-              "app",
-            );
-        }
-        await audit.click(
-          page.getByRole("button", {
-            name: "Start new encounter",
-            exact: true,
-          }),
-          undefined,
-          "app",
-        );
-        await page.waitForTimeout(300);
-        await audit.click(
-          page.getByRole("button", { name: "Open EHR", exact: true }),
-          undefined,
-          "app",
-        );
-        await page.locator(".clinical-app").waitFor({ timeout: 30000 });
+        continue;
       }
+      await page
+        .getByLabel("Patient search", { exact: true })
+        .waitFor({ timeout: 30000 });
+      audit.screen = "worklist";
+      const date = page.getByLabel("Worklist date", { exact: true });
+      await audit.click(date, () => date.fill("2026-11-02"), "app");
+      await page
+        .getByText("Loading Medplum worklist…", { exact: true })
+        .waitFor({ state: "hidden" });
+      await audit.click(
+        page.getByRole("button", { name: "Refresh worklist", exact: true }),
+        undefined,
+        "app",
+      );
+      await page
+        .getByText("Loading Medplum worklist…", { exact: true })
+        .waitFor({ state: "hidden" });
+      const workButtons = await page
+        .locator(
+          '.worklist-table button, [aria-label="Medications due"] button',
+        )
+        .count();
+      for (const w of sampleIndices(workButtons, 1)) {
+        // Each work item starts with an unselected patient in a fresh document.
+        if (w) {
+          await freshGoto("/?audit=buttons&inspect=1");
+          await page.getByLabel("Patient search", { exact: true }).waitFor();
+          await page
+            .getByLabel("Worklist date", { exact: true })
+            .fill("2026-11-02");
+          await page
+            .getByText("Loading Medplum worklist…", { exact: true })
+            .waitFor({ state: "hidden" });
+        }
+        await audit.click(
+          page
+            .locator(
+              '.worklist-table button, [aria-label="Medications due"] button',
+            )
+            .nth(w),
+          undefined,
+          "app",
+        );
+      }
+      await audit.click(
+        page.getByRole("button", { name: "Search patients", exact: true }),
+        undefined,
+        "app",
+      );
+      const patient = page.locator(".patient-search + ul button").first();
+      await patient.waitFor();
+      await audit.click(patient, undefined, "app");
+      audit.screen = "encounter picker";
+      const selects = page.locator("select");
+      for (const control of await selects.all()) {
+        if (!(await control.isVisible())) continue;
+        const values = await control
+          .locator("option")
+          .evaluateAll((nodes) =>
+            nodes.map((n) => (n instanceof HTMLOptionElement ? n.value : "")),
+          );
+        const current = await control.inputValue();
+        const value = values.find((v) => v && v !== current);
+        if (value)
+          await audit.click(control, () => control.selectOption(value), "app");
+      }
+      await audit.click(
+        page.getByRole("button", { name: "Start new encounter", exact: true }),
+        undefined,
+        "app",
+      );
+      await page.waitForTimeout(300);
+      await audit.click(
+        page.getByRole("button", { name: "Open EHR", exact: true }),
+        undefined,
+        "app",
+      );
+      await page.locator(".clinical-app").waitFor({ timeout: 30000 });
       audit.screen = "live encounter header";
       if (persona === "baseline") {
         const source = z
@@ -306,18 +299,11 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         .first();
       await back.waitFor();
       await audit.click(back, undefined, "app");
-      if (
-        await page
-          .getByRole("button", { name: "Sign out", exact: true })
-          .isVisible()
-      ) {
-        await audit.click(
-          page.getByRole("button", { name: "Sign out", exact: true }),
-          undefined,
-          "app",
-        );
-      } else
-        await expect(page.getByRole("button", { name: /^P1 ·/ })).toBeVisible();
+      await audit.click(
+        page.getByRole("button", { name: "Sign out", exact: true }),
+        undefined,
+        "app",
+      );
     }
     writeReport(audit.rows, "app");
     audit.persona = "—";
@@ -327,9 +313,6 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       await freshGoto("/browse");
       await page.getByRole("heading", { name: "Open a clinical UI" }).waitFor();
       await page.locator('[data-node-key="P3-5"]').waitFor();
-      await page
-        .getByLabel("Before and after changes", { exact: true })
-        .waitFor();
     });
     // Sample catalog links across the vendor reference, projections and run versions.
     audit.screen = "replay inspector";
@@ -684,6 +667,12 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     await page
       .locator('div[aria-busy="true"]')
       .waitFor({ state: "hidden", timeout: 30000 });
+    // Prior actions can leave Saved toasts over the next restored list row.
+    // Dismiss them through their real controls before timing an isolated click.
+    for (const notification of await page
+      .locator(".mantine-Notification-closeButton")
+      .all())
+      if (await notification.isVisible()) await notification.click();
     const resourceClose = page.getByRole("button", {
       name: "Close saved resource",
       exact: true,
@@ -747,22 +736,49 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
           .getByRole("button", { name: new RegExp(`^${persona} ·`) })
           .click();
       }
-      // Match the persona to a representative Synthea fixture.
-      const patient = defaultPatient(
-        catalog,
-        persona === "RN2" ? "P3" : persona,
-      );
-      const names = patient.name
-        .replace(/^(?:Mr|Mrs|Ms|Dr)\.?\s+/i, "")
-        .split(" ");
-      const semanticWorkspace = await openWorkspacePatient(
-        page,
-        (names[0] ?? "").replaceAll(",", ""),
-      );
-      if (!semanticWorkspace) {
+      await Promise.race([
+        page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .waitFor({ timeout: 60000 }),
+        page
+          .getByLabel("Patient search", { exact: true })
+          .waitFor({ timeout: 60000 }),
+      ]);
+      let landingCheckpoint: number | undefined;
+      if (
+        await page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .isVisible()
+      ) {
+        landingCheckpoint = await page.evaluate(() =>
+          window.__buttonAuditSession?.checkpoint(),
+        );
+        const patient = defaultPatient(
+          catalog,
+          persona === "RN2" ? "P3" : persona,
+        );
+        await page
+          .getByLabel("Patient search by name or MRN", { exact: true })
+          .fill(patient.mrn ?? patient.name);
+        await page
+          .getByRole("button", { name: /^Open chart:/ })
+          .first()
+          .click();
+        await page
+          .getByRole("banner", { name: "Patient banner", exact: true })
+          .waitFor({ timeout: 30000 });
+      } else {
         await page
           .getByLabel("Patient search", { exact: true })
           .waitFor({ timeout: 30000 });
+        // Match the persona to a representative Synthea fixture.
+        const patient = defaultPatient(
+          catalog,
+          persona === "RN2" ? "P3" : persona,
+        );
+        const names = patient.name
+          .replace(/^(?:Mr|Mrs|Ms|Dr)\.?\s+/i, "")
+          .split(" ");
         await page
           .getByLabel("Patient search", { exact: true })
           .fill(names[0] ?? "");
@@ -830,6 +846,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       const leanSelector =
         'button, [role="button"], a[href], [role="tab"], [role="menuitem"], summary, select, input[type="checkbox"], textarea[data-event="enter"], .field-search input, input[role="combobox"]';
       const queue = [
+        ...(landingCheckpoint === undefined ? [] : [landingCheckpoint]),
         await page.evaluate(
           () => window.__buttonAuditSession?.checkpoint() ?? -1,
         ),
@@ -1004,7 +1021,14 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
                 .join(", "),
             )
             .filter({ visible: true });
-          const control = controls.nth(target.index);
+          // A restored chart can add/remove controls while React paints it.
+          // Resolve certified controls by semantic identity, not a stale DOM index.
+          const semantic = target.comp
+            ? `[data-comp-id=${JSON.stringify(target.comp)}]${target.event ? `[data-event=${JSON.stringify(target.event)}]` : ""}${/^\d+$/.test(target.tab ?? "") ? `[data-tab-index=${JSON.stringify(target.tab)}]` : ""}`
+            : null;
+          const control = semantic
+            ? controls.and(page.locator(semantic)).first()
+            : controls.nth(target.index);
           if (!(await control.count()) || !(await control.isVisible()))
             continue;
           let action: (() => Promise<unknown>) | undefined;

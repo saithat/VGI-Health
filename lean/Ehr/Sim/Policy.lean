@@ -1,3 +1,4 @@
+import Ehr.Core.Workspace
 import Ehr.Sim.Interaction
 import Ehr.Sim.TaskContext
 
@@ -111,7 +112,8 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
   let (ms, dev) := klmFold r.lastDevice ops
   let elapsed := r.elapsedMs + ms
   let before := { r.state with clock := elapsed / 100 }
-  let (after, result) := step ctx.sp ctx.prog ctx.facts ctx.user .human before e
+  let (after, result) := if Workspace.enabled ctx.prog then Workspace.step ctx.sp ctx.prog ctx.facts ctx.user before e
+    else step ctx.sp ctx.prog ctx.facts ctx.user .human before e
   let complaints := match e, result with
     | .click c, .blocked _ => match shownComp? ctx.sp ctx.prog ctx.facts before c with
       | some { kind := .button (.commit cm), .. } => commitComplaints ctx before cm
@@ -125,6 +127,42 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
     complaints := r.complaints ++ complaints
     elapsedMs := elapsed
     lastDevice := dev }
+
+/-- Fixed patient-selection policy: identical directory, workflow and patient imply
+identical activations, typing, scrolls and pointer operations for every UI version. -/
+def selectionActivity (task : Task) : String :=
+  match task.workflow with
+  | .W1 | .W5 => "scheduleTasks" | .W2 => "inBasketResults"
+  | .W3 => "edTrackBoard" | .W4 => "shiftWorklist" | .W7 => "inBasketRxRequests"
+  | .W6 => if task.choices.w6Step? == some .consult then "consultList" else "orSchedule"
+
+/-- Execute the same semantic row/lookup controls that the app receives. -/
+def selectTaskPatient (ctx : Context) (task : Task) (r : EpisodeResult) : EpisodeResult := Id.run do
+  if !Workspace.enabled ctx.prog || Workspace.bound ctx.facts r.state then return r
+  let mut out := r
+  let desired := selectionActivity task
+  if desired != (out.state.patientContext?.map (·.activity)).getD "" &&
+      (Workspace.activities ctx.prog ctx.facts).any (·.info == desired) then
+    out := emit ctx task out (.click ("workspace.activity|" ++ desired)) [.point, .click]
+  let patient := ctx.facts.sourcePatientId?.getD task.patientId
+  let control := (Workspace.openControls ctx.prog ctx.facts out.state).find? fun c =>
+    match c.action with | .openPatient id _ => id == patient | _ => false
+  let control := match control with
+    | some control => some control
+    | none => none
+  if control.isNone then
+    let query := ((Workspace.patient? ctx.facts patient).map (·.mrn)).getD ctx.facts.patientId
+    out := emit ctx task out (.enter "workspace.search" (.text query)) ([.point, .click] ++ List.replicate query.length .key)
+  let control := (Workspace.openControls ctx.prog ctx.facts out.state).find? fun c =>
+    match c.action with | .openPatient id _ => id == patient | _ => false
+  match control with
+  | none => return { out with complaints := out.complaints ++ [task.id ++ ": patient could not be found in the directory"] }
+  | some control =>
+    for _ in List.range ((control.row?.getD 0) / 10) do
+      out := emit ctx task out (.scroll out.state.screen) [.scroll]
+    out := emit ctx task out (.click control.id) [.point, .click]
+    -- Data arrival is not a second clinician activation.
+    return { out with state := Workspace.bind ctx.sp ctx.prog ctx.facts ctx.user out.state }
 
 /-- Scroll to fields below a twelve-component fold, ten rows per page. -/
 def scrollTo (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : EpisodeResult :=
@@ -156,7 +194,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
   | fuel + 1, r, arrival, failures => Id.run do
     if ctx.done r.state then return r
     if failures ≥ 4 then return { r with complaints := r.complaints ++ [s!"{task.id}: repeated blocked commits; incomplete"] }
-    let mut out := r
+    let mut out := selectTaskPatient ctx task r
     if arrival then
       let (n, next) := draw out.rng 1000
       out := { out with rng := next }
@@ -228,6 +266,10 @@ def playEpisode (ctx : Context) (params : PersonaParams) (task : Task) (lastEpis
 and commit/ack history do not. Each task has its own independent RNG stream. -/
 def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
     (factsFor : Task → Facts) (seed : Nat) : DayResult := Id.run do
+  -- Fresh day simulations include the shared workspace even for an older UI
+  -- layout. Recorded trajectory replay keeps its original program flag.
+  let prog := if schedule.tasks.any (fun task => (factsFor task).patientDirectory?.isSome)
+    then { prog with patientSelection? := some true } else prog
   let user : User := { id := prog.owner, role := params.role }
   let mut receipts : List (String × List Receipt) := []
   let mut day : DayResult := {
@@ -235,6 +277,11 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     programVersion := prog.version, trace := [], tasks := [], floor := [], complaints := [] }
   for task in schedule.tasks do
     let raw := factsFor task
+    let raw := if Workspace.enabled prog && raw.patientDirectory?.isNone then
+      { raw with
+        sourcePatientId? := some task.patientId
+        patientDirectory? := some { patients := [{ id := task.patientId, name := raw.patientId, mrn := raw.patientId }], activities := [] } }
+      else raw
     let facts := { raw with
       now := task.startMin,
       receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
@@ -255,7 +302,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       let f := { f with receipts := facts.receipts ++ r.state.receipts }
       let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers } }
       r := { r with
-        state := { init sp prog f user with clock := r.elapsedMs / 100 },
+        state := { (if Workspace.enabled prog && idx == 0 then Workspace.init prog else
+          { init sp prog f user with patientContext? := r.state.patientContext? }) with clock := r.elapsedMs / 100 },
         complaints := r.complaints ++ g.problems.map (fun problem => s!"{task.id}: {problem}") }
       r := playEpisode ctx params task (idx + 1 == eps.length) r
       complete := complete && ctx.done r.state

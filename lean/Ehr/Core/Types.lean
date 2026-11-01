@@ -713,9 +713,48 @@ structure Program where
   screens : List Screen
   macros : List Macro
   componentDefs : List ComponentDef := []
+  /-- Opt in to the certified patient-selection workspace; omitted by archived programs. -/
+  patientSelection? : Option Bool := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Facts (the patient record, abstracted) -/
+
+/-- A patient in the day's searchable directory. IDs remain transport metadata. -/
+structure PatientChoice where
+  id : String
+  name : String
+  mrn : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- One department-list row, with its explicit patient binding. -/
+structure PatientListRow where
+  patient : String
+  fields : List (String × String)
+  /-- Exact source work item; transport may retain its existing encounter/task focus. -/
+  source? : Option String := none
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A source-bounded landing activity. It contains no clinical captures. -/
+structure PatientActivity where
+  info : InfoId
+  title : String
+  rows : List PatientListRow
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Day context is separate from the selected patient's clinical facts. -/
+structure PatientDirectory where
+  patients : List PatientChoice
+  activities : List PatientActivity
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Selected patient and hydration binding. No patient means a list workspace. -/
+structure PatientContext where
+  patient? : Option String := none
+  bound? : Option String := none
+  target? : Option ScreenId := none
+  activity : String := ""
+  query : String := ""
+  deriving DecidableEq, Repr, Inhabited
 
 /-- Native-unit dose bounds. Zero means that no bound is specified. -/
 structure DoseUnitRule where
@@ -803,6 +842,10 @@ structure Facts where
   orderClocks? : Option (List OrderClock) := none
   infoPayloads? : Option (List InfoPayload) := none
   phase? : Option WorkflowPhase := none
+  /-- Exact source Patient.id, independent of its business identifier. -/
+  sourcePatientId? : Option String := none
+  /-- Read-only day lists and the searchable patient directory. -/
+  patientDirectory? : Option PatientDirectory := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/
@@ -863,6 +906,8 @@ structure State where
   currentSlot : Nat
   /-- Deciseconds since the episode started (the caller advances it). -/
   clock : Nat
+  /-- Present only for programs using in-UI patient selection. -/
+  patientContext? : Option PatientContext := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A user (or macro) action. -/

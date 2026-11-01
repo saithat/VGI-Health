@@ -92,6 +92,7 @@ def withRequiredReviews (s : Screen) : Screen :=
 
 /-- **The canonical program, version 1** (spec "v1"). -/
 def canonicalV1 : Program where
+  patientSelection? := some true
   id := "canonical"
   version := 1
   owner := "canonical"

@@ -884,6 +884,59 @@ export interface Program {
   screens: Screen[];
   macros: Macro[];
   componentDefs?: ComponentDef[];
+  /**
+   * Opt in to the certified patient-selection workspace; omitted by archived programs.
+   */
+  patientSelection?: boolean;
+}
+
+/**
+ * A patient in the day's searchable directory. IDs remain transport metadata.
+ */
+export interface PatientChoice {
+  id: string;
+  name: string;
+  mrn: string;
+}
+
+/**
+ * One department-list row, with its explicit patient binding.
+ */
+export interface PatientListRow {
+  patient: string;
+  fields: [string, string][];
+  /**
+   * Exact source work item; transport may retain its existing encounter/task focus.
+   */
+  source?: string;
+}
+
+/**
+ * A source-bounded landing activity. It contains no clinical captures.
+ */
+export interface PatientActivity {
+  info: InfoId;
+  title: string;
+  rows: PatientListRow[];
+}
+
+/**
+ * Day context is separate from the selected patient's clinical facts.
+ */
+export interface PatientDirectory {
+  patients: PatientChoice[];
+  activities: PatientActivity[];
+}
+
+/**
+ * Selected patient and hydration binding. No patient means a list workspace.
+ */
+export interface PatientContext {
+  patient?: string;
+  bound?: string;
+  target?: ScreenId;
+  activity: string;
+  query: string;
 }
 
 /**
@@ -1016,6 +1069,14 @@ export interface Facts {
   orderClocks?: OrderClock[];
   infoPayloads?: InfoPayload[];
   phase?: WorkflowPhase;
+  /**
+   * Exact source Patient.id, independent of its business identifier.
+   */
+  sourcePatientId?: string;
+  /**
+   * Read-only day lists and the searchable patient directory.
+   */
+  patientDirectory?: PatientDirectory;
 }
 
 /**
@@ -1106,6 +1167,10 @@ export interface State {
    * Deciseconds since the episode started (the caller advances it).
    */
   clock: number;
+  /**
+   * Present only for programs using in-UI patient selection.
+   */
+  patientContext?: PatientContext;
 }
 
 /**
@@ -2472,5 +2537,7 @@ export interface FactsInput {
    * Shared dated list graph; chart parsing remains patient scoped.
    */
   worldContext?: unknown;
+  directoryOnly?: boolean;
+  extraPatients?: PatientChoice[];
 }
 

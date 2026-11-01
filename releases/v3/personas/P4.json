@@ -3564,6 +3564,7 @@
      "kind": {"button": {"action": {"goto": {"screen": "w7Review"}}}},
      "id": "w7Decision.toReview"}]}],
  "role": "np",
+ "patientSelection": true,
  "owner": "P4",
  "macros":
  [{"steps":

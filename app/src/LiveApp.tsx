@@ -1,4 +1,5 @@
 import { CURRENT_RELEASE } from "./core/currentRelease";
+import { worldWorkDate } from "./data/worldChart";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -116,7 +117,9 @@ async function liveProgram(
   if (baseline)
     return {
       spec: await readArtifact(`/releases/${CURRENT_RELEASE}/spec.json`),
-      program: await readArtifact(`/releases/${CURRENT_RELEASE}/personas/${persona}.json`),
+      program: await readArtifact(
+        `/releases/${CURRENT_RELEASE}/personas/${persona}.json`,
+      ),
     };
   const catalog = await loadCatalog();
   const deployed = catalog.programs.find(
@@ -134,7 +137,9 @@ async function liveProgram(
   }
   return {
     spec: await readArtifact(`/releases/${CURRENT_RELEASE}/spec.json`),
-    program: await readArtifact(`/releases/${CURRENT_RELEASE}/personas/${persona}.json`),
+    program: await readArtifact(
+      `/releases/${CURRENT_RELEASE}/personas/${persona}.json`,
+    ),
   };
 }
 
@@ -238,6 +243,7 @@ function Chart({
   const inspecting =
     new URLSearchParams(window.location.search).get("inspect") === "1";
   const [pending, setPending] = useState(false);
+  const [opening, setOpening] = useState(false);
   const [error, setError] = useState("");
   const [panel, setPanel] = useState(false);
   const [links, setLinks] = useState<string[]>([]);
@@ -253,8 +259,16 @@ function Chart({
       .then(setSavedResource)
       .catch((error: unknown) => setResourceError(errorText(error)));
   }
+  const closeChart = () => {
+    setPanel(false);
+    setError("");
+    onClose();
+  };
   return (
     <>
+      {opening && (
+        <Text role="status">Loading the selected patient's chart…</Text>
+      )}
       <div
         aria-busy={pending}
         ref={(el) => {
@@ -269,10 +283,19 @@ function Chart({
             onEvent={(event) => {
               if (pending) return;
               setError("");
-              // Ordinary input events resolve immediately; only commits wait on I/O.
+              const selecting =
+                "click" in event &&
+                event.click.comp.startsWith("workspace.open|");
               setPending(true);
-              void session
-                .dispatch(event)
+              setOpening(selecting);
+              // Paint feedback before a potentially large chart projection blocks the UI.
+              const ready = selecting
+                ? new Promise<void>((resolve) =>
+                    requestAnimationFrame(() => setTimeout(resolve, 0)),
+                  )
+                : Promise.resolve();
+              void ready
+                .then(() => session.dispatch(event))
                 .then((result) => {
                   if (result) {
                     setLinks(result.links);
@@ -316,34 +339,39 @@ function Chart({
                   setError(errorText(error));
                   setPanel(true);
                 })
-                .finally(() => setPending(false));
+                .finally(() => {
+                  setOpening(false);
+                  setPending(false);
+                });
             }}
           />
         ) : (
           <Alert color="red">Semantic WASM renderer unavailable</Alert>
         )}
       </div>
-      <div className="live-controls">
-        {!inspecting && (
+      {Boolean(ui?.banner.length) && (
+        <div className="live-controls">
+          {!inspecting && (
+            <Button
+              size="xs"
+              variant="default"
+              loading={pending}
+              title={pending ? "Saving encounter changes" : undefined}
+              onClick={() => setPanel(true)}
+            >
+              Encounter options
+            </Button>
+          )}
           <Button
             size="xs"
-            variant="default"
             loading={pending}
             title={pending ? "Saving encounter changes" : undefined}
-            onClick={() => setPanel(true)}
+            onClick={inspecting ? () => setPanel(true) : closeChart}
           >
-            Encounter options
+            {inspecting ? "Live encounter" : "Close chart"}
           </Button>
-        )}
-        <Button
-          size="xs"
-          loading={pending}
-          title={pending ? "Saving encounter changes" : undefined}
-          onClick={inspecting ? () => setPanel(true) : onClose}
-        >
-          {inspecting ? "Live encounter" : "Close chart"}
-        </Button>
-      </div>
+        </div>
+      )}
       <Drawer
         transitionProps={{ duration: 0 }}
         zIndex={1100}
@@ -389,7 +417,7 @@ function Chart({
               </ul>
             </div>
           )}
-          <Button variant="default" onClick={onClose}>
+          <Button variant="default" onClick={closeChart}>
             Return to worklist
           </Button>
           {inspecting && <a href="/dashboard">Demo / replay dashboard</a>}
@@ -610,6 +638,102 @@ function SelectEncounter({
         )}
       </Stack>
     </Paper>
+  );
+}
+
+function PatientWorkspaceHome({
+  user,
+  baseline,
+  onLogout,
+}: {
+  user: LiveUser;
+  baseline: boolean;
+  onLogout: () => void;
+}) {
+  const [loaded, setLoaded] = useState<{
+    session: Session;
+    presentations: PresentationBundle | null;
+  }>();
+  const [legacy, setLegacy] = useState(false);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    async function load() {
+      const persona = user.persona === "RN2" ? "P3" : user.persona;
+      const [interp, content] = await Promise.all([
+        loadWasmInterp(),
+        liveProgram(persona, baseline),
+      ]);
+      const program =
+        typeof content.program === "object" &&
+        content.program !== null &&
+        !Array.isArray(content.program)
+          ? { ...content.program, patientSelection: true }
+          : content.program;
+      const selectionEnabled =
+        typeof program === "object" &&
+        program !== null &&
+        "patientSelection" in program &&
+        program.patientSelection === true;
+      if (!selectionEnabled) {
+        if (active) setLegacy(true);
+        return;
+      }
+      const date =
+        new URLSearchParams(window.location.search).get("date") ??
+        (await worldWorkDate());
+      const [graph, patients] = await Promise.all([
+        loadListContext(user, date),
+        searchPatients(""),
+      ]);
+      const directory: Bundle = {
+        ...graph,
+        entry: [
+          ...(graph.entry ?? []).filter(
+            (e) => e.resource?.resourceType !== "Patient",
+          ),
+          ...patients.map((resource) => ({ resource })),
+        ],
+      };
+      const session = await createLiveSession(
+        interp,
+        content.spec,
+        program,
+        directory,
+        user,
+        undefined,
+        date,
+      );
+      if (active)
+        setLoaded({ session, presentations: content.presentations ?? null });
+    }
+    void load().catch((error: unknown) => {
+      if (active) setError(errorText(error));
+    });
+    return () => {
+      active = false;
+    };
+  }, [user, baseline]);
+  if (legacy)
+    return <Home user={user} baseline={baseline} onLogout={onLogout} />;
+  if (error)
+    return (
+      <Alert role="alert" color="red">
+        {error}
+      </Alert>
+    );
+  if (!loaded) return <p>Loading Medplum department workspace…</p>;
+  return (
+    <Chart
+      session={loaded.session}
+      presentations={loaded.presentations}
+      viewer={clinicianRoleNames[user.persona] ?? "Clinician"}
+      onClose={() => {
+        void loaded.session
+          .dispatch({ click: { comp: "workspace.return" } })
+          .catch((error: unknown) => setError(errorText(error)));
+      }}
+    />
   );
 }
 
@@ -1082,7 +1206,7 @@ export function LiveApp() {
         </Alert>
       )}
       {user ? (
-        <Home
+        <PatientWorkspaceHome
           user={user}
           baseline={baseline}
           onLogout={() => {

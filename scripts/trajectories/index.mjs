@@ -164,7 +164,7 @@ export async function indexTrajectories({ runId, leanDir = process.env.EHR_LEAN_
             const componentsFile=progPath.replace(/\.json$/,'.components.json'),components=await exists(componentsFile)?await read(componentsFile):[];
             const componentHash=createHash('sha256').update(JSON.stringify(stableForGeometry(components))).digest('hex');
             const variant=geometryFile.replace(/\.json$/,`.${componentHash}.json`),atlas=await read(await exists(variant)?variant:geometryFile);
-            const cost=(!atlas.componentsSha256||atlas.componentsSha256===componentHash)?pointerTravel(recorded.trace,atlas)[task.id]:null;
+            const cost=(!atlas.componentsSha256||atlas.componentsSha256===componentHash)?pointerTravel(recorded.trace,atlas,recorded.day)[task.id]:null;
             if(cost&&entry.metrics)entry.metrics={...entry.metrics,mouseTravelPx:cost.mouseTravelPx,scrollPx:cost.scrollPx,scrolls:cost.scrolls};
           }
           if (!entry.metrics || !entry.theoreticalMinimum) throw new Error(`Missing metrics for ${task.id}`);

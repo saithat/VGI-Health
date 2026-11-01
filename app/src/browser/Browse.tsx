@@ -358,7 +358,12 @@ function Timeline({
               run={run}
             />
             <div className="timeline-measure">
-              <strong>Measured change vs {run?.manifest.measurementProtocol?"active canonical":"rev 0"}</strong>
+              <strong>
+                Measured change vs{" "}
+                {run?.manifest.measurementProtocol
+                  ? "active canonical"
+                  : "rev 0"}
+              </strong>
               {delta ? (
                 <dl>
                   <div>
@@ -368,8 +373,23 @@ function Timeline({
                       {delta.clicks.toFixed(1)}
                     </dd>
                   </div>
-                  <div><dt>Scrolls</dt><dd>{delta.scrolls>0?"+":""}{delta.scrolls.toFixed(1)}</dd></div>
-                  <div><dt>Scroll distance</dt><dd>{delta.scrollPx!==null&&delta.scrollPx>0?"+":""}{delta.scrollPx===null?"—":delta.scrollPx.toFixed(1)} px</dd></div>
+                  <div>
+                    <dt>Scrolls</dt>
+                    <dd>
+                      {delta.scrolls > 0 ? "+" : ""}
+                      {delta.scrolls.toFixed(1)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>Scroll distance</dt>
+                    <dd>
+                      {delta.scrollPx !== null && delta.scrollPx > 0 ? "+" : ""}
+                      {delta.scrollPx === null
+                        ? "—"
+                        : delta.scrollPx.toFixed(1)}{" "}
+                      px
+                    </dd>
+                  </div>
                   <div>
                     <dt>Keys (secondary)</dt>
                     <dd>
@@ -380,8 +400,13 @@ function Timeline({
                   <div>
                     <dt>Mouse travel</dt>
                     <dd>
-                      {delta.mouseTravelPx!==null&&delta.mouseTravelPx>0 ? "+" : ""}
-                      {delta.mouseTravelPx===null?"—":delta.mouseTravelPx.toFixed(1)} px
+                      {delta.mouseTravelPx !== null && delta.mouseTravelPx > 0
+                        ? "+"
+                        : ""}
+                      {delta.mouseTravelPx === null
+                        ? "—"
+                        : delta.mouseTravelPx.toFixed(1)}{" "}
+                      px
                     </dd>
                   </div>
                 </dl>

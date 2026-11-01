@@ -123,6 +123,10 @@ export class Audit {
       this.rows.push(row);
       return row;
     }
+    // Position the target before starting the click-response timer. Playwright's
+    // click otherwise includes automatic scrolling and layout stabilization.
+    // Selection travel/scroll costs are measured separately by the geometry path.
+    await control.scrollIntoViewIfNeeded();
     const before = await this.fingerprint();
     await this.page.evaluate(
       ({ dom, state }) => {
