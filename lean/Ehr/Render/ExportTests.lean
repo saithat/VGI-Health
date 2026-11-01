@@ -31,8 +31,25 @@ def main (args : List String) : IO Unit := do
   let p1spec ← Ehr.Render.Cli.readJson Ehr.Spec "../releases/v1/spec.json"
   let (_, display) ← match Ehr.Render.Fhir.parseBundle context b with
     | .ok r => pure r | .error e => throw (IO.userError e)
+  let mut ordered := (Ehr.goTo p1spec p1 facts (Ehr.init p1spec p1 facts user) "w1Orders").1
+  -- Populate a synthetic prescription through real human enter events. Missing,
+  -- hidden or blocked fields fail the export rather than manufacturing captures.
+  for (element, text) in [("drug", "amoxicillin"), ("dose", "500"), ("route", "PO"),
+      ("freq", "bid"), ("duration", "7 days"), ("quantity", "14"), ("refills", "0"),
+      ("prescriptionDirections", "Take one capsule by mouth twice daily for 7 days"),
+      ("controlledPrescriberName", "Morgan Patel (synthetic)"),
+      ("prescriberFederalRegistration", "DEMO-REG-001")] do
+    let some el := p1spec.element? element | throw (IO.userError s!"sample element missing: {element}")
+    let some it := (Ehr.view p1spec p1 facts user ordered).items.find? (fun it =>
+      it.shown && match it.comp.kind with | .field e _ _ => e == element | _ => false)
+      | throw (IO.userError s!"sample field not shown: {element}")
+    let some value := Ehr.parseValue el.kind text | throw (IO.userError s!"invalid sample value: {element}")
+    let (next, result) := Ehr.step p1spec p1 facts user .human ordered (.enter it.comp.id value)
+    if result != .ok then throw (IO.userError s!"sample entry blocked: {element}: {reprStr result}")
+    ordered := next
   for id in ["w1Rooming", "w1Orders", "w1Sign"] do
-    let state := (Ehr.goTo p1spec p1 facts (Ehr.init p1spec p1 facts user) id).1
+    let base := if id == "w1Rooming" then Ehr.init p1spec p1 facts user else ordered
+    let state := (Ehr.goTo p1spec p1 facts base id).1
     let input : Ehr.Render.RenderInput := { spec := p1spec, program := p1, facts, display, user, state }
     IO.FS.writeFile (dir / ("p1-input-" ++ id ++ ".json")) (Lean.toJson input).compress
     IO.FS.writeFile (dir / (id ++ ".json")) (Lean.toJson (Ehr.Render.runRenderUi input)).pretty

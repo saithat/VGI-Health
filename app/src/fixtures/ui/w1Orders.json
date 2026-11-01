@@ -628,7 +628,7 @@
        "comp": "w1Orders.medication",
        "blockedReason": null}},
      {"field":
-      {"value": null,
+      {"value": "amoxicillin",
        "unit": null,
        "required": true,
        "provenance": null,
@@ -639,7 +639,7 @@
        "humanOnly": false,
        "comp": "w1Orders.drug"}},
      {"field":
-      {"value": null,
+      {"value": "500.0",
        "unit": "mg",
        "required": true,
        "provenance": null,
@@ -659,7 +659,7 @@
        "humanOnly": false,
        "comp": "w1Orders.doseUnit"}},
      {"field":
-      {"value": null,
+      {"value": "PO",
        "unit": null,
        "required": true,
        "provenance": null,
@@ -669,7 +669,7 @@
        "humanOnly": false,
        "comp": "w1Orders.route"}},
      {"field":
-      {"value": null,
+      {"value": "bid",
        "unit": null,
        "required": true,
        "provenance": null,
@@ -727,7 +727,7 @@
     "id": "w1Orders.legal.sig",
     "children":
     [{"field":
-      {"value": null,
+      {"value": "Take one capsule by mouth twice daily for 7 days",
        "unit": null,
        "required": true,
        "provenance": null,
@@ -761,7 +761,7 @@
     "id": "w1Orders.legal.controlled",
     "children":
     [{"field":
-      {"value": null,
+      {"value": "DEMO-REG-001",
        "unit": null,
        "required": false,
        "provenance": null,
@@ -791,7 +791,7 @@
        "humanOnly": false,
        "comp": "w1Orders.legal.controlledDosageForm"}},
      {"field":
-      {"value": null,
+      {"value": "Morgan Patel (synthetic)",
        "unit": null,
        "required": false,
        "provenance": null,
@@ -846,7 +846,7 @@
        "comp": "w1Orders.dispense",
        "blockedReason": null}},
      {"field":
-      {"value": null,
+      {"value": "7 days",
        "unit": null,
        "required": true,
        "provenance": null,
@@ -856,7 +856,7 @@
        "humanOnly": false,
        "comp": "w1Orders.duration"}},
      {"field":
-      {"value": null,
+      {"value": "14.0",
        "unit": null,
        "required": true,
        "provenance": null,
@@ -866,7 +866,7 @@
        "humanOnly": false,
        "comp": "w1Orders.quantity"}},
      {"field":
-      {"value": null,
+      {"value": "0.0",
        "unit": null,
        "required": true,
        "provenance": null,
@@ -1000,7 +1000,18 @@
        "display": "table",
        "comp": "w1Orders.orderInfo.currentMeds"}}]}},
   {"info":
-   {"rows": [],
+   {"rows":
+    [[["Line", "1"],
+      ["Drug", "amoxicillin"],
+      ["Dose", "500.0 mg"],
+      ["Route", "PO"],
+      ["Frequency", "bid"],
+      ["Duration", "7 days"],
+      ["Quantity", "14.0"],
+      ["Refills", "0.0"],
+      ["Directions", "Take one capsule by mouth twice daily for 7 days"],
+      ["Prescriber", "Morgan Patel (synthetic)"],
+      ["Registration", "DEMO-REG-001"]]],
     "label": "Pending orders",
     "infoId": "orderSummary",
     "display": "table",
@@ -1009,9 +1020,9 @@
    {"role": "secondary",
     "label": "Accept and add another order",
     "hotkey": null,
-    "enabled": true,
+    "enabled": false,
     "comp": "w1Orders.newLine",
-    "blockedReason": null}},
+    "blockedReason": "finish this order line first"}},
   {"button":
    {"role": "nav",
     "label": "Review and sign",

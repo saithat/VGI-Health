@@ -139,6 +139,20 @@ for (const [name, input] of data('clinical-ui-cases')) {
     assert.equal(stepped.state.screen, 'next');
   }
 }
+// App samples carry the full P1 program and actual human-entered order values.
+for (const id of ['w1Rooming', 'w1Orders', 'w1Sign']) {
+  const input = data(`p1-input-${id}`);
+  const ui = JSON.parse(ehr.call('ehr_render_ui', JSON.stringify(input)));
+  assert.deepEqual(ui, native('render-ui', input), `${id}: P1 sample native/WASM`);
+  assert.deepEqual(ui, data(id));
+  assert.deepEqual(ui, read(`app/src/fixtures/ui/${id}.json`));
+  if (id === 'w1Sign') {
+    const summary = walk(ui.workspace).find((node) => node.info?.infoId === 'orderSummary').info;
+    assert.equal(summary.display, 'table');
+    assert.equal(summary.rows.length, 1);
+    assert.ok(summary.rows[0].some(([key, value]) => key === 'Drug' && value === 'amoxicillin'));
+  }
+}
 // A real canonical RN scan must accept the interpreter's identity and reject
 // an unrelated Medplum resource address. The painter emits the same Value.code.
 const scanElement = common.spec.elements.find((e) => e.kind?.scan?.target === 'wristband');

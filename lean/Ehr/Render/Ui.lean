@@ -184,9 +184,11 @@ def uiNav (cx : Ctx) : List (String × List (String × String)) :=
 /-- One compact line per source record; workspace info retains the full rows. -/
 def uiAllergySummary (r : AllergyRow) : List (String × String) :=
   [("Record", r.substance ++ (if r.reaction == "" then "" else " — " ++ r.reaction) ++
-    (if r.severity == "" then "" else " (" ++ r.severity ++ ")"))]
+    (if r.severity == "" then "" else " (" ++ r.severity ++ ")") ++
+    (if r.status == "" || r.status == "active" then "" else " — " ++ r.status))]
 def uiMedSummary (r : MedRow) : List (String × String) :=
-  [("Record", r.name ++ (if r.sig == "" then "" else " — " ++ r.sig))]
+  [("Record", r.name ++ (if r.sig == "" then "" else " — " ++ r.sig) ++
+    (if r.status == "" || r.status == "active" then "" else " (" ++ r.status ++ ")"))]
 def uiProblemSummary (r : ProblemRow) : List (String × String) :=
   [("Record", r.name ++ (if r.status == "" then "" else " (" ++ r.status ++ ")"))]
 def uiLatestVitals (d : Display) : List VitalRow :=
@@ -203,7 +205,7 @@ def uiSummaryRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | "problemList" => (cx.disp.problems.filter (fun r => r.status != "resolved" && r.status != "inactive" && r.abatement == "")).map uiProblemSummary
   | "vitals" => (uiLatestVitals cx.disp).map fun r =>
       [("Record", r.name ++ " " ++ r.value ++ (if r.unit == "" then "" else " " ++ r.unit) ++
-        " (" ++ (if r.date.startsWith cx.disp.asOf then "today" else uiDate r.date) ++ ")")]
+        " (" ++ (if cx.disp.asOf != "" && r.date.startsWith cx.disp.asOf then "today" else uiDate r.date) ++ ")")]
   | _ => (uiRows cx i).map fun row => [("Record", " · ".intercalate (row.map (·.2)))]
 
 def uiItemRows (cx : Ctx) (id : CompId) (i : InfoId) : List (List (String × String)) :=
