@@ -4,6 +4,22 @@ import Ehr.Render.NavRules
 
 namespace Ehr.Render
 
+/-- Antiplatelets in the chart are visible even outside the prescribing catalog. -/
+def chartClopidogrel : MedRow where
+  id := "platelet-record"
+  name := "Clopidogrel 75 MG Oral Tablet"
+  rxnorm := ""
+  drug := ""
+  sig := "Daily"
+  status := "active"
+  authored := "2026-10-31"
+  prescriber := ""
+  versionId := "1"
+#guard uiAntithrombotic chartClopidogrel
+#guard uiAntithrombotic { chartClopidogrel with name := "aspirin 81 MG Oral Tablet" }
+#guard !uiAntithrombotic { chartClopidogrel with name := "Clopidogrel-like investigational product" }
+#guard !uiAntithrombotic { chartClopidogrel with name := "Acetaminophen 500 MG Oral Tablet" }
+
 /-- Nonempty parsed clinical records and a real interpreter state. -/
 def uiRoomCtx : Ctx := tinyFhirCtx
 def uiSignCtx : Ctx := { uiRoomCtx with viewCache := ⟨_, rfl⟩, s := { uiRoomCtx.s with screen := "sign" } }

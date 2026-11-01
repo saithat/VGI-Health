@@ -70,6 +70,47 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("dispatches the component IDs declared by Lean navigation", () => {
+    const onEvent = vi.fn();
+    const view = uiScreenSchema.parse(rooming);
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...view,
+            nav: [["Surgical navigator", [["case.open", "Open case"]]]],
+          }}
+          onEvent={onEvent}
+        />
+      </MantineProvider>,
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: /^Open case$/ }),
+    );
+    expect(onEvent).toHaveBeenCalledWith({ click: { comp: "case.open" } });
+    expect(
+      screen.getByRole("list", { name: "Surgical navigator screens" }),
+    ).toBeTruthy();
+  });
+  it("preserves multiline narrative as an ordinary human text entry", () => {
+    const onEvent = vi.fn();
+    paint(
+      [{ field: { ...field, kind: "textarea", humanOnly: true } }],
+      onEvent,
+    );
+    const input = screen.getByRole("textbox", { name: "Clinical value" });
+    expect(input.tagName).toBe("TEXTAREA");
+    fireEvent.change(input, {
+      target: { value: "Findings:\nInflamed appendix." },
+    });
+    expect(onEvent).toHaveBeenCalledWith({
+      enter: {
+        comp: "entry",
+        value: { text: { s: "Findings:\nInflamed appendix." } },
+      },
+    });
+    expect(screen.getByText("Human entry only")).toBeTruthy();
+  });
   it("renders every UiNode constructor and all supplied records", () => {
     paint([
       {
@@ -465,8 +506,21 @@ describe("semantic EHR painter", () => {
   it("shows the encounter-role refusal on the disabled signing action", () => {
     const reason = "Pre-op orders are signed by a physician or surgeon";
     const onEvent = vi.fn();
-    paint([{ button: { ...button, comp: "signOrders", label: "Sign orders",
-      role: "primary", enabled: false, blockedReason: reason } }], onEvent);
+    paint(
+      [
+        {
+          button: {
+            ...button,
+            comp: "signOrders",
+            label: "Sign orders",
+            role: "primary",
+            enabled: false,
+            blockedReason: reason,
+          },
+        },
+      ],
+      onEvent,
+    );
     const action = screen.getByRole("button", { name: "Sign orders" });
     expect(action.getAttribute("disabled")).not.toBeNull();
     expect(action.getAttribute("title")).toBe(reason);

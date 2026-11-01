@@ -99,17 +99,36 @@ export function projectLive(
       : /Orders|Labs|Sign|Verify|PreOp|PostOp|Rx|Refill/.test(screen)
         ? "order-entry"
         : screen;
+  const displayContext = fhirDisplayContext(
+    bundle,
+    context.patient.id ?? "",
+    projection.facts.patientId,
+    context.encounter.id,
+  );
   return {
     ...projection,
     facts: {
       ...projection.facts,
       ...(drug ? { medToGive: drug } : {}),
-      ...fhirDisplayContext(
-        bundle,
-        context.patient.id ?? "",
-        projection.facts.patientId,
-        context.encounter.id,
-      ),
+      ...displayContext,
+      // Keep Lean's read-only FHIR projections. An explicit adapter payload
+      // replaces the same view rather than creating an ambiguous duplicate.
+      infoPayloads: [
+        ...(projection.facts.infoPayloads ?? []).filter(
+          (p) =>
+            !displayContext.infoPayloads.some((other) => other.info === p.info),
+        ),
+        ...displayContext.infoPayloads,
+      ],
+      artifactBindings: [
+        ...(projection.facts.artifactBindings ?? []).filter(
+          (b) =>
+            !displayContext.artifactBindings.some(
+              (other) => other.key === b.key,
+            ),
+        ),
+        ...displayContext.artifactBindings,
+      ],
       phase: { workflow, phase },
       episodeId: context.encounter.id ?? "",
       epochMinute: Math.floor(Date.parse(now) / 60000),

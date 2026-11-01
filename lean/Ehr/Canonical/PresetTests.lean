@@ -19,5 +19,5 @@ def presetLabelsValid (p : Program) : Bool :=
     presetLabelsValid p && p.screens.all (presetScreen id) && p.screens.length < master.screens.length &&
       (presetLandings id).all (fun (target, label) => (p.screen? "home").any (fun home =>
         home.components.any (fun c => c.kind == .button (.goto target) && c.label == label)))
-#guard (personaRoles.map fun (id,role) => (forPersona Specs.V1.specV1 canonicalV1 id role).screens.length) == [16,8,6,13,22]
+#guard (personaRoles.map fun (id,role) => (forPersona Specs.V1.specV1 canonicalV1 id role).screens.length) == [16,8,6,13,24]
 end Ehr.Canonical

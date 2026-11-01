@@ -86,7 +86,7 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
       r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
         ("Value", uiHundredths p.hundredths), ("Unit", r.unit)])
   | "anticoagulants" | "anticoagulantList" =>
-      (cx.disp.meds.filter fun r => inClass r.drug "anticoagulant" || inClass r.drug "antiplatelet").map medCells
+      (cx.disp.meds.filter uiAntithrombotic).map medCells
   | "immunizations" | "immunizationHistory" => cx.disp.immunizations.map fun r =>
       [("Vaccine", r.vaccine), ("CVX", r.cvx), ("Date", uiDate r.date), ("Status", r.status)]
   | "encounters" | "encounterHistory" => cx.disp.encounters.map fun r =>
@@ -145,6 +145,7 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
   let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
     "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
+    else if kind == .text && it.comp.tag.endsWith ".multiline" then "textarea"
     else uiFieldKind kind
   let unit := if kind == .medicationDose then want else
     match it.value? with | some (.qty _ u) => u | _ => want
@@ -321,9 +322,14 @@ def uiMissingReviews (cx : Ctx) : List UiNode :=
   ((uiRequiredReviews cx).filter fun r => !uiFullInfoShown cx r.info).map fun r =>
     uiInfo cx "" (infoLabel cx r.info) r.info "list"
 
-def uiWorkspace (cx : Ctx) : List UiNode :=
+/-- A declared clinical navigator replaces the numbered progress overview.
+Screens without one retain their existing overview. Neither invents actions. -/
+def uiProgress (cx : Ctx) : List UiNode :=
   let steps := uiSteps cx
-  .stepper steps ((steps.map (·.1)).idxOf cx.s.screen) :: (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
+  if (uiNav cx).isEmpty then [.stepper steps ((steps.map (·.1)).idxOf cx.s.screen)] else []
+
+def uiWorkspace (cx : Ctx) : List UiNode :=
+  uiProgress cx ++ (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
 
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/

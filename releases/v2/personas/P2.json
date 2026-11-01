@@ -1677,7 +1677,7 @@
      "tag": "w6PreOp.consentVerified",
      "tab": 0,
      "size": "normal",
-     "label": "Surgical consent verified",
+     "label": "Signed consent matches procedure and site",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
@@ -1685,19 +1685,19 @@
        "element": "consentVerified"}},
      "id": "w3Sign.preop.consentVerified"},
     {"visibility": {"encounter": {"kind": "preop"}},
-     "tag": "w6PreOp.hpUpdate",
+     "tag": "w6PreOp.hpUpdate.multiline",
      "tab": 0,
      "size": "normal",
-     "label": "H&P update (day of surgery)",
+     "label": "Interval history and physical",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}}, "prefill": "none", "element": "hpUpdate"}},
      "id": "w3Sign.preop.hpUpdate"},
     {"visibility": {"encounter": {"kind": "preop"}},
-     "tag": "w6PreOp.medsToHold",
+     "tag": "w6PreOp.medsToHold.multiline",
      "tab": 0,
      "size": "normal",
-     "label": "Medications to hold",
+     "label": "Medication hold / restart plan",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},

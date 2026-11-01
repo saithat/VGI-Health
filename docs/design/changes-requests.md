@@ -1,5 +1,31 @@
 # Cross-lane change requests
 
+## SURG → presentation / shell: perioperative views (2026-11-01)
+
+W6 uses the presentation contract's `present.orSchedule`, `present.worklist`,
+`present.results`, `present.notes` and `present.table` tags. New case/consult
+list screens use existing `scheduleTasks` and `consultRequest` info IDs, with
+ordinary Lean goto actions next to the selected chart's records. These tables
+are read-only; no row-cell event is implied. P5's landing destinations are
+`w6Schedule`, `w6Consults`, `w1Rooming` (Clinic Schedule), and results In Basket.
+
+SURG added a separated perioperative section in `Render/Fhir.lean`. Dated
+surgical ServiceRequests (category SNOMED 387713003) project Room / Start /
+Procedure / Patient / Surgeon / Status. Consultation ServiceRequests (code
+11429006) project the request list. Both codes match `infra/seed-world.mjs`.
+Selected-patient Consent and today's Procedure records supply consent-on-file
+and intra-op evidence. FHIR references resolve to display names or `Not recorded`,
+never raw resource IDs. No room, start time, consent verification, time-out or
+postoperative completion is invented. These are version-bound optional payloads;
+no spec rule was added. Live sessions retain Lean-derived payloads when merging
+adapter context; an explicit payload for the same info ID takes precedence.
+
+Surgical clinic uses the normal W1 navigator, adding a Surgical history chart
+tab and multiline clinical note prompts through P5's preset. `*.multiline` on
+a text field selects the generic textarea painter; its entry event, provenance,
+human-only marker and guard remain unchanged. Other lanes can use the additive
+`narrative` builder without implementing clinical behavior in React.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

@@ -1,5 +1,43 @@
 # EHR UI pattern research
 
+## Canonical realism: P5 general surgeon (perioperative)
+
+Research and implementation review: 2026-11-01, SURG lane. This is the shared vendor canonical with a surgeon's permissions and activity preset. The baseline retains the separate consult signature, order review, per-field order-set confirmations, kg-weight confirmation, human consent verification, and independent note/order/discharge commits. No clinical rule is changed.
+
+### Evidence and target layouts
+
+Public hospital training, rather than promotional artwork, is the primary reference. Salem Health's [surgeon workspace tip sheet, pp.1–5](https://www.salemhealth.org/docs/default-source/common-ground-docs-and-images/surgeon-buttons-tip-sheet.pdf?sfvrsn=5d1cc7e5_2) was read and its preprocedure, postprocedure and brief-note screenshots inspected. It shows schedule/status-board entry, a preprocedure navigator with H&P update, consent and orders, and postprocedure floor/discharge sections with a brief-note template. VGI adopts these information groups and phase terminology, with original composition and styling. No vendor screenshots or assets are stored in this repository.
+
+Alberta Health Services' [Connect Care surgical procedures manual](https://manual.connect-care.ca/workflows/surgical-procedures) distinguishes phases of care and active orders from work saved in a queue and orders signed for later release. VGI only offers its implemented active-sign action: it must not label a normal signature “Sign & Hold”. A pending-order list is draft information; navigating to the next phase cannot activate it.
+
+The [CST PowerChart provider discharge guide](https://cstcernerhelp.healthcarebc.ca/Workflows/Inpatient/Admission_Transfer_Discharge/Discharge_Patient_Home_%28Provider%29.htm) supports chart review, medication reconciliation, discharge orders and documentation as separate parts of discharge. Mount Sinai General Surgery's [resident handbook](https://www.mssurg.com/table-of-contents), sections 3 and 7, supports a compact daily note focused on overnight symptoms, diet/bowel function, wound exam, I&O, labs and plans, and a structured brief operative report. These are workflow examples, not new legal requirements.
+
+| Screen | Target reading order and production pattern |
+| --- | --- |
+| OR Schedule | Room, start, procedure, patient, surgeon, status in a compact schedule table; ordinary `Open selected case` action beside the selected chart. Keep the department queue distinct from its patient's preprocedure navigator. Missing room or case timing remains unknown. |
+| Consults | Consult request list with patient, requesting service, reason, priority and status; `Open selected consult` enters the note. Surgical clinic remains the ordinary ambulatory visit navigator, with surgical history accessible in chart review. |
+| Surgical consult | Request and relevant imaging/results first; then reason, HPI/ROS, exam, assessment/diagnosis and surgical decision in named sections; home-medication reconciliation. `Review consult` opens billing/follow-up and its separate note signature. |
+| Sign Consult | Billing diagnosis/level of service, plan and patient instructions; sign consult note. It does not sign orders or advance the physical surgical phase. |
+| Preprocedure | Case/checklist and H&P review; interval H&P update; consent document plus human verification; anticoagulants/hold plan; NPO; allergies/current medications; prophylaxis orders. A consent document is never presented as a completed team time-out. |
+| Orders | Search/catalog, preference list, medication dosing, prescription details, pending orders and review/sign. The same composer is available during pre-op, floor care, rounds and discharge. No invented phase-dependent signature or “Sign & Hold”. |
+| Sign Orders | Pending orders and visible allergy/medication/anticoagulant/dose evidence; weight and linked dosing weight; controlled-prescription review; human identity immediately above its sign button. |
+| Brief Op Note | Intra-op evidence, optional procedure template; diagnoses/procedure/team, anesthesia/EBL, findings, specimens/drains/implants, complications/condition; sign note. Narrative findings have their own section rather than sharing a dense row with numeric EBL. |
+| Postprocedure Orders | Choose procedure set; diet/activity, VTE prevention, monitoring/labs and nursing care; separate medication sections for analgesia, VTE and nausea; pending orders; review/sign. The selected set fills drafts and still requires confirmations. |
+| Rounding | Overnight events, current vitals, I&O when supplied, results and active orders; SOAP progress note; modify orders or discharge. No fabricated output totals or postoperative-day counter. |
+| Discharge | Current medications/allergies; reconciliation decisions; discharge prescriptions; diagnosis/condition/destination; follow-up; instructions and return precautions; final discharge action. Medication signing remains a separate route. |
+
+The [structured presentation contract](presentation-contract.md) uses `present.orSchedule`, `present.worklist`, `present.table`, `present.results` and `present.notes`. Tables remain read-only. Their adjacent action is a genuine Lean goto; an Open text column is not a control. All safety information remains in the workspace at its required signature. Additional chart summaries never replace it.
+
+P5's shared-workspace preset starts with today's OR cases and `Open selected case`; the OR Schedule activity retains the full case-list view. This preserves the normal single chart-opening action from a schedule instead of forcing a detour through a clinic rooming screen. The ordinary Clinic Schedule remains available for clinic days. The simulator follows the existing goto graph; no task-specific navigation policy or label matching is added.
+
+CST's [Perioperative Tracking guide](https://cstcernerhelp.healthcarebc.ca/Applications/PowerChart/Perioperative_Tracking/Navigate_to_Perioperative_Tracking.htm) confirms a room-organized slate with one patient per row and a separate chart-opening action. Its [tracking-filter guide](https://cstcernerhelp.healthcarebc.ca/Applications/PowerChart/Perioperative_Tracking/Perioperative_Tracking_Filters_and_Rules.htm) distinguishes today's cases from other dates and phase-specific views. VGI's dated surgical-request projection therefore filters to its supplied date; a day-only request stays a date, without an invented time. An `active` request remains an order status, never a claimed `Roomed` or `Complete` status. The surgical summary rail brings the case before the shared chart summaries; consent and anticoagulant reviews remain in the workspace.
+
+### Visual review and measurement
+
+The first case review also exposed antiplatelets missing from the filtered hold-review list: their generic names were present in the chart, but outside the small prescribing formulary. The display now includes explicitly named aspirin, clopidogrel, prasugrel, ticagrelor, ticlopidine and cangrelor, plus named dabigatran/rivaroxaban, alongside the existing formulary anticoagulants. Names are matched at a word boundary; no hold interval, dosing rule or interaction class is inferred. Sources: [AHA medication classes](https://www.heart.org/en/health-topics/heart-attack/treatment-of-a-heart-attack/cardiac-medications), [MedlinePlus P2Y12 inhibitors](https://medlineplus.gov/ency/patientinstructions/000100.htm). The complete medication list remains visible at signing and reconciliation.
+
+Screenshots are captured at 1440×900 under `app/shots/realism/surg/`, with load and task-focused views. The reproducible capture script is `lean/Ehr/Canonical/review_surgery.mjs`; its input is the actual native `ehr render-screens --ui` output. Clinical rows come from Synthea and supplied FHIR/context, with missing data shown honestly. Before/after observations and measured click/KLM results are recorded below after validation.
+
 Research date: 2026-10-31. Scope: BRIEF §§5, 5a, 6 and workflows W1–W7. Companion deliverables: [canonical blueprint](canonical-blueprint.md) and [visual style](visual-style.md).
 
 ## Evidence and reuse boundary

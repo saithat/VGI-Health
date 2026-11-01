@@ -226,6 +226,9 @@ def preOpPath : List Event :=
   order "w6Orders" "cefazolin" 20000 "once" ++ [.click "w6Orders.toSign"] ++
   enter "w6Sign" [("weight", .qty 700 .kg), ("dosingWeight", .qty 700 .kg),
     ("patientIdReentry", .text "RK/M/58")]
+/-- The surgeon's preset opens the actual OR list before its selected case. -/
+def p5PreOpPath : List Event :=
+  [.click "home.work.w6Schedule", .click "w6Schedule.openCase"] ++ preOpPath.drop 1
 /-- Pre-op signing state. -/
 def preOp : State := run preOpPath (f := preOpFacts) (u := surgeon)
 #guard Specs.ruleProfile == .full || (finish preOp "w6Sign" "signOrders" (f := preOpFacts) (u := surgeon)).commits == ["signOrders"]

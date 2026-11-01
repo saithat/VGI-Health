@@ -84,4 +84,31 @@ def surgery : Json := json r#"{"resourceType":"Procedure","code":{"text":"Append
 
 #guard (Lean.fromJson? (json r#"{"patientId":"old","identity":{"initials":"AB","sex":"F","ageYears":40},"allergyVersion":0,"allergyClasses":[],"medsVersion":0,"currentMedClasses":[],"careGaps":[],"abnormalResult":false,"now":0,"receipts":[],"record":[]}"#) : Except String Facts).toOption.any (fun f => f.notesVersion == 0 && f.historyVersion == 0)
 #guard (Lean.fromJson? ((Lean.toJson parsed.facts).setObjVal! "notesVersion" (.str "bad")) : Except String Facts).isOk == false
+
+/-- A dated surgical order for one patient, with no fabricated OR-room name. -/
+def periopPatient : Json := json r#"{"resourceType":"Patient","id":"periop-a","name":[{"given":["Alex"],"family":"Example"}]}"#
+def periopOrder : Json := json r#"{"resourceType":"ServiceRequest","id":"case-a","status":"active","intent":"order","category":[{"coding":[{"code":"387713003"}]}],"code":{"text":"Laparoscopic appendectomy"},"subject":{"reference":"Patient/periop-a"},"occurrenceDateTime":"2026-10-31","performer":[{"reference":"Practitioner/internal-provider-id"}]}"#
+def periopConsult : Json := json r#"{"resourceType":"ServiceRequest","id":"consult-a","status":"active","code":{"coding":[{"code":"11429006","display":"Surgical consultation"}]},"subject":{"reference":"Patient/periop-a"},"priority":"urgent","reasonCode":[{"text":"Right lower quadrant pain"}]}"#
+def periopConsent : Json := json r#"{"resourceType":"Consent","status":"active","patient":{"reference":"Patient/periop-a"},"dateTime":"2026-10-31T07:00:00Z","scope":{"text":"Treatment"}}"#
+def periopOtherPatient : Json := periopOrder.setObjVal! "subject" (json r#"{"reference":"Patient/another-patient"}"#)
+def periopRows := surgicalCaseRows context.today [periopOrder, periopOtherPatient] periopPatient
+#guard periopRows.length == 1
+#guard (periopRows.head!).patient == "Example, Alex"
+#guard (periopRows.head!).start == "2026-10-31"
+#guard (periopRows.head!).room == "Not recorded"
+#guard (periopRows.head!).surgeon == "Not recorded"
+#guard (surgicalCaseRows "2026-11-01" [periopOrder] periopPatient).isEmpty
+#guard (surgicalConsultRows [periopConsult, periopOtherPatient] periopPatient).length == 1
+#guard (surgicalConsultRows [periopConsult.setObjVal! "status" (.str "completed")] periopPatient).isEmpty
+#guard (surgicalConsentRows [periopConsent] periopPatient).head!.lookup "Document status" == some "active"
+#guard !(surgicalConsentRows [periopConsent] periopPatient).any (fun row => row.any (fun cell => cell.2 == "Verified" || cell.2 == "Time-out complete"))
+#guard (surgicalRecordRows context.today [surgery] periopPatient).isEmpty
+/-- Derived display payloads pass the ordinary patient/version reader. -/
+def periopFacts := factsOf context [periopPatient, periopOrder, periopConsent] periopPatient
+#guard (infoPayload periopFacts "scheduleTasks").any (fun p => p.rows.length == 1)
+#guard (infoPayload { periopFacts with patientId := "another-patient" } "scheduleTasks").isNone
+#guard (periopFacts.record.lookup "consentVerified").isNone
+#guard !periopReferenceMatches .null .null
+#guard periopReferenceMatches (periopPatient.setObjVal! "id" (.str "urn:uuid:case-patient"))
+  (json r#"{"reference":"urn:uuid:case-patient"}"#)
 end Ehr.Render.Tests

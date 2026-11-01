@@ -143,6 +143,14 @@ def UiReadOnly : UiNode → Prop
   | .info "" _ _ _ _ | .stepper _ _ => True
   | _ => False
 
+/-- The optional progress overview adds no addressable control. -/
+theorem uiProgress_readOnly (cx : Ctx) (n : UiNode)
+    (hn : n ∈ uiAtomsList (uiProgress cx)) : UiReadOnly n := by
+  unfold uiProgress at hn
+  split at hn <;> simp [uiAtoms] at hn
+  subst n
+  trivial
+
 /-- Missing-review additions have no component event id. -/
 theorem uiMissing_readOnly (cx : Ctx) (n : UiNode)
     (hn : n ∈ uiAtomsList (uiMissingReviews cx)) : UiReadOnly n := by
@@ -191,8 +199,8 @@ theorem uiPresent_source (cx : Ctx) (n : UiNode)
     (∃ it ∈ cx.v.items, it.shown = true ∧ n ∈ uiAtomsList (uiItem cx it [])) ∨ UiReadOnly n := by
   simp only [UiPresent, renderUi, Ctx.rebuild, uiWorkspace, uiAtomsList_cons, uiAtoms, uiAtomsList_append,
     List.mem_append, List.mem_singleton] at hn
-  rcases hn with ((((rfl | (hn | hn)) | hn) | hn) | hn)
-  · right; trivial
+  rcases hn with ((((hn | (hn | hn)) | hn) | hn) | hn)
+  · exact Or.inr (uiProgress_readOnly cx n hn)
   · obtain ⟨it, hi, hs, _, hn⟩ := (uiComponentsWhere_mem cx _ n).mp hn
     exact Or.inl ⟨it, hi, hs, hn⟩
   · exact Or.inr (uiMissing_readOnly cx n hn)

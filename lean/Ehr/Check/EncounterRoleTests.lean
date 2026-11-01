@@ -32,7 +32,7 @@ example : ¬ Props.CommitHappens ⟨specV1, p4, preopChild, np⟩ (default : Sta
   np_preop_never_signs p4 preopChild np rfl rfl (default : State) .human _
 
 /-- A surgeon signs on P5 after the unchanged three pre-op captures. -/
-def surgeonPreopReady : State := run preOpPath p5 preOpFacts surgeon
+def surgeonPreopReady : State := run p5PreOpPath p5 preOpFacts surgeon
 #guard Specs.ruleProfile == .full ||
   ["consentVerified", "hpUpdate", "medsToHold"].all fun e =>
     (cap surgeonPreopReady e).any (fun x => x.confirmed && x.byHuman)

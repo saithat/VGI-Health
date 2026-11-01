@@ -165,6 +165,34 @@
   font-size: 12px;
   line-height: 16px;
 }
+.clinical-nav-group-title {
+  padding: 6px 8px;
+  font-size: 12px;
+  color: var(--clinical-primary);
+  border-bottom: 1px solid var(--clinical-border);
+}
+.workflow-links li {
+  padding: 0;
+}
+.workflow-links button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 28px;
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--clinical-ink);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.workflow-links button:hover,
+.workflow-links button:focus-visible {
+  background: var(--clinical-selected);
+  color: var(--clinical-primary);
+}
 .workflow-links li[aria-current="page"] {
   border-color: var(--clinical-primary);
   background: var(--clinical-selected);
@@ -260,6 +288,14 @@
   border-radius: 4px;
   box-shadow: none;
 }
+.clinical-section[data-section-id^="w6"] > .clinical-section-title {
+  background: #e8f3f0;
+  color: #205c54;
+  border-left: 3px solid #247d6f;
+}
+.clinical-section[data-section-id^="w6"] > .clinical-section-title h2 {
+  color: #205c54;
+}
 .clinical-section-title {
   padding: 4px 12px;
   min-height: 30px;
@@ -285,6 +321,12 @@
 }
 .clinical-section-body > .clinical-field {
   flex: 1 1 224px;
+}
+.clinical-section-body > .field-narrative {
+  flex-basis: 100%;
+}
+.clinical-workspace-body > .field-narrative {
+  grid-column: 1 / -1;
 }
 .clinical-section-body > .clinical-action {
   flex: 0 1 auto;

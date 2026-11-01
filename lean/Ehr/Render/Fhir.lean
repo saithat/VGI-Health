@@ -805,6 +805,126 @@ def bannerOf (today : String) (rs : List Json) (p : Json) : BannerInfo :=
 
 /-! ## Facts and display -/
 
+/-! ## Perioperative chart projections
+
+These views read supplied FHIR resources for the selected patient. They do not
+invent OR times, rooms, consent verification, time-outs or postoperative events.
+The surgical and consultation codes are also used by infra/seed-world.mjs.
+-/
+
+/-- Clinical reference text, resolving a supplied resource without displaying
+an internal FHIR reference when its human-readable name is absent. -/
+def periopReferenceName (rs : List Json) (ref : Json) : String :=
+  let label := str ref "display"
+  if label != "" then label else
+  match rs.find? (fun r => str r "id" != "" &&
+    (resourceType r ++ "/" ++ str r "id" == str ref "reference" ||
+      str r "id" == str ref "reference")) with
+  | none => "Not recorded"
+  | some r =>
+    let name := if resourceType r == "Location" || resourceType r == "Organization"
+      then str r "name" else displayName r
+    if name == "" then "Not recorded" else name
+
+/-- Relative server references and normalized transaction fullUrls identify the
+same selected resource. Missing identities never match each other. -/
+def periopReferenceMatches (target ref : Json) : Bool :=
+  let id := str target "id"
+  id != "" && (str ref "reference" == id ||
+    str ref "reference" == resourceType target ++ "/" ++ id)
+
+/-- A resource belongs to the selected chart only through its explicit subject. -/
+def periopSubject (p r : Json) : Bool :=
+  periopReferenceMatches p (field r "subject")
+
+/-- One surgical request on its actual planned date. Status is the request's
+status; this does not assert that a patient is roomed or a procedure completed. -/
+structure SurgicalCaseRow where
+  room : String
+  start : String
+  procedure : String
+  patient : String
+  surgeon : String
+  status : String
+  deriving Repr, Inhabited
+
+/-- The surgical worklist comes from dated surgical ServiceRequests, including
+date-only requests. A date-only request never acquires an invented start time. -/
+def surgicalCaseRows (today : String) (rs : List Json) (p : Json) : List SurgicalCaseRow :=
+  (rs.filter fun r => resourceType r == "ServiceRequest" && periopSubject p r &&
+    (arr r "category").any (hasCode · "387713003") &&
+    !["entered-in-error", "revoked"].contains (str r "status") &&
+    ((str r "occurrenceDateTime").startsWith today ||
+      (str (field r "occurrencePeriod") "start").startsWith today)).map fun r =>
+    { room := periopReferenceName rs (first r "locationReference")
+      start := let exact := str r "occurrenceDateTime"
+        if exact != "" then exact else str (field r "occurrencePeriod") "start"
+      procedure := knownText (ccText (field r "code"))
+      patient := displayName p
+      surgeon := periopReferenceName rs (first r "performer")
+      status := knownText (str r "status") }
+
+/-- Column labels follow the shared OR-schedule presentation contract. -/
+def SurgicalCaseRow.cells (r : SurgicalCaseRow) : List (String × String) :=
+  [("Room", r.room), ("Start", r.start), ("Procedure", r.procedure),
+   ("Patient", r.patient), ("Surgeon", r.surgeon), ("Status", r.status)]
+
+/-- Open consultation requests retain their request time, indication and owner. -/
+def surgicalConsultRows (rs : List Json) (p : Json) : List (List (String × String)) :=
+  (rs.filter fun r => resourceType r == "ServiceRequest" && periopSubject p r &&
+    hasCode (field r "code") "11429006" &&
+    !["entered-in-error", "revoked", "completed"].contains (str r "status")).map fun r =>
+    [("Due", str r "authoredOn"), ("Patient", displayName p),
+     ("Task", knownText (ccText (field r "code"))),
+     ("Reason", "; ".intercalate ((arr r "reasonCode").map ccText)),
+     ("Priority", knownText (str r "priority")), ("Status", knownText (str r "status")),
+     ("Requested by", periopReferenceName rs (field r "requester")),
+     ("Owner", periopReferenceName rs (first r "performer")),
+     ("Location", periopReferenceName rs (first r "locationReference"))]
+
+/-- Consent documents remain evidence on file, independent of the surgeon's
+human verification field and of the team's surgical time-out. -/
+def surgicalConsentRows (rs : List Json) (p : Json) : List (List (String × String)) :=
+  (rs.filter fun r => resourceType r == "Consent" &&
+    periopReferenceMatches p (field r "patient") &&
+    str r "status" != "entered-in-error").map fun r =>
+    [("Document status", knownText (str r "status")), ("Recorded", str r "dateTime"),
+     ("Scope", ccText (field r "scope")),
+     ("Procedure / consent terms", "; ".intercalate ((arr (field r "provision") "code").map ccText)),
+     ("Verification", "Verify the signed document against the planned procedure and site")]
+
+/-- Today's recorded procedures supply operative evidence. Historical procedures
+cannot masquerade as today's intra-operative record. No completion is inferred. -/
+def surgicalRecordRows (today : String) (rs : List Json) (p : Json) : List (List (String × String)) :=
+  (rs.filter fun r => resourceType r == "Procedure" && periopSubject p r &&
+    !["entered-in-error", "not-done"].contains (str r "status") &&
+    ((str r "performedDateTime").startsWith today ||
+      (str (field r "performedPeriod") "start").startsWith today)).map fun r =>
+    [("Procedure", ccText (field r "code")), ("Status", str r "status"),
+     ("Start", let exact := str r "performedDateTime"
+       if exact != "" then exact else str (field r "performedPeriod") "start"),
+     ("End", str (field r "performedPeriod") "end"),
+     ("Location", periopReferenceName rs (field r "location")),
+     ("Team", "; ".intercalate ((arr r "performer").map fun performer =>
+       periopReferenceName rs (field performer "actor"))),
+     ("Recorded findings", "; ".intercalate ((arr r "note").map (str · "text")))]
+
+/-- Optional read-only payloads are versioned by the supplied resource set.
+They satisfy no physical-event attestation and introduce no new clinical guard. -/
+def surgicalPayloads (today : String) (rs : List Json) (p : Json) : List InfoPayload :=
+  let views := [("scheduleTasks", (surgicalCaseRows today rs p).map SurgicalCaseRow.cells),
+    ("consultRequest", surgicalConsultRows rs p), ("consentDocument", surgicalConsentRows rs p),
+    ("intraopRecord", surgicalRecordRows today rs p)]
+  views.map fun (info, rows) =>
+    { info, patient := patientIdOf p, artifactKey := "render.periop." ++ info
+      artifact := "FHIR/perioperative/" ++ info, version := listVersion rs
+      rows := rows.zipIdx.map fun (fields, slot) =>
+        { id := info ++ "." ++ toString slot, slot, fields } }
+
+/-- Matching bindings let the existing payload reader enforce version identity. -/
+def surgicalBindings (payloads : List InfoPayload) : List ArtifactBinding :=
+  payloads.map fun p => { key := p.artifactKey, artifact := p.artifact, version := p.version }
+
 /-- The facts the spec needs. -/
 def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let age := ageYears (str p "birthDate") ctx.today
@@ -829,6 +949,8 @@ def factsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     medToGive? := ctx.medToGive?
     encounterKind? := ctx.encounterKind?
     receipts := ctx.receipts
+    infoPayloads? := some (surgicalPayloads ctx.today rs p)
+    artifactBindings? := some (surgicalBindings (surgicalPayloads ctx.today rs p))
     record := (if visitDx != "" then [("visitDiagnosis", visitDx)] else []) ++ ctx.record }
 
 /-- The display rows. -/
