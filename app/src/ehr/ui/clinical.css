@@ -286,6 +286,20 @@
 .clinical-section-body > .clinical-field {
   flex: 1 1 224px;
 }
+.clinical-section-body > .clinical-field.field-narrative {
+  flex-basis: 360px;
+}
+.clinical-nav-heading {
+  margin: 8px 8px 4px;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.workflow-links .clinical-nav-destination {
+  min-height: 28px;
+  color: var(--clinical-primary);
+  font-size: 12px;
+}
 .clinical-section-body > .clinical-action {
   flex: 0 1 auto;
 }
@@ -357,6 +371,11 @@
   font-size: 12px;
   line-height: 16px;
   font-weight: 600;
+}
+.clinical-control textarea.mantine-Input-input {
+  min-height: 84px;
+  height: auto;
+  resize: vertical;
 }
 .clinical-control input::placeholder {
   color: var(--clinical-muted);

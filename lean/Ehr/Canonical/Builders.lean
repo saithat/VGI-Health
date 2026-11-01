@@ -66,6 +66,13 @@ The presentation renderer recognizes this suffix; older renderers keep the table
 def presentation (kind : String) (c : Component) : Component :=
   { c with tag := c.tag ++ ".present." ++ kind }
 
+/-- A multiline narrative keeps the ordinary text entry and its provenance. -/
+def narrative (c : Component) : Component := { c with tag := c.tag ++ ".narrative" }
+
+/-- Keep a selected work item's real navigation action beside its clinical context. -/
+def primaryNavigation (c : Component) : Component :=
+  { c with tag := c.tag ++ ".primaryNavigation" }
+
 /-- A trend chart. -/
 def trend (s : ScreenId) (name : String) (info : InfoId) (label : String)
     (parent : Option String := none) (tab : Nat := 0) : Component :=
@@ -252,7 +259,7 @@ def orderComposer (s : ScreenId) (o : ComposerOptions) : List Component :=
   o.inlineAlerts.map (fun (n, a, l) => alertC s n a l (popup := false)) ++
   [group s "prefList" "Preference list"] ++
   o.prefs.map (fun (n, m, l) => macroBtn s n m l (parent := some "prefList")) ++
-  [group s "dosing" "Dosing"] ++
+  (if o.askWeight || o.askDosingWeight || o.weightBased then [group s "dosing" "Dosing"] else []) ++
   (if o.askWeight then [field s "weight" "weight" "Weight today (kg)" (parent := some "dosing")]
    else []) ++
   (if o.askDosingWeight then

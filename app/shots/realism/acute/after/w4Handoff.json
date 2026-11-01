@@ -95,7 +95,7 @@
               "provenance": null,
               "pendingConfirm": false,
               "label": "Situation",
-              "kind": "text",
+              "kind": "textarea",
               "humanOnly": false,
               "comp": "w4Handoff.handoffSituation"
             }
@@ -108,7 +108,7 @@
               "provenance": null,
               "pendingConfirm": false,
               "label": "Background",
-              "kind": "text",
+              "kind": "textarea",
               "humanOnly": false,
               "comp": "w4Handoff.handoffBackground"
             }
@@ -121,7 +121,7 @@
               "provenance": null,
               "pendingConfirm": false,
               "label": "Assessment",
-              "kind": "text",
+              "kind": "textarea",
               "humanOnly": false,
               "comp": "w4Handoff.handoffAssessment"
             }
@@ -134,7 +134,7 @@
               "provenance": null,
               "pendingConfirm": false,
               "label": "Recommendation",
-              "kind": "text",
+              "kind": "textarea",
               "humanOnly": false,
               "comp": "w4Handoff.handoffRecommendation"
             }
@@ -224,7 +224,7 @@
             ]
           ]
         ],
-        "label": "Outstanding shift tasks",
+        "label": "Shift tasks and status",
         "infoId": "shiftWorklist",
         "display": "table",
         "comp": "w4Handoff.remainingTasks"
@@ -247,36 +247,6 @@
         "hotkey": null,
         "enabled": true,
         "comp": "w4Handoff.home",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Unit Census & MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Handoff.nav.w4Worklist",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Handoff.nav.w4Mar",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Flowsheets",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Handoff.nav.w4Flowsheet",
         "blockedReason": null
       }
     },
@@ -1164,7 +1134,25 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "Nursing Navigator",
+      [
+        [
+          "w4Handoff.nav.w4Worklist",
+          "Unit Census & MAR"
+        ],
+        [
+          "w4Handoff.nav.w4Mar",
+          "MAR"
+        ],
+        [
+          "w4Handoff.nav.w4Flowsheet",
+          "Flowsheets"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [

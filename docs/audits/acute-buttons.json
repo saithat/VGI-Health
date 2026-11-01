@@ -1,65 +1,69 @@
 {
   "scope": "Initially shown acute controls, all three current releases and both role projections; native interpreter events. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "a03e2d41ac463b14fb24b4041a06e1b8fe47cb7b",
-  "binarySha256": "6175b77598452cb2810ddd231afa2ea7d977707d8366dd5023489d137f2524ac",
+  "sourceRevision": "f855328fffa96d7e8ef53a7940084dcaa8561d66",
+  "binarySha256": "4bd814ffa6fec0e89c317e89a9eddd836b8211adfb89bb82cd68663120bf9532",
   "programs": [
     {
       "release": "v1",
       "persona": "P2",
       "path": "releases/v1/personas/P2.json",
-      "sha256": "08d0d9a347aa9bdebb45a3a3c00dfd50d7c93ffe222305d15dfdbd77aa4e1d60"
+      "sha256": "aa647d835d01b58d35c69f670a309b508dfee1b1acfa0de907577d71a72227f4"
     },
     {
       "release": "v1",
       "persona": "P3",
       "path": "releases/v1/personas/P3.json",
-      "sha256": "be4f437a0a46626a5876d5b26dd57c4d4568f585eb5b4e208c14b401621a0b9a"
+      "sha256": "6f7b09791c1d9d3889def9e415ec0b9b74494a1bb1227d4f79350274e87d84ad"
     },
     {
       "release": "v2",
       "persona": "P2",
       "path": "releases/v2/personas/P2.json",
-      "sha256": "4d9b919113e004a7d7d45d1e4bfdc3ca47191828954b67eed0fa78ec867703e4"
+      "sha256": "d90f4837ef666cbc049faa131e6c05e642b8c033267d599861ea45c1b6601faf"
     },
     {
       "release": "v2",
       "persona": "P3",
       "path": "releases/v2/personas/P3.json",
-      "sha256": "3e0ee0ca4059798fbe835d8c6fe5990115ede6803ea7cc8a7c41d98a6fde91ca"
+      "sha256": "c24ea92580cf73537e5f533731d448723d4fcf9dfac2c35eaea671f611d4131b"
     },
     {
       "release": "v3",
       "persona": "P2",
       "path": "releases/v3/personas/P2.json",
-      "sha256": "1993caff6ce7d13b596c2bba58385a21a1536a4e6acb66fdbdade9077d4d416a"
+      "sha256": "424f0a26aae9807234baa194c09aa9c77542f4721592b806d37cf7ebc2884612"
     },
     {
       "release": "v3",
       "persona": "P3",
       "path": "releases/v3/personas/P3.json",
-      "sha256": "b778c7bb9ff9de0ef62c39e417942ac3e0e05bc38d0d3dc2090aed626e8acb7f"
+      "sha256": "17e53199b25836ec06e030b6934e3f122f7f534724bb989a831c40fd25f81231"
     }
   ],
   "screens": 36,
-  "clicked": 366,
+  "clicked": 357,
   "tabs": 228,
-  "disabled": 17,
+  "disabled": 23,
   "results": [
     {
       "release": "v1",
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
-        "w3TrackBoard.back",
+        "w3TrackBoard.open",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
         "w3TrackBoard.nav.w3Orders",
         "w3TrackBoard.nav.w3OrderSets",
-        "w3TrackBoard.nav.w3Disposition",
-        "w3TrackBoard.open"
+        "w3TrackBoard.nav.w3Disposition"
       ],
-      "disabled": [],
+      "disabled": [
+        {
+          "comp": "w3TrackBoard.back",
+          "reason": "no previous screen"
+        }
+      ],
       "tabs": [
         "w3TrackBoard.chart/1",
         "w3TrackBoard.chart/2",
@@ -127,6 +131,44 @@
     {
       "release": "v1",
       "persona": "P2",
+      "screen": "w3Orders",
+      "clicked": [
+        "w3Orders.prefList",
+        "w3Orders.prefAcetaminophen",
+        "w3Orders.prefIbuprofen",
+        "w3Orders.prefOndansetron",
+        "w3Orders.prefCeftriaxone",
+        "w3Orders.prefMorphine",
+        "w3Orders.medication",
+        "w3Orders.dispense",
+        "w3Orders.dx",
+        "w3Orders.more",
+        "w3Orders.newLine",
+        "w3Orders.back",
+        "w3Orders.home",
+        "w3Orders.nav.w3TrackBoard",
+        "w3Orders.nav.w3Triage",
+        "w3Orders.nav.w3Provider",
+        "w3Orders.nav.w3OrderSets",
+        "w3Orders.nav.w3Disposition",
+        "w3Orders.toSign",
+        "w3Orders.to.w3OrderSets"
+      ],
+      "disabled": [],
+      "tabs": [
+        "w3Orders.orderInfo/1",
+        "w3Orders.orderInfo/2",
+        "w3Orders.chart/1",
+        "w3Orders.chart/2",
+        "w3Orders.chart/3",
+        "w3Orders.chart/4",
+        "w3Orders.chart/5",
+        "w3Orders.chart/6"
+      ]
+    },
+    {
+      "release": "v1",
+      "persona": "P2",
       "screen": "w3OrderSets",
       "clicked": [
         "w3OrderSets.sepsis",
@@ -158,45 +200,6 @@
         "w3OrderSets.chart/4",
         "w3OrderSets.chart/5",
         "w3OrderSets.chart/6"
-      ]
-    },
-    {
-      "release": "v1",
-      "persona": "P2",
-      "screen": "w3Orders",
-      "clicked": [
-        "w3Orders.prefList",
-        "w3Orders.prefAcetaminophen",
-        "w3Orders.prefIbuprofen",
-        "w3Orders.prefOndansetron",
-        "w3Orders.prefCeftriaxone",
-        "w3Orders.prefMorphine",
-        "w3Orders.dosing",
-        "w3Orders.medication",
-        "w3Orders.dispense",
-        "w3Orders.dx",
-        "w3Orders.more",
-        "w3Orders.newLine",
-        "w3Orders.back",
-        "w3Orders.home",
-        "w3Orders.nav.w3TrackBoard",
-        "w3Orders.nav.w3Triage",
-        "w3Orders.nav.w3Provider",
-        "w3Orders.nav.w3OrderSets",
-        "w3Orders.nav.w3Disposition",
-        "w3Orders.toSign",
-        "w3Orders.to.w3OrderSets"
-      ],
-      "disabled": [],
-      "tabs": [
-        "w3Orders.orderInfo/1",
-        "w3Orders.orderInfo/2",
-        "w3Orders.chart/1",
-        "w3Orders.chart/2",
-        "w3Orders.chart/3",
-        "w3Orders.chart/4",
-        "w3Orders.chart/5",
-        "w3Orders.chart/6"
       ]
     },
     {
@@ -266,14 +269,18 @@
       "screen": "w4Worklist",
       "clicked": [
         "w4Worklist.review.allergyList",
-        "w4Worklist.back",
+        "w4Worklist.toMar",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
-        "w4Worklist.nav.w4Handoff",
-        "w4Worklist.toMar"
+        "w4Worklist.nav.w4Handoff"
       ],
-      "disabled": [],
+      "disabled": [
+        {
+          "comp": "w4Worklist.back",
+          "reason": "no previous screen"
+        }
+      ],
       "tabs": [
         "w4Worklist.chart/1",
         "w4Worklist.chart/2",
@@ -288,12 +295,12 @@
       "persona": "P3",
       "screen": "w4Mar",
       "clicked": [
+        "w4Mar.openDue",
         "w4Mar.back",
         "w4Mar.home",
         "w4Mar.nav.w4Worklist",
         "w4Mar.nav.w4Flowsheet",
-        "w4Mar.nav.w4Handoff",
-        "w4Mar.openDue"
+        "w4Mar.nav.w4Handoff"
       ],
       "disabled": [],
       "tabs": [
@@ -393,16 +400,20 @@
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
-        "w3TrackBoard.back",
+        "w3TrackBoard.open",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
         "w3TrackBoard.nav.w3Orders",
         "w3TrackBoard.nav.w3OrderSets",
-        "w3TrackBoard.nav.w3Disposition",
-        "w3TrackBoard.open"
+        "w3TrackBoard.nav.w3Disposition"
       ],
-      "disabled": [],
+      "disabled": [
+        {
+          "comp": "w3TrackBoard.back",
+          "reason": "no previous screen"
+        }
+      ],
       "tabs": [
         "w3TrackBoard.chart/1",
         "w3TrackBoard.chart/2",
@@ -470,6 +481,49 @@
     {
       "release": "v2",
       "persona": "P2",
+      "screen": "w3Orders",
+      "clicked": [
+        "w3Orders.prefList",
+        "w3Orders.prefAcetaminophen",
+        "w3Orders.prefIbuprofen",
+        "w3Orders.prefOndansetron",
+        "w3Orders.prefCeftriaxone",
+        "w3Orders.prefMorphine",
+        "w3Orders.medication",
+        "w3Orders.dispense",
+        "w3Orders.dx",
+        "w3Orders.more",
+        "w3Orders.newLine",
+        "w3Orders.back",
+        "w3Orders.home",
+        "w3Orders.nav.w3TrackBoard",
+        "w3Orders.nav.w3Triage",
+        "w3Orders.nav.w3Provider",
+        "w3Orders.nav.w3OrderSets",
+        "w3Orders.nav.w3Disposition",
+        "w3Orders.toSign",
+        "w3Orders.to.w3OrderSets"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Orders.requestPriorAuth",
+          "reason": "no order on this line"
+        }
+      ],
+      "tabs": [
+        "w3Orders.orderInfo/1",
+        "w3Orders.orderInfo/2",
+        "w3Orders.chart/1",
+        "w3Orders.chart/2",
+        "w3Orders.chart/3",
+        "w3Orders.chart/4",
+        "w3Orders.chart/5",
+        "w3Orders.chart/6"
+      ]
+    },
+    {
+      "release": "v2",
+      "persona": "P2",
       "screen": "w3OrderSets",
       "clicked": [
         "w3OrderSets.sepsis",
@@ -501,50 +555,6 @@
         "w3OrderSets.chart/4",
         "w3OrderSets.chart/5",
         "w3OrderSets.chart/6"
-      ]
-    },
-    {
-      "release": "v2",
-      "persona": "P2",
-      "screen": "w3Orders",
-      "clicked": [
-        "w3Orders.prefList",
-        "w3Orders.prefAcetaminophen",
-        "w3Orders.prefIbuprofen",
-        "w3Orders.prefOndansetron",
-        "w3Orders.prefCeftriaxone",
-        "w3Orders.prefMorphine",
-        "w3Orders.dosing",
-        "w3Orders.medication",
-        "w3Orders.dispense",
-        "w3Orders.dx",
-        "w3Orders.more",
-        "w3Orders.newLine",
-        "w3Orders.back",
-        "w3Orders.home",
-        "w3Orders.nav.w3TrackBoard",
-        "w3Orders.nav.w3Triage",
-        "w3Orders.nav.w3Provider",
-        "w3Orders.nav.w3OrderSets",
-        "w3Orders.nav.w3Disposition",
-        "w3Orders.toSign",
-        "w3Orders.to.w3OrderSets"
-      ],
-      "disabled": [
-        {
-          "comp": "w3Orders.requestPriorAuth",
-          "reason": "no order on this line"
-        }
-      ],
-      "tabs": [
-        "w3Orders.orderInfo/1",
-        "w3Orders.orderInfo/2",
-        "w3Orders.chart/1",
-        "w3Orders.chart/2",
-        "w3Orders.chart/3",
-        "w3Orders.chart/4",
-        "w3Orders.chart/5",
-        "w3Orders.chart/6"
       ]
     },
     {
@@ -614,14 +624,18 @@
       "screen": "w4Worklist",
       "clicked": [
         "w4Worklist.review.allergyList",
-        "w4Worklist.back",
+        "w4Worklist.toMar",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
-        "w4Worklist.nav.w4Handoff",
-        "w4Worklist.toMar"
+        "w4Worklist.nav.w4Handoff"
       ],
-      "disabled": [],
+      "disabled": [
+        {
+          "comp": "w4Worklist.back",
+          "reason": "no previous screen"
+        }
+      ],
       "tabs": [
         "w4Worklist.chart/1",
         "w4Worklist.chart/2",
@@ -636,12 +650,12 @@
       "persona": "P3",
       "screen": "w4Mar",
       "clicked": [
+        "w4Mar.openDue",
         "w4Mar.back",
         "w4Mar.home",
         "w4Mar.nav.w4Worklist",
         "w4Mar.nav.w4Flowsheet",
-        "w4Mar.nav.w4Handoff",
-        "w4Mar.openDue"
+        "w4Mar.nav.w4Handoff"
       ],
       "disabled": [],
       "tabs": [
@@ -741,16 +755,20 @@
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
-        "w3TrackBoard.back",
+        "w3TrackBoard.open",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
         "w3TrackBoard.nav.w3Orders",
         "w3TrackBoard.nav.w3OrderSets",
-        "w3TrackBoard.nav.w3Disposition",
-        "w3TrackBoard.open"
+        "w3TrackBoard.nav.w3Disposition"
       ],
-      "disabled": [],
+      "disabled": [
+        {
+          "comp": "w3TrackBoard.back",
+          "reason": "no previous screen"
+        }
+      ],
       "tabs": [
         "w3TrackBoard.chart/1",
         "w3TrackBoard.chart/2",
@@ -818,6 +836,49 @@
     {
       "release": "v3",
       "persona": "P2",
+      "screen": "w3Orders",
+      "clicked": [
+        "w3Orders.prefList",
+        "w3Orders.prefAcetaminophen",
+        "w3Orders.prefIbuprofen",
+        "w3Orders.prefOndansetron",
+        "w3Orders.prefCeftriaxone",
+        "w3Orders.prefMorphine",
+        "w3Orders.medication",
+        "w3Orders.dispense",
+        "w3Orders.dx",
+        "w3Orders.more",
+        "w3Orders.newLine",
+        "w3Orders.back",
+        "w3Orders.home",
+        "w3Orders.nav.w3TrackBoard",
+        "w3Orders.nav.w3Triage",
+        "w3Orders.nav.w3Provider",
+        "w3Orders.nav.w3OrderSets",
+        "w3Orders.nav.w3Disposition",
+        "w3Orders.toSign",
+        "w3Orders.to.w3OrderSets"
+      ],
+      "disabled": [
+        {
+          "comp": "w3Orders.requestPriorAuth",
+          "reason": "no order on this line"
+        }
+      ],
+      "tabs": [
+        "w3Orders.orderInfo/1",
+        "w3Orders.orderInfo/2",
+        "w3Orders.chart/1",
+        "w3Orders.chart/2",
+        "w3Orders.chart/3",
+        "w3Orders.chart/4",
+        "w3Orders.chart/5",
+        "w3Orders.chart/6"
+      ]
+    },
+    {
+      "release": "v3",
+      "persona": "P2",
       "screen": "w3OrderSets",
       "clicked": [
         "w3OrderSets.sepsis",
@@ -849,50 +910,6 @@
         "w3OrderSets.chart/4",
         "w3OrderSets.chart/5",
         "w3OrderSets.chart/6"
-      ]
-    },
-    {
-      "release": "v3",
-      "persona": "P2",
-      "screen": "w3Orders",
-      "clicked": [
-        "w3Orders.prefList",
-        "w3Orders.prefAcetaminophen",
-        "w3Orders.prefIbuprofen",
-        "w3Orders.prefOndansetron",
-        "w3Orders.prefCeftriaxone",
-        "w3Orders.prefMorphine",
-        "w3Orders.dosing",
-        "w3Orders.medication",
-        "w3Orders.dispense",
-        "w3Orders.dx",
-        "w3Orders.more",
-        "w3Orders.newLine",
-        "w3Orders.back",
-        "w3Orders.home",
-        "w3Orders.nav.w3TrackBoard",
-        "w3Orders.nav.w3Triage",
-        "w3Orders.nav.w3Provider",
-        "w3Orders.nav.w3OrderSets",
-        "w3Orders.nav.w3Disposition",
-        "w3Orders.toSign",
-        "w3Orders.to.w3OrderSets"
-      ],
-      "disabled": [
-        {
-          "comp": "w3Orders.requestPriorAuth",
-          "reason": "no order on this line"
-        }
-      ],
-      "tabs": [
-        "w3Orders.orderInfo/1",
-        "w3Orders.orderInfo/2",
-        "w3Orders.chart/1",
-        "w3Orders.chart/2",
-        "w3Orders.chart/3",
-        "w3Orders.chart/4",
-        "w3Orders.chart/5",
-        "w3Orders.chart/6"
       ]
     },
     {
@@ -962,14 +979,18 @@
       "screen": "w4Worklist",
       "clicked": [
         "w4Worklist.review.allergyList",
-        "w4Worklist.back",
+        "w4Worklist.toMar",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
-        "w4Worklist.nav.w4Handoff",
-        "w4Worklist.toMar"
+        "w4Worklist.nav.w4Handoff"
       ],
-      "disabled": [],
+      "disabled": [
+        {
+          "comp": "w4Worklist.back",
+          "reason": "no previous screen"
+        }
+      ],
       "tabs": [
         "w4Worklist.chart/1",
         "w4Worklist.chart/2",
@@ -984,12 +1005,12 @@
       "persona": "P3",
       "screen": "w4Mar",
       "clicked": [
+        "w4Mar.openDue",
         "w4Mar.back",
         "w4Mar.home",
         "w4Mar.nav.w4Worklist",
         "w4Mar.nav.w4Flowsheet",
-        "w4Mar.nav.w4Handoff",
-        "w4Mar.openDue"
+        "w4Mar.nav.w4Handoff"
       ],
       "disabled": [],
       "tabs": [

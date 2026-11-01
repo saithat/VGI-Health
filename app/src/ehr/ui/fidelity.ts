@@ -123,21 +123,23 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
       entry("dialog", modalName(screen.modal) ?? "Clinical alert"),
       expectedNodeAria(screen.modal),
     );
-  const step = screen.workspace.find((node) => "stepper" in node);
-  const active =
-    step && "stepper" in step
-      ? step.stepper.steps[step.stepper.current]?.[0]
-      : undefined;
   return [
     entry("banner", "Patient banner"),
     ...nest(
-      entry("navigation", "Clinical workflows"),
-      screen.nav.flatMap(([group, items]) => [
-        { role: "button", name: group, disabled: false },
-        ...(items.some(([id]) => id === active)
-          ? nest(entry("region", group), [entry("list", `${group} screens`)])
-          : []),
-      ]),
+      entry("navigation", "Chart navigation"),
+      screen.nav.flatMap(([group, items]) =>
+        nest(
+          entry("region", group),
+          nest(
+            entry("list", `${group} screens`),
+            items.map(([, label]) => ({
+              role: "button",
+              name: label,
+              disabled: false,
+            })),
+          ),
+        ),
+      ),
     ),
     ...nest(entry("main"), [
       ...(screen.side.length

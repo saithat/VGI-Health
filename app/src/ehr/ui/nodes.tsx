@@ -16,12 +16,18 @@ import {
   Tabs,
   Text,
   TextInput,
+  Textarea,
   Tooltip,
 } from "@mantine/core";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import { entryEvent } from "./events";
 import { ClinicalIcon } from "./Icons";
-import { DisplayValue, severityTone, statusTone } from "./display";
+import {
+  DisplayValue,
+  formatProvenance,
+  severityTone,
+  statusTone,
+} from "./display";
 import { clinicalTokens } from "./theme";
 import type { NodeOf, UiNode } from "./types";
 
@@ -178,7 +184,7 @@ export function FieldNode({
   );
   return (
     <Box
-      className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}`}
+      className={`clinical-field${kind === "textarea" ? " field-narrative" : ""}${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}`}
     >
       <Group
         gap={6}
@@ -251,6 +257,15 @@ export function FieldNode({
           }}
           nothingFoundMessage="Enter a code"
         />
+      ) : kind === "textarea" ? (
+        <Textarea
+          {...common}
+          value={node.value ?? ""}
+          onChange={(event) => send(event.currentTarget.value)}
+          autosize
+          minRows={3}
+          autoComplete="off"
+        />
       ) : (
         <TextInput
           {...common}
@@ -286,7 +301,7 @@ export function FieldNode({
               size="sm"
               className="provenance-chip"
             >
-              <DisplayValue value={node.provenance} />
+              <DisplayValue value={formatProvenance(node.provenance)} />
             </Badge>
           )}
           {node.pendingConfirm && !confirmProvided && (

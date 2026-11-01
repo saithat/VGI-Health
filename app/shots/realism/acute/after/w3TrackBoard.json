@@ -16,12 +16,12 @@
             "ED Provider Note"
           ],
           [
-            "w3OrderSets",
-            "ED order sets"
-          ],
-          [
             "w3Orders",
             "Orders"
+          ],
+          [
+            "w3OrderSets",
+            "ED order sets"
           ],
           [
             "w3Sign",
@@ -110,6 +110,16 @@
         "infoId": "edTrackBoard",
         "display": "table",
         "comp": "w3TrackBoard.board"
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
+        "label": "Open selected encounter",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w3TrackBoard.open",
+        "blockedReason": null
       }
     },
     {
@@ -269,56 +279,6 @@
         "hotkey": null,
         "enabled": true,
         "comp": "w3TrackBoard.home",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Triage summary",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3TrackBoard.nav.w3Triage",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "ED Provider Note",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3TrackBoard.nav.w3Provider",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Orders",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3TrackBoard.nav.w3Orders",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Order sets",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3TrackBoard.nav.w3OrderSets",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Disposition",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3TrackBoard.nav.w3Disposition",
         "blockedReason": null
       }
     },
@@ -978,16 +938,6 @@
           }
         ]
       }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Open selected encounter",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3TrackBoard.open",
-        "blockedReason": null
-      }
     }
   ],
   "title": "ED Track Board",
@@ -1182,7 +1132,33 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "ED Navigator",
+      [
+        [
+          "w3TrackBoard.nav.w3Triage",
+          "Triage summary"
+        ],
+        [
+          "w3TrackBoard.nav.w3Provider",
+          "ED Provider Note"
+        ],
+        [
+          "w3TrackBoard.nav.w3Orders",
+          "Orders"
+        ],
+        [
+          "w3TrackBoard.nav.w3OrderSets",
+          "Order sets"
+        ],
+        [
+          "w3TrackBoard.nav.w3Disposition",
+          "Disposition"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [

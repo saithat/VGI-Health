@@ -70,6 +70,61 @@ function paint(nodes: UiNode[], onEvent: (event: Event) => void = () => {}) {
 }
 
 describe("semantic EHR painter", () => {
+  it("keeps multiline narrative entry and prefill confirmation as separate human events", () => {
+    const emit = vi.fn();
+    paint(
+      [
+        {
+          field: {
+            ...field,
+            kind: "textarea",
+            provenance: "record:noteSource",
+            pendingConfirm: true,
+          },
+        },
+      ],
+      emit,
+    );
+    const input = screen.getByRole("textbox", { name: "Clinical value" });
+    expect(input.tagName).toBe("TEXTAREA");
+    fireEvent.change(input, {
+      target: { value: "History line one\nHistory line two" },
+    });
+    expect(emit).toHaveBeenLastCalledWith({
+      enter: {
+        comp: "entry",
+        value: { text: { s: "History line one\nHistory line two" } },
+      },
+    });
+    expect(screen.getByText("From chart")).toBeTruthy();
+    expect(screen.queryByText("record:noteSource")).toBeNull();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Confirm Clinical value" }),
+    );
+    expect(emit).toHaveBeenLastCalledWith({ confirm: { comp: "entry" } });
+  });
+  it("draws each semantic navigator destination as its exact declared click", () => {
+    const emit = vi.fn();
+    render(
+      <MantineProvider theme={clinicalTheme}>
+        <UiScreenView
+          screen={{
+            ...uiScreenSchema.parse(rooming),
+            nav: [["ED Navigator", [["visit.to.orders", "Orders"]]]],
+            workspace: [],
+            side: [],
+            modal: null,
+          }}
+          onEvent={emit}
+        />
+      </MantineProvider>,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Orders" }));
+    expect(emit).toHaveBeenLastCalledWith({
+      click: { comp: "visit.to.orders" },
+    });
+    expect(screen.queryByRole("button", { name: "ED Navigator" })).toBeNull();
+  });
   it("renders every UiNode constructor and all supplied records", () => {
     paint([
       {
@@ -465,8 +520,21 @@ describe("semantic EHR painter", () => {
   it("shows the encounter-role refusal on the disabled signing action", () => {
     const reason = "Pre-op orders are signed by a physician or surgeon";
     const onEvent = vi.fn();
-    paint([{ button: { ...button, comp: "signOrders", label: "Sign orders",
-      role: "primary", enabled: false, blockedReason: reason } }], onEvent);
+    paint(
+      [
+        {
+          button: {
+            ...button,
+            comp: "signOrders",
+            label: "Sign orders",
+            role: "primary",
+            enabled: false,
+            blockedReason: reason,
+          },
+        },
+      ],
+      onEvent,
+    );
     const action = screen.getByRole("button", { name: "Sign orders" });
     expect(action.getAttribute("disabled")).not.toBeNull();
     expect(action.getAttribute("title")).toBe(reason);

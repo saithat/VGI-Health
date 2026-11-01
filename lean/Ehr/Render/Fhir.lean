@@ -964,33 +964,49 @@ def acuteMergeColumns (cells : List (String × String)) : List (String × String
       (label, if label == key then previous ++ "; " ++ value else previous)
     else columns ++ [(key, value)]) []
 
-/-- MAR uses only explicit order times and actual administrations, preserving
-same-time records. An active order never implies Given or Overdue. -/
+/-- Display recorded wall-clock minutes with their supplied UTC offset. -/
+def acuteTimeColumn (time : String) : String :=
+  if time.length < 16 then if time == "" then "Time not recorded" else time else
+  let offset := sub time (time.length - 6) 6
+  let zone := if time.endsWith "Z" then " UTC"
+    else if offset.startsWith "+" || offset.startsWith "-" then " " ++ offset else ""
+  dayOf time ++ " " ++ sub time 11 5 ++ zone
+
+/-- A single order's explicit planned and recorded administration cells. -/
+def acuteMarCells (sources : List Json) (order : Json) : List (String × String) :=
+  let instruction := first order "dosageInstruction"
+  acuteMergeColumns <|
+    ((arr (field instruction "timing") "event").filterMap fun event => match event with
+      | .str time => some (acuteTimeColumn time, "Scheduled")
+      | _ => none) ++
+    ((ofType "MedicationAdministration" sources).filter fun administration =>
+      str administration "status" != "entered-in-error" &&
+        acuteRefersTo (field administration "request") order).map fun administration =>
+      let values := acuteAdministrationRow administration
+      (acuteTimeColumn ((values.lookup "Actual time").getD ""),
+        " · ".intercalate ([acuteAdministrationStatus administration,
+          (values.lookup "Actual dose").getD "" ++ " " ++ (values.lookup "Unit").getD "",
+          (values.lookup "Route").getD "", (values.lookup "Site").getD "",
+          (values.lookup "Reason").getD ""].filter (· != "")))
+
+/-- The MAR shares ordered time columns across all medications. Source offsets
+remain visible; no frequency expansion, nearest-time matching or overdue rule. -/
 def acuteMarRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
   match acuteEncounter ctx rs patient with
   | none => []
   | some encounter =>
     let sources := acutePatientResources rs patient
-    ((ofType "MedicationRequest" sources).filter fun order =>
-      str order "status" != "entered-in-error" && acuteRefersTo (field order "encounter") encounter).map fun order =>
+    let orders := (ofType "MedicationRequest" sources).filter fun order =>
+      str order "status" != "entered-in-error" && acuteRefersTo (field order "encounter") encounter
+    let times := ((orders.flatMap fun order => (acuteMarCells sources order).map (·.1)).eraseDups).mergeSort (· ≤ ·)
+    orders.map fun order =>
       let instruction := first order "dosageInstruction"
       let dose := field (first instruction "doseAndRate") "doseQuantity"
-      acuteMergeColumns <| [("Medication", medName order), ("Dose", qtyText dose ++ " " ++ qtyUnitText dose),
+      let cells := acuteMarCells sources order
+      [("Medication", medName order), ("Dose", qtyText dose ++ " " ++ qtyUnitText dose),
        ("Route", ccText (field instruction "route")), ("Frequency", sigText order),
        ("Category", if field instruction "asNeededBoolean" == .bool true then "PRN" else "Scheduled"),
-       ("Order status", str order "status")] ++
-      ((arr (field instruction "timing") "event").filterMap fun event => match event with
-        | .str time => some (dayOf time ++ " " ++ sub time 11 5, "Scheduled")
-        | _ => none) ++
-      ((ofType "MedicationAdministration" sources).filter fun administration =>
-        str administration "status" != "entered-in-error" &&
-          acuteRefersTo (field administration "request") order).map fun administration =>
-        let values := acuteAdministrationRow administration
-        ((values.lookup "Actual time").getD "Actual time not recorded",
-          " · ".intercalate ([acuteAdministrationStatus administration,
-            (values.lookup "Actual dose").getD "" ++ " " ++ (values.lookup "Unit").getD "",
-            (values.lookup "Route").getD "", (values.lookup "Site").getD "",
-            (values.lookup "Reason").getD ""].filter (· != "")))
+       ("Order status", str order "status")] ++ times.map fun time => (time, (cells.lookup time).getD "")
 
 /-- Current-encounter flowsheet observations are grouped by measure and unit.
 All values at a shared timestamp survive; blanks are never filled with zero. -/
@@ -1015,6 +1031,8 @@ def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
   let sources := acutePatientResources rs patient
   let labs := (sources.filter isLab).filter fun r =>
     (acuteEncounter ctx rs patient).any (acuteRefersTo (field r "encounter"))
+  let acuteCare := (acuteEncounter ctx rs patient).any fun encounter =>
+    ["EMER", "IMP"].contains (str (field encounter "class") "code")
   let labCodes := fun (codes : List String) => (labs.filter fun r => codes.any (hasCode (field r "code"))).map acuteLabRow
   let prnOrders := (ofType "MedicationRequest" sources).filter fun r =>
     field (first r "dosageInstruction") "asNeededBoolean" == .bool true
@@ -1027,6 +1045,7 @@ def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
    ("shiftWorklist", acuteWorklistRows rs patient),
    ("marSchedule", acuteMarRows ctx rs patient),
    ("flowsheetHistory", acuteFlowsheetRows ctx rs patient),
+   ("labResults", if acuteCare then labs.map acuteLabRow else []),
    ("marDoseDetails", acuteDoseRows ctx rs patient),
    ("glucoseTrend", labCodes ["2339-0", "2345-7", "41653-7", "14743-9"]),
    ("coagLabs", labCodes ["6301-6", "5902-2", "3173-2", "14979-9"]),
@@ -1039,7 +1058,10 @@ def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
 /-- Bind only real, nonempty acute projections to this bundle's version digest.
 These optional panels supply no temporal event evidence or human captures. -/
 def acutePayloads (ctx : FactsContext) (rs : List Json) (patient : Json) : List InfoPayload :=
-  ((acuteSupportingRows ctx rs patient).filter (fun (_, rows) => !rows.isEmpty)).map fun (info, rows) =>
+  let acuteCare := (acuteEncounter ctx rs patient).any fun encounter =>
+    ["EMER", "IMP"].contains (str (field encounter "class") "code")
+  ((acuteSupportingRows ctx rs patient).filter (fun (info, rows) =>
+    !rows.isEmpty || (info == "labResults" && acuteCare))).map fun (info, rows) =>
     { info, patient := patientIdOf patient, artifactKey := "acute:" ++ info
       artifact := "acute-chart:" ++ patientIdOf patient, version := listVersion rs
       rows := rows.zipIdx.map fun (fields, slot) => { id := info ++ ":" ++ toString slot, slot, fields } }

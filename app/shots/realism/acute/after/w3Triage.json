@@ -16,12 +16,12 @@
             "ED Provider Note"
           ],
           [
-            "w3OrderSets",
-            "ED order sets"
-          ],
-          [
             "w3Orders",
             "Orders"
+          ],
+          [
+            "w3OrderSets",
+            "ED order sets"
           ],
           [
             "w3Sign",
@@ -282,56 +282,6 @@
         "hotkey": null,
         "enabled": true,
         "comp": "w3Triage.home",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "ED Track Board",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Triage.nav.w3TrackBoard",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "ED Provider Note",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Triage.nav.w3Provider",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Orders",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Triage.nav.w3Orders",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Order sets",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Triage.nav.w3OrderSets",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Disposition",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Triage.nav.w3Disposition",
         "blockedReason": null
       }
     },
@@ -1195,7 +1145,33 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "ED Navigator",
+      [
+        [
+          "w3Triage.nav.w3TrackBoard",
+          "ED Track Board"
+        ],
+        [
+          "w3Triage.nav.w3Provider",
+          "ED Provider Note"
+        ],
+        [
+          "w3Triage.nav.w3Orders",
+          "Orders"
+        ],
+        [
+          "w3Triage.nav.w3OrderSets",
+          "Order sets"
+        ],
+        [
+          "w3Triage.nav.w3Disposition",
+          "Disposition"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [

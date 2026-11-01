@@ -16,12 +16,12 @@
             "ED Provider Note"
           ],
           [
-            "w3OrderSets",
-            "ED order sets"
-          ],
-          [
             "w3Orders",
             "Orders"
+          ],
+          [
+            "w3OrderSets",
+            "ED order sets"
           ],
           [
             "w3Sign",
@@ -32,7 +32,7 @@
             "Disposition"
           ]
         ],
-        "current": 3
+        "current": 4
       }
     },
     {
@@ -594,56 +594,6 @@
         "hotkey": null,
         "enabled": true,
         "comp": "w3OrderSets.home",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "ED Track Board",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3OrderSets.nav.w3TrackBoard",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Triage summary",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3OrderSets.nav.w3Triage",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "ED Provider Note",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3OrderSets.nav.w3Provider",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Orders",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3OrderSets.nav.w3Orders",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Disposition",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3OrderSets.nav.w3Disposition",
         "blockedReason": null
       }
     },
@@ -1517,7 +1467,33 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "ED Navigator",
+      [
+        [
+          "w3OrderSets.nav.w3TrackBoard",
+          "ED Track Board"
+        ],
+        [
+          "w3OrderSets.nav.w3Triage",
+          "Triage summary"
+        ],
+        [
+          "w3OrderSets.nav.w3Provider",
+          "ED Provider Note"
+        ],
+        [
+          "w3OrderSets.nav.w3Orders",
+          "Orders"
+        ],
+        [
+          "w3OrderSets.nav.w3Disposition",
+          "Disposition"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [

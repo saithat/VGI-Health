@@ -43,4 +43,12 @@ def presetLandings : String → List (ScreenId × String)
   | "P5" => [("w6PreOp", "OR Schedule"), ("w1Rooming", "Consults"), ("w2Inbasket", "In Basket: Results")]
   | _ => []
 
+/-- ED and ward clinicians sign in to their department activity. Existing
+custom start screens and the other role presets keep their declared start. -/
+def presetStart (owner : String) (fallback : ScreenId) : ScreenId :=
+  if fallback != "home" then fallback else match owner with
+  | "P2" => "w3TrackBoard"
+  | "P3" => "w4Worklist"
+  | _ => fallback
+
 end Ehr

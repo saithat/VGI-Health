@@ -411,46 +411,6 @@
       }
     },
     {
-      "button": {
-        "role": "nav",
-        "label": "Unit Census & MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Admin.nav.w4Worklist",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Admin.nav.w4Mar",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Flowsheets",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Admin.nav.w4Flowsheet",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Handoff / SBAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Admin.nav.w4Handoff",
-        "blockedReason": null
-      }
-    },
-    {
       "tabs": {
         "selected": 0,
         "labels": [
@@ -1344,7 +1304,29 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "Nursing Navigator",
+      [
+        [
+          "w4Admin.nav.w4Worklist",
+          "Unit Census & MAR"
+        ],
+        [
+          "w4Admin.nav.w4Mar",
+          "MAR"
+        ],
+        [
+          "w4Admin.nav.w4Flowsheet",
+          "Flowsheets"
+        ],
+        [
+          "w4Admin.nav.w4Handoff",
+          "Handoff / SBAR"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [

@@ -25,8 +25,12 @@ def presetProgram (owner : String) (p : Program) : Program :=
         | _ => none
     { s with components := fields ++ s.components }
   let available := screens.map (·.id)
-  { p with screens := screens.map fun s =>
-      { s with title := if s.id == "home" then ((presetLandings owner).head?).map (·.2) |>.getD s.title
+  let start := presetStart owner p.start
+  { p with start := if available.contains start then start else p.start
+           screens := screens.map fun s =>
+      { s with title := if s.id == "home" then
+                          if ["P2", "P3"].contains owner then "Patient workspace"
+                          else ((presetLandings owner).head?).map (·.2) |>.getD s.title
                         else (navigatorNames s).2
                components := s.components.filterMap fun c =>
                  match c.kind with

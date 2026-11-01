@@ -2070,3 +2070,21 @@ preserve archived trajectory compatibility, rather than adding a React-only
 search engine. This affects the shared chart search and Find orders composer.
 The acute lane retains the declared controls while this core/shell integration
 is outstanding; removing required search would be an unauthorized scope cut.
+
+
+### ACUTE semantic navigation and note-entry bridge
+
+Acute retains the existing W3/W4 `nav` group in Blueprint cleanup and paints its
+actual component IDs as destination buttons, rather than client-only accordion
+headings. Other workflows retain their prior cleanup until their own migration.
+The generic `UiScreen.nav` contract already contains the component ID and label;
+ARIA fidelity now checks those actual buttons. P2/P3 preset starts are their ED
+board/unit worklist, only when the supplied vendor start was `home`; custom
+starts are retained. No workflow capability or permission changes.
+
+`Canonical.narrative` appends `.narrative` to a text-field tag. `Render.Ui` emits
+`kind: "textarea"`; the generic painter sends the existing ordinary text-entry
+event. No new wire constructor or clinical behavior is introduced. Prefill badges
+now show source category only; the underlying provenance is unchanged. These
+small generic painter edits should be preserved when shell/presentation merges.
+The no-op Core search issue above remains open.

@@ -34,7 +34,9 @@ def chart : List Block :=
    (.table, "imaging", "Imaging")]
 
 /-- The shell for a W4 screen. -/
-def frame (s : ScreenId) : List Component := shell s nav hospitalSidebar chart
+def frame (s : ScreenId) : List Component :=
+  (shell s nav hospitalSidebar chart).map fun c =>
+    if c.id == cid s "nav" then { c with label := "Nursing Navigator" } else c
 
 /-- The shift worklist: due and overdue meds, tasks, new orders, and the
 start-of-shift allergy review. -/
@@ -48,7 +50,7 @@ def worklist : Screen :=
       group s "allergyGroup" "Shift allergy review" (collapsible := false),
       panel s "allergies" "allergyList" "Allergies" (parent := some "allergyGroup"),
       reviewBtn s "allergyList" "Mark allergies reviewed — shift start" (parent := some "allergyGroup"),
-      goto s "toMar" "w4Mar" "Open selected patient's MAR"
+      primaryNavigation (goto s "toMar" "w4Mar" "Open selected patient's MAR")
     ] }
 
 /-- The MAR grid, with PRN history, glucose, and coagulation labs on tabs. -/
@@ -57,12 +59,11 @@ def mar : Screen :=
   { id := s, title := "MAR", workflow := "W4"
     components := frame s ++ [
       presentation "timeGrid" (table s "grid" "marSchedule" "Medication administration record"),
-      panel s "selectedDose" "marDoseDetails" "Selected medication task"] ++
+      panel s "selectedDose" "marDoseDetails" "Selected medication task",
+      primaryNavigation (goto s "openDue" "w4Admin" "Document selected dose")] ++
       tabStrip s "marTabs" "Details"
         [(.table, "prnHistory", "PRN history"), (.trend, "glucoseTrend", "Glucose"),
-         (.table, "coagLabs", "Coagulation labs")] ++ [
-      goto s "openDue" "w4Admin" "Document selected dose"
-    ] }
+         (.table, "coagLabs", "Coagulation labs")] }
 
 /-- Administration: dose details, allergies, glucose, coagulation labs, and
 PRN history on screen; alerts; scans; the double check; pain score; status. -/
@@ -113,12 +114,12 @@ def flowsheet : Screen :=
       field s "painReassessment" "painReassessment" "Response after intervention (0–10)" (parent := some "pain"),
       group s "assessment" "Shift nursing assessment" (collapsible := false),
       macroBtn s "copyAssessment" "w4CopyAssessment" "Copy forward last assessment",
-      field s "nursingAssessment" "nursingAssessment" "Systems assessment and response to care" (parent := some "assessment"),
+      narrative (field s "nursingAssessment" "nursingAssessment" "Systems assessment and response to care" (parent := some "assessment")),
       commitBtn s "chartAssessment" "File assessment",
       goto s "toHandoff" "w4Handoff" "Handoff / SBAR"
     ] }
 
-/-- Handoff (SBAR). No commit: the summary is saved with the chart. -/
+/-- Draft handoff in SBAR order. Navigation does not attest or file the report. -/
 def handoff : Screen :=
   let s := "w4Handoff"
   { id := s, title := "Handoff / SBAR", workflow := "W4"
@@ -126,11 +127,11 @@ def handoff : Screen :=
       panel s "last" "handoffSummary" "Last handoff",
       macroBtn s "template" "w4HandoffTemplate" "SBAR template",
       group s "sbar" "Shift report — SBAR" (collapsible := false),
-      field s "handoffSituation" "handoffSituation" "Situation" (parent := some "sbar"),
-      field s "handoffBackground" "handoffBackground" "Background" (parent := some "sbar"),
-      field s "handoffAssessment" "handoffAssessment" "Assessment" (parent := some "sbar"),
-      field s "handoffRecommendation" "handoffRecommendation" "Recommendation" (parent := some "sbar"),
-      presentation "worklist" (table s "remainingTasks" "shiftWorklist" "Outstanding shift tasks"),
+      narrative (field s "handoffSituation" "handoffSituation" "Situation" (parent := some "sbar")),
+      narrative (field s "handoffBackground" "handoffBackground" "Background" (parent := some "sbar")),
+      narrative (field s "handoffAssessment" "handoffAssessment" "Assessment" (parent := some "sbar")),
+      narrative (field s "handoffRecommendation" "handoffRecommendation" "Recommendation" (parent := some "sbar")),
+      presentation "worklist" (table s "remainingTasks" "shiftWorklist" "Shift tasks and status"),
       goto s "toWorklist" "w4Worklist" "Unit Census & MAR"
     ] }
 

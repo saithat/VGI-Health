@@ -1,8 +1,8 @@
 import { useLayoutEffect } from "react";
 import {
-  Accordion,
   AppShell,
   Badge,
+  Button,
   Group,
   Modal,
   Text,
@@ -128,49 +128,47 @@ export function PatientBanner({ fields }: { fields: Pair[] }) {
 export function WorkflowNav({
   groups,
   active,
+  onEvent,
 }: {
   groups: UiScreen["nav"];
   active: string | undefined;
+  onEvent: Emit;
 }) {
   return (
     <AppShell.Navbar
       component="nav"
-      aria-label="Clinical workflows"
+      aria-label="Chart navigation"
       className="clinical-navbar"
       p="sm"
     >
       <Text className="nav-eyebrow" size="xs" fw={700} c="dimmed" mb="sm">
         PATIENT WORKSPACE
       </Text>
-      <Accordion
-        multiple
-        defaultValue={groups.flatMap(([, items], index) =>
-          items.some(([id]) => id === active) ? [String(index)] : [],
-        )}
-        chevronPosition="right"
-        chevron={<ClinicalIcon name="chevron" />}
-        variant="default"
-        className="workflow-groups"
-      >
-        {groups.map(([group, items], index) => (
-          <Accordion.Item key={group} value={String(index)}>
-            <Accordion.Control>{group}</Accordion.Control>
-            <Accordion.Panel>
-              <ul className="workflow-links" aria-label={`${group} screens`}>
-                {items.map(([id, label]) => (
-                  <li
-                    key={id}
-                    aria-current={id === active ? "page" : undefined}
+      <div className="workflow-groups">
+        {groups.map(([group, items]) => (
+          <section key={group} role="region" aria-label={group}>
+            <h2 className="clinical-nav-heading">{group}</h2>
+            <ul className="workflow-links" aria-label={`${group} screens`}>
+              {items.map(([id, label]) => (
+                <li key={id} aria-current={id === active ? "page" : undefined}>
+                  <Button
+                    variant="subtle"
+                    size="compact-xs"
+                    fullWidth
+                    justify="flex-start"
+                    className="clinical-nav-destination"
+                    data-comp-id={id}
+                    data-event="click"
+                    onClick={() => onEvent({ click: { comp: id } })}
                   >
-                    <span aria-hidden="true" className="nav-dot" />
                     {label}
-                  </li>
-                ))}
-              </ul>
-            </Accordion.Panel>
-          </Accordion.Item>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </Accordion>
+      </div>
       <div className="nav-footer">
         <span className="status-dot" aria-hidden="true" />
         <Text size="xs">Encounter workspace</Text>
@@ -212,7 +210,12 @@ export function UiScreenView({
         }}
       >
         <PatientBanner fields={bannerFields(screen)} />
-        <WorkflowNav key={active} groups={screen.nav} active={active} />
+        <WorkflowNav
+          key={active}
+          groups={screen.nav}
+          active={active}
+          onEvent={onEvent}
+        />
         <AppShell.Main>
           <div className="clinical-workspace-heading">
             <div>

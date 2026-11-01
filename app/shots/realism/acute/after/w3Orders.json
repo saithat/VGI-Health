@@ -16,12 +16,12 @@
             "ED Provider Note"
           ],
           [
-            "w3OrderSets",
-            "ED order sets"
-          ],
-          [
             "w3Orders",
             "Orders"
+          ],
+          [
+            "w3OrderSets",
+            "ED order sets"
           ],
           [
             "w3Sign",
@@ -32,7 +32,7 @@
             "Disposition"
           ]
         ],
-        "current": 4
+        "current": 3
       }
     },
     {
@@ -132,24 +132,6 @@
               "hotkey": null,
               "enabled": true,
               "comp": "w3Orders.prefMorphine",
-              "blockedReason": null
-            }
-          }
-        ]
-      }
-    },
-    {
-      "section": {
-        "title": "Dosing",
-        "id": "w3Orders.dosing",
-        "children": [
-          {
-            "button": {
-              "role": "toggle",
-              "label": "Collapse section",
-              "hotkey": null,
-              "enabled": true,
-              "comp": "w3Orders.dosing",
               "blockedReason": null
             }
           }
@@ -500,56 +482,6 @@
         "hotkey": null,
         "enabled": true,
         "comp": "w3Orders.home",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "ED Track Board",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Orders.nav.w3TrackBoard",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Triage summary",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Orders.nav.w3Triage",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "ED Provider Note",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Orders.nav.w3Provider",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Order sets",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Orders.nav.w3OrderSets",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Disposition",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w3Orders.nav.w3Disposition",
         "blockedReason": null
       }
     },
@@ -1423,7 +1355,33 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "ED Navigator",
+      [
+        [
+          "w3Orders.nav.w3TrackBoard",
+          "ED Track Board"
+        ],
+        [
+          "w3Orders.nav.w3Triage",
+          "Triage summary"
+        ],
+        [
+          "w3Orders.nav.w3Provider",
+          "ED Provider Note"
+        ],
+        [
+          "w3Orders.nav.w3OrderSets",
+          "Order sets"
+        ],
+        [
+          "w3Orders.nav.w3Disposition",
+          "Disposition"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [

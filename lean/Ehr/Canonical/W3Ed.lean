@@ -34,7 +34,9 @@ def chart : List Block :=
    (.table, "imaging", "Imaging")]
 
 /-- The shell for a W3 screen. -/
-def frame (s : ScreenId) : List Component := shell s nav hospitalSidebar chart
+def frame (s : ScreenId) : List Component :=
+  (shell s nav hospitalSidebar chart).map fun c =>
+    if c.id == cid s "nav" then { c with label := "ED Navigator" } else c
 
 /-- The ED track board. -/
 def trackBoard : Screen :=
@@ -42,8 +44,8 @@ def trackBoard : Screen :=
   { id := s, title := "ED Track Board", workflow := "W3"
     components := frame s ++ [
       presentation "trackBoard" (table s "board" "edTrackBoard" "Emergency department patients"),
-      panel s "selected" "triageSummary" "Selected encounter — triage summary",
-      goto s "open" "w3Triage" "Open selected encounter"
+      primaryNavigation (goto s "open" "w3Triage" "Open selected encounter"),
+      panel s "selected" "triageSummary" "Selected encounter — triage summary"
     ] }
 
 /-- Triage: vital signs (weight in kg), acuity, arrival, complaint, isolation
@@ -80,14 +82,14 @@ def provider : Screen :=
     components := frame s ++ [
       panel s "triage" "triageSummary" "Triage summary",
       group s "history" "History" (collapsible := false),
-      field s "hpi" "hpi" "History of present illness" (parent := some "history"),
-      field s "ros" "ros" "Review of systems" (parent := some "history"),
+      narrative (field s "hpi" "hpi" "History of present illness" (parent := some "history")),
+      narrative (field s "ros" "ros" "Review of systems" (parent := some "history")),
       group s "examSection" "Physical examination" (collapsible := false),
-      field s "exam" "exam" "Exam findings" (parent := some "examSection"),
+      narrative (field s "exam" "exam" "Exam findings" (parent := some "examSection")),
       presentation "results" (table s "labs" "labResults" "Laboratory results"),
       presentation "table" (table s "imagingTable" "imaging" "Imaging reports"),
       group s "mdm" "Medical decision making" (collapsible := false),
-      field s "assessmentPlan" "assessmentPlan" "Differential, ED course and plan" (parent := some "mdm"),
+      narrative (field s "assessmentPlan" "assessmentPlan" "Differential, ED course and plan" (parent := some "mdm")),
       group s "reconciliation" "Medication reconciliation" (collapsible := false),
       table s "homeMeds" "currentMeds" "Home medications" (parent := some "reconciliation"),
       field s "medRecDecision" "medRecDecision" "Medication reconciliation decision" (parent := some "reconciliation"),
@@ -209,6 +211,6 @@ def macros : List Macro := [
 
 /-- The W3 screens. -/
 def screens : List Screen :=
-  [trackBoard, triage, provider, orderSets, orders, sign, disposition]
+  [trackBoard, triage, provider, orders, orderSets, sign, disposition]
 
 end Ehr.Canonical.W3

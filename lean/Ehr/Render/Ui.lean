@@ -90,7 +90,9 @@ def uiRows (cx : Ctx) (i : InfoId) : List (List (String × String)) :=
   | "vitals" => (cx.disp.vitals.filter fun r => (uiLatestVitals cx.disp).any fun latest =>
       latest.code == r.code && latest.date == r.date).map vitalCells
   | "problemList" => cx.disp.problems.map problemCells
-  | "labs" | "labResults" | "resultTrend" => cx.disp.labs.flatMap fun r =>
+  | "labs" | "labResults" | "resultTrend" =>
+    if i == "labResults" && (infoPayload cx.facts i).isSome then uiPayloadRows cx i else
+    cx.disp.labs.flatMap fun r =>
       [("Test", r.name), ("Value", r.value), ("Unit", r.unit), ("Range", r.refRange),
        ("Recorded", uiDate r.date), ("Abnormal", toString r.abnormal)] ::
       r.trend.map (fun p => [("Test", r.name), ("Recorded", uiDate p.date),
@@ -155,6 +157,7 @@ def uiField (cx : Ctx) (it : ItemView) (e : ElementId) : UiNode :=
   let want := if kind == .medicationDose then (doseInputUnit? cx.s it.slot).getD .none else baseUnit
   let inputKind := if e == "doseUnit" && kind == .coded "dose-unit" then
     "code:" ++ "|".intercalate ((doseUnitsAt cx.s it.slot).map (fun rule => rule.unit.name))
+    else if kind == .text && it.comp.tag.endsWith ".narrative" then "textarea"
     else uiFieldKind kind
   let unit := if kind == .medicationDose then want else
     match it.value? with | some (.qty _ u) => u | _ => want

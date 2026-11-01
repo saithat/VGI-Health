@@ -112,13 +112,14 @@ it renders as clinical information, not a second banner landmark. Real nav
 buttons stay addressable until core supplies shell navigation events (CR-17). -/
 def isShellCopy (s : Screen) (c : Component) : Bool :=
   c.id == cid s.id "sidebar" || c.parent? == some (cid s.id "sidebar") ||
-  c.id == cid s.id "nav"
+  (c.id == cid s.id "nav" && !["W3", "W4"].contains s.workflow)
 
-/-- Every input remains attached to its existing container. Removing the old
-navigator header makes its real interpreter buttons top-level actions. -/
+/-- Acute navigator buttons retain their real group for semantic shell navigation.
+Other workflows keep the existing top-level destinations until their migration. -/
 def clean (s : Screen) : List Component :=
   (s.components.filter fun c => !isShellCopy s c).map fun c =>
-    route (if c.parent? == some (cid s.id "nav") then { c with parent? := none } else c)
+    route (if c.parent? == some (cid s.id "nav") && !["W3", "W4"].contains s.workflow
+      then { c with parent? := none } else c)
 
 /-- Artifact shell/navigation is replaced by the host's shell. Clinical fields,
 reviews, alerts and distinct commits stay in their original order and bindings. -/
@@ -163,7 +164,10 @@ Search-first composers therefore begin with the actual order search/results. -/
 def footer (s : Screen) (c : Component) : Bool :=
   c.id == cid s.id "chart" || c.parent? == some (cid s.id "chart") ||
   c.id == cid s.id "legalNav" || c.id == cid s.id "featureNavigation" ||
-  match c.kind with | .button (.goto _) | .button .back => true | _ => false
+  match c.kind with
+  | .button (.goto _) => !c.tag.endsWith ".primaryNavigation"
+  | .button .back => true
+  | _ => false
 
 /-- Folded artifact links navigate to honest clinical host labels. Duplicate
 host links are omitted only from generated related-care menus, never from the

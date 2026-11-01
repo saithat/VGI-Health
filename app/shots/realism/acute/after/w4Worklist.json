@@ -199,6 +199,16 @@
     {
       "button": {
         "role": "nav",
+        "label": "Open selected patient's MAR",
+        "hotkey": null,
+        "enabled": true,
+        "comp": "w4Worklist.toMar",
+        "blockedReason": null
+      }
+    },
+    {
+      "button": {
+        "role": "nav",
         "label": "Back",
         "hotkey": null,
         "enabled": true,
@@ -213,36 +223,6 @@
         "hotkey": null,
         "enabled": true,
         "comp": "w4Worklist.home",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Worklist.nav.w4Mar",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Flowsheets",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Worklist.nav.w4Flowsheet",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Handoff / SBAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Worklist.nav.w4Handoff",
         "blockedReason": null
       }
     },
@@ -902,16 +882,6 @@
           }
         ]
       }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Open selected patient's MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Worklist.toMar",
-        "blockedReason": null
-      }
     }
   ],
   "title": "Unit Census & MAR",
@@ -1130,7 +1100,25 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "Nursing Navigator",
+      [
+        [
+          "w4Worklist.nav.w4Mar",
+          "MAR"
+        ],
+        [
+          "w4Worklist.nav.w4Flowsheet",
+          "Flowsheets"
+        ],
+        [
+          "w4Worklist.nav.w4Handoff",
+          "Handoff / SBAR"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [

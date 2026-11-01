@@ -322,7 +322,7 @@
               "provenance": null,
               "pendingConfirm": false,
               "label": "Systems assessment and response to care",
-              "kind": "text",
+              "kind": "textarea",
               "humanOnly": false,
               "comp": "w4Flowsheet.nursingAssessment"
             }
@@ -367,36 +367,6 @@
         "hotkey": null,
         "enabled": true,
         "comp": "w4Flowsheet.home",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Unit Census & MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Flowsheet.nav.w4Worklist",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "MAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Flowsheet.nav.w4Mar",
-        "blockedReason": null
-      }
-    },
-    {
-      "button": {
-        "role": "nav",
-        "label": "Handoff / SBAR",
-        "hotkey": null,
-        "enabled": true,
-        "comp": "w4Flowsheet.nav.w4Handoff",
         "blockedReason": null
       }
     },
@@ -1284,7 +1254,25 @@
       }
     }
   ],
-  "nav": [],
+  "nav": [
+    [
+      "Nursing Navigator",
+      [
+        [
+          "w4Flowsheet.nav.w4Worklist",
+          "Unit Census & MAR"
+        ],
+        [
+          "w4Flowsheet.nav.w4Mar",
+          "MAR"
+        ],
+        [
+          "w4Flowsheet.nav.w4Handoff",
+          "Handoff / SBAR"
+        ]
+      ]
+    ]
+  ],
   "modal": null,
   "banner": [
     [
