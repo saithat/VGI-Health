@@ -259,7 +259,7 @@ for (const file of fixtures)
           for (const [key, value] of entry.cells) {
             if (!value) continue;
             const expected =
-              key === "Text"
+              key === "Text" || key === "Title"
                 ? value
                 : key === "Source" && internalSource(value)
                   ? columnCaption(value) === value

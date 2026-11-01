@@ -87,6 +87,7 @@
        "infoId": "trackBoard",
        "display": "table",
        "comp": "records"}}]}}],
+ "viewer": "Physician",
  "title": "Emergency Department",
  "side": [],
  "screen": "example",

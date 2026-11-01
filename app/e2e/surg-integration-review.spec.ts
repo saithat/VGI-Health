@@ -6,7 +6,15 @@ import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import type {} from "../src/ehr/offline";
 
 const root = process.env.EHR_MERGE_REVIEW_ROOT;
-for (const name of ["p1-home", "p4-growth", "p5-or-schedule", "p5-op-note"]) {
+const names = process.env.EHR_MERGE_REVIEW_NAMES?.split(",") ?? [
+  "p1-home",
+  "p4-growth",
+  "p5-or-schedule",
+  "p5-op-note",
+];
+const output =
+  process.env.EHR_MERGE_REVIEW_SHOT_DIR ?? "shots/realism/surg/integration";
+for (const name of names) {
   test(`integrated ambulatory/surgery review: ${name}`, async ({ page }) => {
     test.skip(!root, "Provide current native Lean review screens");
     if (!root) throw new Error("EHR_MERGE_REVIEW_ROOT is required");
@@ -25,9 +33,9 @@ for (const name of ["p1-home", "p4-growth", "p5-or-schedule", "p5-op-note"]) {
       expectedAria(screen),
     );
     await page.mouse.move(0, 0);
-    mkdirSync("shots/realism/surg/integration", { recursive: true });
+    mkdirSync(output, { recursive: true });
     await page.screenshot({
-      path: `shots/realism/surg/integration/${name}.png`,
+      path: join(output, `${name}.png`),
       animations: "disabled",
     });
   });

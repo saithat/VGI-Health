@@ -617,3 +617,45 @@ it("never delegates a row click to a clinical commit", () => {
   fireEvent.click(button);
   expect(onEvent).toHaveBeenCalledExactlyOnceWith({ click: { comp: "sign" } });
 });
+
+// Legacy semantic trend rows use the same drawing as tagged presentations.
+it("keeps different vital signs with the same unit in separate legacy trend plots", () => {
+  paint([
+    {
+      info: {
+        comp: "vitals",
+        infoId: "vitals",
+        label: "Recorded vitals",
+        display: "trend",
+        rows: [
+          [
+            ["Vital sign", "Heart rate"],
+            ["Value", "80"],
+            ["Unit", "/min"],
+            ["Recorded", "Nov 1, 2026 08:00"],
+          ],
+          [
+            ["Vital sign", "Respiratory rate"],
+            ["Value", "18"],
+            ["Unit", "/min"],
+            ["Recorded", "Nov 1, 2026 08:00"],
+          ],
+        ],
+      },
+    },
+  ]);
+  expect(
+    screen.getByRole("img", { name: "Recorded vitals: Heart rate (/min)" }),
+  ).toBeTruthy();
+  expect(
+    screen.getByRole("img", {
+      name: "Recorded vitals: Respiratory rate (/min)",
+    }),
+  ).toBeTruthy();
+  expect(
+    screen.getByRole("table", { name: "Recorded vitals" }).textContent,
+  ).toContain("Heart rate");
+  expect(
+    screen.getByRole("table", { name: "Recorded vitals" }).textContent,
+  ).toContain("Respiratory rate");
+});

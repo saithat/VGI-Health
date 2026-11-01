@@ -246,6 +246,7 @@
     "infoId": "growthChart",
     "display": "table",
     "comp": "records"}}],
+ "viewer": "Nurse practitioner",
  "title": "Growth Chart",
  "side":
  [{"info":

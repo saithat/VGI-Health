@@ -28,6 +28,7 @@
        "infoId": "orSchedule",
        "display": "table",
        "comp": "records"}}]}}],
+ "viewer": "General surgeon",
  "title": "Operating Room Schedule",
  "side": [],
  "screen": "example",

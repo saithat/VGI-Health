@@ -2287,6 +2287,19 @@ says “Allergies not on file”, never “No Known Allergies”. Explicit negat
 wording is normalized only when supplied. Source codes/text remain in accessible
 row labels and native tooltips; no FHIR resource or captured value is rewritten.
 
+## Presentation handoff — banner provider provenance (1 Nov realism review)
+
+For SHELL / semantic banner ownership: `Render/Fhir.lean:bannerOf` falls back from a missing `Patient.generalPractitioner` to the first encounter participant, then also labels that participant Attending. The adult Synthea sample used by the canonical capture has no `generalPractitioner` and only a `PPRF` participant type; the current frame consequently shows that encounter provider as PCP and Attending.
+
+Please keep the PCP tied to its supplied patient care-provider reference (resolving provided resources/display text) and use encounter-role evidence for the attending label. Missing assignments should remain explicit. [FHIR R4 Patient.generalPractitioner](https://hl7.org/fhir/R4/patient-definitions.html#Patient.generalPractitioner) and [Encounter.participant.type](https://hl7.org/fhir/R4/encounter-definitions.html#Encounter.participant.type) define those separate associations. This is a semantic data follow-up for the shared banner; no spec/guard relaxation or widget API change is requested. Presentation leaves that shared-shell mapping unchanged in its frozen build.
+
+## Presentation handoff — patient context during long-note scrolling (1 Nov realism review)
+
+For SHELL ownership: the actual chart capture [notes-import.png](../../app/shots/realism/present/notes-import.png) is scrolled to the first imported note. The full patient banner and application bar are above the viewport. Please keep patient-identification context visible while long chart content scrolls, consistent with the shared-shell brief, and retain usable space at narrow widths. The source tree still contains the banner; this is a shared scrolling/layout follow-up, not missing Lean data. The note body remains complete and its exact native text and ARIA tree pass. Presentation leaves the frozen shared-shell layout unchanged.
+
+## Presentation cutoff integration (1 Nov, 13:29 UTC)
+
+The final fetch observed main `e4d10c5`, including the ambulatory merge. The presentation checkpoint is fully checked against main `062a4ef`; its final application source is `cfad9e9`. Please integrate the remaining presentation commits with the new main, regenerate generated artifacts and rerun the combined gates. The new ambulatory/main combination is not claimed as checked by this lane. Branch application source remains frozen at the requested cutoff.
 ### AMB M09: medication context and source footer response
 
 Existing `medRecDecision` fields may opt into `context.currentMedication`. Lean appends the name at that existing slot in Display.meds; missing data and untagged programs retain the source caption. No React source/slot inference is used. The existing caption is preserved by theorem. AMB Back / Patient workspace controls now carry source footer metadata and follow Chart Review in Lean’s semantic UI, addressing the shared painter's footer request. The renderer’s stable partition preserves exact node and semantic-atom membership; program component order stays unchanged, and no action, field or review is removed.

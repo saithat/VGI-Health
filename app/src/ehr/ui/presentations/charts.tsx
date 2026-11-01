@@ -160,7 +160,11 @@ function seriesFor(
           cell(row, "Percentile"),
         );
     } else {
-      const name = cell(row, "Test") || cell(row, "Measure") || node.label;
+      const name =
+        cell(row, "Test") ||
+        cell(row, "Measure") ||
+        cell(row, "Vital sign") ||
+        node.label;
       const unit = cell(row, "Unit");
       // Summary + dated trend are both in the table; plot each dated trend once.
       const detailed = node.rows.some(

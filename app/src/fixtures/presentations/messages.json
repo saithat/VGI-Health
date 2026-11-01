@@ -93,6 +93,7 @@
        "infoId": "inBasketMessages",
        "display": "table",
        "comp": "records"}}]}}],
+ "viewer": "Physician",
  "title": "Results • In Basket",
  "side": [],
  "screen": "example",

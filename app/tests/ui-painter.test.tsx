@@ -670,7 +670,7 @@ describe("semantic EHR painter", () => {
       { field: { ...field, kind: "code", value: "I10" } },
     ]);
     expect(screen.getByRole("list", { name: "list" })).toBeTruthy();
-    expect(screen.getByRole("img", { name: "trend trend" })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "trend: trend" })).toBeTruthy();
     expect(screen.getByRole("table", { name: "trend" })).toBeTruthy();
     expect(
       screen.getByRole("combobox", { name: "Clinical value" }),
@@ -1076,7 +1076,9 @@ describe("semantic EHR painter", () => {
     );
     for (const kind of ["identity", "scan", "cosign"])
       expect(container.querySelector(`.field-${kind}`)).toBeTruthy();
-    expect(screen.getAllByLabelText("Clinician entry required")).toHaveLength(3);
+    expect(screen.getAllByLabelText("Clinician entry required")).toHaveLength(
+      3,
+    );
   });
   it("keeps modal acknowledgement blocking and uses its alert id", () => {
     const emit = vi.fn();

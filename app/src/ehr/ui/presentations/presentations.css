@@ -125,9 +125,17 @@
 .table-schedule td:nth-child(6) {
   width: 18%;
 }
-.table-orSchedule th:nth-child(3),
-.table-orSchedule td:nth-child(3) {
-  width: 28%;
+.table-orSchedule th[data-column="Room"] {
+  width: 6%;
+}
+.table-orSchedule th[data-column="Start"] {
+  width: 8%;
+}
+.table-orSchedule th[data-column="Procedure"] {
+  width: 36%;
+}
+.table-orSchedule th[data-column="Status"] {
+  width: 10%;
 }
 .table-messages[data-columns="6"] th:nth-child(1) {
   width: 19%;
@@ -309,6 +317,33 @@
 }
 .presentation-note-body dd {
   white-space: pre-wrap;
+}
+.presentation-note-provenance {
+  display: block;
+  color: var(--p-muted, var(--clinical-muted, #526171));
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  margin-top: 3px;
+}
+.presentation-note-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 6px 0 0;
+  color: var(--clinical-muted, #526171);
+  font-size: 12px;
+}
+.presentation-note-footer div {
+  display: flex;
+  gap: 5px;
+}
+.presentation-note-footer dd {
+  margin: 0;
+}
+.presentation-empty {
+  margin: 0;
+  padding: 7px 10px;
 }
 .presentation-charts {
   padding: 12px;
