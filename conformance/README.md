@@ -9,6 +9,7 @@ pnpm conformance --program releases/v3/personas/P1.json --spec releases/v3/spec.
 pnpm conformance --run run1-P3
 pnpm conformance --canonical
 pnpm test:conformance
+node conformance/verify.mjs run1-P3 # compare both completed full-run artifacts
 ```
 
 Set `EHR_BIN` (or `--binary`) to a native `ehr` executable. Default locations are
@@ -43,7 +44,8 @@ artifact. Comma-separated substrings and `--out <file>` are supported.
 ## What is tested
 
 `clinical.mjs` contains hand-written obligations, synthetic patient facts and
-legitimate values. `scenarios.mjs` registers 195 scenarios. They do not derive
+legitimate values. `scenarios.mjs` registers 200 scenarios (including the five
+patient-selection scenarios in `selection.mjs`). They do not derive
 expected requirements, alert triggers or allowed roles from checker decisions.
 The coverage test compares this independently maintained list with the exported
 core entries, reviews and alerts, so a newly introduced rule requires a test.
@@ -68,6 +70,7 @@ Optional fields and removable alerts are not invented signing obligations.
 | Human-only/never-prefill inputs, commits and review receipts | `human-only.*`, `automation.*` |
 | Incomplete line cannot strand the workflow | `orders.incomplete-line-cannot-advance` |
 | Patient reset and mixed-patient FHIR scoping | `patient-switch.*` |
+| Empty landing, list-row opening, lookup by name/MRN, A→B reset and stale-source refusal | `selection.*` |
 | Patient banner/identifiers on reachable screens | `design.*` |
 
 Each entry case forks a reachable prefix just before that entry and attempts the
@@ -84,7 +87,7 @@ navigation macros/back history, opens ancestor groups and selects tabs, then rel
 on native `view` for visibility and native `step` for outcomes. No scenario names
 a canonical component or screen ID. A missing/hidden/unreachable control needed
 for a legitimate workflow fails with “Workflow impossible”. Layout/id mutation
-tests and a native `run-batch` replay verify this behavior. Required workflows
+tests and a native `run-batch` clinical-projection replay verify this behavior. Required workflows
 are fixed per persona independently of the tested layout, so deleting the last
 button cannot silently make a mandatory workflow “not applicable”.
 Passive care-gap/duplicate-therapy rules explicitly target W1, and immunization
@@ -106,8 +109,18 @@ An additional empty-medication workflow case deliberately demands more than the
 encoded per-line rule: its failure is a spec/workflow gap, not evidence that an
 unsafe MedicationRequest was written.
 
-Patient switching tests the native `init` episode boundary and the native FHIR
-projection. It does not establish correct shell selection/race handling, React
+Before each clinical scenario, opt-in programs start with no open patient. The
+driver finds the scenario patient's native list-row action or searches Patient
+Lookup, clicks the actual supplied control, then binds matching source facts
+through public `step`. These setup events have separate `selectionSteps` and
+`hydrationSteps`; `steps` counts only the clinical scenario. Missing selection
+paths report `could-not-open-patient`. An unselected or loading chart is distinct
+from `missing-control` / “Workflow impossible”. Programs that predate the opt-in
+flag keep their original start state and are labeled `legacy-preselected`.
+
+Patient switching tests the native workspace selection/reset/binding boundary,
+the native `init` episode boundary and the native FHIR projection. It does not
+establish correct host networking/race handling, React
 painting, database writes, EPCS authentication, actual VIS delivery, or a real
 payer API. Those require separate integration evidence. The per-revision badge
 is read-only evidence and does not replace any existing deployment gate.
@@ -122,9 +135,9 @@ The pound-weight case observes an invalid stored unit and a signing hard stop;
 that hard stop preempts a commit-time interruption. It does not claim that an
 unsafe pound-weight state can reach a successful acknowledgement/sign sequence.
 
-The saved run combines the original 194-scenario batch with the additional
+Historical evidence combined the original 194-scenario batch with the additional
 refill-route regression evaluated against all 23 identical inputs. `merge.mjs`
 checks binary/program/spec hashes and disjoint scenario IDs, retains every
 existing outcome, and records both batches. It refuses overlapping scenarios;
 it cannot select a later passing result over an earlier failure. A fresh
-`pnpm conformance --run <id>` now runs all 195 together.
+`pnpm conformance --run <id>` now runs all 200 together.
