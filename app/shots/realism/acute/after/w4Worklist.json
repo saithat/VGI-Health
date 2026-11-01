@@ -19,8 +19,8 @@
         "children": [
           {
             "section": {
-              "title": "My patients",
-              "id": "w4Worklist.workActivity",
+              "title": "My Patients",
+              "id": "w4Worklist.census",
               "children": [
                 {
                   "presentation": {
@@ -60,10 +60,10 @@
                               ]
                             ]
                           ],
-                          "label": "Patient list",
-                          "infoId": "unitCensus",
+                          "label": "Assigned patients",
+                          "infoId": "shiftWorklist",
                           "display": "table",
-                          "comp": "w4Worklist.patients"
+                          "comp": "w4Worklist.work"
                         }
                       }
                     ]
@@ -71,13 +71,13 @@
                 },
                 {
                   "rowAction": {
-                    "target": "w4Worklist.patients",
+                    "target": "w4Worklist.work",
                     "row": 0,
                     "children": [
                       {
                         "button": {
                           "role": "nav",
-                          "label": "Open selected patient's MAR",
+                          "label": "Open MAR",
                           "hotkey": null,
                           "enabled": true,
                           "comp": "w4Worklist.toMar",
@@ -88,6 +88,24 @@
                   }
                 }
               ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "section": {
+        "title": "Unit Census",
+        "id": "w4Worklist.unitContext",
+        "children": [
+          {
+            "button": {
+              "role": "toggle",
+              "label": "Expand section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w4Worklist.unitContext",
+              "blockedReason": null
             }
           }
         ]
@@ -184,28 +202,21 @@
                 ]
               ],
               "label": "Selected patient — shift worklist",
-              "infoId": "shiftWorklist",
+              "infoId": "shiftTasks",
               "display": "table",
-              "comp": "w4Worklist.work"
+              "comp": "w4Worklist.tasks"
             }
           }
         ]
       }
     },
     {
-      "presentation": {
-        "kind": "table",
-        "children": [
-          {
-            "info": {
-              "rows": [],
-              "label": "Orders requiring review",
-              "infoId": "newOrders",
-              "display": "table",
-              "comp": "w4Worklist.newOrders"
-            }
-          }
-        ]
+      "info": {
+        "rows": [],
+        "label": "New orders since last shift",
+        "infoId": "newOrders",
+        "display": "table",
+        "comp": "w4Worklist.newOrders"
       }
     },
     {
@@ -234,7 +245,7 @@
             ]
           ]
         ],
-        "label": "Selected patient — handoff report",
+        "label": "Last handoff",
         "infoId": "handoffSummary",
         "display": "list",
         "comp": "w4Worklist.handoff"
@@ -242,13 +253,23 @@
     },
     {
       "section": {
-        "title": "Shift allergy review",
+        "title": "Allergies",
         "id": "w4Worklist.allergyGroup",
         "children": [
           {
+            "button": {
+              "role": "toggle",
+              "label": "Collapse section",
+              "hotkey": null,
+              "enabled": true,
+              "comp": "w4Worklist.allergyGroup",
+              "blockedReason": null
+            }
+          },
+          {
             "info": {
               "rows": [],
-              "label": "Allergies",
+              "label": "Records",
               "infoId": "allergyList",
               "display": "list",
               "comp": "w4Worklist.allergies"
@@ -257,7 +278,7 @@
           {
             "button": {
               "role": "secondary",
-              "label": "Mark allergies reviewed — shift start",
+              "label": "Mark allergies reviewed (start of shift)",
               "hotkey": null,
               "enabled": true,
               "comp": "w4Worklist.review.allergyList",
@@ -1010,6 +1031,14 @@
     [
       "Location",
       "5 West · 512 A"
+    ],
+    [
+      "Encounter type",
+      ""
+    ],
+    [
+      "Department",
+      ""
     ],
     [
       "Allergies",

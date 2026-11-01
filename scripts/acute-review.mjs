@@ -21,7 +21,7 @@ const screens = [
   ['P2', 'w3Disposition', 'w3Disposition.dispositionChoice'],
   ['P3', 'w4Worklist', 'w4Worklist.toMar'], ['P3', 'w4Mar', 'w4Mar.openDue'],
   ['P3', 'w4Admin', 'w4Admin.wristbandScan'], ['P3', 'w4Flowsheet', 'w4Flowsheet.painReassessment'],
-  ['P3', 'w4Handoff', 'w4Handoff.handoffSituation'],
+  ['P3', 'w4Handoff', 'w4Handoff.handoffRecommendation'],
 ];
 for (const [persona, screen, focus] of [
   ['P2', 'w3Provider-chart-results', 'w3Provider.chart'],

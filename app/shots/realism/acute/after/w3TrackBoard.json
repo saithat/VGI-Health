@@ -18,67 +18,100 @@
         "kind": "trackBoard",
         "children": [
           {
-            "info": {
-              "rows": [
-                [
-                  [
-                    "Room",
-                    "ED · A04"
-                  ],
-                  [
-                    "Patient",
-                    "Ankunding, Aaron Bruno"
-                  ],
-                  [
-                    "Age/sex",
-                    "58 / M"
-                  ],
-                  [
-                    "Chief complaint",
-                    "Shortness of breath and fever"
-                  ],
-                  [
-                    "Acuity",
-                    "ESI 2"
-                  ],
-                  [
-                    "Arrival",
-                    "Nov 2, 2026 07:15"
-                  ],
-                  [
-                    "LOS",
-                    "165 min"
-                  ],
-                  [
-                    "RN",
-                    "Jordan Lee, RN"
-                  ],
-                  [
-                    "Provider",
-                    "Morgan Patel, MD"
-                  ],
-                  [
-                    "Labs",
-                    "Results available"
-                  ],
-                  [
-                    "Imaging",
-                    "Report available"
-                  ],
-                  [
-                    "Disposition",
-                    ""
-                  ],
-                  [
-                    "Status",
-                    "in-progress"
-                  ]
-                ]
-              ],
-              "label": "Emergency department patients",
-              "infoId": "edTrackBoard",
-              "display": "table",
-              "comp": "w3TrackBoard.board"
+            "section": {
+              "title": "Emergency Department Census",
+              "id": "w3TrackBoard.census",
+              "children": [
+                {
+                  "presentation": {
+                    "kind": "trackBoard",
+                    "children": [
+                      {
+                        "info": {
+                          "rows": [
+                            [
+                              [
+                                "Room",
+                                "ED · A04"
+                              ],
+                              [
+                                "Patient",
+                                "Ankunding, Aaron Bruno"
+                              ],
+                              [
+                                "Age/sex",
+                                "58 / M"
+                              ],
+                              [
+                                "Chief complaint",
+                                "Shortness of breath and fever"
+                              ],
+                              [
+                                "Acuity",
+                                "ESI 2"
+                              ],
+                              [
+                                "Arrival",
+                                "Nov 2, 2026 07:15"
+                              ],
+                              [
+                                "LOS",
+                                "165 min"
+                              ],
+                              [
+                                "RN",
+                                "Jordan Lee, RN"
+                              ],
+                              [
+                                "Provider",
+                                "Morgan Patel, MD"
+                              ],
+                              [
+                                "Labs",
+                                "Results available"
+                              ],
+                              [
+                                "Imaging",
+                                "Report available"
+                              ],
+                              [
+                                "Disposition",
+                                ""
+                              ],
+                              [
+                                "Status",
+                                "in-progress"
+                              ]
+                            ]
+                          ],
+                          "label": "Department",
+                          "infoId": "edTrackBoard",
+                          "display": "table",
+                          "comp": "w3TrackBoard.board"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "rowAction": {
+                    "target": "w3TrackBoard.board",
+                    "row": 0,
+                    "children": [
+                      {
+                        "button": {
+                          "role": "nav",
+                          "label": "Open encounter",
+                          "hotkey": null,
+                          "enabled": true,
+                          "comp": "w3TrackBoard.open",
+                          "blockedReason": null
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           }
         ]
@@ -89,16 +122,6 @@
         "title": "Selected encounter",
         "id": "w3TrackBoard.selectedActivity",
         "children": [
-          {
-            "button": {
-              "role": "nav",
-              "label": "Open selected encounter",
-              "hotkey": null,
-              "enabled": true,
-              "comp": "w3TrackBoard.open",
-              "blockedReason": null
-            }
-          },
           {
             "info": {
               "rows": [
@@ -1029,6 +1052,14 @@
     [
       "Location",
       "ED · A04"
+    ],
+    [
+      "Encounter type",
+      ""
+    ],
+    [
+      "Department",
+      ""
     ],
     [
       "Allergies",

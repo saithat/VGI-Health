@@ -206,7 +206,7 @@
                 ]
               ],
               "label": "Shift tasks and status",
-              "infoId": "shiftWorklist",
+              "infoId": "shiftTasks",
               "display": "table",
               "comp": "w4Handoff.remainingTasks"
             }
@@ -966,19 +966,7 @@
           [
             [
               "Record",
-              "Full-time employment (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
               "Gingivitis (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Stress (finding) (active)"
             ]
           ],
           [
@@ -991,12 +979,6 @@
             [
               "Record",
               "Sleep disorder (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Medication review due (situation) (active)"
             ]
           ],
           [
@@ -1033,18 +1015,6 @@
             [
               "Record",
               "Impacted molars (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Housing unsatisfactory (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Educated to high school level (finding) (active)"
             ]
           ]
         ],
@@ -1193,6 +1163,14 @@
     [
       "Location",
       "5 West · 512 A"
+    ],
+    [
+      "Encounter type",
+      ""
+    ],
+    [
+      "Department",
+      ""
     ],
     [
       "Allergies",

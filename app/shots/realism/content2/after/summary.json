@@ -45,18 +45,18 @@
       ],
       [
         "Last encounter",
-        "AMB"
+        ""
       ],
       [
         "Last provider",
-        "Dr. Tracy Wilderman"
+        ""
       ],
       [
         "Last location",
-        "Mass General Brigham Urgent Care LLC"
+        ""
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Office Visit – Internal Medicine"
       ],
       [
@@ -92,8 +92,12 @@
         "rows": 20
       },
       {
-        "info": "labResults",
-        "rows": 60
+        "info": "triageSummary",
+        "rows": 1
+      },
+      {
+        "info": "encounterHistory",
+        "rows": 26
       }
     ],
     "banner": [
@@ -126,19 +130,19 @@
         "VGI Community Health Plan"
       ],
       [
-        "Last encounter",
-        "EMER"
+        "Encounter",
+        "Emergency"
       ],
       [
-        "Last provider",
+        "Attending",
         "Dr. Marcus Okafor, MD"
       ],
       [
-        "Last location",
+        "Location",
         "ED 01"
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Emergency Visit – Emergency Medicine"
       ],
       [
@@ -174,6 +178,10 @@
         "rows": 5
       },
       {
+        "info": "shiftTasks",
+        "rows": 0
+      },
+      {
         "info": "newOrders",
         "rows": 0
       },
@@ -186,8 +194,8 @@
         "rows": 1
       },
       {
-        "info": "newOrders",
-        "rows": 0
+        "info": "encounterHistory",
+        "rows": 26
       }
     ],
     "banner": [
@@ -220,19 +228,19 @@
         "VGI Community Health Plan"
       ],
       [
-        "Last encounter",
-        "IMP"
+        "Encounter",
+        "Inpatient"
       ],
       [
-        "Last provider",
+        "Attending",
         "Dr. Maya Chen, MD"
       ],
       [
-        "Last location",
+        "Location",
         "4W-01-A"
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Inpatient Stay – Hospital Medicine"
       ],
       [
@@ -334,7 +342,7 @@
         "Operating Room 1"
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Surgical Visit – General Surgery"
       ],
       [
@@ -371,11 +379,11 @@
       },
       {
         "info": "vitals",
-        "rows": 27
+        "rows": 0
       },
       {
         "info": "labResults",
-        "rows": 59
+        "rows": 0
       },
       {
         "info": "openOrders",
@@ -436,19 +444,19 @@
         "VGI Medicare Advantage"
       ],
       [
-        "Last encounter",
-        "IMP"
+        "Encounter",
+        "Inpatient"
       ],
       [
-        "Last provider",
+        "Attending",
         "Dr. James Whitaker, MD, FACS"
       ],
       [
-        "Last location",
+        "Location",
         "5S-01-A"
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Inpatient Stay – General Surgery"
       ],
       [
@@ -527,18 +535,18 @@
       ],
       [
         "Last encounter",
-        "AMB"
+        ""
       ],
       [
         "Last provider",
-        "Dr. Saundra Kuphal"
+        ""
       ],
       [
         "Last location",
-        "Cooley Dickinson Hospital Inc"
+        ""
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Office Visit – Pediatrics"
       ],
       [
@@ -613,18 +621,18 @@
       ],
       [
         "Last encounter",
-        "AMB"
+        ""
       ],
       [
         "Last provider",
-        "Dr. Tracy Wilderman"
+        ""
       ],
       [
         "Last location",
-        "Mass General Brigham Urgent Care LLC"
+        ""
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Office Visit – Internal Medicine"
       ],
       [
@@ -707,18 +715,18 @@
       ],
       [
         "Last encounter",
-        "AMB"
+        ""
       ],
       [
         "Last provider",
-        "Dr. Francisco Gusikowski"
+        ""
       ],
       [
         "Last location",
-        "Whitley Wellness LLC"
+        ""
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Office Visit – Internal Medicine"
       ],
       [
@@ -906,19 +914,19 @@
         "VGI Medicare Advantage"
       ],
       [
-        "Last encounter",
-        "EMER"
+        "Encounter",
+        "Emergency"
       ],
       [
-        "Last provider",
+        "Attending",
         "Dr. Marcus Okafor, MD"
       ],
       [
-        "Last location",
+        "Location",
         "ED 03"
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Emergency Visit – Emergency Medicine"
       ],
       [
@@ -1020,7 +1028,7 @@
         "Operating Room 1"
       ],
       [
-        "Encounter",
+        "Encounter type",
         "Surgical Visit – General Surgery"
       ],
       [

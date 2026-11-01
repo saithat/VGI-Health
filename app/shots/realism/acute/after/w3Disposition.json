@@ -1091,19 +1091,7 @@
           [
             [
               "Record",
-              "Full-time employment (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
               "Gingivitis (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Stress (finding) (active)"
             ]
           ],
           [
@@ -1116,12 +1104,6 @@
             [
               "Record",
               "Sleep disorder (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Medication review due (situation) (active)"
             ]
           ],
           [
@@ -1158,18 +1140,6 @@
             [
               "Record",
               "Impacted molars (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Housing unsatisfactory (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Educated to high school level (finding) (active)"
             ]
           ]
         ],
@@ -1326,6 +1296,14 @@
     [
       "Location",
       "ED · A04"
+    ],
+    [
+      "Encounter type",
+      ""
+    ],
+    [
+      "Department",
+      ""
     ],
     [
       "Allergies",
