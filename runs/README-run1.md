@@ -1,6 +1,6 @@
 # Run 1 — real single-persona integration
 
-Status: full Lean build passed (215 targets); native preflight and screen-gated Codex run in progress.
+Status: full Lean build and native preflight passed; real Codex run has completed Day 1 and is working through the nights.
 
 Branch: `lane/run`. Merged checker `1cd621a` and simulator `231d5b5` sequentially after the requested octopus merge could not resolve conflicts. `Main.lean` match arms/imports were unioned; proof/change-request documents merged without dropping either lane's material.
 
@@ -23,7 +23,7 @@ Re-run `node scripts/sanity-run1.mjs` and `node scripts/sanity-run1-commands.mjs
 - `ehr simulate`: P1 day 1 exits 0 (39/42 tasks complete); P3 day 1 exits 0. A successful CLI exit is not a claim that every task completed.
 - `ehr min-clicks`: P3's first day-1 task returns 25 clicks; its per-episode search spaces, paths and exactness scope are retained in `P3-min-clicks.stdout`.
 - `ehr render-screens`: 694 P3 page trees, with the actual RN user and the first scheduled patient's real Synthea bundle.
-- Screen check and temp-dir deploy: pending; outputs will be recorded in `run1-preflight/commands.json` and per-command files.
+- Screen check: all 1,388 desktop/narrow checks passed in 183.8 seconds. Native deploy exited 0 and wrote a real certificate under `/tmp/vgi-run1-deploy/P3/`. Exact commands, exit codes and timings are in `run1-preflight/commands.json`; per-command stdout is preserved.
 - Agent: 32/32 tests, typecheck and lint passed, including round trips of all real release specs.
 - P3 vendor projections also certify against v1.1 and v2.
 - Full `cd lean && lake build`: passed all 215 targets, including the expensive concrete negative proofs.

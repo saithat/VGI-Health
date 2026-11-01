@@ -57,11 +57,15 @@ async function ehr(page, version) {
   await page.goto(`${base}/ehr?${new URLSearchParams({ persona, run, program: `runs/${run}/programs/${persona}/v${version}.json` })}`);
   await expect(page.locator('.ehr-shell')).toBeVisible();
   await expect(page.locator('.inspector')).toBeVisible();
-  // A representative nursing task: worklist → MAR → administration, with live blockers visible.
+  // A complete nursing task: worklist → flowsheet → vital signs → file assessment.
   if (persona === 'P3') {
-    for (const id of ['home.work.w4Worklist', 'w4Worklist.toMar', 'w4Mar.openDue']) await click(page, comp(page, id));
-    await click(page, comp(page, 'w4Admin.heldNpo'));
-    await comp(page, 'w4Admin.commit.administerMed').scrollIntoViewIfNeeded(); await pause(page);
+    for (const id of ['home.work.w4Worklist', 'w4Worklist.nav.w4Flowsheet']) await click(page, comp(page, id));
+    if (!(await comp(page, 'w4Flowsheet.bpSystolic').isVisible())) await click(page, comp(page, 'w4Flowsheet.vitalsGroup'));
+    for (const [id, val] of Object.entries({ bpSystolic: '120', bpDiastolic: '80', heartRate: '72', respRate: '16', temperature: '37', spo2: '98', painReassessment: '2', nursingAssessment: 'Stable. Vitals and nursing assessment completed.' })) await fill(page, `w4Flowsheet.${id}`, val);
+    const commit = comp(page, 'w4Flowsheet.commit.chartAssessment');
+    await expect(commit).toBeEnabled(); await click(page, commit);
+    await expect(page.getByTestId('commits')).toContainText('chartAssessment');
+    await page.getByTestId('commits').scrollIntoViewIfNeeded(); await pause(page);
   } else {
     await click(page, comp(page, 'home.work.w1Rooming'));
     await fill(page, 'w1Rooming.weight', '93.4');

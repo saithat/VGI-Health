@@ -1,6 +1,7 @@
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { existsSync } from "node:fs";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { createServer } from "node:net";
 import { spawnSync } from "node:child_process";
 const files = process.argv
@@ -21,12 +22,15 @@ const port = process.env.APP_TEST_PORT ?? await new Promise((resolve, reject) =>
     server.close(() => resolve(String(port)));
   });
 });
+const output = mkdtempSync(resolve(tmpdir(), "ehr-visibility-"));
 const result = spawnSync(
   process.execPath,
   [
     resolve(appDir, "node_modules/@playwright/test/cli.js"),
     "test",
     "screen-check.spec.ts",
+    "--output",
+    output,
     "--fully-parallel",
     "--workers",
     process.env.EHR_SCREEN_WORKERS ?? "4",
@@ -39,5 +43,7 @@ const result = spawnSync(
     env: { ...process.env, APP_TEST_PORT: port, EHR_SCREEN_FILES: JSON.stringify(files) },
   },
 );
+if (result.status === 0) rmSync(output, { recursive: true, force: true });
+else process.stderr.write(`Screen-check artifacts: ${output}\n`);
 if (result.error) process.stderr.write(`${result.error.message}\n`);
 process.exit(result.status ?? 1);

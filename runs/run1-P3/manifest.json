@@ -1,0 +1,23 @@
+{
+  "runId": "run1-P3",
+  "createdAt": "2026-11-01T00:27:19.820Z",
+  "days": 10,
+  "personas": [
+    "P3"
+  ],
+  "world": "/home/saithat/Projects/VGI-run/runs/world/1",
+  "worldSeed": 1,
+  "worldIsFake": false,
+  "backend": "codex",
+  "model": "gpt-6.1-sol",
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-run/lean/.lake/build/bin/ehr"
+  },
+  "seedPolicy": "until-each-rejected",
+  "releaseDays": {
+    "v1_1": 4,
+    "v2": 7
+  },
+  "warning": null
+}

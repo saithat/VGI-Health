@@ -15,6 +15,6 @@
     "/tmp/vgi-run1-deploy"
   ],
   "exit": 0,
-  "ms": 150,
+  "ms": 160,
   "stderr": "published /tmp/vgi-run1-deploy/P3/current.json (version 1)\n"
 }
