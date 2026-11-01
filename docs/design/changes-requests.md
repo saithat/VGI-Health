@@ -2441,6 +2441,16 @@ The browser EHR audit has `AUDIT_CANONICAL_BASELINE=1` with full program/release
 
 The existing display fallback recognizes the observed SNOMED FSN tags `(organism)` and `(substance)` at term boundaries. Other qualifiers and recognized words inside running prose remain. Full clinical source strings/codes, row accessibility labels and native tooltips are retained. Public `fieldSources` captions bypass term cleanup, as do authored note/document bodies. This changes no Lean tree, guard, actor permission, capture, review, source projection or navigation action. The matched terminology baseline is preserved in `before-terms-*` images.
 
+
+### RUN geometry: export all potential popup variants upstream
+
+`ehr render-screens --ui` exports interruptive popup variants, only when its sample condition fires; simulated
+traces on other patients can acknowledge additional interruptive or removable-tier
+immediate popups. Please export these
+reachable display variants in the native exporter. The run lane currently calls
+the existing native facts/init/render-ui commands for those configured popup
+states in an agent-owned adapter, without editing any program, rule or protected
+Lean module. Both the normal screen gate and geometry capture inspect them.
 ## SHELL-PUNCH-2026-11-01: clinician review A2/A3/A5/A10/A11
 
 To canonical/presentation lanes, against main `81691fb`:

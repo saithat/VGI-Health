@@ -30,6 +30,7 @@ const metrics = z.object({
   keystrokes: nat,
   scrolls: nat,
   klmDeciSec: nat,
+  mouseTravelPx:z.number().nonnegative().nullable().optional(),scrollPx:z.number().nonnegative().nullable().optional(),
   completed: z.boolean(),
 });
 const fields = {

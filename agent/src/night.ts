@@ -1,3 +1,4 @@
+import {InfrastructureError,ScreenInfrastructureError} from './errors.js';
 import { calibrationPartition, validationSeed } from './protocol.js';
 import { expandProgram } from './composites.js';
 import { compilePresentations } from './presentation-compiler.js';
@@ -25,7 +26,7 @@ import { choosePrompt, nightlyPrompt, repairPrompt, type HistoryItem, type Perso
 import type { Release } from './releases.js';
 import {
   violationOf, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
-  type JsonPatchOp, type LlmCallRef, type Metrics, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
+  type JsonPatchOp, type LlmCallRef, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
 } from './schema.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
@@ -195,24 +196,31 @@ export function completionOk(r: ReplayDay | null): boolean {
   return r !== null && r.after.tasks > 0 && r.after.tasks === r.before.tasks && r.after.completed === r.after.tasks && r.after.completed >= r.before.completed;
 }
 
+export const INTERACTION_TOLERANCE={clicks:0,scrolls:0,scrollPx:2,mouseTravelPx:2};
+/** Strict improvement in at least one dimension; no count regression; 2% pixel noise tolerance. */
+export function interactionAcceptable(r:ReplayDay):boolean{
+ if(!completionOk(r))return false;
+ return (['clicks','scrolls','scrollPx','mouseTravelPx'] as const).every(key=>{
+  const before=r.before[key],after=r.after[key];if(typeof before!=='number'||typeof after!=='number')return false;
+  return after<=before*(1+INTERACTION_TOLERANCE[key]/100)+((key==='mouseTravelPx'||key==='scrollPx')?1:0);
+ });
+}
 export function improved(r: ReplayDay): boolean {
-  const interactions = (m: Metrics) => m.clicks + m.keystrokes + m.scrolls;
-  return r.after.klmDeciSec < r.before.klmDeciSec && interactions(r.after) <= interactions(r.before) && completionOk(r);
+ return interactionAcceptable(r)&&(['clicks','scrolls','scrollPx','mouseTravelPx'] as const).some(key=>{
+  const b=r.before[key],a=r.after[key];return typeof b==='number'&&typeof a==='number'&&a<b-((key==='mouseTravelPx'||key==='scrollPx')?1:0);
+ });
 }
-
 export function sumSavings(cs: readonly Candidate[]): Savings {
-  return cs.reduce((acc, c) => ({
-    clicks: acc.clicks + c.predicted.clicks, keystrokes: acc.keystrokes + c.predicted.keystrokes,
-    scrolls: acc.scrolls + c.predicted.scrolls, klmDeciSec: acc.klmDeciSec + c.predicted.klmDeciSec,
-  }), { clicks: 0, keystrokes: 0, scrolls: 0, klmDeciSec: 0 });
+ return cs.reduce<Savings>((acc,c)=>({clicks:acc.clicks+c.predicted.clicks,keystrokes:acc.keystrokes+c.predicted.keystrokes,scrolls:acc.scrolls+c.predicted.scrolls,klmDeciSec:0,
+ mouseTravelPx:typeof acc.mouseTravelPx==='number'&&typeof c.predicted.mouseTravelPx==='number'?acc.mouseTravelPx+c.predicted.mouseTravelPx:null,
+ scrollPx:typeof acc.scrollPx==='number'&&typeof c.predicted.scrollPx==='number'?acc.scrollPx+c.predicted.scrollPx:null}),{clicks:0,keystrokes:0,scrolls:0,klmDeciSec:0,mouseTravelPx:0,scrollPx:0});
 }
-
-export function predictionVerdict(predicted: Savings | null, measured: ReplayDay | null): { held: boolean | null; note: string } {
-  if (!predicted || !measured) return { held: null, note: 'no prediction or no validation replay' };
-  const got = measured.saving.klmDeciSec;
-  const want = predicted.klmDeciSec;
-  const held = want > 0 ? got > 0 && got >= 0.5 * want : got >= 0;
-  return { held, note: `predicted ${want / 10}s/day saved; validation replay measured ${got / 10}s (held = measured >= 50% of predicted)` };
+export function predictionVerdict(predicted:Savings|null,measured:ReplayDay|null):{held:boolean|null;note:string}{
+ if(!predicted||!measured)return {held:null,note:'No prediction or validation replay'};
+ const keys=['clicks','scrolls','scrollPx','mouseTravelPx'] as const;
+ const known=keys.filter(k=>typeof predicted[k]==='number'&&typeof measured.saving[k]==='number');
+ const held=known.every(k=>(measured.saving[k]??0)>=(predicted[k]??0)*0.5);
+ return {held:known.length?held:null,note:'Interaction counts and measured pixels only; prediction holds when every available predicted saving reaches 50%.'};
 }
 
 export async function minClicksByWorkflow(deps: LoopDeps, specVersion: string, before: Program, after: Program, day: TrainDay | undefined): Promise<DecisionRecord['measured']['minClicks']> {
@@ -293,7 +301,7 @@ export function emptyRecord(deps: LoopDeps, input: { night: number; persona: Per
   };
 }
 
-export class InfrastructureError extends Error {}
+export {InfrastructureError} from './errors.js';
 
 export type DeployOutcome =
   | { ok: true; certificate: NonNullable<DecisionRecord['certificate']>; deployed: NonNullable<DecisionRecord['deployed']>; screenCheck: ScreenCheckResult }
@@ -383,6 +391,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     return { record: rec, deployed };
   };
 
+  try {
   // 2-3. Hypothesize and generate.
   let proposal: Proposal;
   try {
@@ -458,12 +467,12 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     return finish(null);
   }
   if (chosen.length === 0) {
-    const best = [...eligible].sort((a, b) => (b.trainEstimate?.saving.klmDeciSec ?? 0) - (a.trainEstimate?.saving.klmDeciSec ?? 0))[0];
+    const best = [...eligible].sort((a, b) => (b.trainEstimate?.saving.clicks ?? 0) - (a.trainEstimate?.saving.clicks ?? 0))[0];
     if (!best) return finish(null);
     chosen = [best.candidate];
     rec.chosen = {
       candidateIds: [best.candidate.id],
-      rationale: `loop fallback: the LLM choice was unusable, so the passing candidate with the largest train-day KLM saving (${(best.trainEstimate?.saving.klmDeciSec ?? 0) / 10}s/day) was taken`,
+      rationale: `loop fallback: the LLM choice was unusable, so the passing candidate with the largest train-day click saving (${best.trainEstimate?.saving.clicks ?? 0}/day) was taken`,
       rejectedAlternatives: eligible.filter((e) => e !== best).map((e) => ({ id: e.candidate.id, reason: 'smaller train-day saving' })),
       choiceBy: 'loop-fallback',
     };
@@ -537,7 +546,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     return finish(null);
   }
   rec.validation.accepted = true;
-  rec.validation.reason = `validation day ${replay.day}: ${replay.saving.klmDeciSec / 10}s saved, ${replay.saving.clicks} clicks, ${replay.saving.keystrokes} keystrokes, ${replay.saving.scrolls} scrolls`;
+  rec.validation.reason = `validation day ${replay.day}: ${replay.saving.clicks} clicks, ${replay.saving.scrolls} scrolls, ${replay.saving.scrollPx??"unavailable"}px scroll, ${replay.saving.mouseTravelPx??"unavailable"}px mouse (keys secondary: ${replay.saving.keystrokes})`;
 
   // 8. Simulated user response.
   rec.userResponse = userResponse(deps, night, persona.id, moved);
@@ -556,4 +565,11 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   rec.versionAfter = finalProgram.version;
   rec.outcome = 'deployed';
   return finish(finalProgram);
+  } catch(error) {
+    if(error instanceof InfrastructureError){
+      rec.outcome=error instanceof ScreenInfrastructureError?'error':'infrastructure-error';
+      rec.flags.push(errorMessage(error));await finish(null);
+    }
+    throw error;
+  }
 }

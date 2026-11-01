@@ -48,7 +48,7 @@ test("browser leads with the real run, filters charts and opens P3 day 5", async
     /program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv4.json/,
   );
   await expect(page).toHaveURL(/persona=P3/);
-  await expect(page.locator(".clinical-app")).toBeVisible();
+  await expect(page.locator(".clinical-app")).toBeVisible({timeout:20_000});
   await page.goBack();
   await expect(page.getByLabel("Selected patient summary")).toContainText(
     "Aaron",

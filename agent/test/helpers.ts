@@ -29,7 +29,7 @@ export function markingEhr(): EhrClient {
     ...inner,
     async simulate(input) {
       const res = await inner.simulate(input);
-      return { ...res, complaints: [...res.complaints, `${LEAK_MARKER}${input.schedule.day}`] };
+      return { ...res,tasks:res.tasks.map(t=>({...t,scrollPx:t.scrolls*100,mouseTravelPx:1000})), complaints: [...res.complaints, `${LEAK_MARKER}${input.schedule.day}`] };
     },
   };
 }

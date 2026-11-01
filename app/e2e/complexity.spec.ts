@@ -36,15 +36,16 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
     .filter({ has: page.getByRole("rowheader", { name: "rev 7", exact: true }) });
   await expect(final.getByRole("cell").nth(2)).toHaveText("23");
   for (const [label, value] of [
-    ["Keystrokes", "39"],
-    ["KLM time", "127.55"],
-    ["Screens", "9"],
-    ["Required fields", "13"],
-    ["Popups", "1"],
+    ["Keystrokes (secondary)", "39"],
+    ["Scrolls", "Unavailable"],
+    ["Scroll distance", "Unavailable"],
+    ["Mouse travel", "Unavailable"],
   ] as const) {
     await chart.getByLabel("Complexity metric").selectOption({ label });
-    await expect(final.getByRole("cell").nth(2)).toHaveText(value ?? "");
+    await expect(final.getByRole("cell").nth(2)).toHaveText(value);
   }
+  await expect(chart.getByLabel("Complexity metric").locator('option')).toHaveCount(5);
+  await chart.getByLabel("Complexity metric").selectOption("clicks");
   await chart.getByLabel("Complexity measure").selectOption("workload");
   await expect(chart.getByLabel("Complexity metric")).toHaveValue("clicks");
   await expect(
@@ -54,9 +55,9 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
   ).toBeVisible();
   await expect(final).toContainText("Days 9, 10 · 89/89 tasks completed");
   await expect(final.getByRole("cell").nth(2)).toHaveText("15.629");
-  await chart.getByLabel("Complexity metric").selectOption("klmSeconds");
-  await expect(final.getByRole("cell").nth(2)).toHaveText("128.245");
-  await expect(final.getByRole("cell").nth(3)).toHaveText("127.55");
+  await chart.getByLabel("Complexity metric").selectOption("mouseTravelPx");
+  await expect(final.getByRole("cell").nth(2)).toHaveText("Unavailable");
+  await expect(chart.getByText(/straight-line travel/)).toBeVisible();
   await chart
     .getByText("Chart data and measurement definitions", { exact: true })
     .click();
@@ -68,6 +69,7 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
   await expect(
     chart.getByText(/Patient mix varies by iteration/),
   ).toBeVisible();
+  await chart.getByLabel("Complexity metric").selectOption("clicks");
   await chart.getByLabel("Compare personas").check();
   await expect(chart.locator(".complexity-multiples article")).toHaveCount(5);
   await expect(

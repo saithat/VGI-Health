@@ -34,7 +34,7 @@ const views = ["Evolution", "Trajectories", "Releases", "Try to break it"];
 const eventLabel = (event: object) => JSON.stringify(event);
 function savings(value: Savings | null) {
   return value
-    ? `${value.clicks} clicks · ${value.keystrokes} keys · ${value.scrolls} scrolls · ${(value.klmDeciSec / 10).toFixed(1)}s KLM`
+    ? `${value.clicks} clicks · ${value.scrolls} scrolls / ${value.scrollPx??"—"}px · ${value.mouseTravelPx??"—"}px mouse · ${value.keystrokes} keys (secondary)`
     : "No prediction recorded";
 }
 function Badge({
@@ -265,21 +265,19 @@ function OutcomeTable({ record }: { record: DecisionRecord }) {
             </tr>
           </thead>
           <tbody>
-            {(["clicks", "keystrokes", "scrolls", "klmDeciSec"] as const).map(
+            {(["clicks", "scrolls", "scrollPx","mouseTravelPx","keystrokes"] as const).map(
               (key) => (
                 <tr key={key}>
-                  <th>{key === "klmDeciSec" ? "KLM (seconds)" : key}</th>
+                  <th>{key}</th>
                   {[
                     record.predicted?.[key],
                     validation?.saving[key],
                     test?.saving[key],
                   ].map((n, i) => (
                     <td key={i}>
-                      {n === undefined
+                      {n === undefined || n === null
                         ? "—"
-                        : key === "klmDeciSec"
-                          ? (n / 10).toFixed(1)
-                          : n}
+                        : n}
                     </td>
                   ))}
                 </tr>
@@ -339,7 +337,7 @@ function Why({
           {record.evidence.totals.tasks} tasks · {record.evidence.totals.clicks}{" "}
           clicks · {record.evidence.totals.keystrokes} keys ·{" "}
           {record.evidence.totals.scrolls} scrolls ·{" "}
-          {(record.evidence.totals.klmDeciSec / 10).toFixed(1)}s KLM. Train
+          {record.evidence.totals.mouseTravelPx??"—"}px mouse travel · {record.evidence.totals.scrollPx??"—"}px scroll. Train
           days: {record.evidence.trainDays.join(", ")}.
         </p>
         {record.evidence.complaints.map((c, i) => (
@@ -896,7 +894,7 @@ function VersionList({
     before: ReturnType<typeof exactAt>,
   ) =>
     after && before
-      ? `${fmt(before.total.clicks - after.total.clicks)} clicks / ${fmt(before.total.klmSeconds - after.total.klmSeconds)}s KLM`
+      ? `${fmt(before.total.clicks - after.total.clicks)} clicks / ${before.total.mouseTravelPx!==null&&after.total.mouseTravelPx!==null?fmt(before.total.mouseTravelPx-after.total.mouseTravelPx):'—'}px mouse`
       : "Unavailable";
   return (
     <section className="version-history" aria-label="Version history">
@@ -932,7 +930,7 @@ function VersionList({
           <span>Canonical program</span>
         </span>
         <span>—</span>
-        <span>0 clicks / 0s KLM</span>
+        <span>0 clicks</span>
         <Badge
           tone={
             run.certs.has(`certs/${persona}/v0.json`) ||
@@ -999,13 +997,13 @@ function VersionList({
                         : "Not independently measured"
                   : deployed
                     ? change(after, before)
-                    : "0 clicks / 0s KLM"}
+                    : "0 clicks"}
               </span>
               <span>
                 <span className="mobile-label">vs baseline: </span>
                 {blindProtocol
                   ? r.measured.test
-                    ? `${fmt(r.measured.test.saving.clicks)} clicks / ${fmt(r.measured.test.saving.klmDeciSec / 10)}s KLM vs active canonical; ${r.measured.testNoAgent ? `${fmt(r.measured.testNoAgent.saving.clicks)} clicks / ${fmt(r.measured.testNoAgent.saving.klmDeciSec / 10)}s agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks`
+                    ? `${fmt(r.measured.test.saving.clicks)} clicks / ${r.measured.test.saving.mouseTravelPx??"—"}px mouse vs active canonical; ${r.measured.testNoAgent ? `${fmt(r.measured.testNoAgent.saving.clicks)} clicks / ${r.measured.testNoAgent.saving.mouseTravelPx??"—"}px mouse agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks`
                     : "Unavailable"
                   : change(after, baseline)}
               </span>
@@ -1039,7 +1037,7 @@ function VersionList({
         Exact savings compare fixed benchmark values. For realistic effort,
         choose “Simulated realistic workload” above; its samples and day
         coverage are listed in chart data. A flat expert minimum can coexist
-        with lower scrolling or KLM in simulation.
+        with less scrolling or mouse travel in simulation.
       </p>
     </section>
   );

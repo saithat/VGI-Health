@@ -21,6 +21,7 @@ it('does not label an antibiotic review, other human-only element, or unrelated 
 });
 it.each(['screen-check','native-deploy','publication'])('records %s infrastructure separately and never marks the run completed',async(stage)=>{
  const ehr=createFakeEhr(), screens=createScreenChecker(ehr), deploy=ehr.deploy;
+ const simulate=ehr.simulate;ehr.simulate=async input=>{const result=await simulate(input);return {...result,tasks:result.tasks.map(t=>({...t,clicks:input.program.version>0?1:2,scrolls:0,scrollPx:0,mouseTravelPx:100}))};};
  if(stage==='screen-check'){const check=screens.check.bind(screens);screens.check=async i=>{if(i.program.version>0)throw new Error('FAKE browser startup');return check(i);};}
  if(stage==='native-deploy')ehr.deploy=async i=>{if(i.program.version>0)throw new Error('FAKE native deploy I/O');return deploy(i);};
  const original=RunStore.prototype.deploy;

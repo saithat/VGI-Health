@@ -3,7 +3,7 @@ import { z } from "zod";
 const metricsSchema = z.object({
   clicks: z.number().nonnegative(),
   keystrokes: z.number().nonnegative(),
-  klmSeconds: z.number().nonnegative(),
+  scrolls:z.number().nonnegative().nullable().default(null),scrollPx:z.number().nonnegative().nullable().default(null),mouseTravelPx:z.number().nonnegative().nullable().default(null),
   screens: z.number().nonnegative(),
   requiredFields: z.number().nonnegative(),
   popups: z.number().nonnegative(),
@@ -57,13 +57,10 @@ export const complexitySchema = z.object({
 export type ComplexityData = z.infer<typeof complexitySchema>;
 export type ComplexityPersona = ComplexityData["personas"][number];
 export type Metric = keyof z.infer<typeof metricsSchema>;
-export const metricOptions: { key: Metric; label: string; unit: string }[] = [
-  { key: "clicks", label: "Clicks", unit: "clicks" },
-  { key: "keystrokes", label: "Keystrokes", unit: "keystrokes" },
-  { key: "klmSeconds", label: "KLM time", unit: "seconds" },
-  { key: "screens", label: "Screens", unit: "screen visits" },
-  { key: "requiredFields", label: "Required fields", unit: "fields" },
-  { key: "popups", label: "Popups", unit: "interruptive popups" },
+export const metricOptions:{key:Metric;label:string;unit:string}[]=[
+ {key:'clicks',label:'Clicks',unit:'clicks'},{key:'scrolls',label:'Scrolls',unit:'scrolls'},
+ {key:'scrollPx',label:'Scroll distance',unit:'px'},{key:'mouseTravelPx',label:'Mouse travel',unit:'px'},
+ {key:'keystrokes',label:'Keystrokes (secondary)',unit:'keys'},
 ];
 export const formatComplexity = (value: number) =>
   new Intl.NumberFormat("en-US", { maximumFractionDigits: 3 }).format(value);

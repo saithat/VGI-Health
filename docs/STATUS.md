@@ -5,6 +5,52 @@ Consolidated 2026-10-31. Content, Lean core and render are still active lanes:
 [HANDOFF-lean-core.md](../HANDOFF-lean-core.md) and
 [HANDOFF-render.md](../HANDOFF-render.md) will be folded in when their lanes finish.
 
+## Physical interaction baselines — 2026-11-01
+
+Owner decision: report clicks, scroll count/distance and mouse travel; keystrokes
+are secondary. Timing estimates are retained only in raw logs, **not used**.
+The agent objective uses these dimensions, no count regression, at most 2% + 1px
+pixel regression, strict improvement in at least one dimension, and unchanged
+full-completion and safety gates. The dashboard offers the same metric switches.
+
+All 15 certified persona canonicals were measured with the real native checker
+and simulator on world/2, seed 1, at 1440×900. The schedule is day 2 for v1, day 4
+for v2 and day 8 for v3; these have different workloads and are not paired vendor
+comparisons. Every task completed; every target has real Chromium geometry.
+The reference bundles are Ashly for P1/P2/P3, Abdul (pediatric) for P4, and Albert
+(surgical) for P5. This is a zero-model geometry reference, not an overnight run.
+[Machine-readable numbers and build/program hashes](audits/interaction-baselines.json).
+
+| Release | Persona | Day | Complete | Clicks | Scroll count | Scroll px | Mouse px | Keys (secondary) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| v1 | P1 | 2 | 40/40 | 786 | 826 | 1,620,330 | 292,346.71 | 3746 |
+| v1 | P2 | 2 | 18/18 | 1131 | 1471 | 1,572,427 | 468,114.43 | 4743 |
+| v1 | P3 | 2 | 51/51 | 684 | 528 | 1,047,333 | 310,735.44 | 1167 |
+| v1 | P4 | 2 | 20/20 | 745 | 949 | 845,248 | 310,398.23 | 3998 |
+| v1 | P5 | 2 | 14/14 | 728 | 1200 | 1,022,169 | 271,412.25 | 2467 |
+| v2 | P1 | 4 | 40/40 | 844 | 925 | 1,733,066 | 305,263.88 | 3765 |
+| v2 | P2 | 4 | 13/13 | 941 | 1293 | 1,408,617 | 387,059.03 | 3701 |
+| v2 | P3 | 4 | 41/41 | 557 | 445 | 856,076 | 252,865.52 | 978 |
+| v2 | P4 | 4 | 17/17 | 408 | 552 | 492,660 | 172,091.71 | 2401 |
+| v2 | P5 | 4 | 11/11 | 488 | 927 | 785,914 | 181,759.24 | 1671 |
+| v3 | P1 | 8 | 39/39 | 795 | 860 | 1,712,625 | 300,905.40 | 3464 |
+| v3 | P2 | 8 | 15/15 | 1484 | 2249 | 2,438,885 | 596,142.56 | 5553 |
+| v3 | P3 | 8 | 38/38 | 506 | 420 | 715,809 | 206,098.55 | 857 |
+| v3 | P4 | 8 | 15/15 | 483 | 763 | 676,639 | 218,998.64 | 2663 |
+| v3 | P5 | 8 | 12/12 | 556 | 1031 | 853,294 | 233,801.81 | 1901 |
+
+Geometry uses actual rendered component centers and ancestor scroll offsets,
+including expanded/tab and alert/acknowledged-background states. A pointer starts
+at viewport center once per day trace and travels in straight lines, with no
+tremor or overshoot. Offscreen targets use measured centered reveal offsets;
+explicit scroll events advance a measured container viewport. Scroll count
+includes reveal movements, and scroll pixels sum actual container-offset changes.
+This models interactions on representative screen content; it does not estimate
+human time or rerender changing content for every task. Missing geometry remains
+unavailable. The click floor stays clicks; travel on a minimum-click path is
+reported where available and is not a movement optimum. See
+[agent protocol and exact commands](../agent/STATUS.md).
+
 ## Synthetic Hospital data lane (Phase 1)
 
 Pinned upstream `911f34c4ac65a508543c4b3b90c373a0cd16534d`; SHA256-checked
@@ -415,7 +461,7 @@ and determinism checks below when upstream types or formulary values change.
 | Tests | `test/*.test.ts` (82 tests, vitest, fake/replay simulation backends plus native certificate and real-fingerprint regressions) | One fake night per persona gives a valid record (via the replay backend). Rejected candidates are logged with counterexamples. No validation or test data appears in any captured prompt. Also covered: release modes, try-to-break-it, the adapter contract (stub binary), validators against Lean samples, and JSON Patch. |
 
 #### Nightly loop steps (`src/night.ts`)
-1. **Observe.** `summarizeTrain` builds evidence from TRAIN days only: time sinks by screen, redundant prompts, unused receipts, buried-info searches, alert popups and overrides, backtracks, the complaint log, per-workflow averages, % above floor, and order mix.
+1. **Observe.** `summarizeTrain` builds evidence from TRAIN days only: interaction counts by screen, redundant prompts, unused receipts, buried-info searches, alert popups and overrides, backtracks, the complaint log, per-workflow averages, % above floor, and order mix.
 2. **Hypothesize** and 3. **generate** 3–5 candidates in one LLM call.
 4. **Pre-screen.** `ehr check` on each candidate. Passing candidates also get `ehr simulate` on the last 2 train days, old versus new program.
 5. **Choose.** The LLM picks one candidate or a set with no overlapping patches, and gives a rationale against the alternatives. If its answer is unusable, the loop falls back deterministically.
@@ -498,10 +544,10 @@ outcome `screen-check-failed`.
 
 1. **Release nights are dedicated to the release.** Night 3 is surface-feature only and night 6 is migrate only; there is no separate optimization pass those nights. This keeps one record per persona per night (BRIEF §10).
 2. **Acceptance rules.**
-   - Nightly: the validation replay must have strictly lower KLM time, clicks + keystrokes + scrolls must not increase, completed tasks must not decrease, and the stability budget must hold.
-   - Surface-feature: require full completion, no completion regression, and no more than 5% slower.
+   - Nightly: the validation replay improves at least one of clicks, scroll count, scroll pixels or mouse-travel pixels. Counts cannot regress; pixel metrics allow 2% + 1px tolerance. Every validation task completes, completion cannot regress, and the stability budget holds. Keystrokes are secondary; timing estimates are not used.
+   - Surface-feature: require full completion, no completion regression, and the same physical-interaction non-regression tolerances.
    - Migration: require check, full validation completion/no regression and current whole-version screen gates. Compare against the certified release canonical; fall back to that exact canonical on any deployment failure, and abort if it cannot pass.
-3. **"Prediction held"** means the measured validation KLM saving is at least 50% of the predicted one.
+3. **"Prediction held"** compares measured physical-interaction savings with predicted savings (50% threshold for positive predictions); timing is not used.
 4. **Test measurement** uses the next actual blind even day on which the accepted version was measured. Superseded/out-of-window versions are explicitly unmeasured; night 9 is measured on day 10. Reports show each day’s task/completion count and compare both the active-release persona canonical and the deterministic no-agent recertify/fallback fork, with identical schedules and seeds. Agent-only savings use the no-agent arm; canonical differences include vendor/fork drift.
 5. **Simulated user revert** happens at night step 8, before deploy. Probability = min(0.3, 0.05 + 0.03 × components moved), seeded per (world seed, night, persona).
 6. **Min clicks** are reported as the per-workflow mean over the last train day's tasks, for workflows whose minimum changed.
@@ -659,7 +705,7 @@ same-task traces; version/spec-specific contexts are supported. Its cumulative
 WASM wiring example are in `app/README.md`. Real WASM can use this seam without changing views, agent schemas, or the painter; verify real-run replay contexts as tracked above.
 
 Cost charts use only `measured.test`, never evidence or validation values.
-Clicks, keys, scrolls and KLM, their separate percentages above floor, and
+Clicks, scroll count/distance and mouse travel (keys secondary), available click floors, and
 popups/task are directly labeled in persona colors, with busy/quiet day labels
 and a complete accessible data table. The break panel is explicitly recorded
 replay: audience text is never misrepresented as a fresh checker result.
@@ -733,8 +779,7 @@ the release that certified the recorded iteration. Benchmark clinical choices
 missing from stock TaskChoices (diagnosis, service level, refill count) are
 pinned as existing Goals by the adapter; stock `ehr min-clicks` outputs remain
 verbatim beside the pinned paths. Directed search is exact only in its reported
-space; neither JSON nor chart claims a global optimum. KLM is minimum-click-path
-effort, not independently minimum time. Fields/screens/popups are replay-derived.
+space; neither JSON nor chart claims a global optimum. Geometry describes the minimum-click path when a matching Chromium atlas exists; missing geometry is unavailable. Fields/screens/popups are replay-derived. Raw historical timing fields remain archived and are not used.
 
 The `run-days` CLI now computes the run report after completing a real run,
 without repeating the canonical calculation. Use `--no-complexity` to skip this
@@ -743,16 +788,16 @@ run's clinical artifacts have been saved; no partial report is published.
 Five-persona manifests and both recorded program/certificate layouts are
 supported. Authoritative roles, not daily schedule volume, determine projection.
 
-Dashboard: `/dashboard?run=run1-P3&view=Workflow+complexity` has all six metric
+Dashboard: `/dashboard?run=run1-P3&view=Workflow+complexity` has physical-interaction metric
 switches, directly labeled workflow stacks, floors, vendor/rejection markers,
 shared-scale persona panels and exact tables with v0 deltas. It uses existing
 persona colors and the read-only dashboard JSON boundary. Files are new except
 for the Dashboard import/tab/render registration. Screenshot:
 `app/shots/complexity.png` (desktop); Playwright also checks the 390px viewport.
 
-P3 W4 union, for its fixed insulin/assessment case: v0 = 25 clicks, 39 keys,
-129.95 KLM seconds; v1–v7 = 23 clicks, 39 keys, 127.55 seconds. The floor is
-14 clicks, 20 keys, 92.3 seconds, two screen visits, 13 required fields and one
+P3 W4 union, for its fixed insulin/assessment case: v0 = 25 clicks, 39 keys;
+v1–v7 = 23 clicks, 39 keys. Historical timing estimates are archived and not used. The floor is
+14 clicks, 20 keys, two screen visits, 13 required fields and one
 popup. No daily task-count denominator is used. The current outputs report
 `navigationDirected` for the native and pinned minima.
 

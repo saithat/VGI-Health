@@ -1,3 +1,6 @@
+import {captureGeometry} from './geometry-capture';
+import {createHash} from 'node:crypto';
+import {mkdirSync,writeFileSync} from 'node:fs';
 import { presentationBundleSchema } from "../src/ehr/ui/presentation-types";
 import { readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
@@ -151,7 +154,7 @@ async function visibility(page: Page) {
   expect(failures).toEqual([]);
 }
 for (const file of fixtures)
-  test(`semantic UI fidelity: ${file}`, async ({ page, baseURL }) => {
+  test(`semantic UI fidelity: ${file}`, async ({ page, baseURL },testInfo) => {
     const screen = uiScreenSchema.parse(JSON.parse(readFileSync(file, "utf8")));
     const browserErrors: string[] = [];
     page.on("pageerror", (error) => browserErrors.push(error.message));
@@ -163,6 +166,11 @@ for (const file of fixtures)
     await page.goto("/screen-check.html");
     await page.waitForFunction(() => typeof window.renderUi === "function");
     await render(page, screen);
+    if(process.env.EHR_GEOMETRY_DIR && testInfo.project.name==='desktop'){
+      const sha=createHash('sha256').update(readFileSync(file)).digest('hex');
+      const geometry=await captureGeometry(page,screen.screen??resolve(file).split("/").at(-1)?.replace(".json","")??file,`${file}:${sha}`);
+      mkdirSync(process.env.EHR_GEOMETRY_DIR,{recursive:true});writeFileSync(resolve(process.env.EHR_GEOMETRY_DIR,`${sha}.json`),JSON.stringify(geometry));
+    }
     expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
       expectedAria(screen),
     );
@@ -173,6 +181,11 @@ for (const file of fixtures)
       await visibility(page);
       // Background must also pass fidelity once the blocking alert is acknowledged.
       await render(page, { ...screen, modal: null });
+      if(process.env.EHR_GEOMETRY_DIR&&testInfo.project.name==='desktop'){
+        const sha=createHash('sha256').update(readFileSync(file)).digest('hex');
+        const geometry=await captureGeometry(page,screen.screen??file,`${file}:background:${sha}`);
+        writeFileSync(resolve(process.env.EHR_GEOMETRY_DIR,`${sha}.background.json`),JSON.stringify(geometry));
+      }
       expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
         expectedAria({ ...screen, modal: null }),
       );

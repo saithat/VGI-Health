@@ -291,6 +291,18 @@ interface Ctx {
 }
 
 function emit(ctx: Ctx, screen: string, event: Event, ops: TraceEvent['ops']): void {
+  // The fake planner used virtual navigation IDs. Resolve them to actual fake
+  // programme controls so browser geometry never invents a target location.
+  if('click' in event&&event.click.comp.startsWith('goto-')){
+    const destination=event.click.comp.slice(5);
+    const source=ctx.program.screens.find(s=>s.components.some(c=>gotoOf(c)===destination));
+    const control=source?.components.find(c=>gotoOf(c)===destination);
+    if(source&&control){screen=source.id;event={click:{comp:control.id}};}else ops=ops.filter(op=>op!=='click'&&op!=='point');
+  }else if('click' in event&&event.click.comp==='back'){
+    const source=ctx.program.screens.find(s=>s.id===screen),control=source?.components.find(c=>kindTag(c.kind)==='back');
+    if(control)event={click:{comp:control.id}};else ops=ops.filter(op=>op!=='click'&&op!=='point');
+  }
+
   const add = ops.reduce((acc, op) => acc + (op === 'click' ? KLM.pointClick : op === 'key' ? KLM.key : op === 'scroll' ? KLM.scroll : op === 'scan' ? KLM.scan : op === 'think' ? KLM.think : op === 'wait' ? KLM.wait : 0), 0);
   ctx.t += add;
   ctx.trace?.push({ task: ctx.taskId, t: ctx.t, screen, event, ops, result: 'ok' });
@@ -510,10 +522,14 @@ export async function fakeRenderScreens(i: RenderInput): Promise<string[]> {
   for (const s of i.program.screens) {
     const items = s.components.filter((comp) => isShown(comp, s)).map((comp) =>
       node('div', [{ name: 'class', value: `ehr-${kindTag(comp.kind)}` }, { name: 'data-comp-id', value: comp.id }], [text(comp.label)]));
-    const tree = node('div', [{ name: 'class', value: 'ehr-main' }], [node('h1', [{ name: 'class', value: 'ehr-screen-title' }], [text(s.title)]), ...items]);
+    const tree = node('div', [{ name: 'class', value: 'ehr-main' },{name:'data-screen-id',value:s.id}], [node('h1', [{ name: 'class', value: 'ehr-screen-title' }], [text(s.title)]), ...items]);
     const file = path.join(i.outDir, `${s.id}.json`);
     await writeFile(file, JSON.stringify(tree));
     files.push(file);
+    if(i.ui){
+      const expanded=node('div',[{name:'class',value:'ehr-main'},{name:'data-screen-id',value:s.id}],[node('h1',[],[text(s.title)]),...s.components.map(comp=>node('div',[{name:'data-comp-id',value:comp.id}],[text(comp.label)]))]);
+      const expandedFile=path.join(i.outDir,`${s.id}-expanded.json`);await writeFile(expandedFile,JSON.stringify(expanded));files.push(expandedFile);
+    }
   }
   return files;
 }
