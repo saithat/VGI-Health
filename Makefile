@@ -18,7 +18,6 @@ install:
 	$(MAKE) load
 
 run:
-	$(MAKE) infra-up
 	$(MAKE) wasm-check
 	pnpm --filter app build
 	node scripts/demo-urls.mjs $(APP_PORT)

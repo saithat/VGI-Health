@@ -11,7 +11,9 @@
     "test:smoke": "playwright test dashboard.spec.ts",
     "mock-run": "pnpm --filter agent exec tsx ../app/scripts/generate-mock.ts",
     "screen-check": "node scripts/screen-check.mjs",
-    "export-mock-pages": "node scripts/export-mock-pages.mjs"
+    "export-mock-pages": "node scripts/export-mock-pages.mjs",
+    "verdicts": "node scripts/verdicts.mjs",
+    "test:live": "playwright test live-ehr.spec.ts"
   },
   "dependencies": {
     "@mantine/core": "^8.3.17",

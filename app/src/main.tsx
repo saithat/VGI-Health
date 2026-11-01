@@ -1,11 +1,9 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { MantineProvider, createTheme } from "@mantine/core";
-import { MedplumProvider } from "@medplum/react-hooks";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
-import "@medplum/react/styles.css";
-import { medplum } from "./data/medplum";
+import { Browse } from "./browser/Browse";
 import { App } from "./App";
 import { ReplayApp } from "./ReplayApp";
 import "./styles.css";
@@ -24,16 +22,13 @@ const theme = createTheme({
 createRoot(root).render(
   <React.StrictMode>
     <MantineProvider theme={theme}>
-      <MedplumProvider medplum={medplum}>
-        {window.location.pathname.replace(/\/$/, "") === "/dashboard" ? (
-          <ReplayApp dashboard />
-        ) : new URLSearchParams(window.location.search).get("mode") ===
-          "connected" ? (
-          <App />
-        ) : (
-          <ReplayApp />
-        )}
-      </MedplumProvider>
+      {window.location.pathname.replace(/\/$/, "") === "/dashboard" ? (
+        <ReplayApp dashboard />
+      ) : window.location.pathname.replace(/\/$/, "") === "/browse" ? (
+        <Browse />
+      ) : (
+        <App />
+      )}
     </MantineProvider>
   </React.StrictMode>,
 );

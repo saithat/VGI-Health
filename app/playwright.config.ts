@@ -21,7 +21,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm exec vite --host 127.0.0.1 --port ${port} --strictPort`,
+    command: `pnpm exec vite ${process.env.APP_TEST_PREVIEW ? "preview" : ""} --host 127.0.0.1 --port ${port} --strictPort`,
     url: `http://127.0.0.1:${port}/screen-check.html`,
     reuseExistingServer: false,
   },

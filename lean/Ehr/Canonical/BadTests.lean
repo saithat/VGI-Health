@@ -1,4 +1,5 @@
 import Ehr.Canonical.Tests
+import Ehr.Canonical.LegalTests
 namespace Ehr.Canonical.Tests
 open Ehr.Specs.V1
 
@@ -37,7 +38,8 @@ def offerOnly : State := more highMme [.click "w1Sign.edit",
 #guard reason (one offerOnly (.click "w1Sign.commit.signOrders")).2 == "entry required: naloxoneEducation"
 /-- Human education plus offer permits the high-MME order after alert acknowledgment. -/
 def educated : State := more offerOnly [.click "w1Sign.edit",
-  .enter "w1Orders.naloxoneEducation" (.flag true), .click "w1Orders.toSign", .click "w1Verify.continue"]
+  .enter "w1Orders.naloxoneEducation" (.flag true),
+  .enter "w1Orders.legal.naloxoneEducationOutcome" (.code "provided"), .click "w1Orders.toSign", .click "w1Verify.continue"]
 #guard (finish educated "w1Sign" "signOrders").commits == ["signOrders"]
 /-- A lower-dose opioid with an existing benzodiazepine also needs naloxone. -/
 def benzoFacts : Facts := { adult with currentMedClasses := ["benzodiazepine"] }
@@ -45,7 +47,8 @@ def benzoFacts : Facts := { adult with currentMedClasses := ["benzodiazepine"] }
   (f := benzoFacts)).2 == "entry required: naloxoneOffer"
 #guard (finish (more (run (opioidPath) (f := benzoFacts))
     [.click "w1Sign.edit", .enter "w1Orders.naloxoneOffer" (.code "prescribed"),
-     .enter "w1Orders.naloxoneEducation" (.flag true), .click "w1Orders.toSign",
+     .enter "w1Orders.naloxoneEducation" (.flag true),
+  .enter "w1Orders.legal.naloxoneEducationOutcome" (.code "provided"), .click "w1Orders.toSign",
      .click "w1Verify.continue"] (f := benzoFacts)) "w1Sign" "signOrders" (f := benzoFacts)).commits == ["signOrders"]
 
 /-! Each permanent seed has an explicit regression. Structural predicates here

@@ -27,3 +27,40 @@ The updated baseline requires controlled-order details shown during signing (21 
 Every spec rule docstring is labeled `Law`, `Entrenched` (with a reason/source), `Hospital policy (not law)`, or `Product design property`. Existing barcode scans are entrenched under the Leapfrog BCMA standard; two identifiers support Joint Commission accreditation. Patient-ID re-entry, second-nurse checks and kg-only weight remain local policies. No guidance or accreditation rule was added.
 
 Content tests establish capture and visibility gates, not actual VIS delivery or full legal compliance. The rendered EPCS order-summary data and production checker certificates remain separate integration work tracked in `docs/design/changes-requests.md`.
+
+## Owner-approved full catalog baseline
+
+This release now inherits every one of the 124 `fit: spec-data` rules in the
+reviewed catalog (120 law, 4 entrenched), in addition to 29 existing catalog
+mappings. The v1 additions are split into CMS, Title 22, California statutes,
+federal prescription/vaccine, and entrenched modules. v1.1 imports v1; v2
+imports v1.1. Both concrete `Extends` proofs still use `decide`; their axiom
+prints contain only `propext`.
+
+The canonical now includes the planned scoped artifact screens, grouped
+prescription content on each actual order row, pinned controlled-signing/result
+review panels, separate refill denial, and a new-prescription path in W7.
+Specialist medication authorizations inherit ordinary signing, pre-op and
+alert safeguards; v2 antibiotic indication also applies to them. All existing
+requirements remain. In particular, the old naloxone education flag remains
+required alongside the new human outcome enum, preserving the stricter policy.
+
+There are 24 permanent bad programs, including eight new legal-content/display
+mutations. The human-event walkthroughs exercise every new artifact action.
+`STATS.md` reports source/basis counts. `catalog.json` records each rule's
+`encodedIn`, or an explicit reason where it requires core features or lies
+outside the checker boundary.
+
+These exports do not certify actual panel contents or artifact effects.
+[CR-15](../../docs/design/changes-requests.md#cr-15-full-catalog-content-adoption-content--renderappworldsimcheckwasm)
+requests the 14 renderer payload bindings, actual Schedule V/GHB formulary
+support, adapter writes/reset, checker certificates and WASM adoption. The
+current agent validator also still needs the actual-release schema fixes in
+CR-12/14. See [the source map](../../docs/regulations.md#full-catalog-encoding-map).
+
+Regenerate with `python lean/Ehr/Specs/Rules/encode.py`, then
+`cd lean && lake exe export-content`, then from the root
+`python lean/Ehr/Canonical/export_rules.py`. The final command audits all 124
+encodings against the actual exported specs and regenerates both statistics
+files and the legal source map. The older exporter log still says 16 seeds;
+the exported corpus and audited count contain all 24.

@@ -111,7 +111,41 @@ def scheduleIIRefills : Program := seed 16 <|
         | .button (.goto _) | .button .back | .«macro» _ => false
         | _ => true }
 
-/-- Stable filenames and all sixteen seeds. -/
+/-- Remove every human route to a legally required element, preserving the guard. -/
+def withoutElement (p : Program) (element : ElementId) : Program :=
+  { p with screens := p.screens.map fun s =>
+      { s with components := s.components.filter fun c => match c.kind with
+          | .field e .. => e != element | _ => true } }
+
+/-- 17: A restraint order has no written care-plan modification. -/
+def noRestraintCarePlan : Program := seed 17 <| withoutElement (base 17) "restraintCarePlanChange"
+/-- 18: An operative report cannot capture the surgical technique. -/
+def noOpTechnique : Program := seed 18 <| withoutElement
+  (forPersona Specs.V1.specV1 canonicalV1 "seed18" .surgeon) "opTechnique"
+/-- 19: Vaccine documentation omits the administering provider's address. -/
+def noVaccineProviderAddress : Program := seed 19 <| withoutElement
+  (forPersona Specs.V1.specV1 canonicalV1 "seed19" .np) "vaccineProviderAddress"
+/-- 20: MAR documentation omits the actual administration time. -/
+def noAdministrationTime : Program := seed 20 <| withoutElement
+  (forPersona Specs.V1.specV1 canonicalV1 "seed20" .rn) "actualAdministrationTime"
+/-- 21: Controlled prescriptions cannot capture product strength. Dose remains,
+but dose is not a substitute for product strength. -/
+def noControlledStrength : Program := seed 21 <| withoutElement (base 21) "controlledProductStrength"
+/-- 22: Put the legal signing notice in a closed group; no receipt can replace it. -/
+def hiddenSigningNotice : Program := seed 22 <| (base 22).updateScreen "w1Sign" fun s =>
+  { s with components := group s.id "closedNotice" "Signing notice" (startCollapsed := true) ::
+      s.components.map fun c => if c.kind == .panel "controlledSigningLegalNotice" then
+        { c with parent? := some "w1Sign.closedNotice" } else c }
+/-- 23: Telehealth consent outcome has no capture route. -/
+def noTelehealthConsent : Program := seed 23 <| withoutElement (base 23) "telehealthConsentRecord"
+/-- 24: A default claims human schedule eligibility for refill authorization.
+The never/human-only policy refuses it, even when the code is allowed. -/
+def defaultRefillEligibility : Program := seed 24 <| (base 24).updateScreen "w7Decision" fun s =>
+  s.updateComp "w7Decision.legal.refillScheduleEligibility" fun c =>
+    { c with kind := .field "refillScheduleEligibility" (.fixed 0) (.default "notScheduleII") }
+
+/-- Stable filenames for the original sixteen seeds and eight legal regressions. -/
+
 def programs : List (String × Program) :=
   [("01-hidden-allergies", hiddenAllergies), ("02-prefilled-identity", prefilledIdentity),
    ("03-pounds-as-weight", poundsAsWeight), ("04-macro-override", macroOverride),
@@ -120,8 +154,12 @@ def programs : List (String × Program) :=
    ("09-hidden-allergy-alert", hiddenAllergyAlert), ("10-invented-alert", inventedAlert),
    ("11-repeated-interaction", repeatedInteraction), ("12-passive-popup", passivePopup),
    ("13-no-cures", noCures), ("14-macro-naloxone", macroNaloxone),
-   ("15-hidden-controlled-details", hiddenControlledDetails), ("16-schedule-ii-refills", scheduleIIRefills)]
-#guard programs.length == 16
+   ("15-hidden-controlled-details", hiddenControlledDetails), ("16-schedule-ii-refills", scheduleIIRefills),
+   ("17-no-restraint-care-plan", noRestraintCarePlan), ("18-no-op-technique", noOpTechnique),
+   ("19-no-vaccine-provider-address", noVaccineProviderAddress), ("20-no-administration-time", noAdministrationTime),
+   ("21-no-controlled-strength", noControlledStrength), ("22-hidden-signing-notice", hiddenSigningNotice),
+   ("23-no-telehealth-consent", noTelehealthConsent), ("24-default-refill-eligibility", defaultRefillEligibility)]
+#guard programs.length == 24
 #guard !referencesValid Specs.V1.specV1 poundsAsWeight
 #guard !referencesValid Specs.V1.specV1 inventedAlert
 #guard !(reachable unreachableRefill "home").contains "w7Decision"

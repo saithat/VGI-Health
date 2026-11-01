@@ -1,4 +1,9 @@
 import Ehr.Core.Types
+import Ehr.Specs.Rules.Cms
+import Ehr.Specs.Rules.Title22
+import Ehr.Specs.Rules.CaStatutes
+import Ehr.Specs.Rules.Federal
+import Ehr.Specs.Rules.Entrenched
 
 /-!
 # Hospital spec, version "v1"
@@ -559,7 +564,9 @@ every line (see `orderSigningEntries`). -/
 
 /-- Law: 22 CCR 70263(g), (h)(4).
 The drug (formulary name). Order sets and preference lists may fill it in,
-and a human confirms it. -/
+and a human confirms it.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def drug : ElementSpec where
   id := "drug"
   label := "Medication"
@@ -636,7 +643,9 @@ def quantity : ElementSpec where
   fhirTarget := "MedicationRequest.dispenseRequest.quantity"
 
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Number of refills allowed. -/
+Number of refills allowed.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def refills : ElementSpec where
   id := "refills"
   label := "Refills"
@@ -913,8 +922,9 @@ def triageAcuity : ElementSpec where
   friction := .safety
   fhirTarget := "Encounter.priority"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-How the patient arrived (walk-in, ambulance, …). -/
+/-- Law: 22 CCR §70413(h). Catalog: ca-title22-70413-ed-arrival-means.
+How the patient arrived (walk-in, ambulance, ...), required on recordEdArrival.
+This reuses the original field and record-confirm policy. -/
 def arrivalMode : ElementSpec where
   id := "arrivalMode"
   label := "Arrival mode"
@@ -1004,8 +1014,10 @@ def adminReason : ElementSpec where
   friction := .compliance
   fhirTarget := "MedicationAdministration.statusReason"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Injection site, for injected medications. Optional. -/
+/-- Law: 22 CCR §70749(a)(6)(C). Catalog: ca-title22-70749-mar-site.
+Record the injection site. The UI requires a site answer for every administration
+as a broader hospital policy; an oral dose may explicitly say not applicable.
+The original confirmation policy and compliance friction remain. -/
 def adminSite : ElementSpec where
   id := "adminSite"
   label := "Site"
@@ -1320,8 +1332,10 @@ def opCondition : ElementSpec where
   friction := .compliance
   fhirTarget := "Procedure.outcome.text"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Post-op order set: diet. Optional. -/
+/-- Law: 22 CCR §70749(a)(4). Catalog: ca-title22-70749-diet-orders.
+Diet content is required on the dedicated signDietOrder artifact. Its existing
+safety friction and confirmation policy remain; medication signing does not
+silently acquire a universal diet requirement. -/
 def postOpDiet : ElementSpec where
   id := "postOpDiet"
   label := "Diet"
@@ -1469,7 +1483,9 @@ def dischargeDestination : ElementSpec where
 /-! ## Data elements: refill requests (W7) -/
 
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-Approve, deny, or modify the refill request. -/
+Approve, deny, or modify the refill request.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def refillDecision : ElementSpec where
   id := "refillDecision"
   label := "Refill decision"
@@ -1502,7 +1518,9 @@ def refillQuantity : ElementSpec where
   fhirTarget := "MedicationRequest.dispenseRequest.quantity"
 
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-The number of refills granted. -/
+The number of refills granted.
+Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
+reuse this element without changing its kind, permissions or friction. -/
 def refillRefills : ElementSpec where
   id := "refillRefills"
   label := "Refills"
@@ -1537,8 +1555,10 @@ def refillProtocolMet : ElementSpec where
   friction := .compliance
   fhirTarget := "Task.extension.protocolMet"
 
-/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
-The reason for denying a refill. Optional. -/
+/-- Law: 21 CFR §1306.12(a). Catalog: federal-rx-1306-12-zero-refills.
+The dedicated denyRefill path needs a nonempty denial reason. Requiring this
+explanation is the hospital's implementation of a separate refusal path, not a
+claim that federal law mandates this exact field. Approval cannot record a denial. -/
 def refillDenyReason : ElementSpec where
   id := "refillDenyReason"
   label := "Reason for denial"
@@ -2260,18 +2280,77 @@ def design : DesignRules where
   landmarks := [patientBanner.id]
   catalog := catalog
 
+/-- Hospital policy (not law). Specialist prescription/medication authorizations
+inherit the ordinary signing contract, including pre-op safety and alerts.
+The artifact is one order episode, not proof of every required physical event. -/
+def issuanceCommits : List CommitId :=
+  ["signScheduleIISeries", "signEmergencyRxFollowup", "authorizeDirectDispensing",
+   "authorizeSelfAdministration", "authorizeBedsideMedication", "authorizePatientOwnedMedication"]
+
+/-- Hospital policy (not law). These specialist note/order actions retain a
+human patient identity check and the ordinary allergy/medication review. -/
+def specialtyCommits : List CommitId :=
+  ["signRestraintOrder", "signTreatmentOrder", "signDietOrder", "signStandingOrder",
+   "signNewbornOxygenOrder", "signAnesthesiaRecord", "signPostAnesthesiaNote",
+   "signProgressNote", "signSuicideRiskAssessment"]
+
+/-- Product design property. New artifact paths cannot bypass ordinary signing. -/
+def inheritedEntries : List EntryReq :=
+  issuanceCommits.flatMap (fun c =>
+    (orderSigningEntries { id := c, label := c, roles := prescribers }) ++
+    preOpExtraEntries.map (fun r => { r with commit := c }) ++
+    [{ commit := c, element := "drug" }]) ++
+  specialtyCommits.map (fun c => { commit := c, element := "patientIdReentry" }) ++
+  [{ commit := "signProgressNote", element := "progressNote" }]
+
+/-- Product design property. Inherited reviews keep their exact modes and waivers. -/
+def inheritedReviews : List ReviewReq :=
+  issuanceCommits.flatMap (fun c =>
+    (orderSigningReviews { id := c, label := c, roles := prescribers }) ++
+    preOpExtraReviews.map (fun r => { r with commit := c })) ++
+  specialtyCommits.flatMap (fun c =>
+    [ { commit := c, info := "allergyList", mode := .shownOnCommit },
+      { commit := c, info := "currentMeds", mode := .shownOnCommit }])
+
+/-- Product design property. All issuance variants retain each signing alert;
+only ids and commit bindings differ. Triggers and tiers remain unchanged. -/
+def inheritedAlerts : List AlertSpec :=
+  issuanceCommits.flatMap fun c => (alerts.filter (·.commit == "signOrders")).map fun a =>
+    { a with id := a.id ++ "." ++ c, commit := c }
+
+/-- Product design property. All catalog additions, grouped by legal source. -/
+def ruleEntries : List EntryReq :=
+  Rules.Cms.entries ++ Rules.Title22.entries ++ Rules.CaStatutes.entries ++
+  Rules.Federal.entries ++ Rules.Entrenched.entries
+
+/-- Product design property. All catalog panels have shown-on-commit guards. -/
+def ruleReviews : List ReviewReq :=
+  Rules.Cms.reviews ++ Rules.Title22.reviews ++ Rules.CaStatutes.reviews ++
+  Rules.Federal.reviews ++ Rules.Entrenched.reviews
+
+/-- Product design property. Specialist issuance also inherits every new
+prescription-content gate and every controlled-prescription display rule. -/
+def inheritedRuleEntries : List EntryReq :=
+  issuanceCommits.flatMap fun c => (ruleEntries.filter (·.commit == "signOrders")).map fun r =>
+    { r with commit := c }
+
+/-- Product design property. No specialist signing action bypasses controlled details. -/
+def inheritedRuleReviews : List ReviewReq :=
+  issuanceCommits.flatMap fun c => (ruleReviews.filter (·.commit == "signOrders")).map fun r =>
+    { r with commit := c }
+
 /-! ## The spec -/
 
 /-- Product design property.
 The hospital spec, version "v1". -/
 def specV1 : Spec where
   version := "v1"
-  elements := elements
-  infos := infos
-  commits := commits
-  entries := entries
-  reviews := reviews
-  alerts := alerts
+  elements := elements ++ Rules.Cms.elements ++ Rules.Title22.elements ++ Rules.CaStatutes.elements ++ Rules.Federal.elements ++ Rules.Entrenched.elements
+  infos := infos ++ Rules.Cms.infos ++ Rules.Title22.infos ++ Rules.CaStatutes.infos ++ Rules.Federal.infos ++ Rules.Entrenched.infos
+  commits := commits ++ Rules.Cms.commits ++ Rules.Title22.commits ++ Rules.CaStatutes.commits ++ Rules.Federal.commits ++ Rules.Entrenched.commits
+  entries := entries ++ ruleEntries ++ inheritedEntries ++ inheritedRuleEntries
+  reviews := reviews ++ ruleReviews ++ inheritedReviews ++ inheritedRuleReviews
+  alerts := alerts ++ Rules.Cms.alerts ++ Rules.Title22.alerts ++ Rules.CaStatutes.alerts ++ Rules.Federal.alerts ++ Rules.Entrenched.alerts ++ inheritedAlerts
   design := design
 
 /-! ## Self-checks

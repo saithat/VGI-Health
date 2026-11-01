@@ -7,28 +7,37 @@ Every night an AI agent redesigns each clinician's EHR screens to save them clic
 - Lean practices: [`CLAUDE.md`](CLAUDE.md) · Proof status: [`TODO_PROOFS.md`](TODO_PROOFS.md)
 
 ## Quick start
-Requires Docker Compose, Node 22+, pnpm 11 (`corepack enable`), and
-[elan](https://github.com/leanprover/elan) on PATH. Start Docker, then:
+Requires Node 22+ and pnpm 11 (`corepack enable`). The offline UI needs no
+Docker, Medplum, API key, Lean installation or Emscripten:
 
 ```sh
 git clone https://github.com/saithat/VGI-Health.git
 cd VGI-Health
-make install   # Lean build, packages, Medplum setup, committed patient fixtures
+pnpm install
 make run
 ```
 
-EHR: **http://localhost:5173/?persona=P1** (change to P2–P5).
-Dashboard: **http://localhost:5173/dashboard**. Medplum API: **:8103**;
-Medplum admin: **http://localhost:3000/**. Override the app port with
-`make run APP_PORT=5187` if 5173 is occupied.
+UI browser: **http://localhost:5173/browse**. Open any of the canonical releases,
+P1–P5 projections, bad programs or recorded program versions with one of the
+174 committed Synthea patients. Every EHR click runs **real Lean WASM**.
 
-The default is **REPLAY**: no API key or internet after install. It selects the
-longest replayable real run under `runs/`, then newest timestamp; currently it
-falls back to the clearly labeled authored `runs/mock` examples. A real replay
-needs `replay.json` inputs for P1–P5 ([format](app/README.md#recorded-run-demo-dashboard)).
-Override selection with `VGI_RUN=mock make run`. WASM is committed;
-**install does not need Emscripten**. `make wasm-check` verifies freshness;
-developers rebuilding it use `wasm/setup.sh && make wasm`.
+Persona defaults: **http://localhost:5173/?persona=P1** (change to P2–P5).
+Add `&run=mock` or another recorded run id for its latest deployed program;
+without a run, the v1 projection opens. P2 defaults to an ED fixture, P3 to an
+inpatient fixture, P4 to a child and P5 to a surgical fixture. The inspector shows
+live state, blockers and commits; checker verdicts remain “verdict not computed”
+until the native checker CLI is available (`pnpm --filter app verdicts`).
+
+Dashboard: **http://localhost:5173/dashboard**. Its recorded run selection prefers
+the longest replayable real run, then newest timestamp; currently it falls back
+to the labeled authored `runs/mock` examples. Only this mock dashboard replay
+uses a fixture interpreter. Override selection with `VGI_RUN=mock make run`.
+Use `make run APP_PORT=5187` if 5173 is occupied.
+
+WASM is committed; `make wasm-check` verifies freshness. Developers rebuilding
+it use `wasm/setup.sh && make wasm`. Full Medplum installation remains optional:
+install Docker Compose and [elan](https://github.com/leanprover/elan), then run
+`make install`. Medplum API: **:8103**; admin: **http://localhost:3000/**.
 
 Replay needs no login. For local Medplum, persona logins are:
 
