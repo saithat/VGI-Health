@@ -212,7 +212,7 @@ clinical correctness or real certification. See [BRIEF §13](BRIEF.md#13-trusted
   `make seed SYNTHETIC_HOSPITAL=1` (also supported by `make install`), or run
   `make load-synthetic-hospital`. Mapping, checksums and limitations:
   [import guide](scripts/synthetic-hospital/README.md). Full Notes/history display
-  is planned in [HANDOFF-data.md](HANDOFF-data.md); this phase imports the records.
+  is planned in [docs/STATUS.md](docs/STATUS.md); this phase imports the records.
   (see its CITATION.cff). Its Epic-style simulator is an API, not a UI. We took
   only its chart organization as a reference (chart summary, encounters, problem
   list; results for labs, imaging and pathology; orders) and copied no code or
@@ -221,3 +221,16 @@ clinical correctness or real certification. See [BRIEF §13](BRIEF.md#13-trusted
 - EHR screen patterns follow public documentation and screenshots of real EHRs
   (sources in docs/design/ehr-ui-research.md). No proprietary vendor screens
   were copied.
+
+## Why this is malleable software
+
+[Ink & Switch, “Malleable Software”](https://www.inkandswitch.com/essay/malleable-software/) describes software people can shape to their needs.
+One EHR supplies a common vendor reference; each clinician has a role-based fork.
+Only the AI agent modifies UI programs, evolving each fork around its clinician’s work.
+Every proposed change is checked against the rules before deployment.
+Version history is a tool for inspecting decisions, comparing changes and returning to prior versions.
+AI changes stay visible through readable diffs in the UI browser.
+Certification answers the open problem of untrusted modifications within the modeled rules.
+Read the [verification scope](docs/VERIFICATION.md) and [Lean mistakes](docs/LEAN-MISTAKES.md).
+
+The archived `runs/run1-P3` retains historical local paths and release spellings for provenance.

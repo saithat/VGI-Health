@@ -32,13 +32,13 @@
       "fixture": "app/src/fixtures/punch/P1-orders.json",
       "fixtureSha256": "79323ad030d413e8b11d3ec32b0ee0ecbb79f8b41220346154d413f74f4ec31f",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P1-orders.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "05197298a05357f26dce4fb3c9267e47d4a878577e7cdcf83765bfbf54ef5d50",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P1-orders.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "ce5f92daa33ff6ca751124269e6c64d844b4e03e5ffdd17ec94c0b3ecca4be7a",
         "width": 1440,
         "height": 900
@@ -49,13 +49,13 @@
       "fixture": "app/src/fixtures/punch/P1-schedule.json",
       "fixtureSha256": "91d931e0547e20b7334c03a9a60b957a89d3487782fae15adeb0343079297689",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P1-schedule.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "d2ac87e2287ac095946f045c1c75858710038ca98c17672cbda3d10b4717c2a6",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P1-schedule.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "f862a9d83d435bde37dd1908b995eb577ca5997a6c19df1612c0fc924be068be",
         "width": 1440,
         "height": 900
@@ -66,13 +66,13 @@
       "fixture": "app/src/fixtures/punch/P2-track-board.json",
       "fixtureSha256": "41ed874a2a499ee1500e846c595107fa395d10bf08f2a0be884d18040af3d8c7",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P2-track-board.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "bd6ee10ceb30e235ab2ff75036de1d1d3d1b8c0d1a8089986d336121c5bff990",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P2-track-board.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "d0ba5135a09187f2fbea9d6c84675bcfe8ac32e3ac62388a93601317affd9bad",
         "width": 1440,
         "height": 900
@@ -83,13 +83,13 @@
       "fixture": "app/src/fixtures/punch/P2-triage.json",
       "fixtureSha256": "f4c2e3542257967747cbd635229c90eece092d70856cebfa2877cf3f39f69d47",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P2-triage.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "c32f4d2a3f53e60682afa40be1d769bd7e97e4a7fd7e5c0d382fc4718ad0ea8c",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P2-triage.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "af3db15a0fafd95ac0996aad5e678d2324da96dd2a25520b3b9c1e13e0e42a75",
         "width": 1440,
         "height": 900
@@ -100,13 +100,13 @@
       "fixture": "app/src/fixtures/punch/P3-MAR.json",
       "fixtureSha256": "6308296d64a3aa9630c850acceed10a79733af25d085ec5c574d46aefc5dea4d",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P3-MAR.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "17ab402ea3349ef90233b5e50ea815346c6c70a480621a856928fd7e9e1243b4",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P3-MAR.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "faa2eaa7a4f35fc76e4f9fd919665512f841da5996dba1872a2ec2ea05a1ed5e",
         "width": 1440,
         "height": 900
@@ -117,13 +117,13 @@
       "fixture": "app/src/fixtures/punch/P3-flowsheet.json",
       "fixtureSha256": "01af311422dca77a32cffa294b2617eeb92fd17e0c81a60404f53468df4795a1",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P3-flowsheet.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "fab0a210f266a5419b867acd3a40515c04ac7e023ed1af3ffde6f3361d91b6db",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P3-flowsheet.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "f64544ae437242dcb0bb6b1e8881c93f6ae2e57554b0cacd2f722cec58d767e7",
         "width": 1440,
         "height": 900
@@ -134,13 +134,13 @@
       "fixture": "app/src/fixtures/punch/P4-growth.json",
       "fixtureSha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P4-growth.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "cff7be617484cedd84a678fd32c258d088a7a1f6e2a03e5bad5cc568fea8b7c3",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P4-growth.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "ff2598ff8f1b54fd195b0a0e838d99a58a1f10aeb91c52a747bcab1ae55e416a",
         "width": 1440,
         "height": 900
@@ -151,13 +151,13 @@
       "fixture": "app/src/fixtures/punch/P5-OR-schedule.json",
       "fixtureSha256": "1534c5806695f624917e27f473d2375eb5ae22e00af02ac34f97d750de4734a8",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P5-OR-schedule.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "d9ceec2781e1e139b9a5ffc081b67054651b160b02d82a284415a8cffb4009d1",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P5-OR-schedule.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "b94e20d2144115e83d89463184635bfc23a4d62b35a73f641ea51aff240feb41",
         "width": 1440,
         "height": 900
@@ -168,13 +168,13 @@
       "fixture": "app/src/fixtures/punch/P5-op-note.json",
       "fixtureSha256": "cac26a9d3dec6b703fbe14c74c05b665fbd0564be7034e0b519fb6e459e6ede3",
       "before": {
-        "path": "app/shots/realism/punch/before/populated/P5-op-note.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "d2ebf2cd479e999346d87e40ef0d0529a02ebd87b3f503cc52f79fc9e194a1c4",
         "width": 1440,
         "height": 900
       },
       "after": {
-        "path": "app/shots/realism/punch/after/populated/P5-op-note.png",
+        "path": "app/shots/final (supersedes earlier captures)",
         "sha256": "0c8b662f3eafada99f7dad7f8d034ab93b46b4ffb6fce4253a34b9f3502280b4",
         "width": 1440,
         "height": 900

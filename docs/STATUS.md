@@ -1,9 +1,8 @@
 # Project status
 
-Consolidated 2026-10-31. Content, Lean core and render are still active lanes:
-[HANDOFF-content.md](../HANDOFF-content.md),
-[HANDOFF-lean-core.md](../HANDOFF-lean-core.md) and
-[HANDOFF-render.md](../HANDOFF-render.md) will be folded in when their lanes finish.
+Consolidated 2026-11-01. Active releases are v1/v2/v3; v1.1 appears only in archived runs. The rule profile is **core**. Clinicians use role-based pre-set views, landing patient lists and **Open chart** for in-UI patient selection. Only the AI agent modifies UI programs. New runs use **world/2**. Metrics are clicks, scroll count/distance and mouse travel; keystrokes are secondary and time is not an optimization metric.
+
+The realism lanes cover chart notes, patient context, signing and rendered interactions. Pre-op signing uses encounter-role privileges: NPs cannot sign pre-op orders; route them to the surgeon. There is no attending-cosign route. The held-out `conformance/` suite is report-only: 195+ scenarios exposed five gap families subsequently closed; see [results](../conformance/RESULTS.md).
 
 ## Physical interaction baselines — 2026-11-01
 
@@ -73,9 +72,9 @@ Validation: 12 Node import tests; app build/lint and all 152 tests pass, includi
 real WASM projection of all 324 fixture patients. One Chromium browser signed in
 with each persona, found an imported patient, opened every chart, and verified
 the offline source filter/replay without browser errors. Screenshot:
-`app/shots/synthetic-hospital-chart.png`; browser evidence is alongside it.
+`app/shots/final (supersedes earlier captures)`; browser evidence is alongside it.
 No Lean build, Lean source change, simulation world change or shared-stack reset.
-The precise Notes/history rendering plan is [HANDOFF-data.md](../HANDOFF-data.md).
+The precise Notes/history rendering plan is [docs/STATUS.md](STATUS.md).
 A later world may select from this cohort's index/flags/persona fits after its
 loader supports these FHIR types and text-only codes; do not modify world 2 or
 infer active orders/admissions from historical narrative.
@@ -114,7 +113,7 @@ also verifies each task belongs to its persona's pre-set view. Evidence:
 The active releases are **v1**, **v2** (prior authorization, day 4), and **v3**
 (antibiotic indication, day 7). Lean modules, exports, clients and release-day
 configuration use these names. All fifteen role views certify; the three shared
-masters remain vendor references. All seventeen core bad programs are rejected.
+vendor references remain vendor references. All seventeen core bad programs are rejected.
 
 `scripts/historical-releases.mjs` maps legacy IDs only at archive readers:
 `v1.1` becomes `v2`, and legacy `v2` becomes `v3`. Current `v2` is never remapped.
@@ -793,7 +792,7 @@ switches, directly labeled workflow stacks, floors, vendor/rejection markers,
 shared-scale persona panels and exact tables with v0 deltas. It uses existing
 persona colors and the read-only dashboard JSON boundary. Files are new except
 for the Dashboard import/tab/render registration. Screenshot:
-`app/shots/complexity.png` (desktop); Playwright also checks the 390px viewport.
+`app/shots/final (supersedes earlier captures)` (desktop); Playwright also checks the 390px viewport.
 
 P3 W4 union, for its fixed insulin/assessment case: v0 = 25 clicks, 39 keys;
 v1–v7 = 23 clicks, 39 keys. Historical timing estimates are archived and not used. The floor is
@@ -860,5 +859,909 @@ The committed run1-P3 index covers 424 tasks across ten days, 14,658 recorded
 events, and three optional v0 trajectories. Schema validation and differential
 tests cover three releases, episode resets, baselines and deliberately corrupted
 screens/results. Run `pnpm test:trajectories` for these checks and one desktop
-Chromium smoke test (`--workers=1`). Screenshot: `app/shots/trajectories.png`.
+Chromium smoke test (`--workers=1`). Screenshot: `app/shots/final (supersedes earlier captures)`.
 Never run a build alongside a browser/dev server on the memory-limited machine.
+
+## Consolidated lane handoffs (historical evidence)
+
+The following snapshots preserve lane findings and reproduction details. Earlier blockers and test counts describe their recorded revision; the current decisions above take precedence.
+
+### Archived HANDOFF-check
+
+# Check lane handoff — remaining work
+
+Worktree `/home/saithat/Projects/VGI-check`, branch `lane/check`.
+
+The requested task is **not complete**. No property, spec or safety rule was
+weakened. Main's expanded legal catalog, all 24 seeds and five core language
+features have been merged; main was fetched again after those features landed.
+
+## Remaining work
+
+1. **All 15 persona certifications (content).** The actual CLI rejects every
+   P1–P5 candidate in v1, v2 and v3. `docs/design/changes-requests.md` section
+   CHECK-2026-10-31 enumerates all 33 missing screen/commit/review pins per
+   release. First failures: anticoagulantList on w1Sign for P1/P2/P4/P5;
+   currentMeds on w3SuicideAssessment for P3. The NP pre-op consent permission
+   obstruction also remains. Only content may repair these placements/model
+   issues. The formerly passing P3 regression now requires rejection of the
+   actually defective expanded canonical, explicitly linked to the request.
+
+2. **General T1 completion (check).** Safety clauses 1–5 and 7–12, expanded
+   commit contracts, scalar value witnesses and successful human entry steps
+   are proved. `satisfies_of_checked_completable` is still CONDITIONAL.
+   Prove arbitrary accepted-program completion from `completeFor`: navigation
+   and ancestor reveal; initialization/prefill and archived-line invariants;
+   fixed/current slot repairs; common allowed values and waivers; final
+   reviews; finite alert acknowledgment and commit. Then assemble T1 and add
+   its actual statement to Comparator. Do not claim a conditional theorem is T1.
+
+3. **New-feature completion/phase coverage.** `CommitContracts` and
+   `commitContracts` cover all five new guard families for real interpreter
+   executions. The checker conservatively refuses unsupported universal
+   completion claims involving external temporal evidence, missing/expired
+   clocks, absent structured payloads, validators/relational dependencies, and
+   capture-dependent per-line clinical predicates. `additionalCompletionIssue`
+   explains why; exact action labels/default declarations are checked too.
+   See CHECK-CORE-CONTRACT-DOMAIN: arbitrary records in `Completable` only
+   assume medication scans are possible. UI actions cannot fabricate trusted
+   evidence. Coordinate total lawful completion/refusal goals and evidence
+   domain/route contracts; do not weaken guards or assume sample success is
+   universal completion. Record-only clinical conditions retain conservative
+   true/false/unknown coverage. Phase-wide display coverage needs integration.
+   Before display contracts are adopted, extend `Spec.Extends` to preserve its
+   new `displays` field and extend T8 to the five extraGuard contract families;
+   current T8 covers the requested original entry/review/human/unit/alert
+   projection. The concrete v1/v2/v3 specs have no display contracts.
+   See CHECK-EXTENDS-DISPLAYS.
+
+4. **Full T7 requires a contract decision.** The existing replay and failed-rule
+   theorems remain proved, but full semantic rejection soundness is false for
+   the conservative checker. `RejectionObstruction.T7_semantic_rejection_false`
+   gives a fully Satisfies candidate rejected only because an unused reference
+   workflow was removed. Keep the safety rule. Distinguish conservative
+   certification failures from demonstrated semantic violations, or obtain
+   owner approval for the missing trusted workflow-retention property.
+   Public counterexamples still lack patient/user witnesses; a normal replay
+   record does not demonstrate a pre-op-conditioned review failure. Cut paths
+   also need actual violation evidence. See CHECK-T7 and CHECK-REPLAY.
+
+5. **Intended seed-13 and seed-16 completion proofs.** Seed 13 still has the
+   real cross-workflow CURES receipt escape (`Seed13Escape.lean`, retaining the
+   original controlled drug). Its negative theorem uses the unrelated pre-op
+   review defect and is labeled accordingly. Seed 16 is rejected and replay
+   tested but still needs the intended semantic stranded-refills proof.
+   All eight new legal seeds have mutation-specific negative implementations.
+
+6. **App verdict generation (app ownership).** The app's
+   `pnpm --filter app verdicts` script omits required `--canonical`; it also
+   incorrectly labels exit-1 violation JSON as a checker failure. The exact
+   minimal patch is in changes-requests.md. The async ownership-exception
+   question remains pending; do not assume silence is approval. The stale
+   16→24 assertion was fixed upstream and all 129 updated app tests now pass.
+   The unchanged app verdict file remains a placeholder. The script's 70
+   invocation failures were saved in `/tmp/vgi-check-script-failure-verdicts.json`
+   and were not published as verdicts. Regenerate through the corrected real
+   script after approval/owning-lane repair.
+
+7. **D5 canonical navigation fixes (content/render).** The checker integration
+   is now complete: `NavigationSane` and `accepted_navigation` inspect the real
+   `Render.uiNav`, with a strict rule for unique labels, twelve-group/item
+   limits and no orphan screens. Current canonical groups W1/W3/W6 contain
+   14/17/18 screens respectively. Fix grouping/presentation without relaxing D5.
+   New main also supplies optional source-only component definitions; runtime
+   `use`/expansion integration is still a core pending patch, not something
+   check claims to support before its owning API lands.
+
+## Completed in this continuation
+
+- T8 old-obligations projection, directly from actual checker acceptance:
+  `T8_checked_old_obligations`, `T8_v1_to_v2`, `T8_v2_to_v3`.
+  Does not assume unfinished T1. Includes the actual old static human/unit/alert
+  predicates, using a proved old-element lookup preservation lemma.
+  `T8_unqualified_false` is retained.
+- D5 acceptance soundness over the actual semantic renderer navigation.
+- Completion reachability is cached once per check. `cached_completion_eq`
+  proves exact equality with the original algorithm for every program.
+  Popup pair checks filter request components first; `filteredPopupRequests_iff`
+  proves exact equivalence with the original safety property.
+- Core guard/clinical-alert safety proof compatibility and expanded contract
+  safety, plus actual human-entry construction lemmas.
+- Seeds 8/9 timeout fix: closed local component/macro witnesses compile in
+  10 seconds; no heartbeat increase or native_decide. Other static seed proofs
+  have also been split into small, closed structural witnesses.
+- Full current validation and final commit hashes: to be filled after the
+  running serialized Lean build, Comparator and kernel checks finish.
+
+## Working rules
+
+Edit only Props/Check (plus explicitly authorized root notes and generated app
+verdict output). Content, core, app and render requests go in changes-requests.md.
+Use `pnpm --config.verify-deps-before-run=false`. Never overlap Lake processes;
+world tests invoke one Lake process. Commit with the required Codex coauthor
+footer and push each meaningful step to `origin lane/check`.
+
+
+### Archived HANDOFF-content
+
+# Content handoff
+
+## Completed
+
+Merged `origin/main` (`db48c49`) first. Checkpoint `792607f` is pushed; final
+implementation/export checkpoint: `a0fa74c`. Branch: `lane/content`.
+
+The canonical follows the reviewed blueprint on **45 screens**: home and W1–W7
+with **9 / 3 / 7 / 5 / 6 / 9 / 5** steps. All **87** artifact-only screens are
+relocated to clinical sections; the two W7 prescription screens remain. The
+exhaustive ledger is `Canonical/Blueprint.lean`. Original clinical field and
+commit component IDs, element/slot bindings, roles, allowed values, guards,
+reviews, alerts, event windows, durable clocks and separate release/stop/refusal
+routes remain. Source controls are checked against the assembled program.
+Runtime goto destinations/macros use actual host IDs; no alias/orphan screens.
+Content's patch/walk helpers resolve old artifact IDs through the same ledger.
+
+- Artifact fields, human identity and independent actions are real children of
+  open sections. Mandatory infos stay pinned at the root before each section,
+  as current core pinning requires. No pinning or visibility rule was relaxed.
+- Signature sections contain the required human-only, never-prefilled identity
+  field immediately above their own Sign control. Initials/sex/age is the actual
+  `identityText` validator; it was not changed to match renderer documentation.
+- Search-first composers include catalog results and unsigned-order tables;
+  issuance variants/W7 use the full composer. Order-set macros retain per-field
+  unconfirmed defaults. The extra W1 Verify step, allergy reconfirmations, long
+  composers/copied notes, history tabs and removable popups remain.
+- Blueprint views include result tables/trends/flags/ranges, inbox list+preview,
+  ED board, MAR scheduled-time schema/BCMA fields, flowsheet history, growth/dose
+  schemas, prescription comparison, and surgical/discharge phase checklists.
+  `Specs/ClinicalTables.lean` declares real adapter contracts; absent data is not
+  manufactured. These declarations do not claim complete adapter implementation.
+- Legal descriptions/citations remain in docstrings and catalog. Human labels
+  are short. Unrestricted narratives are validated nonempty **text**, not coded
+  pickers. Patient/prescriber and related identity facts use named `recordFact?`
+  sources, record-confirm text and provenance; humans confirm them. Enumerations
+  retain coded domains and all original allowed-value/clinical validation.
+- Render already owns nav/stepper/clinical rail. Duplicate workspace navigator
+  and sidebar groups are removed. Real goto buttons remain until core supports
+  shell navigation events. The safety landmark remains; renderer projection of
+  its extra workspace card is CR-17, not a deleted safety component.
+- v3 antibiotic controls/defaults preserve distinct artifact composer bindings
+  after folding. Seed 7 now removes every route to refill decision, including
+  relocated host links, preserving its original unreachable-decision failure.
+  All **32** permanent seeds remain. Eight replay manifests use actual exported
+  programs/specs, trusted test evidence and human events.
+
+All **308** catalog rules previously represented remain represented (29 original,
+124 first pass, 155 feature pass). The **26** exact feature gaps below, **83**
+L-group policy/completeness rows and **139** out-of-scope rows remain documented.
+No source rule is weakened, dropped or replaced by a substitute checkbox.
+
+## Validation
+
+- Full `lake build`, all W1–W7 walkthroughs, every original/new artifact walk,
+  all bad-program regressions and v2/v3 paths pass.
+- `lake check` and Comparator pass all 18 statements. Kernel axioms are only
+  propext / Quot.sound / Classical.choice; both Extends `#print axioms` audits
+  report only propext. No content proof has sorry, admit, new axioms or native_decide.
+  Comparator's trusted Statements sorry warnings are expected, not content proofs.
+- The renderer's actual **NavSane** passes on **all 15 saved persona programs**
+  (P1–P5 for v1/v2/v3), not just a parallel navigation model. Source checks
+  also cover identity adjacency, retained clinical controls and pinned reviews.
+- All eight native and installed-WASM feature failures replay with the intended
+  hard stop and no commits. This tests runtime behavior, not manifest freshness.
+- App **129**, agent **31**, world **92** tests pass. Workspace build/lint and
+  agent typecheck pass. The old app seed-count failure was already fixed on main.
+- P1 rooming/orders/sign inputs from an adult Synthea record pass all **8**
+  desktop/narrow ARIA, visibility, legibility and fidelity tests. Nine actual
+  painter PNGs and three native semantic JSON files are under
+  `programs/canonical/review/P1/`; see the review README. Screens intentionally
+  show missing adapter data and disabled signing rather than synthetic evidence.
+- Final source generator reproduces ten artifacts byte-for-byte. Fresh native
+  export reproduces **54** spec/program JSON artifacts byte-for-byte. Catalog
+  audit verifies all 279 added representations, release inheritance and 32 seeds.
+  `git diff --check` passes. No Core/Render/Props/Check or other lane source changed.
+
+## Reproduction
+
+From root (never run simultaneous Lake processes, including world contract tests):
+
+```sh
+python -B lean/Ehr/Specs/Rules/encode.py
+cd lean
+lake build
+lake check
+lake comparator
+lake exe export-content
+lake env lean --run Ehr/Canonical/FeatureReplays.lean ../programs/replays
+lake env lean --run Ehr/Canonical/NavExports.lean
+lake env lean --run Ehr/Canonical/ReviewScreens.lean ../fixtures/synthea/Aaron_Ankunding_4966bd28.json ../programs/canonical/review/P1
+cd ..
+python -B lean/Ehr/Canonical/export_rules.py
+python -B lean/Ehr/Canonical/replay_features.py
+node lean/Ehr/Canonical/replay_features_wasm.mjs
+node lean/Ehr/Canonical/review_screens.mjs
+```
+
+Use `pnpm --config.store-dir=/tmp/vgi-content-pnpm-store --filter <pkg> run <script>`.
+World's test suite invokes Lake internally: run it after all other Lake work.
+`export-content`'s console still says 16 seeds; the actual loop exports all 32.
+That owning-tools diagnostic is already requested in CR-16; no seed was removed.
+
+## Exactly what remains
+
+**Content-owned implementation expressible with the merged runtime: nothing left.**
+The following project requirements remain real cross-lane dependencies, consolidated
+in **CR-16 / CR-17** in `docs/design/changes-requests.md`:
+
+1. **Core/render — conditional sections.** `Visibility` has only always and
+   unlessReceipt, not When/clinical predicates. Sections therefore stay open,
+   while original applicability guards fail closed. Add shared conditional
+   visibility with unknown handling; do not invent React-only hiding.
+2. **Core/render — literal attestation.** InfoSpec has no literal text field and
+   Kind has no static text node. Add it and wire the exact controlled-prescription
+   notice plus the hospital explanation. CR-17 provides verbatim 21 CFR
+   1311.140(a)(3) text and its verified eCFR link. A short label is not the notice.
+3. **Render/app — shell and section support.** Project the component banner into
+   the one real banner, place the clinical rail on the left, and support actual
+   interpreter events/IDs for shell nav/stepper. Preserve root pinning until
+   always-open ancestor visibility is supported with the same safety guarantee.
+4. **World/render/app — actual data/behavior.** Supply record-confirm identity
+   sources, current clinical/phase/event/version evidence, calendars, clocks and
+   InfoPayloads; populate search results, complete draft/service-order summaries,
+   per-slot selection, results, inbox previews, ED status, MAR time columns,
+   flowsheets, growth/reference/dose calculations and phase checklists. Real
+   select/deselect, messaging/delivery and backend effects require actual events.
+   Do not substitute fixture evidence or fake normal/completion states.
+5. **Core/check — coverage and certification.** Enforce source row/slot completeness
+   and certify actual migrated programs. No T1/T4/general-T8, deployment, external
+   evidence-truth or physical-care certificate is claimed by these content tests.
+6. **WASM — refresh build assets/manifest.** Installed runtime passes new external
+   programs and all eight failure replays, but its source manifest predates this
+   content change. The owning lane must rebuild/refresh it. Content has not
+   edited app/wasm-owned artifacts to conceal stale source hashes.
+7. **Adapters/authorization/effects — CR-16.** Persist the distinct artifact and
+   completion/filing/release effects with current patient/episode/artifact version;
+   preserve original durable anchors across navigation/transfer. Practitioner
+   qualification, proxy/release policy, actual controlled-V/GHB formulary support,
+   source-row completeness and the 83 L-group policies remain owning-lane work.
+
+The original **26** precise unsupported feature rows remain:
+
+- `cms-482.25-b5-automatic-stop`: ExpiryReq blocks actions for a known durable order, but cannot choose policy-dependent defaults when duration/dose-count is absent or run an automatic-stop scheduler. A fixed expiry on a new manual action would not implement this source rule. Needs default-policy selection plus backend auto-stop scheduling.
+
+- `ca-statutes-fam-6929-parent-initiated-disclosure`: Clinical predicates can scope UI requirements but cannot enforce requester identity, disclosure destinations or independently applicable federal confidentiality law. Requires release-access-policy; a disclosure checkbox would not enforce it.
+
+- `ca-statutes-hsc-123115-protected-minor-proxy`: ClinicalPredicate can identify age/service/capacity but cannot filter record resources returned to a proxy or authorize that proxy. Requires release-access-policy over resource and requester identities.
+
+- `ca-statutes-civ-56-11-authorization-expiration`: TemporalReq compares two event timestamps, but cannot authorize a future release up to a civil-year expiration/date-or-event, evaluate revocation, or enforce requested-later/research exceptions. A deadline on documenting authorization would not enforce release access. Needs release-access-policy and civil-year/event expiry.
+
+- `federal-rx-1306-11-emergency-quantity`: supplyDaysCeil computes days supplied, but Validation has no comparison to a patient-specific emergency-period duration. An arbitrary fixed ceiling would misstate the emergency rule. Needs bounded relational comparison to trusted emergency-period evidence.
+
+- `federal-rx-170-315-implant-lot`, `federal-rx-170-315-implant-serial`, `federal-rx-170-315-implant-expiry`: udiGs1 validates a supported UDI string but exposes no parser output/extraction into lot, serial or expiration fields. Other issuer formats need trusted product tables. Accepting a valid UDI is not the required production-identifier parsing capability; needs a typed parser/projection and persistence binding.
+
+- `entrenched-ismp-dosing-weight-category`: The AST can restrict kg ranges but cannot select wet/dry/dosing weight by indication, fluid status and precedence or attest the selected source. A category enum would not define the required selection rules.
+
+- `entrenched-leapfrog-bcma-wrong-dose`: Validation has no scanned-product-strength times administered-count comparison against the active administration order. drug-name scan matching is not dose matching. Requires product identity/strength relational validation.
+
+- `entrenched-tjc-prohibited-list`, `entrenched-ismp-abbrev-iu`, `entrenched-ismp-abbrev-qd`, `entrenched-ismp-abbrev-qod`, `entrenched-ismp-abbrev-cc`, `entrenched-ismp-abbrev-microgram`, `entrenched-ismp-abbrev-dc`, `entrenched-ismp-abbrev-units`, `entrenched-ismp-abbrev-ms`, `entrenched-ismp-abbrev-mso4`, `entrenched-ismp-abbrev-mgso4`: Validation.token constrains a whole-string alphabet/length, not forbidden tokens, case/punctuation variants or context-sensitive abbreviation replacement across narratives and rendered medication communication. A vocabulary on an additional field would leave existing text unprotected; needs token-aware text/output validation.
+
+- `entrenched-safer-allergy-synonyms`, `entrenched-safer-environmental-allergy`: codeMember validates exact membership but cannot normalize synonym aliases or route environmental allergens into Condition rather than AllergyIntolerance. Needs terminology normalization and category-specific record routing.
+
+- `entrenched-safer-pediatric-dose-rounding`: Fixed tenths and decimal lexical validation cannot implement weight-dependent rounding precision below 0.1 units.
+
+- `entrenched-safer-pediatric-concentration`: No validated concentration-to-volume relation or available-product selection exists; membership alone does not calculate a safe volume.
+
+- `entrenched-safer-maximum-daily-dose`: doseByWeight caps one dose, not the sum of dose times frequency across all active/new administrations. Requires daily aggregate arithmetic with product/unit normalization.
+
+The **83 L-group** record-level-completeness, qualified-authorization and
+release-access-policy rows retain their individual unencoded reasons; the
+139 out-of-scope rows remain documented. No remaining catalog row is silently
+omitted or relabeled as complete.
+
+
+### Archived HANDOFF-data
+
+# Data lane: Synthetic Hospital
+
+Phase 1 imports historical charts. Phase 2 is implemented; see the completion
+record below. Phase 1 did not modify Lean or WASM; Phase 2 rebuilds both.
+Build with `LEAN_NUM_THREADS=6`, one Lake invocation at a time. No world files
+were changed.
+
+## Phase 1 artifacts and operating commands
+
+- Immutable source manifest: `scripts/synthetic-hospital/source.json`, upstream
+  commit `911f34c4ac65a508543c4b3b90c373a0cd16534d`, SHA256 for both downloads.
+- `make synthetic-hospital`: fetch cached upstream files and convert with Node
+  and Python3 only. Tests: `make test-synthetic-hospital`.
+- 150 committed FHIR transaction bundles plus index in
+  `fixtures/synthetic-hospital/`, under 10 MB uncompressed. The complete source
+  has 1,268 patients, including 248 under 18. Primary selections are 30 each
+  for P1–P5; overlapping fit counts are P1 95, P2 120, P3 51, P4 34, P5 90.
+- `make load-synthetic-hospital` loads that exact committed cohort using the
+  existing infra credentials. `make seed SYNTHETIC_HOSPITAL=1` and
+  `make install SYNTHETIC_HOSPITAL=1` opt in; ordinary seed/install retain the
+  existing default. No download is needed to load committed fixtures.
+- `node infra/scripts/load-synthetic-hospital.mjs --verify-only` checks tagged
+  resource counts and unique upstream identifiers. A full rerun exercises
+  conditional creates; no resets, deletes, or clinical writes are needed.
+- Medplum 5.2.13 permits at most eight entries in a transaction with conditional
+  creates. `infra/scripts/synthetic-hospital-batches.mjs` chunks in dependency
+  order and rewrites cross-chunk references using response locations. Each
+  chunk is atomic; the whole patient import is resumable, not one atomic write.
+  Provenance is last, after all of its referenced resources. Patient identifier
+  is exactly `urn:vgi:synthetic-hospital|<patient_id>`. Condition search keys are
+  hashed: punctuation in diagnosis names must never become FHIR token operators.
+- The live app already searches all Medplum Patients and retrieves notes,
+  MedicationStatements, procedures and social observations. It now also loads
+  FamilyMemberHistory in the patient bundle. Imported historical encounters
+  stay finished; use patient search from any persona to open their charts.
+  Active work queues remain generated from world schedules, not invented from
+  historical notes. Phase 1 adds no fake admissions, orders or administrations.
+- Offline catalog entries carry `source` and a validated `bundlePath` for both
+  cohorts. `/browse` has a Synthetic Hospital source filter; production copies
+  both fixture directories. Existing Synthea defaults remain first in the list.
+- Live smoke: start `pnpm --filter app exec vite --port 5195 --strictPort`, then
+  `node scripts/synthetic-hospital/verify-live.mjs`. It uses one Chromium browser,
+  sequentially signs in with P1–P5 persona buttons, searches for a primary-fit
+  patient, opens the real chart, verifies the offline source filter and replay,
+  and saves `app/shots/final (supersedes earlier captures)`. It does no clinical writes.
+
+Source/code caveats, timestamp handling, mapping rules, commands and citation:
+`scripts/synthetic-hospital/README.md`. Integer source ages are approximate at
+our reference date; candidate timelines before approximate DOB are excluded.
+Original note text is verbatim, including unshifted source dates. Structured
+Encounter/DocumentReference dates are shifted; each note discloses that shift.
+Codes are upstream assertions, not independently clinically validated codes.
+
+## Phase 2: Notes and imported history in the certified chart
+
+Current seam: `loadPatientBundle` includes DocumentReference and history records;
+`Ehr.Render.Fhir.displayOf` currently ignores DocumentReference,
+MedicationStatement, FamilyMemberHistory and social observations. The existing
+`priorNotes` info and Notes tab exist in V1/canonicals, but have no note rows.
+`currentMeds` currently projects MedicationRequest only. Do not fabricate orders
+from home medications to make them visible. The semantic renderer is
+`Ehr.Render.renderUi`; `Page.render` also remains a supported HTML output.
+The plan must update both and rebuild WASM before UI validation.
+
+1. **Display schema** (`lean/Ehr/Specs/ClinicalTables.lean`, namespace
+   `Ehr.Specs.ClinicalTables`): add exactly these optional `InfoSpec` definitions,
+   then include them once in `infos`:
+
+   ```lean
+   def encounterNotes : InfoSpec :=
+     { id := "encounterNotes", label := "Notes", version := "notesVersion"
+       payload? := some { rowFields := ["date", "type", "author", "encounter",
+         "title", "text", "status", "sourceDate", "shiftDays"] } }
+   def importedHistory : InfoSpec :=
+     { id := "importedHistory", label := "History", version := "historyVersion"
+       payload? := some { rowFields := ["kind", "item", "detail", "status", "source"]
+         groupBy? := some "kind" } }
+   ```
+
+   Preserve `priorNotes`, `noteSummary` and all mandatory review contracts.
+   Do not add a second `InfoSpec` with the existing `priorNotes` ID. Supply its
+   missing row schema through `columns`/`withSchema` and render it as an alias of
+   `encounterNotes`; new optional schema metadata must not manufacture receipts.
+
+2. **Typed display rows** (`lean/Ehr/Render/Types.lean`, namespace `Ehr.Render`):
+   add `structure NoteRow` with String fields `id`, `date`, `noteType`, `author`,
+   `encounter`, `title`, `text`, `status`, `sourceDate`, `shiftDays`, `versionId`.
+   Add `structure HistoryRow` with String fields `id`, `kind`, `item`, `detail`,
+   `status`, `source`, `versionId`. Add `Display.notes : List NoteRow` and
+   `Display.history : List HistoryRow` and initialize both to `[]` in
+   `Display.empty`. Extend derived JSON instances in `Render/Json.lean` and every
+   explicit Display literal; regenerate TS types/validators using the existing
+   exporter, never hand-edit generated contracts. These are display records,
+   not new clinical evidence or new Facts guards.
+
+3. **Total FHIR projection** (`lean/Ehr/Render/Fhir.lean`, namespace
+   `Ehr.Render.Fhir`): add the following exact definitions:
+
+   - `isDocumentReference (r : Json) : Bool`
+   - `documentVisible (r : Json) : Bool` (exclude entered-in-error; retain
+     superseded/amended notes and display their status)
+   - `decodeBase64Utf8 (s : String) : Option String` (pure, total, computable;
+     use the existing Lean library implementation if available; otherwise add
+     bounded structural byte decoding and strict UTF-8 validation)
+   - `noteAttachmentText (a : Json) : String` (inline text/plain data only;
+     decode failures, missing data and URL-only attachments get explicit text
+     such as “Note body unavailable”; never fetch a URL or interpret HTML)
+   - `noteRow (r : Json) : NoteRow` (all attachments retained in source order;
+     concatenate their labeled text, join author displays and encounter refs;
+     date = DocumentReference.date, else context.period.start, else creation;
+     read original-date/shift extensions when supplied, without inferring them)
+   - `noteRows (rs : List Json) : List NoteRow` (one row for every visible
+     DocumentReference, newest date first; missing dates sort last)
+   - `medicationStatementHistoryRow (r : Json) : HistoryRow`
+   - `familyHistoryRows (r : Json) : List HistoryRow` (one row per condition;
+     retain a row even when conditions are absent)
+   - `socialHistoryRow (r : Json) : HistoryRow` (social-history category,
+     generic CodeableConcept label and value; no source-specific patient logic)
+   - `procedureHistoryRow (r : Json) : HistoryRow`
+   - `historyRows (rs : List Json) : List HistoryRow` (reported home medications,
+     family, social and surgical history; include unknown/text-only values;
+     explicitly label MedicationStatement as reported history, not an order)
+   - `notesVersionOf (rs : List Json) : Nat` and
+     `historyVersionOf (rs : List Json) : Nat`, using the existing sorted
+     `id@versionId` digest convention. Add default-zero `notesVersion : Nat`
+     and `historyVersion : Nat` fields to `Ehr.Facts` in `Core/Types.lean`;
+     extend `Ehr.factVersion` in `Core/Basics.lean` with those two named cases.
+     Update `factsOf` to populate them and `displayOf`'s two new fields.
+     This is a future core/data-format change; coordinate it with the core lane
+     and regenerate Core JSON/TS defaults and round-trip fixtures. Do not let display versions create review
+     receipts or trusted clinical facts.
+
+   Also render the already-imported Conditions through existing problem rows
+   and Coverage through the banner; keep absent dates visibly unknown.
+
+4. **Rendering** (`lean/Ehr/Render/Ui.lean`, namespace `Ehr.Render`): add
+   `noteCells (r : NoteRow) : List (String × String)` and
+   `historyCells (r : HistoryRow) : List (String × String)`; extend `uiRows` for
+   `"encounterNotes" | "priorNotes"` and `"importedHistory"`. Extend existing
+   familyHistory/socialHistory/surgicalHistory views from the generic history
+   projection, so W1/W5 history tabs also show imported data. In `Page.lean`
+   extend `infoContent` with matching read-only tables. Retain this existing definition and do not introduce a second rendering path.
+   Text must remain escaped through existing `.text` nodes. Preserve paragraphs
+   with existing allowed text/row elements, without HTML injection or content
+   clipping. No React clinical adapters or custom note renderer.
+
+5. **Chart review navigation**: update `Ehr.Canonical.home` in
+   `lean/Ehr/Canonical/Program.lean`: bind the existing Notes tab to
+   `encounterNotes`, and add a History tab bound to `importedHistory` using the
+   existing `tabStrip`. Keep workflow-local `priorNotes` routes as aliases.
+   Verify D5 group limits and re-project P1–P5. Update corresponding blueprint
+   placements only where the blueprint supplies this chart-review shell.
+   Do not rewrite historical recorded programs/certificates; aliases let those
+   programs show the new data on their existing note/history components.
+
+6. **Proofs and tests**: add `noteRows_complete` and `T11_note` beside the
+   existing FHIR row-coverage proofs; add `uiNotes_complete` in UiProofs and
+   `T11_notes_rendered` in PanelProofs, with hypotheses for a shown Notes info
+   component. Cover UTF-8/base64, missing attachment data, URL-only and wrong
+   MIME types, all statuses, multiple authors/attachments, equal/missing dates,
+   shifted source dates, text-only codes and every history resource kind.
+   Re-run native/WASM equivalence, painter/tree and ARIA fidelity, and render
+   one imported P1 and one P4 chart with notes/history. Assert count equality
+   with the bundle and that text-only drugs remain visible as reported history.
+   Keep all clinical guards, seeded-bad rejections and axiom audits intact.
+
+7. **Build/deploy only after the heavy lanes finish**: coordinate the build
+   slot, build Lean with the documented memory/thread limits, export releases
+   and generated types, rebuild/install WASM, regenerate its asset manifest,
+   re-certify affected current programs, run app build/lint/test and screen
+   checks, then repeat the single-browser live smoke and save a Notes screenshot.
+
+## A later simulation world
+
+Leave world 2 to the sim lane. A future world generator can take the committed
+index as an optional second population source, using `sourceId`, `identifier`,
+`bundlePath` (or directory + file), age, flags and overlapping persona fits.
+First extend the world's loader to consume these FHIR types, approximate DOB
+metadata, shifted encounter dates and text-only terminology honestly. Generate
+new schedules/clinical choices independently: historical narrative text is not
+an order, a current admission, a verified dose, or a measured vital sign. Preserve
+source tags/provenance and keep this cohort separate from held-out evaluation.
+No existing world manifest, schedule or state should be modified implicitly.
+
+## Orchestrator addition
+- Imported home medications are MedicationStatement resources, but the chart's "Active medications" reads MedicationRequest, so imported patients show "No records on file". Phase 2 must surface MedicationStatement as home medications (Render/Fhir facts), labeled as home/reported meds.
+
+## Phase 2 completion record
+
+- Implemented `encounterNotes` / `importedHistory`, typed `NoteRow` /
+  `HistoryRow`, total FHIR projection, and both certified renderers. Inline
+  plain-text notes retain attachment order, author/encounter information,
+  paragraphs, status, and explicitly supplied original-date/shift extensions.
+  Malformed base64/UTF-8, missing data, external URLs, and other MIME types
+  produce explicit unavailable-body text. Entered-in-error notes are excluded;
+  superseded/amended notes remain visible. Unknown dates stay visibly unknown.
+- Home medications remain MedicationStatement history. They appear under
+  **Home medications (reported)** and in History; `currentMeds`, active-order
+  rows, and medication guard evidence still come from MedicationRequest.
+  Family, social, and procedure history use generic FHIR readers. Conditions
+  and Coverage use the existing problems/banner projections.
+- Core edits are exactly the two default-zero Facts fields and the two
+  `factVersion` cases. `Ehr/JsonCompat.lean` supplies missing JSON version fields
+  outside Core, since Lean's derived readers do not honor structure defaults.
+  Malformed supplied versions still fail. Old display JSON defaults only the
+  two absent row lists. No review receipts or clinical facts are manufactured.
+- Added and audited note row/UI/Page completeness proofs; extended the existing
+  renderer Comparator audit. Edge tests cover decoding, statuses, attachments,
+  authors, dates, source extensions, text-only drugs, and all history kinds.
+- Regenerated contracts with `gents`, current release canonicals and all fifteen
+  persona projections, and certification/verdict artifacts. The sample exporter
+  now skips full-profile fields absent from the default core profile; its three
+  generated P1 UI fixtures were refreshed from the current release.
+- `git fetch origin && git merge origin/main` ran before the final build;
+  origin/main was already included. Lean default build, `lake check`, repository
+  Comparator, `make wasm`, `make wasm-check`, all 15 persona checks and all 17
+  seeded-bad rejections passed. App build/lint and all 153 tests passed; all 12
+  Synthetic Hospital import tests passed.
+- `verify-projection.mjs` checks imported P1/P4 chart counts, full note bodies,
+  separate reported medications, and native/WASM equality for both Page and
+  semantic UI. P1: 8 notes, 2 home medications, 8 history rows. P4: 3 notes,
+  0 home medications, 6 history rows. Desktop/narrow imported-chart UI visibility
+  and ARIA checks passed (17 tests; 3 standard duplicate-project skips), as did
+  all 8 Page visibility checks.
+- The live script passed P1–P5 using Vite on 5195, with no browser errors or
+  clinical writes. Screenshot: `app/shots/final (supersedes earlier captures)`.
+- `pnpm trajectories --run run1-P3 --verify-only`: 424 tasks / 14,658 events,
+  plus 3 baselines / 137 events, **0 mismatches**. Only the verification report's
+  WASM provenance hash changed. Historical programs, certificates, contexts,
+  traces, and world data were not rewritten. Existing `priorNotes`,
+  `socialHistory`, and `surgicalHistory` components now display their FHIR rows;
+  the reported-medication group appears only when MedicationStatements exist.
+  Screen IDs, selected tabs, transitions, and interpreter results are unchanged.
+- Full renderer differential suite passed: 324 Synthea + Synthetic Hospital
+  bundles and all 652 canonical HTML/semantic UI variants, including actual RN
+  wristband acceptance/rejection and error envelopes. Both the repository
+  Comparator and the extended renderer Comparator accepted the implementation
+  using only `propext`, `Quot.sound`, and `Classical.choice`.
+- Final WASM SHA256:
+  `ca6e5a828edc038c54f583ef9f47e7b723368307d157269d470730b288027720`.
+  Its rebuilt source manifest is current, and its hash matches the fresh
+  trajectory verification report. Generated TypeScript samples typecheck.
+- World 2 remains deferred to the simulation lane, as requested.
+
+
+### Archived HANDOFF-lean-core
+
+# Handoff: lean-core
+
+Worktree: `/home/saithat/Projects/VGI-lean`; branch `lane/lean-core`.
+Read this first. This continuation fetched and fast-forwarded main to `fe475fa`.
+The optional composite-format checkpoint is `133e364` (pushed).
+
+## Delivered in this continuation
+
+- Init-only `ComponentDef { name, params, body }` and
+  `Program.componentDefs : List ComponentDef := []`.
+- Custom Program JSON preserves SOURCE definitions, accepts omission of the new
+  field, and omits empty definitions. Existing generated JSON samples are
+  unchanged, preserving legacy source/hash encodings. Malformed definitions
+  remain parse errors. No new clinical/backend behavior is active yet.
+- GenTS exports 138 types/42 real JSON samples, with optional `componentDefs`.
+  Core guards cover definition/source round trips, legacy omission and malformed
+  field rejection. The feature corpus now includes an unused-definition case.
+- Rebuilt and installed WASM assets with the supplied `.tools` symlink to
+  `/home/saithat/Projects/VGI-wasm/.tools`; binary is 1,924,963 bytes.
+- The proposed constructor/expansion implementation is preserved in
+  `lean/Ehr/Core/composites-pending.patch`. `git apply --check` passes. Applying
+  the patch and running `cd lean && lake build Ehr.Core.Tests` passes. It includes
+  `Kind.use`, total Init-only `Program.expand`, checked load helpers, a
+  `wellFormed` error verdict helper, six candidate theorem/axiom audits, and
+  Tiny vitals-strip guards and a satisfiable expanded witness. There are no
+  `sorry`, `admit`, new axioms or `native_decide` in this patch.
+
+**The expansion patch is NOT active in this checkpoint. Composite execution is
+unfinished.** It was kept as a concrete reviewable patch so the pushed branch
+continues to build while respecting the explicit prohibition on editing Render.
+
+## Integration blocker and scope
+
+Activating `Kind.use` makes `lean/Ehr/Render/Page.lean:157` fail its exhaustive
+Kind match. The owner explicitly said not to edit `lean/Ehr/Render/**`, so no
+Render source was edited. The exact dependency and presentation-key request are
+in `docs/design/changes-requests.md`.
+
+This main checkout also has no checker/deploy or simulation implementation/CLI
+commands; those still exist on the owning branches. They were not merged or
+edited without authorization. Scope questions about API/integration files and
+owning-lane merges were sent to the user; no answer had arrived at this checkpoint.
+The explicit GenTS and generated-WASM instructions were carried out.
+
+## Verification of the buildable checkpoint
+
+- `cd lean && lake build`: pass (143 jobs).
+- `lake check`: pass, including the final repeat; default kernel accepts,
+  using only `propext`, `Quot.sound`, and `Classical.choice`.
+- `lake comparator`: pass, all 18 original statements, including final repeat.
+- T0, T2, T3, T6, A2 and A4 remain proven, with unchanged statements and only
+  permitted axioms. The earlier strengthened `commitGuard_iff` remains DRAFT
+  for owner review, as in the previous handoff.
+- `lake exe gents` and strict generated-sample TypeScript check: pass.
+- Workspace build/lint and agent typecheck: pass.
+- Agent tests: 31/31. World tests: 92/92. App: 89/90.
+- App's existing main-branch failure: `tests/app.test.tsx:25` expects 16 bad
+  programs, while the merged content catalog contains 24. The real-WASM fixture
+  projection test passes. An owning-app change is requested; the test was not
+  weakened or edited here.
+- `make wasm` and `make wasm-check`: pass.
+- `node lean/Ehr/Core/test-wasm-features.mjs`: pass, 255 native/WASM comparisons
+  across all 85 cases (the previous 84 cases were retained).
+
+The pending expansion patch has only targeted build/guard/axiom verification;
+it has NOT passed a full build, `lake check`, Comparator, or WASM execution with
+expansion enabled. Its proof integration is tracked in `TODO_PROOFS.md`.
+
+## Exactly what's left
+
+1. Render owner supplies the new Kind compatibility arm, or the user explicitly
+   authorizes that edit. Coordinate it with applying
+   `lean/Ehr/Core/composites-pending.patch` so the full build stays valid.
+2. Wire source expansion into **all** API/native/WASM init/step/view/batch paths.
+   Core's pending `Composite.loadInit/loadStep/loadView` fail closed and use the
+   existing interpreter on expansion. Existing `Ehr.Api` entry points are still
+   unchanged and do not yet call these helpers.
+3. Check/deploy owners expand candidate, previous and canonical programs before
+   evaluating properties, reject expansion failures as `wellFormed`, and hash
+   and store the SOURCE program (including definitions). Integrate the actual
+   checker `Satisfies` with expansion and finish its proof bridge. The pending
+   generic property lift is not a claim of checker certification.
+4. Sim owner expands before simulate/min-clicks, including policy/state-space
+   inspection. Render owner expands before render/render-screens and propagates
+   `composite:<name>` into UiNode as a presentation key. Do not edit Render
+   without the requested authorization.
+5. Once active, add the vitals-strip source/use/expanded examples to GenTS's
+   samples and regenerate; verify agent/app schemas preserve definitions/args.
+6. Run the full build, kernel check, Comparator and audits with expansion active;
+   retain T0/T2/T3/T6/A2/A4 and every existing safety rule. Rebuild WASM again and
+   add native/WASM coverage for successful uses and expansion failures. Current
+   installed assets cover only the optional-format checkpoint.
+7. App owner fixes the catalog-count baseline assertion and reruns all TS tests.
+8. Update this handoff to the resulting exact remaining work, and push each
+   meaningful step with the required Codex co-author line.
+
+The previous handoff's five M rule groups, interpreter/API, date-parser fix and
+prior proof milestones remain intact. The original L-group implementations are
+still intentionally unrequested; their designs and all earlier owning-lane
+integration requests remain in `docs/design/changes-requests.md`.
+
+
+### Archived HANDOFF-render
+
+# Render lane handoff
+
+Worktree `/home/saithat/Projects/VGI-render`, branch `lane/render`.
+
+## Completed and pushed
+
+- Reviewed saved WIP `f58a24e`; retained the earlier shell, clinical summary,
+  captured-order, human-date and full-panel proof work.
+- `bc457f2`: merged main's content blueprint (45 canonical screens).
+- `d7ed156`: finished saved navigator regression, removed identical nested
+  section headings, and preserved the historical corpus in the exporter.
+- `dadb423`: compute the interpreter view once per render, with dependent
+  equality witnesses `Ctx.v_exact` and `Ctx.rebuild`. Every registered theorem
+  statement is unchanged. Native orders rendering improved from 40.06 s to
+  0.05 s with identical JSON. Rebuilt WASM and populated P1 samples.
+- `670a748`: merged main's live app/dashboard work; resolved its generated
+  manifest conflict by rebuilding WASM.
+- `1108805`: bounded differential-worker memory and added coverage/hash audits.
+- `1f3ebe0`: merged main's final visible-control acceptance criterion.
+- `badeb5c`: committed the complete verification receipt and exact owner blockers.
+- `f313bab`: merged main checkpoint `1123612` (dashboard trajectories). No Lean,
+  WASM or corpus input changed; app build/lint/152 tests, trajectory tests and the
+  15 P1 browser checks passed again.
+- Final verification is recorded in `lean/Ehr/Render/validation.json`.
+
+No Core/Specs/Canonical/Props/Check/Sim/app implementation was edited. App
+changes authored here are generated WASM assets, P1 semantic samples and their
+README, as requested. All other-lane source changes arrived through main merges.
+
+## Preserved contracts
+
+- One shell banner; program banners are excluded from workspace/side. Nav-tagged
+  non-collapsible groups contribute real shown, enabled goto component IDs to
+  nav. Blocked/hotkey controls keep their complete workspace button metadata.
+- Tagged sidebar components render in side. Compact list rows preserve every
+  allergy/current medication, unresolved problem, and latest vital per code.
+  Full workspace panels retain full records, including resolved problems.
+- D2 requires complete review rows in workspace, even when Core counts a compact
+  sidebar as shown. T11 preserves each full panel's exact source ID and rows.
+- Signing tables use this episode's captured medication lines, with dose/unit,
+  route, frequency, duration, quantity, refills, directions, indication and
+  captured prescriber details. Supplied artifact rows remain intact.
+- Read-only dates are human formatted; editable values retain exact interpreter
+  spelling. Reasons use spec labels. Repeated direct parent/child headings use
+  a neutral inner label without losing source IDs or children.
+- Cache witnesses require the exact current interpreter output. State/program
+  fixture updates rebuild the cache; stale caches do not typecheck. No property,
+  guard, spec rule, or theorem statement was weakened.
+
+## Final verification
+
+- `LEAN_NUM_THREADS=1 lake build Ehr.Render`: **passed**, 32 jobs.
+- Render Comparator: **35 contracts passed**; all 35 statement signatures match
+  saved WIP `f58a24e`. Kernel check of the complete render export passed.
+  Axiom audits use only propext, Quot.sound and Classical.choice. Finished render
+  modules contain no sorry, admit, new axioms or native_decide.
+- `make wasm` and `make wasm-check`: **passed** with the authorized SDK symlinks.
+  Tested WASM SHA-256:
+  `7a67c34a907a7a30724eb99e51e7c011fc137de01db31b3c92a17ebf1be083bc`.
+- **14,225 native/WASM variants passed**: all 9,843 variants of the 45-screen
+  current canonical plus all 4,382 variants of the 132-screen historical
+  canonical. Four shards per corpus; all original state bodies/indexes, every
+  expanded scan probe, disjoint coverage, and one WASM/native hash audited.
+  All 174 Synthea bundles match; RN wristband acceptance/rejection is exercised.
+- App build/lint/**152 tests**, agent typecheck/lint/**31 tests**, world
+  build/lint/**92 tests**, infra **7 tests**, generated-sample strict tsc: passed.
+- Dashboard trajectory replay also passes 2 node tests and 1 browser smoke test
+  on main checkpoint `1123612` (all 424 saved tasks remain available). Its test
+  screenshot is preserved at `/tmp/render-final-trajectories.png`; the app-owned
+  tracked image was restored after the test.
+- The three populated P1 samples pass **15 browser checks** (3 intentional skips)
+  and **3 screenshot checks** (6 PNGs). Rooming/orders/sign images were reviewed,
+  including the populated signing table. Screenshots are under `app/shots/`.
+- **Full project Lean build fails** the unchanged canonical task-completion and
+  floor assertions at `Ehr/Sim/PolicyTests.lean:31–32`. The initial render failure
+  during iteration was fixed and all render modules subsequently rebuilt. The
+  whole-project kernel check remains blocked by that owning-lane build failure;
+  the successful render-export kernel check is not a whole-project claim.
+
+No render build/test process remains running. All eight differential shards and
+both auditors finished successfully. Logs and reports are `/tmp/render-*`.
+
+## Reproduction notes
+
+The aggregate CLI imports the failing Sim test. The differential tests therefore
+use a runtime-only native driver calling the **exact exported Core/Render API
+functions**, with no replacement clinical logic. Build it with
+`lean/Ehr/Render/build-native-test.sh` (one Lake process at a time). The tracked
+script's driver source matches the tested source byte for byte.
+
+Set `EHR_RENDER_NATIVE="$PWD/.tools/render-native/.lake/build/bin/render-native"`.
+`prepare-shards.py` creates the four memory-bounded inputs from each complete
+`states.json`; `test-wasm.mjs` accepts EHR_RENDER_SHARD_COUNT/INDEX/INPUT/REPORT;
+`audit-shards.py <corpus-dir> <four-reports>` checks the exact original bodies,
+scan probes, complete disjoint indexes and current binary hashes. Both the
+current and historical native/WASM inputs remain in `/tmp/render-{final,legacy}-api`.
+The historical spec/program are from `f58a24e`. Current P1 samples come from the
+complete current release and actual checked human enter events.
+
+For pnpm 11 in this sandbox, set
+`pnpm_config_store_dir="$PWD/.tools/pnpm-store"`; its default external SQLite
+store is read-only. Shared SDK links remain under this worktree's `.tools`.
+
+## Exactly what is left
+
+1. **Sim/content:** repair `PolicyTests.lean:31–32`, then pass the full Lean build
+   and whole-project kernel check. Compiled replay of the unchanged fixture
+   reports missing `ca-title22-70223-hp-24-hours:temporal026` / `:temporal027`,
+   followed by the structured-display/action-label hard stop and an unreachable
+   goal. Actual popups are 0 versus floor 1. Supply truthful episode context and
+   required data; never fabricate completed H&P evidence or weaken assertions.
+2. **App:** paint nav pairs as buttons dispatching `Event.click(compId)`, open
+   available groups by default, and observe their real entries/events in fidelity.
+   The current painter still treats component IDs like screen IDs and uses text.
+3. **Core/content, then render:** add literal InfoSpec text, supply the exact
+   21 CFR 1311.140(a)(3) notice, and render its body verbatim. The reviewed quote
+   is in changes-requests.md, but the compiled spec still has no text member.
+4. **Checker/content:** certify D5 against the real interactive projection. The
+   45-screen workflow overview diagnostic passes; it does not certify that nav.
+5. **App/infra:** complete the exact Facts.patientId Synthea wristband-token
+   integration. Native/WASM acceptance/rejection is verified; this is an app/data
+   integration request, not a new validator or permissive token fallback.
+6. **New main requirement (render/app):** define/prove Lean `aria : UiScreen →
+   AriaNode` and have app fidelity consume it (BRIEF `f60a795`). Existing proofs
+   cover UiScreen and expected ARIA remains TypeScript. This new work is marked
+   not started in TODO_PROOFS.md; no unfinished proof declaration is hidden.
+7. **New main requirement (app/core/content):** implement `audit:buttons`,
+   `docs/audits/buttons.md` and the regression gate from BRIEF `2710777`. The
+   package script does not exist yet. Keep shown components and D3/T10 semantics
+   intact while implementing real actions or removing them in the owning source.
+
+All cross-lane requests and the concrete simulator diagnosis are in
+`docs/design/changes-requests.md`. The requested render visual-fix verification,
+WASM rebuild, sample regeneration and both complete corpus audits are finished.
+
+
+### Archived HANDOFF-sim
+
+# Handoff: sim lane
+
+Worktree `/home/saithat/Projects/VGI-sim`, branch `lane/sim`.
+
+## Integrated snapshot
+
+Initially merged main `fe475fa` in `f3a4d4d`. Main advanced during validation;
+merged again at `b26f772` in `bfaa352` and pushed it. The final verification below
+uses that pinned revision, including its app inventory fix and semantic renderer.
+`fbe18d0` fixes history proofs for the five new Core feature groups;
+`9ee5345` adopts those contracts in Goals/Policy; `f82f846` adds independent
+native validation workers (`--jobs`, serial by default). `85c04e8` records the
+first verified checkpoint. `54489d4` fixes the exact-slot clinical dependency
+edge case: an any-slot entry is fulfilled by the condition's exact binding,
+so a different visible field cannot leave its predicate unknown. Every commit
+has the required Codex co-author line.
+Local edits are limited to sim-owned files, this handoff and the permitted
+change-request document; main merges bring their owners' changes.
+
+`guardReason_history` is **true as stated**. `State.history` is only the Back
+screen list. External event times, artifact versions, calendars, clinical
+sources, durable clocks and payloads are fixed Facts inputs; captures and clock
+are preserved by the quotient. The new recursive clinical/validation ASTs made
+whole-guard reduction expensive and prevented several old rfl proofs from
+closing. Explicit helper lemmas now prove invariance for those ASTs, temporal
+and expiry statuses, value goals, payload contracts, alerts and the guard.
+No theorem was weakened and no heartbeat limit was raised. Every named
+simulator theorem is axiom-audited, including the new helpers.
+
+## Simulator adoption
+
+- Patient predicates use Core's three-valued clinical evaluation. Unknown/stale
+  sources conservatively apply requirements. A scenario-supplied captured-code
+  discriminator used by entries, reviews, time windows, expiry, displays or
+  alerts becomes a real UI capture goal, even if it is otherwise optional.
+- Unspecified constrained goals can choose allowed/default/declared-record,
+  trusted terminology, bounded quantity and relational candidates; every
+  candidate is checked by Core. Explicit conflicting choices remain goals and
+  are reported. This remains a finite candidate policy, not a universal solver.
+- Entry planning defers relational values until their sources are captured and
+  can confirm valid prefills. Goal completion rechecks Core's current validator.
+- Temporal and durable-clock failures report named missing/invalid/overdue
+  obligations. KLM time and interruptions advance the actual interpreter clock
+  before each action. Sim never creates external evidence or renews an order.
+- Structured-display panels are navigation goals independently of ReviewReqs;
+  neither receipts nor a visible placeholder bypasses Core's payload contract.
+- `FeatureTests.lean` adds 52 executable checks covering completing/rejected
+  cases across all five groups, current/stale/missing sources, real predicate
+  inputs, valid prefills, relational ordering, conditional time obligations,
+  interruption expiry, exact-slot predicate captures and certified temporal
+  minimum search.
+
+T9's original single/joint contracts and real-interpreter replay remain intact.
+Exactness is within the reported full, goalDirected or navigationDirected
+space, per joint task. Search time stays fixed; there is no global/day-wide
+optimality or missing-external-event scheduling claim. See `lean/Ehr/Sim/README.md`.
+
+## Verification
+
+- Full `cd lean && lake build`: passes, 189 jobs.
+- `lake check`: passes; only propext, Quot.sound, Classical.choice.
+- `lake comparator`: passes all 18 trusted core statements.
+- `python3 lean/Ehr/Sim/verify_proofs.py`: passes the explicit single/joint T9
+  contracts. Proof holes occur only in Comparator reference challenges.
+- Fresh native ten-day sweep with `--jobs 10 --timeout-seconds 240`:
+  50 schedules, all 1284 tasks retained, 1271 complete. Exactly the same 13 baseline service tasks remain
+  incomplete. Zero violations across all eight floor metrics for completed
+  tasks; zero interruption-retention violations. All five day-one replays are
+  byte-identical at seed 123 and match the serial reports, including complaints.
+  All 50 reports also match the earlier full sweep exactly. The report pins the
+  actual merged-main commit; it never uses the moving origin/main reference.
+  Compact results and refreshed minimum examples: `lean/Ehr/Sim/validation.json`.
+  Reproduce: `python3 lean/Ehr/Sim/cli_smoke.py --days 10 --jobs 10 --timeout-seconds 240 --report /tmp/sim.json`.
+  `09008cb` adds the optional per-process wall budget (serial default stays
+  120 seconds). Twenty workers exceeded that budget on a busy RN schedule;
+  the final ten-worker run passed with an explicit 240-second process budget.
+  Clinical clocks, deadlines, goals and validation checks were unchanged.
+  Workers never invoke Lake or write the shared report. `--require-complete`
+  remains an intentional failure until the 13 baseline service scenarios work.
+- World build/lint/tests pass (92 tests); agent typecheck/lint/tests pass (31).
+- App build/lint and all 129 tests pass after the second main merge, including
+  inventory, real-WASM rendering and the new semantic painter. The app owner's
+  16-to-24 inventory fix is integrated; this handoff item is resolved.
+- Fresh native minimum examples: day-one P1 W1-001 is 44 clicks / 223 keys;
+  P3 W4-001 is 38 / 104 over two receipt-carry episodes. Both report certified
+  navigationDirected exactness for each objective.
+- Fresh unchanged-renewal CLI minimum `d01-P1-W7-022` still fails safely with
+  no completion, reproducing the owner integration request below.
+
+## Exactly what remains
+
+1. **The original 13 baseline service scenarios remain incomplete:** v1 still
+   lacks orderKind/orderCode declarations and composers. Content/world must provide the applicable UI or
+   align release timing while retaining all requested service work. Optional
+   declarations/composers exist in v2/v3; sim retains the unmet goals.
+2. **CLI owner integration:** in `lean/Ehr/Cli/Sim.lean:minSchedule`, replace
+   `let eps := episodes facts task.workflow task.choices` with
+   `let eps := taskEpisodes facts task`. It is already imported through Policy.
+   Persona simulation uses focused request context; minimum search still needs
+   this adoption for unchanged renewals whose choices.orders is empty.
+
+The app inventory item from the original handoff is resolved by main `b26f772`.
+The two remaining owning-lane changes are requested in `docs/design/changes-requests.md`,
+including the section "Sim revalidation after five-feature Core merge".
+Production rule/FHIR-source adoption for the new language remains under Core's
+existing owning-lane requests; sim's typed Facts path and all five feature
+fixtures are integrated. No production spec or safety rule was changed here.
+
+No unfinished simulator proofs remain. Do not call the project all-green while
+the owning-lane items above remain.
+
+
+## Archived run1 findings
+
+Run `run1-P3` completed 424/424 tasks over ten days with a real Codex agent, ending at certified v7 after five optimization deployments. Nineteen candidate checks passed and thirteen were rejected. Its early preflight exposed missing anticoagulant review placement in other personas; the current fifteen persona views certify. The obsolete preflight outputs and duplicate sanity scripts were removed. The immutable run retains original release labels and machine paths. Timing in its raw logs is historical evidence, not the current objective.

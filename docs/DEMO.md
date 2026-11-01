@@ -1,6 +1,6 @@
 # Judge demo · 3 minutes 55 seconds
 
-“Every night, AI redesigns your doctor's screen to save time. The hospital writes
+“Every night, AI redesigns your doctor's screen to reduce clicks, scrolling and mouse travel. The hospital writes
 the rules; Lean rejects shortcuts that remove required safety steps.”
 
 ## Before the clock starts
@@ -13,8 +13,7 @@ run**, `run1-P3`, not a new model call. The live segment writes to local Medplum
 Rehearse the note below on an available P1 clinic patient. Set **Worklist date**
 to **2026-11-02** for the seeded day, rather than the computer's date. Keep the
 actual selected patient and encounter visible; don't promise that a completed
-shared work item will still be waiting on the next rehearsal. The timeline
-segment below is explicitly an intended flow being built in another UI lane.
+shared work item will still be waiting on the next rehearsal. The UI browser exposes version history and readable diffs.
 
 ## 0:00–1:30 · This is a working EHR
 
@@ -61,7 +60,7 @@ Navigate to
    In **Measure**, use **Exact expert minimum (min-clicks)**; choose **Clicks**
    in **Complexity metric**. The fixed W4 case goes **25 → 23 clicks** from v0
    to v1 (8% fewer); **39 keystrokes stay 39**. It still requires **13 fields**
-   and **one popup**. The modeled KLM time is **129.95 → 127.55 seconds**.
+   and **one popup**.
 2. Click **v1 · Night 2** in **Versions and decisions**. Show the evidence,
    hypothesis, candidates and choice. Click **Before / after on screen** and
    **Next task event** to compare the real EHR screens. Close **Close EHR
@@ -157,3 +156,19 @@ with an inspectable reason for every change.”
 - **The optimizer gets told no:** a readable explanation and a replayable path.
 - **Personal histories:** accepted versions, rejected branches and release changes.
 - **No demo-time API dependency:** the recorded overnight run plays locally.
+
+## Curated integrated-build captures
+
+Captured from the served build at `http://127.0.0.1:5180` in replay mode. These supersede earlier screenshots.
+
+| Persona | Landing | Chart |
+|---|---|---|
+| P1 | [Landing](../app/shots/final/P1-landing.png) | [Chart](../app/shots/final/P1-chart.png) |
+| P2 | [Landing](../app/shots/final/P2-landing.png) | [Chart](../app/shots/final/P2-chart.png) |
+| P3 | [Landing](../app/shots/final/P3-landing.png) | [Chart](../app/shots/final/P3-chart.png) |
+| P4 | [Landing](../app/shots/final/P4-landing.png) | [Chart](../app/shots/final/P4-chart.png) |
+| P5 | [Landing](../app/shots/final/P5-landing.png) | [Chart](../app/shots/final/P5-chart.png) |
+
+[UI browser timeline](../app/shots/final/ui-browser-timeline.png) · [Dashboard](../app/shots/final/dashboard.png) · [Capture hashes](../app/shots/final/manifest.json).
+
+Old-UI MP4s were removed. A new integrated-build replay walkthrough replaces them; the later full-run recording remains pending until that run finishes.

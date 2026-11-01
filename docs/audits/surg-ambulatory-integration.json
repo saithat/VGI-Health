@@ -154,28 +154,28 @@
   "complexity": "programs/benchmarks/canonical-complexity.json",
   "screenshots": [
     {
-      "file": "app/shots/realism/surg/integration/p1-home.png",
+      "file": "app/shots/final (supersedes earlier captures)",
       "sha256": "3bc09d1a70cff0c2044094e844a082d17825dbb5f8e3b85d142dbcf1f16d99d9",
       "width": 1440,
       "height": 900,
       "nativeUiSha256": "a53215ed3b5727f4bc59713d8bb8100faf0c76369453ded80532c5f475491dc5"
     },
     {
-      "file": "app/shots/realism/surg/integration/p4-growth.png",
+      "file": "app/shots/final (supersedes earlier captures)",
       "sha256": "cff7be617484cedd84a678fd32c258d088a7a1f6e2a03e5bad5cc568fea8b7c3",
       "width": 1440,
       "height": 900,
       "nativeUiSha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480"
     },
     {
-      "file": "app/shots/realism/surg/integration/p5-op-note.png",
+      "file": "app/shots/final (supersedes earlier captures)",
       "sha256": "d2ebf2cd479e999346d87e40ef0d0529a02ebd87b3f503cc52f79fc9e194a1c4",
       "width": 1440,
       "height": 900,
       "nativeUiSha256": "cac26a9d3dec6b703fbe14c74c05b665fbd0564be7034e0b519fb6e459e6ede3"
     },
     {
-      "file": "app/shots/realism/surg/integration/p5-or-schedule.png",
+      "file": "app/shots/final (supersedes earlier captures)",
       "sha256": "0c082396db3850be8fe9ce5a59680408735bb8de0e4b71c987fc2dfc6ce1f9f0",
       "width": 1440,
       "height": 900,

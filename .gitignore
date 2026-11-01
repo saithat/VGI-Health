@@ -27,7 +27,11 @@ test-results/
 docs/recordings/.video-*/
 docs/recordings/*-error.png
 # Clinical UI review screenshots
-app/shots/
+app/shots/*
+!app/shots/realism/
+app/shots/realism/*
+!app/shots/realism/present/
+!app/shots/final/
 
 # Pinned Synthetic Hospital upstream downloads
 .cache/synthetic-hospital/
@@ -38,3 +42,11 @@ app/shots/
 # Lane-local validation inputs and baseline executable
 .cache/content2/
 .cache/conformance/
+
+__pycache__/
+*.pyc
+/.cache/
+runs/*
+!runs/mock/
+!runs/run1-P3/
+!runs/world/

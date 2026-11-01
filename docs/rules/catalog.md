@@ -4,7 +4,7 @@ Catalog-module rules are encoded; core keeps only denyRefill for W7 denial tasks
 
 Generated from reviewed decisions in `scripts/rules/build_catalog.py`. Baseline: the checked-in `lean/Ehr/Specs/V1.lean` and `lean/Ehr/Core/Types.lean`, not pending content-lane work. Research input digests are pinned so a reorder/update cannot silently reuse the wrong indexed decision. The deliverable is a classification and implementation plan; it does not change the Lean spec.
 
-Read 676 source rows; excluded 22 nonqualifying rows; retained 556 unique rules after citation + atomic-requirement de-duplication. Basis: 458 law, 98 entrenched. Distinct citations remain distinct legal rules even when their encodings can share a field. The two guidance-lane files are compatibility mirrors, not twice as many rules. `sourceIds` keeps every distinct source id, and `sourceLocations` keeps every file occurrence, including identical ids in mirrors.
+Read 578 source rows; excluded 22 nonqualifying rows; retained 556 unique rules after citation + atomic-requirement de-duplication. Basis: 458 law, 98 entrenched. Distinct citations remain distinct legal rules even when their encodings can share a field. The two guidance-lane files are compatibility mirrors, not twice as many rules. `sourceIds` keeps every distinct source id, and `sourceLocations` keeps every file occurrence, including identical ids in mirrors.
 
 The source `verified`, quotes, URLs, confidence and notes are preserved, not newly certified here. Research guesses are retained under `sourceAssessment`; only `fit`, `fitReason`, `existingSpecItems` and `proposedEncoding` are the audited classification. Source JSON basis omissions on binding rules are normalized to `law`. Nonbinding rows are accepted only with `basis: entrenched` and a concrete `entrenchedBecause`; accreditation, self-assessment and local checklist adoption are not relabeled law.
 
@@ -230,7 +230,7 @@ The first-pass spec-data plan has been executed; `catalog.json` records `encoded
 
 `proposedEncoding.workflowRoutes` records shared-screen routes: preserve patient/encounter and return to the originating workflow. Only the named roles may commit; other roles may view or hand off. A navigation link does not prove artifact creation. ED discharge-planning fields gate disposition directly; W7 new-prescription screens inherit every `signOrders` gate. Per-line captures bind to `.current` or the selected order slot, never an unbound episode slot.
 
-New commits need a resource-producing backend action, a human-only button and a canonical navigator route; `CommitSpec` alone is not an adapter. No new commit may broaden access to a protected action. Validate the JSON with `python -m json.tool docs/rules/catalog.json`; run the content checks in `HANDOFF-content.md`, including missing-field and wrong-role rejections, confirmations, negative coded outcomes and mixed Schedule II/non-II lines. The research builder's `--check` also checks generated-file drift, but rebuilding the research baseline overwrites content encoding metadata: rerun `lean/Ehr/Specs/Rules/encode.py` and the second-pass content mapping afterward. Timing, vocabulary validation, recurrent-event coverage and actual delivery require their own implemented features and evidence.
+New commits need a resource-producing backend action, a human-only button and a canonical navigator route; `CommitSpec` alone is not an adapter. No new commit may broaden access to a protected action. Validate the JSON with `python -m json.tool docs/rules/catalog.json`; run the content checks in `docs/STATUS.md`, including missing-field and wrong-role rejections, confirmations, negative coded outcomes and mixed Schedule II/non-II lines. The research builder's `--check` also checks generated-file drift, but rebuilding the research baseline overwrites content encoding metadata: rerun `lean/Ehr/Specs/Rules/encode.py` and the second-pass content mapping afterward. Timing, vocabulary validation, recurrent-event coverage and actual delivery require their own implemented features and evidence.
 
 ## Research provenance and scope
 
@@ -308,18 +308,17 @@ Validation passed: JSON parsing of both deliverables; exact schema keys/enums; 9
 | File | Rows | SHA-256 |
 | --- | --- | --- |
 | docs/rules/cms.json | 120 | bd621fbb14c7aa83b6d6df105a2eff268bc8113bee456d1dbd95f0510e99b051 |
-| docs/rules/ca-title22.json | 120 | bd75a74dcdd160deb98fa9c675019c4ad5771a72b55dc8308fd83d98b0f29dd1 |
+| docs/rules/ca-title22.json | 120 | fa7ff56c349b51183c78a524db0e8253464a188be1858538ec4b95801c737d68 |
 | docs/rules/ca-statutes.json | 120 | a5fadcf8fbacb9b83c6d75d71ef53d6ce16c94ff6ec8761ae1462af90c77883d |
 | docs/rules/federal-rx.json | 120 | 2c8c9e8362737e72a149566f337b548a8f7cd021fefa96938f3f67f13e55327b |
 | docs/rules/entrenched.json | 98 | 6369ee63d926b74653496e4cf44683b6c9705d002539881daaee75841d52d8ec |
-| docs/rules/guidance.json | 98 | 6369ee63d926b74653496e4cf44683b6c9705d002539881daaee75841d52d8ec |
 
 | Encoding baseline | SHA-256 |
 | --- | --- |
-| lean/Ehr/Core/Types.lean | 4dfcb842a8f6c9a77b7798bb69b9dc7bb884d961734a1f650ebc7f7ab69a9ced |
-| lean/Ehr/Specs/V1.lean | 669a52a1a937ed80d20650f949874c78d4d5a2b4ae2e8ce33ff6aadf7023e322 |
-| docs/design/core-model.md | 4f0f794e08a284c41f1fc909a0c4695a8e00c278717a2eb6dac6306336ea1153 |
-| BRIEF.md | 0137909b3f52e6e7d316f53e8ff280305dc7183671024389e04dd69f4259688a |
+| lean/Ehr/Core/Types.lean | dd31ef493970f44cd3c4caf7f90d817e84b933a30acbb3a57bfcc8f154c74f4b |
+| lean/Ehr/Specs/V1.lean | b518fda2d28f63b13f92055412b753f2b3e9c5a21ccc2aa769fe5e61b5f9dc2b |
+| docs/design/core-model.md | 332c3d89efa81ba0c7d02d821c7e686fbe6594a9f30cf5e8124f3c03e2d23db3 |
+| BRIEF.md | 55b581a42c160eea729ebded627a9fbd9a4bd1c0ccd4c6fb9259d5944a9469f0 |
 
 ### Excluded source rows
 

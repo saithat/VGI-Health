@@ -218,7 +218,7 @@ Owner hospital policy, **2026-10-31**, implemented by commit [`5aad7a9`](https:/
 +      commitRoleOk sp facts user c = true ∧
 ```
 
-The role must now pass both its ordinary permission and any encounter-specific restriction (`lean/Ehr/Core/Guard.lean:153`). The later attending-route update permits an NP to sign pre-op orders only after a declared human attending cosign; the NP’s own role is insufficient. Ordinary entry permissions remain unchanged. `commitRoleOk` checks both ordinary permission and the encounter’s direct-role or human-cosign route. `np_preop_without_cosign_never_signs` records the refusal without that route, and named P4/P5 walks are in `Check/EncounterRoleTests.lean`.
+The role must pass both ordinary permission and the encounter-specific role restriction. Pre-op orders require a physician or surgeon; NPs cannot sign them and must route the work to the surgeon. `commitRoleOk` checks encounter roles without an attending-cosign route. `np_preop_never_signs` proves refusal for every program, event and state; named P4/P5 walks are in `Check/EncounterRoleTests.lean`.
 
 Two other scope decisions matter: the temporary core profile removes most catalog content (above), and D2 now requires full review rows in the workspace even when a compact sidebar is present (`Render/UiProofs.lean:298`). D5's current overview check must not be described as a proof about interactive navigation. Signing roles, dose units and navigation are active lanes: regenerate the appendix after merging them, then re-review these plain-language claims.
 
@@ -235,7 +235,7 @@ Two other scope decisions matter: the temporary core profile removes most catalo
 - [ ] **Restore current bad-output proofs:** repair parked witnesses, prove the current CURES mutation and intended Schedule II completion failure, and add full-profile negative proofs for feature seeds (`EhrHeavy.lean:1`, `Check/AdditionalBadProofs.lean:29`, `Canonical/BadPrograms.lean:110`, `:154`).
 - [ ] **Align D5 with the clickable tree:** `Props/Navigation.lean:6` and `Check/NavigationSound.lean:6` say actual navigation, but `Render/NavRules.lean:12` checks `uiOverviewNav`; its own docstring records the open integration.
 - [ ] **Add the Lean ARIA projection and design proofs:** current semantic rules end at `renderUi` (`Render/Ui.lean:312`), not the browser accessibility tree; see the last section of `TODO_PROOFS.md`.
-- [x] **Correct role/unit/property comments and checker helper docstrings:** `Statements.lean` now describes encounter restrictions, the human attending-cosign route and `extraGuard`; its declaration tokens are unchanged. Property comments now state whole-episode and declared-unit scope, capture retention and linked-prefill declarations precisely. Twenty-five public checker helper docstrings were added.
+- [x] **Correct role/unit/property comments and checker helper docstrings:** `Statements.lean` now describes encounter-role restrictions and `extraGuard`; its declaration tokens are unchanged. Property comments now state whole-episode and declared-unit scope, capture retention and linked-prefill declarations precisely. Twenty-five public checker helper docstrings were added.
 - [ ] **Renderer-owned helper docstrings:** the original `Render/UiContracts.uiAtomsList` and several `Render/UiTests` fixtures still lack declaration docstrings. `Render/**` was left untouched for the active checker lane; named renderer counterparts in `Proofs/RenderExamples.lean` are documented. Existing owner-review notices in `Props/Defs.lean` and `Statements.lean` remain explicit.
 - [x] **Opaque contracts:** no project `opaque` or `axiom` declarations were found in `lean/Ehr/**`; there is no bodyless project contract to list. External I/O/toolchains remain trusted, not secretly proved by this result.
 - [x] **Audit the main proof axioms:** the generated results contain only the three allowed axioms. This does not validate parked proofs or replace a final Comparator / `lake check` run after lane merges.
@@ -1321,3 +1321,7 @@ Counts include named project definitions and types. Compiler helpers, instances,
 </details>
 
 <!-- END GENERATED AUDIT -->
+
+## Held-out rule conformance
+
+The held-out [conformance suite](../conformance/) is report-only and covers 195+ scenarios. It found five gap families that were subsequently closed. It supplements certification and does not alter the acceptance gate. See [conformance results](../conformance/RESULTS.md).

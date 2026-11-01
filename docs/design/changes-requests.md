@@ -348,7 +348,7 @@ fails these checks (the remaining rules pass):
 
 Content's bad-program exports and `Specs/Extends.lean` have not yet landed on
 origin/lane/content `6cd108d`. Please preserve the expected properties listed
-in HANDOFF-check.md when exporting the 14 programs. Per-screen component IDs
+in docs/STATUS.md when exporting the 14 programs. Per-screen component IDs
 are accepted; spec-level alert IDs must remain unique.
 
 ## CR-6. Prior-auth requests and the existing semantic properties
@@ -386,7 +386,7 @@ Render will test the generator in a temporary copy without editing your file.
 `wasm/build-ehr.sh` and `wasm/build.py` hardcode `.tools/{emsdk,lean4,libuv}`;
 there is no supported environment override. Please add one (e.g.
 `VGI_TOOLS_DIR`), including the Python paths. The available pinned toolchains
-are in `/home/saithat/Projects/VGI-wasm/.tools`. For this lane's rebuild we
+are in `.tools`. For this lane's rebuild we
 use local ignored symlinks under `.tools` pointing to those read-only inputs.
 
 ## Render → app / infra: patient identity and wristbands (2026-10-31)
@@ -1907,7 +1907,7 @@ clinical deadline, goal, completion and validation check unchanged.
 **Exactly two original owning-lane requests remain open:** baseline v1 service
 order declarations/composers for the 13 retained tasks, and the one-line
 `taskEpisodes facts task` adoption in Cli.Sim.minSchedule. The app inventory
-request is closed. Exact details and the final verification are in HANDOFF-sim.md
+request is closed. Exact details and the final verification are in docs/STATUS.md
 and lean/Ehr/Sim/validation.json. No unfinished simulator proofs remain.
 # Live Medplum integration requests (lane/app, 2026-10-31)
 
@@ -2228,7 +2228,7 @@ The three existing entry requirements and permissions remain unchanged.
 `np_preop_never_signs` proves the guard refuses every NP pre-op signature;
 `entry_relevant_when_allowed` justifies excluding forbidden-context entries
 from depth and completion checks. All 15 persona baselines now certify.
-The three shared canonical masters mix roles and are reference programs, not
+The three shared canonical vendor references mix roles and are reference programs, not
 single-role deployable baselines; only their persona projections are certified.
 World 1 has 15 pre-op tasks, all P5, and none on day 1. P4 has no pre-op tasks.
 The named P5 pre-op walkthrough signs after the three required human captures.
@@ -2293,13 +2293,13 @@ Validation on world 2: **38 / 1,284** tasks remain incomplete, all with this
 specific dose obstruction; P1 has 4, P2 has 29, P5 has 5. P3/P4 complete all tasks;
 P4 has no pre-op tasks. `lean/Ehr/Sim/validation-world2.json` contains every
 blocked task ID and its exact drug/dose/unit choices. The per-day table is in
-`docs/STATUS.md`. No service-order release mismatch remains.
+`STATUS.md`. No service-order release mismatch remains.
 
 
 Resolved by the check lane: native-unit dose kind, per-slot formulary/selector
 validation, unit-aware composer and UCUM FHIR writes. The same 1,284 tasks now
 complete with zero incomplete; see `lean/Ehr/Sim/validation-world2.json` and
-`docs/STATUS.md`. The earlier 38-task obstruction above records the pre-fix result.
+`STATUS.md`. The earlier 38-task obstruction above records the pre-fix result.
 
 ## SIM-WORLD2-AGENT-SCHEMA-2026-10-31: new runs reject the active core spec
 
