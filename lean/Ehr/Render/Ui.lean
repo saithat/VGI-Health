@@ -496,8 +496,11 @@ def uiQueueRowTag (cx : Ctx) (tag : String) : String :=
       | .table info | .panel info =>
         if !["scheduleTasks", "orSchedule", "edTrackBoard", "shiftWorklist", "consultList", "inBasketResults", "inBasketRxRequests"].contains info then tag
         else
-          let rows := uiRows cx info
-          match rows.findIdx? (fun row => row.lookup "Patient" == some cx.disp.banner.name) with
+          let payload := infoPayload cx.facts info
+          let selected := if payload.any (fun p => p.artifactKey.startsWith "world:") then
+            payload.bind fun p => p.rows.findIdx? (fun row => row.id == "selected-chart")
+          else (uiRows cx info).findIdx? (fun row => row.lookup "Patient" == some cx.disp.banner.name)
+          match selected with
           | none => ""
           | some index => "present.row|" ++ target ++ "|" ++ toString index
       | _ => tag

@@ -1772,12 +1772,14 @@ def worldList (ctx : FactsContext) (rs : List Json) (code : String) : Option (Li
 def worldExtension (r : Json) (key : String) : String :=
   ((arr r "extension").find? (fun e => str e "url" == "https://vgi-health.example/fhir/StructureDefinition/" ++ key)).map (str · "valueString") |>.getD ""
 
-/-- Keep the selected chart's row first for its existing ordinary opener.
-Other rows remain read-only context; membership and source order are retained. -/
-def selectedFirst (p : Json) (rows : List Json) : List Json :=
-  let selected := fun r => periopSubject p r || Ambulatory.referenceMatches (str (field r "for") "reference") p ||
+/-- Source patient references identify a chart row independently of name formatting. -/
+def worldRowMatches (p r : Json) : Bool :=
+  periopSubject p r || Ambulatory.referenceMatches (str (field r "for") "reference") p ||
     (arr r "participant").any (fun a => Ambulatory.referenceMatches (str (field a "actor") "reference") p)
-  rows.filter selected ++ rows.filter (fun r => !selected r)
+
+/-- Pin the current chart's source rows while retaining the other source rows. -/
+def selectedFirst (p : Json) (rows : List Json) : List Json :=
+  rows.filter (worldRowMatches p) ++ rows.filter (fun r => !worldRowMatches p r)
 
 /-- Explicit List membership supplies department queues independently of chart facts. -/
 def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload :=
@@ -1800,7 +1802,13 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
      ("Chief complaint", row.complaint), ("Acuity", row.acuity), ("Arrival", row.arrival),
      ("RN", encounterParticipant rs r "PPRF"), ("Provider", row.provider),
      ("Labs", worldExtension r "pending-labs"), ("Imaging", worldExtension r "pending-imaging"),
-     ("Disposition", worldExtension r "disposition"), ("Assignment", worldExtension r "nursing-assignment"), ("Status", row.status)]
+     ("Disposition", worldExtension r "disposition"), ("Status", row.status)]
+  let censusCells := fun r =>
+    let row := boardRow ctx.today rs r
+    [("Room", row.room), ("Patient", row.patient), ("Age/sex", row.ageSex),
+     ("Diagnosis", row.complaint), ("Admitted", row.arrival),
+     ("RN", encounterParticipant rs r "PPRF"), ("Attending", row.provider),
+     ("Assignment", worldExtension r "nursing-assignment"), ("Status", row.status)]
   let caseCells := fun r =>
     [("Room", humanRef rs (first r "locationReference")), ("Start", str (field r "occurrencePeriod") "start"),
      ("Procedure", ccText (field r "code")), ("Patient", humanRef rs (field r "subject")),
@@ -1819,8 +1827,8 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
     [("scheduleTasks", clinic.map (fun rows => (selectedFirst p rows).map scheduleCells)),
      ("orSchedule", cases.map (fun rows => (selectedFirst p rows).map caseCells)),
      ("edTrackBoard", ed.map (fun rows => (selectedFirst p rows).map boardCells)),
-     ("shiftWorklist", mine.map (fun rows => (selectedFirst p rows).map boardCells)),
-     ("unitCensus", unit.map (fun rows => (selectedFirst p rows).map boardCells)),
+     ("shiftWorklist", mine.map (fun rows => (selectedFirst p rows).map censusCells)),
+     ("unitCensus", unit.map (fun rows => (selectedFirst p rows).map censusCells)),
      ("consultList", consults.map (fun rows => (selectedFirst p rows).map fun r =>
        [("Received", str r "authoredOn"), ("Patient", humanRef rs (field r "subject")),
         ("Reason", ccText (first r "reasonCode")), ("Priority", str r "priority"),
@@ -1831,7 +1839,16 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
      ("inBasketMessages", basket.map fun _ => (messages.filter (fun r => resourceType r == "Communication")).map messageCells),
      ("inBasketResults", basket.map fun _ => results.map messageCells),
      ("inBasketRxRequests", basket.map fun _ => refills.map messageCells)]
-  views.filterMap fun (info, rows) => rows.bind fun rows => Ambulatory.payload p rs info rows true
+  let sources := [("scheduleTasks", clinic.getD []), ("orSchedule", cases.getD []),
+    ("edTrackBoard", ed.getD []), ("shiftWorklist", mine.getD []), ("unitCensus", unit.getD []),
+    ("consultList", consults.getD []), ("inBasketResults", results), ("inBasketRxRequests", refills)]
+  views.filterMap fun (info, rows) => rows.bind fun rows => do
+    let payload ← Ambulatory.payload p rs info rows true
+    let hasSelected := ((sources.lookup info).getD []).any (worldRowMatches p)
+    pure { payload with
+      artifactKey := "world:" ++ info
+      rows := payload.rows.zipIdx.map fun (row, index) =>
+        if index == 0 && hasSelected then { row with id := "selected-chart" } else row }
 
 /-- Input of `facts`: a FHIR bundle and the context. -/
 structure FactsInput where

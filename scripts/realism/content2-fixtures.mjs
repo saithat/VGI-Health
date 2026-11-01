@@ -62,8 +62,8 @@ for (const [name, persona, day, workflow, screen] of cases) {
   for (const event of path) { const step = native('step',{...base,state,event});assert.equal(step.result,'ok');state=step.state; }
   if (name === 'problem-list') {
     const chart = program.screens.find(s=>s.id===screen).components.find(c=>c.kind === "tabs");
-    const problems = program.screens.find(s=>s.id===screen).components.find(c=>c.kind.table?.info==='problemList' && c.parent===chart?.id);
-    if (chart && problems) state=native('step',{...base,state,event:{selectTab:{comp:chart.id,idx:problems.tab}}}).state;
+    const problems = program.screens.find(s=>s.id===screen).components.find(c=>c.kind.table?.info==='problemList' && c.id===`${screen}.chart.problemList`);
+    if (chart && problems) state=native('step',{...base,state,event:{selectTab:{comp:chart.id,idx:problems.parent===chart.id ? problems.tab : program.screens.find(s=>s.id===screen).components.find(c=>c.id===problems.parent).tab}}}).state;
   }
   const renderInput = {...base,display:projection.display,state};
   const ui = native('render-ui',renderInput);

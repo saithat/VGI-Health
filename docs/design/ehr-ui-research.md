@@ -1251,7 +1251,7 @@ Public references: [Northwestern Medicine In Basket training](https://physicianf
 
 Before/after captures are in `app/shots/realism/content2/{before,after}/`, at 1440 × 900. They are produced from the native Lean API by `scripts/realism/content2-fixtures.mjs` and painted by `app/e2e/content2-realism.spec.ts`, which checks the browser ARIA tree against the supplied semantic tree for every capture.
 
-- P1 Schedule: the original fixture has no full-day department context. The after view resolves all 18 dated appointments with patient, visit, status, provider and location. The current chart's ordinary encounter opener belongs to its actual row; other rows are read-only.
+- P1 Schedule: the original fixture has no full-day department context. The after view resolves all 18 dated appointments with patient, visit, status, provider and location. The current chart's ordinary encounter opener belongs to its actual row, matched by source patient reference rather than the displayed name format; other rows are read-only.
 - P2 Track Board: the after view resolves 20 List members, including source ESI, bed, nurse/provider and pending studies. The existing encounter opener remains the action.
 - P3 My Patients: five assigned patients are separate from the 12-patient Unit Census, available through its ordinary collapsible section. Cross-coverage task patients keep their own chart even when absent from the assignment snapshot.
 - P5 OR Schedule / Consults: ten room-specific cases and three consultations come from their separate Lists. Department queues use separate info IDs from the selected patient's case/consult summary. Rounding shows the actual inpatient bed, recorded postoperative day and inpatient encounter name, rather than a pre-op label.

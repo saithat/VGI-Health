@@ -165,11 +165,11 @@ def sidebar (s : ScreenId) (blocks : List Block) : List Component :=
 tab 0 is open at first. -/
 def tabStrip (s : ScreenId) (name : String) (label : String) (blocks : List Block) :
     List Component :=
-  (if blocks.any (fun (_, info, _) => info == "problemList") then
-    [group s (name ++ ".includeResolved") "Include resolved problems" (startCollapsed := true)] else []) ++
   tabsC s name label ::
-    ((List.range blocks.length).zip blocks).map fun (i, look, info, lbl) =>
-      showInfo s (name ++ "." ++ info) look info lbl (parent := some name) (tab := i)
+    (((List.range blocks.length).zip blocks).map fun (i, look, info, lbl) =>
+      showInfo s (name ++ "." ++ info) look info lbl (parent := some name) (tab := i)) ++
+    (if blocks.any (fun (_, info, _) => info == "problemList") then
+      [group s (name ++ ".includeResolved") "Include resolved problems" (startCollapsed := true)] else [])
 
 /-- A visit navigator: one button per screen of the workflow, except `s` itself. -/
 def navigator (s : ScreenId) (steps : List (ScreenId × String)) : List Component :=

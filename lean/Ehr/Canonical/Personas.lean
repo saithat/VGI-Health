@@ -16,6 +16,8 @@ def roleComponentAllowed (sp : Spec) (role : Role) (c : Component) : Bool :=
 row. In Basket remains a separate activity; no destination or event is added. -/
 def clinicLandingLayout (owner : String) (screen : Screen) : Screen :=
   if screen.id != "home" then screen else
+  let screen := { screen with components := screen.components.filter fun c =>
+    c.id != "home.chart" && !c.id.startsWith "home.chart." }
   if !["P1", "P4"].contains owner then
     let info := if owner == "P2" then "edTrackBoard" else if owner == "P3" then "shiftWorklist" else "orSchedule"
     let kind := if owner == "P5" then "orSchedule" else "trackBoard"
