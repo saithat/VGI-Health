@@ -158,7 +158,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   }
   const manifestData = {
     interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'raw only; not used'},
-    status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:1,fingerprints, measurementProtocol,
+    status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:Math.max(1,Number.parseInt(process.env['EHR_SCREEN_WORKERS']??'1',10)||1),fingerprints, measurementProtocol,
     mode: opts.llm.name === 'replay' ? 'REPLAY' : opts.llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
