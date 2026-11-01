@@ -157,7 +157,7 @@ describe("structured clinical data boundary", () => {
   });
   it("uses explicit status words and never derives a flag from a numeric value", () => {
     expect(suppliedTone("L")).toBe("blue");
-    expect(suppliedTone("H")).toBe("amber");
+    expect(suppliedTone("H")).toBe("red");
     expect(suppliedTone("HH")).toBe("red");
     expect(suppliedTone("Held · Per order")).toBe("amber");
     expect(suppliedTone("6.5")).toBeUndefined();
