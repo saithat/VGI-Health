@@ -4,15 +4,15 @@ Measured with one Chromium worker; wire bytes include headers. “Interactive”
 
 | Host | Action | Bytes before → after | Requests | Interactive ms | WASM requests |
 |---|---|---:|---:|---:|---:|
-| 127.0.0.1 | cold dashboard | 3,160,539 → 273,338 | 88 → 18 | 1007 → 849 | 1 → 0 |
-| 127.0.0.1 | EHR → dashboard | 11,488 → 901 | 88 → 9 | 970 → 219 | 1 → 0 |
-| 127.0.0.1 | dashboard → EHR | 1,963 → 1,051 | 13 → 4 | 278 → 123 | 1 → 0 |
-| vgi-audit.example.ts.net | cold dashboard | 3,160,227 → 298,769 | 88 → 18 | 501 → 243 | 1 → 0 |
-| vgi-audit.example.ts.net | EHR → dashboard | 11,176 → 901 | 88 → 9 | 972 → 225 | 1 → 0 |
-| vgi-audit.example.ts.net | dashboard → EHR | 1,651 → 1,051 | 13 → 4 | 280 → 124 | 1 → 0 |
+| 127.0.0.1 | cold dashboard | 3,160,539 → 278,473 | 88 → 18 | 1007 → 904 | 1 → 0 |
+| 127.0.0.1 | EHR → dashboard | 11,488 → 901 | 88 → 9 | 970 → 322 | 1 → 0 |
+| 127.0.0.1 | dashboard → EHR | 1,963 → 1,315 | 13 → 5 | 278 → 370 | 1 → 0 |
+| vgi-audit.example.ts.net | cold dashboard | 3,160,227 → 304,043 | 88 → 18 | 501 → 286 | 1 → 0 |
+| vgi-audit.example.ts.net | EHR → dashboard | 11,176 → 901 | 88 → 9 | 972 → 217 | 1 → 0 |
+| vgi-audit.example.ts.net | dashboard → EHR | 1,651 → 1,315 | 13 → 5 | 280 → 356 | 1 → 0 |
 
 The baseline was the production bundle from ee9e8b4 with its uncompressed static preview and eager dashboard loading. The optimized initial dashboard requests one summary, no program versions, no day traces, no replay context and no WASM. Opening a version drawer hydrates the selected persona's versions, certificates and day traces plus replay context. Browser JSON caching deduplicates repeated detail requests.
 
-Build output decreased from **159 MiB to 5.2 MiB**, including Brotli and gzip variants. A measured optimized build took **7.6 seconds** including TypeScript (peak build RSS 751 MiB). No fixtures, runs or programs are copied into dist. Preview serves repository artifacts with ETags, encoding negotiation and revalidation; hashed assets and the manifest-hash-versioned WASM get a one-year immutable cache policy. The checkout is required alongside dist.
+Build output decreased from **159 MiB to 5.7 MiB**, including Brotli and gzip variants. A measured optimized build took **7.6 seconds** including TypeScript (peak build RSS 751 MiB). No fixtures, runs or programs are copied into dist. Preview serves repository artifacts with ETags, encoding negotiation and revalidation; hashed assets and the manifest-hash-versioned WASM get a one-year immutable cache policy. The checkout is required alongside dist.
 
 Reproduce with `pnpm --filter app build`, then `pnpm --filter app audit:performance`. The browser test resolves `vgi-audit.example.ts.net` to loopback and explicitly allows that Host on the test preview. It does not modify Tailscale Serve.
