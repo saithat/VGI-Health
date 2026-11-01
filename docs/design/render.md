@@ -102,7 +102,7 @@ UiScreen. The old PageNode API remains available for existing integrations.
 `render-screens --ui` writes one semantic JSON screen for every existing variant.
 Use `lean/generated/ehr-types.ts`; the JSON encoding is Lean's derived encoding.
 
-UiScreen owns one banner landmark (name, DOB, MRN keys), grouped workflow nav,
+UiScreen owns one banner landmark (name, human-readable DOB, MRN keys), real goto-button nav,
 a workspace beginning with a workflow stepper, a clinical side column, and an
 optional modal. JSON key order has no layout meaning: the painter must place the
 banner first. Missing identifiers remain empty; the renderer never invents them.
@@ -115,10 +115,10 @@ item: unmatched branches stay at workspace level. The proof `uiComponents_mem`
 covers arbitrary component lists, not just canonical programs.
 
 D2 adds full-row read-only review info for applicable requirements not already
-shown on a screen with the relevant commit button (including a disabled button).
+shown in full detail in the workspace with the relevant commit button (including a disabled button).
 It never changes interpreter state, guard outcomes, or original component IDs.
-The supplement and sidebar use empty comp IDs and never dispatch events; hidden-id
-T10 applies to nonempty component IDs. D3 covers workspace, side, and modal.
+The supplement/default summaries use empty comp IDs; program side controls retain their real IDs. Hidden-id
+T10 applies to nonempty component IDs. D3 covers workspace, side, navigation, and modal.
 D4 filters passive/unknown modal IDs even in externally supplied malformed states.
 D6 copies raw provenance/human-only/pending flags exactly; the painter may label
 the provenance but must not infer or modify it. Pending fields get a confirm button.
@@ -134,8 +134,9 @@ payloads, artifact IDs, and serialized payload/debug objects are not displayed.
 and semantic T10/T11. `UiTests.lean` has satisfiable Tiny/FHIR instances, a missing
 review program, round trips, and axiom reports. The proof comparator checks these
 statements independently of the solution. D5 belongs to the checker: decidable
-`NavSane spec prog` in NavRules checks real nav labels, group sizes, and orphans.
-Its P1 report currently fails the 12-entry limit (14 W1, 17 W3, 18 W6); no entries
+`NavSane spec prog` in NavRules checks the workflow-wide overview labels, group sizes, and orphans.
+That overview diagnostic is not a certificate of the new interactive shell nav.
+Its expanded P1 report still fails the 12-entry limit; no entries
 are truncated. The content/checker integration request is tracked separately.
 
 Field kind strings preserve `identity`, `scan`, and `cosign`. Formulary inputs
@@ -144,3 +145,19 @@ inputs use `code`. This keeps the original entry semantics and choices without
 requiring React to reconstruct domain data. The clinical banner includes allergy
 records/reactions/status and code status from Facts.record's `codeStatus` value,
 or explicit `Not recorded` if unavailable. It never assumes full code.
+
+The program's banner is represented once in the shell. Navigator groups tagged
+`nav`/`navigator` become shell headings and enabled goto entries with **comp IDs**.
+The painter must dispatch click using that ID. The workspace has no duplicate
+navigator section. Side-tagged groups and descendants render in the side column;
+compact list rows use `Record` as their primary text. Resolved/inactive problems
+remain in the full problem list, but not in the side summary. Required review info
+always has full rows in workspace (`D2_workspace_required`), even when the side
+summary is also shown. T11 proves every record survives the requested full or
+compact presentation; `uiItemRows` fixes which projection each component uses.
+
+Order-signing info tables read captured order lines from the current State. Dose
+includes its unit; other captured prescription/prescriber values remain explicit.
+No historical MedicationRequest becomes a new episode order. Missing captures are
+not invented. Dates preserve recorded wall time and omit ISO offset syntax in the
+display. Verbatim regulatory text must come from content (request outstanding).

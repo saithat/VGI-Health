@@ -91,3 +91,20 @@ must not be presented as a proof of the new seed's CURES defect.
 Core certification is still blocked for NP pre-op episodes by the preserved
 consent role rule (`np_preop_obstruction`, retained and kernel checked in the
 default build). No safety rule, property domain or role permission was changed.
+Render visual-review follow-up: shell/side/nav presence is covered by T10;
+semantic T11 distinguishes the requested full and compact record projections.
+`D2_workspace_required` additionally proves full rows in workspace for every
+applicable commit review, including when a compact sidebar is counted as shown.
+All revised semantic proofs compile and are axiom-audited; no render proof hole.
+The original full HTML/FHIR theorem statements remain unchanged.
+
+## Newly merged accessibility-tree requirement
+
+Main `f60a795` adds `aria : UiScreen → AriaNode` and proofs over that expected
+accessibility tree to BRIEF.md. That projection and its theorem surface are
+**not started**. The existing 35 render Comparator contracts cover the semantic
+UiScreen and legacy HTML/FHIR boundaries; they do not claim this new extension.
+The app still computes expected ARIA in TypeScript. A follow-up must define the
+Lean projection, prove its design contracts, and have the app fidelity gate
+consume it, including real nav click entries. No unfinished theorem declaration
+or proof hole has been added to the completed render modules.

@@ -50,7 +50,7 @@ structure Rule where
 
 /-- Explain D5 using exactly the renderer's navigation groups and labels. -/
 def navigationFinding (p : Program) : Option Finding :=
-  let nav := Render.uiNav p
+  let nav := Render.uiOverviewNav p
   if ¬ (nav.map (·.1)).Nodup then
     some { property := "navigation", message := "D5: navigation group labels are not unique" }
   else if 12 < nav.length then

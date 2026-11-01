@@ -8,14 +8,14 @@ theorem enabled_mem (cx : Ctx) (id : CompId) :
         c.id = id ∧ actionStatus cx.sp cx.prog cx.facts cx.user cx.s c = some none := by
   cases hp : cx.s.popup? with
   | none =>
-    simp [Ctx.v, view, hp, List.mem_filterMap, List.mem_filter]
+    simp [Ctx.v, Ctx.viewCache_exact, view, hp, List.mem_filterMap, List.mem_filter]
     constructor
     · rintro ⟨a, b, ⟨c, ⟨hc, hs⟩, ha, he⟩, hb, hid⟩
       subst b
       exact ⟨c, hc, hs, he.trans hid, ha⟩
     · rintro ⟨c, hc, hs, hid, ha⟩
       exact ⟨id, none, ⟨c, ⟨hc, hs⟩, ha, hid⟩, rfl, rfl⟩
-  | some p => simp [Ctx.v, view, hp]
+  | some p => simp [Ctx.v, Ctx.viewCache_exact, view, hp]
 /-- Unique component ids identify the same component, even for malformed
  programs elsewhere. The theorem requires uniqueness only on this screen. -/
 theorem id_unique (cs : List Component) (hn : (cs.map (·.id)).Nodup)
@@ -69,7 +69,7 @@ example :
       "signOrders" ∉ tinyCtx.s.commits ∧
       guardBase Examples.Tiny.spec Examples.Tiny.program Examples.Tiny.facts Examples.Tiny.user
         { tinyCtx.s with screen := "sign" } "signOrders" = true := by
-  exact T10_commit_enabled { tinyCtx with s := { tinyCtx.s with screen := "sign" } }
+  exact T10_commit_enabled { tinyCtx with viewCache := ⟨_, rfl⟩, s := { tinyCtx.s with screen := "sign" } }
     { id := "signButton", kind := .button (.commit "signOrders"), label := "Sign", hotkey? := some "Ctrl+Enter", tag := "sign" }
     "signOrders" (by decide) (by decide) (by decide) rfl
 

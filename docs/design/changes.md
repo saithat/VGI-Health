@@ -650,6 +650,22 @@ component. D1 guarantees identifier fields, not invented values: empty input
 identifiers remain empty. UiScreen has one banner field and UiNode has no banner
 constructor; the AppShell must place this landmark first. JSON object key order
 is not a layout instruction.
+
+### App integration follow-up
+
+Merged app-owned semantic painter and fidelity gate (`f810f92`) into render;
+app build/lint and all 124 unit tests now pass, including the 24-seed catalog.
+The real P1 rooming/orders/sign samples pass 8 desktop/narrow ARIA checks.
+Group-header buttons dispatch the existing `Event.click` (there is no
+`Event.toggle`); confirm and ack roles select their actual events.
+
+The semantic field kind now preserves `identity`, `scan`, and `cosign`, and
+`code:<choice>|<choice>...` carries the existing Lean formulary choices. This
+uses section 10's existing String field; no UiNode type change was made. Other
+coded sets retain the previous free-code entry behavior. The clinical banner
+also emits allergy records with reactions/status, and explicit code status
+from `Facts.record["codeStatus"]` when supplied, otherwise `Not recorded`.
+React does not need to infer these clinical fields.
 ## Content pass 2: five newly available rule families
 
 V1 now composes the reviewed feature mappings under `Ehr/Specs/Rules/` with
@@ -669,18 +685,57 @@ integration, source-row coverage and remaining AST limitations are CR-16 work;
 per-rule status/reasons are in catalog.json. No runtime/core/property statement
 was edited by content.
 
-### App integration follow-up
+## Render visual review: shell placement and clinical projections
 
-Merged app-owned semantic painter and fidelity gate (`f810f92`) into render;
-app build/lint and all 124 unit tests now pass, including the 24-seed catalog.
-The real P1 rooming/orders/sign samples pass 8 desktop/narrow ARIA checks.
-Group-header buttons dispatch the existing `Event.click` (there is no
-`Event.toggle`); confirm and ack roles select their actual events.
+`renderUi` routes program banner components to the single `UiScreen.banner`;
+non-collapsible navigator groups tagged `nav`/`navigator` route shown goto controls
+into `nav`, using their actual component IDs. Sidebar-tagged groups and their
+children route to `side`. Blocked or hotkey-bearing goto controls retain their
+full button metadata in the workspace because the approved nav pair has no
+fields for that metadata. No interpreter transition or enabled state is invented.
+Navigation/group labels are preserved; an empty group still has a shell heading.
+The old workflow-wide screen overview is now explicitly `uiOverviewNav`; its D5
+report is an outstanding content/checker diagnostic, not a certificate for the
+interactive shell. App must paint the new nav pairs as clicks (requested).
 
-The semantic field kind now preserves `identity`, `scan`, and `cosign`, and
-`code:<choice>|<choice>...` carries the existing Lean formulary choices. This
-uses section 10's existing String field; no UiNode type change was made. Other
-coded sets retain the previous free-code entry behavior. The clinical banner
-also emits allergy records with reactions/status, and explicit code status
-from `Facts.record["codeStatus"]` when supplied, otherwise `Not recorded`.
-React does not need to infer these clinical fields.
+T10's presence observer now covers workspace, side, nav pairs as their real click
+buttons, and the shell's clinical banner fields. Banner components are read-only;
+the shell does not invent an addressable banner component ID. Navigation group
+headers are structural labels, not duplicate workspace sections. T10 still proves
+shown semantic contributions present and hidden nonempty IDs absent for every
+input, without certification assumptions. D3 now includes nav and side controls.
+
+Compact side rows are explicit projections: every allergy/active medication,
+active unresolved problems, and latest measurement per vital code. Full workspace
+panels retain all rows including resolved problems. The semantic T11 statements
+now distinguish these two requested presentations and prove record preservation
+from FHIR in either form. The original full HTML/FHIR T11 statements are untouched.
+**D2 is strengthened by `D2_workspace_required`: every applicable commit review
+has complete full-detail rows in the workspace, even if the interpreter counts a
+compact side panel as shown.** A summary cannot replace a required signing review.
+No guard, spec rule, property in Props, or interpreter enablement changed.
+
+Order-summary/controlled-signing detail info uses a table populated from current
+State order-line captures, including dose with its unit and captured prescription,
+indication and prescriber details. It never substitutes historical medications.
+ISO dates/date-times are formatted for people, preserving the recorded wall time.
+Blocked reasons retain constraints and replace identifier tokens with spec labels.
+The identity hard stop is explicit clinician-facing text. Group toggle controls
+say Expand/Collapse section, and modals no longer repeat their title in body text.
+The required verbatim legal notice still needs a content/core text field; that
+cross-lane request is recorded rather than inventing legal wording in render.
+
+Follow-up: supplied structured artifact fields/rows are preserved alongside the
+current captured order lines. Child info labels beneath an identical section
+heading use `Records`; identically titled fields use `Enter <label>`, preserving
+the clinical label while avoiding duplicate headings. Editable field values keep
+the interpreter's exact lexical spelling (especially validated dates); human date
+formatting applies to the banner and read-only clinical/captured-summary values.
+
+`T11_ui_full_info` additionally preserves the exact component ID and all full
+rows for each shown workspace info panel; it cannot be satisfied by a compact
+summary. App main `d3e0860` resolves plain primary-list-cell painting. The P1
+rooming/orders/sign samples have been regenerated from the complete release JSON
+using actual init/goTo states; none repeats a direct child label as its section
+heading. The exporter emits reproducible sample inputs alongside the complete
+canonical differential corpus.
