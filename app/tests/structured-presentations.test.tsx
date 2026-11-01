@@ -25,6 +25,174 @@ function paint(nodes: UiNode[]) {
   return onEvent;
 }
 describe("structured clinical data boundary", () => {
+  it("retains the recorded clock, fractional seconds and offset for ISO result times", () => {
+    const recorded = "2026-11-01T01:30:00.125-07:00";
+    paint([
+      {
+        presentation: {
+          kind: "results",
+          children: [
+            {
+              info: {
+                comp: "results",
+                infoId: "labResults",
+                label: "Results",
+                display: "table",
+                rows: [
+                  [
+                    ["Test", "Potassium"],
+                    ["Value", "4.0"],
+                    ["Unit", "mmol/L"],
+                    ["Recorded", recorded],
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const time = screen.getByText("01 Nov 2026 01:30:00.125-07:00");
+    expect(time.getAttribute("datetime")).toBe(recorded);
+    expect(time.getAttribute("title")).toBe(recorded);
+  });
+  it.each(["legacy", "structured"] as const)(
+    "retains verbatim note bodies and complete imported metadata in %s notes",
+    (layout) => {
+      const title =
+        "General Surgery (procedure). Source date 2020-03-15; structured dates shifted 2238 days. Note text retained verbatim.";
+      const body =
+        "Subjective\n\nPain improved (finding).\n\nAssessment & Plan\n  Continue the documented plan.";
+      const info: UiNode = {
+        info: {
+          comp: "notes",
+          infoId: "encounterNotes",
+          label: "Clinical notes",
+          display: "list",
+          rows: [
+            [
+              ["Date", "2026-05-01"],
+              ["Type", "Progress note"],
+              ["Author", "Daniel Park, MD"],
+              ["Title", title],
+              ["Text", body],
+              ["Status", "final"],
+              ["Source date", "2020-03-15"],
+              ["Shift days", "2238"],
+            ],
+          ],
+        },
+      };
+      paint([
+        layout === "legacy"
+          ? info
+          : { presentation: { kind: "notes", children: [info] } },
+      ]);
+      const narrative = screen.getByText(
+        (_, element) =>
+          element?.textContent === body && element.children.length === 0,
+      );
+      expect(narrative.textContent).toBe(body);
+      expect(
+        screen.getByRole("list", { name: "Clinical notes" }).textContent,
+      ).toContain(title);
+      expect(
+        screen.getByText(
+          "Source date 2020-03-15; structured dates shifted 2238 days. Note text retained verbatim.",
+        ),
+      ).toBeTruthy();
+      expect(screen.getByText("15 Mar 2020")).toBeTruthy();
+      expect(screen.getByText("2238", { exact: true })).toBeTruthy();
+      expect(screen.queryByRole("button")).toBeNull();
+    },
+  );
+  it("uses the shared source-direction grammar in structured medication review", () => {
+    paint([
+      {
+        presentation: {
+          kind: "table",
+          children: [
+            {
+              info: {
+                comp: "meds",
+                infoId: "currentMeds",
+                label: "Current medications",
+                display: "table",
+                rows: [
+                  [
+                    ["Medication", "lisinopril 10 MG Oral Tablet"],
+                    ["Instructions", "1, 1x per 1 d"],
+                  ],
+                  [
+                    ["Medication", "lisinopril 10 MG Oral Tablet"],
+                    [
+                      "Instructions",
+                      "Follow the supplied taper through the feeding tube",
+                    ],
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    expect(screen.getByText("1 daily")).toBeTruthy();
+    expect(screen.queryByText("1 tab PO daily")).toBeNull();
+    expect(
+      screen.getByText("Follow the supplied taper through the feeding tube"),
+    ).toBeTruthy();
+    expect(
+      screen.getByText("1 daily").closest("[title]")?.getAttribute("title"),
+    ).toBe("1, 1x per 1 d");
+  });
+  it("keeps an empty worklist named and its unmatched action usable", () => {
+    const model: UiNode = {
+      presentation: {
+        kind: "worklist",
+        children: [
+          {
+            info: {
+              comp: "records",
+              infoId: "worklist",
+              label: "My tasks",
+              display: "table",
+              rows: [],
+            },
+          },
+          {
+            rowAction: {
+              target: "records",
+              row: 0,
+              children: [
+                {
+                  button: {
+                    comp: "open",
+                    label: "Open chart",
+                    role: "nav",
+                    enabled: true,
+                    blockedReason: null,
+                    hotkey: null,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    };
+    const emit = paint([model]);
+    expect(screen.getByRole("note", { name: "My tasks" }).textContent).toBe(
+      "No records on file",
+    );
+    expect(screen.queryByRole("table")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Open chart" }));
+    expect(emit).toHaveBeenCalledExactlyOnceWith({ click: { comp: "open" } });
+    expect(expectedNodeAria(model)).toEqual([
+      { role: "note", name: "My tasks" },
+      { role: "button", name: "Open chart", disabled: false },
+    ]);
+  });
   it("places the original action in its explicit row through nested presentations", () => {
     const onEvent = paint([
       {
@@ -554,4 +722,46 @@ describe("structured clinical data boundary", () => {
       }).success,
     ).toBe(false);
   });
+});
+
+// Legacy semantic trend rows use the same drawing as tagged presentations.
+it("keeps different vital signs with the same unit in separate legacy trend plots", () => {
+  paint([
+    {
+      info: {
+        comp: "vitals",
+        infoId: "vitals",
+        label: "Recorded vitals",
+        display: "trend",
+        rows: [
+          [
+            ["Vital sign", "Heart rate"],
+            ["Value", "80"],
+            ["Unit", "/min"],
+            ["Recorded", "Nov 1, 2026 08:00"],
+          ],
+          [
+            ["Vital sign", "Respiratory rate"],
+            ["Value", "18"],
+            ["Unit", "/min"],
+            ["Recorded", "Nov 1, 2026 08:00"],
+          ],
+        ],
+      },
+    },
+  ]);
+  expect(
+    screen.getByRole("img", { name: "Recorded vitals: Heart rate (/min)" }),
+  ).toBeTruthy();
+  expect(
+    screen.getByRole("img", {
+      name: "Recorded vitals: Respiratory rate (/min)",
+    }),
+  ).toBeTruthy();
+  expect(
+    screen.getByRole("table", { name: "Recorded vitals" }).textContent,
+  ).toContain("Heart rate");
+  expect(
+    screen.getByRole("table", { name: "Recorded vitals" }).textContent,
+  ).toContain("Respiratory rate");
 });

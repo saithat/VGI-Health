@@ -57,6 +57,7 @@
        "infoId": "schedule",
        "display": "table",
        "comp": "records"}}]}}],
+ "viewer": "Physician",
  "title": "Today's schedule",
  "side": [],
  "screen": "example",

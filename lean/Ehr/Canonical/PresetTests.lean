@@ -14,9 +14,9 @@ def presetLabelsValid (p : Program) : Bool :=
     (Render.uiOverviewNav p).all (fun g => presetLabelValid g.1 && g.2.all (fun e => presetLabelValid e.2))
 
 #guard [(Specs.V1.specV1, canonicalV1), (Specs.V2.specV2, canonicalV2),
-  (Specs.V3.specV3, canonicalV3)].all fun (sp, master) => personaRoles.all fun (id, role) =>
-    let p := forPersona sp master id role
-    presetLabelsValid p && p.screens.all (presetScreen id) && p.screens.length < master.screens.length &&
+  (Specs.V3.specV3, canonicalV3)].all fun (sp, vendorReference) => personaRoles.all fun (id, role) =>
+    let p := forPersona sp vendorReference id role
+    presetLabelsValid p && p.screens.all (presetScreen id) && p.screens.length < vendorReference.screens.length &&
       (presetLandings id).all (fun (target, label) => (p.screen? "home").any (fun home =>
         home.components.any (fun c => c.kind == .button (.goto target) &&
           c.label == presetLandingControlLabel id target label)))

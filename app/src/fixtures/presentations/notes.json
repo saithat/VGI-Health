@@ -17,6 +17,7 @@
        "infoId": "encounterNotes",
        "display": "table",
        "comp": "records"}}]}}],
+ "viewer": "General surgeon",
  "title": "Notes",
  "side":
  [{"info":

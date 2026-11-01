@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { UiPresentationKind } from "../../../../../lean/generated/ehr-types";
 import type { NodeOf, Pair } from "../types";
-import { DisplayValue } from "../display";
-import { formatMedicationDirections } from "../clinical-display";
+import { DisplayValue, statusTone } from "../display";
+import { emptyInfoText, formatMedicationDirections } from "../clinical-display";
 import { ClinicalChart } from "./charts";
 import { MarGrid } from "./MarGrid";
 import "./presentations.css";
@@ -12,40 +12,28 @@ export type RowActions = ReadonlyMap<number, ReactNode>;
 
 /** Color decorates source text. It never determines a clinical value. */
 export function suppliedTone(value: string): string | undefined {
-  const word = (value.split(/[·\n]/)[0] ?? "").trim().toLowerCase();
-  if (/^(overdue|critical|urgent|stat|hh|ll|abnormal|a)$/.test(word))
-    return "red";
-  if (/^(low|l)$/.test(word)) return "blue";
-  if (/^(high|h)$/.test(word)) return "amber";
-  if (/^(given|complete|completed|signed|done)$/.test(word)) return "green";
-  if (
-    /^(held|on-hold|needs review|in progress|in-progress|roomed|arrived)$/.test(
-      word,
-    )
-  )
-    return "amber";
-  if (/^(refused|declined)$/.test(word)) return "violet";
-  if (/^(due|scheduled|pending|booked|ordered|requested|unread)$/.test(word))
-    return "blue";
-  if (
-    /^(future|stopped|discontinued|cancelled|canceled|unknown|not given|not-done)$/.test(
-      word,
-    )
-  )
-    return "neutral";
-  return undefined;
+  const tone = statusTone(value);
+  return tone === "yellow" ? "amber" : tone === "gray" ? "neutral" : tone;
 }
 export function SuppliedStatus({ value }: { value: string }) {
   const tone = suppliedTone(value);
   return (
-    <span className={tone ? `presentation-status tone-${tone}` : undefined}>
+    <span
+      className={
+        tone
+          ? `clinical-status status-${statusTone(value)} presentation-status tone-${tone}`
+          : undefined
+      }
+    >
       <DisplayValue value={value || "—"} />
     </span>
   );
 }
 function isStatus(key: string, kind: UiPresentationKind): boolean {
   return (
-    /status|priority|^flag$|^acuity$|^labs$|^imaging$/i.test(key) ||
+    /status|priority|confirmation|review state|scheduled|administration|^\d{1,2}:\d{2}|^flag$|^acuity$|^labs$|^imaging$/i.test(
+      key,
+    ) ||
     (kind === "timeGrid" &&
       !["Medication", "Dose", "Route", "Frequency"].includes(key))
   );
@@ -69,6 +57,10 @@ export function RecordTable({
       <table
         className={`presentation-table table-${kind}${actions?.size ? " with-row-actions" : ""}`}
         data-columns={columns.length}
+        data-medication-grid={
+          columns.some((column) => /^(medication|drug)$/i.test(column)) ||
+          undefined
+        }
         aria-label={node.label}
       >
         <thead>
@@ -92,7 +84,15 @@ export function RecordTable({
             </tr>
           ) : (
             node.rows.map((row, i) => (
-              <tr key={i}>
+              <tr
+                key={i}
+                aria-label={row
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join(" · ")}
+                title={row
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join(" · ")}
+              >
                 {columns.map((key, c) => {
                   const values = row
                     .filter(([name]) => name === key)
@@ -106,22 +106,24 @@ export function RecordTable({
                       {values.length ? (
                         values.map((value, n) => (
                           <span className="presentation-cell-value" key={n}>
-                            {key === "Text" ? (
-                              value
-                            ) : isStatus(key, kind) ? (
+                            {isStatus(key, kind) ? (
                               <SuppliedStatus value={value} />
-                            ) : node.infoId === "currentMeds" &&
-                              key === "Instructions" ? (
-                              <span title={value} aria-label={value}>
-                                {formatMedicationDirections(
-                                  row.find(
-                                    ([name]) => name === "Medication",
-                                  )?.[1] ?? "",
-                                  value,
-                                ) || "—"}
-                              </span>
+                            ) : key === "Text" || key === "Title" ? (
+                              value || "—"
                             ) : (
-                              <DisplayValue value={value || "—"} />
+                              <span title={value} aria-label={value}>
+                                {node.infoId === "currentMeds" &&
+                                key === "Instructions" ? (
+                                  formatMedicationDirections(
+                                    row.find(
+                                      ([name]) => name === "Medication",
+                                    )?.[1] ?? "",
+                                    value,
+                                  ) || "—"
+                                ) : (
+                                  <DisplayValue value={value || "—"} />
+                                )}
+                              </span>
                             )}
                           </span>
                         ))
@@ -213,12 +215,31 @@ function FolderList({
     </ul>
   );
 }
+/** Imported provenance stays visible in secondary typography. No characters are removed. */
+export function NoteTitle({ value }: { value: string }) {
+  const metadata =
+    / Source date \d{4}-\d{2}-\d{2}; structured dates shifted [+-]?\d+ days\. Note text retained verbatim\.?$/.exec(
+      value,
+    );
+  if (!metadata) return value;
+  return (
+    <>
+      {value.slice(0, metadata.index)}
+      <span className="presentation-note-provenance">
+        {value.slice(metadata.index)}
+      </span>
+    </>
+  );
+}
 function NoteCards({ node }: { node: Info }) {
   return (
     <ul className="presentation-notes" aria-label={node.label}>
       {node.rows.length === 0 && <li>No records on file</li>}
       {node.rows.map((row, i) => (
-        <li key={i}>
+        <li
+          key={i}
+          aria-label={row.map(([key, value]) => `${key}: ${value}`).join(" · ")}
+        >
           <dl>
             {row.map(([key, value], j) => (
               <div
@@ -233,10 +254,12 @@ function NoteCards({ node }: { node: Info }) {
               >
                 <dt>{key}</dt>
                 <dd>
-                  {key === "Text" ? (
-                    value
-                  ) : key === "Status" ? (
+                  {key === "Status" ? (
                     <SuppliedStatus value={value} />
+                  ) : key === "Text" ? (
+                    value || "—"
+                  ) : key === "Title" ? (
+                    <NoteTitle value={value || "—"} />
                   ) : (
                     <DisplayValue value={value || "—"} />
                   )}
@@ -247,6 +270,43 @@ function NoteCards({ node }: { node: Info }) {
         </li>
       ))}
     </ul>
+  );
+}
+/** A source-declared current document shares the structured information painter. */
+export function ClinicalDocument({ node }: { node: Info }) {
+  return (
+    <div
+      className="clinical-info info-document"
+      data-comp-id={node.comp || undefined}
+      data-info-id={node.infoId}
+    >
+      <h3 className="clinical-info-label">{node.label}</h3>
+      <div
+        role="region"
+        aria-label={node.label}
+        tabIndex={0}
+        className="clinical-document-body"
+      >
+        {node.rows.map((row, index) => (
+          <div className="clinical-document-section" key={index}>
+            {row.map(([key, value], cell) =>
+              key === "Section" ? (
+                <h4 key={cell}>{value}</h4>
+              ) : key === "Text" ? (
+                <div key={cell} className="clinical-document-text">
+                  {value}
+                </div>
+              ) : (
+                <div key={cell} className="clinical-document-detail">
+                  <span>{key}: </span>
+                  <span>{value}</span>
+                </div>
+              ),
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 export function StructuredInfo({
@@ -265,7 +325,15 @@ export function StructuredInfo({
       data-info-id={node.infoId}
     >
       <h3 className="presentation-heading">{node.label}</h3>
-      {kind === "folderList" ? (
+      {node.rows.length === 0 ? (
+        <p
+          role="note"
+          aria-label={node.label}
+          className="clinical-empty presentation-empty"
+        >
+          {emptyInfoText(node.infoId)}
+        </p>
+      ) : kind === "folderList" ? (
         <FolderList node={node} actions={actions} />
       ) : kind === "notes" ? (
         <NoteCards node={node} />

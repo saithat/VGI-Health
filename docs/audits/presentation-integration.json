@@ -1,0 +1,1094 @@
+{
+  "generatedAt": "2026-11-01T15:09:11.631810+00:00",
+  "source": {
+    "build": {
+      "revision": "6723adf1924615b9679460a69a89eebe9b1ae6a4",
+      "mainRevision": "81691fbbeeb08d906bf4b2d43e8e8e152af9a735",
+      "leanHash": "35b6d95d5e0ce93f3d23373d7763360eedf18a1e03909449fcfcd252d7ae0ea2",
+      "builtAt": "2026-11-01T14:32:44.109Z"
+    },
+    "appBinding": {
+      "schemaVersion": 1,
+      "appSha256": "14fea971f62a963033df99875a9f259f20a873988f18dfca1ef7d85a4cb46cb4"
+    },
+    "nativeSha256": "102a8f3b99539d91362b2593b2dbc314fd03db1f984daef4c6ecb1438c67c548",
+    "scope": "Runtime source frozen at merge 6723adf; subsequent changes only repair review/export test inputs and update evidence."
+  },
+  "integration": {
+    "main": "81691fbbeeb08d906bf4b2d43e8e8e152af9a735",
+    "structuredKinds": 13,
+    "singleDrawings": [
+      "RecordTable",
+      "MarGrid",
+      "ClinicalChart",
+      "FolderList",
+      "NoteCards",
+      "ClinicalDocument"
+    ],
+    "removedDuplicates": [
+      "legacy generic info table",
+      "legacy note-card drawing",
+      "legacy trend sparkline"
+    ],
+    "preserved": [
+      "typed growth references and birth-sex evidence",
+      "source captions",
+      "code choices and entry hints",
+      "explicit confirmation metadata",
+      "document/status nodes",
+      "surgical and ambulatory queue adapters"
+    ],
+    "specsOrPropertiesWeakened": false,
+    "navigationAudit": "Module compile-time filesystem report moved to the runtime NavExports audit. Fifteen canonical guards and all D5 assertions retained; runtime report 15/15 true."
+  },
+  "checks": {
+    "defaultLeanBuild": {
+      "passed": true,
+      "jobs": 359
+    },
+    "lakeCheck": "passed: Lean default kernel; propext, Quot.sound, Classical.choice",
+    "comparators": {
+      "core": 18,
+      "renderer": 50,
+      "checker": 21,
+      "completion": 5
+    },
+    "D1ThroughD6": "proved, unchanged statements",
+    "navigation": "15/15 actual canonical projections sane",
+    "generated": [
+      "export-content",
+      "gents: 160 types / 42 samples",
+      "make wasm",
+      "make wasm-check",
+      "certify.py",
+      "pnpm complexity --release-root releases"
+    ],
+    "certification": {
+      "accepted": 15,
+      "total": 15,
+      "badRejected": 18,
+      "badTotal": 18
+    },
+    "world2": {
+      "schedules": 50,
+      "tasks": 1284,
+      "completed": 1284,
+      "binarySha256": "102a8f3b99539d91362b2593b2dbc314fd03db1f984daef4c6ecb1438c67c548"
+    },
+    "archiveRun1P3": {
+      "tasks": 424,
+      "events": 14658,
+      "baselineReplays": 3,
+      "baselineEvents": 137,
+      "mismatches": 0,
+      "painterEffect": "Unified drawings change replay appearance only; archived programs, events and states retain zero verification mismatches."
+    },
+    "nativeWasmPresentationParity": 16,
+    "efficiency": {
+      "taskMetrics": 27,
+      "workflowMetricGroups": 21,
+      "allIterationsAndNativePathsEqualMergedMain": true,
+      "benchmarkSha256": "63852b239d54eae1415506d9b50343cfcf63b123f94ad8788f9f0d5079036718",
+      "KLM": "Estimate replayed along minimum-click path; not a separately minimized KLM. Directed search retains existing non-global-minimum caveat."
+    },
+    "app": {
+      "build": "passed",
+      "lint": "passed",
+      "tests": 261,
+      "browserPassed": 75,
+      "browserSkipped": 93,
+      "skipScope": "Opt-in capture cases and duplicate narrow probes"
+    },
+    "agent": {
+      "lint": "passed",
+      "tests": 84
+    },
+    "realism": {
+      "ambulatoryNativeReviews": 30,
+      "explicitLiveAndSurgicalChecks": 4,
+      "widgetCaptures": 32,
+      "roleCaptures": 5,
+      "viewport": [
+        1440,
+        900
+      ]
+    },
+    "ariaUiCheck": {
+      "passed": true,
+      "baseRoleTrees": 204,
+      "allNativeVariantsExported": 3555,
+      "browserScope": "Base screen for each canonical role/release; sixteen populated widget fixtures, five standard/known-bad fixtures and one extra surgical day-two screen. Not every exported tab/group/alert variant. Exact tree hashes reused only in identical context. Known-bad controls rerun.",
+      "inputTrees": 226,
+      "byteDistinctTrees": 111,
+      "context": "d94746dfbc11aa9a8081020635bfda66d9b1938a28359094ce34f53bbe9d84dc",
+      "receipt": "e09216c6-d49e-496a-bfd0-dfcf3e05c6ea.coverage.json",
+      "receiptSha256": "63af6355ad6763f424f998ccc851058c461df2aaeee3ebca24f320beef2fed00",
+      "treeEntries": [
+        {
+          "file": "ui/v1/P1/home.json",
+          "sha256": "a53215ed3b5727f4bc59713d8bb8100faf0c76369453ded80532c5f475491dc5"
+        },
+        {
+          "file": "ui/v1/P1/w1Close.json",
+          "sha256": "8cebb70d767056ab84407bd1a776b2b35ea8ef13a8ba653c0fe7f34accd0adb9"
+        },
+        {
+          "file": "ui/v1/P1/w1Exam.json",
+          "sha256": "51626f0c65c2f9ab921a2139da8828a9e212cb65cd1be74a66b938a5ac4ffee3"
+        },
+        {
+          "file": "ui/v1/P1/w1Hpi.json",
+          "sha256": "cbbff1bce2422a19c5c6cfb8d3bc8b03878aa8593e8dce065b7c6e712e88ebda"
+        },
+        {
+          "file": "ui/v1/P1/w1Labs.json",
+          "sha256": "24ef6548331dad651df74045eaca7d36d1740d55058d49751a8219d1c5976c76"
+        },
+        {
+          "file": "ui/v1/P1/w1MedRec.json",
+          "sha256": "44d5fdf1434b7a29a69c95d9c93782c264d69f70963ec22ee2e4ce379d075b1a"
+        },
+        {
+          "file": "ui/v1/P1/w1Orders.json",
+          "sha256": "dd69eed70796291242656efd4be9f8edd1d3befcfbcb6167be361e4a4253f8a7"
+        },
+        {
+          "file": "ui/v1/P1/w1Rooming.json",
+          "sha256": "3f198fdbf57a968fa64dabe3aed3ac20c19e5083f4e471e7ea1e2379aa268eda"
+        },
+        {
+          "file": "ui/v1/P1/w1Sign.json",
+          "sha256": "ad78e503933260465e7056dee87cdf1e99fadf187be75aa583f98325db93d0c3"
+        },
+        {
+          "file": "ui/v1/P1/w1Verify.json",
+          "sha256": "eb4a8441c38ca1bf6775c84933b71b1e68ce024069d1b1119a704e7eda04b079"
+        },
+        {
+          "file": "ui/v1/P1/w2Inbasket.json",
+          "sha256": "cf8e820051e1ce31c3487e8b8e6e885c70562b166a193f4da5841ccda68a1850"
+        },
+        {
+          "file": "ui/v1/P1/w2Message.json",
+          "sha256": "316c38fedf64679148be34fb6b5cb6231c2a621a4ea16b3113e836c4fa29ef58"
+        },
+        {
+          "file": "ui/v1/P1/w2Result.json",
+          "sha256": "83d72e61a809054eb505824f702b582ede3a47ff3ebfc2f612acd0454f5b2917"
+        },
+        {
+          "file": "ui/v1/P1/w7Decision.json",
+          "sha256": "9474b34f3f697740da497db1b2adc1738d8d584ca24d98128a184001a8b497fc"
+        },
+        {
+          "file": "ui/v1/P1/w7Queue.json",
+          "sha256": "4e664c210776ff293da2a6e29c8738b1034099d723abf5242cb8a69bd83952c8"
+        },
+        {
+          "file": "ui/v1/P1/w7Review.json",
+          "sha256": "333374b8db840aa8655608b56456eca69c622fb4865ccd35e3344c3d349c5a42"
+        },
+        {
+          "file": "ui/v2/P1/home.json",
+          "sha256": "a53215ed3b5727f4bc59713d8bb8100faf0c76369453ded80532c5f475491dc5"
+        },
+        {
+          "file": "ui/v2/P1/w1Close.json",
+          "sha256": "8cebb70d767056ab84407bd1a776b2b35ea8ef13a8ba653c0fe7f34accd0adb9"
+        },
+        {
+          "file": "ui/v2/P1/w1Exam.json",
+          "sha256": "51626f0c65c2f9ab921a2139da8828a9e212cb65cd1be74a66b938a5ac4ffee3"
+        },
+        {
+          "file": "ui/v2/P1/w1Hpi.json",
+          "sha256": "cbbff1bce2422a19c5c6cfb8d3bc8b03878aa8593e8dce065b7c6e712e88ebda"
+        },
+        {
+          "file": "ui/v2/P1/w1Labs.json",
+          "sha256": "b673b361360c66c99532875b688239c31f1a63d078eabece3d56e75ff1ccd829"
+        },
+        {
+          "file": "ui/v2/P1/w1MedRec.json",
+          "sha256": "44d5fdf1434b7a29a69c95d9c93782c264d69f70963ec22ee2e4ce379d075b1a"
+        },
+        {
+          "file": "ui/v2/P1/w1Orders.json",
+          "sha256": "32e6581e2255048c4817efcb791271d0118012ff686a765e6d9c2271596d08f2"
+        },
+        {
+          "file": "ui/v2/P1/w1Rooming.json",
+          "sha256": "3f198fdbf57a968fa64dabe3aed3ac20c19e5083f4e471e7ea1e2379aa268eda"
+        },
+        {
+          "file": "ui/v2/P1/w1Sign.json",
+          "sha256": "ad78e503933260465e7056dee87cdf1e99fadf187be75aa583f98325db93d0c3"
+        },
+        {
+          "file": "ui/v2/P1/w1Verify.json",
+          "sha256": "eb4a8441c38ca1bf6775c84933b71b1e68ce024069d1b1119a704e7eda04b079"
+        },
+        {
+          "file": "ui/v2/P1/w2Inbasket.json",
+          "sha256": "cf8e820051e1ce31c3487e8b8e6e885c70562b166a193f4da5841ccda68a1850"
+        },
+        {
+          "file": "ui/v2/P1/w2Message.json",
+          "sha256": "316c38fedf64679148be34fb6b5cb6231c2a621a4ea16b3113e836c4fa29ef58"
+        },
+        {
+          "file": "ui/v2/P1/w2Result.json",
+          "sha256": "83d72e61a809054eb505824f702b582ede3a47ff3ebfc2f612acd0454f5b2917"
+        },
+        {
+          "file": "ui/v2/P1/w7Decision.json",
+          "sha256": "9474b34f3f697740da497db1b2adc1738d8d584ca24d98128a184001a8b497fc"
+        },
+        {
+          "file": "ui/v2/P1/w7Queue.json",
+          "sha256": "4e664c210776ff293da2a6e29c8738b1034099d723abf5242cb8a69bd83952c8"
+        },
+        {
+          "file": "ui/v2/P1/w7Review.json",
+          "sha256": "333374b8db840aa8655608b56456eca69c622fb4865ccd35e3344c3d349c5a42"
+        },
+        {
+          "file": "ui/v3/P1/home.json",
+          "sha256": "a53215ed3b5727f4bc59713d8bb8100faf0c76369453ded80532c5f475491dc5"
+        },
+        {
+          "file": "ui/v3/P1/w1Close.json",
+          "sha256": "8cebb70d767056ab84407bd1a776b2b35ea8ef13a8ba653c0fe7f34accd0adb9"
+        },
+        {
+          "file": "ui/v3/P1/w1Exam.json",
+          "sha256": "51626f0c65c2f9ab921a2139da8828a9e212cb65cd1be74a66b938a5ac4ffee3"
+        },
+        {
+          "file": "ui/v3/P1/w1Hpi.json",
+          "sha256": "cbbff1bce2422a19c5c6cfb8d3bc8b03878aa8593e8dce065b7c6e712e88ebda"
+        },
+        {
+          "file": "ui/v3/P1/w1Labs.json",
+          "sha256": "b673b361360c66c99532875b688239c31f1a63d078eabece3d56e75ff1ccd829"
+        },
+        {
+          "file": "ui/v3/P1/w1MedRec.json",
+          "sha256": "44d5fdf1434b7a29a69c95d9c93782c264d69f70963ec22ee2e4ce379d075b1a"
+        },
+        {
+          "file": "ui/v3/P1/w1Orders.json",
+          "sha256": "79323ad030d413e8b11d3ec32b0ee0ecbb79f8b41220346154d413f74f4ec31f"
+        },
+        {
+          "file": "ui/v3/P1/w1Rooming.json",
+          "sha256": "3f198fdbf57a968fa64dabe3aed3ac20c19e5083f4e471e7ea1e2379aa268eda"
+        },
+        {
+          "file": "ui/v3/P1/w1Sign.json",
+          "sha256": "52b8f6c8b723a35469935f0b93e3e5d09d636bffe95b5b64f2614499674554be"
+        },
+        {
+          "file": "ui/v3/P1/w1Verify.json",
+          "sha256": "eb4a8441c38ca1bf6775c84933b71b1e68ce024069d1b1119a704e7eda04b079"
+        },
+        {
+          "file": "ui/v3/P1/w2Inbasket.json",
+          "sha256": "cf8e820051e1ce31c3487e8b8e6e885c70562b166a193f4da5841ccda68a1850"
+        },
+        {
+          "file": "ui/v3/P1/w2Message.json",
+          "sha256": "316c38fedf64679148be34fb6b5cb6231c2a621a4ea16b3113e836c4fa29ef58"
+        },
+        {
+          "file": "ui/v3/P1/w2Result.json",
+          "sha256": "83d72e61a809054eb505824f702b582ede3a47ff3ebfc2f612acd0454f5b2917"
+        },
+        {
+          "file": "ui/v3/P1/w7Decision.json",
+          "sha256": "9474b34f3f697740da497db1b2adc1738d8d584ca24d98128a184001a8b497fc"
+        },
+        {
+          "file": "ui/v3/P1/w7Queue.json",
+          "sha256": "4e664c210776ff293da2a6e29c8738b1034099d723abf5242cb8a69bd83952c8"
+        },
+        {
+          "file": "ui/v3/P1/w7Review.json",
+          "sha256": "333374b8db840aa8655608b56456eca69c622fb4865ccd35e3344c3d349c5a42"
+        },
+        {
+          "file": "ui/v1/P2/home.json",
+          "sha256": "dd8dcc5be84b1c3e3566632cab3fa2eb095b493eb372400cc8dd4a2eb23ca700"
+        },
+        {
+          "file": "ui/v1/P2/w3Disposition.json",
+          "sha256": "cb251926fb4ee84e3acbc12a9989579e2a5c457996f68777dc135e00e91ebe9f"
+        },
+        {
+          "file": "ui/v1/P2/w3OrderSets.json",
+          "sha256": "e02fa62f7283450ffa248bbf8f01d7d8a6992421b93341a994670a4f2d7dbf67"
+        },
+        {
+          "file": "ui/v1/P2/w3Orders.json",
+          "sha256": "b6746f30beda81a9bffc20989d0ceada34ccdde1544933cbfe9f0e5ff813f42f"
+        },
+        {
+          "file": "ui/v1/P2/w3Provider.json",
+          "sha256": "516754b5dcb1e18650c7089150f85b912958f9e092b3221c84129e34841184e6"
+        },
+        {
+          "file": "ui/v1/P2/w3Sign.json",
+          "sha256": "d670d24fd3eb1cc9e6424acb03db6ee1fcf82280e45fe18133147817710a04cc"
+        },
+        {
+          "file": "ui/v1/P2/w3TrackBoard.json",
+          "sha256": "0c8ce277679f9440a6c26dbf8ee23223ef722a07771a798dd414ddf8b17af2c8"
+        },
+        {
+          "file": "ui/v1/P2/w3Triage.json",
+          "sha256": "a757b0faebf82c0a525a818fdb43ec524ed0a065eca122e6cdde41d894ca27dd"
+        },
+        {
+          "file": "ui/v2/P2/home.json",
+          "sha256": "dd8dcc5be84b1c3e3566632cab3fa2eb095b493eb372400cc8dd4a2eb23ca700"
+        },
+        {
+          "file": "ui/v2/P2/w3Disposition.json",
+          "sha256": "cb251926fb4ee84e3acbc12a9989579e2a5c457996f68777dc135e00e91ebe9f"
+        },
+        {
+          "file": "ui/v2/P2/w3OrderSets.json",
+          "sha256": "e02fa62f7283450ffa248bbf8f01d7d8a6992421b93341a994670a4f2d7dbf67"
+        },
+        {
+          "file": "ui/v2/P2/w3Orders.json",
+          "sha256": "b44c39660556057d8a7cc13a58841af881ffc95ee45f2c5ea2f5c491a34db579"
+        },
+        {
+          "file": "ui/v2/P2/w3Provider.json",
+          "sha256": "516754b5dcb1e18650c7089150f85b912958f9e092b3221c84129e34841184e6"
+        },
+        {
+          "file": "ui/v2/P2/w3Sign.json",
+          "sha256": "d670d24fd3eb1cc9e6424acb03db6ee1fcf82280e45fe18133147817710a04cc"
+        },
+        {
+          "file": "ui/v2/P2/w3TrackBoard.json",
+          "sha256": "0c8ce277679f9440a6c26dbf8ee23223ef722a07771a798dd414ddf8b17af2c8"
+        },
+        {
+          "file": "ui/v2/P2/w3Triage.json",
+          "sha256": "a757b0faebf82c0a525a818fdb43ec524ed0a065eca122e6cdde41d894ca27dd"
+        },
+        {
+          "file": "ui/v3/P2/home.json",
+          "sha256": "dd8dcc5be84b1c3e3566632cab3fa2eb095b493eb372400cc8dd4a2eb23ca700"
+        },
+        {
+          "file": "ui/v3/P2/w3Disposition.json",
+          "sha256": "cb251926fb4ee84e3acbc12a9989579e2a5c457996f68777dc135e00e91ebe9f"
+        },
+        {
+          "file": "ui/v3/P2/w3OrderSets.json",
+          "sha256": "91eac935c9c70747a917e7fe086e4b5918346cfba95a88d3f0af0d02bf3cbdd3"
+        },
+        {
+          "file": "ui/v3/P2/w3Orders.json",
+          "sha256": "417ee73b4a73486390d80f7391372c209c3bcb02fdb83b378b91f125051fbab0"
+        },
+        {
+          "file": "ui/v3/P2/w3Provider.json",
+          "sha256": "516754b5dcb1e18650c7089150f85b912958f9e092b3221c84129e34841184e6"
+        },
+        {
+          "file": "ui/v3/P2/w3Sign.json",
+          "sha256": "1ca606bad9815748b8e75c09360975ae9357f73ef4023095c095492090103439"
+        },
+        {
+          "file": "ui/v3/P2/w3TrackBoard.json",
+          "sha256": "0c8ce277679f9440a6c26dbf8ee23223ef722a07771a798dd414ddf8b17af2c8"
+        },
+        {
+          "file": "ui/v3/P2/w3Triage.json",
+          "sha256": "a757b0faebf82c0a525a818fdb43ec524ed0a065eca122e6cdde41d894ca27dd"
+        },
+        {
+          "file": "ui/v1/P3/home.json",
+          "sha256": "bbd09b9eccfda59fcbc98f5e73710432e49e12c4ef88339828340fdd1ceb6984"
+        },
+        {
+          "file": "ui/v1/P3/w4Admin.json",
+          "sha256": "d38024b08f0074184fb2ff79245e8583598ed5f6582a0c79e66a81979186cb70"
+        },
+        {
+          "file": "ui/v1/P3/w4Flowsheet.json",
+          "sha256": "573795a2e9bc70c6fd53e8e9cc5f91f674f91197c9a2c2f67a077acc1c171720"
+        },
+        {
+          "file": "ui/v1/P3/w4Handoff.json",
+          "sha256": "8aebab0122de26d6bc38107044de74b45ffceab2e429448c547b742f6b8c3799"
+        },
+        {
+          "file": "ui/v1/P3/w4Mar.json",
+          "sha256": "09067c818d1783309156fb7b13af9deba739065549cfff81cd4450e2f15e12a9"
+        },
+        {
+          "file": "ui/v1/P3/w4Worklist.json",
+          "sha256": "65e720e70bc0527118f3ca536ae45cf045eff451bd71570a4f0c4c7a4d31cf73"
+        },
+        {
+          "file": "ui/v2/P3/home.json",
+          "sha256": "bbd09b9eccfda59fcbc98f5e73710432e49e12c4ef88339828340fdd1ceb6984"
+        },
+        {
+          "file": "ui/v2/P3/w4Admin.json",
+          "sha256": "d38024b08f0074184fb2ff79245e8583598ed5f6582a0c79e66a81979186cb70"
+        },
+        {
+          "file": "ui/v2/P3/w4Flowsheet.json",
+          "sha256": "573795a2e9bc70c6fd53e8e9cc5f91f674f91197c9a2c2f67a077acc1c171720"
+        },
+        {
+          "file": "ui/v2/P3/w4Handoff.json",
+          "sha256": "8aebab0122de26d6bc38107044de74b45ffceab2e429448c547b742f6b8c3799"
+        },
+        {
+          "file": "ui/v2/P3/w4Mar.json",
+          "sha256": "09067c818d1783309156fb7b13af9deba739065549cfff81cd4450e2f15e12a9"
+        },
+        {
+          "file": "ui/v2/P3/w4Worklist.json",
+          "sha256": "65e720e70bc0527118f3ca536ae45cf045eff451bd71570a4f0c4c7a4d31cf73"
+        },
+        {
+          "file": "ui/v3/P3/home.json",
+          "sha256": "bbd09b9eccfda59fcbc98f5e73710432e49e12c4ef88339828340fdd1ceb6984"
+        },
+        {
+          "file": "ui/v3/P3/w4Admin.json",
+          "sha256": "9b233bc17a759bc38b17cad5e968bfd512862eeb22eb7aa6be613eb1117553ca"
+        },
+        {
+          "file": "ui/v3/P3/w4Flowsheet.json",
+          "sha256": "573795a2e9bc70c6fd53e8e9cc5f91f674f91197c9a2c2f67a077acc1c171720"
+        },
+        {
+          "file": "ui/v3/P3/w4Handoff.json",
+          "sha256": "8aebab0122de26d6bc38107044de74b45ffceab2e429448c547b742f6b8c3799"
+        },
+        {
+          "file": "ui/v3/P3/w4Mar.json",
+          "sha256": "09067c818d1783309156fb7b13af9deba739065549cfff81cd4450e2f15e12a9"
+        },
+        {
+          "file": "ui/v3/P3/w4Worklist.json",
+          "sha256": "65e720e70bc0527118f3ca536ae45cf045eff451bd71570a4f0c4c7a4d31cf73"
+        },
+        {
+          "file": "ui/v1/P4/home.json",
+          "sha256": "9c4643e16a1989dc8985b527369ed3c8a58db6a01875d9e80af65cc3183c3bf7"
+        },
+        {
+          "file": "ui/v1/P4/w2Inbasket.json",
+          "sha256": "58c8cb8e9d6a50b88b535aa1346d4cc56969a502e8fb6afddc5c0f25afc1bdfe"
+        },
+        {
+          "file": "ui/v1/P4/w2Message.json",
+          "sha256": "b6ad81d265f898e8810631bed860bf7c5200e34faaed2a75a6548988097e736f"
+        },
+        {
+          "file": "ui/v1/P4/w2Result.json",
+          "sha256": "b0ad3ad6ffbed9a6578a50ca037017e33bf845883bd11ccefc48fa1e9cfbbb21"
+        },
+        {
+          "file": "ui/v1/P4/w5Close.json",
+          "sha256": "91fb643c9b232bd43dd64793f6fffea93288075109559ebc29f90a54b0719faf"
+        },
+        {
+          "file": "ui/v1/P4/w5Growth.json",
+          "sha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480"
+        },
+        {
+          "file": "ui/v1/P4/w5Immunizations.json",
+          "sha256": "8159bba7a060f2231c1b0560447d19af2542b1e1e2518fbbef900382b579a9a6"
+        },
+        {
+          "file": "ui/v1/P4/w5Note.json",
+          "sha256": "4ee64eb8cfe85ed6bd195eacf9bfcbcfb153b2ca2ffad1d0a9f3be0930a7a865"
+        },
+        {
+          "file": "ui/v1/P4/w5Orders.json",
+          "sha256": "5fe60ab65375f992c70aafdfb9dafecc7bafd8a65cc26a99e2c79f21889a0ae5"
+        },
+        {
+          "file": "ui/v1/P4/w5Rooming.json",
+          "sha256": "1710fea847f025d9ac7f590e2983bb0904b4a0b3fd49ad193f1a2e059327ee23"
+        },
+        {
+          "file": "ui/v1/P4/w5Sign.json",
+          "sha256": "a879a53c3e2bfc6b11efd03a186b3f8659f54571b30cf4349c7583a210dea1c0"
+        },
+        {
+          "file": "ui/v1/P4/w7Decision.json",
+          "sha256": "98ebd2eaba2211103cb93cdb2b69d5026c21cabc7169cfa3487cac7ab5a3be62"
+        },
+        {
+          "file": "ui/v1/P4/w7Queue.json",
+          "sha256": "be8fb2b568fa4811645cc789f9bb43d008bd3641265281dd9550e01217f3179a"
+        },
+        {
+          "file": "ui/v1/P4/w7Review.json",
+          "sha256": "9e682fac1037e72a009706e0d89c2e63193861244e50f0efb547cafba651ebb5"
+        },
+        {
+          "file": "ui/v2/P4/home.json",
+          "sha256": "9c4643e16a1989dc8985b527369ed3c8a58db6a01875d9e80af65cc3183c3bf7"
+        },
+        {
+          "file": "ui/v2/P4/w2Inbasket.json",
+          "sha256": "58c8cb8e9d6a50b88b535aa1346d4cc56969a502e8fb6afddc5c0f25afc1bdfe"
+        },
+        {
+          "file": "ui/v2/P4/w2Message.json",
+          "sha256": "b6ad81d265f898e8810631bed860bf7c5200e34faaed2a75a6548988097e736f"
+        },
+        {
+          "file": "ui/v2/P4/w2Result.json",
+          "sha256": "b0ad3ad6ffbed9a6578a50ca037017e33bf845883bd11ccefc48fa1e9cfbbb21"
+        },
+        {
+          "file": "ui/v2/P4/w5Close.json",
+          "sha256": "91fb643c9b232bd43dd64793f6fffea93288075109559ebc29f90a54b0719faf"
+        },
+        {
+          "file": "ui/v2/P4/w5Growth.json",
+          "sha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480"
+        },
+        {
+          "file": "ui/v2/P4/w5Immunizations.json",
+          "sha256": "8159bba7a060f2231c1b0560447d19af2542b1e1e2518fbbef900382b579a9a6"
+        },
+        {
+          "file": "ui/v2/P4/w5Note.json",
+          "sha256": "4ee64eb8cfe85ed6bd195eacf9bfcbcfb153b2ca2ffad1d0a9f3be0930a7a865"
+        },
+        {
+          "file": "ui/v2/P4/w5Orders.json",
+          "sha256": "6ed2a117225ce0827bd07b059dbbebb95c39f28d25dfdb9ac774061b5b1c40df"
+        },
+        {
+          "file": "ui/v2/P4/w5Rooming.json",
+          "sha256": "1710fea847f025d9ac7f590e2983bb0904b4a0b3fd49ad193f1a2e059327ee23"
+        },
+        {
+          "file": "ui/v2/P4/w5Sign.json",
+          "sha256": "a879a53c3e2bfc6b11efd03a186b3f8659f54571b30cf4349c7583a210dea1c0"
+        },
+        {
+          "file": "ui/v2/P4/w7Decision.json",
+          "sha256": "98ebd2eaba2211103cb93cdb2b69d5026c21cabc7169cfa3487cac7ab5a3be62"
+        },
+        {
+          "file": "ui/v2/P4/w7Queue.json",
+          "sha256": "be8fb2b568fa4811645cc789f9bb43d008bd3641265281dd9550e01217f3179a"
+        },
+        {
+          "file": "ui/v2/P4/w7Review.json",
+          "sha256": "9e682fac1037e72a009706e0d89c2e63193861244e50f0efb547cafba651ebb5"
+        },
+        {
+          "file": "ui/v3/P4/home.json",
+          "sha256": "9c4643e16a1989dc8985b527369ed3c8a58db6a01875d9e80af65cc3183c3bf7"
+        },
+        {
+          "file": "ui/v3/P4/w2Inbasket.json",
+          "sha256": "58c8cb8e9d6a50b88b535aa1346d4cc56969a502e8fb6afddc5c0f25afc1bdfe"
+        },
+        {
+          "file": "ui/v3/P4/w2Message.json",
+          "sha256": "b6ad81d265f898e8810631bed860bf7c5200e34faaed2a75a6548988097e736f"
+        },
+        {
+          "file": "ui/v3/P4/w2Result.json",
+          "sha256": "b0ad3ad6ffbed9a6578a50ca037017e33bf845883bd11ccefc48fa1e9cfbbb21"
+        },
+        {
+          "file": "ui/v3/P4/w5Close.json",
+          "sha256": "91fb643c9b232bd43dd64793f6fffea93288075109559ebc29f90a54b0719faf"
+        },
+        {
+          "file": "ui/v3/P4/w5Growth.json",
+          "sha256": "d25e30750598496a290fb1e8739189ac2da4a8815725271804dc004913847480"
+        },
+        {
+          "file": "ui/v3/P4/w5Immunizations.json",
+          "sha256": "8159bba7a060f2231c1b0560447d19af2542b1e1e2518fbbef900382b579a9a6"
+        },
+        {
+          "file": "ui/v3/P4/w5Note.json",
+          "sha256": "4ee64eb8cfe85ed6bd195eacf9bfcbcfb153b2ca2ffad1d0a9f3be0930a7a865"
+        },
+        {
+          "file": "ui/v3/P4/w5Orders.json",
+          "sha256": "aad428ae476ac49a96b54bfc0ca9a78cd0bf3d22a8a5d4e8e070f57cf45f04ed"
+        },
+        {
+          "file": "ui/v3/P4/w5Rooming.json",
+          "sha256": "1710fea847f025d9ac7f590e2983bb0904b4a0b3fd49ad193f1a2e059327ee23"
+        },
+        {
+          "file": "ui/v3/P4/w5Sign.json",
+          "sha256": "0ad22ba4ae2d67fc17688b9a4b7bcfc4dd8754e2e628696b2e4f1e410cf8665e"
+        },
+        {
+          "file": "ui/v3/P4/w7Decision.json",
+          "sha256": "98ebd2eaba2211103cb93cdb2b69d5026c21cabc7169cfa3487cac7ab5a3be62"
+        },
+        {
+          "file": "ui/v3/P4/w7Queue.json",
+          "sha256": "be8fb2b568fa4811645cc789f9bb43d008bd3641265281dd9550e01217f3179a"
+        },
+        {
+          "file": "ui/v3/P4/w7Review.json",
+          "sha256": "9e682fac1037e72a009706e0d89c2e63193861244e50f0efb547cafba651ebb5"
+        },
+        {
+          "file": "ui/v1/P5/home.json",
+          "sha256": "601e253c53e656ff11e24de8562df204323592ce37f71e900d8531e9e66d200b"
+        },
+        {
+          "file": "ui/v1/P5/w1Close.json",
+          "sha256": "1b421e227adbebbbd0d3865a93ac7c40c16ab53df634b00eb2503ccc0c143c8d"
+        },
+        {
+          "file": "ui/v1/P5/w1Exam.json",
+          "sha256": "b58bbe1faaf712ef3bfca89e149881d252c564ddd841286f6c5cefa1c0c4ee89"
+        },
+        {
+          "file": "ui/v1/P5/w1Hpi.json",
+          "sha256": "c77afee3ac01a0d4fc4d364a9523b09b1e8cc0d32173a93ad9e0b6b0a9b3907f"
+        },
+        {
+          "file": "ui/v1/P5/w1Labs.json",
+          "sha256": "ce020ff3d6191e8312cc1b45c0fe5b0bdf398fd5478f30b70c9d95a02dbffe9b"
+        },
+        {
+          "file": "ui/v1/P5/w1MedRec.json",
+          "sha256": "5dee45ab6cea18efccf436241cf9cb52eaa0e35367c316c5eb531dd7672e2172"
+        },
+        {
+          "file": "ui/v1/P5/w1Orders.json",
+          "sha256": "b22116a82ed560104702732236dc954337fa88b89a284edb6bea5fb67e35667e"
+        },
+        {
+          "file": "ui/v1/P5/w1Rooming.json",
+          "sha256": "a0545a89af6ad8d4aca594208844570d6703df670cf200983d39db1350e7b780"
+        },
+        {
+          "file": "ui/v1/P5/w1Sign.json",
+          "sha256": "574a243833dee493e382e95d36c6e966c29a176044d5adef6ce66d73eb6a8227"
+        },
+        {
+          "file": "ui/v1/P5/w1Verify.json",
+          "sha256": "4c98e836bbc608ffdb7db9d3e55eadd981533d34aca1d2b7c9c141afac2d0c91"
+        },
+        {
+          "file": "ui/v1/P5/w2Inbasket.json",
+          "sha256": "b5d1ac87523a2a78fdc45f11c76a63560168cd92278ab701cb2016c7017ff927"
+        },
+        {
+          "file": "ui/v1/P5/w2Message.json",
+          "sha256": "47ba314473c0e9626ed18bca7bb05bc0827081bd96602f89155080e623515ac0"
+        },
+        {
+          "file": "ui/v1/P5/w2Result.json",
+          "sha256": "1f7cc260faeebf40421e72576484d402dd377e8311eb78e915dad62ca9170408"
+        },
+        {
+          "file": "ui/v1/P5/w6Consult.json",
+          "sha256": "999657d280a3a477125afe98662df43211e27b494ba2230a90294ed5635be3b4"
+        },
+        {
+          "file": "ui/v1/P5/w6ConsultClose.json",
+          "sha256": "9004e2c4659ba60c9356b219e06638f689fd1c31952ed2b5635a2382182ce5cb"
+        },
+        {
+          "file": "ui/v1/P5/w6Consults.json",
+          "sha256": "5a6fab3aaf89414ee424c447feae0633bc8da9081acb425598a7e15acf9d5348"
+        },
+        {
+          "file": "ui/v1/P5/w6Discharge.json",
+          "sha256": "e102eb0135cb935eb4363ca430360116a2e8c3f212ffcdc0b41f76992b4b809e"
+        },
+        {
+          "file": "ui/v1/P5/w6OpNote.json",
+          "sha256": "677d5f1f1e038b738a678ad14a8f1036f35a399e197bdff3941e058bc3600c29"
+        },
+        {
+          "file": "ui/v1/P5/w6Orders.json",
+          "sha256": "48e8bde1afe2b215bea0b2336e80c80fe8a551c31cb28507b40bba36dd1eeb76"
+        },
+        {
+          "file": "ui/v1/P5/w6PostOp.json",
+          "sha256": "e796b36f5706ca34304669c15041f446c31e9de98bf65ff4dc4e00580ea94f72"
+        },
+        {
+          "file": "ui/v1/P5/w6PreOp.json",
+          "sha256": "ba9d406bd0d4986641cde04de4dcc00dbfb50a0759c2244337a0934b8940843b"
+        },
+        {
+          "file": "ui/v1/P5/w6Rounding.json",
+          "sha256": "b138e167325b70aeeaa66cd00b2d686b9a89b5a74ed254eef3392470e61b7654"
+        },
+        {
+          "file": "ui/v1/P5/w6Schedule.json",
+          "sha256": "5517c621ff4a49c002a24325cc4242b564c9e388591e2b8279721b4ccf6212c1"
+        },
+        {
+          "file": "ui/v1/P5/w6Sign.json",
+          "sha256": "4829e523c389e82d30528d4be5a6ad8a25a905cddee1a351cb3d80d1c8a46252"
+        },
+        {
+          "file": "ui/v2/P5/home.json",
+          "sha256": "601e253c53e656ff11e24de8562df204323592ce37f71e900d8531e9e66d200b"
+        },
+        {
+          "file": "ui/v2/P5/w1Close.json",
+          "sha256": "1b421e227adbebbbd0d3865a93ac7c40c16ab53df634b00eb2503ccc0c143c8d"
+        },
+        {
+          "file": "ui/v2/P5/w1Exam.json",
+          "sha256": "b58bbe1faaf712ef3bfca89e149881d252c564ddd841286f6c5cefa1c0c4ee89"
+        },
+        {
+          "file": "ui/v2/P5/w1Hpi.json",
+          "sha256": "c77afee3ac01a0d4fc4d364a9523b09b1e8cc0d32173a93ad9e0b6b0a9b3907f"
+        },
+        {
+          "file": "ui/v2/P5/w1Labs.json",
+          "sha256": "80aa3238bb03cfbe242333241ae57d9d40b755ba352832913708e6ae5efa3f3f"
+        },
+        {
+          "file": "ui/v2/P5/w1MedRec.json",
+          "sha256": "5dee45ab6cea18efccf436241cf9cb52eaa0e35367c316c5eb531dd7672e2172"
+        },
+        {
+          "file": "ui/v2/P5/w1Orders.json",
+          "sha256": "065b9786b91edba27fa5ca1c76683cd3c40ee29c856e0644b2d881117f49662e"
+        },
+        {
+          "file": "ui/v2/P5/w1Rooming.json",
+          "sha256": "a0545a89af6ad8d4aca594208844570d6703df670cf200983d39db1350e7b780"
+        },
+        {
+          "file": "ui/v2/P5/w1Sign.json",
+          "sha256": "574a243833dee493e382e95d36c6e966c29a176044d5adef6ce66d73eb6a8227"
+        },
+        {
+          "file": "ui/v2/P5/w1Verify.json",
+          "sha256": "4c98e836bbc608ffdb7db9d3e55eadd981533d34aca1d2b7c9c141afac2d0c91"
+        },
+        {
+          "file": "ui/v2/P5/w2Inbasket.json",
+          "sha256": "b5d1ac87523a2a78fdc45f11c76a63560168cd92278ab701cb2016c7017ff927"
+        },
+        {
+          "file": "ui/v2/P5/w2Message.json",
+          "sha256": "47ba314473c0e9626ed18bca7bb05bc0827081bd96602f89155080e623515ac0"
+        },
+        {
+          "file": "ui/v2/P5/w2Result.json",
+          "sha256": "1f7cc260faeebf40421e72576484d402dd377e8311eb78e915dad62ca9170408"
+        },
+        {
+          "file": "ui/v2/P5/w6Consult.json",
+          "sha256": "999657d280a3a477125afe98662df43211e27b494ba2230a90294ed5635be3b4"
+        },
+        {
+          "file": "ui/v2/P5/w6ConsultClose.json",
+          "sha256": "9004e2c4659ba60c9356b219e06638f689fd1c31952ed2b5635a2382182ce5cb"
+        },
+        {
+          "file": "ui/v2/P5/w6Consults.json",
+          "sha256": "5a6fab3aaf89414ee424c447feae0633bc8da9081acb425598a7e15acf9d5348"
+        },
+        {
+          "file": "ui/v2/P5/w6Discharge.json",
+          "sha256": "e102eb0135cb935eb4363ca430360116a2e8c3f212ffcdc0b41f76992b4b809e"
+        },
+        {
+          "file": "ui/v2/P5/w6OpNote.json",
+          "sha256": "677d5f1f1e038b738a678ad14a8f1036f35a399e197bdff3941e058bc3600c29"
+        },
+        {
+          "file": "ui/v2/P5/w6Orders.json",
+          "sha256": "092e097d293cdd9cfcd67329b0f2d3766832968856e49c5aec4c7e97cf5549e0"
+        },
+        {
+          "file": "ui/v2/P5/w6PostOp.json",
+          "sha256": "e796b36f5706ca34304669c15041f446c31e9de98bf65ff4dc4e00580ea94f72"
+        },
+        {
+          "file": "ui/v2/P5/w6PreOp.json",
+          "sha256": "5652390e8841c4b12c49513cedede1a058c09f6b2c9c27ba33cf0ea654035d80"
+        },
+        {
+          "file": "ui/v2/P5/w6Rounding.json",
+          "sha256": "b138e167325b70aeeaa66cd00b2d686b9a89b5a74ed254eef3392470e61b7654"
+        },
+        {
+          "file": "ui/v2/P5/w6Schedule.json",
+          "sha256": "5517c621ff4a49c002a24325cc4242b564c9e388591e2b8279721b4ccf6212c1"
+        },
+        {
+          "file": "ui/v2/P5/w6Sign.json",
+          "sha256": "4829e523c389e82d30528d4be5a6ad8a25a905cddee1a351cb3d80d1c8a46252"
+        },
+        {
+          "file": "ui/v3/P5/home.json",
+          "sha256": "601e253c53e656ff11e24de8562df204323592ce37f71e900d8531e9e66d200b"
+        },
+        {
+          "file": "ui/v3/P5/w1Close.json",
+          "sha256": "1b421e227adbebbbd0d3865a93ac7c40c16ab53df634b00eb2503ccc0c143c8d"
+        },
+        {
+          "file": "ui/v3/P5/w1Exam.json",
+          "sha256": "b58bbe1faaf712ef3bfca89e149881d252c564ddd841286f6c5cefa1c0c4ee89"
+        },
+        {
+          "file": "ui/v3/P5/w1Hpi.json",
+          "sha256": "c77afee3ac01a0d4fc4d364a9523b09b1e8cc0d32173a93ad9e0b6b0a9b3907f"
+        },
+        {
+          "file": "ui/v3/P5/w1Labs.json",
+          "sha256": "80aa3238bb03cfbe242333241ae57d9d40b755ba352832913708e6ae5efa3f3f"
+        },
+        {
+          "file": "ui/v3/P5/w1MedRec.json",
+          "sha256": "5dee45ab6cea18efccf436241cf9cb52eaa0e35367c316c5eb531dd7672e2172"
+        },
+        {
+          "file": "ui/v3/P5/w1Orders.json",
+          "sha256": "14baeb89bc72d363635385d5799093404e67099ce40931d51eb5de8c96c147fc"
+        },
+        {
+          "file": "ui/v3/P5/w1Rooming.json",
+          "sha256": "a0545a89af6ad8d4aca594208844570d6703df670cf200983d39db1350e7b780"
+        },
+        {
+          "file": "ui/v3/P5/w1Sign.json",
+          "sha256": "882aa38d8e425dc4d46af0588acb421420e3fafcd40d43f1cf601984f63f2c70"
+        },
+        {
+          "file": "ui/v3/P5/w1Verify.json",
+          "sha256": "4c98e836bbc608ffdb7db9d3e55eadd981533d34aca1d2b7c9c141afac2d0c91"
+        },
+        {
+          "file": "ui/v3/P5/w2Inbasket.json",
+          "sha256": "b5d1ac87523a2a78fdc45f11c76a63560168cd92278ab701cb2016c7017ff927"
+        },
+        {
+          "file": "ui/v3/P5/w2Message.json",
+          "sha256": "47ba314473c0e9626ed18bca7bb05bc0827081bd96602f89155080e623515ac0"
+        },
+        {
+          "file": "ui/v3/P5/w2Result.json",
+          "sha256": "1f7cc260faeebf40421e72576484d402dd377e8311eb78e915dad62ca9170408"
+        },
+        {
+          "file": "ui/v3/P5/w6Consult.json",
+          "sha256": "999657d280a3a477125afe98662df43211e27b494ba2230a90294ed5635be3b4"
+        },
+        {
+          "file": "ui/v3/P5/w6ConsultClose.json",
+          "sha256": "9004e2c4659ba60c9356b219e06638f689fd1c31952ed2b5635a2382182ce5cb"
+        },
+        {
+          "file": "ui/v3/P5/w6Consults.json",
+          "sha256": "5a6fab3aaf89414ee424c447feae0633bc8da9081acb425598a7e15acf9d5348"
+        },
+        {
+          "file": "ui/v3/P5/w6Discharge.json",
+          "sha256": "e102eb0135cb935eb4363ca430360116a2e8c3f212ffcdc0b41f76992b4b809e"
+        },
+        {
+          "file": "ui/v3/P5/w6OpNote.json",
+          "sha256": "677d5f1f1e038b738a678ad14a8f1036f35a399e197bdff3941e058bc3600c29"
+        },
+        {
+          "file": "ui/v3/P5/w6Orders.json",
+          "sha256": "545809d204c60cdfbd3ffbd07d907d94a909cddb175c4ae039893d75ec484709"
+        },
+        {
+          "file": "ui/v3/P5/w6PostOp.json",
+          "sha256": "2c0e5ea66551dc85083706ae9d7fceec4dfce3af711480ff7ec65d5beb31107c"
+        },
+        {
+          "file": "ui/v3/P5/w6PreOp.json",
+          "sha256": "5652390e8841c4b12c49513cedede1a058c09f6b2c9c27ba33cf0ea654035d80"
+        },
+        {
+          "file": "ui/v3/P5/w6Rounding.json",
+          "sha256": "b138e167325b70aeeaa66cd00b2d686b9a89b5a74ed254eef3392470e61b7654"
+        },
+        {
+          "file": "ui/v3/P5/w6Schedule.json",
+          "sha256": "5517c621ff4a49c002a24325cc4242b564c9e388591e2b8279721b4ccf6212c1"
+        },
+        {
+          "file": "ui/v3/P5/w6Sign.json",
+          "sha256": "e241d0b5c0990fb6649556f842cdd3c087e5197e2c92a323c8c067f5f34e7215"
+        },
+        {
+          "file": "app/src/fixtures/presentations/flowsheet.json",
+          "sha256": "be30d4408c1abfb4ec5d69148ccd8cd02e62343c6a9ffbf413010674c4d9f76a"
+        },
+        {
+          "file": "app/src/fixtures/presentations/folderList.json",
+          "sha256": "47e79b21fbb826422e561f4ef96f569b8df6b2c88266ff5e023bf706ae1e9dce"
+        },
+        {
+          "file": "app/src/fixtures/presentations/growth.json",
+          "sha256": "defc36262e50a45e8dcbb184ab21e477a1dc4ef02cb101ed8090f15cc10f14a2"
+        },
+        {
+          "file": "app/src/fixtures/presentations/growthUnits.json",
+          "sha256": "457cde06943844febbf21ed029ebd0ea7a81e09b132d31dde852d3dd8d3fdd82"
+        },
+        {
+          "file": "app/src/fixtures/presentations/inBasket.json",
+          "sha256": "93788f423bec0a92b8c9885ec300cc1dd01ed35ccdba4b95b9f75e2c8eabf497"
+        },
+        {
+          "file": "app/src/fixtures/presentations/messages.json",
+          "sha256": "8b57b69bdc257481dfc1f4eeda35c24febdc0ac5629ce2aa1595f9550bb71661"
+        },
+        {
+          "file": "app/src/fixtures/presentations/notes.json",
+          "sha256": "c578f84bc46219b0d59b458846191d478de1e3b0083ffe9dc3526665a691b386"
+        },
+        {
+          "file": "app/src/fixtures/presentations/orSchedule.json",
+          "sha256": "c69161a76a9790ecb4779c160ce330f601ab0dffeadf24e642276bdd552ae71a"
+        },
+        {
+          "file": "app/src/fixtures/presentations/results.json",
+          "sha256": "5240fa804695e462daaab5156a437af3a96ded90a365b28b7913c218281df747"
+        },
+        {
+          "file": "app/src/fixtures/presentations/rowActions.json",
+          "sha256": "9f6587d2124ab777217f2aa2d6cb43d9515eb12c79569219595eaf256031921b"
+        },
+        {
+          "file": "app/src/fixtures/presentations/schedule.json",
+          "sha256": "6929a7bb790be44e581fc275c832c04a1bbcad901aff90e4a1058ff4931ce5aa"
+        },
+        {
+          "file": "app/src/fixtures/presentations/table.json",
+          "sha256": "b27581d151e2af4f805fd84205f41c64b2af4a8f74b4b5100243271ff01f4835"
+        },
+        {
+          "file": "app/src/fixtures/presentations/timeGrid.json",
+          "sha256": "d3349506efd993c5790793f8e26caa3c41c35b37020c36e3e8cf34b053a5b120"
+        },
+        {
+          "file": "app/src/fixtures/presentations/trackBoard.json",
+          "sha256": "73146e3bdf43c4f54ec6214a6960da13d2569f7cea786bc586ed7305170d45ba"
+        },
+        {
+          "file": "app/src/fixtures/presentations/trend.json",
+          "sha256": "073898aa4ac368cec708a2db50a45b432306fe3e1cb950ad0ae62b4783008946"
+        },
+        {
+          "file": "app/src/fixtures/presentations/worklist.json",
+          "sha256": "f248332d4ff3dc8ebe92ee654c1166574b01ebfe32273d6873c0748eacce6783"
+        },
+        {
+          "file": "requested/p5-or-schedule.json",
+          "sha256": "0771e7714502fb43e3436dc7f09f166b675a913f2176c1321a037679b7508ee8"
+        },
+        {
+          "file": "app/src/fixtures/ui/bad-sign.json",
+          "sha256": "b9e2e6333c9716f99573d9f91c2ee7f119ec249ab717ce36671b42cc947a1219"
+        },
+        {
+          "file": "app/src/fixtures/ui/p1-alert.json",
+          "sha256": "65e1327a75bfac8dc8ccc7e3e13e4d44ac50bcb32e6bc628de227f2b1e894471"
+        },
+        {
+          "file": "app/src/fixtures/ui/w1Orders.json",
+          "sha256": "07842320b459c23de435ff88d6671d785450eb7aa73f365f3bab5801caedf120"
+        },
+        {
+          "file": "app/src/fixtures/ui/w1Rooming.json",
+          "sha256": "9a92e150d6bf18b4b7da94ac84ceffded5ffc8544a04ab256863a5a614351932"
+        },
+        {
+          "file": "app/src/fixtures/ui/w1Sign.json",
+          "sha256": "203439963b0fa8c359992c4c9e7cd12e11ecbf46478a65088980627ee0c91787"
+        }
+      ],
+      "browserChecksPassed": 231,
+      "coverageReuseChecksPassed": 19,
+      "skippedDuplicateNarrowProbesPerPass": 3
+    },
+    "buttons": {
+      "counts": {
+        "works": 2806,
+        "disabled-with-reason": 114,
+        "dead": 0,
+        "error": 0
+      },
+      "report": "buttons.json",
+      "reportSha256": "d0ec938769f6ee1636ac566bd649e7b4af46817bea810aa711fdc54109417b74",
+      "scope": "Bounded sample, at most 48 configurations per persona; not an exhaustive state census.",
+      "regression": "passed",
+      "interruptedRun": "Temporary quota stopped RN2 before completion. Completed P1-P5/app checkpoints retained; RN2 reran through the supported build-identity-checked resume path with browser scratch on the project disk.",
+      "realUnsafeProposal": "Rejected for reviewsBeforeCommit; counterexample replay passed"
+    },
+    "screenshots": {
+      "manifest": "presentation-screenshots.json",
+      "images": 39,
+      "semanticSourceTreesCommittedForRoles": 5
+    }
+  },
+  "limits": [
+    "The ACUTE lane follows this merge: existing edTrackBoard and marSchedule payloads in Main remain empty. Actual empty-state captures and populated structured native examples are both retained.",
+    "P4 supplies explicit birth-sex evidence and displays published WHO/CDC bands. No reference population is inferred from administrative sex.",
+    "Actual P5 room text can break inside the long Operating room caption with both sidebars; P4 reference endpoint labels can sit near the patient series at the WHO/CDC boundary. Full source values remain readable.",
+    "The general review matrix uses one task/patient per role on world day one; the requested OR capture uses an actual surgical request on day two."
+  ],
+  "sampledConfigurations": [
+    {
+      "persona": "P1",
+      "sampled": 25,
+      "remaining": 0
+    },
+    {
+      "persona": "P2",
+      "sampled": 14,
+      "remaining": 0
+    },
+    {
+      "persona": "P3",
+      "sampled": 48,
+      "remaining": 8
+    },
+    {
+      "persona": "P4",
+      "sampled": 24,
+      "remaining": 0
+    },
+    {
+      "persona": "P5",
+      "sampled": 40,
+      "remaining": 0
+    },
+    {
+      "persona": "RN2",
+      "sampled": 48,
+      "remaining": 8
+    }
+  ]
+}

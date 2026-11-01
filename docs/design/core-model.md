@@ -6,7 +6,7 @@ One canonical EHR serves everyone. Each persona starts at v0 with that canonical
 role permissions and pre-set view (`forPersona`). The overnight agent edits only
 that persona's fork. Vendor releases merge into every fork, followed by
 re-certification. “The canonical is certified” means every role's view passes;
-the shared master is a reference template, not a deployable single-role program.
+the shared vendor reference is a reference template, not a deployable single-role program.
 
 ## 1. Design principle: safety by construction, plus a checker for the rest
 

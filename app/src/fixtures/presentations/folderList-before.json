@@ -10,6 +10,7 @@
     "infoId": "inBasketFolders",
     "display": "table",
     "comp": "records"}}],
+ "viewer": "Physician",
  "title": "My Messages",
  "side":
  [{"info":
