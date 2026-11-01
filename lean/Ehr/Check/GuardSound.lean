@@ -30,9 +30,9 @@ theorem infoShown_iff (ep : Episode) (s : State) (i : InfoId) :
     exact ⟨c, hc, hi, (hcomp c hi) ▸ hs⟩
 
 /-- The entry Boolean has the same meaning as the plain property. -/
-theorem entryDirectMet_iff (ep : Episode) (s : State) (rq : EntryReq) :
-    entryDirectMet ep.spec ep.facts ep.user s rq = true ↔ EntryDirectMetIn ep s rq := by
-  unfold entryDirectMet EntryDirectMetIn
+theorem entryMet_iff (ep : Episode) (s : State) (rq : EntryReq) :
+    entryMet ep.spec ep.facts ep.user s rq = true ↔ EntryMetIn ep s rq := by
+  unfold entryMet EntryMetIn
   cases hel : ep.spec.element? rq.element with
   | none => simp
   | some el =>
@@ -40,11 +40,6 @@ theorem entryDirectMet_iff (ep : Episode) (s : State) (rq : EntryReq) :
     cases ha : rq.allowed? <;> cases hp : rq.perOrderLine <;>
       simp [hasGoodEntry, capturedSatisfies, CountsFor, Applies, AllowedEntryValue, entryValueAllowed, ha, Bool.and_eq_true,
         List.any_eq_true, List.all_eq_true, Bool.or_eq_true, beq_iff_eq, and_assoc] <;> grind
-
-/-- The entry Boolean is true exactly when its direct-or-attested property holds. -/
-theorem entryMet_iff (ep : Episode) (s : State) (rq : EntryReq) :
-    entryMet ep.spec ep.facts ep.user s rq = true ↔ EntryMetIn ep s rq := by
-  simp [entryMet, EntryMetIn, Bool.or_eq_true, entryDirectMet_iff]
 
 /-- The review Boolean allows precisely shown info, a valid receipt, or a
 human waiver, whenever the requirement applies. -/
@@ -79,7 +74,7 @@ theorem commitUnitsRight (ep : Episode) : CommitUnitsRight ep := by
   intro s _ actor e c hc rq hrq hrc el u hel hk hw hp
   have hper : rq.perOrderLine = false := by simpa using hp
   obtain ⟨x, hx, hxe, hconf, _, hv⟩ :=
-    T0_entry_values _ _ _ _ actor s e c hc.1 hc.2 rq hrq hrc hper hw el hel (by simp [entryWaiver, hel, hk])
+    T0_entry_values _ _ _ _ actor s e c hc.1 hc.2 rq hrq hrc hper hw el hel
   exact ⟨x, hx, hxe, hconf, hv u hk⟩
 
 /-- A cosign names another human, never the signed-in user. -/

@@ -90,17 +90,15 @@ unfinished. Seed 13 now removes every CURES report/review/exemption route;
 The old `bad13_preop_not_satisfies` witness is stale after review pinning and
 must not be presented as a proof of the new seed's CURES defect.
 
-Owner decision 2026-10-31 resolves the NP/pre-op domain obstruction:
-physicians and surgeons sign directly; NPs need a human attending cosign.
-`np_preop_without_cosign_never_signs` replaces `np_preop_obstruction`.
-Only consent, H&P and medication-hold entries may use the attending attestation;
-their original entry permissions stay unchanged. `entry_direct_or_attested`
-bridges the guard and property. The macro/prefill attending safety theorems are
-kernel checked with clean axiom audits. Persona walkthroughs and a deterministic
-NP pre-op simulator walkthrough are compiled #guards, avoiding whole-program
-kernel reduction. `Statements.lean` supplies state to the role predicate and
-adds a no-attestation hypothesis to `T0_entry_values`; direct quantity, per-line
-and distinct-user cosign safety statements remain unchanged.
+Owner decision 2026-11-01 resolves the NP/pre-op domain obstruction with
+security-class order privileges: only physicians and surgeons sign pre-op
+orders. `np_preop_never_signs` has no state or attestation exception. The three
+entries retain their original permissions. The blocking attending route and
+its tests are removed; entry waivers are gone. `entry_relevant_when_allowed`
+connects the role restriction to completion obligations. `T0_entry_values`
+again has its original statement without a waiver hypothesis. Executable
+walkthroughs cover NP clinic completion, NP pre-op refusal with reason, and
+surgeon pre-op completion. All remaining high-alert cosign theorems stay active.
 General T1 completion remains the previously recorded unfinished construction.
 Render visual-review follow-up: shell/side/nav presence is covered by T10;
 semantic T11 distinguishes the requested full and compact record projections.
@@ -136,7 +134,7 @@ a pinned allergy review (either review mode), and one alert with **any condition
 and any tier**. Entry kinds include text, flag, code, every quantity unit,
 identity, cosign and targeted scans. Medication scans retain `RecordAllowsScans`.
 Medication-dose values are excluded: they need a selected formulary drug.
-There are no per-line requirements, allowed-value lists, encounter cosign routes,
+There are no per-line requirements, allowed-value lists, encounter role restrictions,
 waiver-only reviews or additional temporal/relational contracts in this fragment.
 This is a structural family, not all programs accepted by the core profile.
 

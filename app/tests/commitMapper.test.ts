@@ -423,23 +423,6 @@ describe("pure Lean commit → FHIR transaction", () => {
   });
 });
 
-// The full-profile fixture stays frozen; this new base element is explicit here.
-it("records the attending as a FHIR attester on the signed order", () => {
-  const elements = [...base.elements, { id: "attendingCosign", label: "Attending co-signature (pre-op orders)",
-    fhirTarget: "Provenance.agent[attester].who" }];
-  const signed = resources({ elements, captured: [...order,
-    captured("attendingCosign", { user: { u: "attending" } })] });
-  const request = signed.find(r => r.resourceType === "MedicationRequest");
-  const provenance = signed.find(r => r.resourceType === "Provenance");
-  expect(request).toMatchObject({ requester: { reference: "Practitioner/doctor" } });
-  expect(provenance).toMatchObject({ agent: [{ type: { coding: [{ code: "attester" }] },
-    who: { reference: "Practitioner/attending" } }] });
-  expect(() => resources({ elements, captured: [...order,
-    captured("attendingCosign", { user: { u: "doctor" } })] })).toThrow("distinct human");
-  expect(() => resources({ elements, captured: [...order,
-    { ...captured("attendingCosign", { user: { u: "attending" } }), byHuman: false }] })).toThrow("distinct human");
-});
-
 it.each([
   ["heparin", 5000, "units", "[iU]"],
   ["insulin lispro", 4, "units", "[iU]"],

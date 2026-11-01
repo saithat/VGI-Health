@@ -215,7 +215,7 @@ def waiverHasNonemptyValue (spec : Spec) (e : ElementId) : Bool :=
     | .scan target => target != "wristband" && target != "medication"
     | _ => true
 
-/-- A cosign can be collected on an always-visible or matching encounter field. -/
+/-- A required field is reachable when always visible or scoped to the encounter. -/
 def openEncounterField (prog : Program) (screens : List ScreenId) (e kind : String) : Bool :=
   prog.screens.any fun scr => screens.contains scr.id && scr.components.any fun comp =>
     (fieldOf? comp.kind).any (fun f => f.1 == e) &&
@@ -236,12 +236,6 @@ def completeViaWithReach (spec : Spec) (prog : Program) (c : CommitId) (s : Scre
   | some x => some (x.id, s!"commit {c}: from screen {x.id} the user cannot get back to the {c} button on screen {s}")
   | none =>
     let fromS := reach s
-    let routes := (spec.commit? c).toList.flatMap fun cs => cs.encounterRoles?.getD []
-    match routes.find? (fun rule => !rule.roles.contains prog.role &&
-      encounterRouteAvailable spec prog.role rule &&
-      !rule.cosign?.any (fun e => openEncounterField prog fromS e rule.encounter)) with
-    | some rule => some (s, s!"commit {c}: no reachable human cosign field for {rule.encounter}")
-    | none =>
     let reqs := spec.entries.filter (fun rq => rq.commit == c && entryRelevantForRole spec prog.role rq)
     match reqs.find? (fun rq => !rq.perOrderLine && !(match rq.when with
         | .encounter kind => openEncounterField prog fromS rq.element kind

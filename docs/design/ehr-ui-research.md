@@ -122,6 +122,11 @@ Before implementation acceptance, have a clinician walk P1's signing/refill, P2'
 
 ## Cosignature
 
+Production cosign is a non-blocking In Basket follow-up; not modeled.
+Owner decision 2026-11-01 supersedes the blocking prototype described below.
+The links and earlier design notes are retained as research history.
+
+
 Public Cerner training routes orders to the ordering provider's Message Centre
 according to the communication type. Some verbal orders become active before
 cosignature; proposed orders wait for provider signature. These are distinct

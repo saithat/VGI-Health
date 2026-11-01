@@ -27,25 +27,24 @@ private theorem signingPolicy :
   decide
 
 /-- Hospital policy (not law), owner decision 2026-10-31.
-No event adds an NP pre-op signature without a human attending response. -/
-theorem np_preop_without_cosign_never_signs (p : Program) (facts : Facts) (user : User)
+No event can add a pre-op order signature for an NP, on any program or state. -/
+theorem np_preop_never_signs (p : Program) (facts : Facts) (user : User)
     (encounter : facts.encounterKind? = some "preop") (role : user.role = .np)
-    (s : State)
-    (noCosign : humanWaiverMet specV1 facts user s (some "attendingCosign") = false) (actor : Actor) (event : Event) :
+    (s : State) (actor : Actor) (event : Event) :
     ¬ CommitHappens ⟨specV1, p, facts, user⟩ s actor event "signOrders" := by
   intro happened
   have permission := ((commitGuard_iff specV1 p facts user s "signOrders").mp
     (T0_commit_needs_guard _ _ _ _ actor s event "signOrders" happened.1 happened.2)).1
-  have forbidden : encounterRolesOk specV1 facts user s "signOrders" = false := by
+  have forbidden : encounterRolesOk specV1 facts user "signOrders" = false := by
     cases lookup : specV1.commit? "signOrders" with
     | none => simp [encounterRolesOk, lookup]
     | some cs =>
       have policy := signingPolicy
       simp only [lookup, Option.map_some, Option.some.injEq] at policy
-      simp [encounterRolesOk, lookup, policy,
-        preopSigningRoles, encounterMatches, encounter, role, noCosign]
+      simp [encounterRolesOk, lookup, CommitSpec.encounterRoleAllowed, policy,
+        preopSigningRoles, encounterMatches, encounter, role]
   simp [commitRoleOk, forbidden] at permission
 
 #print axioms newCommit_witness
-#print axioms np_preop_without_cosign_never_signs
+#print axioms np_preop_never_signs
 end Ehr.Check

@@ -53,7 +53,8 @@ theorem scalar_identity_required (facts : Facts) (user : User) (role : user.role
     requiredCommitsFor (Scalar.spec .identity .physician .shownOnCommit .drugAllergy .interruptive)
       (Scalar.program .physician) (Scalar.program .physician) facts user = ["recordReview"] := by
   simp [requiredCommitsFor, requiredCommits, commitButtons, Scalar.spec, Scalar.program,
-    Scalar.screen, Scalar.field, Scalar.button, Spec.commit?, commitRolePossible, roleOk, role, List.eraseDups_cons]
+    Scalar.screen, Scalar.field, Scalar.button, presetScreen, Program.presetOwner,
+    Spec.commit?, commitRoleOk, encounterRolesOk, CommitSpec.encounterRoleAllowed, roleOk, role, List.eraseDups_cons]
 
 /-- A finite empty task family makes both assembly hypotheses satisfiable. -/
 def emptySpec : Spec where

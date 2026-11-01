@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "23cbdb6068d2321d94bcd284f786f8048d871680",
+  "sourceRevision": "efd411fc5f3ef5b9e7496e5962ab3cd742b804ea",
   "sourceDirty": true,
-  "binarySha256": "2116e32e88e13c0bc687aeed24102c18cea1e85c537b97f13f4e02079199aa3d",
+  "binarySha256": "b3241bbf2c40f227b0d165550465eb00835220a7a7ef741e3f5c3793d16460e6",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 18,
-  "badCount": 18,
+  "badRejected": 17,
+  "badCount": 17,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -34,8 +34,8 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "2beedf760720bfd502ee0ada95c8e1b5828110a1e8e1bd2c0985b821bb46fd99",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 0,
       "verdict": "ok",
@@ -46,8 +46,8 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "a1099fb23aa8f1fa167bc83d8821af9a7e8bd7bf7422c1bf806628c97e4c50c7",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 0,
       "verdict": "ok",
@@ -58,8 +58,8 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "32591f2a2bc4ce2550a835df5da39b1529ea4ab08d99c457c981cde6b4aa1146",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 0,
       "verdict": "ok",
@@ -69,9 +69,9 @@
       "program": "releases/v1/personas/P4.json",
       "group": "persona",
       "spec": "releases/v1/spec.json",
-      "programSha256": "3ab935ff6b61a06d858fb3b405399d4efbe34d224c20165e3693723a5a8fb8c8",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "programSha256": "77d9bd21fd4e5aac2b2d13cc4e832eaff4ebf8854887d2787837471122dc790a",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 0,
       "verdict": "ok",
@@ -82,8 +82,8 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "1b4da61b47b261f2aa50ca49eae59dee03eda12872a50dfe89fcc66e77fde389",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 0,
       "verdict": "ok",
@@ -94,8 +94,8 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "84ba9111da4cb19f909598358191c392c34720060168d57fc99aeb687f9b758c",
-      "specSha256": "c3bf96a1e68f8d18cdf52b1c555f46cceaaad55f72cb65cbd69c484af44d0e7f",
-      "canonicalSha256": "da97fc39c531188d20c7bf7367dabf40ae73f7e1b30570b9548bdb6cddb0e06a",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "canonicalSha256": "543bdd5dce372fcef0f587079e4818b41c125afe14a8b637c5175b19fb602fda",
       "previous": "releases/v1/personas/P1.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -106,8 +106,8 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "bcfb29bd1cc15daee9dc9306315bef33e22d5e4b407a479d851908137b8f2cd5",
-      "specSha256": "c3bf96a1e68f8d18cdf52b1c555f46cceaaad55f72cb65cbd69c484af44d0e7f",
-      "canonicalSha256": "da97fc39c531188d20c7bf7367dabf40ae73f7e1b30570b9548bdb6cddb0e06a",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "canonicalSha256": "543bdd5dce372fcef0f587079e4818b41c125afe14a8b637c5175b19fb602fda",
       "previous": "releases/v1/personas/P2.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -118,8 +118,8 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "8f1f3fdfe6d9d5566ce4500cb642f476c073f1d2fdf8fa88387adb0ff0d7a462",
-      "specSha256": "c3bf96a1e68f8d18cdf52b1c555f46cceaaad55f72cb65cbd69c484af44d0e7f",
-      "canonicalSha256": "da97fc39c531188d20c7bf7367dabf40ae73f7e1b30570b9548bdb6cddb0e06a",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "canonicalSha256": "543bdd5dce372fcef0f587079e4818b41c125afe14a8b637c5175b19fb602fda",
       "previous": "releases/v1/personas/P3.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -129,9 +129,9 @@
       "program": "releases/v2/personas/P4.json",
       "group": "persona",
       "spec": "releases/v2/spec.json",
-      "programSha256": "b672b5f88dac72ea6d5bc766a7804ffa4864f277c4cbde2b3c38bf58bb07e101",
-      "specSha256": "c3bf96a1e68f8d18cdf52b1c555f46cceaaad55f72cb65cbd69c484af44d0e7f",
-      "canonicalSha256": "da97fc39c531188d20c7bf7367dabf40ae73f7e1b30570b9548bdb6cddb0e06a",
+      "programSha256": "96a90eb648bb1fc1597f969a3210e15abdf1423a000d43e66d431b9981a5a4ae",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "canonicalSha256": "543bdd5dce372fcef0f587079e4818b41c125afe14a8b637c5175b19fb602fda",
       "previous": "releases/v1/personas/P4.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -142,8 +142,8 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "b9baf6443d7290e2900256170c63b5c674ae3526c196f7ad83480fc9ae697034",
-      "specSha256": "c3bf96a1e68f8d18cdf52b1c555f46cceaaad55f72cb65cbd69c484af44d0e7f",
-      "canonicalSha256": "da97fc39c531188d20c7bf7367dabf40ae73f7e1b30570b9548bdb6cddb0e06a",
+      "specSha256": "86ec7cde743958b88d3784979c94205fd2ceeb9430d1b194a5f55004a1341d9e",
+      "canonicalSha256": "543bdd5dce372fcef0f587079e4818b41c125afe14a8b637c5175b19fb602fda",
       "previous": "releases/v1/personas/P5.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -154,8 +154,8 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "ca880207169061a54f2e741e89158d08cee4e328edb7f9dfe7ac4269a5e2ab8b",
-      "specSha256": "7619b93379cbb793aaf9c5faf0f5c4b5f416f709dfc8cd342f9eda6116f0626a",
-      "canonicalSha256": "f093808fb5ef54aebdf2a338e575a1722b48704729624c57fcdbc959b7e84cb3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "canonicalSha256": "0d05994a1b0d7d60e0efd9ffb226732600175b6592c55589fea46e7216cbb7b2",
       "previous": "releases/v2/personas/P1.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -166,8 +166,8 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "aac2eefab3382e97c6749536c613f10be093b74ddd39563974fe70d00d8eef01",
-      "specSha256": "7619b93379cbb793aaf9c5faf0f5c4b5f416f709dfc8cd342f9eda6116f0626a",
-      "canonicalSha256": "f093808fb5ef54aebdf2a338e575a1722b48704729624c57fcdbc959b7e84cb3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "canonicalSha256": "0d05994a1b0d7d60e0efd9ffb226732600175b6592c55589fea46e7216cbb7b2",
       "previous": "releases/v2/personas/P2.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -178,8 +178,8 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "184a97fe54ef1dd38cb42d4d9a99ac6bd36c2ab06f7d1e84f807f236f80fc1ae",
-      "specSha256": "7619b93379cbb793aaf9c5faf0f5c4b5f416f709dfc8cd342f9eda6116f0626a",
-      "canonicalSha256": "f093808fb5ef54aebdf2a338e575a1722b48704729624c57fcdbc959b7e84cb3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "canonicalSha256": "0d05994a1b0d7d60e0efd9ffb226732600175b6592c55589fea46e7216cbb7b2",
       "previous": "releases/v2/personas/P3.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -189,9 +189,9 @@
       "program": "releases/v3/personas/P4.json",
       "group": "persona",
       "spec": "releases/v3/spec.json",
-      "programSha256": "6d0d9b75b5b3637be581ec9f845615b5590e411ccdb6ea291683bd0b471f0eae",
-      "specSha256": "7619b93379cbb793aaf9c5faf0f5c4b5f416f709dfc8cd342f9eda6116f0626a",
-      "canonicalSha256": "f093808fb5ef54aebdf2a338e575a1722b48704729624c57fcdbc959b7e84cb3",
+      "programSha256": "3a2ae0c53e68542a5e672b17243136ce5f30be4be9c8575f9cc55ea142ad8f99",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "canonicalSha256": "0d05994a1b0d7d60e0efd9ffb226732600175b6592c55589fea46e7216cbb7b2",
       "previous": "releases/v2/personas/P4.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -202,8 +202,8 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "7953be950babe1c4d78c94018565c3b2f478063a2267f8ed33966c6c9f5bf225",
-      "specSha256": "7619b93379cbb793aaf9c5faf0f5c4b5f416f709dfc8cd342f9eda6116f0626a",
-      "canonicalSha256": "f093808fb5ef54aebdf2a338e575a1722b48704729624c57fcdbc959b7e84cb3",
+      "specSha256": "308856886bf2fd048da77b8483feb97e19a303a23a73b7aea625d34568254d88",
+      "canonicalSha256": "0d05994a1b0d7d60e0efd9ffb226732600175b6592c55589fea46e7216cbb7b2",
       "previous": "releases/v2/personas/P5.json",
       "exitCode": 0,
       "verdict": "ok",
@@ -214,8 +214,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "76a575ed8a409699b523c6633a25b3c28eed991c24660ff9b2b0a60ee588c681",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -283,8 +283,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "b13469e0975595417223f42bbcc114a404f7f0f2c838c5edbe619e4d3418392b",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -342,8 +342,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "eaabb9fc5578eaca2cc9fdeeb3e76f218a923ff6c7dd76bb79a15b14db16fc85",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -387,8 +387,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "01ff6ffc3918732b8387b358f633afa13b0baad41092cd16b2d4d1bd333f2a64",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -449,8 +449,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "7d2ad7fd0fe6704e912a36f8e26124b3615cc3285becb688d18512fd13ba6cd0",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -500,9 +500,9 @@
       "program": "programs/bad/06-stale-weight.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "aef0f24d8e60cff5eec0f4ba03b75e72a89ac9be5fedc371fd50f0a4528d92e7",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "programSha256": "9752dab864157e9f1bd75a46f3f94a2a19c7ec306e7e515282f3f91ec03345d9",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -539,8 +539,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "8b8cff9d471a544f04f5c2cfe0e9a1456b63300f152f5eee1cb50729f0aa2138",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -568,8 +568,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "735fe1168243e9bd9da5df656ab0de4a165bf00ceda8d7437788ad0f45536345",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -616,8 +616,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "4ad1b673c1125e8e5e09d6c2639c7aacaf45b89120dc781e979213cee69acffb",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -671,8 +671,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "b264b8eb01242c6e5f164d573a76567e980de5f682c5d4dce2756dc0fb196001",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -716,8 +716,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "d4ea07e8c89e76e5e36649e2b321c5170c62d3e81f30a4e4b170a57918c0233c",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -761,8 +761,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "13b9a7db1c7ab3c47133374047a7e6d1096f722eecfe9772359bdc3ceba8585a",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -799,8 +799,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "d7abb4b738a20a36e597a4b91730504a8872ac1b03177c480fd501e3c8849fc8",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -868,8 +868,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "d4b36facfe98efb450d9b2bda0ae2cf2a9da44d55040373987adc99c3b0461a8",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -923,8 +923,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "a58855c2fe79a88b7a39f36472461bdb9b4222a99ec052a09548fe7bc316c1ee",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -992,8 +992,8 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "958d01a84f1eb4e96b01c53173886e628f2722d5c8a3920da4166aef8d629767",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -1060,9 +1060,9 @@
       "program": "programs/bad/33-np-preop-macro.json",
       "group": "bad",
       "spec": "releases/v1/spec.json",
-      "programSha256": "fd1ad26c79adf6ff7958d8991df038651e56493d4d2644009845efae17fef8d5",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "programSha256": "5eb4dc64b88f6bec512f9c9b155c1ebf64dce068aeef235ad3335c7b4b291783",
+      "specSha256": "e3ae97f6f196505a72aef8767f913d14476cb532d9ca74fe26d47d35a4c8ab6d",
+      "canonicalSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "previous": null,
       "exitCode": 1,
       "verdict": {
@@ -1112,63 +1112,11 @@
       }
     },
     {
-      "program": "programs/bad/34-prefilled-attending.json",
-      "group": "bad",
-      "spec": "releases/v1/spec.json",
-      "programSha256": "e1baff68c1d6c4cd61d8be4c7c4e40644574e6cb63a82bbbe0d4f1a7bd406def",
-      "specSha256": "420e2e8d356176762a6068279668496fc8e1d9c11580d9cbeb1a349dea5b4d41",
-      "canonicalSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
-      "previous": null,
-      "exitCode": 1,
-      "verdict": {
-        "violation": {
-          "screens": [
-            "home",
-            "w5Rooming",
-            "w5Orders",
-            "w5Sign"
-          ],
-          "property": "humanOnlyKept",
-          "message": "field w5Sign.attendingCosign on screen w5Sign prefills attendingCosign, which a human must enter every time",
-          "counterexample": [
-            {
-              "click": {
-                "comp": "home.work.w5Rooming"
-              }
-            },
-            {
-              "click": {
-                "comp": "w5Rooming.nav.w5Orders"
-              }
-            },
-            {
-              "click": {
-                "comp": "w5Orders.toSign"
-              }
-            }
-          ]
-        }
-      },
-      "status": "rejected",
-      "expectedProperty": "humanOnlyKept",
-      "expectedPropertyRejected": true,
-      "replay": {
-        "valid": true,
-        "eventCount": 3,
-        "results": [
-          "ok",
-          "ok",
-          "ok"
-        ],
-        "scope": "navigation replay; not a semantic violation proof"
-      }
-    },
-    {
       "program": "releases/v1/canonical.json",
       "group": "reference",
       "status": "reference",
       "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
-      "programSha256": "96a517e64cc4c1ddb2a4cf0bae0332cc72808615727e689ae57819372e975067",
+      "programSha256": "2bf8b0794f2b2eb3e48ad2e0c471c11ac433b3df7ed59ac9bf391dd418522121",
       "spec": "releases/v1/spec.json"
     },
     {
@@ -1176,7 +1124,7 @@
       "group": "reference",
       "status": "reference",
       "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
-      "programSha256": "da97fc39c531188d20c7bf7367dabf40ae73f7e1b30570b9548bdb6cddb0e06a",
+      "programSha256": "543bdd5dce372fcef0f587079e4818b41c125afe14a8b637c5175b19fb602fda",
       "spec": "releases/v2/spec.json"
     },
     {
@@ -1184,7 +1132,7 @@
       "group": "reference",
       "status": "reference",
       "reason": "Vendor master for comparison; mixed clinician roles make it a reference, not a deployable single-role program.",
-      "programSha256": "f093808fb5ef54aebdf2a338e575a1722b48704729624c57fcdbc959b7e84cb3",
+      "programSha256": "0d05994a1b0d7d60e0efd9ffb226732600175b6592c55589fea46e7216cbb7b2",
       "spec": "releases/v3/spec.json"
     }
   ]

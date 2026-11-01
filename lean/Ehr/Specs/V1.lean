@@ -176,19 +176,6 @@ def consentVerified : ElementSpec where
   humanOnly := true
   fhirTarget := "Consent.verification"
 
-/-- Hospital policy (not law), owner decision 2026-10-31.
-A human attending attests the pending pre-op orders.
-The attending attests consent, H&P and medication holds for NP pre-op orders. -/
-def attendingCosign : ElementSpec where
-  id := "attendingCosign"
-  label := "Attending co-signature (pre-op orders)"
-  kind := .cosign
-  enteredBy := [.np]
-  prefill := .never
-  friction := .safety
-  humanOnly := true
-  fhirTarget := "Provenance.agent[attester].who"
-
 /-! ## Data elements: vital signs and rooming -/
 
 /-- Hospital policy (not law): local kg-only dosing policy informed by ISMP Best Practice 3.
@@ -1626,7 +1613,7 @@ def vaccineProvider : ElementSpec where
 Every data element in spec v1. -/
 def elements : List ElementSpec := [
   -- safety checks
-  patientIdReentry, wristbandScan, medScan, highAlertCosign, consentVerified, attendingCosign,
+  patientIdReentry, wristbandScan, medScan, highAlertCosign, consentVerified,
   -- vital signs and rooming
   weight, height, headCircumference, bpSystolic, bpDiastolic, heartRate, respRate,
   temperature, spo2, painScore, painReassessment, chiefComplaint, tobaccoUse,
@@ -1831,10 +1818,10 @@ def infos : List InfoSpec := [
 A commit changes the record. Each has the roles that may do it. -/
 
 /-- Hospital policy (not law), owner decision 2026-10-31.
-Physicians and surgeons sign directly; NPs require an attending co-signature. -/
+Our stand-in for security-class order privileges. -/
 def preopSigningRoles : EncounterRoleRule :=
   { encounter := "preop", roles := [.physician, .surgeon],
-    reason := "Pre-op orders need an attending co-signature", cosign? := some "attendingCosign" }
+    reason := "Pre-op orders are signed by a physician or surgeon" }
 
 /-- Sign orders, with the hospital's pre-op role restriction. -/
 def signOrders : CommitSpec :=
@@ -1921,9 +1908,9 @@ and a decision about which home medications to hold.
 
 Consent and H&P: 42 CFR 482.51(b)(1)–(2); 22 CCR 70223(d). The pre-op signing deadline and meds-to-hold field are our stricter policy (docs/regulations.md §3.2 R6). -/
 def preOpExtraEntries : List EntryReq :=
-  [{ requires signOrders consentVerified (.encounter "preop") with waivedBy? := some "attendingCosign" },
-   { requires signOrders hpUpdate (.encounter "preop") with waivedBy? := some "attendingCosign" },
-   { requires signOrders medsToHold (.encounter "preop") with waivedBy? := some "attendingCosign" }]
+  [requires signOrders consentVerified (.encounter "preop"),
+   requires signOrders hpUpdate (.encounter "preop"),
+   requires signOrders medsToHold (.encounter "preop")]
 
 /-- Hospital policy (not law): local note section and billing checklist supporting record authentication duties.
 A signed visit or consult note needs the core note sections, the diagnosis

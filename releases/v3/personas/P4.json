@@ -1587,17 +1587,6 @@
      "label": "Signature",
      "kind": {"group": {"startCollapsed": false, "collapsible": false}},
      "id": "w5Sign.signature.signOrders"},
-    {"visibility": {"encounter": {"kind": "preop"}},
-     "tag": "w5Sign.attendingCosign",
-     "tab": 0,
-     "size": "normal",
-     "label": "Attending co-signature (pre-op orders)",
-     "kind":
-     {"field":
-      {"slot": {"fixed": {"n": 0}},
-       "prefill": "none",
-       "element": "attendingCosign"}},
-     "id": "w5Sign.attendingCosign"},
     {"visibility": "always",
      "tag": "w5Sign.patientIdReentry",
      "tab": 0,

@@ -370,12 +370,7 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
   let raw := commits.flatMap fun c =>
     (sp.entries.filter (·.commit == c)).flatMap fun rq =>
       match sp.element? rq.element with
-      | some el =>
-        let viaAttending := !entryRelevantForRole sp user.role rq
-        match (if viaAttending then rq.waivedBy? else none).bind sp.element? with
-        | some waiver => entryGoals facts user choices med? orders hyp0 waiver
-            { rq with element := waiver.id, waivedBy? := none }
-        | none => entryGoals facts user choices med? orders hyp0 el rq
+      | some el => entryGoals facts user choices med? orders hyp0 el rq
       | none => []
   -- Core's currentLineComplete checks every per-line requirement, including
   -- other signing artifacts, before advancing. These captures are necessary

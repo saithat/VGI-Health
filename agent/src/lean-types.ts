@@ -67,13 +67,13 @@ export const specSchema: z.ZodType<L.Spec> = z.object({
   infos: z.array(z.looseObject({ id: str, label: str, version: str })),
   commits: z.array(dropNulls(['encounterRoles'], z.object({
     id: str, label: str, roles: z.array(roleSchema),
-    encounterRoles: z.array(dropNulls(['cosign'], z.object({
-      encounter: str, roles: z.array(roleSchema), reason: str, cosign: str.exactOptional(),
-    }))).exactOptional(),
+    encounterRoles: z.array(z.object({
+      encounter: str, roles: z.array(roleSchema), reason: str,
+    })).exactOptional(),
   }))),
-  entries: z.array(dropNulls(['allowed', 'waivedBy'], z.object({
+  entries: z.array(dropNulls(['allowed'], z.object({
     commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(),
-    allowed: z.array(str).exactOptional(), waivedBy: str.exactOptional(),
+    allowed: z.array(str).exactOptional(),
   }))),
   reviews: z.array(dropNulls(['waivedBy'], z.object({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
   alerts: z.array(z.object({
@@ -213,7 +213,6 @@ export const dayResultSchema: z.ZodType<L.DayResult> = z.object({
   trace: z.array(z.object({
     task: str, t: nat, screen: str, event: eventSchema,
     ops: z.array(z.enum(['click', 'key', 'scroll', 'scan', 'point', 'think', 'wait'])), result: stepResultSchema,
-    actor: str.exactOptional(), responseDelayMinutes: nat.exactOptional(),
   })),
   tasks: z.array(taskMetricsSchema),
   floor: z.array(taskMetricsSchema),

@@ -85,7 +85,7 @@ Only the Back-navigation list is erased; captures and clock are preserved. -/
 
 @[simp] theorem entryMet_history (sp facts user s h rq) :
     entryMet sp facts user (withHistory s h) rq = entryMet sp facts user s rq := by
-  simp only [entryMet, entryWaiver, humanWaiverMet, entryDirectMet, lineMatches_history, whenHolds_history]
+  simp only [entryMet, lineMatches_history, whenHolds_history]
   rfl
 
 @[simp] theorem entryReason_history (sp facts user s h rq) :
