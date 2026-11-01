@@ -46,8 +46,11 @@ export function PatientPicker({
       </label>
       <label>
         Data source{" "}
-        <select aria-label="Patient source" value={source}
-          onChange={(event) => setSource(event.currentTarget.value)}>
+        <select
+          aria-label="Patient source"
+          value={source}
+          onChange={(event) => setSource(event.currentTarget.value)}
+        >
           <option value="">All sources</option>
           <option value="synthea">Synthea</option>
           <option value="synthetic-hospital">Synthetic Hospital</option>
@@ -89,7 +92,10 @@ export function PatientPicker({
           {patients.map((patient) => (
             <option key={patient.id} value={patient.id}>
               {patient.name} · {patient.age} · {patient.sex} ·{" "}
-              {patient.encounterClass} · {patient.source === "synthetic-hospital" ? "Synthetic Hospital" : "Synthea"}
+              {patient.encounterClass} ·{" "}
+              {patient.source === "synthetic-hospital"
+                ? "Synthetic Hospital"
+                : "Synthea"}
             </option>
           ))}
         </select>

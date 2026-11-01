@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import type { State } from "../../../lean/generated/ehr-types";
 import type { Control } from "./report";
 import { test, expect } from "@playwright/test";
 import { z } from "zod";
@@ -629,6 +630,19 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
       ];
       const seenScreens = new Set<string>();
       const checkedResources = new Set<string>();
+      const variantOf = (state: State) =>
+        JSON.stringify({ ...state, history: state.history.length > 0 });
+      const discovered = new Set<string>();
+      const enqueue = async (state: State) => {
+        const key = variantOf(state);
+        if (discovered.has(key)) return;
+        discovered.add(key);
+        queue.push(
+          await page.evaluate(
+            () => window.__buttonAuditSession?.checkpoint() ?? -1,
+          ),
+        );
+      };
       const tested = new Set<string>();
       while (queue.length) {
         const checkpoint = queue.shift() ?? -1;
@@ -639,7 +653,8 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         );
         if (!snapshot) throw new Error("Missing audit session");
         const screen = snapshot.state.screen;
-        const variant = `${screen}:${JSON.stringify(snapshot.state.tabSel)}:${JSON.stringify(snapshot.state.popup)}:${JSON.stringify(snapshot.state.acked)}:${JSON.stringify(snapshot.state.receipts)}:${JSON.stringify(snapshot.state.commits)}:${JSON.stringify(snapshot.state.captured.map((c) => [c.element, c.confirmed]))}`;
+        const variant = variantOf(snapshot.state);
+        discovered.add(variant);
         if (seenScreens.has(variant)) continue;
         seenScreens.add(variant);
         audit.screen = screen;
@@ -862,25 +877,33 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             after &&
             JSON.stringify(after.state) !== JSON.stringify(snapshot.state)
           )
-            queue.push(
-              await page.evaluate(
-                () => window.__buttonAuditSession?.checkpoint() ?? -1,
-              ),
-            );
+            await enqueue(after.state);
         }
         await restore(checkpoint);
         const pending = page
           .locator('[data-event="confirm"]:not([inert] *)')
           .filter({ visible: true });
         if (await pending.count()) {
-          let confirmed = 0;
-          while ((await pending.count()) && confirmed++ < 40)
-            await pending.first().click();
-          queue.push(
-            await page.evaluate(
-              () => window.__buttonAuditSession?.checkpoint() ?? -1,
-            ),
+          const beforeBatch = await page.evaluate(() =>
+            JSON.stringify(window.__buttonAuditSession?.snapshot().state),
           );
+          const confirms = await pending.evaluateAll((nodes) =>
+            nodes
+              .map((node) => node.getAttribute("data-comp-id"))
+              .filter((id): id is string => !!id),
+          );
+          for (const comp of confirms) {
+            const confirm = page
+              .locator('[data-event="confirm"]:enabled:not([inert] *)')
+              .filter({ visible: true })
+              .and(page.locator(`[data-comp-id=${JSON.stringify(comp)}]`));
+            if (await confirm.count()) await confirm.first().click();
+          }
+          const afterBatch = await page.evaluate(() =>
+            window.__buttonAuditSession?.snapshot(),
+          );
+          if (afterBatch && JSON.stringify(afterBatch.state) !== beforeBatch)
+            await enqueue(afterBatch.state);
         }
         console.log(
           `${persona} ${screen}: ${tested.size} controls, ${queue.length} queued`,

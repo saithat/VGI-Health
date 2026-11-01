@@ -51,6 +51,7 @@ export class Audit {
       state: JSON.stringify(window.__buttonAuditSession?.snapshot().state),
       result: JSON.stringify(window.__buttonAuditSession?.snapshot().result),
       observedAt: window.__buttonAuditObservation?.at,
+      busy: !!document.querySelector('div[aria-busy="true"]'),
     }));
   }
   async click(
@@ -159,7 +160,7 @@ export class Audit {
       const start = Date.now();
       while (
         !changed() &&
-        !(owner === "lean" && after.result === '"ignored"') &&
+        !(owner === "lean" && !after.busy) &&
         Date.now() - start < 1900
       ) {
         await this.page.waitForTimeout(100);
@@ -196,6 +197,8 @@ export class Audit {
         row.status = "error";
         row.effect = this.errors.slice(errorCount).join("; ");
       }
+      if (row.status === "dead" && owner === "lean" && !after.busy)
+        row.effect = `Synchronous interpreter/UI dispatch completed without a state or UI change; result ${after.result}`;
       if (
         row.owner === "lean" &&
         metadata.comp &&
