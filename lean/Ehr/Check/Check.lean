@@ -314,10 +314,10 @@ def rules (spec : Spec) (prev : Option Program) (canonical prog : Program) : Lis
                 screen? := some scr.id }) },
     { property := "wellFormed"
       passes := required.all fun c => spec.entries.all fun rq =>
-        rq.commit != c || (allComps prog).any fun sc =>
+        rq.commit != c || !entryRelevantForRole spec prog.role rq || (allComps prog).any fun sc =>
           (fieldOf? sc.2.kind).any (·.1 == rq.element) && (shortPathTo prog spec.design.maxDepth sc.1.id).isSome
       explain := fun _ => required.findSome? fun c =>
-        (spec.entries.find? fun rq => rq.commit == c && !(allComps prog).any fun sc =>
+        (spec.entries.find? fun rq => rq.commit == c && entryRelevantForRole spec prog.role rq && !(allComps prog).any fun sc =>
           (fieldOf? sc.2.kind).any (·.1 == rq.element) && (shortPathTo prog spec.design.maxDepth sc.1.id).isSome).map fun rq =>
             { property := "wellFormed"
               message := s!"required element {rq.element} (for {c}) has no field within {spec.design.maxDepth} clicks of the start screen"

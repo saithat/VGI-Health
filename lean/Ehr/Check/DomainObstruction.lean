@@ -22,34 +22,29 @@ def preopFacts : Facts :=
   { replayFacts with encounterKind? := some "preop", medToGive? := some "acetaminophen" }
 def npUser : User := { id := "np-domain-witness", role := .np }
 
-/-- The current completeness domain includes NP/preop episodes, but the
-preserved consent permission excludes NP. Consequently *no* NP program
-required to sign orders can satisfy the full current property set. This is
-an explicit domain obstruction, not an excuse to broaden consent permissions. -/
-theorem np_preop_obstruction (can p : Program) (hp : p.role = .np)
-    (hrequired : "signOrders" ∈ requiredCommits specV1 can p) :
-    ¬ Satisfies specV1 none can p := by
-  intro h
-  let ep : Episode := ⟨specV1, p, preopFacts, npUser⟩
-  have hrole : npUser.role = p.role := hp.symm
-  have hscans : RecordAllowsScans specV1 preopFacts := fun _ => rfl
-  have hinit : ep.start.commits = [] := (prefillScreen_frame _ _ _ _).1
-  obtain ⟨es, hes⟩ := h.2.2.2.2.2.1 preopFacts npUser hrole hscans ep.start
-    .start "signOrders" hrequired (by simp [hinit])
-  obtain ⟨s, e, hs, hn, hc⟩ := newCommit_witness ep es ep.start .start "signOrders"
-    (by simp [hinit]) hes
-  have hentry := T0_entry_values specV1 p preopFacts npUser .human s e "signOrders" hn hc
-    (requires signOrders consentVerified (.encounter "preop")) (by decide) rfl rfl rfl
-    consentVerified (by decide)
-  obtain ⟨x, hx, hxe, _, _, _⟩ := hentry
-  have hw := (h.2.2.1.2 preopFacts npUser hrole s hs).1 x hx
-  obtain ⟨el, hel, hallowed⟩ := hw
-  rw [hxe] at hel
-  have hconsent : specV1.element? consentVerified.id = some consentVerified := by decide
-  rw [hconsent] at hel
-  cases hel
-  exact (by decide : Role.np ∉ consentVerified.enteredBy) hallowed
+private theorem signingPolicy :
+    (specV1.commit? "signOrders").map (·.encounterRoles?) = some (some [preopSigningRoles]) := by
+  decide
+
+/-- Hospital policy (not law), owner decision 2026-10-31.
+No event can add a pre-op order signature for an NP, on any program or state. -/
+theorem np_preop_never_signs (p : Program) (facts : Facts) (user : User)
+    (encounter : facts.encounterKind? = some "preop") (role : user.role = .np)
+    (s : State) (actor : Actor) (event : Event) :
+    ¬ CommitHappens ⟨specV1, p, facts, user⟩ s actor event "signOrders" := by
+  intro happened
+  have permission := ((commitGuard_iff specV1 p facts user s "signOrders").mp
+    (T0_commit_needs_guard _ _ _ _ actor s event "signOrders" happened.1 happened.2)).1
+  have forbidden : encounterRolesOk specV1 facts user "signOrders" = false := by
+    cases lookup : specV1.commit? "signOrders" with
+    | none => simp [encounterRolesOk, lookup]
+    | some cs =>
+      have policy := signingPolicy
+      simp only [lookup, Option.map_some, Option.some.injEq] at policy
+      simp [encounterRolesOk, lookup, CommitSpec.encounterRoleAllowed, policy,
+        preopSigningRoles, encounterMatches, encounter, role]
+  simp [commitRoleOk, forbidden] at permission
 
 #print axioms newCommit_witness
-#print axioms np_preop_obstruction
+#print axioms np_preop_never_signs
 end Ehr.Check

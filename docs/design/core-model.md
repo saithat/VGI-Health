@@ -72,10 +72,16 @@ structure InfoSpec where
   label : String
   version : String                 -- name of the fact that versions it (e.g. "allergyVersion"), "" if unversioned
 
+structure EncounterRoleRule where
+  encounter : String
+  roles : List Role
+  reason : String
+
 structure CommitSpec where
   id : CommitId
   label : String
   roles : List Role
+  encounterRoles? : Option (List EncounterRoleRule) := none
 
 inductive When
   | always
@@ -583,3 +589,18 @@ Nothing else is constrained: columns, grouping, order, density, colors, and comp
 - AppShell layout (header banner, nav, workspace, optional side, modal).
 
 **Fidelity (offline, before deploy):** generate the expected accessibility tree (roles + names) from `UiScreen` and compare it to the rendered DOM's accessibility tree (Playwright ARIA snapshot). Also check visibility, the legibility minimum, and no element covered. A mismatch blocks the deploy.
+
+
+### Encounter roles (owner decision 2026-10-31)
+
+Hospital policy (not law): only physicians and surgeons sign pre-op orders.
+`CommitSpec.encounterRoles?` optionally restricts a commit by encounter kind;
+all matching rules must allow the actual user. Its match uses the same
+`encounterMatches` function as `When.encounter`. Absent restrictions preserve
+the old JSON behavior. `signOrders` carries the pre-op restriction in every
+release and both profiles. The guard displays the rule's reason before checking
+entries. Consent verification, H&P and medication-hold requirements and who may
+enter them remain unchanged. Completion is required only for roles allowed in
+the actual encounter. Depth and completion checks omit an encounter-scoped
+entry only when that role cannot commit in that encounter; all other entries
+remain relevant. Unknown encounter kind matches no named encounter, as before.

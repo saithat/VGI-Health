@@ -162,7 +162,7 @@ interruptive alert for the commit is acknowledged for each key it fires for. -/
 theorem commitGuard_iff (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : CommitId) :
     commitGuard sp prog facts user s c = true ↔
-      roleOk sp user c = true ∧
+      commitRoleOk sp facts user c = true ∧
       (∀ rq ∈ sp.entries, rq.commit = c → entryMet sp facts user s rq = true) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →
@@ -252,7 +252,7 @@ The original Comparator statement remains available as commitGuard_iff. -/
 theorem commitGuard_iff_values (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : CommitId) :
     commitGuard sp prog facts user s c = true ↔
-      roleOk sp user c = true ∧
+      commitRoleOk sp facts user c = true ∧
       (∀ rq ∈ sp.entries, rq.commit = c → EntryValuesMet sp facts user s rq) ∧
       (∀ rq ∈ sp.reviews, rq.commit = c → reviewMet sp prog facts s rq = true) ∧
       (∀ al ∈ sp.alerts, al.commit = c → al.tier = .interruptive →

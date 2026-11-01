@@ -1679,7 +1679,11 @@
  "commits":
  [{"roles": ["physician", "np", "surgeon"],
    "label": "Sign orders",
-   "id": "signOrders"},
+   "id": "signOrders",
+   "encounterRoles":
+   [{"roles": ["physician", "surgeon"],
+     "reason": "Pre-op orders are signed by a physician or surgeon",
+     "encounter": "preop"}]},
   {"roles": ["physician", "np", "surgeon"],
    "label": "Sign note",
    "id": "signNote"},

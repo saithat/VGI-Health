@@ -93,7 +93,7 @@ private theorem clickCommit_writes (sp p f u s cm) (h : WritesState sp f u s) :
   intro c hc
   rcases clickCommit_guarded sp p f u s cm c hc with hc | hg
   · exact h.2.1 c hc
-  · exact roleOk_witness sp u c ((commitGuard_iff ..).mp hg).1
+  · exact roleOk_witness sp u c (Bool.and_eq_true_iff.mp ((commitGuard_iff ..).mp hg).1).1
 
 private theorem enterCore_writes (sp p f u actor s cid v) (h : WritesState sp f u s) :
     WritesState sp f u (enterCore sp p f u actor s cid v).1 := by

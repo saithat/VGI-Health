@@ -10,6 +10,17 @@ types. Imports only `Init` (through `Ehr.Formulary`).
 
 namespace Ehr
 
+/-- Match the episode's encounter kind. An unknown kind matches no named kind. -/
+def encounterMatches (actual : Option String) (kind : String) : Bool :=
+  actual == some kind
+
+/-- Every role restriction matching this encounter must permit the user. -/
+def CommitSpec.encounterRoleAllowed (cs : CommitSpec) (encounter : Option String)
+    (role : Role) : Bool :=
+  (cs.encounterRoles?.getD []).all fun rule =>
+    !encounterMatches encounter rule.encounter || rule.roles.contains role
+
+
 /-! ## Well-known IDs
 
 The interpreter gives a fixed meaning to a few element and info IDs. -/

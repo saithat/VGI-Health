@@ -26,7 +26,7 @@ theorem unusedWorkflow_self_satisfies :
     Satisfies unusedWorkflowSpec none emptyProgram emptyProgram :=
   satisfies_of_checked_completable _ _ _ _ (by decide) (by
     intro facts user _ _ s _ c hc
-    simp [requiredCommits, commitButtons, emptyProgram] at hc)
+    simp [requiredCommitsFor, requiredCommits, commitButtons, emptyProgram] at hc)
 
 /-- Removing the unused reference workflow changes no semantic obligation:
 there are no required commits and no requested popups. -/
@@ -37,9 +37,9 @@ theorem unusedWorkflow_satisfies :
   refine ⟨⟨wf.1, wf.2.1, wf.2.2.1, wf.2.2.2.1, ?_, wf.2.2.2.2.2⟩,
     cap, writes, reviews, human, ?_, units, ⟨?_, budget.2⟩, alerts, falseAlarms, once, tiers, nav⟩
   · intro c hc
-    simp [requiredCommits, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
+    simp [requiredCommitsFor, requiredCommits, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
   · intro facts user _ _ s _ c hc
-    simp [requiredCommits, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
+    simp [requiredCommitsFor, requiredCommits, commitButtons, unusedWorkflowCanonical, emptyProgram] at hc
   · intro rc rp _ _
     have zero (rs : List ScreenId) : popupRequestCount emptyProgram rs = 0 := by
       by_cases h : "home" ∈ rs <;> simp [popupRequestCount, emptyProgram, h]

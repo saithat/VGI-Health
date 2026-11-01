@@ -25,7 +25,7 @@ deriving instance Lean.ToJson, Lean.FromJson for
   InfoPayload, WorkflowPhase, DisplayScope, DisplayReq, SelectedPayloadRow, PayloadGroup, PayloadView, InfoSpec,
   EventRef, TimeMetric, TemporalDirection, TemporalReq, ArtifactBinding, EventEvidence, BusinessCalendar,
   ObligationStatus, ObligationView, ClockAnchor, ClockStamp, MonthCutoff, ClockRenewal,
-  OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec,
+  OrderClock, ExpiryDuration, RenewalPolicy, ExpiryReq, EncounterRoleRule, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec,
   DesignRules, Spec
 
 deriving instance Lean.ToJson, Lean.FromJson for

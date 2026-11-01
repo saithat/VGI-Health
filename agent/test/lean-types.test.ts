@@ -23,6 +23,15 @@ describe('validators vs Lean-written samples', () => {
     expect(sampleTask.id.length).toBeGreaterThan(0);
   });
 
+  it('preserves optional encounter role policy and accepts legacy commits', () => {
+    const reason = 'Pre-op orders are signed by a physician or surgeon';
+    const withPolicy = { ...tinySpec, commits: tinySpec.commits.map((commit) => ({
+      ...commit, encounterRoles: [{ encounter: 'preop', roles: ['physician', 'surgeon'], reason }],
+    })) };
+    same(specSchema.parse(withPolicy), withPolicy);
+    same(specSchema.parse(tinySpec), tinySpec);
+  });
+
   it('patched programs keep Lean encoding: null options from an LLM are dropped, not emitted', () => {
     const screen = tinyProgram.screens[0];
     if (!screen) throw new Error('no screen');
