@@ -69,7 +69,10 @@ export function DisplayValue({ value }: { value: string }) {
 
 /** Only explicit supplied status text receives a tone; no timing or workflow inference. */
 export function statusTone(value: string): ClinicalTone | undefined {
-  const status = (value.split(/[·\n]/)[0] ?? "").trim().toLowerCase();
+  const status = (value.split(/[·\n]/)[0] ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[_-]/g, " ");
   if (/^(l|low)$/.test(status)) return "blue";
   if (/^(h|high)$/.test(status)) return "red";
   if (/^(hh|ll|a|abnormal)$/.test(status)) return "red";
@@ -82,7 +85,7 @@ export function statusTone(value: string): ClinicalTone | undefined {
   )
     return "green";
   if (
-    /^(due|due-soon|due soon|unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation|held|on-hold|roomed|arrived)(?:$|\s)/.test(
+    /^(due|due-soon|due soon|unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation|held|on hold|roomed|arrived)(?:$|\s)/.test(
       status,
     )
   )
@@ -98,7 +101,7 @@ export function statusTone(value: string): ClinicalTone | undefined {
   )
     return "violet";
   if (
-    /^(draft|future|scheduled|stopped|discontinued|cancelled|canceled|not given|not-done|not due|not charted|not documented)(?:$|\s)/.test(
+    /^(draft|future|scheduled|stopped|discontinued|cancelled|canceled|not given|not done|not due|not charted|not documented)(?:$|\s)/.test(
       status,
     )
   )
@@ -126,9 +129,19 @@ export function sectionTone(label: string): ClinicalTone {
     /in basket|message|cosign|note|history|instruction|education/i.test(label)
   )
     return "violet";
-  if (/medication|\bmar\b|pharmacy|immuniz/i.test(label)) return "green";
-  if (/result|lab|imaging|triage|acuity/i.test(label)) return "orange";
-  if (/order|assessment|plan|disposition|procedure|surg|operative/i.test(label))
+  if (
+    /medication|\bmar\b|pharmacy|immuniz|census|worklist|flowsheet|ward/i.test(
+      label,
+    )
+  )
+    return "green";
+  if (/result|lab|imaging|triage|acuity|track board|emergency/i.test(label))
+    return "orange";
+  if (
+    /order|assessment|plan|disposition|procedure|surg|operative|or schedule/i.test(
+      label,
+    )
+  )
     return "yellow";
   return "blue";
 }

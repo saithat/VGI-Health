@@ -8,13 +8,33 @@ import { readFile, mkdtemp, writeFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { CURRENT_RELEASE } from "../src/core/currentRelease";
 import { propertyReason } from "../src/browser/revision-diff";
-import { createEhr } from "../../agent/src/ehr";
-import {
-  programSchema,
-  specSchema,
-  verdictSchema,
-} from "../../agent/src/schema";
+import { programSchema, verdictSchema } from "../../agent/src/schema";
 import { buildCatalog, root } from "./catalog.mjs";
+
+function nativeJson(binary: string, args: string[]): Promise<unknown> {
+  return new Promise((done, reject) =>
+    execFile(
+      binary,
+      args,
+      { timeout: 60000, maxBuffer: 8 * 1024 * 1024, encoding: "utf8" },
+      (error, output, stderr) => {
+        if (error && typeof error.code !== "number") {
+          reject(new Error(`Native check unavailable: ${error.message}`));
+          return;
+        }
+        try {
+          done(JSON.parse(output));
+        } catch {
+          reject(
+            new Error(
+              `Native checker returned no valid verdict: ${stderr.slice(0, 200)}`,
+            ),
+          );
+        }
+      },
+    ),
+  );
+}
 
 /** The live login and check-only history share the current release. */
 const currentRelease = CURRENT_RELEASE;
@@ -48,19 +68,13 @@ export async function recheckRevision(
   const canonical = await read(
     `releases/${currentRelease}/personas/${persona}.json`,
   );
-  const checker = createEhr({
-    fake: false,
-    ...(binary ? { binary } : {}),
-  });
-  const expectedSpec = specSchema.parse(
-    JSON.parse(
-      await readFile(
-        resolve(root, `releases/${currentRelease}/spec.json`),
-        "utf8",
-      ),
-    ),
-  );
-  const nativeSpec = await checker.specExport(currentRelease);
+  const executable = binary ?? process.env.EHR_BIN ?? DEFAULT_EHR_BIN;
+  const specFile = resolve(root, `releases/${currentRelease}/spec.json`);
+  const expectedSpec: unknown = JSON.parse(await readFile(specFile, "utf8"));
+  const nativeSpec = await nativeJson(executable, [
+    "spec-export",
+    currentRelease,
+  ]);
   if (!isDeepStrictEqual(nativeSpec, expectedSpec))
     throw new Error(
       "The native checker does not match the current release. Rebuild the server checker before re-checking history.",
@@ -72,35 +86,19 @@ export async function recheckRevision(
       baseline = resolve(temporary, "baseline.json");
     await writeFile(source, JSON.stringify(expandProgram(program)));
     await writeFile(baseline, JSON.stringify(expandProgram(canonical)));
-    const stdout = await new Promise<string>((done, reject) =>
-      execFile(
-        binary ?? process.env.EHR_BIN ?? DEFAULT_EHR_BIN,
-        [
-          "check",
-          "--spec",
-          resolve(root, `releases/${currentRelease}/spec.json`),
-          "--program",
-          source,
-          "--prev",
-          source,
-          "--canonical",
-          baseline,
-        ],
-        { timeout: 60000, maxBuffer: 8 * 1024 * 1024, encoding: "utf8" },
-        (error, output, stderr) => {
-          if (error && typeof error.code !== "number")
-            reject(new Error(`Native check unavailable: ${error.message}`));
-          else if (!output.trim())
-            reject(
-              new Error(
-                `Native check returned no verdict: ${stderr.slice(0, 200)}`,
-              ),
-            );
-          else done(output);
-        },
-      ),
+    verdict = verdictSchema.parse(
+      await nativeJson(executable, [
+        "check",
+        "--spec",
+        specFile,
+        "--program",
+        source,
+        "--prev",
+        source,
+        "--canonical",
+        baseline,
+      ]),
     );
-    verdict = verdictSchema.parse(JSON.parse(stdout));
   } finally {
     await rm(temporary, { recursive: true, force: true });
   }

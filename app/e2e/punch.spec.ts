@@ -28,7 +28,10 @@ test("populated native clinician screen review", async ({ page }) => {
     ["P5", "w6OpNote", "P5-op-note"],
   ];
   if (process.env.COLOR_DENSITY_SHOTS)
-    screens.push(["P1", "w1Sign", "P1-alert"]);
+    screens.push(
+      ["P4", "w5Rooming", "P4-rooming"],
+      ["P1", "w1Sign", "P1-alert"],
+    );
   for (const [persona, screen, name] of screens) {
     const ui = uiScreenSchema.parse(
       JSON.parse(

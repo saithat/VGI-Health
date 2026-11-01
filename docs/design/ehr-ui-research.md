@@ -1430,8 +1430,9 @@ uses red overdue tasks; [MAR Summary](https://cstcernerhelp.healthcarebc.ca/Pati
 uses yellow current-time columns. Vendor installations differ: VGI's green given,
 amber held and yellow due-soon statuses follow the owner's requested convention.
 
-The ten before/after pairs in `app/shots/realism/color-density/` use identical,
-immutable native source trees (the nine punch fixtures plus `p1-alert.json`). All
+The ten requested clinical screens plus an interruptive alert (11 before/after
+pairs) in `app/shots/realism/color-density/` use identical, immutable native
+source trees (the ten punch fixtures plus `p1-alert.json`). All
 are 1440×900. These deliberately isolate painter effects; source content issues
 in archived inputs (single-patient lists, social-history problems, surgical
 case/template mismatch) are not concealed or clinically corrected by CSS.
@@ -1444,6 +1445,7 @@ case/template mismatch) are not concealed or clinically corrected by CSS.
 | P2 Triage | Orange triage and red allergy headings separate safety review from measurements. The amber pending weight and confirmation remain conspicuous and actionable. |
 | P3 MAR | Red overdue, green given, amber held remain labeled. Medication details wrap compactly within one cell; every dose/route/category/status remains visible. |
 | P3 Flowsheet | Dense time columns and 23–25 px ordinary rows show the observation grid and documentation together. Multiline assessment grows naturally. |
+| P4 Rooming | Red allergy review and recorded-allergy banner distinguish safety review from green growth/vitals. Compact field groups retain kg weight provenance and the separate human confirmation. The before image was rendered from the actual `d2abcf0` painter in an isolated preview with the same frozen P4 tree. |
 | P4 Growth | Filled red recorded-allergy banner, green growth heading, compact measurement rows. Curves retain readable right-edge labels; no percentile is inferred. |
 | P5 OR Schedule | Orange schedule and amber case accents; narrower summary and compact rows. The frozen fixture's content limitations are documented rather than hidden. |
 | P5 Op Note | Amber procedure/findings sections, purple note destinations, compact four-column clinical fields. Narrative fields retain readable height. |

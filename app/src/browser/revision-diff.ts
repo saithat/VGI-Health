@@ -221,6 +221,7 @@ export function recordedPatch(record: DecisionRecord): JsonPatchOp[] {
   );
 }
 const reasons: Record<string, string> = {
+  patientSelection: "Patient selection inside the EHR must be retained.",
   wellFormed:
     "The screen structure does not satisfy the current release's requirements.",
   writesOnly: "A field or action exceeds this role's permissions.",

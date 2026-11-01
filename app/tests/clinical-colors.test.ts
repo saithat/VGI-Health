@@ -54,6 +54,11 @@ describe("meaningful clinical palette", () => {
       "violet",
     ]);
     expect(statusTone("Active")).toBeUndefined();
+    expect(
+      ["needs-action", "on-hold", "not-done", "cosign-required"].map(
+        statusTone,
+      ),
+    ).toEqual(["yellow", "yellow", "gray", "violet"]);
     expect(severityTone("passive")).toBe("yellow");
     expect(severityTone("warning")).toBe("orange");
     expect(severityTone("interruptive")).toBe("red");
@@ -69,5 +74,14 @@ describe("meaningful clinical palette", () => {
         "Schedule",
       ].map(sectionTone),
     ).toEqual(["red", "green", "orange", "yellow", "violet", "blue"]);
+    expect(
+      [
+        "Schedule",
+        "ED Track Board",
+        "Unit Census",
+        "OR Schedule",
+        "In Basket",
+      ].map(sectionTone),
+    ).toEqual(["blue", "orange", "green", "yellow", "violet"]);
   });
 });
