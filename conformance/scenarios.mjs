@@ -524,11 +524,17 @@ add('epcs.details-content', 'Law: controlled-prescription details at signing', '
 add('weight.linked-source-refresh', 'Hospital dosing weight / declared source linkage', 'Correcting weight to 20 kg refreshes or invalidates an earlier 70 kg link; mismatched values cannot be signed',
   t => supports(t, 'signOrders') && t.program.screens.some(s => s.components.some(c => field('dosingWeight')(c) && c.kind.field.prefill?.linked?.element === 'weight')), f => {
     const ctx = context('signOrders'), d = f.prefix(ctx, 'dosingWeight');
+    // Establish and confirm the old copy first on every layout. Some layouts
+    // do not visit the dependent field until after the source was entered.
+    const oldCopy = d.find(c => field('dosingWeight')(c) && c.kind.field.prefill?.linked?.element === 'weight', 'linked dosing weight before correction');
+    if (d.capture('dosingWeight') && !d.capture('dosingWeight').confirmed)
+      d.step({ confirm: { comp: oldCopy.id } }, 'confirm the original 70 kg linked copy');
+    d.assertCaptured('dosingWeight', qty(700, 'kg'));
     d.enter('weight', qty(200, 'kg'));
     const c = d.find(field('dosingWeight'), 'linked dosing weight after source correction');
     if (d.capture('dosingWeight') && !d.capture('dosingWeight').confirmed)
       d.step({ confirm: { comp: c.id } }, 'try confirming the existing dosing-weight copy');
-    prepare(d, ctx, ['weight']);
+    prepare(d, ctx, ['weight', 'dosingWeight']);
     const mismatch = JSON.stringify(d.capture('weight')?.value) !== JSON.stringify(d.capture('dosingWeight')?.value);
     if (mismatch) {
       d.clickCommit('signOrders');
