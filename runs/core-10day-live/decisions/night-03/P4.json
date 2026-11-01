@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "manualHash": "bebdde82f91cb622a1159153d6367ca6521cc5bd6c0eba0941ed8c00bd7c4a3d",
+    "ruleContextHash": "f4d7a212771e0be33883dedf86a8e656240a0b60e4d326a09f6ea6c2a2070b7f",
+    "ruleProfile": "core"
+  },
+  "runId": "core-10day-live",
+  "night": 3,
+  "persona": "P4",
+  "owner": "P4",
+  "mode": "surface-feature",
+  "specVersion": "v2",
+  "versionBefore": 2,
+  "versionAfter": 3,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P4",
+    "trainDays": [
+      1,
+      3
+    ],
+    "programVersion": 2,
+    "totals": {
+      "tasks": 26,
+      "completed": 26,
+      "clicks": 863,
+      "keystrokes": 4793,
+      "scrolls": 1024,
+      "popups": 0,
+      "overrides": 0,
+      "searches": 3,
+      "backtracks": 19,
+      "klmDeciSec": 51126,
+      "mouseTravelPx": 358729.54999999993,
+      "scrollPx": 1084019
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 14,
+          "completed": 14,
+          "clicks": 488,
+          "keystrokes": 2652,
+          "scrolls": 630,
+          "popups": 0,
+          "overrides": 0,
+          "searches": 3,
+          "backtracks": 14,
+          "klmDeciSec": 29657,
+          "mouseTravelPx": 202774.65999999997,
+          "scrollPx": 660975
+        }
+      },
+      {
+        "day": 3,
+        "load": "busy",
+        "programVersion": 2,
+        "metrics": {
+          "tasks": 12,
+          "completed": 12,
+          "clicks": 375,
+          "keystrokes": 2141,
+          "scrolls": 394,
+          "popups": 0,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 5,
+          "klmDeciSec": 21469,
+          "mouseTravelPx": 155954.88999999998,
+          "scrollPx": 423044
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 33,
+      "keystrokes": 6197.1,
+      "scrolls": 0,
+      "klmDeciSec": 384.4
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W5",
+        "tasks": 26,
+        "avgClicks": 33.2,
+        "avgKeystrokes": 184.3,
+        "avgScrolls": 39.4,
+        "avgKlmSec": 196.6,
+        "avgMouseTravelPx": 13797.3,
+        "avgScrollPx": 41693
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w5Orders",
+        "events": 664,
+        "klmSec": 0,
+        "share": 25.538
+      },
+      {
+        "screen": "w5Note",
+        "events": 223,
+        "klmSec": 0,
+        "share": 8.577
+      },
+      {
+        "screen": "w5Immunizations",
+        "events": 150,
+        "klmSec": 0,
+        "share": 5.769
+      },
+      {
+        "screen": "w5Rooming",
+        "events": 275,
+        "klmSec": 0,
+        "share": 10.577
+      },
+      {
+        "screen": "w5Close",
+        "events": 132,
+        "klmSec": 0,
+        "share": 5.077
+      },
+      {
+        "screen": "w5Sign",
+        "events": 28,
+        "klmSec": 0,
+        "share": 1.077
+      },
+      {
+        "screen": "chartSummary",
+        "events": 110,
+        "klmSec": 0,
+        "share": 4.231
+      },
+      {
+        "screen": "home",
+        "events": 52,
+        "klmSec": 0,
+        "share": 2
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "allergyList",
+        "created": 23,
+        "reprompted": 0
+      },
+      {
+        "info": "currentMeds",
+        "created": 14,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [
+      {
+        "query": "task",
+        "count": 1,
+        "screens": [
+          "chartSummary"
+        ]
+      }
+    ],
+    "alertOverrides": [],
+    "totalOverrides": 0,
+    "backtracks": [
+      {
+        "screen": "w5Close",
+        "count": 14
+      },
+      {
+        "screen": "w5Rooming",
+        "count": 1
+      },
+      {
+        "screen": "w5Orders",
+        "count": 1
+      }
+    ],
+    "complaints": [],
+    "orderMix": [
+      {
+        "drug": "acetaminophen",
+        "count": 5
+      },
+      {
+        "drug": "amoxicillin",
+        "count": 4
+      },
+      {
+        "drug": "ibuprofen",
+        "count": 4
+      },
+      {
+        "drug": "ondansetron",
+        "count": 2
+      },
+      {
+        "drug": "albuterol",
+        "count": 2
+      }
+    ]
+  },
+  "hypothesis": "P4 completed 26 pediatric W5 tasks, with routine medication orders and no observed imaging, procedure, or prior-authorization work. The main interaction hotspots are scrolling and returning from Sign Visit to edit notes. Surfacing the optional prior-auth controls would add clutter without evidence of fewer clicks, scrolls, or pointer travel.",
+  "candidates": [],
+  "chosen": {
+    "candidateIds": [],
+    "rationale": "P4 completed 26 pediatric W5 tasks, with routine medication orders and no observed imaging, procedure, or prior-authorization work. The main interaction hotspots are scrolling and returning from Sign Visit to edit notes. Surfacing the optional prior-auth controls would add clutter without evidence of fewer clicks, scrolls, or pointer travel.",
+    "rejectedAlternatives": [],
+    "choiceBy": "llm"
+  },
+  "predicted": null,
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 0,
+        "candidateIds": [],
+        "source": "recertify",
+        "patch": [],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 3,
+      "load": "busy",
+      "before": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 262,
+        "keystrokes": 1376,
+        "scrolls": 288,
+        "popups": 0,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 5,
+        "klmDeciSec": 11803,
+        "mouseTravelPx": 115298.9,
+        "scrollPx": 309337
+      },
+      "after": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 264,
+        "keystrokes": 1380,
+        "scrolls": 230,
+        "popups": 0,
+        "overrides": 0,
+        "searches": 1,
+        "backtracks": 5,
+        "klmDeciSec": 11663,
+        "mouseTravelPx": 117598.62,
+        "scrollPx": 274989
+      },
+      "saving": {
+        "clicks": -2,
+        "keystrokes": -4,
+        "scrolls": 58,
+        "klmDeciSec": 140,
+        "mouseTravelPx": -2299.72,
+        "scrollPx": 34348
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 34.4,
+          "keystrokes": 11366.7,
+          "scrolls": 0,
+          "klmDeciSec": 288.4
+        },
+        "after": {
+          "clicks": 35.4,
+          "keystrokes": 11400,
+          "scrolls": 0,
+          "klmDeciSec": 283.8
+        }
+      }
+    },
+    "improved": false,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "agent decided not to surface the feature for this user"
+  },
+  "measured": {
+    "validation": {
+      "day": 3,
+      "load": "busy",
+      "before": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 262,
+        "keystrokes": 1376,
+        "scrolls": 288,
+        "popups": 0,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 5,
+        "klmDeciSec": 11803,
+        "mouseTravelPx": 115298.9,
+        "scrollPx": 309337
+      },
+      "after": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 264,
+        "keystrokes": 1380,
+        "scrolls": 230,
+        "popups": 0,
+        "overrides": 0,
+        "searches": 1,
+        "backtracks": 5,
+        "klmDeciSec": 11663,
+        "mouseTravelPx": 117598.62,
+        "scrollPx": 274989
+      },
+      "saving": {
+        "clicks": -2,
+        "keystrokes": -4,
+        "scrolls": 58,
+        "klmDeciSec": 140,
+        "mouseTravelPx": -2299.72,
+        "scrollPx": 34348
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 34.4,
+          "keystrokes": 11366.7,
+          "scrolls": 0,
+          "klmDeciSec": 288.4
+        },
+        "after": {
+          "clicks": 35.4,
+          "keystrokes": 11400,
+          "scrolls": 0,
+          "klmDeciSec": 283.8
+        }
+      }
+    },
+    "test": null,
+    "minClicks": [],
+    "predictionHeld": null,
+    "predictionNote": ""
+  },
+  "userResponse": {
+    "response": "not-offered",
+    "probability": 0,
+    "reason": "no change to offer"
+  },
+  "certificate": {
+    "specVersion": "v2",
+    "specHash": "fnv1a64:2198833001ec4406",
+    "programHash": "fnv1a64:a4d4753631233abc",
+    "verdict": "ok",
+    "checkerVersion": "check-1",
+    "time": "2026-11-01T23:01:59Z"
+  },
+  "screenCheck": {
+    "status": "pass",
+    "mode": "real",
+    "bundles": [
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Ashly_Rippin_149fcc1f.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Abdul_Sauer_d0fe99e5.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Albert_Weber_84816a36.json"
+    ],
+    "pages": 938,
+    "failingScreens": [],
+    "failingFiles": [],
+    "message": "938 page trees passed"
+  },
+  "deployed": {
+    "version": 3,
+    "program": "programs/P4/v3.json",
+    "certificate": "certs/P4/v3.json",
+    "build": "certs/P4/v3.build.json",
+    "source": "programs/P4/v3.source.json"
+  },
+  "outcome": "not-surfaced",
+  "release": {
+    "id": "v2",
+    "specVersion": "v2",
+    "recheck": {
+      "status": "pass",
+      "property": null,
+      "message": null,
+      "counterexample": null,
+      "screens": null,
+      "verdict": "ok"
+    },
+    "items": [],
+    "surfaced": false,
+    "customizationsKept": [],
+    "customizationsDropped": [],
+    "fallback": false,
+    "flaggedUser": false
+  },
+  "flags": [
+    "reporting: theoretical minima are post-run only; no search attempted overnight"
+  ],
+  "llmCalls": [
+    {
+      "callId": "night-03/P4/surface-0",
+      "purpose": "surface",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 331359,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-03/P4/surface-0.json"
+    }
+  ],
+  "createdAt": "2026-11-01T22:56:04.207Z",
+  "sourceRunId": "core-10day"
+}
