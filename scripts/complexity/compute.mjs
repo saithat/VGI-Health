@@ -9,13 +9,12 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const defaultRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const root = defaultRoot;
 const exec = promisify(execFile);
-// Limit Lean children while allowing Node's WebAssembly runtime to reserve its address space.
-const leanMemoryKb = Number(process.env.EHR_LEAN_MEMORY_KB ?? 12000000);
-if (!Number.isSafeInteger(leanMemoryKb) || leanMemoryKb < 1) throw new Error('EHR_LEAN_MEMORY_KB must be a positive integer');
+// The orchestrator systemd scope supplies memory limits; RLIMIT_AS prevents Lean threads on this host.
 const run = (bin, args, options = {}) => bin === 'lake'
-  ? exec('bash', ['-c', `ulimit -v ${leanMemoryKb}; exec lake "$@"`, 'lake', ...args], {timeout:180000,env:{...process.env,LEAN_NUM_THREADS:'6',LEAN_STACK_SIZE_KB:'65536'},...options})
+  ? exec('lake', args, {timeout:180000,env:{...process.env,LEAN_NUM_THREADS:'6',LEAN_STACK_SIZE_KB:'65536'},...options})
   : exec(bin,args,{timeout:Number(process.env.EHR_COMMAND_TIMEOUT_MS??600000),...options});
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -27,7 +26,7 @@ const exists = async p => { try { await access(p); return true; } catch { return
 const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, stable(value[k])])) : value;
 const shape = program => JSON.stringify(stable({ screens: program.screens, start: program.start, macros: program.macros, specVersion: program.specVersion }));
 
-export async function compute({ runDir, canonical, releaseDirectory, canonicalOutput, taskTimeoutMs=10000, searchBound=5000 } = {}) {
+export async function compute({ root = defaultRoot, runDir, canonical, releaseDirectory, canonicalOutput, taskTimeoutMs=10000, searchBound=5000 } = {}) {
   canonical??=!runDir;
   if(!Number.isSafeInteger(taskTimeoutMs)||taskTimeoutMs<1||!Number.isSafeInteger(searchBound)||searchBound<1)throw new Error('Task time and search bound must be positive integers');
   if (process.env.EHR_FAKE === '1') throw new Error('Complexity requires the real EHR; EHR_FAKE is forbidden');
