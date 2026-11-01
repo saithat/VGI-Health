@@ -51,7 +51,7 @@ async function recheck(deps: LoopDeps, input: ReleaseNightInput): Promise<{ prog
 }
 
 function startRecord(deps: LoopDeps, input: ReleaseNightInput, mode: DecisionRecord['mode'], evidence: TrainSummary, check: CheckResult): DecisionRecord {
-  const rec = emptyRecord(deps, { night: input.night, persona: input.persona, specVersion: input.next.specVersion, current: input.current }, evidence);
+  const rec = emptyRecord(deps, { night: input.night, persona: input.persona, specVersion: input.next.specVersion, current: input.current, spec: input.next.spec }, evidence);
   rec.mode = mode;
   rec.release = {
     id: input.next.id, specVersion: input.next.specVersion, recheck: check, items: [], surfaced: null,

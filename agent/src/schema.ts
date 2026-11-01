@@ -287,6 +287,7 @@ export const outcomeSchema = z.enum([
 
 export const decisionRecordSchema = z.object({
   schemaVersion: z.literal(1),
+  context: z.object({ manualHash: str, ruleContextHash: str, ruleProfile: str }).optional(),
   runId: str,
   night: nat,
   persona: str,

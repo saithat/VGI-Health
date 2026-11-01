@@ -39,11 +39,11 @@ export const roleSchema: z.ZodType<L.Role> = z.enum(['physician', 'np', 'rn', 's
 export const unitKindSchema: z.ZodType<L.UnitKind> = z.enum(['kg', 'lb', 'g', 'mg', 'mcg', 'mL', 'mgPerKg', 'units', 'none']);
 const valueKindSchema: z.ZodType<L.ValueKind> = z.union([
   z.enum(['text', 'flag', 'identity', 'cosign']),
-  z.object({ quantity: z.object({ unit: unitKindSchema }) }),
-  z.object({ coded: z.object({ valueSet: str }) }),
-  z.object({ scan: z.object({ target: str }) }),
+  z.looseObject({ quantity: z.looseObject({ unit: unitKindSchema }) }),
+  z.looseObject({ coded: z.looseObject({ valueSet: str }) }),
+  z.looseObject({ scan: z.looseObject({ target: str }) }),
 ]);
-const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom', 'recordFact'], z.object({
+const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom', 'recordFact'], z.looseObject({
   id: str, label: str, kind: valueKindSchema, enteredBy: z.array(roleSchema),
   prefill: z.enum(['never', 'recordConfirm', 'defaultConfirm', 'autoLinked']),
   friction: z.enum(['safety', 'compliance', 'accidental']),
@@ -51,28 +51,28 @@ const elementSpecSchema: z.ZodType<L.ElementSpec> = dropNulls(['linkedFrom', 're
 }));
 const whenSchema: z.ZodType<L.When> = z.union([
   z.enum(['always', 'highAlertMed', 'abnormalResult', 'naloxoneRisk', 'weightBased']),
-  z.object({ orderClass: z.object({ cls: str }) }),
-  z.object({ drugClass: z.object({ cls: str }) }),
-  z.object({ medClass: z.object({ cls: str }) }),
-  z.object({ encounter: z.object({ kind: str }) }),
+  z.looseObject({ orderClass: z.looseObject({ cls: str }) }),
+  z.looseObject({ drugClass: z.looseObject({ cls: str }) }),
+  z.looseObject({ medClass: z.looseObject({ cls: str }) }),
+  z.looseObject({ encounter: z.looseObject({ kind: str }) }),
 ]);
 const reviewModeSchema: z.ZodType<L.ReviewMode> = z.union([
   z.literal('shownOnCommit'),
-  z.object({ shownOrReceipt: z.object({ windowMin: nat, roles: z.array(roleSchema) }) }),
+  z.looseObject({ shownOrReceipt: z.looseObject({ windowMin: nat, roles: z.array(roleSchema) }) }),
 ]);
-export const specSchema: z.ZodType<L.Spec> = z.object({
+export const specSchema: z.ZodType<L.Spec> = z.looseObject({
   version: str,
   elements: z.array(elementSpecSchema),
-  infos: z.array(z.object({ id: str, label: str, version: str })),
-  commits: z.array(z.object({ id: str, label: str, roles: z.array(roleSchema) })),
-  entries: z.array(dropNulls(['allowed'], z.object({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(), allowed: z.array(str).exactOptional() }))),
-  reviews: z.array(dropNulls(['waivedBy'], z.object({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
-  alerts: z.array(z.object({
+  infos: z.array(z.looseObject({ id: str, label: str, version: str })),
+  commits: z.array(z.looseObject({ id: str, label: str, roles: z.array(roleSchema) })),
+  entries: z.array(dropNulls(['allowed'], z.looseObject({ commit: str, element: str, when: whenSchema, perOrderLine: z.boolean(), allowed: z.array(str).exactOptional() }))),
+  reviews: z.array(dropNulls(['waivedBy'], z.looseObject({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
+  alerts: z.array(z.looseObject({
     id: str, label: str,
     cond: z.enum(['drugAllergy', 'interaction', 'duplicateTherapy', 'doseOutOfRange', 'weightInLb', 'careGap', 'highAlertMed']),
     tier: z.enum(['interruptive', 'passive', 'removable']), commit: str, screens: z.array(str),
   })),
-  design: z.object({ maxDepth: nat, minTextSize: nat, stabilityBudget: nat, landmarks: z.array(str), catalog: z.array(str) }),
+  design: z.looseObject({ maxDepth: nat, minTextSize: nat, stabilityBudget: nat, landmarks: z.array(str), catalog: z.array(str) }),
 });
 
 // ---------------------------------------------------------------- programs

@@ -1,0 +1,95 @@
+/** Generated from the checked-in formal sources; never reads simulation holdouts. */
+import { readFileSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { z } from 'zod';
+import { sha256 } from './program.js';
+import type { Program, Spec } from './schema.js';
+import { REPO_ROOT, writeJson } from './util.js';
+
+const read = (file: string) => readFileSync(path.join(REPO_ROOT, file), 'utf8');
+const docstrings = (source: string) => [...source.matchAll(/\/--\s*([\s\S]*?)\s*-\//g)].map((m) => m[1] ?? '');
+export function ruleProfile(): string {
+  const match = /def ruleProfile\s*:\s*RuleProfile\s*:=\s*\.(\w+)/.exec(read('lean/Ehr/Specs/Profile.lean'));
+  if (!match) throw new Error('Cannot identify enforced rule profile');
+  return match[1] ?? '';
+}
+const profileLine = () => ruleProfile() === 'core'
+  ? 'Catalog additions are switched off for this run, except the explicitly retained denyRefill requirements; the hand-written base rules and all safety/design properties remain enforced.'
+  : 'The full catalog profile is enforced for this run.';
+
+function properties(): string {
+  // Include supporting docstrings too: the short property headings alone omit obligations.
+  return ['lean/Ehr/Props/Properties.lean', 'lean/Ehr/Props/Navigation.lean'].map((file) =>
+    `Source: ${file}\n\n${docstrings(read(file)).join('\n\n')}`).join('\n\n');
+}
+function designRules(): string {
+  return read('docs/design/core-model.md').split('**Minimal design rules')[1]?.split('Nothing else')[0] ?? '';
+}
+function specDocs(): { text: string; declaration: string }[] {
+  return ['V1', 'V1_1', 'V2', 'Rules/Federal'].flatMap((name) => {
+    const source = read(`lean/Ehr/Specs/${name}.lean`);
+    return [...source.matchAll(/\/--\s*([\s\S]*?)\s*-\/\s*(?:def|private def)\s+(\w+)([\s\S]*?)(?=\n(?:\/--|def |private def |end |theorem )|$)/g)]
+      .map((m) => ({ text: `${m[1] ?? ''} [lean/Ehr/Specs/${name}.lean:${m[2] ?? ''}]`, declaration: m[3] ?? '' }));
+  });
+}
+
+/** Exact, role/workflow-relevant obligations from the exported active spec. */
+export function formalRuleContext(spec: Spec, program: Program): string {
+  const serialized = JSON.stringify(program);
+  const commits = new Set(spec.commits.filter((c) => c.roles.includes(program.role) && serialized.includes(`"${c.id}"`)).map((c) => c.id));
+  const entries = spec.entries.filter((e) => commits.has(e.commit));
+  const reviews = spec.reviews.filter((e) => commits.has(e.commit));
+  const ids = new Set([...entries.map((e) => e.element), ...reviews.map((e) => e.info), ...commits]);
+  const labels = [...spec.elements, ...spec.infos, ...spec.commits].filter((e) => ids.has(e.id)).map((e) => ({ id: e.id, label: e.label }));
+  const citations = specDocs().filter((d) => [...ids].some((id) => d.declaration.includes(`"${id}"`))).map((d) => d.text);
+  return [`Rule profile: ${ruleProfile()}. ${profileLine()}`, `Role ${program.role}; workflows ${[...new Set(program.screens.map((s) => s.workflow))].join(', ')}.`,
+    'Enforced entries, reviews, alerts, labels and policy citations (the complete active spec is also supplied):',
+    JSON.stringify({ entries, reviews, alerts: spec.alerts.filter((a) => commits.has(a.commit)), labels, budgets: spec.design }), ...citations,
+    'NP pre-op attending co-signature is human-only. A simulated attending may supply it in replay; the designer must never automate it.'].join('\n\n');
+}
+
+export function capabilitiesManual(): string {
+  const examples: string[] = [];
+  const dir = path.join(REPO_ROOT, 'runs/run1-P3/decisions');
+  for (const night of readdirSync(dir).sort()) {
+    const record = z.object({ candidates: z.array(z.object({ candidate: z.object({ summary: z.string(), patch: z.unknown() }), check: z.object({ status: z.string(), property: z.string().nullable(), message: z.string().nullable() }) })) }).parse(JSON.parse(read(`runs/run1-P3/decisions/${night}/P3.json`)));
+    for (const candidate of record.candidates) {
+      const outcome = candidate.check.status === 'pass' ? 'accepted by checker' : 'rejected';
+      if (examples.some((e) => e.startsWith(outcome))) continue;
+      examples.push(`${outcome} (historical full-profile run1-P3, ${night}): ${JSON.stringify(candidate)}`);
+    }
+  }
+  return `# Capabilities manual (generated; pnpm --filter agent manual)\n
+One canonical EHR serves everyone. Each persona's v0 is the canonical with that role's permissions and pre-set view. The overnight agent evolves only that persona's FORK. Vendor releases are merged into every fork and re-certified before next login.\n
+Rule profile: ${ruleProfile()}. ${profileLine()}\n
+## What you can change\n
+Program screens, start navigation, components, labels, grouping, tabs, visibility, density, shortcuts, copies, provenance prefills, receipts, defaults with confirmation, and guarded macros. Use the generated Program/Kind/Macro types as the exact vocabulary (lean/generated/ehr-types.ts). JSON Patch examples: add a copied button with copyOf; change a panel from normal to compact; link an autoLinked field to its source.\n
+Composite source templates are planned through componentDefs and kind.use. This checkout declares componentDefs but has no Kind.use/Program.expand yet, so composite proposals cannot deploy until that formal support lands. Example: componentDefs [{name:"summary",params:["info"],body:[{id:"panel",kind:{panel:{info:"{{info}}"}},label:"Summary",tab:0,visibility:"always",size:"normal",tag:"summary"}]}], then kind {use:{name:"summary",args:[["info","currentMeds"]]}}. The use component id namespaces expanded ids. No nested use in template bodies.\n
+Presentation components may draw an existing UiNode subtree differently, with events only through its mapped callback. They require a sandbox manifest, component bundle hash, type/lint checks and whole-version ARIA/visibility checks before deployment. If that pipeline is unavailable, presentation proposals cannot deploy.\n
+## What you cannot change\n
+Never change Lean interpreter, checker, spec, properties, data/FHIR write layer or backend. No new semantic kinds. Never automate a human-only action, identity check, scan, acknowledgement, commit or cosign (including NP pre-op attending co-signature). No hidden required information and no exceeded budgets. Presentation code cannot fetch, use storage, timers, global DOM, unsafe HTML or imports outside the allowlist.\n
+## Enforced properties 1–13, A1–A4\n
+${properties()}\n
+## Design rules D1–D6\n
+${designRules()}\n
+## Active spec rules, labels and citations\n
+Every prompt includes the persona's formalRuleContext, derived from the active releases/<version>/spec.json, its role and workflow commits; it includes exact entry/review/alert conditions, budgets and source docstrings with citations. Full exported spec follows it. Only active rules are listed; source catalog additions are not imported as obligations under core.\n
+## Certification and deployment\n
+Each candidate is pre-screened. Compatible candidates are merged, then checked as ONE program. The whole merged version passes offline screen visibility, legibility, no-cover and ARIA fidelity checks before real ehr deploy re-checks it. A refusal publishes nothing. The per-user login pointer is replaced atomically after program, components, certificate and build binding are staged. Next login loads the certified fork; release migrations preserve customizations where certification permits. Stability and alert budgets come from spec.design and alert tiers; no budget is relaxed.\n
+Counterexample: {violation:{property,message,counterexample:[Event],screens:[ScreenId]}}. Replay the events to see why the checker refused the design; repair the program, never the rule.\n
+## Recorded examples\n
+${examples.join('\n\n')}\n`;
+}
+export function promptContext(spec: Spec, program: Program) {
+  const manual = capabilitiesManual();
+  const rules = formalRuleContext(spec, program);
+  return { manual, rules, manualHash: sha256(manual), ruleContextHash: sha256(rules), ruleProfile: ruleProfile() };
+}
+
+if (process.argv[1]?.endsWith('/manual.ts')) {
+  const { mkdir, writeFile } = await import('node:fs/promises');
+  await mkdir(path.join(REPO_ROOT, 'docs/agent'), { recursive: true });
+  const manual = capabilitiesManual();
+  await writeFile(path.join(REPO_ROOT, 'docs/agent/CAPABILITIES.md'), manual);
+  await writeJson(path.join(REPO_ROOT, 'docs/agent/CAPABILITIES.sha256.json'), { sha256: sha256(manual), ruleProfile: ruleProfile() });
+}

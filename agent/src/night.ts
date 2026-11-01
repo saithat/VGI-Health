@@ -1,3 +1,4 @@
+import { promptContext } from './manual.js';
 /**
  * The nightly loop for one persona (BRIEF section 9):
  *   1 observe -> 2 hypothesize -> 3 generate 3-5 candidates -> 4 pre-screen
@@ -19,7 +20,7 @@ import { choosePrompt, nightlyPrompt, repairPrompt, type HistoryItem, type Perso
 import type { Release } from './releases.js';
 import {
   violationOf, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
-  type JsonPatchOp, type LlmCallRef, type Metrics, type Program, type ReplayDay, type Savings, type ScreenCheckResult, type TrainSummary, type Verdict,
+  type JsonPatchOp, type LlmCallRef, type Metrics, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
 } from './schema.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
@@ -236,9 +237,10 @@ export function userResponse(deps: LoopDeps, night: number, persona: string, mov
 
 export const callId = (night: number, persona: string, step: string): string => `night-${pad2(night)}/${persona}/${step}`;
 
-export function emptyRecord(deps: LoopDeps, input: { night: number; persona: PersonaView; specVersion: string; current: Program }, evidence: TrainSummary): DecisionRecord {
+export function emptyRecord(deps: LoopDeps, input: { night: number; persona: PersonaView; specVersion: string; current: Program; spec: Spec }, evidence: TrainSummary): DecisionRecord {
   return {
     schemaVersion: 1,
+    context: (({ manualHash, ruleContextHash, ruleProfile }) => ({ manualHash, ruleContextHash, ruleProfile }))(promptContext(input.spec, input.current)),
     runId: deps.runId,
     night: input.night,
     persona: input.persona.id,
@@ -319,7 +321,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
 
   // 1. Observe (train days only).
   const evidence = summarizeTrain(persona.id, current, input.train, input.programs);
-  const rec = emptyRecord(deps, { night, persona, specVersion, current }, evidence);
+  const rec = emptyRecord(deps, { night, persona, specVersion, current, spec: input.release.spec }, evidence);
   const calls: LlmCallRef[] = [];
   let noted = 0;
   const note = () => {
@@ -382,7 +384,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   try {
     const choice = await deps.agent.chooseCandidates({
       callId: callId(night, persona.id, 'choose-0'),
-      parts: choosePrompt({ night, persona, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }),
+      parts: choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }),
     });
     calls.push(choice.call);
     const byId = new Map(eligible.map((e) => [e.candidate.id, e.candidate]));

@@ -4,6 +4,7 @@
  * spec, and outcome-only decision history). Nothing here can reach a
  * validation or test DayResult; those live behind `Holdout` in night.ts.
  */
+import { promptContext } from './manual.js';
 import type { CheckResult, Component, EvaluatedCandidate, JsonPatchOp, PersonaParams, Program, Spec, TrainSummary } from './schema.js';
 
 export interface PromptParts {
@@ -78,6 +79,10 @@ function header(title: string, persona: PersonaView, program: Program, spec: Spe
     '',
     '## Persona behavior parameters',
     json(persona.params),
+    '',
+    '## Capabilities manual and enforced formal rules',
+    promptContext(spec, program).manual,
+    promptContext(spec, program).rules,
     '',
     '## Hospital spec (exported from Lean)',
     json(spec),
@@ -157,6 +162,8 @@ export interface ChooseContext {
   night: number;
   persona: PersonaView;
   stabilityBudget: number;
+  spec: Spec;
+  program: Program;
   hypothesis: string;
   candidates: readonly EvaluatedCandidate[];
 }
@@ -176,7 +183,7 @@ export function choosePrompt(c: ChooseContext): PromptParts {
   return {
     system: SYSTEM_PROMPT,
     prompt: [
-      `# Night ${c.night}: choose the change for persona ${c.persona.id}`,
+      header(`Night ${c.night}: choose the change`, c.persona, c.program, c.spec),
       `Hypothesis: ${c.hypothesis}`,
       '',
       '## Candidates after pre-screening',

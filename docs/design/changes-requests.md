@@ -1970,3 +1970,9 @@ a particular failure. P5 also reports an incompatible dose unit and fallback to
 an accepted value; clinical-choice fidelity needs review even when a task completes.
 P4's complete day-1 schedule does not discharge universal pre-op completability.
 See `lean/Ehr/Check/sim-smoke-report.json`. Sim changes remain with its lane.
+
+## Overnight all-persona smoke prerequisite (lane/run, 2026-10-31)
+
+Native core-profile `ehr check --spec releases/v1/spec.json --program releases/v1/personas/P4.json --prev releases/v1/personas/P4.json --canonical releases/v1/personas/P4.json` still rejects P4 with `completable`: `commit signOrders: no field the user can reach for required element consentVerified`. Counterexample follows home → w1Rooming → w1Orders → w1Verify → w1Sign → signOrders. Owner now requires NP pre-op orders to have a **human-only attending co-signature**, supplied by a simulated attending, never automated by the overnight agent. Please land the corresponding spec/canonical/simulator fix and regenerated release exports on main; lane/run will not change protected Lean directories or weaken the universal completion property. This blocks a certified all-five-persona smoke and the full run.
+
+Composite prerequisite: main currently has `ComponentDef`/`Program.componentDefs`, but no `Kind.use` or `Program.expand` in Core. Please supply finite structural expansion, source certificate binding and checker/render/sim integration; the agent must not invent an unchecked semantic kind.
