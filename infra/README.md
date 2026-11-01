@@ -9,11 +9,13 @@ infra/
     wait-healthy.mjs        block until /healthcheck is ok (and the app answers)
     setup.mjs               project, ClientApplication, persona Practitioners + users -> .env
     load.mjs                upload fixtures/synthea/*.json, each file exactly once
+    seed-world.mjs          world day -> real FHIR worklists, reference verification + counts
     lib.mjs                 .env merge, identifier systems, helpers
   synthea/
     generate.sh             pinned Synthea jar -> fixtures/raw/ (gitignored)
     keep/*.json             Synthea "keep" modules for the targeted cohorts
     trim.mjs                fixtures/raw/ -> fixtures/synthea/*.json + index.json (committed)
+  valuesets/                ICD-10-CM, CPT references, LOINC, CVX; sources/licenses in README.md
 ```
 
 ## Commands
@@ -22,11 +24,12 @@ From the repo root:
 
 | Command | What it does |
 |---|---|
-| `make install` | lean build, `pnpm install`, then `infra-up`, `setup`, `load`. Safe to re-run. |
+| `make install` | lean build, `pnpm install`, then `infra-up`, `setup`, `load`, `seed`. Safe to re-run. |
 | `make infra-up` | `docker compose up -d` and wait for the server healthcheck and the app. First boot takes about 3 minutes while Medplum migrates and seeds its database. |
 | `make infra-wait` | Wait for the healthcheck only (for example, after a reboot). |
 | `make setup` | `node infra/scripts/setup.mjs`: create anything missing and write `.env`. |
 | `make load` | `node infra/scripts/load.mjs`: upload fixtures that are not loaded yet (about 55 s for all 174). |
+| `make seed` | Seed world 1, day 1 into Medplum, verify clinical references, and query persona worklist counts. |
 | `make infra-down` | Stop the containers and keep the data. |
 | `make infra-reset` | Stop the containers and **delete all Medplum data** (`docker compose down -v`). |
 | `make synthea` | Regenerate raw Synthea output and re-trim it (Java 17+; about 3 min plus a 200 MB download the first time). Not part of install. |
@@ -169,6 +172,100 @@ Flag definitions:
 - Files that already have a marker are skipped, so nothing is uploaded twice. As a second guard, a file whose Synthea Patient identifier already exists on the server is not uploaded either.
 - If a committed fixture changes after it was loaded, the loader warns and does not re-upload. To reload, run `make infra-reset && make infra-up setup load`.
 - `LOAD_CONCURRENCY` (default 3), `--only <file>`, `--dry-run`.
+
+## World worklists (`scripts/seed-world.mjs`)
+
+`make seed` authenticates using `@medplum/core` and the client credentials in this worktree's `.env`.
+Run `make setup load` first on a new stack. In another worktree sharing this stack, reuse the
+existing `.env` before setup: setup without an existing persona password resets the shared logins.
+No credentials are committed or printed by the seeder.
+
+```sh
+make seed                                           # runs/world/1, day 1
+make seed SEED_ARGS='--day 2'                        # chosen simulated day
+node infra/scripts/seed-world.mjs --world runs/world/1 --day 1
+node infra/scripts/seed-world.mjs --day 1 --dry-run   # authenticate/plan, no writes
+node infra/scripts/seed-world.mjs --day 1 --verify-only
+make seed SEED_ARGS='--day 1 --reset-day'             # remove/rebuild just this seed day
+node --test infra/scripts/seed-world.test.mjs
+```
+
+“Today” means the simulation date from `manifest.json`, **not the computer's date**:
+day 1 is **2026-11-02**, with the world's Pacific `-08:00` offset and per-persona shift starts.
+Filter app worklists by that date (and/or the exact day tag); `--day` seeds an independent daily
+snapshot, rather than advancing or discharging the previously seeded day's encounters.
+
+The script reads `schedules/day-NN/P*.json` and both adjacent `state-day-*.json` snapshots:
+
+| Worklist | FHIR resources and links |
+|---|---|
+| P1 clinic | Booked `Appointment`s with Patient, Practitioner P1, PractitionerRole, clinic, and start/end times. |
+| P1 in-basket | Requested `Task`s owned by P1, focused on final `DiagnosticReport`s whose `result` links to the world's `Observation`s. Abnormal items are urgent. Normal result-review tasks and the unhandled in-basket backlog are retained too. |
+| P1 refills | Requested `Task`s owned by P1, focused on standalone active `MedicationRequest`s promoted from the world's contained current prescriptions. The seeder does not approve/deny requests. |
+| P2 ED | In-progress `Encounter`s with class `EMER`, P2 participants, individual ED room `Location`s, ESI 1–5 priority, arrived/triaged history, triage-time extension, and linked triage weight `Observation`s. Original kg/lb values and UCUM units are preserved. |
+| P3 census/MAR | Shift-start `IMP` encounters with P3 participants and ward → room → bed `Location`s. Active inpatient `MedicationRequest`s retain dose, RxNorm ingredient, route, repeat frequency, due events, PRN flag, indication, and high-alert tag. Prior-state regimens preserve patients discharged later that day. No doses are recorded as administered. |
+| P4 pediatrics | Booked appointments plus the world's actual dated weights, linked to the real child Patient. |
+| P5 surgery | Clinic appointments; active OR `ServiceRequest`s and `Procedure.status=preparation` (FHIR R4 has no `planned` Procedure status); ED consultation ServiceRequest/Task with P2 requester, P5 performer/owner, ED encounter and supporting results; requested rounding/discharge Tasks. |
+| Persona roles | Six active `PractitionerRole`s, including RN2, linked to setup's real Practitioners, organization, specialty, and Locations. Setup owns the Practitioners; reset never removes them. |
+
+Day 1 is P5's **clinic day**, so its nine pending OR cases keep their actual future dates;
+none is falsely scheduled for today. Known OR times are preserved; date-only bookings remain
+date-only instead of inventing a time. Shift-start census excludes later ED admissions, as the
+world's P3 schedule does. Scheduled clinic work includes add-ons; no-show patients do not get
+booked work items. Clinical choices remain pending for the app to perform.
+
+Every created resource carries both:
+
+- `identifier`: `https://vgi-health.example/fhir/sid/world|day1-<stable key>`;
+- `meta.tag`: system `https://vgi-health.example/fhir/sid/world`, code `day1`.
+
+Worklist tags use `https://vgi-health.example/fhir/CodeSystem/worklist`, such as
+`P1-inbasket`, `P1-refills`, `P2-ed`, `P3-census`, `P3-mar`, `P4-appointments`, and `P5-or`.
+High-alert medication tags use `https://vgi-health.example/fhir/CodeSystem/vgi-infra|high-alert`.
+ESI priorities use `https://vgi-health.example/fhir/CodeSystem/vgi-infra/esi`, with codes `1`–`5`.
+The explicit triage-time extension is `https://vgi-health.example/fhir/StructureDefinition/triage-time`.
+
+Patients are resolved by their Synthea identifiers; world UUIDs are never treated as Medplum ids.
+References become server-assigned ids through dependency-ordered FHIR transactions. Medplum 5.2
+limits conditional-create transactions to **eight entries**, so seeding uses resumable atomic groups
+of eight. Conditional creates plus existing-identifier checks prevent duplicates, and reruns leave
+completed Tasks and app edits untouched. If a seed definition changes, use `--reset-day` to rebuild.
+
+`--reset-day` searches only the listed seeder resource types with the **exact day tag**, checks
+each also has a matching `dayN-` identifier, and deletes those resources in a transaction before
+reseeding. It never deletes Patients, setup Practitioners/users, fixture resources, or another day.
+Different `--world` directories share the day namespace: reset the chosen day when replacing its
+source world. A dry run reports the proposed reset and new resources without deleting anything.
+
+After writes, the script verifies the clinical reference graph and issues actual Medplum searches
+by practitioner/owner/performer, status, class, and day tag. Worklist-tag queries also retain the
+day filter (repeated `_tag` parameters mean AND). Example direct queries after loading `.env`:
+
+```sh
+set -a; . ./.env; set +a
+curl -sG -u "$MEDPLUM_CLIENT_ID:$MEDPLUM_CLIENT_SECRET" http://localhost:8103/fhir/R4/Appointment \
+  --data-urlencode "actor=$VGI_PRACTITIONER_P1" --data-urlencode 'status=booked' \
+  --data-urlencode '_tag=https://vgi-health.example/fhir/sid/world|day1' --data-urlencode '_summary=count'
+curl -sG -u "$MEDPLUM_CLIENT_ID:$MEDPLUM_CLIENT_SECRET" http://localhost:8103/fhir/R4/Task \
+  --data-urlencode "owner=$VGI_PRACTITIONER_P1" --data-urlencode 'status=requested' \
+  --data-urlencode '_tag=https://vgi-health.example/fhir/sid/world|day1'
+```
+
+Verified against the running :8103 stack: 308 seeded resources, a second run with zero creates,
+and a scoped reset/reseed preserving fixture counts (174 Patients, 174 load markers, 2,548
+Conditions, 3,407 Immunizations, 1,035 DocumentReferences) and all seven existing Practitioners.
+The five persona username/password logins were also checked against their real FHIR worklists.
+
+```text
+P1: appointments=20 results=5 abnormal=1 refills=19
+P2: ed=22 weights=22
+P3: census=7 mar=33 highAlert=13; PRN orders=13
+P4: appointments=22 weights=22
+P5: appointments=15 orPlanned=9 orToday=0 consults=1 rounding=2
+```
+
+Reference value sets for the app/spec are in [`valuesets/`](valuesets/README.md). They are
+checked-in JSON and do not require a terminology service at runtime.
 
 ## Gotchas
 

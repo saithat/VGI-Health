@@ -167,6 +167,9 @@ The owner writes no code. Agents build, and the owner reviews and steers.
 
 **Realism references:** OpenEMR (structure and density); ONC §170.315(g)(3) usability test tasks (task scripts); general production-EHR conventions. Do not copy any vendor's proprietary screens. If possible, have a clinician sanity-check the canonical UI and specs.
 
+### A working EHR on the live backend (owner decision, Oct 31)
+A clinician can be handed the canonical EHR and do real workflows against the local Medplum backend: notes, orders (meds, labs, imaging), diagnoses (ICD-10-CM), CPT / level of service, admit and discharge (inpatient encounters, beds, discharge prescriptions), MAR administration with barcode scans and cosigns, immunizations, results acknowledgment and patient messages, refills, consents, and review receipts. Live mode is the default: sign in as a persona; worklists come from Medplum (seeded from the world generator). On each commit, the app's data module writes the FHIR records in one transaction (a trusted, integration-tested mapping). Lean still decides every screen, guard, and alert. Offline replay remains for the dashboard and no-Docker demos. Only the CPT codes the workflows need ship, with our own labels (CPT is AMA-licensed); ICD-10-CM is public domain.
+
 ### The canonical is the certified baseline (owner decision, Oct 31)
 Every persona projection of the canonical, in every release (v1, v1.1, v2), must pass the FULL checker before anything else: properties 1–12, alerts A1–A4, and design rules D1–D6 (including D5 sane navigation). The canonical is what every clinician starts from on Day 1 and what a failed migration falls back to. Personalization only builds up from it. It keeps realistic friction for the agent to optimize, but it never violates a rule.
 

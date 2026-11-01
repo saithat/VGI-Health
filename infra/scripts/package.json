@@ -7,7 +7,9 @@
   "scripts": {
     "wait": "node wait-healthy.mjs",
     "setup": "node setup.mjs",
-    "load": "node load.mjs"
+    "load": "node load.mjs",
+    "seed": "node seed-world.mjs",
+    "test": "node --test seed-world.test.mjs"
   },
   "dependencies": {
     "@medplum/core": "5.2.13"

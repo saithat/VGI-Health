@@ -1,0 +1,356 @@
+{
+  "name": "VGI CPT workflow references with project-authored labels",
+  "system": "http://www.ama-assn.org/go/cpt",
+  "version": "VGI selection 2026-10-31",
+  "license": "CPT is copyright American Medical Association. These short labels are independently authored by VGI and are not AMA descriptors. This file does not grant an AMA license; use of the CPT code set may require a separate AMA license, including use in software. Not a complete or authoritative billing catalog.",
+  "source": {
+    "codeReferences": [
+      "https://www.cms.gov/medicare/payment/fee-schedules/physician",
+      "https://www.ama-assn.org/practice-management/cpt/cpt-code-set-basics-and-resources"
+    ],
+    "licenseUrl": "https://www.ama-assn.org/practice-management/cpt/cpt-licensing-frequently-asked-questions-faqs",
+    "labels": "VGI project authors; independently written"
+  },
+  "codes": [
+    {
+      "code": "10060",
+      "label": "Simple abscess drainage",
+      "category": "workflow"
+    },
+    {
+      "code": "12001",
+      "label": "Short superficial wound closure",
+      "category": "workflow"
+    },
+    {
+      "code": "44140",
+      "label": "Partial colon removal",
+      "category": "workflow"
+    },
+    {
+      "code": "44204",
+      "label": "Laparoscopic partial colon removal",
+      "category": "workflow"
+    },
+    {
+      "code": "44950",
+      "label": "Open appendix removal",
+      "category": "workflow"
+    },
+    {
+      "code": "44970",
+      "label": "Laparoscopic appendix removal",
+      "category": "workflow"
+    },
+    {
+      "code": "45378",
+      "label": "Diagnostic colon examination",
+      "category": "workflow"
+    },
+    {
+      "code": "45380",
+      "label": "Colon examination with tissue sampling",
+      "category": "workflow"
+    },
+    {
+      "code": "47562",
+      "label": "Laparoscopic gallbladder removal",
+      "category": "workflow"
+    },
+    {
+      "code": "47563",
+      "label": "Laparoscopic gallbladder removal with duct imaging",
+      "category": "workflow"
+    },
+    {
+      "code": "47600",
+      "label": "Open gallbladder removal",
+      "category": "workflow"
+    },
+    {
+      "code": "49591",
+      "label": "Small initial abdominal hernia repair, reducible",
+      "category": "workflow"
+    },
+    {
+      "code": "49592",
+      "label": "Small initial abdominal hernia repair, incarcerated",
+      "category": "workflow"
+    },
+    {
+      "code": "49650",
+      "label": "Laparoscopic groin hernia repair",
+      "category": "workflow"
+    },
+    {
+      "code": "71046",
+      "label": "Two-view chest radiograph",
+      "category": "workflow"
+    },
+    {
+      "code": "72148",
+      "label": "Lumbar MRI without contrast",
+      "category": "workflow"
+    },
+    {
+      "code": "74177",
+      "label": "Contrast CT of abdomen and pelvis",
+      "category": "workflow"
+    },
+    {
+      "code": "76705",
+      "label": "Focused abdominal ultrasound",
+      "category": "workflow"
+    },
+    {
+      "code": "80048",
+      "label": "Basic chemistry panel",
+      "category": "workflow"
+    },
+    {
+      "code": "80053",
+      "label": "Comprehensive chemistry panel",
+      "category": "workflow"
+    },
+    {
+      "code": "80061",
+      "label": "Lipid panel",
+      "category": "workflow"
+    },
+    {
+      "code": "81003",
+      "label": "Automated urine screen",
+      "category": "workflow"
+    },
+    {
+      "code": "83036",
+      "label": "A1c measurement",
+      "category": "workflow"
+    },
+    {
+      "code": "84443",
+      "label": "Thyroid signal test",
+      "category": "workflow"
+    },
+    {
+      "code": "85025",
+      "label": "Blood count with differential",
+      "category": "workflow"
+    },
+    {
+      "code": "85610",
+      "label": "Prothrombin time test",
+      "category": "workflow"
+    },
+    {
+      "code": "87040",
+      "label": "Blood culture",
+      "category": "workflow"
+    },
+    {
+      "code": "87880",
+      "label": "Rapid group A strep test",
+      "category": "workflow"
+    },
+    {
+      "code": "90460",
+      "label": "Pediatric vaccine counseling and administration",
+      "category": "workflow"
+    },
+    {
+      "code": "90471",
+      "label": "Initial vaccine injection",
+      "category": "workflow"
+    },
+    {
+      "code": "90686",
+      "label": "Four-strain injected influenza vaccine",
+      "category": "workflow"
+    },
+    {
+      "code": "93000",
+      "label": "Office ECG with interpretation",
+      "category": "workflow"
+    },
+    {
+      "code": "97161",
+      "label": "PT evaluation, low complexity",
+      "category": "workflow"
+    },
+    {
+      "code": "99202",
+      "label": "New office visit, level 2",
+      "category": "outpatient"
+    },
+    {
+      "code": "99203",
+      "label": "New office visit, level 3",
+      "category": "outpatient"
+    },
+    {
+      "code": "99204",
+      "label": "New office visit, level 4",
+      "category": "outpatient"
+    },
+    {
+      "code": "99205",
+      "label": "New office visit, level 5",
+      "category": "outpatient"
+    },
+    {
+      "code": "99211",
+      "label": "Return office visit, level 1",
+      "category": "outpatient"
+    },
+    {
+      "code": "99212",
+      "label": "Return office visit, level 2",
+      "category": "outpatient"
+    },
+    {
+      "code": "99213",
+      "label": "Return office visit, level 3",
+      "category": "outpatient"
+    },
+    {
+      "code": "99214",
+      "label": "Return office visit, level 4",
+      "category": "outpatient"
+    },
+    {
+      "code": "99215",
+      "label": "Return office visit, level 5",
+      "category": "outpatient"
+    },
+    {
+      "code": "99221",
+      "label": "Hospital admission, level 1",
+      "category": "inpatient"
+    },
+    {
+      "code": "99222",
+      "label": "Hospital admission, level 2",
+      "category": "inpatient"
+    },
+    {
+      "code": "99223",
+      "label": "Hospital admission, level 3",
+      "category": "inpatient"
+    },
+    {
+      "code": "99231",
+      "label": "Hospital follow-up, level 1",
+      "category": "inpatient"
+    },
+    {
+      "code": "99232",
+      "label": "Hospital follow-up, level 2",
+      "category": "inpatient"
+    },
+    {
+      "code": "99233",
+      "label": "Hospital follow-up, level 3",
+      "category": "inpatient"
+    },
+    {
+      "code": "99234",
+      "label": "Same-day hospital stay, level 1",
+      "category": "workflow"
+    },
+    {
+      "code": "99235",
+      "label": "Same-day hospital stay, level 2",
+      "category": "workflow"
+    },
+    {
+      "code": "99236",
+      "label": "Same-day hospital stay, level 3",
+      "category": "workflow"
+    },
+    {
+      "code": "99238",
+      "label": "Hospital discharge, up to 30 minutes",
+      "category": "workflow"
+    },
+    {
+      "code": "99239",
+      "label": "Hospital discharge, over 30 minutes",
+      "category": "workflow"
+    },
+    {
+      "code": "99281",
+      "label": "ED visit, level 1",
+      "category": "emergency"
+    },
+    {
+      "code": "99282",
+      "label": "ED visit, level 2",
+      "category": "emergency"
+    },
+    {
+      "code": "99283",
+      "label": "ED visit, level 3",
+      "category": "emergency"
+    },
+    {
+      "code": "99284",
+      "label": "ED visit, level 4",
+      "category": "emergency"
+    },
+    {
+      "code": "99285",
+      "label": "ED visit, level 5",
+      "category": "emergency"
+    },
+    {
+      "code": "99291",
+      "label": "Critical care, first time block",
+      "category": "workflow"
+    },
+    {
+      "code": "99292",
+      "label": "Critical care, added time block",
+      "category": "workflow"
+    },
+    {
+      "code": "99381",
+      "label": "Infant preventive visit, new",
+      "category": "workflow"
+    },
+    {
+      "code": "99382",
+      "label": "Toddler preventive visit, new",
+      "category": "workflow"
+    },
+    {
+      "code": "99383",
+      "label": "School-age preventive visit, new",
+      "category": "workflow"
+    },
+    {
+      "code": "99384",
+      "label": "Adolescent preventive visit, new",
+      "category": "workflow"
+    },
+    {
+      "code": "99391",
+      "label": "Infant preventive visit, return",
+      "category": "workflow"
+    },
+    {
+      "code": "99392",
+      "label": "Toddler preventive visit, return",
+      "category": "workflow"
+    },
+    {
+      "code": "99393",
+      "label": "School-age preventive visit, return",
+      "category": "workflow"
+    },
+    {
+      "code": "99394",
+      "label": "Adolescent preventive visit, return",
+      "category": "workflow"
+    }
+  ]
+}
