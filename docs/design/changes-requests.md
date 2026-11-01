@@ -657,3 +657,11 @@ The exact minimal owned-runner patch is prepared at
 /tmp/wasm-equivalence-memory.patch. It keeps the original seed, case generation,
 case/event counts and full byte comparisons; only native batching and output
 case-index bookkeeping change.
+
+Final verification passed with the full original seed/corpus: 4,096 cases,
+144,807 step and 144,807 view byte comparisons, plus 32 init comparisons.
+The temporary parallel driver is /tmp/lean-parallel-equivalence.mjs; its workers
+run no Lake commands, and the report asserts disjoint full coverage and identical
+WASM hashes. For CI runtime, shard the canonical cases after one sequential Lake
+setup; preserve every event and the same byte comparisons. Renderer/FHIR also
+passes 174 Synthea bundles and 694 canonical page variants with current assets.
