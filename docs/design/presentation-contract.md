@@ -99,3 +99,5 @@ Growth measurements use the existing tenths-of-kg/cm display precision. Gram wei
 Structured medication review uses the shared painter's existing explicit-direction grammar, retaining original source values in native tooltips and accessible labels. Captured fields, units and events are unchanged. Note `Text` and `Title` fields stay verbatim; a recognized converter-provenance suffix uses smaller secondary type with every original character retained. Both structured and legacy note cards retain supplied extra metadata.
 
 ISO display timestamps retain the supplied clock, fractional seconds and offset alongside their calendar date. They do not shift through the browser's timezone. Empty info keeps its clinical label and a named notice; original actions remain inline when there is no matching data row.
+
+The row-action extension above is implemented; the original adjacent-button pattern remains supported. Empty-state wording may use the shared painter's contextual message for that info ID instead of the generic `No records on file`. Neither refinement introduces a browser-owned action or changes the payload schema.
