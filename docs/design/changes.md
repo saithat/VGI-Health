@@ -408,3 +408,23 @@ The proof implementation and matching DRAFT Statements entry are minimal
 compatibility edits explicitly requested by the orchestrator. No finished proof
 uses sorry, admit, new axioms or native_decide. Adapter, checker route coverage
 and production content adoption remain owning-lane work below.
+
+## Rules catalog: patient-predicate (59 rules, M)
+
+`ClinicalPredicate` is a closed AST: age bands, named service/payer/setting,
+homelessness, pregnancy, capacity and consent facts, named risk/test categories,
+confirmed captured-code equality on a specific slot, and and/or/not. Record
+facts retain artifact/version provenance checked against the unique current
+binding. Missing, ambiguous or stale facts evaluate to unknown. Kleene logic
+preserves unknown through negation; **the explicit fixed unknown policy applies
+a requirement unless known false**. Thus missing age never bypasses a minor rule.
+`When.clinical` is shared by whole-episode and per-line entries and reviews;
+`TemporalReq.when` supports conditional event obligations. `AlertCond.clinical`
+uses the same evaluation, with distinct true/unknown keys bound to the clinical
+snapshot and captures so changed evidence can be acknowledged again.
+
+Core Tiny examples cover age 17/18, composition, stale provenance, unknowns,
+captured equality, actual entry applicability and alert keys. GenTS exports the
+AST, source records and examples. No property or theorem statement changed in
+this group. Adapter completeness and truth remain trusted; content must choose
+source codes, applicability and lawful refusal paths explicitly.

@@ -127,6 +127,51 @@ structure InfoSpec where
   version : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- Closed patient/episode dimensions. Values retain their source coding. -/
+inductive ClinicalField
+  | service | payer | setting | homelessness | pregnancy | capacity | consent
+  deriving DecidableEq, Repr, Inhabited
+
+/-- A current-version coded clinical fact with explicit record provenance. -/
+structure ClinicalObservation where
+  code : String
+  artifactKey : String
+  artifact : String
+  version : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+structure ClinicalAge where
+  years : Nat
+  source : ClinicalObservation
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Named facts, not overloaded encounter-kind strings. Absence means unknown. -/
+structure ClinicalFacts where
+  age? : Option ClinicalAge := none
+  service? : Option ClinicalObservation := none
+  payer? : Option ClinicalObservation := none
+  setting? : Option ClinicalObservation := none
+  homelessness? : Option ClinicalObservation := none
+  pregnancy? : Option ClinicalObservation := none
+  capacity? : Option ClinicalObservation := none
+  consent? : Option ClinicalObservation := none
+  risks : List (String × ClinicalObservation) := []
+  testResults : List (String × ClinicalObservation) := []
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Closed applicability language. Evaluation is three-valued; unknown
+conservatively applies a requirement and fires an explicit unknown alert key. -/
+inductive ClinicalPredicate
+  | ageBetween (minYears maxYears : Nat)
+  | factEquals (field : ClinicalField) (code : String)
+  | riskEquals (risk code : String)
+  | testEquals (test code : String)
+  | capturedCode (element : ElementId) (slot : Nat) (code : String)
+  | and (left right : ClinicalPredicate)
+  | or (left right : ClinicalPredicate)
+  | not (predicate : ClinicalPredicate)
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A named clinical or documentation event (completion and filing are distinct). -/
 abbrev EventId := String
 
@@ -147,6 +192,7 @@ The deadline is an explicit offset from the anchor, in the same metric.
 Missing evidence always blocks; passing a deadline also exposes overdue status. -/
 structure TemporalReq where
   id : String
+  when? : Option ClinicalPredicate := none
   subject : EventRef
   anchor : EventRef
   metric : TimeMetric := .minutes
@@ -227,6 +273,7 @@ inductive When
   an opioid, and the patient takes a benzodiazepine or the line's daily MME is
   90 or more (an unknown dose, frequency, or MME factor counts as a risk). -/
   | naloxoneRisk
+  | clinical (predicate : ClinicalPredicate)
   deriving DecidableEq, Repr, Inhabited
 
 /-- An element that must be captured before a commit. -/
@@ -271,6 +318,7 @@ inductive AlertCond
   | weightInLb
   | careGap
   | highAlertMed
+  | clinical (predicate : ClinicalPredicate)
   deriving DecidableEq, Repr, Inhabited
 
 /-- Alert tier.
@@ -522,6 +570,7 @@ structure Facts where
   artifactBindings? : Option (List ArtifactBinding) := none
   eventEvidence? : Option (List EventEvidence) := none
   calendars? : Option (List BusinessCalendar) := none
+  clinical? : Option ClinicalFacts := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/

@@ -552,3 +552,15 @@ wrong recipients, holds, unknown jurisdiction, partial consent and cache replay.
 Backend enforces tokens, delivery, physical export and encryption; UI eligibility
 is not proof of successful transmission. Compose qualified capabilities with
 consent, never replace either with a checkbox or an ackResult receipt.
+
+### Patient-predicate adoption (59-rule group)
+
+Use `When.clinical` / `AlertCond.clinical` with `ClinicalPredicate`; do not encode
+patient properties in encounterKind. Render/world must populate Facts.clinical
+named source records and artifactBindings. Age is explicitly sourced, not guessed
+from identity.ageYears's default. Unknowns apply requirements and fire unknown
+alerts. Content: use actual coded source values and dedicated exception/refusal
+routes. Check: cover true/false/unknown branches, code domains, slot-specific
+captured dependencies (including unconfirmed captures) and all refusal routes.
+Agent/app validators must round-trip recursive and/or/not, optional clinical
+facts and conditional temporal requirements. Tiny: CoreTests.PatientPredicate.

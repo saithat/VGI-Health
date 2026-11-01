@@ -272,9 +272,64 @@ def timeDistance (facts : Facts) (metric : TimeMetric) (a b : Int) : Option Int 
       let n := (cal.workingDays.eraseDups.filter (fun d => lo < d && d ≤ hi)).length
       some (if a ≤ b then Int.ofNat n else -Int.ofNat n)
 
+/-- Accept only a uniquely bound, current-version source for a clinical fact. -/
+def clinicalSourceValid (facts : Facts) (o : ClinicalObservation) : Bool :=
+  match (facts.artifactBindings?.getD []).filter (·.key == o.artifactKey) with
+  | [b] => !o.code.isEmpty && !o.artifact.isEmpty && b.artifact == o.artifact && b.version == o.version
+  | _ => false
+
+def clinicalCode (facts : Facts) (o : Option ClinicalObservation) : Option String := do
+  let o ← o
+  if clinicalSourceValid facts o then some o.code else none
+
+def ClinicalFacts.field (f : ClinicalFacts) : ClinicalField → Option ClinicalObservation
+  | .service => f.service? | .payer => f.payer? | .setting => f.setting?
+  | .homelessness => f.homelessness? | .pregnancy => f.pregnancy?
+  | .capacity => f.capacity? | .consent => f.consent?
+
+def namedClinicalCode (facts : Facts) (xs : List (String × ClinicalObservation))
+    (name : String) : Option String :=
+  match xs.filter (·.1 == name) with
+  | [(_, o)] => clinicalCode facts (some o)
+  | _ => none
+
+/-- Kleene three-valued logic: false AND unknown is false; true OR unknown
+is true; NOT unknown remains unknown. No absent fact becomes false. -/
+def clinicalEval (facts : Facts) (s : State) : ClinicalPredicate → Option Bool
+  | .ageBetween lo hi => do
+    let age ← facts.clinical?.bind (·.age?)
+    if clinicalSourceValid facts age.source then some (lo ≤ age.years && age.years ≤ hi) else none
+  | .factEquals field code =>
+    (clinicalCode facts (facts.clinical?.bind (·.field field))).map (· == code)
+  | .riskEquals name code =>
+    (namedClinicalCode facts (facts.clinical?.map (·.risks) |>.getD []) name).map (· == code)
+  | .testEquals name code =>
+    (namedClinicalCode facts (facts.clinical?.map (·.testResults) |>.getD []) name).map (· == code)
+  | .capturedCode e slot code =>
+    match s.captured.filter (fun x => x.element == e && x.slot == slot) with
+    | [x] => if !x.confirmed then none else
+      match x.value with | .code c => some (c == code) | _ => none
+    | _ => none
+  | .and l r =>
+    match clinicalEval facts s l, clinicalEval facts s r with
+    | some false, _ | _, some false => some false
+    | some true, some true => some true
+    | _, _ => none
+  | .or l r =>
+    match clinicalEval facts s l, clinicalEval facts s r with
+    | some true, _ | _, some true => some true
+    | some false, some false => some false
+    | _, _ => none
+  | .not p => (clinicalEval facts s p).map (!·)
+
+/-- Fixed explicit unknown policy: requirements apply unless known false. -/
+def clinicalApplies (facts : Facts) (s : State) (p : ClinicalPredicate) : Bool :=
+  clinicalEval facts s p != some false
+
 /-- Evaluate one obligation. A missing/invalid subject is overdue only after
 its explicit deadline; an already completed valid event stays met thereafter. -/
 def temporalStatus (facts : Facts) (s : State) (rq : TemporalReq) : ObligationStatus :=
+  if rq.when?.any (fun p => !clinicalApplies facts s p) then .met else
   match eventTime facts s rq.anchor true, epochNow facts s with
   | some anchor, some now =>
     let overdue : Bool := match timeDistance facts rq.metric anchor now with

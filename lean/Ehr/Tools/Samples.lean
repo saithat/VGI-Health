@@ -45,6 +45,9 @@ def samplePage : Ehr.Render.PageNode :=
 
 /-- All samples: data formats, plus interpreter states, views, and outputs. -/
 def all : List Sample := [
+  mk "minorPredicate" "ClinicalPredicate" Ehr.CoreTests.PatientPredicate.minor,
+  mk "minorFacts" "Facts" Ehr.CoreTests.PatientPredicate.minorFacts,
+  mk "minorEntry" "EntryReq" Ehr.CoreTests.PatientPredicate.minorEntry,
   mk "temporalRequirement" "TemporalReq" Ehr.CoreTests.EventWindow.requirement,
   mk "temporalFacts" "Facts" Ehr.CoreTests.EventWindow.context,
   mk "temporalSpec" "Spec" Ehr.CoreTests.EventWindow.tinySpec,

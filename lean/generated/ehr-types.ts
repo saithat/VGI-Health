@@ -164,6 +164,65 @@ export interface InfoSpec {
 }
 
 /**
+ * Closed patient/episode dimensions. Values retain their source coding.
+ */
+export type ClinicalField =
+  | "service"
+  | "payer"
+  | "setting"
+  | "homelessness"
+  | "pregnancy"
+  | "capacity"
+  | "consent";
+/** All values of `ClinicalField`. */
+export const ClinicalFieldValues = ["service", "payer", "setting", "homelessness", "pregnancy", "capacity", "consent"] as const;
+
+/**
+ * A current-version coded clinical fact with explicit record provenance.
+ */
+export interface ClinicalObservation {
+  code: string;
+  artifactKey: string;
+  artifact: string;
+  version: number;
+}
+
+export interface ClinicalAge {
+  years: number;
+  source: ClinicalObservation;
+}
+
+/**
+ * Named facts, not overloaded encounter-kind strings. Absence means unknown.
+ */
+export interface ClinicalFacts {
+  age?: ClinicalAge;
+  service?: ClinicalObservation;
+  payer?: ClinicalObservation;
+  setting?: ClinicalObservation;
+  homelessness?: ClinicalObservation;
+  pregnancy?: ClinicalObservation;
+  capacity?: ClinicalObservation;
+  consent?: ClinicalObservation;
+  risks: [string, ClinicalObservation][];
+  testResults: [string, ClinicalObservation][];
+}
+
+/**
+ * Closed applicability language. Evaluation is three-valued; unknown
+ * conservatively applies a requirement and fires an explicit unknown alert key.
+ */
+export type ClinicalPredicate =
+  | { ageBetween: { minYears: number; maxYears: number } }
+  | { factEquals: { field: ClinicalField; code: string } }
+  | { riskEquals: { risk: string; code: string } }
+  | { testEquals: { test: string; code: string } }
+  | { capturedCode: { element: ElementId; slot: number; code: string } }
+  | { and: { left: ClinicalPredicate; right: ClinicalPredicate } }
+  | { or: { left: ClinicalPredicate; right: ClinicalPredicate } }
+  | { not: { predicate: ClinicalPredicate } };
+
+/**
  * A named clinical or documentation event (completion and filing are distinct).
  */
 export type EventId = string;
@@ -190,6 +249,7 @@ export type TimeMetric =
  */
 export interface TemporalReq {
   id: string;
+  when?: ClinicalPredicate;
   subject: EventRef;
   anchor: EventRef;
   metric: TimeMetric;
@@ -284,7 +344,8 @@ export type When =
   /** Some order drug has a nonzero weight-based dose range. */
   | "weightBased"
   /** Naloxone should be offered (CA B&P Code §741): some order line's drug is an opioid, and the patient takes a benzodiazepine or the line's daily MME is 90 or more (an unknown dose, frequency, or MME factor counts as a risk). */
-  | "naloxoneRisk";
+  | "naloxoneRisk"
+  | { clinical: { predicate: ClinicalPredicate } };
 
 /**
  * An element that must be captured before a commit.
@@ -339,9 +400,8 @@ export type AlertCond =
   | "doseOutOfRange"
   | "weightInLb"
   | "careGap"
-  | "highAlertMed";
-/** All values of `AlertCond`. */
-export const AlertCondValues = ["drugAllergy", "interaction", "duplicateTherapy", "doseOutOfRange", "weightInLb", "careGap", "highAlertMed"] as const;
+  | "highAlertMed"
+  | { clinical: { predicate: ClinicalPredicate } };
 
 /**
  * Alert tier.
@@ -671,6 +731,7 @@ export interface Facts {
   artifactBindings?: ArtifactBinding[];
   eventEvidence?: EventEvidence[];
   calendars?: BusinessCalendar[];
+  clinical?: ClinicalFacts;
 }
 
 /**

@@ -57,6 +57,7 @@ def AlertSpec.targetsScreen (a : AlertSpec) (sc : Screen) : Bool :=
 
 /-- A `When` condition holds now. -/
 def whenHolds (facts : Facts) (s : State) : When → Bool
+  | .clinical p => clinicalApplies facts s p
   | .always => true
   | .orderClass cls | .drugClass cls => (orderLines s).any (fun p => inClass p.2 cls)
   | .medClass cls =>
@@ -73,6 +74,7 @@ def whenHolds (facts : Facts) (s : State) : When → Bool
 per-order-line requirements. -/
 def lineMatches (facts : Facts) (s : State) (w : When) (slot : Nat) (d : String) : Bool :=
   match w with
+  | .clinical p => clinicalApplies facts s p
   | .always => true
   | .orderClass cls | .drugClass cls => inClass d cls
   | .medClass cls =>

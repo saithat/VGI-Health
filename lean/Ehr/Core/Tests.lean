@@ -316,4 +316,35 @@ def calendarFacts : Facts :=
 
 end EventWindow
 
+namespace PatientPredicate
+open EventWindow
+
+def minor : ClinicalPredicate := .ageBetween 0 17
+def ageSource : ClinicalObservation :=
+  { code := "birthDate", artifactKey := "assessment", artifact := "a", version := 2 }
+def minorFacts : Facts := { context with clinical? := some { age? := some { years := 17, source := ageSource }, pregnancy? := some { ageSource with code := "negative" } } }
+#guard clinicalEval minorFacts atOrder minor == some true
+#guard clinicalEval { minorFacts with clinical? := some { age? := some { years := 18, source := ageSource } } } atOrder minor == some false
+#guard clinicalEval facts atOrder (.not minor) == none
+#guard whenHolds facts atOrder (.clinical minor)
+#guard lineMatches facts atOrder (.clinical minor) 0 "metformin"
+#guard clinicalEval minorFacts atOrder (.and minor (.factEquals .pregnancy "negative")) == some true
+#guard clinicalEval minorFacts atOrder (.or minor (.riskEquals "suicide" "high")) == some true
+#guard clinicalEval minorFacts atOrder (.and (.not minor) (.testEquals "HIV" "positive")) == some false
+#guard clinicalEval { minorFacts with artifactBindings? := some [] } atOrder minor == none
+#guard !(alertKeys minorFacts atOrder (.clinical (.not minor))).isEmpty == false
+#guard !(alertKeys facts atOrder (.clinical minor)).isEmpty
+#guard alertKeys facts atOrder (.clinical minor) != alertKeys minorFacts atOrder (.clinical minor)
+-- Unknown minor status keeps the entry required; known adult status skips it.
+def minorEntry : EntryReq := { commit := "signOrders", element := "patientIdReentry", when := .clinical minor }
+#guard !entryMet spec facts user atOrder minorEntry
+#guard entryMet spec { minorFacts with clinical? := some { age? := some { years := 18, source := ageSource } } } user atOrder minorEntry
+#guard clinicalEval facts { atOrder with captured :=
+  [{ element := "eligibility", slot := 2, value := .code "yes", byHuman := true, confirmed := true }] }
+  (.capturedCode "eligibility" 2 "yes") == some true
+#guard clinicalEval facts atOrder (.capturedCode "eligibility" 2 "yes") == none
+#guard roundTrips (.clinical (.and minor (.not (.factEquals .pregnancy "positive"))) : When)
+#guard roundTrips minorFacts
+end PatientPredicate
+
 end Ehr.CoreTests

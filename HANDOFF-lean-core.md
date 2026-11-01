@@ -163,3 +163,8 @@ owning-lane temporal adoption requests are in changes-requests.md.
 
 Remaining in this continuation: patient-predicate, value-validation,
 order-expiry-clock, structured-display; final TS verification and WASM rebuild.
+
+Event-time-window db1c6bb: lake build/check/comparator and generated TS sample
+check pass. Patient-predicate implementation/build complete; same proof statements
+retained, with explicit conservative unknown policy. Remaining implementation:
+value-validation, order-expiry-clock, structured-display, final WASM assets.

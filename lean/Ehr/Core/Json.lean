@@ -20,6 +20,7 @@ namespace Ehr
 
 deriving instance Lean.ToJson, Lean.FromJson for
   Role, UnitKind, PrefillPolicy, Friction, ValueKind, ElementSpec, InfoSpec,
+  ClinicalField, ClinicalObservation, ClinicalAge, ClinicalFacts, ClinicalPredicate,
   EventRef, TimeMetric, TemporalReq, ArtifactBinding, EventEvidence, BusinessCalendar,
   ObligationStatus, ObligationView, CommitSpec, When, EntryReq, ReviewMode, ReviewReq, AlertCond, Tier, AlertSpec,
   DesignRules, Spec
