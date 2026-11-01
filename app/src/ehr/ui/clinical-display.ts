@@ -31,11 +31,12 @@ const intervals: Record<string, string> = {
   "three times a day": "TID",
   "four times a day": "QID",
 };
+const structuredSig = /^(\d+(?:\.\d+)?)(?:\s+([A-Za-z]+))?,\s*(\d+)x per (\d+(?:\.\d+)?)\s*(d|h|wk|mo)$/i;
 
 /** Recognized Synthea quantity/frequency grammar is rephrased, never rescheduled. */
 export function formatSig(raw: string, countUnit = ""): string {
   const text = cleanClinicalText(raw);
-  const structured = /^(\d+(?:\.\d+)?)(?:\s+([A-Za-z]+))?,\s*(\d+)x per (\d+(?:\.\d+)?)\s*(d|h|wk|mo)$/i.exec(text);
+  const structured = structuredSig.exec(text);
   if (structured) {
     const [, amount, suppliedUnit, frequency, period, unit] = structured;
     const daily: Record<string, string> = { "1": "daily", "2": "BID", "3": "TID", "4": "QID" };
@@ -53,11 +54,12 @@ function medicationParts(name: string, sig: string): { caption: string; directio
   const form = /\boral (tablet|capsule)\b/i.exec(medication)?.[1]?.toLowerCase();
   const rawSig = cleanClinicalText(sig);
   const hasRoute = /\b(?:PO|IV|IM|SC|SQ|SL|oral|topical|intravenous|intramuscular|subcutaneous)\b/i.test(rawSig);
-  const addOral = Boolean(form && !hasRoute && rawSig);
+  const recognizedDirections = structuredSig.test(rawSig) || Object.hasOwn(intervals, rawSig.toLowerCase());
+  const addOral = Boolean(form && !hasRoute && recognizedDirections);
   const caption = addOral ? medication.replace(/\boral (?=tablet|capsule)/i, "") : medication;
   let directions = formatSig(rawSig, form === "tablet" ? "tab" : form === "capsule" ? "cap" : "");
   if (addOral) {
-    const counted = /^(\d+(?:\.\d+)? (?:tab|cap)) (.+)$/.exec(directions);
+    const counted = /^(\d+(?:\.\d+)? [A-Za-z]+) (.+)$/.exec(directions);
     directions = counted ? `${counted[1]} PO ${counted[2]}` : `PO ${directions}`;
   }
   return { caption, directions };

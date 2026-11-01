@@ -24,6 +24,8 @@ describe("deterministic clinical display", () => {
       .toBe("lisinopril 10 mg tablet: 1 tab PO daily");
     expect(formatMedicationLine("Amoxicillin 250 MG Oral Capsule", "2, 3x per 1 d"))
       .toBe("Amoxicillin 250 mg capsule: 2 cap PO TID");
+    expect(formatMedicationLine("lisinopril 10 MG Oral Tablet", "10 mg, 1x per 1 d"))
+      .toBe("lisinopril 10 mg tablet: 10 mg PO daily");
   });
   it("preserves explicit routes, unknown units, timing periods and unfamiliar directions", () => {
     expect(formatMedicationLine("lisinopril 10 MG Oral Tablet", "1 tab IV daily"))
@@ -35,6 +37,10 @@ describe("deterministic clinical display", () => {
     expect(formatSig("Use according to the taper schedule")).toBe("Use according to the taper schedule");
     expect(formatMedicationLine("Insulin 100 units/mL", "5 units SC before meals"))
       .toBe("Insulin 100 units/mL: 5 units SC before meals");
+    expect(formatMedicationLine("lisinopril 10 MG Oral Tablet", "Give 1 tablet via PEG tube daily"))
+      .toBe("lisinopril 10 mg oral tablet: Give 1 tablet via PEG tube daily");
+    expect(formatMedicationLine("lisinopril 10 MG Oral Tablet", "Use according to the taper schedule"))
+      .toBe("lisinopril 10 mg oral tablet: Use according to the taper schedule");
   });
   it("does not equate absent allergy records with explicit negative allergy findings", () => {
     expect(allergyDisplay("No allergy records on file")).toBe("Allergies not on file");
