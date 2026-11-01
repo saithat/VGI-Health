@@ -264,6 +264,13 @@
       "status": "recorded",
       "topic": "PCP/attending source provenance",
       "location": "docs/design/changes-requests.md#presentation-handoff--banner-provider-provenance-1-nov-realism-review"
+    },
+    {
+      "area": "shared shell",
+      "status": "recorded",
+      "topic": "Patient context during long-note scrolling",
+      "location": "docs/design/changes-requests.md#presentation-handoff--patient-context-during-long-note-scrolling-1-nov-realism-review",
+      "capture": "app/shots/realism/present/notes-import.png"
     }
   ]
 }
