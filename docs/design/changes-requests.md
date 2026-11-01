@@ -1815,3 +1815,43 @@ preserves `displays?` exactly in Spec.Extends. Check's OldObligations and T8 now
 include old temporal, validator/default, expiry, display and signing-label
 contracts. Continuous phase-wide display coverage is still separate from this
 per-commit guarantee. No old obligation or safety rule has been weakened.
+
+
+## CHECK-CORE-2026-10-31: certification and day-1 smoke blockers
+
+The owner-selected core profile is active. No base rule, role permission,
+property or simulator implementation was changed. Native certification accepts
+P1/P2/P3/P5 in v1, v1.1 and v2, but not P4. `consentVerified.enteredBy` is
+`[surgeon, physician]`; `preOpExtraEntries` requires that input for `signOrders`
+in pre-op episodes. Completable quantifies over those episodes for NP too.
+`Check/DomainObstruction.lean` proves this impossibility. Content alone cannot
+supply an authorized NP input. Owner/core must resolve the task/episode domain
+or role model without broadening the safety permission to make a check pass.
+The shared `canonical.json` templates also retain RN-only inputs while declaring
+physician role; a single-role deployable baseline needs an explicit template /
+deployment convention that preserves the nursing persona source.
+
+Simulator smoke commands used the real native binary, `--spec v1` (also v1.1,
+v2), `--program releases/v1/personas/P1.json`,
+`--persona runs/world/1/personas/P1.json`,
+`--schedule runs/world/1/day-1-P1.json --world runs/world/1 --seed 7`, replacing
+release/persona for each of 15 runs. Completed/incomplete counts:
+
+| Release | P1 | P2 | P3 | P4 | P5 |
+|---|---:|---:|---:|---:|---:|
+| v1 | 36/6 | 22/0 | 38/0 | 22/0 | 14/4 |
+| v1.1 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
+| v2 | 39/3 | 22/0 | 38/0 | 22/0 | 18/0 |
+
+All three releases leave P1 refill-denial tasks `d01-P1-W7-027`, `028`, `033`
+incomplete: core has no `denyRefill` commit, and the simulator reports
+"no commit in spec ... for workflow Ehr.Workflow.W7". The v1-only incomplete
+W1 tasks are P1 `006`, `010`, `015` and P5 `008`, `010`, `016`, `018`; complaints
+include absent `orderKind`/`orderCode` (introduced in v1.1). P1 `010` makes one
+navigation click before giving up; the other listed W1 tasks make none.
+v1.1/v2 complete those W1 tasks. The smoke report preserves exact task choices
+and complaints; these observations are not a claim that every complaint caused
+a particular failure. P5 also reports an incompatible dose unit and fallback to
+an accepted value; clinical-choice fidelity needs review even when a task completes.
+P4's complete day-1 schedule does not discharge universal pre-op completability.
+See `lean/Ehr/Check/sim-smoke-report.json`. Sim changes remain with its lane.

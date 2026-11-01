@@ -43,10 +43,11 @@ conservatively by `additionalCompletionIssue`; these are not proofs of semantic
 falsity. Capture-dependent per-line clinical conditions additionally need an
 archived-line repair construction.
 
-Parked seed proofs: all eight new legal regressions (17–24) have mutation-specific
-negative proof implementations. The original seed-13 CURES completeness claim
-still has an actual cross-workflow escape; its existing negative theorem uses the
-separate pre-op review defect. Seed 16 still needs its intended stranded-refills
+Parked seed proofs: the eight catalog regressions (17–24) retain mutation-specific
+negative proof implementations, but their restructured modules are not claimed
+finished. The old W1-only seed 13 had a cross-workflow CURES receipt escape; the
+active seed now removes every CURES route and is rejected natively. Its kernel
+proof still needs repair. Seed 16 still needs its intended stranded-refills
 semantic completion obstruction. Do not label either intended proof finished.
 Section 10 semantic renderer: **D1, D2, D3, D4, D6 and UiScreen T10/T11 are
 proven** in `lean/Ehr/Render/UiProofs.lean`, with satisfiable examples (including
@@ -59,8 +60,8 @@ for read-only sidebar and safety review info. The actual component forest has
 an exact shown-item equivalence for every input, including malformed graphs.
 All 18 new main semantic theorems are registered in the render Comparator audit.
 D5 is intentionally **not** a universal renderer theorem: `NavSane spec prog`
-is decidable and ready for checker integration. P1 currently fails the 12-entry
-per-group limit; content/checker integration is requested, with no weakened rule.
+is decidable and integrated with the checker. Persona navigation tests pass under
+both rule profiles; the twelve-entry limit and all other D5 clauses are unchanged.
 No unfinished render proof remains.
 
 D5: `accepted_navigation` proves unique labels, twelve-group/item limits and
