@@ -41,6 +41,15 @@ export function DisplayValue({ value }: { value: string }) {
 /** Only explicit supplied status text receives a tone; no timing or workflow inference. */
 export function statusTone(value: string): ClinicalTone | undefined {
   const status = value.trim().toLowerCase();
+  if (/^(signed|reviewed|complete|completed)(?:$|\s)/.test(status))
+    return "green";
+  if (
+    /^(unsigned|pending|needs review|needs confirmation|needs action|missing details|awaiting confirmation)(?:$|\s)/.test(
+      status,
+    )
+  )
+    return "yellow";
+  if (/^in progress(?:$|\s)/.test(status)) return "blue";
   if (/^overdue(?:$|\s)/.test(status)) return "red";
   if (/^due(?:$|\s)/.test(status)) return "blue";
   if (/^given(?:$|\s)/.test(status)) return "green";
@@ -55,7 +64,10 @@ export function statusTone(value: string): ClinicalTone | undefined {
   return undefined;
 }
 export function severityTone(severity: string): ClinicalTone {
-  // Legacy wires supply interruption tiers here. Placement never implies severity.
+  // The legacy wire supplies tiers here. Color is a presentation cue; it never
+  // changes clinical severity text, modality, acknowledgment or enabled state.
+  if (severity === "interruptive") return "red";
+  if (severity === "removable") return "yellow";
   if (/^(severe|critical|error|high|danger)$/.test(severity.toLowerCase()))
     return "red";
   if (/^(warning|caution|moderate)$/.test(severity.toLowerCase()))

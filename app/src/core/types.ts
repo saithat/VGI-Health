@@ -253,6 +253,7 @@ export const stateSchema = ctor({
   commits: z.array(id),
   expanded: z.array(id),
   tabSel: z.array(z.tuple([id, nat])),
+  searchQueries: z.array(z.tuple([id, z.string()])).optional(),
   popup: z.tuple([id, z.string()]).nullable(),
   currentSlot: nat,
   clock: nat,

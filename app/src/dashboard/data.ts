@@ -1,4 +1,8 @@
-import { complexityReleaseLabels, historicalRunIds } from "../../../scripts/historical-releases.mjs";
+import { checkResultSchema, jsonPatchSchema } from "../../../agent/src/schema";
+import {
+  complexityReleaseLabels,
+  historicalRunIds,
+} from "../../../scripts/historical-releases.mjs";
 import { z } from "zod";
 import { complexitySchema, type ComplexityData } from "./complexity-data";
 import {
@@ -24,7 +28,7 @@ export const manifestSchema = z.object({
   personas: z.array(z.string()),
   warning: z.string().nullable().optional(),
   buildBindingRequired: z.boolean().optional(),
-  measurementProtocol: z.object({name:z.string()}).optional(),
+  measurementProtocol: z.object({ name: z.string() }).optional(),
   status: z.string().optional(),
   blockers: z.array(z.string()).optional(),
   ehr: z.object({ mode: z.enum(["real", "fake"]) }),
@@ -70,14 +74,17 @@ export interface RunData {
   records: DecisionRecord[];
   days: DayResult[];
   baselines?: DayResult[];
-  noAgentDays?:DayResult[];
+  noAgentDays?: DayResult[];
   programs: Map<string, Program>;
   sources?: Map<string, Program>;
   certs: Map<string, z.infer<typeof certificateSchema>>;
   replay: Replay | null;
   complexity: ComplexityData | null;
+  files?: string[];
 }
 export type ReadJson = (path: string) => Promise<unknown>;
+
+const runRequests = new Map<string, Promise<unknown>>();
 
 /** The only dashboard network boundary: same-origin recorded JSON under /runs/. */
 export const readRunJson: ReadJson = async (path) => {
@@ -86,9 +93,24 @@ export const readRunJson: ReadJson = async (path) => {
     path.split("/").includes("..")
   )
     throw new Error("Invalid recorded-run path");
-  const response = await fetch(path);
-  if (!response.ok) throw new Error(`Cannot load ${path} (${response.status})`);
-  return response.json();
+  let pending = runRequests.get(path);
+  if (!pending) {
+    const revalidate = /\/(?:index|default|summary)\.json$/.test(path);
+    pending = (async () => {
+      const response = await fetch(path);
+      if (!response.ok)
+        throw new Error(`Cannot load ${path} (${response.status})`);
+      return response.json();
+    })();
+    runRequests.set(path, pending);
+    void pending.then(
+      () => {
+        if (revalidate) runRequests.delete(path);
+      },
+      () => runRequests.delete(path),
+    );
+  }
+  return pending;
 };
 export async function loadRun(
   id: string,
@@ -116,7 +138,9 @@ export async function loadRun(
   const run: RunData = {
     manifest,
     records: [],
-    days: [], baselines: [], noAgentDays:[],
+    days: [],
+    baselines: [],
+    noAgentDays: [],
     programs: new Map(),
     sources: new Map(),
     certs: new Map(),
@@ -139,12 +163,17 @@ export async function loadRun(
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))
         run.programs.set(file, programSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.source\.json$/.test(file))
-        run.sources?.set(file.replace(/\.source\.json$/, '.json'), programSchema.parse(await get(file)));
+        run.sources?.set(
+          file.replace(/\.source\.json$/, ".json"),
+          programSchema.parse(await get(file)),
+        );
       else if (/^certs\/[\w-]+\/v\d+\.json$/.test(file))
         run.certs.set(file, certificateSchema.parse(await get(file)));
       else if (file === "complexity.json") {
         const raw = complexitySchema.parse(await get(file));
-        const complexity = historicalRunIds.has(id) ? complexityReleaseLabels(raw) : raw;
+        const complexity = historicalRunIds.has(id)
+          ? complexityReleaseLabels(raw)
+          : raw;
         if (complexity.runId !== id)
           throw new Error("Complexity belongs to another run");
         run.complexity = complexity;
@@ -157,6 +186,101 @@ export async function loadRun(
   );
   run.days.sort((a, b) => a.day - b.day);
   return run;
+}
+/** Summary contains measured outcomes, never program trees, patient contexts or traces. */
+export async function loadRunSummary(
+  id: string,
+  read: ReadJson = readRunJson,
+): Promise<RunData> {
+  const data = z
+    .object({
+      manifest: manifestSchema,
+      records: z.array(decisionRecordSchema),
+      days: z.array(dayResultSchema),
+      baselines: z.array(dayResultSchema).default([]),
+      noAgentDays: z.array(dayResultSchema).default([]),
+      complexity: complexitySchema.nullable(),
+      files: z.array(z.string()),
+      certificates: z.record(z.string(), certificateSchema).default({}),
+    })
+    .parse(await read(`/runs/${id}/summary.json`));
+  if (
+    data.manifest.runId !== id ||
+    data.records.some(
+      (r) => r.runId !== id || !data.manifest.personas.includes(r.persona),
+    )
+  )
+    throw new Error("Summary belongs to another run");
+  data.records.sort(
+    (a, b) => a.night - b.night || a.persona.localeCompare(b.persona),
+  );
+  data.days.sort((a, b) => a.day - b.day);
+  return {
+    ...data,
+    complexity:
+      data.complexity && historicalRunIds.has(id)
+        ? complexityReleaseLabels(data.complexity)
+        : data.complexity,
+    programs: new Map(),
+    sources: new Map(),
+    certs: new Map(Object.entries(data.certificates)),
+    replay: null,
+  };
+}
+/** Hydrate only this persona when opening a decision or replay. */
+export async function loadRunDetails(
+  run: RunData,
+  persona: string,
+  read: ReadJson = readRunJson,
+): Promise<RunData> {
+  if (!run.files) return run;
+  const detail = {
+    ...run,
+    programs: new Map(run.programs),
+    sources: new Map(run.sources),
+    certs: new Map(run.certs),
+    days: [...run.days],
+  };
+  await Promise.all(
+    run.files.map(async (file) => {
+      if (file === "replay.json")
+        detail.replay = replaySchema.parse(
+          await read(`/runs/${run.manifest.runId}/${file}`),
+        );
+      else if (new RegExp(`^programs/${persona}/v\\d+\\.json$`).test(file))
+        detail.programs.set(
+          file,
+          programSchema.parse(
+            await read(`/runs/${run.manifest.runId}/${file}`),
+          ),
+        );
+      else if (
+        new RegExp(`^programs/${persona}/v\\d+\\.source\\.json$`).test(file)
+      )
+        detail.sources.set(
+          file.replace(/\.source\.json$/, ".json"),
+          programSchema.parse(
+            await read(`/runs/${run.manifest.runId}/${file}`),
+          ),
+        );
+      else if (new RegExp(`^certs/${persona}/v\\d+\\.json$`).test(file))
+        detail.certs.set(
+          file,
+          certificateSchema.parse(
+            await read(`/runs/${run.manifest.runId}/${file}`),
+          ),
+        );
+      else if (new RegExp(`^days/day-\\d+/${persona}\\.json$`).test(file)) {
+        const day = dayResultSchema.parse(
+          await read(`/runs/${run.manifest.runId}/${file}`),
+        );
+        detail.days = detail.days
+          .filter((d) => d.persona !== day.persona || d.day !== day.day)
+          .concat(day);
+      }
+    }),
+  );
+  return detail;
 }
 export function programAt(
   run: RunData,
@@ -177,4 +301,46 @@ export function testPoints(run: RunData, persona: string) {
       r.measured.test ? [{ ...r.measured.test, version: r.versionAfter }] : [],
     )
     .sort((a, b) => a.day - b.day);
+}
+
+const breakCapabilitySchema = z.object({
+  available: z.boolean(),
+  backend: z.string().nullable(),
+  reason: z.string().nullable(),
+});
+export async function breakCapability() {
+  const response = await fetch("/__dev/try-to-break-it");
+  if (!response.ok)
+    throw new Error("Live attempts require the local Vite server.");
+  return breakCapabilitySchema.parse(await response.json());
+}
+const liveBreakSchema = z.object({
+  request: z.string(),
+  persona: z.string(),
+  agentSays: z.string(),
+  verdict: z.enum(["pass", "fail", "invalid-patch"]),
+  property: z.string().nullable(),
+  message: z.string().nullable(),
+  counterexample: checkResultSchema.shape.counterexample,
+  candidate: z
+    .object({ summary: z.string(), patch: jsonPatchSchema })
+    .nullable(),
+});
+export async function submitBreakAttempt(
+  persona: string,
+  request: string,
+  run: string,
+) {
+  const response = await fetch("/__dev/try-to-break-it", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ persona, request, run }),
+  });
+  const body: unknown = await response.json();
+  if (
+    !response.ok ||
+    (typeof body === "object" && body !== null && "error" in body)
+  )
+    throw new Error(z.object({ error: z.string() }).parse(body).error);
+  return liveBreakSchema.parse(body);
 }

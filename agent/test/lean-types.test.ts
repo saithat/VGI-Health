@@ -46,6 +46,22 @@ describe('validators vs Lean-written samples', () => {
     same(specSchema.parse(tinySpec), tinySpec);
   });
 
+  it('preserves the controlled-drug applicability alias and allowed refill values', () => {
+    const spec = { ...tinySpec, entries: [{
+      commit: 'signOrders', element: 'refills', when: { drugClass: { cls: 'scheduleII' } },
+      perOrderLine: true, allowed: ['0'],
+    }] };
+    same(specSchema.parse(spec), spec);
+  });
+
+  it('loads every committed real release and canonical program', () => {
+    for (const version of ['v1', 'v2', 'v3']) {
+      const base = new URL(`../../releases/${version}/`, import.meta.url);
+      expect(() => specSchema.parse(JSON.parse(readFileSync(new URL('spec.json', base), 'utf8')))).not.toThrow();
+      expect(() => programSchema.parse(JSON.parse(readFileSync(new URL('canonical.json', base), 'utf8')))).not.toThrow();
+    }
+  });
+
   it('patched programs keep Lean encoding: null options from an LLM are dropped, not emitted', () => {
     const screen = tinyProgram.screens[0];
     if (!screen) throw new Error('no screen');

@@ -1,0 +1,348 @@
+{
+  "source": {
+    "revision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+    "mainRevision": "251d9a0029c2d0fa1aec0116668668e6c474af25",
+    "leanHash": "412471a4f4bc61c71e4205af41e8c3905bb9cacffa2aaed6b2c9393a7c061ef1",
+    "builtAt": "2026-11-01T09:51:47.474Z"
+  },
+  "build": {
+    "elapsedSeconds": 7.68,
+    "maxRssKiB": 767216,
+    "revision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+    "mainRevision": "251d9a0029c2d0fa1aec0116668668e6c474af25",
+    "leanHash": "412471a4f4bc61c71e4205af41e8c3905bb9cacffa2aaed6b2c9393a7c061ef1",
+    "builtAt": "2026-11-01T09:51:47.474Z"
+  },
+  "checks": {
+    "lean": [
+      "default build",
+      "lake check",
+      "Comparator",
+      "CheckerComparator",
+      "CompletionComparator",
+      "D1\u2013D6",
+      "make wasm-check"
+    ],
+    "certification": {
+      "personas": 15,
+      "accepted": 15,
+      "bad": 18,
+      "rejected": 18,
+      "binarySha256": "f592f45aec7aa04f8125bf82834156cd16c6695fd6af8ca6cd4053af59913b78"
+    },
+    "world2": {
+      "schedules": 50,
+      "tasks": 1284,
+      "completed": 1284
+    },
+    "run1P3": {
+      "tasks": 424,
+      "events": 14658,
+      "baselineReplays": 3,
+      "baselineEvents": 137,
+      "mismatches": 0
+    },
+    "appUnitTests": 189,
+    "agentTests": 84,
+    "liveMapperTests": 6,
+    "appLint": "passed",
+    "appTypecheck": "passed",
+    "agentLint": "passed",
+    "agentTypecheck": "passed",
+    "desktop": {
+      "passed": 35,
+      "skipped": 5
+    },
+    "narrow": {
+      "passed": 20,
+      "skipped": 3
+    },
+    "directCanonicalAriaRoles": 5,
+    "renderedTextContrast": {
+      "surfaces": 7,
+      "viewports": 2,
+      "passed": 14
+    },
+    "buttonAudit": {
+      "counts": {
+        "works": 2666,
+        "disabled-with-reason": 114,
+        "dead": 0,
+        "error": 0
+      },
+      "personas": [
+        "P1",
+        "P2",
+        "P3",
+        "P4",
+        "P5",
+        "RN2"
+      ],
+      "scope": "Bounded observed-state sample, at most 48 configurations per persona; not exhaustive state exploration.",
+      "sampledConfigurations": [
+        {
+          "persona": "P1",
+          "sampled": 25,
+          "remaining": 0
+        },
+        {
+          "persona": "P2",
+          "sampled": 14,
+          "remaining": 0
+        },
+        {
+          "persona": "P3",
+          "sampled": 48,
+          "remaining": 8
+        },
+        {
+          "persona": "P4",
+          "sampled": 23,
+          "remaining": 0
+        },
+        {
+          "persona": "P5",
+          "sampled": 39,
+          "remaining": 0
+        },
+        {
+          "persona": "RN2",
+          "sampled": 48,
+          "remaining": 8
+        }
+      ],
+      "regression": "passed",
+      "realAgentDemo": {
+        "backend": "claude",
+        "model": "claude-opus-5-5",
+        "verdict": "fail",
+        "property": "reviewsBeforeCommit",
+        "counterexampleReplay": "passed"
+      }
+    },
+    "performance": {
+      "measurements": [
+        {
+          "host": "127.0.0.1",
+          "label": "cold dashboard",
+          "bytes": 263238,
+          "requests": 18,
+          "interactiveMs": 854,
+          "wasmRequests": 0
+        },
+        {
+          "host": "127.0.0.1",
+          "label": "EHR \u2192 dashboard",
+          "bytes": 901,
+          "requests": 9,
+          "interactiveMs": 214,
+          "wasmRequests": 0
+        },
+        {
+          "host": "127.0.0.1",
+          "label": "dashboard \u2192 EHR",
+          "bytes": 1052,
+          "requests": 4,
+          "interactiveMs": 121,
+          "wasmRequests": 0
+        },
+        {
+          "host": "vgi-audit.example.ts.net",
+          "label": "cold dashboard",
+          "bytes": 288518,
+          "requests": 18,
+          "interactiveMs": 220,
+          "wasmRequests": 0
+        },
+        {
+          "host": "vgi-audit.example.ts.net",
+          "label": "EHR \u2192 dashboard",
+          "bytes": 901,
+          "requests": 9,
+          "interactiveMs": 209,
+          "wasmRequests": 0
+        },
+        {
+          "host": "vgi-audit.example.ts.net",
+          "label": "dashboard \u2192 EHR",
+          "bytes": 1052,
+          "requests": 4,
+          "interactiveMs": 118,
+          "wasmRequests": 0
+        }
+      ],
+      "scope": "One Chromium worker, localhost and a synthetic non-localhost Host resolving to loopback; not a slow-link simulation."
+    },
+    "baselineComplexity": "All 21 release/workflow metric payloads and all fixed task payloads unchanged."
+  },
+  "screenshots": [
+    {
+      "file": "app/shots/realism/shell/before/browse-narrow.png",
+      "sourceRevision": "75282d1",
+      "width": 390,
+      "height": 844,
+      "sha256": "91ae94d731f04397d6478c6cfe2e38861645d617306b97e4c69ecbc27b7037dd"
+    },
+    {
+      "file": "app/shots/realism/shell/before/browse.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a7e704f991c0fa25b281cf05f6942daab6ddf484bcee18be7ac21776eb78c470"
+    },
+    {
+      "file": "app/shots/realism/shell/before/chart-notes.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "187eb09763923e054fa2f5d3c47beaf8626a6eaa800ed8f2ae3bd800ac70b960"
+    },
+    {
+      "file": "app/shots/realism/shell/before/chart-search.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2101398e0e15fd4ed2d79d40bfdd41a6e7f87bec2ad1bb935e0838569a901af9"
+    },
+    {
+      "file": "app/shots/realism/shell/before/dashboard.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "c3faf70ceec89fff5c159156be1a900cd871eeb6bf9e0fc9a84e698e05fbbe3f"
+    },
+    {
+      "file": "app/shots/realism/shell/before/home-medications.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "ba8106f5132702470e94fb7caf710612edb938b53cd7d6c26003d1109cb7866c"
+    },
+    {
+      "file": "app/shots/realism/shell/before/interruptive-alert.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "844771434333d590322aef51e9610884a6c7b2b3760a02ffd37ee0dc6ccb9f1c"
+    },
+    {
+      "file": "app/shots/realism/shell/before/w1Orders.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "648b47e1b3c8abb6d63f74ab0051046d1e13cf03d6ba11a742313f6429e4b90e"
+    },
+    {
+      "file": "app/shots/realism/shell/before/w3Triage.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "73dffd8adad02191d5c49b95b5e61741afbd6af693cfa129eda8399c402be959"
+    },
+    {
+      "file": "app/shots/realism/shell/before/w4Mar.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "d250160919cc95fa13e8060b1f02b4cb0c6105613f5a0956b1a3194b5b9a50c8"
+    },
+    {
+      "file": "app/shots/realism/shell/before/w5Growth.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "48f798992f386ca9c1f01bcc0b4c6b4a357f009850ab157d1a54fd39b2bb34fc"
+    },
+    {
+      "file": "app/shots/realism/shell/before/w6PreOp.png",
+      "sourceRevision": "75282d1",
+      "width": 1440,
+      "height": 900,
+      "sha256": "db07ab2ac8b8084e13fc29cf9b378fa4ad088e6509cc7715bc55bd4a590a7174"
+    },
+    {
+      "file": "app/shots/realism/shell/after/browse-narrow.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 390,
+      "height": 844,
+      "sha256": "980de9e4d0067d55b26341147ea85015daaca21f6eea21fe5c61a028391f5434"
+    },
+    {
+      "file": "app/shots/realism/shell/after/browse.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "82dc503b5193fbe348c54d41246c6c3ea655f61d5382f67c7cfe3bf4ce3f83ef"
+    },
+    {
+      "file": "app/shots/realism/shell/after/chart-notes.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "52da0cdd3f1577312939e1e349ce20cb8c1d838bcbfe7a0999dfd60763427ebb"
+    },
+    {
+      "file": "app/shots/realism/shell/after/chart-search.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "2acbce072a5e2a9f19a8a09de1080f41facc2355863af97a7d3e9f583264d88e"
+    },
+    {
+      "file": "app/shots/realism/shell/after/dashboard.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a0a8cf836a8c68761575bc713b5b98eb54485571ed50792e40b7a5388f85549b"
+    },
+    {
+      "file": "app/shots/realism/shell/after/home-medications.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "67c406b67b8f1b6512bb4844069c742b2963d08a2da00adaa53e57ece1b83d9f"
+    },
+    {
+      "file": "app/shots/realism/shell/after/interruptive-alert.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "e025e69685229e604710307cd33014e0a4a9d3d1e8d3b3af2f91f2a4e4e67a11"
+    },
+    {
+      "file": "app/shots/realism/shell/after/w1Orders.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "9183c5587024f8a908bcfeb5764657d7722d8fcc14c6c06d16b75d6e308d2d36"
+    },
+    {
+      "file": "app/shots/realism/shell/after/w3Triage.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "92b200f21c8b6f12bb58657ba3cb73ee96b0a0768becb6985c66bb5ae55d44eb"
+    },
+    {
+      "file": "app/shots/realism/shell/after/w4Mar.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "91d85230c2927e5fb9b9030c0179fd1f9ff11642c8290dfc8975e1743fc0e6a4"
+    },
+    {
+      "file": "app/shots/realism/shell/after/w5Growth.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "86fe598c6d0b1dd4c577d3d2b4a7edf6333c66d8553cffa495ae27955e07bdb2"
+    },
+    {
+      "file": "app/shots/realism/shell/after/w6PreOp.png",
+      "sourceRevision": "5559068b8e8876daa6cbf1495dd2a4cba458bfa2",
+      "width": 1440,
+      "height": 900,
+      "sha256": "71dc149f7ed79b3386e67382ee9284904e2d069cefc21b84207bae72bdd93ca9"
+    }
+  ]
+}

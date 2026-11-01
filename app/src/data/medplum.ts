@@ -271,6 +271,24 @@ export async function readResource(
 ): Promise<Resource> {
   return medplum.readResource(type, id, { cache: "no-store" });
 }
+/** Open saved resources through the authenticated same-origin client. */
+export async function readSavedResource(link: string): Promise<Resource> {
+  const match =
+    /\/fhir\/R4\/([A-Za-z]+)\/([A-Za-z0-9.-]+)(?:\/_history\/([A-Za-z0-9.-]+))?\/?$/.exec(
+      new URL(link, medplumBaseUrl).pathname,
+    );
+  const type = match?.[1],
+    id = match?.[2],
+    version = match?.[3];
+  if (!type || !id) throw new Error("Invalid saved resource reference");
+  return medplum.get<Resource>(
+    new URL(
+      `fhir/R4/${type}/${id}${version ? `/_history/${version}` : ""}`,
+      medplumBaseUrl,
+    ),
+    { cache: "no-store" },
+  );
+}
 export async function searchPatients(name: string): Promise<Patient[]> {
   const results = await searchResources(
     "Patient",
@@ -390,10 +408,8 @@ export async function persistCommit(input: CommitInput): Promise<{
       return location
         ? [
             new URL(
-              location.startsWith("http")
-                ? location
-                : `fhir/R4/${location.replace(/^\//, "")}`,
-              environment.VITE_MEDPLUM_BASE_URL,
+              `fhir/R4/${(location.startsWith("http") ? new URL(location).pathname : location).replace(/^.*fhir\/R4\//, "").replace(/^\/+/, "")}`,
+              medplumBaseUrl,
             ).href,
           ]
         : [];

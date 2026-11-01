@@ -118,6 +118,7 @@ private theorem enterCore_writes (sp p f u actor s cid v) (h : WritesState sp f 
           · split
             · exact h
             · exact ⟨setCaptured_writes sp u s.captured _ h.1 ⟨el, hel, hrole⟩, h.2⟩
+    · cases v <;> exact h
     · exact h
 
 private theorem confirmCore_writes (sp p f u actor s cid) (h : WritesState sp f u s) :

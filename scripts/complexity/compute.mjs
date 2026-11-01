@@ -9,9 +9,10 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const exec = promisify(execFile);
-// Limit Lean children while allowing Node's WebAssembly runtime to reserve its address space.
+// Lean's mapped libraries need more virtual address space than resident memory.
+// Keep workers at four and bound the address-space reservation on shared hosts.
 const run = (bin, args, options = {}) => bin === 'lake'
-  ? exec('bash', ['-c', 'ulimit -v 8000000; exec lake "$@"', 'lake', ...args], { timeout: 180000, ...options })
+  ? exec('bash', ['-c', 'ulimit -v 12000000; exec lake "$@"', 'lake', ...args], { timeout: 180000, ...options })
   : exec(bin, args, { timeout: 180000, ...options });
 const read = async p => JSON.parse(await readFile(p, 'utf8'));
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -50,7 +51,7 @@ export async function compute({ runDir, canonical = true, releaseDirectory } = {
     const source = path.join(root, 'scripts/complexity/Measure.lean');
     const c = path.join(work, 'Measure.c');
     const helper = path.join(work, 'ehr-benchmark');
-    await run('lake', ['env', 'lean', `--root=${root}`, '-c', c, source], { cwd: lean });
+    await run('lake', ['env', 'lean', '-j4', `--root=${root}`, '-c', c, source], { cwd: lean });
     const rsp = await readFile(path.join(lean, '.lake/build/bin/ehr.rsp'), 'utf8');
     const objects = [...rsp.matchAll(/"([^"\n]+\.o\.export)"/g)].map(x => x[1]).filter(p => !p.endsWith('/Main.c.o.export'));
     if (!objects.length) throw new Error('Missing native CLI link objects; rebuild ehr');

@@ -235,6 +235,33 @@ def uiNavSavedCollapsedCtx : Ctx :=
     [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
+
+/-- Flat canonical navigation tags keep their existing event and move to the shell. -/
+def uiFlatNavCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.filterMap (fun c =>
+      if c.id == "shell.nav" then none
+      else some (if c.id == "shell.nav.next" then { c with parent? := none, tag := "shell.nav.next" } else c)) } } }
+
+/-- The same flat program rendered through the public semantic projection. -/
+def uiFlatNavScreen : UiScreen := renderUi uiFlatNavCtx.sp uiFlatNavCtx.prog uiFlatNavCtx.facts
+  uiFlatNavCtx.disp uiFlatNavCtx.user uiFlatNavCtx.s
+
+#guard uiFlatNavScreen.nav == [("Navigator", [("shell.nav.next", "Next screen")])]
+#guard !(uiAtomsList uiFlatNavScreen.workspace).any (fun n => match n with
+  | .button "shell.nav.next" _ _ _ _ _ => true | _ => false)
+#guard (step uiFlatNavCtx.sp uiFlatNavCtx.prog uiFlatNavCtx.facts uiFlatNavCtx.user .human
+    uiFlatNavCtx.s (.click "shell.nav.next")).1.screen == "next"
+/-- The actual enabled goto used by the flat navigator example. -/
+def uiFlatNavItem : ItemView :=
+  (uiFlatNavCtx.v.items.find? (·.comp.id == "shell.nav.next")).getD uiSignItem
+
+#guard uiNavButton uiFlatNavCtx uiFlatNavItem
+#guard !(uiNavButton uiFlatNavCtx { uiFlatNavItem with comp :=
+  { uiFlatNavItem.comp with kind := .button (.commit "signOrders") } })
+#guard !(uiNavButton uiFlatNavCtx { uiFlatNavItem with comp :=
+  { uiFlatNavItem.comp with hotkey? := some "Ctrl+N" } })
+
 #guard !(uiAtomsList uiShellScreen.workspace).any (fun n => match n with
   | .info _ _ "patientBanner" _ _ | .section "shell.nav" _ _ | .section "shell.sidebar" _ _ | .button "shell.nav.next" _ _ _ _ _ => true
   | _ => false)
@@ -292,5 +319,49 @@ def uiNotesCtx : Ctx :=
 #guard (uiRows uiNotesCtx "surgicalHistory").length == 1
 #guard uiRows uiNotesCtx "currentMeds" == uiRows uiRoomCtx "currentMeds"
 #guard uiNotesCtx.facts.receipts == uiRoomCtx.facts.receipts
+
+/-- A real shown search input, independent from clinical capture. -/
+def uiSearchCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, prog := { uiRoomCtx.prog with
+      screens := uiRoomCtx.prog.screens.map fun screen =>
+        if screen.id == uiRoomCtx.s.screen then { screen with components := screen.components ++
+          [{ id := "chartSearch", label := "Search chart", kind := .search "chart", tag := "search" }] }
+        else screen } }
+
+def uiSearchEntered : State × StepResult :=
+  enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+    uiSearchCtx.s "chartSearch" (.text "Acetaminophen")
+
+#guard uiSearchEntered.2 == .ok
+#guard uiSearchEntered.1.captured == uiSearchCtx.s.captured
+#guard uiSearchEntered.1.commits == uiSearchCtx.s.commits
+#guard uiSearchEntered.1.receipts == uiSearchCtx.s.receipts
+#guard uiSearchEntered.1.searchQueries? == some [("chartSearch", "Acetaminophen")]
+#guard (uiSearchRows uiSearchCtx "formulary" "METFORMIN").any (fun row =>
+  row.any (fun pair => (pair.2.splitOn "metformin").length > 1))
+#guard uiSearchRows uiSearchCtx "chart" "no-such-record-xxxxxxxx" == [[("Search", "No matching records")]]
+#guard (enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchEntered.1 "chartSearch" (.text "")).1.searchQueries? == none
+#guard (enterCore uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchCtx.s "hiddenSearch" (.text "metformin")).2 == .ignored
+#guard (stepEvent uiSearchCtx.sp uiSearchCtx.prog uiSearchCtx.facts uiSearchCtx.user .human
+  uiSearchCtx.s (.search "legacy abstract search")).1 == uiSearchCtx.s
+#guard match (Lean.toJson uiSearchCtx.s).getObjVal? "searchQueries" with
+  | .error _ => true
+  | .ok _ => false
+#guard match (Lean.fromJson? (Lean.toJson uiSearchCtx.s) : Except String State) with
+  | .ok state => state == uiSearchCtx.s
+  | .error _ => false
+
+/-- Search snippets omit source plumbing and preserve matching clinical text. -/
+def uiSearchNoteSummary := uiSearchSummary
+  [("Date", "2026-10-31"), ("Type", "Progress note"), ("Encounter", "urn:uuid:opaque"),
+   ("Title", "Unknown"), ("Text", "Current medications include lisinopril daily."),
+   ("Source date", "2020-03-15"), ("Shift days", "Unknown")] "lisinopril"
+#guard uiSearchNoteSummary.any (fun pair => (pair.2.splitOn "Excerpt: ").length > 1)
+#guard uiSearchNoteSummary.all (fun pair => (pair.2.splitOn "urn:uuid:").length == 1)
+#guard uiSearchNoteSummary.all (fun pair => (pair.2.splitOn "Shift days").length == 1)
+#guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Weight" != none
+#guard (uiClinicalBanner uiRoomCtx.facts uiRoomCtx.disp).lookup "Isolation" == some "Not recorded"
 
 end Ehr.Render

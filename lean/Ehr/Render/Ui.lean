@@ -17,6 +17,15 @@ def uiBanner (d : Display) : List (String × String) :=
    ("Language", d.banner.language), ("PCP", d.banner.pcp), ("Coverage", d.banner.coverage),
    ("Encounter", d.banner.encounterClass), ("Attending", d.banner.attending), ("Location", d.banner.location)]
 
+/-- Recorded banner weight is distinct from a human-confirmed dosing weight. -/
+def uiBannerWeight (facts : Facts) (d : Display) : String :=
+  let weight := d.banner.weight?.orElse fun _ =>
+    facts.weightToday?.map fun (value, unit) => (value, unit, d.asOf)
+  match weight with
+  | none => "Not recorded"
+  | some (value, unit, date) => s!"{value / 10}.{value % 10} {unit.name}" ++
+      (if date == "" then "" else " · " ++ uiDate date)
+
 /-- Clinical banner content comes from Lean, so the painter need not infer it.
 An unavailable code status is explicit, never silently treated as full code. -/
 def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
@@ -25,7 +34,9 @@ def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
       else "; ".intercalate (d.allergies.map (fun r => r.substance ++
         (if r.reaction == "" then "" else " — " ++ r.reaction) ++
         (if r.status == "" then "" else " (" ++ r.status ++ ")")))),
-     ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded")]
+     ("Code status", uiLabel ((facts.record.lookup "codeStatus").getD "") "Not recorded"),
+     ("Weight", uiBannerWeight facts d),
+     ("Isolation", uiLabel ((facts.record.lookup "isolation").getD "") "Not recorded")]
 
 /-- Overview uses public activities and navigator sections, retaining every screen. -/
 def uiOverviewNav (prog : Program) : List (String × List (String × String)) :=
@@ -187,11 +198,13 @@ def uiNavGroup (it : ItemView) : Bool :=
   | _ => false
 
 /-- The pair-only nav wire format can represent enabled, ordinary click buttons.
+An explicit nav group or a nav segment in the semantic tag places the control.
 Controls with a hotkey or blocked reason stay in the workspace with all metadata. -/
 def uiNavButton (cx : Ctx) (it : ItemView) : Bool :=
   match it.comp.kind with
   | .button (.goto _) => uiEnabled cx it.comp.id && it.comp.hotkey?.isNone &&
-      cx.v.items.any (fun parent => uiNavGroup parent && it.comp.parent? == some parent.comp.id)
+      (cx.v.items.any (fun parent => uiNavGroup parent && it.comp.parent? == some parent.comp.id) ||
+        (it.comp.tag.splitOn ".").contains "nav")
   | _ => false
 
 def uiNavTitle (cx : Ctx) (it : ItemView) : String :=
@@ -242,6 +255,66 @@ def uiItemInfo (cx : Ctx) (it : ItemView) (i display : String) : UiNode :=
     (if uiOrderInfo i then "table" else if uiSideAt cx it.comp.id then "list" else display)
     (uiItemRows cx it.comp.id i)
 
+/-- Search reads typed chart rows or the supplied code catalog. It never replaces
+required reviews, captures clinical evidence, or selects an order. -/
+def uiSearchLabs (cx : Ctx) : List (List (String × String)) :=
+  cx.disp.labs.map fun row => [("Test", row.name), ("Value", row.value), ("Unit", row.unit),
+    ("Range", row.refRange), ("Recorded", uiDate row.date), ("Abnormal", toString row.abnormal)]
+
+def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) :=
+  if scope == "formulary" then
+    formulary.map fun drug => [("Medication", drug.name), ("RxNorm", ", ".intercalate drug.rxnorm)]
+  else if scope == "loinc" then
+    uiSearchLabs cx ++ (cx.facts.codeTables?.getD []).flatMap (fun table =>
+      if table.system == "LOINC" then table.codes.map (fun code => [("Code", code), ("System", table.system)]) else [])
+  else if scope == "chart" then
+    (["currentMeds", "allergyList", "problemList", "vitals", "encounterNotes",
+      "importedHistory", "immunizations", "encounterHistory", "procedures"] : List String).flatMap (uiRows cx) ++ uiSearchLabs cx
+  else
+    (cx.v.items.filter (·.shown)).flatMap fun item => match item.comp.kind with
+      | .panel info | .table info | .trend info =>
+          if ["labs", "labResults", "resultTrend"].contains info then uiSearchLabs cx else uiRows cx info
+      | _ => []
+
+/-- A bounded excerpt is centered near the matching text. Ellipses mark omitted
+text; the full note remains in Chart Review and required review panels. -/
+def uiSearchExcerpt (text query : String) : String :=
+  let before := ((text.toLower.splitOn query.toLower).headD "").length
+  let start := before - 60
+  let excerpt := (text.toSlice.drop start).take 200
+  (if start > 0 then "…" else "") ++ excerpt.toString ++
+    (if (text.toSlice.drop (start + 200)).isEmpty then "" else "…")
+
+def uiSearchCells (row : List (String × String)) : List (String × String) :=
+  (row.filter fun pair =>
+    pair.2 != "" && pair.2 != "Unknown" && pair.2 != "Not recorded" &&
+      !["Source", "Source date", "Shift days"].contains pair.1 &&
+      !pair.2.startsWith "urn:uuid:").map fun pair =>
+        if pair.1 == "Title" then (pair.1, (pair.2.splitOn ". Source date").headD pair.2) else pair
+
+/-- Search is a summary view. Opaque encounter references and converter metadata
+stay out of the result list; existing full source panels remain unchanged. -/
+def uiSearchSummary (row : List (String × String)) (query : String) : List (String × String) :=
+  let pairs := uiSearchCells row
+  match pairs with
+  | [] => [("Record", "Matching record")]
+  | first :: rest =>
+      [("Record", first.1 ++ ": " ++ (if first.2.length > 240 then uiSearchExcerpt first.2 query else first.2))] ++
+      if rest.isEmpty then [] else [("Details", " · ".intercalate (rest.map fun pair =>
+        if pair.1 == "Text" || pair.2.length > 240 then "Excerpt: " ++ uiSearchExcerpt pair.2 query
+        else pair.1 ++ ": " ++ pair.2))]
+
+/-- Case-insensitive matching reads full supplied values and displays concise
+summaries. Empty results are explicit. Full source panels are never filtered. -/
+def uiSearchRows (cx : Ctx) (scope query : String) : List (List (String × String)) :=
+  let needle := query.toLower
+  let rows := (uiSearchSource cx scope).filter fun row =>
+    (uiSearchCells row).any fun pair => (pair.2.toLower.splitOn needle).length > 1
+  if rows.isEmpty then [[("Search", "No matching records")]]
+  else (rows.take 25).map (fun row => uiSearchSummary row query) ++
+    if (rows.drop 25).isEmpty then [] else
+      [[("Record", "More results available"), ("Details", "Showing the first 25 matches. Refine your search to narrow the results.")]]
+
 /-- Render one shown item and its already-visible children. No visibility test
 is repeated here. Confirm buttons retain the field's id for Event.confirm. -/
 def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
@@ -256,7 +329,12 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
   | .trend i => [uiItemInfo cx it i "trend"]
   | .button a => [uiWrapRow (if uiNavButton cx it then "" else it.comp.tag) (uiButton cx it (actionRole a))]
   | .«macro» _ => [uiButton cx it "macro"]
-  | .search _ => [.field it.comp.id (uiLabel it.comp.label "Search chart") "search" none none none false false false]
+  | .search scope =>
+      let query := ((cx.s.searchQueries?.getD []).lookup it.comp.id).getD ""
+      .field it.comp.id (uiLabel it.comp.label "Search chart") "search"
+        (if query == "" then none else some query) none none false false false ::
+      if query == "" then [] else
+        [.info it.comp.id s!"Search results for “{query}”" "searchResults" "list" (uiSearchRows cx scope query)]
   | .alert a _ => [.alert it.comp.id a
       (uiLabel (((cx.sp.alert? a).map (·.label)).getD it.comp.label) "Clinical alert")
       (match (cx.sp.alert? a).map (·.tier) with

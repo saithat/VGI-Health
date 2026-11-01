@@ -7,6 +7,7 @@ import type {
 import type { UiScreen } from "../ehr/ui/types";
 import type { Html } from "../ehr/html";
 import type { Interp } from "./interp";
+import { installButtonAudit } from "./buttonAudit";
 
 /** Opaque interpreter state. No runtime certification or tree validation.
  * The release pipeline validates JSON and checks rendered screens offline.
@@ -67,12 +68,51 @@ export function createSession(
         ? args
         : ([args[0], args[1], JSON.stringify(facts), args[3]] as const);
     const nextState = JSON.stringify(response.state);
-    const nextSnapshot = readSnapshot(response.result, nextArgs, nextState);
+    // Lean rendering is pure for identical inputs. A no-op step still updates
+    // the inspector result, but must not rebuild the entire clinical tree.
+    const previous = snapshot;
+    const nextSnapshot =
+      nextState === stateJson && nextArgs === args
+        ? {
+            get page() {
+              return previous.page;
+            },
+            get view() {
+              return previous.view;
+            },
+            ui: previous.ui,
+            state: previous.state,
+            result: response.result,
+          }
+        : readSnapshot(response.result, nextArgs, nextState);
     args = nextArgs;
     stateJson = nextState;
     snapshot = nextSnapshot;
     listeners.forEach((listener) => listener());
   }
+  const checkpoints: {
+    args: typeof args;
+    state: string;
+    snapshot: typeof snapshot;
+  }[] = [];
+  installButtonAudit({
+    program,
+    snapshot: () => ({
+      state: snapshot.state,
+      result: snapshot.result,
+      ui: snapshot.ui,
+    }),
+    checkpoint: () =>
+      checkpoints.push({ args, state: stateJson, snapshot }) - 1,
+    restore(id) {
+      const saved = checkpoints[id];
+      if (!saved) throw new Error("Unknown audit checkpoint");
+      args = saved.args;
+      stateJson = saved.state;
+      snapshot = saved.snapshot;
+      listeners.forEach((listener) => listener());
+    },
+  });
   return {
     getSnapshot: () => snapshot,
     subscribe(listener: () => void) {
