@@ -37,6 +37,8 @@ theorem reviewMet_sound (sp : Spec) (prog : Program) (facts : Facts) (s : State)
       obtain ⟨r, hr, ⟨⟨⟨⟨hi, hv⟩, ht⟩, hw⟩, hrole⟩⟩ := hrec
       exact ⟨w, roles, hmode, r, hr, hi, hv, ht, hw, hrole⟩
   · right
+    have hwaive : waived s rq.waivedBy? = true := by
+      simpa only [Bool.and_eq_true] using (show waived s rq.waivedBy? = true ∧ waiverEligible facts s rq.waivedBy? = true by simpa only [Bool.and_eq_true] using hwaive).1
     unfold waived at hwaive
     split at hwaive
     · rename_i e he

@@ -1753,6 +1753,30 @@ def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
     observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs
     clinicians? := match clinicianRows rs with | [] => none | rows => some rows }
 
+/-- Clinical chart rows must explicitly belong to the open patient. Shared
+reference resources remain available for resolving chart authors and locations. -/
+def chartResources (rs : List Json) (p : Json) : List Json :=
+  rs.filter fun r =>
+    if resourceType r == "Patient" then str r "id" == str p "id"
+    else if ["Practitioner", "Organization", "Location", "Medication", "PractitionerRole"].contains (resourceType r) then true
+    else [field r "subject", field r "patient", field r "for", field r "beneficiary"].any
+      (fun ref => Ambulatory.referenceMatches (str ref "reference") p) ||
+      (resourceType r == "Appointment" && (arr r "participant").any
+        (fun a => Ambulatory.referenceMatches (str (field a "actor") "reference") p))
+
+/-- The selected patient's chart resources, excluding unrelated patients and lists. -/
+def chartResourcesOfBundle (b : Json) : List Json :=
+  match (bundleResources b).find? (resourceType · == "Patient") with
+  | none => []
+  | some p => chartResources (bundleResources b) p
+
+/-- A scoped chart row always comes from the supplied bundle. -/
+theorem chartResource_mem {b r : Json} (h : r ∈ chartResourcesOfBundle b) : r ∈ bundleResources b := by
+  unfold chartResourcesOfBundle at h
+  split at h
+  · contradiction
+  · exact (List.mem_filter.mp h).1
+
 /-- **Parse a FHIR bundle** into facts and display rows. Fails only if the
 input is not a Bundle or has no Patient. -/
 def parseBundle (ctx : FactsContext) (b : Json) : Except String (Facts × Display) :=
@@ -1761,7 +1785,7 @@ def parseBundle (ctx : FactsContext) (b : Json) : Except String (Facts × Displa
     let rs := bundleResources b
     match rs.find? (resourceType · == "Patient") with
     | none => .error "bundle has no Patient"
-    | some p => .ok (factsOf ctx rs p, displayOf ctx rs p)
+    | some p => .ok (factsOf ctx (chartResourcesOfBundle b) p, displayOf ctx (chartResourcesOfBundle b) p)
 
 /-! ## API record (needs `Lean.Json`) -/
 

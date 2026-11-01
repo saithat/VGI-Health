@@ -1,0 +1,1316 @@
+{
+  "schemaVersion": 1,
+  "suite": "held-out-core-rule-conformance",
+  "runId": null,
+  "generatedAt": "2026-11-01T17:30:03.334Z",
+  "independentOfChecker": true,
+  "deploymentGate": false,
+  "boundary": "Native interpreter + FHIR projection. Does not exercise browser painter, persistence, or shell patient-selection wiring.",
+  "native": {
+    "binary": "/home/saithat/Projects/VGI-check/lean/.lake/build/bin/ehr",
+    "sha256": "5b4cbc4e5cb888ddcad2b5c708d0eea54673aacca1f0b136b461ce9925067545",
+    "calls": 2580,
+    "jobs": 15
+  },
+  "scenarios": [
+    {
+      "id": "entry.signOrders.dosingWeight",
+      "rule": "Core signOrders: dosingWeight",
+      "expected": "A configured link uses weight; a manual field remains required",
+      "intent": {
+        "commit": "signOrders",
+        "element": "dosingWeight",
+        "action": "enter source and inspect link"
+      }
+    },
+    {
+      "id": "cures.review-required",
+      "rule": "Law: CURES / documented seven-day procedure exemption",
+      "expected": "No eligible exemption: signing without CURES report refused",
+      "scope": "runtime-probe",
+      "probe": "remove only CURES report display to observe waiver eligibility; original program hash retained"
+    },
+    {
+      "id": "cures.procedure-seven-day",
+      "rule": "Law: CURES / documented seven-day procedure exemption",
+      "expected": "Eligible seven-day surgical exemption permits signing without report",
+      "scope": "runtime-probe",
+      "probe": "remove only CURES report display to observe waiver eligibility; original program hash retained"
+    },
+    {
+      "id": "cures.procedure-eight-day",
+      "rule": "Law: CURES / documented seven-day procedure exemption",
+      "expected": "No eligible exemption: signing without CURES report refused",
+      "scope": "runtime-probe",
+      "probe": "remove only CURES report display to observe waiver eligibility; original program hash retained"
+    },
+    {
+      "id": "cures.unknown-exemption",
+      "rule": "Law: CURES / documented seven-day procedure exemption",
+      "expected": "No eligible exemption: signing without CURES report refused",
+      "scope": "runtime-probe",
+      "probe": "remove only CURES report display to observe waiver eligibility; original program hash retained"
+    },
+    {
+      "id": "workflow.empty-medication-signing",
+      "rule": "Workflow expectation: do not sign an empty medication episode",
+      "expected": "After ID and kg checks, signing with no selected medication should refuse",
+      "expectationBoundary": "Stricter workflow expectation: per-line encoded entries are vacuous when no drug line exists. A failure does not establish an unsafe MedicationRequest write."
+    },
+    {
+      "id": "patient-switch.chart-scoping",
+      "rule": "Patient isolation in FHIR projection",
+      "expected": "Opening B with a stale A resource must reject or exclude A clinical data",
+      "scope": "adapter-probe",
+      "expectationBoundary": "Defensive mixed-bundle test. Native init reset is tested separately; shell chart-loading/patient-selection integration is outside this no-browser suite."
+    },
+    {
+      "id": "weight.linked-source-refresh",
+      "rule": "Hospital dosing weight / declared source linkage",
+      "expected": "Correcting weight to 20 kg refreshes or invalidates an earlier 70 kg link; mismatched values cannot be signed"
+    },
+    {
+      "id": "refill.denial-via-approval-action",
+      "rule": "Core refill denial reason across every action route",
+      "expected": "A deny decision cannot complete through approveRefill without a reason; dedicated denial with a reason and ordinary approval remain possible",
+      "intent": {
+        "commit": "approveRefill",
+        "element": "refillDecision",
+        "value": "deny",
+        "omit": "refillDenyReason"
+      }
+    }
+  ],
+  "targets": [
+    {
+      "id": "canonical/v1/P1",
+      "persona": "P1",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P1.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "30ff0635a84bd45ea0fc6f8d4c7ed21b2e9f86b8c7e2090256b8de9215c550d0",
+      "specSha256": "b9c8742f697c270937615df8e15216f2e0216e35eef9d50ad78fdc2c91cb4081",
+      "passed": 9,
+      "failed": 0,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v1/P2",
+      "persona": "P2",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P2.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "5f7f65a0ce1331680a26397b7a21973be7c60061a825ee9b59c45896e0de058e",
+      "specSha256": "b9c8742f697c270937615df8e15216f2e0216e35eef9d50ad78fdc2c91cb4081",
+      "passed": 8,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v1/P3",
+      "persona": "P3",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P3.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "0ebd8242eabc5cd4909edf41121cd804d0ec9a1636b2886ae9d193250e50f750",
+      "specSha256": "b9c8742f697c270937615df8e15216f2e0216e35eef9d50ad78fdc2c91cb4081",
+      "passed": 1,
+      "failed": 0,
+      "notApplicable": 8
+    },
+    {
+      "id": "canonical/v1/P4",
+      "persona": "P4",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P4.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "d3c7ffe56ec664115a44789e3b49ea4905adb0c5b090d5e58bab72a5f23cd993",
+      "specSha256": "b9c8742f697c270937615df8e15216f2e0216e35eef9d50ad78fdc2c91cb4081",
+      "passed": 5,
+      "failed": 0,
+      "notApplicable": 4
+    },
+    {
+      "id": "canonical/v1/P5",
+      "persona": "P5",
+      "kind": "canonical",
+      "release": "v1",
+      "semanticRelease": "v1",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v1/personas/P5.json",
+      "specPath": "releases/v1/spec.json",
+      "programSha256": "b6bb7301b7857934197b7b5759404d3b6fc2af55b6449848be7f38d7ac9e46be",
+      "specSha256": "b9c8742f697c270937615df8e15216f2e0216e35eef9d50ad78fdc2c91cb4081",
+      "passed": 8,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v2/P1",
+      "persona": "P1",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P1.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "d036c36f7714d8636978ac9241ff9c1388ed978f125740146d65f80f398a7a53",
+      "specSha256": "39c2253a982cd9ad904010f86250852093885324993dd7d2544554a430278c6f",
+      "passed": 9,
+      "failed": 0,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v2/P2",
+      "persona": "P2",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P2.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "2e9cfda685e9bc73f7e25bea32f2f20912d2f0dd40492cb60df7ea6316f45ac3",
+      "specSha256": "39c2253a982cd9ad904010f86250852093885324993dd7d2544554a430278c6f",
+      "passed": 8,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v2/P3",
+      "persona": "P3",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P3.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "02121d6fb501d0577c6b1801d0d783e9746b6722ac4a46ded0013809a375a96e",
+      "specSha256": "39c2253a982cd9ad904010f86250852093885324993dd7d2544554a430278c6f",
+      "passed": 1,
+      "failed": 0,
+      "notApplicable": 8
+    },
+    {
+      "id": "canonical/v2/P4",
+      "persona": "P4",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P4.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "427d5f251bf22086c6d401a40fb6e126a73cbc366aca32e0756b6e4b63c3efe6",
+      "specSha256": "39c2253a982cd9ad904010f86250852093885324993dd7d2544554a430278c6f",
+      "passed": 5,
+      "failed": 0,
+      "notApplicable": 4
+    },
+    {
+      "id": "canonical/v2/P5",
+      "persona": "P5",
+      "kind": "canonical",
+      "release": "v2",
+      "semanticRelease": "v2",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v2/personas/P5.json",
+      "specPath": "releases/v2/spec.json",
+      "programSha256": "e829e063776347156d077843a23f2a862aabecbe15a242b1d586bf02e6e1d9c8",
+      "specSha256": "39c2253a982cd9ad904010f86250852093885324993dd7d2544554a430278c6f",
+      "passed": 8,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v3/P1",
+      "persona": "P1",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P1.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "1d79b4e87f13a4fb9078f4da795a9621a55039c89c3ca9a449724cab483f2dd9",
+      "specSha256": "1d5566a499d558f428149a64b4013298d2c06c893714b422a4c5e50efcb20b5b",
+      "passed": 9,
+      "failed": 0,
+      "notApplicable": 0
+    },
+    {
+      "id": "canonical/v3/P2",
+      "persona": "P2",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P2.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "2c1a3061bbf4494a41b3b88ecb37460b7f322e959402ab7ab94b02e9289e2a15",
+      "specSha256": "1d5566a499d558f428149a64b4013298d2c06c893714b422a4c5e50efcb20b5b",
+      "passed": 8,
+      "failed": 0,
+      "notApplicable": 1
+    },
+    {
+      "id": "canonical/v3/P3",
+      "persona": "P3",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P3.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "bd377d90995d0ef780e82df912fb0be3f74fb8faa30e3bc16ecef0ddffce7353",
+      "specSha256": "1d5566a499d558f428149a64b4013298d2c06c893714b422a4c5e50efcb20b5b",
+      "passed": 1,
+      "failed": 0,
+      "notApplicable": 8
+    },
+    {
+      "id": "canonical/v3/P4",
+      "persona": "P4",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P4.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "a996f8c9a0ffa0c7365f560a0a520277478848d537c278cd8a5cbc57f6046533",
+      "specSha256": "1d5566a499d558f428149a64b4013298d2c06c893714b422a4c5e50efcb20b5b",
+      "passed": 5,
+      "failed": 0,
+      "notApplicable": 4
+    },
+    {
+      "id": "canonical/v3/P5",
+      "persona": "P5",
+      "kind": "canonical",
+      "release": "v3",
+      "semanticRelease": "v3",
+      "certification": "canonical export; checker evidence recorded separately",
+      "programPath": "releases/v3/personas/P5.json",
+      "specPath": "releases/v3/spec.json",
+      "programSha256": "80b3160dd9d2ec7dfd23497b0cb8bb5a01a7e67a7429e15568fff8bcf5617f54",
+      "specSha256": "1d5566a499d558f428149a64b4013298d2c06c893714b422a4c5e50efcb20b5b",
+      "passed": 8,
+      "failed": 0,
+      "notApplicable": 1
+    }
+  ],
+  "results": [
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "c32007ecc2fa8c968ab36e8a5916d963033d5dbf0f0954bc1c2d1b204a183db9",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ca874307a812f52c3dff9b66f14b7051b489d8fb4ebd06ed0b0429a2fd9f1d7d",
+      "steps": 28
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "ca874307a812f52c3dff9b66f14b7051b489d8fb4ebd06ed0b0429a2fd9f1d7d",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ca874307a812f52c3dff9b66f14b7051b489d8fb4ebd06ed0b0429a2fd9f1d7d",
+      "steps": 32
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ca874307a812f52c3dff9b66f14b7051b489d8fb4ebd06ed0b0429a2fd9f1d7d",
+      "steps": 32
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "c32007ecc2fa8c968ab36e8a5916d963033d5dbf0f0954bc1c2d1b204a183db9",
+      "steps": 13
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "c32007ecc2fa8c968ab36e8a5916d963033d5dbf0f0954bc1c2d1b204a183db9",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "c32007ecc2fa8c968ab36e8a5916d963033d5dbf0f0954bc1c2d1b204a183db9",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "pass",
+      "observed": "Denial bypass refused; reasoned denial and ordinary approval completed",
+      "testedProgramSha256": "c32007ecc2fa8c968ab36e8a5916d963033d5dbf0f0954bc1c2d1b204a183db9",
+      "steps": 12
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "a074094c67f4d34c1eadd4e99a4235dd98114f5de33c8764c0011a64f2ebc6b5",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ab51ab0efe2b07534702a1c6c30f529ac4b2f65116a351b8d59bf0d6936b0990",
+      "steps": 28
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "ab51ab0efe2b07534702a1c6c30f529ac4b2f65116a351b8d59bf0d6936b0990",
+      "steps": 33
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ab51ab0efe2b07534702a1c6c30f529ac4b2f65116a351b8d59bf0d6936b0990",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ab51ab0efe2b07534702a1c6c30f529ac4b2f65116a351b8d59bf0d6936b0990",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "a074094c67f4d34c1eadd4e99a4235dd98114f5de33c8764c0011a64f2ebc6b5",
+      "steps": 11
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "a074094c67f4d34c1eadd4e99a4235dd98114f5de33c8764c0011a64f2ebc6b5",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "a074094c67f4d34c1eadd4e99a4235dd98114f5de33c8764c0011a64f2ebc6b5",
+      "steps": 35
+    },
+    {
+      "target": "canonical/v1/P2",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "cures.review-required",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "cures.procedure-seven-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "cures.procedure-eight-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "cures.unknown-exemption",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "9ae4c2bb7956f6445b41e9104cc6ec3112af6814febec79b0999259ec8845b61",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "weight.linked-source-refresh",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "00ab4738cdfcc0e981ca9bcd6c2b6f9fe2e2468cc02f449525473faebb957354",
+      "steps": 9
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "cures.review-required",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "cures.procedure-seven-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "cures.procedure-eight-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "cures.unknown-exemption",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "00ab4738cdfcc0e981ca9bcd6c2b6f9fe2e2468cc02f449525473faebb957354",
+      "steps": 11
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "00ab4738cdfcc0e981ca9bcd6c2b6f9fe2e2468cc02f449525473faebb957354",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "00ab4738cdfcc0e981ca9bcd6c2b6f9fe2e2468cc02f449525473faebb957354",
+      "steps": 33
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "pass",
+      "observed": "Denial bypass refused; reasoned denial and ordinary approval completed",
+      "testedProgramSha256": "00ab4738cdfcc0e981ca9bcd6c2b6f9fe2e2468cc02f449525473faebb957354",
+      "steps": 12
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "cebe66f6fce5e507f36017625811231e9254e89abe61238328ce314579dc22da",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "c389442251d32fac58d2ed32720da0dc85b58272436242c1ca885a5fd1d5279e",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "c389442251d32fac58d2ed32720da0dc85b58272436242c1ca885a5fd1d5279e",
+      "steps": 34
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "c389442251d32fac58d2ed32720da0dc85b58272436242c1ca885a5fd1d5279e",
+      "steps": 30
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "c389442251d32fac58d2ed32720da0dc85b58272436242c1ca885a5fd1d5279e",
+      "steps": 30
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "cebe66f6fce5e507f36017625811231e9254e89abe61238328ce314579dc22da",
+      "steps": 13
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "cebe66f6fce5e507f36017625811231e9254e89abe61238328ce314579dc22da",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "cebe66f6fce5e507f36017625811231e9254e89abe61238328ce314579dc22da",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v1/P5",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "a73ce97d6fbfe34352fe1cf9a5e07597e026becadf8058c0763770ae1f056c37",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "449ba898158041781c28d397987ffe1e501bd5e9517f7753f064ca87d25efcb0",
+      "steps": 28
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "449ba898158041781c28d397987ffe1e501bd5e9517f7753f064ca87d25efcb0",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "449ba898158041781c28d397987ffe1e501bd5e9517f7753f064ca87d25efcb0",
+      "steps": 32
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "449ba898158041781c28d397987ffe1e501bd5e9517f7753f064ca87d25efcb0",
+      "steps": 32
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "a73ce97d6fbfe34352fe1cf9a5e07597e026becadf8058c0763770ae1f056c37",
+      "steps": 13
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "a73ce97d6fbfe34352fe1cf9a5e07597e026becadf8058c0763770ae1f056c37",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "a73ce97d6fbfe34352fe1cf9a5e07597e026becadf8058c0763770ae1f056c37",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v2/P1",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "pass",
+      "observed": "Denial bypass refused; reasoned denial and ordinary approval completed",
+      "testedProgramSha256": "a73ce97d6fbfe34352fe1cf9a5e07597e026becadf8058c0763770ae1f056c37",
+      "steps": 12
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "9f2b1632cf9d0e0bbeee66fc4f973a40fa7957db84b626f537d5456b9fab1384",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "9822fa583941329e6b7bc9b889dd678fa4bd04ec2f48afc2555741b595a0190e",
+      "steps": 28
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "9822fa583941329e6b7bc9b889dd678fa4bd04ec2f48afc2555741b595a0190e",
+      "steps": 33
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "9822fa583941329e6b7bc9b889dd678fa4bd04ec2f48afc2555741b595a0190e",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "9822fa583941329e6b7bc9b889dd678fa4bd04ec2f48afc2555741b595a0190e",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "9f2b1632cf9d0e0bbeee66fc4f973a40fa7957db84b626f537d5456b9fab1384",
+      "steps": 11
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "9f2b1632cf9d0e0bbeee66fc4f973a40fa7957db84b626f537d5456b9fab1384",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "9f2b1632cf9d0e0bbeee66fc4f973a40fa7957db84b626f537d5456b9fab1384",
+      "steps": 35
+    },
+    {
+      "target": "canonical/v2/P2",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "cures.review-required",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "cures.procedure-seven-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "cures.procedure-eight-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "cures.unknown-exemption",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "8244ed041ffb5eddcd96b147dcfeeed3eae8c3ab2c330701557c878cf7ee718d",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "weight.linked-source-refresh",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "1cbb3217ca4246c4fa053b40c285ae85ed22ac49880c83c36783c5e1dc4dcbc9",
+      "steps": 9
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "cures.review-required",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "cures.procedure-seven-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "cures.procedure-eight-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "cures.unknown-exemption",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "1cbb3217ca4246c4fa053b40c285ae85ed22ac49880c83c36783c5e1dc4dcbc9",
+      "steps": 11
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "1cbb3217ca4246c4fa053b40c285ae85ed22ac49880c83c36783c5e1dc4dcbc9",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "1cbb3217ca4246c4fa053b40c285ae85ed22ac49880c83c36783c5e1dc4dcbc9",
+      "steps": 33
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "pass",
+      "observed": "Denial bypass refused; reasoned denial and ordinary approval completed",
+      "testedProgramSha256": "1cbb3217ca4246c4fa053b40c285ae85ed22ac49880c83c36783c5e1dc4dcbc9",
+      "steps": 12
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "c5efeb7ab804654622f74e726a1c7344b96c4284ba5eec8ff9596ddc82aaa544",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ca4907681e723c35a6f2337e0bb28eda81f345007397b47df6275491fc3f0135",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "ca4907681e723c35a6f2337e0bb28eda81f345007397b47df6275491fc3f0135",
+      "steps": 34
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ca4907681e723c35a6f2337e0bb28eda81f345007397b47df6275491fc3f0135",
+      "steps": 30
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "ca4907681e723c35a6f2337e0bb28eda81f345007397b47df6275491fc3f0135",
+      "steps": 30
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "c5efeb7ab804654622f74e726a1c7344b96c4284ba5eec8ff9596ddc82aaa544",
+      "steps": 13
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "c5efeb7ab804654622f74e726a1c7344b96c4284ba5eec8ff9596ddc82aaa544",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "c5efeb7ab804654622f74e726a1c7344b96c4284ba5eec8ff9596ddc82aaa544",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v2/P5",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "28fb2712a34bd83b1097bdd3b974d2c0433bff6bc7b0924666a0e78b87b67c2a",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "0fb60ec3d83a8eef6929c724bdc35ed09c37941a981524cc62a214cbaf93f296",
+      "steps": 28
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "0fb60ec3d83a8eef6929c724bdc35ed09c37941a981524cc62a214cbaf93f296",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "0fb60ec3d83a8eef6929c724bdc35ed09c37941a981524cc62a214cbaf93f296",
+      "steps": 32
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "0fb60ec3d83a8eef6929c724bdc35ed09c37941a981524cc62a214cbaf93f296",
+      "steps": 32
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "28fb2712a34bd83b1097bdd3b974d2c0433bff6bc7b0924666a0e78b87b67c2a",
+      "steps": 13
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "28fb2712a34bd83b1097bdd3b974d2c0433bff6bc7b0924666a0e78b87b67c2a",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "28fb2712a34bd83b1097bdd3b974d2c0433bff6bc7b0924666a0e78b87b67c2a",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v3/P1",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "pass",
+      "observed": "Denial bypass refused; reasoned denial and ordinary approval completed",
+      "testedProgramSha256": "28fb2712a34bd83b1097bdd3b974d2c0433bff6bc7b0924666a0e78b87b67c2a",
+      "steps": 12
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "7a1a736459533304bf50f573f00fc73a88d58dd8afdbf7eca82868bdf6f4a363",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "6050e00ba249007859cab352a34128008735f584fa3d281bfe29fa03264a71bc",
+      "steps": 28
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "6050e00ba249007859cab352a34128008735f584fa3d281bfe29fa03264a71bc",
+      "steps": 33
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "6050e00ba249007859cab352a34128008735f584fa3d281bfe29fa03264a71bc",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "6050e00ba249007859cab352a34128008735f584fa3d281bfe29fa03264a71bc",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "7a1a736459533304bf50f573f00fc73a88d58dd8afdbf7eca82868bdf6f4a363",
+      "steps": 11
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "7a1a736459533304bf50f573f00fc73a88d58dd8afdbf7eca82868bdf6f4a363",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "7a1a736459533304bf50f573f00fc73a88d58dd8afdbf7eca82868bdf6f4a363",
+      "steps": 35
+    },
+    {
+      "target": "canonical/v3/P2",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "cures.review-required",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "cures.procedure-seven-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "cures.procedure-eight-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "cures.unknown-exemption",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "6a89c457a0949d08ddc15babae655895ccd51b665b79964b475c2fc38176e44e",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "weight.linked-source-refresh",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "14a4b8bf37768ccdb88001f8e53d77c9d1d6f34e05c898525227144b264437d7",
+      "steps": 9
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "cures.review-required",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "cures.procedure-seven-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "cures.procedure-eight-day",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "cures.unknown-exemption",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "14a4b8bf37768ccdb88001f8e53d77c9d1d6f34e05c898525227144b264437d7",
+      "steps": 11
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "14a4b8bf37768ccdb88001f8e53d77c9d1d6f34e05c898525227144b264437d7",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "14a4b8bf37768ccdb88001f8e53d77c9d1d6f34e05c898525227144b264437d7",
+      "steps": 33
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "pass",
+      "observed": "Denial bypass refused; reasoned denial and ordinary approval completed",
+      "testedProgramSha256": "14a4b8bf37768ccdb88001f8e53d77c9d1d6f34e05c898525227144b264437d7",
+      "steps": 12
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "entry.signOrders.dosingWeight",
+      "status": "pass",
+      "observed": "dosingWeight confirmed from declared source weight",
+      "testedProgramSha256": "b300dcb8085a5627eca51f579e859cb91e3fb69966e78f09a16cb1bfeeed89f1",
+      "steps": 10
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "cures.review-required",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "6f609958ca2f2c34b4a44f29d15ba8c54152db9ab7a78fee4ac1cdb7e77afc81",
+      "steps": 29
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "cures.procedure-seven-day",
+      "status": "pass",
+      "observed": "Seven-day surgical exemption permits signing without report",
+      "testedProgramSha256": "6f609958ca2f2c34b4a44f29d15ba8c54152db9ab7a78fee4ac1cdb7e77afc81",
+      "steps": 34
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "cures.procedure-eight-day",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "6f609958ca2f2c34b4a44f29d15ba8c54152db9ab7a78fee4ac1cdb7e77afc81",
+      "steps": 30
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "cures.unknown-exemption",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)\"}}",
+      "testedProgramSha256": "6f609958ca2f2c34b4a44f29d15ba8c54152db9ab7a78fee4ac1cdb7e77afc81",
+      "steps": 30
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "workflow.empty-medication-signing",
+      "status": "pass",
+      "observed": "{\"blocked\":{\"reason\":\"entry required: drug or complete service order\"}}",
+      "testedProgramSha256": "b300dcb8085a5627eca51f579e859cb91e3fb69966e78f09a16cb1bfeeed89f1",
+      "steps": 13
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "patient-switch.chart-scoping",
+      "status": "pass",
+      "observed": "Patient A clinical resource excluded from B projection",
+      "testedProgramSha256": "b300dcb8085a5627eca51f579e859cb91e3fb69966e78f09a16cb1bfeeed89f1",
+      "steps": 0
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "weight.linked-source-refresh",
+      "status": "pass",
+      "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+      "testedProgramSha256": "b300dcb8085a5627eca51f579e859cb91e3fb69966e78f09a16cb1bfeeed89f1",
+      "steps": 36
+    },
+    {
+      "target": "canonical/v3/P5",
+      "scenario": "refill.denial-via-approval-action",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    }
+  ],
+  "summary": {
+    "targets": 15,
+    "scenarios": 9,
+    "passed": 93,
+    "failed": 0,
+    "notApplicable": 42
+  }
+}

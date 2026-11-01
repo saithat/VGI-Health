@@ -81,38 +81,38 @@ theorem labResultRows_length (rs : List Json) :
 
 /-- A successfully parsed bundle retains every non-error appointment in Display. -/
 theorem T11_schedule (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (ht : resourceType r = "Appointment") (hv : str r "status" ≠ "entered-in-error") :
-    scheduleRow ctx.today (bundleResources b) r ∈ d.schedule := by
+    scheduleRow ctx.today (chartResourcesOfBundle b) r ∈ d.schedule := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
   exact scheduleRows_complete ctx.today _ r hr ht hv
 
 /-- A successfully parsed bundle retains every non-error encounter on its board. -/
 theorem T11_board (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (ht : resourceType r = "Encounter") (hv : str r "status" ≠ "entered-in-error") :
-    boardRow ctx.today (bundleResources b) r ∈ d.board := by
+    boardRow ctx.today (chartResourcesOfBundle b) r ∈ d.board := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
   exact boardRows_complete ctx.today _ r hr ht hv
 
 /-- Actual administrations are never lost during FHIR abstraction. -/
 theorem T11_administration (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (ht : resourceType r = "MedicationAdministration") (hv : str r "status" ≠ "entered-in-error") :
-    administrationRow (bundleResources b) r ∈ d.administrations := by
+    administrationRow (chartResourcesOfBundle b) r ∈ d.administrations := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
   exact administrationRows_complete _ r hr ht hv
 
 /-- Every valid Observation in a parsed bundle reaches its display series. -/
 theorem T11_observation (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (hv : isObservation r = true) : observationRow r ∈ d.observations := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
   exact observationRows_complete _ r hr hv
 
 /-- Assessment components survive parsing with their own values and parent context. -/
 theorem T11_observation_component (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (hp : parseBundle ctx b = .ok (f, d)) (r c : Json) (hr : r ∈ bundleResources b)
+    (hp : parseBundle ctx b = .ok (f, d)) (r c : Json) (hr : r ∈ chartResourcesOfBundle b)
     (hv : isObservation r = true) (hc : c ∈ arr r "component") :
     observationComponentRow r c ∈ d.observations := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
@@ -120,14 +120,14 @@ theorem T11_observation_component (ctx : FactsContext) (b : Json) (f : Facts) (d
 
 /-- Every valid laboratory observation reaches Display without substituting a later unit. -/
 theorem T11_lab_result (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (hp : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (hv : isLab r = true) : labResultRow r ∈ d.labResults := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp
   exact labResultRows_complete _ r hr hv
 
 /-- Component results survive the same parsed-bundle boundary as their report. -/
 theorem T11_lab_component (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (hp : parseBundle ctx b = .ok (f, d)) (r c : Json) (hr : r ∈ bundleResources b)
+    (hp : parseBundle ctx b = .ok (f, d)) (r c : Json) (hr : r ∈ chartResourcesOfBundle b)
     (hv : isLab r = true) (hc : c ∈ arr r "component") :
     labComponentResultRow r c ∈ d.labResults := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d hp

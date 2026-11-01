@@ -16,7 +16,7 @@ theorem commitContracts (ep : Episode) : CommitContracts ep := by
   | none => simp [hc] at guard
   | some cs =>
     simp only [hc, Bool.and_eq_true, List.all_eq_true, beq_iff_eq] at guard
-    exact ⟨cs, rfl, guard.1.1.1.1, guard.1.1.1.2, guard.1.1.2, guard.1.2, guard.2⟩
+    exact ⟨cs, rfl, guard.1.1.1.1.2, guard.1.1.1.2, guard.1.1.2, guard.1.2, guard.2⟩
 
 /-- Certification retains the interpreter's complete contract guarantee. -/
 theorem accepted_contracts (sp : Spec) (prev : Option Program) (can p : Program)

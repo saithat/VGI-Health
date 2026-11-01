@@ -62,6 +62,8 @@ def main():
     dependency_bad = "lean/Ehr/Check/bad/35-dose-without-drug.json"
     overrides = {dependency_bad: ("lean/Ehr/Check/bad/dose-only-spec.json", dependency_bad)}
     expected[dependency_bad] = "completable"
+    for path, prop in json.loads((ROOT / "lean/Ehr/Check/conformance-bad-programs.json").read_text()):
+        expected[path] = prop
     cases += [(path, "bad") for path in expected]
     if "--bad-only" in sys.argv[1:]:
         cases = [(path, "bad") for path in expected]

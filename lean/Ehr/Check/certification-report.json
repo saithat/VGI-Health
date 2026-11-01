@@ -1,7 +1,7 @@
 {
-  "sourceRevision": "ea0b86429b85a0190feedc56df8d66c8e0da101a",
+  "sourceRevision": "5da344c56a533570fc71d67fcf5687a790542e5a",
   "sourceDirty": true,
-  "binarySha256": "aff5cdca6ef5f40dfdea12cdf1e81141583f6421a3d0e32719b197f768905f13",
+  "binarySha256": "2cce77e126d2914a2052d3a1c7b50b0124fbd5eb9e2ef97a4aa15da53ce161ab",
   "profile": "core",
   "fullProfileOnly": [
     "17-no-restraint-care-plan",
@@ -25,8 +25,8 @@
   "certifiedBaselineCount": 15,
   "personaAccepted": 15,
   "personaCount": 15,
-  "badRejected": 18,
-  "badCount": 18,
+  "badRejected": 23,
+  "badCount": 23,
   "replayValidation": "Native run-batch with the checker's replay context; navigation only, not full T7.",
   "results": [
     {
@@ -34,7 +34,7 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "9779beb00503e2dcf2260a4d30213395b87406b97b1a70a87d1961cd0edb0a76",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 0,
@@ -46,7 +46,7 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "2ce96ca8a75bcba7bf578b047158686ccb72ade0cb9adabb77ffcf25a1b06968",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 0,
@@ -58,7 +58,7 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "1c27e8f0594cf4187f3aec4d643cc989c6eca8a22e2baacb8645b518196b34b8",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 0,
@@ -70,7 +70,7 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "5969c5b6c9dd7245a57bd8cc85fb9224650b1dd04735684dd3b3d73f16aee349",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 0,
@@ -82,7 +82,7 @@
       "group": "persona",
       "spec": "releases/v1/spec.json",
       "programSha256": "3e48e64f0f642910777b1e0dfdcb2466add3f2fcad88950651de3a43840cfe46",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 0,
@@ -94,7 +94,7 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "a22b0076f85dd1ce3ad04ccc02cc454cb0320090b019ecac5ef3aa767afbe1db",
-      "specSha256": "dfe0f1276ed6f7f454c8c1f9f017b6d5c6018389801dd5a4c463e5debda1189b",
+      "specSha256": "25a685f1a2d3f0b7f6e6547d9d03d88eb26f0102ff8ffb282ce2740da5123ae5",
       "canonicalSha256": "b5cf891ea3443eb8f01df6b517032691c6c7f11af858b76aec3acfcef0c23f94",
       "previous": "releases/v1/personas/P1.json",
       "exitCode": 0,
@@ -106,7 +106,7 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "df6574278a3a912f1aca5a1eb3477f71ef22213abf26204f524c3fab7eb4f1cc",
-      "specSha256": "dfe0f1276ed6f7f454c8c1f9f017b6d5c6018389801dd5a4c463e5debda1189b",
+      "specSha256": "25a685f1a2d3f0b7f6e6547d9d03d88eb26f0102ff8ffb282ce2740da5123ae5",
       "canonicalSha256": "b5cf891ea3443eb8f01df6b517032691c6c7f11af858b76aec3acfcef0c23f94",
       "previous": "releases/v1/personas/P2.json",
       "exitCode": 0,
@@ -118,7 +118,7 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "44f769d515ed060f2c6353a06cc2a62eb589bc791e0e77499811bc9c6969db7a",
-      "specSha256": "dfe0f1276ed6f7f454c8c1f9f017b6d5c6018389801dd5a4c463e5debda1189b",
+      "specSha256": "25a685f1a2d3f0b7f6e6547d9d03d88eb26f0102ff8ffb282ce2740da5123ae5",
       "canonicalSha256": "b5cf891ea3443eb8f01df6b517032691c6c7f11af858b76aec3acfcef0c23f94",
       "previous": "releases/v1/personas/P3.json",
       "exitCode": 0,
@@ -130,7 +130,7 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "3c8acb2dbf8d1a19d41d5fcaa75dca751741294e09922a85296b4dd007d9adb9",
-      "specSha256": "dfe0f1276ed6f7f454c8c1f9f017b6d5c6018389801dd5a4c463e5debda1189b",
+      "specSha256": "25a685f1a2d3f0b7f6e6547d9d03d88eb26f0102ff8ffb282ce2740da5123ae5",
       "canonicalSha256": "b5cf891ea3443eb8f01df6b517032691c6c7f11af858b76aec3acfcef0c23f94",
       "previous": "releases/v1/personas/P4.json",
       "exitCode": 0,
@@ -142,7 +142,7 @@
       "group": "persona",
       "spec": "releases/v2/spec.json",
       "programSha256": "403179842b7a3934598fe5ef9771ce607120d80dcbb0b0dc84850afb0731e02a",
-      "specSha256": "dfe0f1276ed6f7f454c8c1f9f017b6d5c6018389801dd5a4c463e5debda1189b",
+      "specSha256": "25a685f1a2d3f0b7f6e6547d9d03d88eb26f0102ff8ffb282ce2740da5123ae5",
       "canonicalSha256": "b5cf891ea3443eb8f01df6b517032691c6c7f11af858b76aec3acfcef0c23f94",
       "previous": "releases/v1/personas/P5.json",
       "exitCode": 0,
@@ -154,7 +154,7 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "ff73f5641cc3e7b4905a859651f3c56146d1a6a168b55adfe90ab82fdbe3fa99",
-      "specSha256": "2cd372ae6adc8f8d8e4f63594a2c70a06e9e5b7732d3da090c7cb2299508e0c0",
+      "specSha256": "15274d6f3f8ab70645c0d6391daf2832f61ba94eac8755601d4614c633702b39",
       "canonicalSha256": "41c51633327b35ad5e32aebdba8e22e8e502f52ebaef8709d6118e633b22b26a",
       "previous": "releases/v2/personas/P1.json",
       "exitCode": 0,
@@ -166,7 +166,7 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "ee1fd818c54bf62ba0a801c50cee406fa4547a69a140a0a338187e41c8e88741",
-      "specSha256": "2cd372ae6adc8f8d8e4f63594a2c70a06e9e5b7732d3da090c7cb2299508e0c0",
+      "specSha256": "15274d6f3f8ab70645c0d6391daf2832f61ba94eac8755601d4614c633702b39",
       "canonicalSha256": "41c51633327b35ad5e32aebdba8e22e8e502f52ebaef8709d6118e633b22b26a",
       "previous": "releases/v2/personas/P2.json",
       "exitCode": 0,
@@ -178,7 +178,7 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "06217cb41d37381dec37825a2c31f3290f2c3fcb3f1299dff36fe66d37448ea7",
-      "specSha256": "2cd372ae6adc8f8d8e4f63594a2c70a06e9e5b7732d3da090c7cb2299508e0c0",
+      "specSha256": "15274d6f3f8ab70645c0d6391daf2832f61ba94eac8755601d4614c633702b39",
       "canonicalSha256": "41c51633327b35ad5e32aebdba8e22e8e502f52ebaef8709d6118e633b22b26a",
       "previous": "releases/v2/personas/P3.json",
       "exitCode": 0,
@@ -190,7 +190,7 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "027a98ad24741401fcf14b4481dd8259949a5470b2794a0089e39af3d37c543a",
-      "specSha256": "2cd372ae6adc8f8d8e4f63594a2c70a06e9e5b7732d3da090c7cb2299508e0c0",
+      "specSha256": "15274d6f3f8ab70645c0d6391daf2832f61ba94eac8755601d4614c633702b39",
       "canonicalSha256": "41c51633327b35ad5e32aebdba8e22e8e502f52ebaef8709d6118e633b22b26a",
       "previous": "releases/v2/personas/P4.json",
       "exitCode": 0,
@@ -202,7 +202,7 @@
       "group": "persona",
       "spec": "releases/v3/spec.json",
       "programSha256": "c926d44d06c72a7470ca738d1864ccc174fd8fa6097a768d1be5036fff45bae2",
-      "specSha256": "2cd372ae6adc8f8d8e4f63594a2c70a06e9e5b7732d3da090c7cb2299508e0c0",
+      "specSha256": "15274d6f3f8ab70645c0d6391daf2832f61ba94eac8755601d4614c633702b39",
       "canonicalSha256": "41c51633327b35ad5e32aebdba8e22e8e502f52ebaef8709d6118e633b22b26a",
       "previous": "releases/v2/personas/P5.json",
       "exitCode": 0,
@@ -214,7 +214,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "f9e3da1d77b69468a7a2d080bbcf0ddbffa938bdb2d5db2b38c4c46e41da94d7",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -283,7 +283,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "7b0671e708ce2ef40e3769546d2fa7e506f946083e196f8ab97139f15dd851b4",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -342,7 +342,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "c9737538b8ae327c6b1b0ecd014563f6b3f6df7f5bff93d3fb8dd4552f4a923d",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -387,7 +387,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "ff215f63190468df2f1c1b398fed41d0771b98868f5e23a63b95de6e12142d94",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -449,7 +449,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "3d322fc8d3da0d0101b324a1596fef003bb527e19e0a04dab7ba130b80e60ff2",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -501,7 +501,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "4b05bf7f95f3eab5ec17948a51ae5397b1e4fd720ccf7bc9267cfc2260de0c68",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -539,7 +539,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "38ec86b31eee96dc1c3458512cd07bd155afd41c438e542b7c0598181b2d019d",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -568,7 +568,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "0c9e8b813e87b3e908136d1a75ed4f15605f8f94fdcae7966feae279814d24b8",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -616,7 +616,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "8f0864593eefd28ec0c3a798c7dd208f16194da8004f53b8fc5cbf7255557209",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -671,7 +671,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "7a5accc5d648ee66d0c1f7dc5a34019c6d7cdcf0b816ec7ff0b1b1e94fbf3695",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -716,7 +716,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "5c7969df360a7a101249e1cab3cf592da80b2e0b7d64f2fe7e4e47c60393b393",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -761,7 +761,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "402f022b4ade1bc59f78667fe27d4b094e00f3239732b974328e28ce8271cc0e",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -799,7 +799,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "0f67aae5ab2d4c40ba37705e80bb79de140b104cebf586b63317d77c2d5a0605",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -868,7 +868,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "9014b5e67175fcd40968167bd490b342428a933133eab1278e7c92a9e225a428",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -923,7 +923,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "74a6f40c685970142f2da8829927eb04a98f2c7525f481f42d2b197cd8d46bb8",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -992,7 +992,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "cb56156fa1e5a53296e5f3e47e6954a552890257bda1b7a417328cf95f382a9c",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -1006,7 +1006,7 @@
             "w1Sign"
           ],
           "property": "completable",
-          "message": "commit signOrders: no field the user can reach for required element weight",
+          "message": "commit signOrders: no reachable medication or service order selection; empty signing is forbidden",
           "counterexample": [
             {
               "click": {
@@ -1061,7 +1061,7 @@
       "group": "bad",
       "spec": "releases/v1/spec.json",
       "programSha256": "f54843fc01c8680678000d329c1b696108beb748b5b1b93a82c465411752ac85",
-      "specSha256": "6be2ce402c1fb73279a5c9fd189a9140e815b5d9fea8b3a66691ffe52d30a47d",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
       "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
       "previous": null,
       "exitCode": 1,
@@ -1146,6 +1146,280 @@
           {
             "blocked": {
               "reason": "entry required: assessment"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/36-cures-without-review.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "302095996c71e21af319d2fa916203cdecd7a3d0cedcc9d42b30e8c1b6c8a55c",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
+      "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/37-stale-dosing-weight.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "032f6463d68f40c519635415bf1a80cf770f682fb24c6addc4eab6a7681caa35",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
+      "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders"
+          ],
+          "property": "capturesAllOnce",
+          "message": "field w1Orders.dosingWeight on screen w1Orders asks for dosingWeight, which is linked from weight and must not be typed again",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "capturesAllOnce",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 2,
+        "results": [
+          "ok",
+          "ok"
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/38-cross-patient-panel.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "342355d66edabc13d2245814c9101157654057c3f412e1393681cf228c6ef305",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
+      "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home"
+          ],
+          "property": "writesOnly",
+          "message": "button foreignAllergies on screen home reviews info patient-A-allergies, which is not in the spec",
+          "counterexample": []
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "writesOnly",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 0,
+        "results": [],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/39-empty-order-signing.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "a71e5e0186effd5b454883eb42c231355d3f7b5a7d9327684896a09acca39e86",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
+      "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Verify",
+            "w1Sign"
+          ],
+          "property": "completable",
+          "message": "commit signOrders: no reachable medication or service order selection; empty signing is forbidden",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Verify.continue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 5,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: patientIdReentry"
+            }
+          }
+        ],
+        "scope": "navigation replay; not a semantic violation proof"
+      }
+    },
+    {
+      "program": "lean/Ehr/Check/bad/40-denial-without-reason.json",
+      "group": "bad",
+      "spec": "releases/v1/spec.json",
+      "programSha256": "ff8de0463be3681a5e47341ec2015e7f8f326c16cca1f877864b23f1b9fde24f",
+      "specSha256": "2ab579b11dc655d40a4650c1c769f367376b4cf6d1a8765f0a6007aadc79d09e",
+      "canonicalSha256": "1cf37aa9d3180d35c2b4a43224dfb46678d68f6514026b4109a2a33c1f180265",
+      "previous": null,
+      "exitCode": 1,
+      "verdict": {
+        "violation": {
+          "screens": [
+            "home",
+            "w7Queue",
+            "w7Review",
+            "w7Decision"
+          ],
+          "property": "completable",
+          "message": "commit denyRefill: no field the user can reach for required element refillDenyReason",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w7Queue"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Queue.open"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Review.decide"
+              }
+            },
+            {
+              "click": {
+                "comp": "w7Decision.commit.denyRefill"
+              }
+            }
+          ]
+        }
+      },
+      "status": "rejected",
+      "expectedProperty": "completable",
+      "expectedPropertyRejected": true,
+      "replay": {
+        "valid": true,
+        "eventCount": 4,
+        "results": [
+          "ok",
+          "ok",
+          "ok",
+          {
+            "blocked": {
+              "reason": "entry required: refillDecision"
             }
           }
         ],
