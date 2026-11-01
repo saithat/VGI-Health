@@ -1340,6 +1340,13 @@ expected ARIA in TypeScript and retains the old nav interpretation. That is not
 a proved Lean ARIA projection. The new work is explicitly tracked in
 TODO_PROOFS.md, separately from the completed semantic render proofs.
 
+**New visible-control acceptance criterion (`2710777`):** app/core/content must
+implement `pnpm --filter app audit:buttons`, its `docs/audits/buttons.md` report
+and regression gate. The script is currently absent from app/package.json.
+Retain D3 enabled-state fidelity and T10 shown-component presence: implement the
+actual event effect or remove an unsupported control in its owning program/core
+source, rather than dropping a shown component in the painter to pass the audit.
+
 **WASM owner:** rebuild/refresh installed assets and source manifest after merging
 this content checkpoint. Core/Render runtime definitions and wire types were not
 changed here, but the manifest hashes content sources and is now stale. Native and

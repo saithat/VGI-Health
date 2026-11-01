@@ -1,0 +1,140 @@
+{
+  "verifiedAtUtc": "2026-11-01T04:20:01.212650+00:00",
+  "runtimeChangeCommit": "dadb423",
+  "mainIntegrationCommit": "1f3ebe0",
+  "leanRenderBuild": {
+    "result": "passed",
+    "jobs": 32
+  },
+  "renderComparator": {
+    "result": "passed",
+    "contracts": 35,
+    "statementsUnchangedFrom": "f58a24e"
+  },
+  "kernelCheck": {
+    "result": "passed",
+    "scope": "Ehr.Render exported environment",
+    "allowedAxioms": [
+      "propext",
+      "Quot.sound",
+      "Classical.choice"
+    ]
+  },
+  "wasm": {
+    "build": "passed",
+    "manifestCheck": "passed",
+    "bytes": 2031202,
+    "sha256": "7a67c34a907a7a30724eb99e51e7c011fc137de01db31b3c92a17ebf1be083bc",
+    "leanSourceHash": "74eee8d8f3934ea5bbfc020f33c3b1b77b1c6b85a074afb1b96039a5f23505a1",
+    "lean": "4.35.0",
+    "emscripten": "6.0.13"
+  },
+  "differential": {
+    "totalVariants": 14225,
+    "current": {
+      "states": 9843,
+      "screens": 45,
+      "shards": 4,
+      "syntheaBundles": 174,
+      "completeDisjointCoverage": true,
+      "exactShardInputs": true,
+      "allExpandedScanProbes": true,
+      "wasmSha256": "7a67c34a907a7a30724eb99e51e7c011fc137de01db31b3c92a17ebf1be083bc",
+      "nativeSha256": "fe78375eddb2b3dc4c6826c1020473506c10b4cb08a5d56cb1222c0e71c55370",
+      "programSha256": "4207659e6465ce07f215fd234fcca76c47f97806a33e0ea76a574196fb492d5b",
+      "specSha256": "e2a9dcf9559ae4428b7356b77b43d09bb953b9bccde916a0d4881a5f3925049d"
+    },
+    "historical132ScreenBaseline": {
+      "states": 4382,
+      "screens": 132,
+      "shards": 4,
+      "syntheaBundles": 174,
+      "completeDisjointCoverage": true,
+      "exactShardInputs": true,
+      "allExpandedScanProbes": true,
+      "wasmSha256": "7a67c34a907a7a30724eb99e51e7c011fc137de01db31b3c92a17ebf1be083bc",
+      "nativeSha256": "fe78375eddb2b3dc4c6826c1020473506c10b4cb08a5d56cb1222c0e71c55370",
+      "programSha256": "e511aca554ecc40567331b83e80ab0d171ec4c429249292629f2667fa56eab18",
+      "specSha256": "355fbdec7a301fc7b500a6009b166940c6137b930ef9c04fbdbaff2596daa643"
+    },
+    "historicalSourceCommit": "f58a24e",
+    "nativeDriver": "Direct native calls to the exact exported Core/Render API functions; aggregate CLI build is blocked by Sim tests.",
+    "nativeDriverRebuild": "lean/Ehr/Render/build-native-test.sh",
+    "nativeDriverSourceSha256": "8ad437702924c6b6fe6be6341a625998b65beea871aaeaba0997334ea5ee8585",
+    "checks": [
+      "facts for every Synthea bundle",
+      "native/WASM HTML and semantic UI equality",
+      "shown component identity and enabled-state fidelity",
+      "full and compact clinical rows",
+      "current captured orders and native/WASM Event.click on real goto component IDs",
+      "three populated P1 samples",
+      "RN wristband acceptance and unrelated-token rejection",
+      "WASM malformed-input error envelopes"
+    ]
+  },
+  "typescript": {
+    "app": {
+      "build": "passed",
+      "lint": "passed",
+      "tests": 152
+    },
+    "agent": {
+      "typecheck": "passed",
+      "lint": "passed",
+      "tests": 31
+    },
+    "world": {
+      "build": "passed",
+      "lint": "passed",
+      "tests": 92
+    },
+    "generatedSamplesStrictTsc": "passed",
+    "infraTests": 7
+  },
+  "browser": {
+    "passed": 15,
+    "intentionalSkips": 3,
+    "screenshotChecks": 3,
+    "screenshotImages": 6,
+    "samples": [
+      "w1Rooming",
+      "w1Orders",
+      "w1Sign"
+    ],
+    "visualReview": "completed"
+  },
+  "cache": {
+    "nativeOrdersBeforeSeconds": 40.06,
+    "nativeOrdersAfterSeconds": 0.05,
+    "identicalOrdersJson": true,
+    "equalityWitnesses": [
+      "Ctx.v_exact",
+      "Ctx.rebuild"
+    ]
+  },
+  "wholeProjectLeanBuild": {
+    "result": "failed",
+    "remainingModule": "Ehr.Sim.PolicyTests",
+    "assertionLines": [
+      31,
+      32
+    ],
+    "renderFailuresResolved": true,
+    "nativeReplayCompleted": false,
+    "nativeReplayComplaints": [
+      "naloxone response unspecified; modeling offered-declined",
+      "signOrders: obligation ca-title22-70223-hp-24-hours:temporal026 is Ehr.ObligationStatus.missing",
+      "signOrders: obligation ca-title22-70223-hp-24-hours:temporal027 is Ehr.ObligationStatus.missing",
+      "structured display or action label required",
+      "visit: no reachable unmet goal; incomplete"
+    ],
+    "wholeProjectKernelCheck": "blocked until owning-lane build regression is fixed; render export checked separately"
+  },
+  "remainingWork": "HANDOFF-render.md",
+  "validationToolSha256": {
+    "lean/Ehr/Render/test-wasm.mjs": "e1c2472d4cba72ff2fcb1732eed4109e1e782f884034168e49c265211efd84ae",
+    "lean/Ehr/Render/prepare-shards.py": "24aa2f5e7419bbe9b39f5030fdf2ec77823abdf709ffda221b68512c5de9fe4d",
+    "lean/Ehr/Render/audit-shards.py": "e31935bf826bfd93c8f9d36490e42b5fd654d832d769fd53266db74852028045",
+    "lean/Ehr/Render/build-native-test.sh": "67c32f7b0c4b8083744d903a38db7eef38194b4fa735773d2b809505d75f780e"
+  }
+}

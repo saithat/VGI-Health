@@ -2,137 +2,125 @@
 
 Worktree `/home/saithat/Projects/VGI-render`, branch `lane/render`.
 
-## Completed and pushed in this continuation
+## Completed and pushed
 
-- `97f1b38`: initial origin/main integration; resolved GenTS by preserving both exports.
-- `4040ba7`: single shell banner; real goto comp IDs in nav; sidebar placement;
-  human dates/reasons; captured order tables; compact clinical summaries; proofs.
-- `f2c763f`: latest simulator and clinical app theme integration from main.
-- `251464f`: remove repeated section/child labels, preserve exact editable values
-  and supplied artifact rows, strengthen full-panel T11, regenerate P1 samples.
-- `44044cf`: P1 orders/sign samples carry a synthetic prescription entered through
-  actual human interpreter events. Export fails on hidden/blocked fields. Also
-  preserve non-active summary statuses and don't invent "today" without asOf.
-- `c235dd6`: merge main's live-backend brief and worklist-seeding integration
-  (main at `80e45b9`); infra's new tests pass.
+- Reviewed saved WIP `f58a24e`; retained the earlier shell, clinical summary,
+  captured-order, human-date and full-panel proof work.
+- `bc457f2`: merged main's content blueprint (45 canonical screens).
+- `d7ed156`: finished saved navigator regression, removed identical nested
+  section headings, and preserved the historical corpus in the exporter.
+- `dadb423`: compute the interpreter view once per render, with dependent
+  equality witnesses `Ctx.v_exact` and `Ctx.rebuild`. Every registered theorem
+  statement is unchanged. Native orders rendering improved from 40.06 s to
+  0.05 s with identical JSON. Rebuilt WASM and populated P1 samples.
+- `670a748`: merged main's live app/dashboard work; resolved its generated
+  manifest conflict by rebuilding WASM.
+- `1108805`: bounded differential-worker memory and added coverage/hash audits.
+- `1f3ebe0`: merged main's final visible-control acceptance criterion.
+- Final verification is recorded in `lean/Ehr/Render/validation.json`.
 
-No Core/Specs/Canonical/Props/Check/Sim/app implementation was edited. App changes
-are generated semantic samples and their README, explicitly requested. GenTS
-changes are merge resolutions retaining both lanes' export checks.
+No Core/Specs/Canonical/Props/Check/Sim/app implementation was edited. App
+changes authored here are generated WASM assets, P1 semantic samples and their
+README, as requested. All other-lane source changes arrived through main merges.
 
-## Contracts
+## Preserved contracts
 
-- The program's banner contributes to `UiScreen.banner`, not a workspace panel.
-- Non-collapsible groups tagged nav/navigator route ordinary enabled goto buttons
-  to nav, using real comp IDs. Blocked/hotkey controls retain full workspace
-  button metadata because the nav pair has no fields for it. Group titles remain.
-- Sidebar-tagged groups/descendants route to side. Compact list rows retain all
-  allergies/current meds, active unresolved problems, latest vitals per code.
+- One shell banner; program banners are excluded from workspace/side. Nav-tagged
+  non-collapsible groups contribute real shown, enabled goto component IDs to
+  nav. Blocked/hotkey controls keep their complete workspace button metadata.
+- Tagged sidebar components render in side. Compact list rows preserve every
+  allergy/current medication, unresolved problem, and latest vital per code.
   Full workspace panels retain full records, including resolved problems.
-- T10 observes the actual workspace/side, nav pairs as click buttons, and shell
-  banner data. Read-only banners/default summaries use an empty non-event ID.
-- D2_workspace_required proves full-detail required reviews in workspace, even
-  when the interpreter counts a compact sidebar as shown. T11_ui_full_info proves
-  each workspace info's exact source ID and every full row. Semantic T11 also
-  covers complete compact record projections; original HTML/FHIR statements stay
-  unchanged. No guard, spec, safety rule or Props definition was weakened.
-- Order-summary/controlled-signing tables read current State order captures,
-  preserving captured dose+unit, route, frequency, duration, quantity, refills,
-  directions, indication and prescriber details. Supplied artifact rows remain.
-- Read-only ISO dates/date-times are human formatted without inventing timezone
-  conversions; narratives beginning with a date aren't truncated. Editable values
-  keep exact interpreter spelling. Reasons replace identifier tokens with labels.
+- D2 requires complete review rows in workspace, even when Core counts a compact
+  sidebar as shown. T11 preserves each full panel's exact source ID and rows.
+- Signing tables use this episode's captured medication lines, with dose/unit,
+  route, frequency, duration, quantity, refills, directions, indication and
+  captured prescriber details. Supplied artifact rows remain intact.
+- Read-only dates are human formatted; editable values retain exact interpreter
+  spelling. Reasons use spec labels. Repeated direct parent/child headings use
+  a neutral inner label without losing source IDs or children.
+- Cache witnesses require the exact current interpreter output. State/program
+  fixture updates rebuild the cache; stale caches do not typecheck. No property,
+  guard, spec rule, or theorem statement was weakened.
 
-## Verification completed so far
+## Final verification
 
-- Full Lean build passed before the second main merge (165 jobs).
-- Initial render Comparator passed all 34 registered statements. Added the exact
-  full-panel T11 theorem afterward: final registered count is 35 (20 semantic).
-- Every final render module/proof/example compiles in an isolated `/tmp` library,
-  with only propext, Classical.choice and Quot.sound in axiom audits. No holes.
-- App build/lint/129 tests, agent typecheck/lint/31 tests, world build/lint/92 tests
-  passed. Infra's newly merged seed tests pass.
-- Refreshed initial and human-populated P1 samples each passed 15 desktop/narrow
-  ARIA/visibility/contrast checks (3 intentional per-project skips), and 3 shots.
-- Generated TS samples pass strict tsc. Finished render sources have no sorry,
-  admit, new axioms or native_decide.
+- `LEAN_NUM_THREADS=1 lake build Ehr.Render`: **passed**, 32 jobs.
+- Render Comparator: **35 contracts passed**; all 35 statement signatures match
+  saved WIP `f58a24e`. Kernel check of the complete render export passed.
+  Axiom audits use only propext, Quot.sound and Classical.choice. Finished render
+  modules contain no sorry, admit, new axioms or native_decide.
+- `make wasm` and `make wasm-check`: **passed** with the authorized SDK symlinks.
+  Tested WASM SHA-256:
+  `7a67c34a907a7a30724eb99e51e7c011fc137de01db31b3c92a17ebf1be083bc`.
+- **14,225 native/WASM variants passed**: all 9,843 variants of the 45-screen
+  current canonical plus all 4,382 variants of the 132-screen historical
+  canonical. Four shards per corpus; all original state bodies/indexes, every
+  expanded scan probe, disjoint coverage, and one WASM/native hash audited.
+  All 174 Synthea bundles match; RN wristband acceptance/rejection is exercised.
+- App build/lint/**152 tests**, agent typecheck/lint/**31 tests**, world
+  build/lint/**92 tests**, infra **7 tests**, generated-sample strict tsc: passed.
+- The three populated P1 samples pass **15 browser checks** (3 intentional skips)
+  and **3 screenshot checks** (6 PNGs). Rooming/orders/sign images were reviewed,
+  including the populated signing table. Screenshots are under `app/shots/`.
+- **Full project Lean build fails** the unchanged canonical task-completion and
+  floor assertions at `Ehr/Sim/PolicyTests.lean:31–32`. The initial render failure
+  during iteration was fixed and all render modules subsequently rebuilt. The
+  whole-project kernel check remains blocked by that owning-lane build failure;
+  the successful render-export kernel check is not a whole-project claim.
 
-## Restart continuation
+No render build/test process remains running. All eight differential shards and
+both auditors finished successfully. Logs and reports are `/tmp/render-*`.
 
-- Integrated main's 45-screen content blueprint as `bc457f2` (pushed).
-- Reviewed the saved WIP. Added a full-render regression for non-collapsible
-  navigator groups with a saved startCollapsed bit. Identical direct nested
-  section titles now use a neutral inner heading without losing IDs/children.
-- The exporter can also load historical spec/program JSON, so the previous
-  132-screen / 4,382-variant corpus remains part of differential verification.
-- Targeted `LEAN_NUM_THREADS=1 lake build Ehr.Render` passes with axiom audits.
-  App build/lint/132 tests, agent typecheck/lint/31 tests, world build/lint, and
-  infra's seven tests pass before the final asset refresh.
-- **Full build is currently blocked by an owning-lane regression:**
-  `Ehr/Sim/PolicyTests.lean:31–32` fails canonical task completion and its floor
-  assertion after 830 seconds of evaluation. Both assertions are unchanged.
-  This is recorded in changes-requests.md; render cannot edit Sim/content.
-- The original background cells/sessions did not survive the restart. Old cells
-  38 and 83 are finished/stopped; do not resume their old Lake session IDs.
-  Logs: `/tmp/render-{final-build,cached-build,comparator,kernel-check}.log`.
-- SDK symlinks still point to the authorized shared .tools SDK directories.
-- A performance regression on the folded orders screen is fixed: Ctx now stores
-  one view with a dependent proof that it equals the actual interpreter output.
-  State/program fixture updates explicitly rebuild that cache. No theorem
-  statement changed; all render modules, 35 Comparator contracts, and a kernel
-  check of the full render export pass. Only the permitted three axioms occur.
-  The exact same orders JSON takes 0.05 seconds instead of 40.06 seconds natively.
-- Current/legacy exports contain 9,843 / 4,382 variants (all 45 / 132 screens).
-  Rebuilt WASM matches all three regenerated native P1 samples. Before the cache
-  rebuild, final app build/lint/132 tests and 15 browser checks passed (3 intended
-  skips); world 92 tests passed. Differential shards and final assets remain.
-- The aggregate CLI imports the failing Sim test. A temporary runtime-only
-  native driver under `.tools/render-native` calls the exact exported Core/Render
-  API functions, without implementing any clinical logic. The differential runner
-  accepts its path through EHR_RENDER_NATIVE and records its binary hash.
-- Pushed `dadb423` (the exact view cache, WASM, samples) and `670a748` (second main
-  integration). Its generated manifest conflict was resolved by `make wasm`.
-  Final app build/lint/**152** tests, agent typecheck/lint/**31** tests, world
-  build/lint/**92** tests, generated-sample strict tsc, **15** browser checks
-  (3 intended skips), and **3** screenshot checks pass on the merged assets.
-- Four reduced-memory Node workers are active: sessions **89632, 48595, 52119,
-  42010**, shards 0–3 respectively. Each checks current then legacy corpus.
-  There is no active Lake build. Logs/reports are `/tmp/render-{current,legacy}-shard-{0,1,2,3}.{log,json}`.
-  All original indexes and all expanded scan probes survive the pre-split files.
-  `prepare-shards.py` and `audit-shards.py` make splitting/auditing reproducible.
-- pnpm 11 uses a worktree-local store here: set
-  `pnpm_config_store_dir="$PWD/.tools/pnpm-store"` for package commands; the
-  default external store is read-only in this sandbox.
-- A compiled replay of unchanged PolicyTests definitions reports missing
-  `ca-title22-70223-hp-24-hours:temporal026` / `:temporal027`, then the structured
-  display/action-label hard stop. The owning-lane request contains this diagnosis.
+## Reproduction notes
+
+The aggregate CLI imports the failing Sim test. The differential tests therefore
+use a runtime-only native driver calling the **exact exported Core/Render API
+functions**, with no replacement clinical logic. Build it with
+`lean/Ehr/Render/build-native-test.sh` (one Lake process at a time). The tracked
+script's driver source matches the tested source byte for byte.
+
+Set `EHR_RENDER_NATIVE="$PWD/.tools/render-native/.lake/build/bin/render-native"`.
+`prepare-shards.py` creates the four memory-bounded inputs from each complete
+`states.json`; `test-wasm.mjs` accepts EHR_RENDER_SHARD_COUNT/INDEX/INPUT/REPORT;
+`audit-shards.py <corpus-dir> <four-reports>` checks the exact original bodies,
+scan probes, complete disjoint indexes and current binary hashes. Both the
+current and historical native/WASM inputs remain in `/tmp/render-{final,legacy}-api`.
+The historical spec/program are from `f58a24e`. Current P1 samples come from the
+complete current release and actual checked human enter events.
+
+For pnpm 11 in this sandbox, set
+`pnpm_config_store_dir="$PWD/.tools/pnpm-store"`; its default external SQLite
+store is read-only. Shared SDK links remain under this worktree's `.tools`.
 
 ## Exactly what is left
 
-1. Finish the four differential shards per corpus, run their complete/disjoint
-   coverage and binary-hash audits, refresh final verification receipt/handoff,
-   and commit/push. The completed render kernel check covers the exported render
-   environment; whole-project build/check remain blocked by the unchanged Sim
-   assertion failures. Do not repeat the 830-second failed build without an
-   owning-lane fix or new evidence that its dependencies changed.
-2. **App owner:** paint nav pairs as clickable buttons with Event.click(comp),
-   open available navigator groups by default, and include entries in fidelity.
-   The old screen-ID/active-screen accordion default otherwise hides all entries.
-   No new Core navigation Event is necessary. Request is in changes-requests.md.
-3. **Core/content:** InfoSpec still lacks verbatim text. Add optional text and
-   provide the exact 21 CFR 1311.140(a)(3) notice, then render its body verbatim.
-   Current source is an authoring instruction. Render must not fabricate it.
-4. **Checker/content:** integrate/certify D5 with the real interactive projection.
-   The new 45-screen overview diagnostic passes; it does not certify that projection.
-5. **App/infra:** prior exact Facts.patientId Synthea wristband-token request
-   remains. Native/WASM acceptance/rejection stays in the differential suite.
+1. **Sim/content:** repair `PolicyTests.lean:31–32`, then pass the full Lean build
+   and whole-project kernel check. Compiled replay of the unchanged fixture
+   reports missing `ca-title22-70223-hp-24-hours:temporal026` / `:temporal027`,
+   followed by the structured-display/action-label hard stop and an unreachable
+   goal. Actual popups are 0 versus floor 1. Supply truthful episode context and
+   required data; never fabricate completed H&P evidence or weaken assertions.
+2. **App:** paint nav pairs as buttons dispatching `Event.click(compId)`, open
+   available groups by default, and observe their real entries/events in fidelity.
+   The current painter still treats component IDs like screen IDs and uses text.
+3. **Core/content, then render:** add literal InfoSpec text, supply the exact
+   21 CFR 1311.140(a)(3) notice, and render its body verbatim. The reviewed quote
+   is in changes-requests.md, but the compiled spec still has no text member.
+4. **Checker/content:** certify D5 against the real interactive projection. The
+   45-screen workflow overview diagnostic passes; it does not certify that nav.
+5. **App/infra:** complete the exact Facts.patientId Synthea wristband-token
+   integration. Native/WASM acceptance/rejection is verified; this is an app/data
+   integration request, not a new validator or permissive token fallback.
+6. **New main requirement (render/app):** define/prove Lean `aria : UiScreen →
+   AriaNode` and have app fidelity consume it (BRIEF `f60a795`). Existing proofs
+   cover UiScreen and expected ARIA remains TypeScript. This new work is marked
+   not started in TODO_PROOFS.md; no unfinished proof declaration is hidden.
+7. **New main requirement (app/core/content):** implement `audit:buttons`,
+   `docs/audits/buttons.md` and the regression gate from BRIEF `2710777`. The
+   package script does not exist yet. Keep shown components and D3/T10 semantics
+   intact while implementing real actions or removing them in the owning source.
 
-6. **Sim/content:** repair the canonical PolicyTests regression above; full build
-   and whole-project kernel check must pass after that integration.
-7. **New main requirement (render/app):** implement the Lean `aria`/`AriaNode`
-   projection and its proofs/consumer added by BRIEF `f60a795`. Current proofs
-   cover UiScreen, and current expected ARIA is still TypeScript. This new work
-   is explicitly marked not started in TODO_PROOFS.md; no proof hole is hidden.
-
-All cross-lane requests are in docs/design/changes-requests.md. App's primary
-compact-list-cell painting is resolved by main d3e0860. No unfinished render proof.
+All cross-lane requests and the concrete simulator diagnosis are in
+`docs/design/changes-requests.md`. The requested render visual-fix verification,
+WASM rebuild, sample regeneration and both complete corpus audits are finished.
