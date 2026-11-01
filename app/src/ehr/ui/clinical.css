@@ -341,10 +341,7 @@
   background: var(--clinical-primary);
   border-color: var(--clinical-primary);
 }
-.complete .step-number {
-  color: var(--clinical-green-ink);
-  background: var(--clinical-green-tint);
-}
+
 .clinical-control .mantine-Input-input {
   height: 32px;
   min-height: 32px;
@@ -708,4 +705,13 @@
   .clinical-summary > div {
     grid-template-columns: minmax(72px, 0.8fr) minmax(0, 1.2fr);
   }
+}
+
+.clinical-table-scroll table[data-medication-grid] td {
+  min-height: 40px;
+  height: 40px;
+}
+.clinical-info[data-info-id="mar"] td {
+  min-height: 48px;
+  height: 48px;
 }

@@ -151,7 +151,7 @@ for (const file of fixtures)
         await expect(page.getByRole("banner")).toContainText(
           formatDisplayValue(value),
         );
-    const infos = [...screen.workspace, ...screen.side]
+    const infos = [...screen.side, ...screen.workspace]
       .flatMap(nodes)
       .flatMap((node) => ("info" in node ? [node.info] : []));
     for (const [index, info] of infos.entries()) {
@@ -241,4 +241,238 @@ test("fidelity gate detects label drift, wrong disabled state, illegible and cov
   await expect(visibility(page)).rejects.toThrow();
   await cover.evaluate((el) => el.parentNode?.removeChild(el));
   await visibility(page);
+});
+
+const denseScreen: UiScreen = {
+  banner: [
+    ["Patient", "Alexandra Morgan – long patient name"],
+    ["DOB", "1968-07-03"],
+    ["MRN", "123456"],
+  ],
+  nav: [],
+  title: "Medication review",
+  workspace: [
+    {
+      field: {
+        comp: "scan",
+        label: "Scan medication",
+        kind: "scan",
+        value: null,
+        unit: null,
+        provenance: null,
+        pendingConfirm: false,
+        humanOnly: true,
+        required: true,
+      },
+    },
+    {
+      info: {
+        comp: "medications",
+        infoId: "medications",
+        label: "Medication records",
+        display: "table",
+        rows: Array.from({ length: 24 }, (_, index) => [
+          ["Medication", `Medication ${index + 1} 250 mg oral tablet`],
+          [
+            "Instructions",
+            "Take one tablet by mouth with food; complete instructions remain available for clinical review.",
+          ],
+          [
+            "Status",
+            [
+              "Scheduled 12:00",
+              "Due 09:00",
+              "Overdue 09:00",
+              "Given 09:12",
+              "Held",
+              "Refused",
+              "Stopped",
+              "unknown",
+            ][index % 8] ?? "unknown",
+          ],
+          ["Recorded", "2026-10-31T00:30:00Z"],
+        ]),
+      },
+    },
+    {
+      info: {
+        comp: "history",
+        infoId: "history",
+        label: "History",
+        display: "list",
+        rows: Array.from({ length: 24 }, (_, index) => [
+          ["Problem", `History record ${index + 1}`],
+          ["Status", "unknown"],
+        ]),
+      },
+    },
+    {
+      button: {
+        comp: "record",
+        label: "Record administration",
+        role: "primary",
+        enabled: false,
+        blockedReason: "Scan medication",
+        hotkey: null,
+      },
+    },
+    ...["critical", "warning", "informational", "success"].map(
+      (severity): UiNode => ({
+        alert: {
+          comp: severity,
+          alertId: severity,
+          label: `${severity} supplied status`,
+          severity,
+        },
+      }),
+    ),
+  ],
+  side: [],
+  modal: null,
+};
+
+test.describe("clinical presentation", () => {
+  test.use({ timezoneId: "America/Los_Angeles" });
+
+  for (const width of [1440, 1280, 720])
+    test(`all long records and controls survive at ${width}px${width === 720 ? " (200% desktop reflow equivalent)" : ""}`, async ({
+      page,
+    }, testInfo) => {
+      test.skip(
+        testInfo.project.name !== "desktop",
+        "Additional desktop/reflow sizes",
+      );
+      await page.setViewportSize({ width, height: width === 1280 ? 800 : 900 });
+      await page.goto("/screen-check.html");
+      await page.waitForFunction(() => typeof window.renderUi === "function");
+      await render(page, denseScreen);
+      expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
+        expectedAria(denseScreen),
+      );
+      await visibility(page);
+      await expect(page.getByRole("table").locator("tbody tr")).toHaveCount(24);
+      await expect(
+        page.getByRole("list", { name: "History" }).locator("li"),
+      ).toHaveCount(24);
+      await expect(
+        page.locator('time[datetime="2026-10-31T00:30:00Z"]').first(),
+      ).toHaveText("30 Oct 2026");
+      await expect(page.getByRole("banner")).toContainText("03 Jul 1968");
+      await expect(page.locator(".status-green").first()).toHaveText(
+        "Given 09:12",
+      );
+      await expect(page.locator(".status-red").first()).toHaveText(
+        "Overdue 09:00",
+      );
+      await expect(
+        page.locator(".clinical-info-list table, .clinical-info-list dl"),
+      ).toHaveCount(0);
+    });
+
+  test("keyboard focus is visible, scanner Enter cannot commit, and dialog focus stays contained", async ({
+    page,
+  }) => {
+    await page.goto("/screen-check.html");
+    await page.waitForFunction(() => typeof window.renderUi === "function");
+    await render(page, denseScreen);
+    await page.keyboard.press("Tab");
+    const scan = page.getByRole("textbox", { name: "Scan medication" });
+    await expect(scan).toBeFocused();
+    expect(
+      await scan.evaluate((el) => {
+        const style = getComputedStyle(el);
+        return [style.outlineWidth, style.outlineStyle, style.outlineColor];
+      }),
+    ).toEqual(["2px", "solid", "rgb(36, 90, 129)"]);
+    await page.keyboard.press("Enter");
+    await expect(
+      page.getByRole("button", { name: "Record administration" }),
+    ).toBeDisabled();
+    const modal: UiNode = {
+      section: {
+        id: "review",
+        title: "Review medication",
+        children: [
+          {
+            text: {
+              s: "Review the supplied medication evidence before acknowledging.",
+            },
+          },
+          {
+            button: {
+              comp: "review",
+              label: "Acknowledge",
+              role: "ack",
+              enabled: true,
+              blockedReason: null,
+              hotkey: null,
+            },
+          },
+        ],
+      },
+    };
+    await render(page, { ...denseScreen, modal });
+    const dialog = page.getByRole("dialog", { name: "Review medication" });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator(".clinical-modal-body")).toBeFocused();
+    for (let index = 0; index < 3; index++) {
+      await page.keyboard.press("Tab");
+      expect(
+        await dialog.evaluate((el) => el.contains(document.activeElement)),
+      ).toBe(true);
+    }
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeVisible();
+    await render(page, denseScreen);
+    await expect(scan).toBeFocused();
+  });
+
+  test("rendered status, alert and disabled text meet clinical contrast", async ({
+    page,
+  }) => {
+    await page.goto("/screen-check.html");
+    await page.waitForFunction(() => typeof window.renderUi === "function");
+    await render(page, denseScreen);
+    const contrast = await page
+      .locator(
+        ".clinical-status, .clinical-alert p, .clinical-blocked, .clinical-action button:disabled, .human-lock",
+      )
+      .evaluateAll((elements) => {
+        function rgb(color: string): number[] {
+          return (color.match(/[\d.]+/g) ?? []).map(Number);
+        }
+        function luminance(channels: number[]): number {
+          const linear = channels.slice(0, 3).map((value) => {
+            const n = value / 255;
+            return n <= 0.04045 ? n / 12.92 : ((n + 0.055) / 1.055) ** 2.4;
+          });
+          return (
+            (linear[0] ?? 0) * 0.2126 +
+            (linear[1] ?? 0) * 0.7152 +
+            (linear[2] ?? 0) * 0.0722
+          );
+        }
+        return elements.map((el) => {
+          const ink = luminance(rgb(getComputedStyle(el).color));
+          let current: Element | null = el;
+          let background = [255, 255, 255];
+          while (current) {
+            const channels = rgb(getComputedStyle(current).backgroundColor);
+            if (channels.length === 3 || channels[3] === 1) {
+              background = channels;
+              break;
+            }
+            current = current.parentElement;
+          }
+          const surface = luminance(background);
+          return {
+            text: el.textContent,
+            ratio:
+              (Math.max(ink, surface) + 0.05) / (Math.min(ink, surface) + 0.05),
+          };
+        });
+      });
+    expect(contrast.length).toBeGreaterThan(20);
+    expect(contrast.filter(({ ratio }) => ratio < 4.5)).toEqual([]);
+  });
 });

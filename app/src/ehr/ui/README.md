@@ -26,7 +26,10 @@ The fidelity gate compares the ordered role/name/disabled/ancestry projection of
 actual Chromium ARIA snapshot with an independently generated expectation. It
 also checks all supplied record values, 12px minimum rendered type, horizontal
 overflow, hidden content, and hit-testing of every control and record cell.
-It runs at desktop and narrow widths with external requests blocked. Modal
+It runs at desktop and narrow widths with external requests blocked. Additional
+checks cover 1280×800, 720px desktop reflow (equivalent layout width at 200% zoom),
+24 complete medication/list records, local date rollover, keyboard focus,
+scanner Enter, modal containment/return, and rendered status/alert text contrast. Modal
 backgrounds are inert; the dialog and its background (after dismissal) are
 checked separately. It exits nonzero on any mismatch. This checks presentation
 fidelity; it does not replace Lean's clinical or design proofs.
@@ -42,3 +45,25 @@ The initial semantic wire has contract gaps recorded in
 specialized kinds are not preserved, some content labels contain authoring
 instructions). Workspace action buttons remain fully interactive by comp id;
 nav destinations/stepper are an overview until that Event exists.
+
+Visual tokens live in `theme.ts`, following `docs/design/visual-style.md` and
+`docs/design/ehr-ui-research.md`. The shell and portaled modal share those tokens;
+icons are original generic SVG line drawings. The clinical summary is the left
+rail and comes before the workspace in DOM order. Banner, history, and review
+content grow in normal document flow without fixed-height record scroll traps.
+List records use a primary value and muted inline metadata. ISO dates/timestamps
+receive a short local display date; date-only DOBs keep their calendar date,
+invalid values survive unchanged, and `<time datetime>` retains the raw value.
+Input values and clinical event payloads are never reformatted.
+
+Only explicitly supplied MAR status text gets the documented status tint.
+Unknown statuses retain their text without a success tone. The current wire's
+`severity` string can contain a tier (`interruptive`, `passive`, `removable`);
+those render with informational styling until the renderer supplies independent
+clinical severity. A step index indicates position only, never completed review.
+
+Navigation follow-up: `origin/lane/render` at `97f1b38` still exports
+`nav: [string, [string, string][]][]`, without click component metadata. Do not
+send destination screen IDs as component clicks. Once that contract lands,
+render metadata-bearing entries as keyboard-operable buttons, dispatch exactly
+`{ click: { comp } }`, and extend `types.ts`/`fidelity.ts` and event tests together.

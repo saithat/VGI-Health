@@ -127,16 +127,10 @@ export function StepperNode({ node }: Props<"stepper">) {
         <li
           key={id}
           aria-current={index === node.current ? "step" : undefined}
-          className={
-            index < node.current
-              ? "complete"
-              : index === node.current
-                ? "current"
-                : ""
-          }
+          className={index === node.current ? "current" : ""}
         >
           <span className="step-number" aria-hidden="true">
-            {index < node.current ? <ClinicalIcon name="check" /> : index + 1}
+            {index + 1}
           </span>
           <span className="step-label">{label}</span>
         </li>
@@ -338,6 +332,10 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
         highlightOnHover
         withColumnBorders={false}
         aria-label={node.label}
+        data-medication-grid={
+          headers.some((header) => /^(medication|drug)$/i.test(header)) ||
+          undefined
+        }
         fz="xs"
         verticalSpacing={6}
         horizontalSpacing={6}

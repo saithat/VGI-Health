@@ -26,6 +26,17 @@ function tone(color: string): color is ClinicalTone {
 export const clinicalTheme = createTheme({
   primaryColor: "blue",
   primaryShade: 8,
+  colors: Object.fromEntries(
+    (["blue", "red", "yellow", "green", "violet", "gray"] as const).map(
+      (color) => {
+        const { ink, tint, hover } = clinicalTokens[color];
+        return [
+          color,
+          [tint, tint, tint, tint, tint, ink, ink, ink, ink, hover] as const,
+        ];
+      },
+    ),
+  ),
   black: clinicalTokens.ink,
   white: clinicalTokens.surface,
   fontFamily:
@@ -76,7 +87,9 @@ export const clinicalTheme = createTheme({
   },
   components: {
     Button: { defaultProps: { fw: 600 } },
-    Badge: { defaultProps: { variant: "light", radius: "xs", fw: 600 } },
+    Badge: {
+      defaultProps: { variant: "light", radius: "xs", fw: 600, tt: "none" },
+    },
     Text: { defaultProps: { c: clinicalTokens.ink } },
     Tooltip: { defaultProps: { fz: "xs" } },
   },
