@@ -15,7 +15,10 @@ export function suppliedTone(value: string): string | undefined {
   if (/^(overdue|critical|hh|ll|abnormal|a)$/.test(word)) return "red";
   if (/^(low|l)$/.test(word)) return "blue";
   if (/^(high|h)$/.test(word)) return "amber";
-  if (/^(given|complete|completed|signed|done)$/.test(word)) return "green";
+  if (
+    /^(given|complete|completed|signed|done|final|report available)$/.test(word)
+  )
+    return "green";
   if (
     /^(held|on-hold|needs review|in progress|in-progress|roomed|arrived)$/.test(
       word,
@@ -24,7 +27,7 @@ export function suppliedTone(value: string): string | undefined {
     return "amber";
   if (/^(refused|declined)$/.test(word)) return "violet";
   if (
-    /^(due|scheduled|pending|booked|ordered|unread|requested|results available)$/.test(
+    /^(due|scheduled|pending|booked|ordered|unread|requested|results available|partial|preliminary|preliminary report)$/.test(
       word,
     )
   )

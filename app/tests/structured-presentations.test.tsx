@@ -5,6 +5,7 @@ import { UiChildren } from "../src/ehr/ui/nodes";
 import { clinicalTheme } from "../src/ehr/ui/theme";
 import { uiNodeSchema, type UiNode } from "../src/ehr/ui/types";
 import { suppliedTone } from "../src/ehr/ui/presentations/StructuredInfo";
+import { expectedNodeAria } from "../src/ehr/ui/fidelity";
 
 beforeAll(() => {
   window.matchMedia = vi.fn().mockImplementation(() => ({
@@ -311,12 +312,8 @@ describe("structured clinical data boundary", () => {
         .getByRole("columnheader", { name: "2026-11-02 -08:00" })
         .getAttribute("colspan"),
     ).toBe("2");
-    expect(
-      screen.getByRole("columnheader", { name: "08:00" }),
-    ).toBeTruthy();
-    expect(
-      screen.getByRole("columnheader", { name: "09:00" }),
-    ).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "08:00" })).toBeTruthy();
+    expect(screen.getByRole("columnheader", { name: "09:00" })).toBeTruthy();
     expect(screen.queryByRole("columnheader", { name: "Category" })).toBeNull();
     expect(screen.getByText("Given · 09:03 · 4 units")).toBeTruthy();
   });
@@ -478,6 +475,10 @@ describe("structured clinical data boundary", () => {
     expect(suppliedTone("H")).toBe("amber");
     expect(suppliedTone("HH")).toBe("red");
     expect(suppliedTone("Held · Per order")).toBe("amber");
+    expect(suppliedTone("final")).toBe("green");
+    expect(suppliedTone("Report available")).toBe("green");
+    expect(suppliedTone("Preliminary report")).toBe("blue");
+    expect(suppliedTone("Images available")).toBeUndefined();
     expect(suppliedTone("6.5")).toBeUndefined();
     expect(suppliedTone("No high alert")).toBeUndefined();
   });
@@ -514,6 +515,72 @@ describe("structured clinical data boundary", () => {
       ...screen.getByRole("table").querySelectorAll("tbody tr"),
     ].map((row) => row.textContent);
     dates.forEach((date, i) => expect(rows[i]).toContain(date));
+  });
+  it("retains numeric text outside the plotting range without inventing a point", () => {
+    const value = "9".repeat(400);
+    const node: UiNode = {
+      presentation: {
+        kind: "trend",
+        children: [
+          {
+            info: {
+              comp: "large",
+              label: "Source result",
+              infoId: "resultTrend",
+              display: "trend",
+              rows: [
+                [
+                  ["Test", "Example"],
+                  ["Value", value],
+                  ["Recorded", "Nov 1, 2026"],
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    };
+    paint([node]);
+    expect(screen.queryByRole("img")).toBeNull();
+    expect(screen.getByRole("table").textContent).toContain(value);
+    expect(expectedNodeAria(node).some((entry) => entry.role === "img")).toBe(
+      false,
+    );
+  });
+  it("keeps finite geometry for a large supplied numeric result", () => {
+    const values = ["174", "178"].map((prefix) => prefix + "0".repeat(306));
+    paint([
+      {
+        presentation: {
+          kind: "trend",
+          children: [
+            {
+              info: {
+                comp: "large-finite",
+                label: "Finite result",
+                infoId: "resultTrend",
+                display: "trend",
+                rows: values.map((value, i) => [
+                  ["Test", "Example"],
+                  ["Value", value],
+                  ["Recorded", `Nov ${i + 1}, 2026`],
+                ]),
+              },
+            },
+          ],
+        },
+      },
+    ]);
+    const circles = [...screen.getByRole("img").querySelectorAll("circle")];
+    expect(circles).toHaveLength(2);
+    expect(
+      circles.every((circle) =>
+        Number.isFinite(Number(circle.getAttribute("cy"))),
+      ),
+    ).toBe(true);
+    values.forEach((value) =>
+      expect(screen.getByRole("table").textContent).toContain(value),
+    );
   });
   it("validates the new semantic wrapper and rejects an unknown wire kind", () => {
     expect(

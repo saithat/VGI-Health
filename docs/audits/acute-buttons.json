@@ -1,44 +1,44 @@
 {
   "scope": "Initially shown acute buttons, inactive tabs and unmasked search inputs, all three current releases and both role projections; native interpreter events. Search must return semantic query/results without changing captures, receipts, commits or the order slot. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "d276d9f5868a311f6aa70f6dba59243e666cd511",
+  "sourceRevision": "c97fe54f872342f8c409139c2a527987159c564f",
   "sourceTreeDirty": true,
-  "binarySha256": "8906aa01051a62c9c48d146f29f42289b3830943739d7e89fc09cd20a0901840",
+  "binarySha256": "458022e6d702cf7eff5c03972906c64c9a467ff9f65779b93cfcc6e2fc65121f",
   "programs": [
     {
       "release": "v1",
       "persona": "P2",
       "path": "releases/v1/personas/P2.json",
-      "sha256": "099a4c959c251b244f2bbe5d7202547b3541eb954ca1095afa6f671ae2be6d01"
+      "sha256": "0ec3cef3fe0c4100fbdd9f95426c2d695dae3befd43c43ee078c59e2038f55b1"
     },
     {
       "release": "v1",
       "persona": "P3",
       "path": "releases/v1/personas/P3.json",
-      "sha256": "da5dcfc0fc45351d00f2c47097728ea460797a61986422a8bc94e41aa138a74d"
+      "sha256": "454ce633069bc56629e99b02e3b5ddb68702d1c4d1058f2a79174d5c7f9b212f"
     },
     {
       "release": "v2",
       "persona": "P2",
       "path": "releases/v2/personas/P2.json",
-      "sha256": "cbd7ebc85062797361629a7d7676fcd8e4b7481bc8ad6fde761daa8422e79760"
+      "sha256": "2579ea48cf658f67ae1d89eea3274479ddc7af31f632437a15d1cd5c5a24adf9"
     },
     {
       "release": "v2",
       "persona": "P3",
       "path": "releases/v2/personas/P3.json",
-      "sha256": "b7aa86fdae3377970ddd48e0bf6072efdd5ad0f5c80bbcfbd641c2088fda61da"
+      "sha256": "5cece71977d958c990bedc13eb9820d540aef7672d8f772d1d614886b72db4ca"
     },
     {
       "release": "v3",
       "persona": "P2",
       "path": "releases/v3/personas/P2.json",
-      "sha256": "3c6a9bfa983cf69d184236bb246cd18404157312051bdaf9bfc46de6c91c8a4b"
+      "sha256": "b74c109d71ede07a0469ccd86626c65c551075d82d62e835a90a88ff2a679b8c"
     },
     {
       "release": "v3",
       "persona": "P3",
       "path": "releases/v3/personas/P3.json",
-      "sha256": "9eb330af723b16f3cd028687183dff66991493b46ede0fa2dacaebd2b14e7002"
+      "sha256": "22c650897b5a9c0020a9276984931a8d862142cf48af5831278c4c325df6b884"
     }
   ],
   "fixtures": [
@@ -47,11 +47,11 @@
       "files": [
         {
           "file": "P2.json",
-          "sha256": "ec873de9e8ffeb96de1f52a105003640dbdfae60e63232a71e1f08169dc2cbd6"
+          "sha256": "a221bc56c423592a2a0768647aaebad7ffd1b16a79cf3a59cb46de1ba8bd5aaf"
         },
         {
           "file": "P2-context.json",
-          "sha256": "2cffb227cdf34841812008836553aed4575874fa6877d68648c4720a6360c88d"
+          "sha256": "774dfd69184a0730fe4970319894b11e83f829648c6b9538b4460f03e2dd9c2c"
         },
         {
           "file": "P2-user.json",
@@ -68,7 +68,7 @@
         },
         {
           "file": "P3-context.json",
-          "sha256": "e368be220171a375c8a57f07ecf4553112669ec1f5cdeb831b044144f7f3963a"
+          "sha256": "b8550c2ae0f31016c07f267e44cf661f90708572b544476f124360d4c8c465d2"
         },
         {
           "file": "P3-user.json",

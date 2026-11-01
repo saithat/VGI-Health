@@ -152,13 +152,15 @@ def unitOf (q : Json) : Option UnitKind :=
 /-- A resource's type. -/
 def resourceType (r : Json) : String := str r "resourceType"
 
-/-- Normalize a fixture resource's identity. Medplum resources keep their
-server id; Synthea transaction entries without an id use the entire fullUrl. -/
+/-- Normalize identity and retain the exact Bundle fullUrl for local reference
+resolution. The private alias is never a clinical display value. -/
 def entryResource (e : Json) : Json :=
   let r := field e "resource"
   match r with
   | .obj _ =>
-    if str r "id" == "" then r.setObjVal! "id" (.str (str e "fullUrl")) else r
+    let normalized := if str r "id" == "" then r.setObjVal! "id" (.str (str e "fullUrl")) else r
+    if str e "fullUrl" == "" then normalized
+    else normalized.setObjVal! "_vgiBundleFullUrl" (.str (str e "fullUrl"))
   | _ => r
 
 /-- **The resources of a bundle**: normalized `entry[i].resource`, in order. -/
@@ -441,6 +443,23 @@ def isVital (r : Json) : Bool := isObservation r && (categoryCodes r).contains "
 /-- A laboratory Observation. -/
 def isLab (r : Json) : Bool := isObservation r && (categoryCodes r).contains "laboratory"
 
+/-- Only explicitly coded BP components can form a systolic/diastolic pair.
+FHIR slices are unordered; a component's array position never supplies its meaning. -/
+def observationBpValue? (r : Json) : Option (String × String) := do
+  let loinc := fun cc code => (codings cc).any
+    (fun c => str c "system" == "http://loinc.org" && str c "code" == code)
+  let suppliedValue := ["valueQuantity", "valueCodeableConcept", "valueString", "valueBoolean",
+    "valueInteger", "valueRange", "valueRatio", "valueSampledData", "valueTime", "valueDateTime", "valuePeriod"]
+      |>.any (fun key => field r key != .null)
+  if suppliedValue || !loinc (field r "code") "85354-9" then none else do
+    let [systolic] := (arr r "component").filter (fun c => loinc (field c "code") "8480-6") | none
+    let [diastolic] := (arr r "component").filter (fun c => loinc (field c "code") "8462-4") | none
+    let s := field systolic "valueQuantity"
+    let d := field diastolic "valueQuantity"
+    if systolic == diastolic || qtyText s == "" || qtyText d == "" || qtyUnitText s == "" ||
+        qtyUnitText s != qtyUnitText d || str s "code" != str d "code" then none
+    else some (str s "comparator" ++ qtyText s ++ "/" ++ str d "comparator" ++ qtyText d, qtyUnitText s)
+
 /-- The value of an observation as text, its unit, and its value × 100.
 Blood pressure (components) reads `"128/82"`. -/
 def obsValue (r : Json) : String × String × Option Nat :=
@@ -449,8 +468,23 @@ def obsValue (r : Json) : String × String × Option Nat :=
   else
     let comps := arr r "component"
     if !comps.isEmpty then
-      let qs := comps.map (field · "valueQuantity")
-      ("/".intercalate (qs.map qtyText), qtyUnitText (qs.headD .null), none)
+      match observationBpValue? r with
+      | some (value, unit) => (value, unit, none)
+      | none =>
+        let values := comps.map fun component =>
+          let quantity := field component "valueQuantity"
+          let label := ccText (field component "code")
+          let value := if quantity != .null then str quantity "comparator" ++ qtyText quantity
+            else if field component "valueCodeableConcept" != .null then ccText (field component "valueCodeableConcept")
+            else if str component "valueString" != "" then str component "valueString" else
+              match field component "valueInteger", field component "valueBoolean" with
+              | .num n, _ => toString n
+              | _, .bool b => if b then "Yes" else "No"
+              | _, _ => ""
+          let unit := qtyUnitText quantity
+          (if label == "" then "Component" else label) ++ ": " ++
+            (if value == "" then "Not recorded" else value) ++ (if unit == "" then "" else " " ++ unit)
+        ("; ".intercalate values, "", none)
     else
       let cc := field r "valueCodeableConcept"
       if cc != .null then (ccText cc, "", none) else (str r "valueString", "", none)
@@ -458,7 +492,8 @@ def obsValue (r : Json) : String × String × Option Nat :=
 /-- The display row of a vital sign. -/
 def vitalRow (r : Json) : VitalRow :=
   let (v, u, h) := obsValue r
-  { id := str r "id", code := firstCode (field r "code"), name := ccText (field r "code")
+  { id := str r "id", code := firstCode (field r "code"), name :=
+      if (observationBpValue? r).isSome then "Blood pressure" else ccText (field r "code")
     value := v, unit := u, date := obsWhen r, hundredths? := h }
 
 /-! ## Labs -/
@@ -736,16 +771,30 @@ def historyVersionOf (rs : List Json) : Nat := listVersion (rs.filter isHistoryR
 
 /-! ## Growth -/
 
+/-- Normalize an explicitly supplied height unit for a centimeter growth axis.
+Unknown units stay unavailable; an unlabelled number is never assumed to be cm. -/
+def heightCmTenths (quantity : Json) : Option Nat :=
+  let code := str quantity "code"
+  let unit := (if code == "" then str quantity "unit" else code).toLower
+  match unit with
+  | "cm" => qtyScaled quantity 1
+  | "m" => qtyScaled quantity 3
+  | "[in_i]" | "in" => (qtyScaled quantity 3).map (fun n => n * 254 / 10000)
+  | _ => none
+
 /-- Growth points: body weights (kg) and heights (cm), joined by day, oldest
-first. -/
+first. Each day uses the latest recorded reading, independent of bundle order. -/
 def growthPoints (dob : String) (rs : List Json) : List GrowthPoint :=
+  let rs := oldestFirst obsWhen (rs.filter fun r => isBodyWeight r ||
+    (isObservation r && hasCode (field r "code") bodyHeightCode))
   let ws := (rs.filter isBodyWeight).filterMap fun r =>
     match weightReading r with
     | some (w, .kg) => some (dayOf (obsWhen r), w)
     | some (w, .lb) => some (dayOf (obsWhen r), w * 4536 / 10000)
+    | some (w, .g) => some (dayOf (obsWhen r), w / 1000)
     | _ => none
   let hs := (rs.filter fun r => isObservation r && hasCode (field r "code") bodyHeightCode).filterMap
-    fun r => (qtyScaled (field r "valueQuantity") 1).map (dayOf (obsWhen r), ·)
+    fun r => (heightCmTenths (field r "valueQuantity")).map (dayOf (obsWhen r), ·)
   let days := oldestFirst id ((ws.map (·.1) ++ hs.map (·.1)).eraseDups)
   days.map fun d =>
     { date := d, ageMonths := ageMonths dob d
@@ -1076,22 +1125,6 @@ def labResultRowsFor (r : Json) : List LabResultRow :=
 def labResultRows (rs : List Json) : List LabResultRow :=
   newestFirst (·.date) ((rs.filter isLab).flatMap labResultRowsFor)
 
-/-- Only explicitly coded BP components can form a systolic/diastolic pair.
-FHIR slices are unordered; a component's array position never supplies its meaning. -/
-def observationBpValue? (r : Json) : Option (String × String) := do
-  let loinc := fun cc code => (codings cc).any
-    (fun c => str c "system" == "http://loinc.org" && str c "code" == code)
-  let suppliedValue := ["valueQuantity", "valueCodeableConcept", "valueString", "valueBoolean",
-    "valueInteger", "valueRange", "valueRatio", "valueSampledData", "valueTime", "valueDateTime", "valuePeriod"]
-      |>.any (fun key => field r key != .null)
-  if suppliedValue || !loinc (field r "code") "85354-9" then none else do
-    let [systolic] := (arr r "component").filter (fun c => loinc (field c "code") "8480-6") | none
-    let [diastolic] := (arr r "component").filter (fun c => loinc (field c "code") "8462-4") | none
-    let s := field systolic "valueQuantity"
-    let d := field diastolic "valueQuantity"
-    if systolic == diastolic || qtyText s == "" || qtyText d == "" || qtyUnitText s == "" || qtyUnitText s != qtyUnitText d then none
-    else some (str s "comparator" ++ qtyText s ++ "/" ++ str d "comparator" ++ qtyText d, qtyUnitText s)
-
 /-- Source values include assessments, absent reasons and censored quantities. -/
 def observationRow (r : Json) : ObservationRow :=
   let (value, unit) := (observationBpValue? r).getD
@@ -1129,7 +1162,8 @@ They are selectors, never visible clinical columns or evidence of completion. -/
 def acuteRefersTo (reference resource : Json) : Bool :=
   let id := str resource "id"
   let ref := str reference "reference"
-  id != "" && (ref == id || ref == resourceType resource ++ "/" ++ id)
+  id != "" && ref != "" && (ref == id || ref == resourceType resource ++ "/" ++ id ||
+    ref == str resource "_vgiBundleFullUrl")
 
 /-- Encounter links differ by resource: direct, administration context, or document context. -/
 def acuteInEncounter (resource encounter : Json) : Bool :=
@@ -1166,6 +1200,14 @@ def acuteEncounter (ctx : FactsContext) (rs : List Json) (patient : Json) : Opti
     let newest ← latestBy (fun r => str (field r "period") "start") ongoing
     let [only] := ongoing.filter (fun r => str (field r "period") "start" == str (field newest "period") "start") | none
     some only
+
+/-- An explicit or ongoing acute encounter determines chart context. Missing or
+ambiguous acute selection cannot silently become a different historical visit. -/
+def selectedChartEncounter (ctx : FactsContext) (rs : List Json) (patient : Json) : Option Json :=
+  let patientRecords := acutePatientResources rs patient
+  if acuteSelectionRequired ctx rs patient
+  then acuteEncounter ctx rs patient
+  else latestEncounter patientRecords
 
 /-- The medication task must name its exact order. A same-drug order is not a
 substitute, even if it is the only current order in the supplied chart. -/
@@ -1241,7 +1283,7 @@ def acuteVitalRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List
       (latestBy obsWhen sameCode).any fun newest => obsWhen r == obsWhen newest
     latest.map fun r =>
         let (value, unit, _) := obsValue r
-        [("Vital sign", ccText (field r "code")), ("Value", value),
+        [("Vital sign", (vitalRow r).name), ("Value", value),
          ("Unit", unit), ("Recorded", obsWhen r)]
 
 /-- Triage context and its dated vitals come from the selected encounter. -/
@@ -1279,6 +1321,105 @@ def acuteParticipant (encounter : Json) (role : String) : String :=
     (arr participant "type").any (hasCode · role)).map fun participant =>
       str (field participant "individual") "display")
 
+/-! ### Acute imaging reports and study availability -/
+
+/-- Classification uses an explicit service category, never a test-name guess. -/
+def acuteCategory (r : Json) (codes : List String) : Bool :=
+  (arr r "category").any fun category =>
+    codes.any (fun code => hasCode category code || (ccText category).toLower == code.toLower)
+
+/-- An imaging order and a radiology report are different source resources. -/
+def acuteImagingOrder (r : Json) : Bool :=
+  resourceType r == "ServiceRequest" && acuteCategory r ["imaging", "RAD", "radiology"] &&
+    !["entered-in-error", "revoked"].contains (str r "status")
+
+/-- A report can identify its imaging service directly or through an exact order link. -/
+def acuteImagingReport (sources : List Json) (r : Json) : Bool :=
+  resourceType r == "DiagnosticReport" && !["entered-in-error", "cancelled"].contains (str r "status") &&
+    (acuteCategory r ["RAD", "imaging", "radiology"] ||
+      (!acuteCategory r ["LAB", "laboratory"] && (arr r "basedOn").any (fun reference => sources.any (fun order =>
+        acuteImagingOrder order && acuteRefersTo reference order))))
+
+/-- Images being available does not imply that a radiologist's report is final. -/
+def acuteImagingStudy (r : Json) : Bool :=
+  resourceType r == "ImagingStudy" && !["entered-in-error", "cancelled"].contains (str r "status")
+
+/-- Use a supplied clinician/organization name, never a logical reference as a name. -/
+def acuteReferenceName (sources : List Json) (reference : Json) : String :=
+  let supplied := str reference "display"
+  if supplied != "" then supplied else
+  match sources.filter (acuteRefersTo reference) with
+  | [resource] => if resourceType resource == "Organization" then str resource "name"
+    else if resourceType resource == "Practitioner"
+      then displayName resource else ""
+  | _ => ""
+
+/-- Only inline plain-text attachments are decoded. Other attachments remain
+explicitly unavailable; no network fetch or fake viewer action is added. -/
+def acuteReportAttachment (attachment : Json) : String :=
+  let title := str attachment "title"
+  let contentType := str attachment "contentType"
+  let name := if title == "" then "Report attachment" else title
+  if (((contentType.splitOn ";").headD "").trimAscii.toString.toLower) == "text/plain"
+  then name ++ ": " ++ noteAttachmentText attachment
+  else name ++ (if contentType == "" then "" else " (" ++ contentType ++ ")") ++ " — preview unavailable"
+
+/-- A report retains its full conclusion, coded impressions, explicitly linked
+patient observations and inline report text. No conclusion is inferred from images. -/
+def acuteImagingText (sources : List Json) (report : Json) : String :=
+  let findings := (arr report "result").flatMap fun reference =>
+    (sources.filter fun resource => resourceType resource == "Observation" &&
+      !["entered-in-error", "cancelled"].contains (str resource "status") && acuteRefersTo reference resource).map fun result =>
+        ccText (field result "code") ++ ": " ++ labResultValue result ++
+          (let unit := qtyUnitText (field result "valueQuantity"); if unit == "" then "" else " " ++ unit)
+  "\n".intercalate (([str report "conclusion"] ++ (arr report "conclusionCode").map ccText ++
+    findings ++ (arr report "presentedForm").map acuteReportAttachment).filter (· != ""))
+
+/-- Study details preserve acquisition status, modality and date separately from
+the report status. A report may explicitly reference more than one study. -/
+def acuteStudyFields (study : Json) : List (String × String) :=
+  [("Study", str study "description"), ("Image status", str study "status"),
+   ("Acquired", str study "started"),
+   ("Modality", "; ".intercalate ((arr study "modality").map fun coding =>
+      let label := str coding "display"; if label == "" then str coding "code" else label))]
+
+/-- The chart contains full patient imaging history. Current encounter context is
+identified by an exact link; unrelated patients and invalidated reports are excluded. -/
+def acuteImagingRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
+  let sources := acutePatientResources rs patient
+  let reports := sources.filter (acuteImagingReport sources)
+  let studies := sources.filter acuteImagingStudy
+  let context := fun resource =>
+    if field resource "encounter" == .null then "Encounter not recorded"
+    else match selectedChartEncounter ctx rs patient with
+      | none => "Encounter not selected"
+      | some selected => if acuteInEncounter resource selected then "Selected encounter" else "Another encounter"
+  let reportRows := reports.map fun report =>
+    let interpreters := (arr report "resultsInterpreter").map (acuteReferenceName rs)
+    let author := "; ".intercalate ((if interpreters.any (· != "") then interpreters
+      else (arr report "performer").map (acuteReferenceName rs)).filter (· != ""))
+    let linked := studies.filter fun study => (arr report "imagingStudy").any (acuteRefersTo · study)
+    [("Title", let title := ccText (field report "code"); if title == "" then "Radiology report" else title),
+     ("Type", "Radiology report"), ("Date", obsWhen report), ("Reported", str report "issued"),
+     ("Author", author), ("Status", str report "status"), ("Encounter", context report),
+     ("Text", acuteImagingText sources report)] ++ linked.flatMap acuteStudyFields
+  let studyRows := (studies.filter fun study =>
+    !reports.any (fun report => (arr report "imagingStudy").any (acuteRefersTo · study))).map fun study =>
+      [("Title", let title := str study "description"; if title == "" then "Imaging study" else title),
+       ("Type", "Imaging study"), ("Date", str study "started"),
+       ("Author", "; ".intercalate (((arr study "interpreter").map (acuteReferenceName rs)).filter (· != ""))),
+       ("Status", str study "status"), ("Encounter", context study)] ++ acuteStudyFields study
+  newestFirst (fun row => (row.lookup "Date").getD "") (reportRows ++ studyRows)
+
+/-- Board availability reports source milestones, not completion of every order. -/
+def acuteImagingAvailability (sources : List Json) (lookupSources : List Json := sources) : String :=
+  let reports := sources.filter (acuteImagingReport lookupSources)
+  if reports.any (fun r => ["final", "amended", "corrected", "appended"].contains (str r "status"))
+    then "Report available"
+  else if reports.any (fun r => ["partial", "preliminary"].contains (str r "status")) then "Preliminary report"
+  else if sources.any (fun r => acuteImagingStudy r && str r "status" == "available") then "Images available"
+  else if sources.any (fun r => acuteImagingOrder r && str r "status" == "active") then "Ordered" else ""
+
 /-- A supplied active ED encounter is one board row. Missing assignments, LOS
 and disposition remain empty; no default acuity or progress is invented. -/
 def acuteBoardRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List (List (String × String)) :=
@@ -1292,8 +1433,6 @@ def acuteBoardRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List
   ((encounters.filter selected) ++ (encounters.filter fun encounter => !selected encounter)).map fun encounter =>
     let sources := (acutePatientResources rs patient).filter fun r =>
       acuteRefersTo (field r "encounter") encounter
-    let imagingOrders := (ofType "ServiceRequest" sources).filter fun r =>
-      (arr r "category").any (hasCode · "imaging")
     [("Room", (encRow encounter).location), ("Patient", displayName patient),
      ("Age/sex", (if str patient "birthDate" == "" then "Age not recorded"
        else toString (ageYears (str patient "birthDate") ctx.today)) ++ " / " ++ sexOf patient),
@@ -1302,7 +1441,7 @@ def acuteBoardRows (ctx : FactsContext) (rs : List Json) (patient : Json) : List
      ("LOS", " ".intercalate ([qtyText (field encounter "length"), qtyUnitText (field encounter "length")].filter (· != ""))),
      ("RN", acuteParticipant encounter "RN"), ("Provider", acuteParticipant encounter "ATND"),
      ("Labs", if sources.any isLab then "Results available" else ""),
-     ("Imaging", if imagingOrders.any (fun r => str r "status" == "active") then "Ordered" else ""),
+     ("Imaging", acuteImagingAvailability sources (acutePatientResources rs patient)),
      ("Disposition", ccText (field (field encounter "hospitalization") "dischargeDisposition")),
      ("Status", str encounter "status")]
 
@@ -1533,6 +1672,7 @@ def acuteSupportingRows (ctx : FactsContext) (rs : List Json) (patient : Json) :
   [("triageSummary", acuteTriageRows ctx rs patient),
    ("edTrackBoard", acuteBoardRows ctx rs patient),
    ("unitCensus", acuteCensusRows ctx rs patient),
+   ("imaging", acuteImagingRows ctx rs patient),
    ("shiftWorklist", acuteWorklistRows ctx rs patient),
    ("marSchedule", acuteMarRows ctx rs patient),
    ("flowsheetHistory", acuteFlowsheetRows ctx rs patient),
@@ -1553,16 +1693,9 @@ different task/encounter cannot reuse an identical-bundle projection version. -/
 def acuteProjectionVersion (ctx : FactsContext) (rs : List Json) : Nat :=
   let selection := fun key => key ++ ":" ++ match ctx.record.lookup key with
     | none => "absent" | some value => "selected:" ++ value
-  versionDigest (((rs.map versionKey) ++ ["acute-projection:v3", "day:" ++ ctx.today,
+  versionDigest (((rs.map (fun resource => versionKey resource ++ "|" ++ str resource "_vgiBundleFullUrl")) ++
+    ["acute-projection:v4", "day:" ++ ctx.today,
     selection "selectedEncounterId", selection "selectedMedicationRequestId"]).mergeSort (· ≤ ·))
-
-/-- An explicit or ongoing acute encounter determines chart context. Missing or
-ambiguous acute selection cannot silently become a different historical visit. -/
-def selectedChartEncounter (ctx : FactsContext) (rs : List Json) (patient : Json) : Option Json :=
-  let patientRecords := acutePatientResources rs patient
-  if acuteSelectionRequired ctx rs patient
-  then acuteEncounter ctx rs patient
-  else latestEncounter patientRecords
 
 /-- Banner encounter/location/attending follow the selected chart, not whichever
 resource happens to have the latest date. A primary nurse is not an attending. -/

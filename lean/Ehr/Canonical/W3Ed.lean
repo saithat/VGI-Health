@@ -39,6 +39,7 @@ def frame (s : ScreenId) : List Component :=
     if c.id == cid s "nav" then activityNavigator { c with label := "ED Navigator" }
     else if c.id == cid s "chart.labResults" then
       presentation "results" { c with kind := .table "resultTrend" }
+    else if c.id == cid s "chart.imaging" then presentation "notes" c
     else c
 
 /-- The ED track board. -/
@@ -93,7 +94,7 @@ def provider : Screen :=
       group s "examSection" "Physical examination" (collapsible := false),
       narrative (field s "exam" "exam" "Exam findings" (parent := some "examSection")),
       presentation "results" (table s "labs" "labResults" "Laboratory results"),
-      presentation "table" (table s "imagingTable" "imaging" "Imaging reports"),
+      presentation "notes" (table s "imagingTable" "imaging" "Imaging reports"),
       group s "mdm" "Medical decision making" (collapsible := false),
       narrative (field s "assessmentPlan" "assessmentPlan" "Differential, ED course and plan" (parent := some "mdm")),
       group s "reconciliation" "Medication reconciliation" (collapsible := false),

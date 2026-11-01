@@ -5,6 +5,7 @@ Run with --refresh-reference only when deliberately updating the reference input
 """
 from pathlib import Path
 import base64
+import copy
 import csv
 import io
 import json
@@ -84,6 +85,19 @@ for i,(med,dose,unit,route,freq,status,hours,given_hour) in enumerate([
 body='Subjective\nPain improved this morning. Tolerating oral intake. No nausea or vomiting.\n\nObjective\nAfebrile. Abdomen soft, nondistended. Incisions clean and dry.\n\nAssessment & Plan\nPostoperative day 1 after laparoscopic appendectomy. Advance diet, ambulate, continue multimodal analgesia. Review discharge readiness this afternoon.'
 add('DocumentReference',id='note',status='current',docStatus='final',date='2026-11-01T09:20:00',type=cc('Progress note'),description='General Surgery • Daily Progress',author=[dict(display='Daniel Park, MD')],context=dict(encounter=[dict(display='Inpatient • General Surgery')]),content=[dict(attachment=dict(contentType='text/plain',data=base64.b64encode(body.encode()).decode()))])
 (OUT/'presentations.json').write_text(json.dumps(dict(resourceType='Bundle',type='collection',entry=[dict(resource=r) for r in resources]),indent=2)+'\n')
+
+# The same child has mixed recorded units and out-of-order same-day weights.
+# The archived before UI was produced by renderer 10517bc, not the current painter.
+growth_resources=copy.deepcopy([r for r in resources if r['resourceType'] not in ['Encounter','Appointment'] and r.get('subject',{}).get('reference','') in ['', 'Patient/p0']])
+growth_resources.sort(key=lambda r:not(r['resourceType']=='Patient' and r['id']=='p0'))
+for r in growth_resources:
+    if r.get('id')=='growth-29463-7-0': r['valueQuantity']=qty(22200,'g')
+    if r.get('id')=='growth-8302-2-1': r['valueQuantity']=qty(1.232,'m')
+last=next(r for r in growth_resources if r.get('id')=='growth-29463-7-5')
+late=copy.deepcopy(last); late.update(id='growth-unit-late',effectiveDateTime='2026-11-01T10:00:00')
+early=copy.deepcopy(last); early.update(id='growth-unit-early',effectiveDateTime='2026-11-01T08:00:00'); early['valueQuantity']['value']=29.9
+growth_resources.extend([late,early])
+(OUT/'growth-units.json').write_text(json.dumps(dict(resourceType='Bundle',entry=[dict(resource=r) for r in growth_resources]),indent=2)+'\n')
 
 payloads={
  'trackBoard': [dict(Room=f'ED {i+3:02}',Patient=f'{p[0]}, {p[1]}',**{'Age/sex':a,'Chief complaint':c},Acuity=esi,Arrival=f'07:{i*7:02}',LOS=los,RN=rn,Provider=md,Labs=lab,Imaging=img,Disposition=dispo,Status=st) for i,(p,a,c,esi,los,rn,md,lab,img,dispo,st) in enumerate(zip(people,['9 / F','52 / M','38 / F','64 / M','32 / F','68 / M'],['Abdominal pain','Chest pain','Shortness of breath','Fall, left hip pain','Headache','Dizziness'],['ESI 3','ESI 2','ESI 2','ESI 3','ESI 4','ESI 3'],['2h 05m','1h 58m','1h 51m','1h 44m','1h 37m','1h 30m'],['Reed, J','Reed, J','Lopez, M','Lopez, M','Kim, S','Kim, S'],['Shah, N','Shah, N','Foster, E','Foster, E','Shah, N','Foster, E'],['Pending','Complete','Pending','Complete','Ordered','Complete'],['Ordered','Complete','Pending','Complete','—','Ordered'],['—','Admit','—','Consult','Discharge','—'],['Roomed','In progress','In progress','Needs review','Complete','Roomed']))],

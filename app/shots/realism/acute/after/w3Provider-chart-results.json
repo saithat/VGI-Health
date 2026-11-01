@@ -281,7 +281,7 @@
           [
             [
               "Record",
-              "Blood pressure panel with all children optional 95/136 mm[Hg] (Apr 22, 2026 13:28)"
+              "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"
             ]
           ]
         ]
@@ -650,11 +650,62 @@
               "display": "table",
               "infoId": "imaging",
               "label": "Imaging reports",
-              "rows": []
+              "rows": [
+                [
+                  [
+                    "Title",
+                    "Portable chest radiograph"
+                  ],
+                  [
+                    "Type",
+                    "Radiology report"
+                  ],
+                  [
+                    "Date",
+                    "Nov 2, 2026 07:28"
+                  ],
+                  [
+                    "Reported",
+                    "Nov 2, 2026 07:40"
+                  ],
+                  [
+                    "Author",
+                    "Avery Shah, MD"
+                  ],
+                  [
+                    "Status",
+                    "final"
+                  ],
+                  [
+                    "Encounter",
+                    "Selected encounter"
+                  ],
+                  [
+                    "Text",
+                    "Bilateral lower-lung airspace opacities.\nRadiology study findings: Patchy airspace opacities in the lower lungs. No pleural effusion or pneumothorax."
+                  ],
+                  [
+                    "Study",
+                    "Portable chest radiograph"
+                  ],
+                  [
+                    "Image status",
+                    "available"
+                  ],
+                  [
+                    "Acquired",
+                    "Nov 2, 2026 07:28"
+                  ],
+                  [
+                    "Modality",
+                    "Digital radiography"
+                  ]
+                ]
+              ]
             }
           }
         ],
-        "kind": "table"
+        "kind": "notes"
       }
     },
     {

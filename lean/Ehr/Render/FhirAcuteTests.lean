@@ -387,4 +387,86 @@ def repeatedHourRows := (acuteMarRows context (resources ++ [administration, sec
 #guard repeatedHourRows.any (fun (key, value) => key == "2026-11-02 08:00 -08:00" && value.startsWith "Given · 08:07")
 #guard repeatedHourRows.any (fun (key, value) => key == "2026-11-02 08:00 -08:00" && value.startsWith "Given · 08:22")
 
+/-! Imaging availability and report text have separate, exact source bindings. -/
+
+/-- A real imaging request, not a laboratory order inferred from a name. -/
+def chestOrder : Json := Json.mkObj [("resourceType", .str "ServiceRequest"), ("id", .str "chest-order"),
+  ("subject", reference "Patient/selected"), ("encounter", reference "Encounter/ed-1"),
+  ("status", .str "active"), ("category", .arr #[concept "imaging"])]
+
+/-- Available images are not themselves a final report. -/
+def chestStudy : Json := Json.mkObj [("resourceType", .str "ImagingStudy"), ("id", .str "chest-study"),
+  ("subject", reference "Patient/selected"), ("encounter", reference "Encounter/ed-1"),
+  ("status", .str "available"), ("description", .str "Portable chest radiograph"),
+  ("started", .str "2026-11-02T07:28:00-08:00"),
+  ("modality", .arr #[Json.mkObj [("code", .str "DX"), ("display", .str "Digital radiography")]])]
+
+/-- The report explicitly links its study and a full source finding. -/
+def chestReport : Json := Json.mkObj [("resourceType", .str "DiagnosticReport"), ("id", .str "chest-report"),
+  ("subject", reference "Patient/selected"), ("encounter", reference "Encounter/ed-1"),
+  ("status", .str "final"), ("category", .arr #[concept "RAD"]),
+  ("code", concept "Portable chest radiograph"), ("effectiveDateTime", .str "2026-11-02T07:28:00-08:00"),
+  ("issued", .str "2026-11-02T07:40:00-08:00"), ("conclusion", .str "Bilateral lower-lung airspace opacities."),
+  ("basedOn", .arr #[reference "ServiceRequest/chest-order"]),
+  ("imagingStudy", .arr #[reference "ImagingStudy/chest-study"]),
+  ("result", .arr #[reference "Observation/chest-finding"]) ]
+
+/-- A linked narrative observation belongs to the same patient. -/
+def chestFinding : Json := Json.mkObj [("resourceType", .str "Observation"), ("id", .str "chest-finding"),
+  ("subject", reference "Patient/selected"), ("status", .str "final"),
+  ("code", concept "Radiology findings"), ("valueString", .str "Full supplied finding, without truncation.")]
+
+/-- An actual source graph is projected into one complete report card. -/
+def chestSources := resources ++ [chestOrder, chestStudy, chestReport, chestFinding]
+def chestRows := acuteImagingRows context chestSources patient
+
+#guard chestRows.length == 1
+#guard chestRows.head!.lookup "Type" == some "Radiology report"
+#guard chestRows.head!.lookup "Image status" == some "available"
+#guard chestRows.head!.lookup "Status" == some "final"
+#guard chestRows.head!.lookup "Modality" == some "Digital radiography"
+#guard chestRows.head!.lookup "Encounter" == some "Selected encounter"
+#guard chestRows.head!.lookup "Text" == some "Bilateral lower-lung airspace opacities.\nRadiology findings: Full supplied finding, without truncation."
+#guard acuteImagingAvailability [chestOrder] == "Ordered"
+#guard acuteImagingAvailability [chestOrder, chestStudy] == "Images available"
+#guard acuteImagingAvailability [chestOrder, chestStudy, chestReport.setObjVal! "status" (.str "preliminary")] == "Preliminary report"
+#guard acuteImagingAvailability [chestOrder, chestStudy, chestReport] == "Report available"
+#guard (acuteImagingRows context (resources ++ [chestStudy]) patient).head!.lookup "Type" == some "Imaging study"
+#guard !(acuteImagingRows context (resources ++ [chestStudy]) patient).head!.any (fun (key, _) => key == "Text")
+#guard (acuteImagingRows context (resources ++ [chestReport.setObjVal! "subject" (reference "Patient/other")]) patient).isEmpty
+#guard (acuteImagingRows context (resources ++ [chestReport.setObjVal! "status" (.str "cancelled")]) patient).isEmpty
+#guard (acuteImagingRows context (resources ++ [chestReport.setObjVal! "status" (.str "entered-in-error")]) patient).isEmpty
+#guard (acuteImagingRows context (resources ++ [chestOrder, chestReport.setObjVal! "category" (.arr #[])]) patient).length == 1
+#guard (acuteImagingRows context (resources ++ [chestReport.setObjVal! "category" (.arr #[concept "LAB"])]) patient).isEmpty
+#guard (acuteImagingRows context (resources ++ [chestOrder, chestReport.setObjVal! "category" (.arr #[concept "LAB"])]) patient).isEmpty
+#guard (acuteImagingRows context (resources ++ [chestReport,
+  chestFinding.setObjVal! "subject" (reference "Patient/other")]) patient).head!.lookup "Text" ==
+  some "Bilateral lower-lung airspace opacities."
+#guard acuteReferenceName [] (reference "Practitioner/opaque-id") == ""
+#guard acuteReferenceName [Json.mkObj [("resourceType", .str "Practitioner"), ("id", .str "duplicate")],
+  Json.mkObj [("resourceType", .str "Practitioner"), ("id", .str "duplicate")]] (reference "Practitioner/duplicate") == ""
+#guard acuteReportAttachment (Json.mkObj [("contentType", .str "application/pdf"), ("url", .str "https://example.invalid/private.pdf")]) ==
+  "Report attachment (application/pdf) — preview unavailable"
+#guard acuteReportAttachment (Json.mkObj [("contentType", .str "text/plain"), ("data", .str "ZnVsbCByZXBvcnQ=")]) ==
+  "Report attachment: full report"
+
+/-- A Bundle fullUrl remains an exact alias even when a resource already has an id. -/
+def aliasedStudy := entryResource (Json.mkObj [("fullUrl", .str "https://hospital.example/ImagingStudy/chest-study"),
+  ("resource", chestStudy)])
+#guard acuteRefersTo (reference "https://hospital.example/ImagingStudy/chest-study") aliasedStudy
+#guard !(acuteRefersTo (reference "https://other.example/ImagingStudy/chest-study") aliasedStudy)
+
+/-- URN graph links are resolved without replacing logical ids or leaking aliases. -/
+def urnImagingBundle : Json := Json.mkObj [("resourceType", .str "Bundle"), ("entry", .arr #[
+  Json.mkObj [("fullUrl", .str "urn:uuid:patient"), ("resource", patient)],
+  Json.mkObj [("fullUrl", .str "urn:uuid:encounter"), ("resource", encounter.setObjVal! "subject" (reference "urn:uuid:patient"))],
+  Json.mkObj [("fullUrl", .str "urn:uuid:study"), ("resource", (chestStudy.setObjVal! "subject" (reference "urn:uuid:patient")).setObjVal! "encounter" (reference "urn:uuid:encounter"))],
+  Json.mkObj [("fullUrl", .str "urn:uuid:report"), ("resource", (((chestReport.setObjVal! "subject" (reference "urn:uuid:patient")).setObjVal! "encounter" (reference "urn:uuid:encounter")).setObjVal! "imagingStudy" (.arr #[reference "urn:uuid:study"])))]])]
+def urnImagingResources := bundleResources urnImagingBundle
+def urnImagingRows := acuteImagingRows context urnImagingResources urnImagingResources.head!
+#guard urnImagingRows.length == 1
+#guard urnImagingRows.head!.lookup "Modality" == some "Digital radiography"
+#guard urnImagingRows.head!.lookup "Encounter" == some "Selected encounter"
+#guard !(urnImagingRows.flatMap id).any (fun (_, value) => (value.splitOn "urn:uuid:").length > 1)
+
 end Ehr.Render.Fhir.AcuteTests

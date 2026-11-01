@@ -110,14 +110,31 @@ const ed = [{ ...encounter(edId, 'EMER', 'ED · A04', 'Shortness of breath and f
   ...vitals(edId), ...labs(edId),
   task('acute-ed-labs', edId, 'CBC and metabolic panel — collection pending', '2026-11-02T08:00:00-08:00', 'urgent'),
   stamped({ resourceType: 'ServiceRequest', id: 'acute-ed-imaging', status: 'active', intent: 'order', subject: patientRef,
-    encounter: ref('Encounter', edId), category: [cc('imaging', 'Imaging')], code: cc('71046', 'Chest radiograph, 2 views'),
+    encounter: ref('Encounter', edId), category: [cc('imaging', 'Imaging')], code: cc('30746-2', 'Portable chest radiograph', 'http://loinc.org'),
     authoredOn: '2026-11-02T07:25:00-08:00' }),
+  stamped({ resourceType: 'ImagingStudy', id: 'acute-ed-cxr-study', status: 'available', subject: patientRef,
+    encounter: ref('Encounter', edId), started: '2026-11-02T07:28:00-08:00', description: 'Portable chest radiograph',
+    modality: [{ system: 'http://dicom.nema.org/resources/ontology/DCM', code: 'DX', display: 'Digital radiography' }],
+    basedOn: [ref('ServiceRequest', 'acute-ed-imaging')], interpreter: [ref('Practitioner', 'review-radiologist', 'Avery Shah, MD')],
+    numberOfSeries: 1, numberOfInstances: 1 }),
+  stamped({ resourceType: 'Observation', id: 'acute-ed-cxr-findings', status: 'final', subject: patientRef,
+    encounter: ref('Encounter', edId), category: [cc('imaging', 'Imaging')], code: cc('18782-3', 'Radiology study findings', 'http://loinc.org'),
+    effectiveDateTime: '2026-11-02T07:28:00-08:00',
+    valueString: 'Patchy airspace opacities in the lower lungs. No pleural effusion or pneumothorax.' }),
+  stamped({ resourceType: 'DiagnosticReport', id: 'acute-ed-cxr-report', status: 'final', subject: patientRef,
+    encounter: ref('Encounter', edId), category: [cc('RAD', 'Radiology', 'http://terminology.hl7.org/CodeSystem/v2-0074')],
+    code: cc('30746-2', 'Portable chest radiograph', 'http://loinc.org'),
+    effectiveDateTime: '2026-11-02T07:28:00-08:00', issued: '2026-11-02T07:40:00-08:00',
+    basedOn: [ref('ServiceRequest', 'acute-ed-imaging')], imagingStudy: [ref('ImagingStudy', 'acute-ed-cxr-study')],
+    result: [ref('Observation', 'acute-ed-cxr-findings')],
+    resultsInterpreter: [ref('Practitioner', 'review-radiologist', 'Avery Shah, MD')],
+    conclusion: 'Bilateral lower-lung airspace opacities.' }),
 ];
 await mkdir(output, { recursive: true });
 for (const [persona, extra, selected, medication] of [['P2', ed, edId], ['P3', rn, rnId, 'acute-rn-insulin']]) {
   const bundle = { ...original, entry: [...original.entry, ...extra.map(resource => ({ resource }))] };
   await writeFile(path.join(output, `${persona}.json`), JSON.stringify(bundle, null, 2) + '\n');
-  await writeFile(path.join(output, `${persona}-context.json`), JSON.stringify({ today: '2026-11-02', now: 475, receipts: [],
+  await writeFile(path.join(output, `${persona}-context.json`), JSON.stringify({ today: '2026-11-02', now: 600, receipts: [],
     ...(medication ? { medToGive: 'insulin lispro' } : {}),
     encounterKind: persona === 'P2' ? 'emergency' : 'inpatient',
     record: [['selectedEncounterId', selected], ...(medication ? [['selectedMedicationRequestId', medication]] : [])] }, null, 2) + '\n');

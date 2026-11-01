@@ -39,6 +39,7 @@ def frame (s : ScreenId) : List Component :=
     if c.id == cid s "nav" then activityNavigator { c with label := "Nursing Navigator" }
     else if c.id == cid s "chart.labResults" then
       presentation "results" { c with kind := .table "resultTrend" }
+    else if c.id == cid s "chart.imaging" then presentation "notes" c
     else c
 
 /-- The shift worklist: due and overdue meds, tasks, new orders, and the

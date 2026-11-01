@@ -165,3 +165,86 @@ for (const [
     }
   });
 }
+
+test("ED imaging retains the report, linked findings and separate image status", async ({
+  page,
+}) => {
+  const base = {
+    spec: read(join(root, "releases/v1/spec.json")),
+    program: read(join(root, "releases/v1/personas/P2.json")),
+    user: read(join(fixtures, "P2-user.json")),
+    ...native<FactsOutput>("facts", {
+      bundle: read(join(fixtures, "P2.json")),
+      context: read(join(fixtures, "P2-context.json")),
+    }),
+  };
+  const input: RenderInput = { ...base, state: native<State>("init", base) };
+  const events: Event[] = [];
+  await page.exposeFunction("recordAcuteEvent", (event: Event) => {
+    events.push(event);
+  });
+  await page.goto("/screen-check.html");
+  await page.waitForFunction(() => typeof window.renderUi === "function");
+  const paint = async () => {
+    const ui = native<UiScreen>("render-ui", input);
+    await page.evaluate(
+      (screen) =>
+        window.renderUi(screen, null, (event) => {
+          void window.recordAcuteEvent(event);
+        }),
+      ui,
+    );
+    expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
+      expectedAria(ui),
+    );
+  };
+  await paint();
+  await expect(
+    page.getByRole("table", {
+      name: "Emergency department patients",
+      exact: true,
+    }),
+  ).toContainText("Report available");
+  await page
+    .locator('button[data-comp-id="w3TrackBoard.nav.w3Provider"]')
+    .click();
+  await expect.poll(() => events.length).toBe(1);
+  let next = native<StepOutput>("step", { ...input, event: events[0] });
+  expect(next.result).toBe("ok");
+  expect(
+    next.state.captured.filter(
+      (capture) => capture.byHuman || capture.confirmed,
+    ),
+  ).toEqual(
+    input.state.captured.filter(
+      (capture) => capture.byHuman || capture.confirmed,
+    ),
+  );
+  input.state = next.state;
+  await paint();
+  const report = page.getByRole("list", {
+    name: "Imaging reports",
+    exact: true,
+  });
+  await expect(report).toContainText(
+    "Bilateral lower-lung airspace opacities.",
+  );
+  await expect(report).toContainText("No pleural effusion or pneumothorax.");
+  await expect(report).toContainText("Avery Shah, MD");
+  await expect(report).toContainText("Digital radiography");
+  await expect(report).toContainText("available");
+  await expect(report.locator(".tone-green")).toContainText(["final"]);
+  await expect(report).not.toContainText("urn:uuid:");
+  await page.getByRole("tab", { name: "Imaging", exact: true }).click();
+  await expect.poll(() => events.length).toBe(2);
+  expect(events[1]).toEqual({
+    selectTab: { comp: "w3Provider.chart", idx: 6 },
+  });
+  next = native<StepOutput>("step", { ...input, event: events[1] });
+  expect(next.result).toBe("ok");
+  input.state = next.state;
+  await paint();
+  await expect(
+    page.getByRole("list", { name: "Imaging", exact: true }),
+  ).toContainText("Bilateral lower-lung airspace opacities.");
+});

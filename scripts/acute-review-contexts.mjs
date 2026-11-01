@@ -30,14 +30,18 @@ for (const [persona, target] of [['P2', 'w3Provider'], ['P3', 'w4Mar']]) {
   }
   const route = routes.get(target);
   if (!route) throw new Error(`No real navigation to ${target}`);
-  let state = native('init', input);
-  for (const event of [...route, { selectTab: { comp: `${target}.chart`, idx: 2 } }]) {
-    const step = native('step', { ...input, state, event });
+  let encounter = native('init', input);
+  for (const event of route) {
+    const step = native('step', { ...input, state: encounter, event });
     if (step.result !== 'ok') throw new Error(`Failed chart navigation: ${JSON.stringify(step.result)}`);
-    state = step.state;
+    encounter = step.state;
   }
-  const ui = native('render-ui', { ...input, state });
-  const file = path.join(output, persona, `${target}-chart-results.json`);
-  writeFileSync(file, JSON.stringify(ui, null, 2) + '\n');
-  process.stdout.write(`${file}\n`);
+  for (const [tab, idx] of [['results', 2], ['imaging', 6]]) {
+    const step = native('step', { ...input, state: encounter, event: { selectTab: { comp: `${target}.chart`, idx } } });
+    if (step.result !== 'ok') throw new Error(`Failed chart navigation: ${JSON.stringify(step.result)}`);
+    const ui = native('render-ui', { ...input, state: step.state });
+    const file = path.join(output, persona, `${target}-chart-${tab}.json`);
+    writeFileSync(file, JSON.stringify(ui, null, 2) + '\n');
+    process.stdout.write(`${file}\n`);
+  }
 }

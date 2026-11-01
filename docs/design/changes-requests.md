@@ -1,5 +1,11 @@
 # Cross-lane change requests
 
+## Acute imaging projection and banner coverage (2026-11-01)
+
+The focused screenshot also caught a legacy blood-pressure panel joined in array order. It now shares the coded systolic/diastolic reader with structured observations; unknown or mixed-unit components keep their individual labels/units. `node scripts/check-acute-wasm.mjs` checks both original acute source bundles, all reachable role screens and Imaging tabs. Frozen replay extraction now uses four workers, matching this lane’s resource budget.
+
+The acute lane now supplies the existing `imaging` info from patient-bound DiagnosticReport/ImagingStudy resources, preserving report text and exact linked study/observation context. Board availability distinguishes source order/image/report milestones. W3 provider and W3/W4 Chart Review Imaging opt into the existing `present.notes` layout; there is no new control or info catalog item. Exact Bundle full-URL aliases are retained privately for reference resolution, without suffix matching or visible resource IDs. The desktop banner also stacks above the navigator; stronger browser checks test actual coverage rather than only viewport bounds. Existing clinical rules/spec data and theorem signatures remain unchanged.
+
 ## Sim → lean-core / world: typed task choices (2026-10-31)
 
 The sim lane merged `origin/main` and `origin/lane/lean-core`. Please add typed

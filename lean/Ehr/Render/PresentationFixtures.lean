@@ -135,5 +135,19 @@ def main (args : List String) : IO Unit := do
       unless back.screen == "example" do throw (IO.userError s!"Return failed: {control}")
     IO.FS.writeFile (out / "rowActions.json") (toJson screen).pretty
     IO.FS.writeFile (out / "rowActions-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
+  if let some (_, base) := inputs.find? (fun (name, _) => name == "growth") then
+    let bundle ← IO.ofExcept (Json.parse (← IO.FS.readFile "Ehr/Render/TestData/growth-units.json"))
+    let (facts, display) ← IO.ofExcept (Fhir.parseBundle { today := "2026-11-01" } bundle)
+    let facts := { facts with
+      record := ("codeStatus", "Full code") :: facts.record
+      infoPayloads? := base.facts.infoPayloads?
+      artifactBindings? := base.facts.artifactBindings? }
+    let input := { base with facts, display, state := init base.spec base.program facts base.user }
+    inputs := inputs ++ [("growthUnits", input)]
+    IO.FS.writeFile (out / "growthUnits.json") (toJson (runRenderUi input)).pretty
+    -- This is a true pre-fix semantic snapshot, with its original incorrect readings.
+    let before : UiScreen ← IO.ofExcept (fromJson? (← IO.ofExcept
+      (Json.parse (← IO.FS.readFile "Ehr/Render/TestData/growth-units-before-ui.json"))))
+    IO.FS.writeFile (out / "growthUnits-before.json") (toJson before).pretty
   IO.FS.writeFile (out / "api-inputs.jsonl") ("\n".intercalate (inputs.map encodeJson) ++ "\n")
   IO.println s!"Exported {inputs.length} structured examples and before views to {out}"

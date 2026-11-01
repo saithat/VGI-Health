@@ -80,7 +80,7 @@ theorem popup_step_opens :
 theorem sign_button_present :
     UiPresent (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s)
       (uiButton uiSignCtx uiSignItem "primary") := by
-  apply T10_ui_shown uiSignCtx uiSignItem (by decide) (by decide)
+  apply T10_ui_shown uiSignCtx uiSignItem (uiSourceItem_mem uiSignCtx _ (by decide)) (by decide)
   have kind : uiSignItem.comp.kind = .button (.commit "signOrders") := rfl
   simp [uiItem, kind, actionRole, uiButton, uiAtoms]
 
@@ -97,7 +97,7 @@ theorem weight_field_present : UiPresent uiScreenTest
     (.field "weightField" "Weight" "qty" (some "20.0") (some "kg")
       (some "record:weightToday") true false true) :=
   (D6_clear_fields uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    (by decide) (by decide) rfl).1
+    (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl).1
 
 /-- D6 directly proves a present clinical field has a nonempty label. -/
 theorem weight_label_instance : ("Weight" : String) ≠ "" :=

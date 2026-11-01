@@ -31,6 +31,13 @@ for (const [kind, input] of corpus) {
     assert.ok(!rows.some(row => row.some(([key, value]) => key === 'Measure' && value === 'Hemoglobin')));
     assert.ok(rows.some(row => row.some(([key, value]) => key === 'Measure' && value.includes('Systolic'))));
   }
+  if (kind === 'growthUnits') {
+    const rows = result.workspace[1].presentation.children[0].info.rows;
+    const has = (row, key, value) => row.some(([name, text]) => name === key && text === value);
+    assert.ok(rows.some(row => has(row, 'Date', 'May 1, 2024') && has(row, 'Weight (kg)', '22.2')));
+    assert.ok(rows.some(row => has(row, 'Date', 'Nov 1, 2024') && has(row, 'Height (cm)', '123.2')));
+    assert.ok(rows.some(row => has(row, 'Date', 'Nov 1, 2026') && has(row, 'Weight (kg)', '30.4')));
+  }
   if (kind === 'inBasket') {
     const panes = result.workspace[1].section.children[0].columns.children;
     assert.deepEqual(panes.map(node => node.presentation.kind), ['folderList', 'messages']);
@@ -54,7 +61,7 @@ for (const [kind, input] of corpus) {
       assert.equal(original?.button.label, 'Open MAR');
     }
   } else {
-    assert.equal(result.workspace[1].presentation.kind, kind);
+    assert.equal(result.workspace[1].presentation.kind, kind === 'growthUnits' ? 'growth' : kind);
     assert.ok(result.workspace[1].presentation.children.some(node => node.info), kind);
   }
 }

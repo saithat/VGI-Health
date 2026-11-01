@@ -18,6 +18,14 @@ def uiReview : ReviewReq :=
 def uiScreenTest : UiScreen :=
   renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 
+/-- Witness a real source item without comparing its complete FHIR payload.
+The interpreter builds these items by mapping its current screen components. -/
+theorem uiSourceItem_mem (cx : Ctx) (component : Component)
+    (hc : component ∈ cx.prog.compsOf cx.s.screen) :
+    itemView cx.sp cx.facts cx.s (cx.prog.compsOf cx.s.screen) component ∈ cx.v.items := by
+  rw [Ctx.v_exact]
+  exact List.mem_map.mpr ⟨component, hc, rfl⟩
+
 -- Input updates rebuild the dependent cache; a rooming view cannot leak
 -- into a sign state. The equality also holds for every arbitrary context.
 #guard uiRoomCtx.v.screen == uiRoomCtx.s.screen
@@ -33,7 +41,7 @@ example : ∃ comp label display, UiPresent
     (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s)
     (.info comp label uiReview.info display (uiRows uiSignCtx uiReview.info)) := by
   exact D2_commit_review uiSignCtx uiReview (by decide) (by decide) uiSignItem
-    (by decide) (by decide) (by decide)
+    (uiSourceItem_mem uiSignCtx _ (by decide)) (by decide) (by decide)
 
 example : ∀ n, UiPresent
     (renderUi uiSignCtx.sp uiSignCtx.prog uiSignCtx.facts uiSignCtx.disp uiSignCtx.user uiSignCtx.s) n ∨
@@ -59,7 +67,7 @@ example : (renderUi uiRoomCtx.sp uiRoomCtx.prog uiRoomCtx.facts uiRoomCtx.disp u
 
 example : UiPresent uiScreenTest (uiField uiRoomCtx uiWeightItem "weight") :=
   (D6_clear_fields uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    (by decide) (by decide) rfl).1
+    (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl).1
 
 -- The real weight prefill is pending: confirmation is not a vacuous branch.
 example : uiWeightItem.pendingConfirm = true := by decide
@@ -67,7 +75,7 @@ example : UiPresent uiScreenTest
     (.button "weightField" "Confirm prefilled value" "confirm" (uiEnabled uiRoomCtx "weightField")
       (uiBlocked uiRoomCtx "weightField") none) :=
   (D6_clear_fields uiRoomCtx uiWeightItem "weight" (.fixed 0) (.fromRecord "weightToday")
-    (by decide) (by decide) rfl).2.2 (by decide)
+    (uiSourceItem_mem uiRoomCtx _ (by decide)) (by decide) rfl).2.2 (by decide)
 
 -- Empty labels are repaired, rather than rendering an unnamed field/button.
 example : uiLabel "" "Clinical entry" ≠ "" := uiLabel_nonempty _ _ (by decide)

@@ -320,7 +320,8 @@
           "coding": [
             {
               "code": "85354-9",
-              "display": "Blood pressure"
+              "display": "Blood pressure",
+              "system": "http://loinc.org"
             }
           ]
         },
@@ -328,13 +329,35 @@
           {
             "valueQuantity": {
               "value": 128,
-              "unit": "mmHg"
+              "unit": "mmHg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic blood pressure"
+                }
+              ]
             }
           },
           {
             "valueQuantity": {
               "value": 82,
-              "unit": "mmHg"
+              "unit": "mmHg",
+              "system": "http://unitsofmeasure.org",
+              "code": "mm[Hg]"
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic blood pressure"
+                }
+              ]
             }
           }
         ]

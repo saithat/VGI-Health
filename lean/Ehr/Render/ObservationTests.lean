@@ -9,16 +9,28 @@ open Lean Fhir
 def reversedBloodPressure := Tests.json r#"{"resourceType":"Observation","status":"final","category":[{"coding":[{"code":"vital-signs"}]}],"code":{"text":"Blood pressure","coding":[{"system":"http://loinc.org","code":"85354-9"}]},"effectiveDateTime":"2026-11-01T08:00:00","component":[{"code":{"text":"Diastolic blood pressure","coding":[{"system":"http://loinc.org","code":"8462-4"}]},"valueQuantity":{"value":76,"unit":"mmHg"}},{"code":{"text":"Systolic blood pressure","coding":[{"system":"http://loinc.org","code":"8480-6"}]},"valueQuantity":{"value":128,"unit":"mmHg"}}]}"#
 #guard observationBpValue? reversedBloodPressure == some ("128/76", "mmHg")
 #guard (observationRow reversedBloodPressure).value == "128/76"
+#guard (obsValue reversedBloodPressure).1 == "128/76"
+#guard (vitalRow reversedBloodPressure).value == "128/76"
+#guard (vitalRow reversedBloodPressure).name == "Blood pressure"
 #guard (observationRows [reversedBloodPressure]).length == 3
 #guard (observationRows [reversedBloodPressure]).any (fun r => r.measure == "Blood pressure • Diastolic blood pressure" && r.value == "76")
 
 /-- Uncoded or incomplete panels never acquire meaning from array position. -/
 def uncodedPanel := reversedBloodPressure.setObjVal! "code" (Tests.json r#"{"text":"Assessment panel"}"#)
 #guard observationBpValue? uncodedPanel == none
+#guard (obsValue uncodedPanel).1 == "Diastolic blood pressure: 76 mmHg; Systolic blood pressure: 128 mmHg"
 #guard (observationRow uncodedPanel).value == "See component results"
 #guard (observationRows [uncodedPanel]).length == 3
 #guard observationBpValue? (reversedBloodPressure.setObjVal! "valueQuantity" (Tests.json r#"{"value":42,"unit":"mmHg"}"#)) == none
 #guard (observationRow (reversedBloodPressure.setObjVal! "valueQuantity" (Tests.json r#"{"value":42,"unit":"mmHg"}"#))).value == "42"
+
+/-- A pair cannot borrow the first component's unit for a different unit. -/
+def mixedUnitPressure := reversedBloodPressure.setObjVal! "component" (.arr #[
+  Tests.json r#"{"code":{"text":"Diastolic","coding":[{"system":"http://loinc.org","code":"8462-4"}]},"valueQuantity":{"value":10,"unit":"kPa"}}"#,
+  Tests.json r#"{"code":{"text":"Systolic","coding":[{"system":"http://loinc.org","code":"8480-6"}]},"valueQuantity":{"value":128,"unit":"mmHg"}}"#])
+#guard observationBpValue? mixedUnitPressure == none
+#guard (obsValue mixedUnitPressure).1 == "Diastolic: 10 kPa; Systolic: 128 mmHg"
+#guard (obsValue mixedUnitPressure).2.1 == ""
 
 /-- A categorical assessment component retains the parent's time, status and category. -/
 def assessment := Tests.json r#"{"resourceType":"Observation","status":"preliminary","category":[{"coding":[{"code":"exam"}]}],"code":{"text":"Mobility assessment"},"effectiveDateTime":"2026-11-01T09:00:00","component":[{"code":{"text":"Ambulates independently"},"valueBoolean":false},{"code":{"text":"Assistance"},"valueCodeableConcept":{"text":"One person assist"}}]}"#
