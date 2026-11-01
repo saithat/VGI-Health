@@ -1,3 +1,17 @@
+# Conformance repair follow-up — 2026-11-01
+
+The five gap families now have strengthened implementations.
+
+Focused result: 0 failures across 15 canonicals; 93 applicable checks passed. A focused rerun on
+all fifteen canonicals is recorded in [gap-families.json](results/gap-families.json)
+and [its scenario matrix](results/gap-families.md). It preserves every negative
+expectation and exercises the legitimate CURES, weight and denial paths. The
+weight-correction positive control now performs the newly required human
+re-confirmation; it also asserts invalidation before that action.
+
+The broader 195-scenario matrix was not completed before the 10:30 AM PDT hard
+stop. The earlier full-run findings below remain historical, not current results.
+
 # Native rule-conformance evaluation — 2026-11-01
 
 195 scenarios were evaluated against all 15 current role canonicals and every

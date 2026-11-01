@@ -29,9 +29,35 @@ def resolveSlot (s : State) : Slot → Nat
 def hasEntry (s : State) (e : ElementId) (n : Nat) : Bool :=
   s.captured.any fun x => x.element == e && x.slot == n
 
-/-- Store a captured value, replacing any value for the same element and slot. -/
+/-- Follow each dependency once, stopping when no new element is found. -/
+def linkedClosure (l : List Captured) (ids : List ElementId) : Nat → List ElementId
+  | 0 => ids
+  | fuel + 1 =>
+    let next := (ids ++ l.filterMap (fun y =>
+      if ids.any (fun e => y.provenance? == some ("linked:" ++ e)) then some y.element else none)).eraseDups
+    if next.length == ids.length then ids else linkedClosure l next fuel
+
+/-- Captures linked directly or transitively to a source element. -/
+def linkedDependents (l : List Captured) (source : ElementId) : List ElementId :=
+  (linkedClosure l [source] l.length).filter (· != source)
+
+@[simp] theorem linkedDependents_not_self (l : List Captured) (e : ElementId) :
+    e ∉ linkedDependents l e := by simp [linkedDependents]
+
+/-- Store a value and discard its superseded linked copies. A changed source
+marks future copies as pending human confirmation. -/
+def storedCapture (l : List Captured) (x : Captured) : Captured :=
+  { x with provenance? := if (!(linkedDependents l x.element).isEmpty && l.any (fun y =>
+      y.element == x.element && y.slot == x.slot && y.value != x.value)) ||
+      l.any (fun y => y.element == x.element && y.slot == x.slot && y.provenance? == some "linked-source-changed")
+    then some "linked-source-changed" else x.provenance? }
+
 def setCaptured (l : List Captured) (x : Captured) : List Captured :=
-  l.filter (fun y => !(y.element == x.element && y.slot == x.slot)) ++ [x]
+  let superseded := l.any (fun old => old.element == x.element &&
+    (old.value != x.value || old.confirmed != x.confirmed))
+  let dependents := if superseded then linkedDependents l x.element else []
+  l.filter (fun y => !(y.element == x.element && y.slot == x.slot) &&
+    !dependents.contains y.element) ++ [storedCapture l x]
 
 /-! ## Prefill (on screen entry) -/
 
@@ -60,7 +86,7 @@ def prefillRecord (facts : Facts) (s : State) (e : ElementId) (el : ElementSpec)
   | .linked src =>
     (linkedSource? s src n).map fun x =>
       { element := e, slot := n, value := x.value, byHuman := false
-        confirmed := el.prefill == .autoLinked && x.confirmed
+        confirmed := el.prefill == .autoLinked && x.confirmed && x.provenance? != some "linked-source-changed"
         provenance? := some ("linked:" ++ src) }
 
 /-- Validate generated prefills, preserving the original policy/source rules. -/
@@ -168,6 +194,8 @@ def requestPriorAuth (sp : Spec) (user : User) (actor : Actor) (s : State) : Sta
       (s, .blocked s!"role: {user.role.name} may not enter {priorAuthElement}")
     else if !hasOrderAt s s.currentSlot then (s, .ignored)
     else if priorAuthCaptured s then (s, .ignored)
+    else if !(linkedDependents s.captured priorAuthElement).isEmpty then
+      (s, .blocked "linked confirmation must be updated through a human field")
     else
       match actor with
       | .«macro» =>
@@ -268,7 +296,7 @@ def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
             else
               let x : Captured :=
                 { element := e, slot := resolveSlot s slot, value := v, byHuman := false
-                  confirmed := false, provenance? := some "macro" }
+                  confirmed := false, provenance? := (el.linkedFrom?.map ("linked:" ++ ·)).or (some "macro") }
               ({ s with captured := setCaptured s.captured x }, .ok)
           | .human =>
             if (!valueAccepted facts user el.kind v ||
@@ -276,7 +304,7 @@ def enterCore (sp : Spec) (prog : Program) (facts : Facts) (user : User) (actor 
             else
               let x : Captured :=
                 { element := e, slot := resolveSlot s slot, value := v, byHuman := true
-                  confirmed := true, provenance? := none }
+                  confirmed := true, provenance? := el.linkedFrom?.map ("linked:" ++ ·) }
               ({ s with captured := setCaptured s.captured x }, .ok)
     | .search _ =>
       match v with

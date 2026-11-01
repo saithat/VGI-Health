@@ -141,7 +141,7 @@ private theorem request_slots (sp u actor s slots) (h : DrugSlotsWithin slots s)
     simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hx
     rcases hx with ⟨hx, _⟩ | rfl
     · exact h x hx he
-    · simp [priorAuthElement, drugElement] at he
+    · simp [storedCapture, priorAuthElement, drugElement] at he
 
 private theorem goTo_slots (sp p f s z slots) (bound : FixedDrugSlots p slots)
     (h : DrugSlotsWithin slots s) : DrugSlotsWithin slots (goTo sp p f s z).1 := by

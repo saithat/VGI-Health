@@ -224,6 +224,11 @@ def urnPrimaryCareExample : Json := primaryCareProviderExample.setObjVal! "id" (
 #guard (bannerOf context.today [urnPrimaryCareExample] assignedPatientExample).pcp == "Morgan, Taylor"
 
 
+/-- A mixed chart bundle exposes only the open patient's allergy. -/
+def mixedChart : Json := json r#"{"resourceType":"Bundle","entry":[{"resource":{"resourceType":"Patient","id":"B"}},{"resource":{"resourceType":"AllergyIntolerance","id":"own","patient":{"reference":"Patient/B"},"code":{"text":"Own allergy"}}},{"resource":{"resourceType":"AllergyIntolerance","id":"foreign","patient":{"reference":"Patient/A"},"code":{"text":"Private foreign allergy"}}}]}"#
+#guard (output mixedChart).display.allergies.map (·.id) == ["own"]
+#guard (chartResourcesOfBundle mixedChart).all (fun r => str r "id" != "foreign")
+
 end Ehr.Render.Tests
 
 namespace Ehr.Render.Tests

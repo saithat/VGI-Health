@@ -1,5 +1,29 @@
 # Cross-lane change requests
 
+## CHECK conformance repair — 2026-11-01
+
+The five findings below have implementation fixes: CURES waiver membership and
+facility/procedure/supply evidence are checked; changed linked sources discard
+stale dependents and require fresh human confirmation; chart resources are
+patient scoped before facts and display projection; order signing requires an
+order, including a confirmed imaging/procedure-only route; and approval accepts
+only approve/modify, retaining the reasoned denial action. The checker rejects
+programs relying solely on a CURES waiver and programs with no order composer.
+
+Certification: 15/15; bad regressions: 23/23, with five new checker-local cases.
+World 2: 1,284/1,284 across all fifty schedules. Default build, kernel check and
+Comparator pass. App tests: 285; agent tests: 93. The archived run1-P3 replay
+retains its input/spec IDs and matches 14,658 events plus 137 baseline events.
+No `Statements.lean` change was needed. FHIR inclusion proofs now quantify over
+the selected patient's chart resources, rather than unrelated bundle entries.
+
+The positive kg-correction scenario explicitly re-confirms dosing weight after
+source correction and asserts the old confirmation was invalidated; its refusal
+oracle is unchanged. The conformance runner allows up to sixteen independent
+native workers for the owner's deadline. The focused rerun and its exact scope
+are recorded in `conformance/results/gap-families.json`; the earlier full matrix
+is retained as historical evidence, not a claim about the repaired executable.
+
 ## RULE CONFORMANCE findings — owner-side held-out evaluation (2026-11-01)
 
 The behavioral suite is [conformance/](../../conformance/README.md). It uses the

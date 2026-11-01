@@ -23,27 +23,14 @@ element. -/
 theorem requestPriorAuth_macro_safe (sp : Spec) (user : User) (s : State) :
     MacroSafe sp s (requestPriorAuth sp user .«macro» s).1 := by
   unfold requestPriorAuth
-  split
-  · exact MacroSafe.refl _ _
-  · rename_i el hel
-    split
-    · exact MacroSafe.refl _ _
-    · split
-      · exact MacroSafe.refl _ _
-      · split
-        · exact MacroSafe.refl _ _
-        · dsimp only
-          split
-          · exact MacroSafe.refl _ _
-          · rename_i hnh
-            refine ⟨rfl, rfl, rfl, ?_⟩
-            intro y hy hh
-            simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hy
-            rcases hy with ⟨hy, _⟩ | rfl
-            · exact hy
-            · exfalso
-              simp only [Bool.or_eq_true, beq_iff_eq, not_or, Bool.not_eq_true] at hnh
-              simp [Spec.isHumanOnly, hel, hnh.1] at hh
+  repeat' (first | exact MacroSafe.refl _ _ | split | dsimp only)
+  all_goals
+    refine ⟨rfl, rfl, rfl, ?_⟩
+    intro y hy hh
+    simp only [setCaptured, List.mem_append, List.mem_filter, List.mem_singleton] at hy
+    rcases hy with ⟨hy, _⟩ | rfl
+    · exact hy
+    · simp_all [Spec.isHumanOnly, storedCapture, Bool.or_eq_true]
 
 theorem clickCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user : User)
     (s : State) (c : Component) : MacroSafe sp s (clickCore sp prog facts user .«macro» s c).1 := by
@@ -88,7 +75,7 @@ theorem enterCore_macro_safe (sp : Spec) (prog : Program) (facts : Facts) (user 
               · exact hy
               · exfalso
                 simp only [Bool.or_eq_true, beq_iff_eq, not_or, Bool.not_eq_true] at hnh
-                simp [Spec.isHumanOnly, hel, hnh.1] at hh
+                simp [Spec.isHumanOnly, storedCapture, hel, hnh.1] at hh
     · cases v <;> exact MacroSafe.of_eq rfl rfl rfl rfl
     · exact MacroSafe.refl _ _
 

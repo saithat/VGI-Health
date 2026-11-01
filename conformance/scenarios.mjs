@@ -148,7 +148,10 @@ add('weight.lb', 'Hospital kg-only weight', 'Pounds never satisfy signing; re-en
   const ctx = context('signOrders'), d = f.prefix(ctx);
   d.enter('weight', qty(1540, 'lb'));
   refusal(d, 'signOrders', 'weight');
-  d.enter('weight', qty(700, 'kg')); d.finish('signOrders');
+  d.enter('weight', qty(700, 'kg'));
+  assert(!d.capture('dosingWeight')?.confirmed, 'Corrected source must invalidate the dependent confirmation');
+  d.enter('dosingWeight', qty(700, 'kg')); // Human re-confirmation required after source correction.
+  d.finish('signOrders');
   return { d, observed: 'lb stored as invalid and refused at signing; corrected kg signed' };
 });
 

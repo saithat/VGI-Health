@@ -10,16 +10,17 @@ def microSpec : Spec := { spec with
   elements := [{
     id := "x", label := "X", kind := .text, enteredBy := [.physician],
     prefill := .never, friction := .compliance, fhirTarget := "Composition.text" }]
-  entries := [{ commit := "signOrders", element := "x" }]
+  commits := [{ id := "signNote", label := "Sign note", roles := [.physician] }]
+  entries := [{ commit := "signNote", element := "x" }]
   reviews := [], alerts := [] }
 def microProgram : Program := { program with start := "a", macros := [], screens := [
   { id := "a", title := "A", workflow := "W1", components := [
     { id := "x", kind := .field "x" (.fixed 0) .none },
     { id := "next", kind := .button (.goto "b") }] },
   { id := "b", title := "B", workflow := "W1", components := [
-    { id := "sign", kind := .button (.commit "signOrders") }] }] }
-def microGoals : Goals := { commits := ["signOrders"], values := [
-  { element := "x", value? := some (.text "ok"), commit := "signOrders" }], expectedAcks := [] }
+    { id := "sign", kind := .button (.commit "signNote") }] }] }
+def microGoals : Goals := { commits := ["signNote"], values := [
+  { element := "x", value? := some (.text "ok"), commit := "signNote" }], expectedAcks := [] }
 def microCtx : Context := { sp := microSpec, prog := microProgram, facts, user, goals := microGoals }
 def microStart := init microSpec microProgram facts user
 
@@ -59,7 +60,7 @@ example : Certificate.accept (searchGraph microCtx .full .clicks) (forgetHistory
 /-- The removable reminder appears only in the variant that requests it. -/
 def reminderSpec : Spec := { microSpec with alerts := [{
   id := "reminder", label := "Reminder",
-  cond := .careGap, tier := .removable, commit := "signOrders" }] }
+  cond := .careGap, tier := .removable, commit := "signNote" }] }
 def reminderProgram : Program := { microProgram with screens := microProgram.screens.map fun (sc : Screen) =>
   if sc.id == "b" then { sc with components := sc.components ++ [
     { id := "reminder", kind := .alert "reminder" true }] } else sc }
@@ -69,7 +70,7 @@ def reminderCtx : Context := { microCtx with sp := reminderSpec, prog := reminde
 
 /-- Tiny simulation and search share the activation model, including a popup
 trigger click plus its acknowledgment. -/
-def microTask : Task := { PolicyTests.task with choices := { orders := [GoalsTests.amox] }, interruptions := 0 }
+def microTask : Task := { PolicyTests.task with choices := { orders := [], noteSections := ["x"] }, interruptions := 0 }
 def microSchedule : DaySchedule := { PolicyTests.schedule with tasks := [microTask] }
 def quietPersona := { PolicyTests.p1 with
   backtrackRate := 0, scansSidebar := false,

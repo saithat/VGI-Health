@@ -44,7 +44,7 @@ theorem medRows_complete (rs : List Json) (r : Json) (hr : r ∈ rs)
 /-- Recover the patient and the exact facts/display used by a successful parse. -/
 theorem parseBundle_eq (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
     (h : parseBundle ctx b = .ok (f, d)) :
-    ∃ p, f = factsOf ctx (bundleResources b) p ∧ d = displayOf ctx (bundleResources b) p := by
+    ∃ p, f = factsOf ctx (chartResourcesOfBundle b) p ∧ d = displayOf ctx (chartResourcesOfBundle b) p := by
   unfold parseBundle at h
   split at h
   · contradiction
@@ -55,14 +55,14 @@ theorem parseBundle_eq (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
 
 /-- T11: every active allergy survives abstraction into Display. -/
 theorem T11_allergy (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (ha : isAllergy r = true) (active : allergyActive r = true) : allergyRow r ∈ d.allergies := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d h
   exact allergyRows_complete _ r hr ha active
 
 /-- T11: every active medication survives abstraction into Display. -/
 theorem T11_med (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (hm : isMedRequest r = true) (active : medActive r = true) : medRow r ∈ d.meds := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d h
   exact medRows_complete _ r hr hm active
@@ -107,12 +107,13 @@ theorem T5_weight (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
     ∃ r ∈ bundleResources b, isBodyWeight r = true ∧ dayOf (obsWhen r) = ctx.today ∧
       unitOf (field r "valueQuantity") = some u ∧ qtyScaled (field r "valueQuantity") 1 = some w := by
   obtain ⟨p, rfl, _⟩ := parseBundle_eq ctx b f d h
-  exact weightToday_witness _ _ w u hw
+  obtain ⟨r, hr, hrest⟩ := weightToday_witness _ _ w u hw
+  exact ⟨r, chartResource_mem hr, hrest⟩
 
 /-- T5: allergy versions cover precisely all bundle allergy resources. -/
 theorem T5_allergyVersion (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
     (h : parseBundle ctx b = .ok (f, d)) :
-    f.allergyVersion = listVersion ((bundleResources b).filter isAllergy) := by
+    f.allergyVersion = listVersion ((chartResourcesOfBundle b).filter isAllergy) := by
   obtain ⟨p, rfl, _⟩ := parseBundle_eq ctx b f d h
   rfl
 
@@ -139,10 +140,10 @@ theorem T5_version_order_independent (rs ss : List Json) (h : rs.Perm ss) :
 /- A small FHIR representation of Tiny's patient and 20 kg weight. Missing
  allergy status deliberately exercises the conservative active reading. -/
 def tinyPatient : Json := Json.mkObj [("resourceType", .str "Patient"), ("id", .str "pt-1")]
-def tinyAllergy : Json := Json.mkObj [("resourceType", .str "AllergyIntolerance"), ("id", .str "a-1")]
-def tinyMed : Json := Json.mkObj [("resourceType", .str "MedicationRequest"), ("id", .str "m-1"), ("status", .str "active")]
+def tinyAllergy : Json := Json.mkObj [("resourceType", .str "AllergyIntolerance"), ("id", .str "a-1"), ("patient", Json.mkObj [("reference", .str "Patient/pt-1")])]
+def tinyMed : Json := Json.mkObj [("resourceType", .str "MedicationRequest"), ("id", .str "m-1"), ("status", .str "active"), ("subject", Json.mkObj [("reference", .str "Patient/pt-1")])]
 def tinyWeight : Json := Json.mkObj [("resourceType", .str "Observation"), ("id", .str "w-1"),
-  ("status", .str "final"), ("effectiveDateTime", .str "2026-10-31"),
+  ("status", .str "final"), ("subject", Json.mkObj [("reference", .str "Patient/pt-1")]), ("effectiveDateTime", .str "2026-10-31"),
   ("code", Json.mkObj [("coding", .arr #[Json.mkObj [("code", .str "29463-7")]])]),
   ("valueQuantity", Json.mkObj [("value", toJson (20 : Nat)), ("code", .str "kg")])]
 def tinyBundle : Json := Json.mkObj [("resourceType", .str "Bundle"),
@@ -177,7 +178,7 @@ theorem noteRows_complete (rs : List Json) (r : Json) (hr : r ∈ rs)
   exact ⟨r, List.mem_filter.mpr ⟨hr, by simp [hn, hv]⟩, rfl⟩
 
 theorem T11_note (ctx : FactsContext) (b : Json) (f : Facts) (d : Display)
-    (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ bundleResources b)
+    (h : parseBundle ctx b = .ok (f, d)) (r : Json) (hr : r ∈ chartResourcesOfBundle b)
     (hn : isDocumentReference r = true) (hv : documentVisible r = true) : noteRow r ∈ d.notes := by
   obtain ⟨p, _, rfl⟩ := parseBundle_eq ctx b f d h
   exact noteRows_complete _ r hr hn hv

@@ -853,11 +853,18 @@ def infoPinned (sp : Spec) (facts : Facts) (s : State) (i : InfoId) : Bool :=
       | .commit c => displayActive facts s (some c) r
       | _ => false)
 
+/-- Signing an order needs a medication line or a complete, confirmed service line. -/
+def signingHasOrder (sp : Spec) (s : State) (c : CommitId) : Bool :=
+  let signing := c == "signOrders" || sp.entries.any (fun rq => rq.commit == c && rq.perOrderLine && rq.element == drugElement)
+  !signing || !(orderLines s).isEmpty || s.captured.any (fun x =>
+    serviceOrderAt s x.slot && ["orderKind", "orderCode"].all (fun e =>
+      s.captured.any (fun y => y.slot == x.slot && y.element == e && y.confirmed)))
+
 /-- Additional commit contracts. Kept separate from entries/review receipts. -/
 def extraGuard (sp : Spec) (prog : Program) (facts : Facts) (s : State) (c : CommitId) : Bool :=
   match sp.commit? c with
   | none => false
-  | some cs => (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met) &&
+  | some cs => signingHasOrder sp s c && (cs.temporal?.getD []).all (fun rq => temporalStatus facts s rq == .met) &&
       validationsOk sp facts s && defaultsOk sp prog &&
       (cs.expiry?.getD []).all (fun rq => expiryStatus facts s rq == .met) &&
       displaysOk sp prog facts s c

@@ -131,7 +131,7 @@ def w3Lb : State := run (w3Path .lb) (f := hospital)
 /-- Correct the same episode in kg, then return to sign. -/
 def w3 : State := more w3Lb [.click "w3Sign.nav.w3Triage",
   .enter "w3Triage.weight" (.qty 700 .kg), .click "w3Triage.nav.w3Orders",
-  .click "w3Orders.toSign"] (f := hospital)
+  .click "w3Orders.toSign", .enter "w3Sign.dosingWeight" (.qty 700 .kg)] (f := hospital)
 #guard Specs.ruleProfile == .full || (finish w3 "w3Sign" "signOrders" (f := hospital)).commits.contains "signOrders"
 /-- W3 disposition after signing. -/
 def w3Disposition : State := more (finish w3 "w3Sign" "signOrders" (f := hospital))

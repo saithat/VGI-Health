@@ -783,8 +783,7 @@ Checked against docs/rules/ca-statutes.json (procedure-seven-day and
 ed-buprenorphine rows) and its cited official bulk source for §11165.4(c).
 This is a subset: non-surgical procedures in (c)(4), the separate ED
 buprenorphine branch in (c)(3), and (c)(7)–(9) are not separately modeled.
-The codes document a human's choice; the current interpreter checks neither
-value-set membership nor these clinical/facility/supply predicates (CR-11). -/
+The interpreter checks these categories and their documented eligibility limits. -/
 def curesExemptionCodes : List String :=
   ["admin-in-facility", "ed-7-day", "surgery-7-day", "hospice", "cures-unavailable"]
 
@@ -793,8 +792,7 @@ Why CURES was not checked: one of the statutory exemptions in
 `curesExemptionCodes` (CA Health and Safety Code §11165.4(c)). A human
 records it; it is never pre-filled. A confirmed human entry waives the modeled
 CURES review requirement instead of the report (see `orderSigningReviews`).
-This is documentation, not proof that the statutory exemption applies: code
-membership and clinical/facility/supply eligibility remain CR-11 work. -/
+The guard checks the category and its clinical/facility/supply evidence. -/
 def curesExemptionReason : ElementSpec where
   id := "curesExemptionReason"
   label := "CURES not checked: exemption"
@@ -1940,7 +1938,7 @@ the pharmacy, and the protocol check.
 
 Our clinical protocol, not a legal lab/visit requirement (docs/regulations.md §3.1 E17). -/
 def approveRefillEntries : List EntryReq :=
-  [requires approveRefill refillDecision, requires approveRefill refillQuantity,
+  [{ requires approveRefill refillDecision with allowed? := some ["approve", "modify"] }, requires approveRefill refillQuantity,
    requires approveRefill refillRefills, requires approveRefill refillPharmacy,
    requires approveRefill refillProtocolMet]
 
