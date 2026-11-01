@@ -1,0 +1,83 @@
+{
+  "sourceRevision": "15896ac3d781af9a186cb6a8b9b8a13f0f4586dd",
+  "mainRevision": "a3b34ef6419fbe9ca088b18cded5958e7488030e",
+  "shellRevision": "4ebad6bb",
+  "evidenceRevision": "912a484d",
+  "leanHash": "480dbb23ac0ec4634bfd4705e9a0159ca242129e5fc9cff4c7a0564fc57f002e",
+  "defaultLeanBuild": {
+    "status": "pass",
+    "targets": 371
+  },
+  "lakeCheck": "pass",
+  "comparators": {
+    "root": "pass",
+    "checker": "pass",
+    "renderIncludingD1D6": "pass"
+  },
+  "wasm": "regenerated and current",
+  "certification": {
+    "accepted": 15,
+    "total": 15,
+    "badRejected": 23,
+    "badTotal": 23
+  },
+  "world2": {
+    "completed": 1284,
+    "tasks": 1284,
+    "selectedTasks": 1284
+  },
+  "archivedReplay": {
+    "run": "run1-P3",
+    "tasks": 424,
+    "events": 14658,
+    "baselines": 3,
+    "baselineEvents": 137,
+    "mismatches": 0
+  },
+  "tests": {
+    "app": 301,
+    "agent": 95,
+    "appLint": "pass",
+    "agentLint": "pass",
+    "agentTypes": "pass"
+  },
+  "browser": {
+    "openingCharts": 5,
+    "chartReviewTabsPerRole": 10,
+    "curatedScreens": 8,
+    "freshSummaryFidelity": 5,
+    "standardUiChecks": "pass",
+    "responsiveCardChecks": 3
+  },
+  "buttonAudit": {
+    "scope": "three observed configurations per persona; sampled",
+    "works": 118,
+    "dead": 0,
+    "error": 0
+  },
+  "geometry": {
+    "beforeAfterRows": 15,
+    "tasks": 384,
+    "completed": 384,
+    "missingTargets": 0,
+    "comparison": "comparison.json"
+  },
+  "screenshots": {
+    "before": "app/shots/final/epic-before/",
+    "after": "app/shots/final/epic-after/",
+    "curated": "app/shots/final/"
+  },
+  "conformance": {
+    "status": "running",
+    "command": "pnpm conformance --canonical --jobs 15 --out docs/measurements/epic-density/conformance.json",
+    "startedAt": "2026-11-01T19:01:20Z",
+    "completedTargets": 3,
+    "completedTargetFailures": 0,
+    "note": "Full suite has not completed at the lane cutoff. It remains running read-only; do not label the full milestone green yet.",
+    "lastCheckedAt": "2026-11-01T19:19:23.223299+00:00",
+    "completedTargetPasses": 139,
+    "processId": 4132684,
+    "toolSession": 86938,
+    "log": ".cache/content2/epic-logs/conformance-final.log"
+  }
+}
