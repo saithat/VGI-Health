@@ -83,9 +83,8 @@ def bundleResourcesWithIds (bundle : Json) : List Json :=
 /-- Schedule fixture UUIDs and renderer wristband identifier tokens name the
 same Patient. Validate either declared identity without rewriting parsed Facts. -/
 def bundlePatientMatches (bundle : Json) (id : String) : Bool :=
-  (bundleResourcesWithIds bundle).any fun r =>
-    Render.Fhir.resourceType r == "Patient" &&
-      (Render.Fhir.str r "id" == id || Render.Fhir.patientIdOf r == id)
+  ((bundleResourcesWithIds bundle).find? (Render.Fhir.resourceType · == "Patient")).any fun r =>
+    Render.Fhir.str r "id" == id || Render.Fhir.patientIdOf r == id
 
 /-- World clinical observations are structured FHIR, not note-section tags.
 Pass their explicit coded values to goal derivation as named record facts. -/

@@ -594,6 +594,13 @@ are never substituted. This request does not block live interaction.
 Main's owner-authored prior-auth and app fixture changes resolve the historical
 build blockers above. Shared W2/W3 composers work through Home. The verified
 ten-day sweep before the latest merge completed 1271/1284 tasks, with all 13
-incomplete tasks being P1/P5 service orders requested before v1.1. A fresh sweep
-after the merge is recorded in HANDOFF-sim.md. The service versioning and W7
+incomplete tasks being P1/P5 service orders requested before v1.1. The fresh sweep
+after the merge confirms the same counts, with zero floor/interruption violations;
+results are committed in lean/Ehr/Sim/validation.json. The service versioning and W7
 prescription-context requests remain open; no clinical goal or guard was removed.
+
+Validated sim snapshot `5383fc4` includes main `cccd64e`. Shared refs subsequently
+advanced to catalog main `f3dd0c2` and clinical/payload core `7e527f6`; those newer
+contracts require a fresh integration/replay rather than inheriting the earlier
+pass results. Catalog W7 now declares drug capture, so reassess that request
+after integration instead of applying the obsolete workaround.

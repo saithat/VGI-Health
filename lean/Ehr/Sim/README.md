@@ -35,7 +35,9 @@ patient-ID-keyed files. Precomputed Facts are a fallback. Facts-only input with
 without a patient Bundle.
 
 Synthea transaction `entry.fullUrl` UUIDs are materialized as resource IDs when
-resource.id is absent. Today's resources replace matching (type,id) resources,
+resource.id is absent. Schedule UUIDs and renderer Synthea identifier tokens
+are validated against the same selected Patient without rewriting its identity.
+Today's resources replace matching (type,id) resources,
 without leaking later tasks backward. Render's `Fhir.parseBundle` derives Facts.
 Structured world clinical observations supply named record values, including the
 naloxone response. No clinical state or display logic is reimplemented in TS.
@@ -125,9 +127,12 @@ unspecified goals; conflicting explicit clinical choices remain complaints.
 
 ```sh
 cd lean
-lake build Ehr.Sim.Audit Ehr.Cli.Sim
+lake build
+lake check
+lake comparator  # the repository's 18 trusted core statements
 # One Lake process at a time.
 cd ..
+python3 lean/Ehr/Sim/verify_proofs.py  # explicit single/joint T9 Comparator contracts
 python3 lean/Ehr/Sim/cli_smoke.py --days 10 --report /tmp/sim-validation.json
 ```
 
@@ -136,3 +141,12 @@ every completed task, and exact interruption retention. It records all incomplet
 tasks; `--require-complete` additionally fails on those scenarios. This distinction
 matters when a schedule requests work absent from its chosen spec/program.
 Current integration blockers and exact remaining work are in `HANDOFF-sim.md`.
+
+`verify_proofs.py` writes temporary Comparator challenge statements and exports
+both their proved counterparts and the standard primitive declarations. Only
+the temporary reference challenge has proof holes; neither simulator proofs nor
+the solution export does. The trusted statement surface is `jointMinimum`,
+`taskInitial`, `realTaskGraph`, `taskDone`, the selected `searchMoves`, and Core's
+`init`/`step` plus their spec predicates. History equivalence and certificate
+acceptance are proved; Dijkstra's untrusted candidate is checked before return.
+Native CLI execution additionally relies on the Lean compiler/runtime.
