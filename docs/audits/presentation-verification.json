@@ -135,10 +135,17 @@
     },
     "buttonRegression": "passed",
     "personaMatrix": {
-      "status": "running",
+      "status": "passed",
       "cases": 15,
       "semanticVariants": 2877,
-      "scope": "Every native group/tab/alert variant for one appropriate World 2 task/patient per role across v1/v2/v3. The pending broad run is not counted as a completed gate."
+      "byteDistinctTrees": 1099,
+      "browserChecksPassed": 2207,
+      "skippedDuplicateNarrowProbes": 3,
+      "coverageReuseChecksPassed": 19,
+      "context": "56be4bafe8d2c72f7df042e2454386636b43ad0b6a8265f71e312d82376e22e2",
+      "scope": "Every native group/tab/alert variant for one appropriate World 2 task/patient per role across v1/v2/v3. Each byte-distinct tree checked at desktop and narrow widths; identical trees reused only under the same browser context.",
+      "distinctReceipt": "76a6fde1-0a1a-4c64-96f2-63113275a204.coverage.json",
+      "wholeVersionReceipt": "ed90596f-f05b-4a01-972b-8e86e3429b78.coverage.json"
     },
     "directImportedNotesAria": "passed; every displayed note body also equals its native source string"
   },
