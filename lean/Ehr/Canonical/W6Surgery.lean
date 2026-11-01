@@ -68,7 +68,7 @@ def schedule : Screen :=
   { id := s, title := "OR Schedule", workflow := "W6"
     components := frame s ++ [
       presented "orSchedule" (group s "caseList" "Surgical cases" (collapsible := false)),
-      presented "orSchedule" (table s "cases" "scheduleTasks" "Scheduled cases — request status"
+      presented "orSchedule" (table s "cases" "orSchedule" "Scheduled cases — request status"
         (parent := some "caseList")),
       { goto s "openCase" "w6PreOp" "Open selected case" (parent := some "caseList") with
         tag := "present.row|" ++ cid s "cases" ++ "|0" },
@@ -82,7 +82,7 @@ def consultList : Screen :=
   { id := s, title := "Consults", workflow := "W6"
     components := frame s ++ [
       presented "worklist" (group s "consultQueue" "Consult queue" (collapsible := false)),
-      presented "worklist" (table s "requests" "consultRequest" "Consult requests"
+      presented "worklist" (table s "requests" "consultList" "Consult requests"
         (parent := some "consultQueue")),
       { goto s "openConsult" "w6Consult" "Open selected consult" (parent := some "consultQueue") with
         tag := "present.row|" ++ cid s "requests" ++ "|0" },
@@ -178,7 +178,7 @@ def postOp : Screen :=
   { id := s, title := "Postprocedure Orders", workflow := "W6"
     components := frame s ++ [
       group s "sets" "Order sets" (collapsible := false),
-      macroBtn s "appendectomySet" "w6AppendectomySet" "Laparoscopic appendectomy — postoperative" (parent := some "sets"),
+      macroBtn s "appendectomySet" "w6AppendectomySet" "General surgery — postoperative" (parent := some "sets"),
       group s "care" "Diet and activity" (collapsible := false),
       field s "postOpDiet" "postOpDiet" "Diet" (parent := some "care"),
       field s "postOpActivity" "postOpActivity" "Activity" (parent := some "care"),
@@ -236,7 +236,7 @@ def opNote : Screen :=
     components := frame s ++ [
       table s "phases" "surgicalChecklist" "Before leaving the OR",
       panel s "intraop" "intraopRecord" "Intra-op record",
-      macroBtn s "template" "w6OpNoteTemplate" "Template: laparoscopic appendectomy",
+      macroBtn s "template" "w6OpNoteTemplate" "Brief operative note",
       group s "note" "Diagnoses and procedure" (collapsible := false),
       field s "opPreopDiagnosis" "opPreopDiagnosis" "Pre-op diagnosis (ICD-10-CM)" (parent := some "note"),
       field s "opPostopDiagnosis" "opPostopDiagnosis" "Post-op diagnosis (ICD-10-CM)" (parent := some "note"),
@@ -308,11 +308,11 @@ def inpatientLine (drug dose route freq quantity indication : String) (prn : Boo
 
 /-- The W6 macros: the post-op order set, the preference list, and templates. -/
 def macros : List Macro := [
-  orderSet "w6AppendectomySet" "Appendectomy post-op order set" "w6PostOp"
-    [inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "post-op pain" (diagnosis := "K35.80"),
-     inpatientLine "oxycodone" "10" "PO" "q6h" "12" "severe post-op pain" (prn := true) (diagnosis := "K35.80"),
-     inpatientLine "enoxaparin" "40" "SC" "daily" "3" "VTE prophylaxis" (diagnosis := "K35.80"),
-     inpatientLine "ondansetron" "8" "IV" "q8h" "9" "nausea" (prn := true) (diagnosis := "K35.80")]
+  orderSet "w6AppendectomySet" "General surgery post-op order set" "w6PostOp"
+    [inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "post-op pain" ,
+     inpatientLine "oxycodone" "10" "PO" "q6h" "12" "severe post-op pain" (prn := true) ,
+     inpatientLine "enoxaparin" "40" "SC" "daily" "3" "VTE prophylaxis" ,
+     inpatientLine "ondansetron" "8" "IV" "q8h" "9" "nausea" (prn := true) ]
     (extra := [.setValue (cid "w6PostOp" "postOpDiet") "clear-liquids",
                .setValue (cid "w6PostOp" "postOpActivity") "ambulate-tid",
                .setValue (cid "w6PostOp" "vteMechanical") "scd",
@@ -330,16 +330,9 @@ def macros : List Macro := [
     (inpatientLine "enoxaparin" "40" "SC" "daily" "3" "VTE prophylaxis"),
   preference "w6PrefOndansetron" "Ondansetron 8 mg IV q8h PRN" "w6Orders"
     (inpatientLine "ondansetron" "8" "IV" "q8h" "9" "nausea" (prn := true)),
-  textMacro "w6OpNoteTemplate" "Template: laparoscopic appendectomy"
-    [(cid "w6OpNote" "opPreopDiagnosis", "K35.80"),
-     (cid "w6OpNote" "opPostopDiagnosis", "K35.80"),
-     (cid "w6OpNote" "opProcedure", "44970"),
-     (cid "w6OpNote" "opAnesthesia", "general"),
-     (cid "w6OpNote" "opFindings", "Inflamed, non-perforated appendix. No abscess."),
-     (cid "w6OpNote" "opSpecimens", "Appendix to pathology"),
-     (cid "w6OpNote" "opComplications", "none"),
-     (cid "w6OpNote" "opCondition", "stable")],
-  textMacro "w6DischargeTemplate" "Instructions: appendectomy"
+  textMacro "w6OpNoteTemplate" "Brief operative note"
+    [(cid "w6OpNote" "opAnesthesia", "general")],
+  textMacro "w6DischargeTemplate" "Postoperative incision care"
     [(cid "w6Discharge" "dischargeInstructions",
       "No lifting over 10 pounds for 2 weeks. You may shower; keep incisions dry. Call for fever over 38.5 °C, worsening pain, redness, or drainage.")]
 ]
@@ -395,6 +388,7 @@ def workspaceView (sc : Screen) : Screen :=
       if c.id == cid sc.id "schedule" then
         [presented "orSchedule" (group sc.id "caseList" "Surgical cases" (collapsible := false)),
          presented "orSchedule" { c with
+           kind := .table "orSchedule"
            label := "Today's OR cases — request status"
            parent? := some (cid sc.id "caseList") },
          { goto sc.id "openSelectedCase" "w6PreOp" "Open selected case" (parent := some "caseList") with

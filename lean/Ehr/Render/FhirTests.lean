@@ -221,6 +221,7 @@ def assignedPatientExample : Json := patientWithoutMrn.setObjVal! "generalPracti
 def urnPrimaryCareExample : Json := primaryCareProviderExample.setObjVal! "id" (.str "urn:uuid:assigned-pcp")
 #guard (bannerOf context.today [urnPrimaryCareExample] assignedPatientExample).pcp == "Morgan, Taylor"
 
+
 end Ehr.Render.Tests
 
 namespace Ehr.Render.Tests
@@ -342,5 +343,19 @@ def integratedPreopFactsExample : Facts := factsOf { context with encounterKind?
 #guard (infoPayload clinicFacts "scheduleTasks").any fun payload =>
   payload.rows.any fun row => (row.fields.lookup "Visit type").isSome
 #guard (labResultRow mdrdDisplayObservation).name == "eGFR (MDRD)"
+
+/-- A complete department graph cannot contribute another patient's clinical facts. -/
+def worldScopeGraphExample : Json := json r#"{"resourceType":"Bundle","entry":[{"resource":{"resourceType":"Patient","id":"other","name":[{"family":"Other"}]}},{"resource":{"resourceType":"AllergyIntolerance","id":"foreign-allergy","patient":{"reference":"Patient/other"},"code":{"text":"Penicillin"}}},{"resource":{"resourceType":"List","status":"current","date":"2026-10-31","code":{"coding":[{"code":"clinic-schedule"}]},"meta":{"tag":[{"system":"urn:vgi:world:realism","code":"P1"}]},"entry":[{"item":{"reference":"Appointment/appt-example"}}]}},{"resource":{"resourceType":"Appointment","id":"appt-example","start":"2026-10-31T08:00:00","participant":[{"actor":{"reference":"Patient/other"}}]}}]}"#
+def worldScopeOutputExample : FactsOutput :=
+  (runFacts { bundle := emptyBundle, context := { context with record := [("viewerPersona", "P1")] }, worldContext? := some worldScopeGraphExample }).toOption.getD { facts := default, display := .empty }
+#guard worldScopeOutputExample.display.allergies.all (·.id != "foreign-allergy")
+#guard (worldList { context with record := [("viewerPersona", "P1")] } (bundleResources worldScopeGraphExample) "clinic-schedule").any (·.length == 1)
+#guard (worldList { context with record := [("viewerPersona", "P4")] } (bundleResources worldScopeGraphExample) "clinic-schedule").isNone
+#guard (worldList { context with today := "2026-11-01", record := [("viewerPersona", "P1")] } (bundleResources worldScopeGraphExample) "clinic-schedule").isNone
+/-- Exact SNOMED codes move while a similarly named non-SNOMED diagnosis stays. -/
+def socialConditionExample : Json := json r#"{"resourceType":"Condition","code":{"coding":[{"system":"http://snomed.info/sct","code":"160903007","display":"Full-time employment"}]}}"#
+#guard isSocialCondition socialConditionExample
+#guard (historyRows [socialConditionExample]).any (·.kind == "Social history")
+#guard !isSocialCondition (json r#"{"resourceType":"Condition","code":{"coding":[{"system":"http://hl7.org/fhir/sid/icd-10-cm","code":"F43.9","display":"Stress reaction"}]}}"#)
 
 end Ehr.Render.Tests

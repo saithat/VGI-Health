@@ -15,11 +15,19 @@ def roleComponentAllowed (sp : Spec) (role : Role) (c : Component) : Bool :=
 /-- Clinic presets place the existing encounter opener in the selected schedule
 row. In Basket remains a separate activity; no destination or event is added. -/
 def clinicLandingLayout (owner : String) (screen : Screen) : Screen :=
-  if screen.id != "home" || !["P1", "P4"].contains owner then screen else
+  if screen.id != "home" then screen else
+  let screen := { screen with components := screen.components.filter fun c =>
+    c.id != "home.chart" && !c.id.startsWith "home.chart." }
+  if !["P1", "P4"].contains owner then
+    let info := if owner == "P2" then "edTrackBoard" else if owner == "P3" then "shiftWorklist" else "orSchedule"
+    let kind := if owner == "P5" then "orSchedule" else "trackBoard"
+    { screen with components := screen.components.map fun c =>
+        if c.id == "home.schedule" then { c with kind := .table info, label := if owner == "P3" then "My Patients" else screen.title, tag := "layout.overview.present." ++ kind } else c }
+  else
   match screen.components.find? (·.id == "home.work") with
   | none => screen
   | some work =>
-    let work := { work with label := "Scheduled visits", tag := "present.schedule" }
+    let work := { work with label := "Scheduled visits", tag := "layout.overview.present.schedule" }
     let activities : Component :=
       { id := "home.activityTabs", kind := .group false false, label := "Activities", tag := "activities" }
     let rest := screen.components.filter (·.id != "home.work")

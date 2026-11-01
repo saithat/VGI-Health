@@ -2468,5 +2468,9 @@ export interface SurgicalCaseRow {
 export interface FactsInput {
   bundle: unknown;
   context: FactsContext;
+  /**
+   * Shared dated list graph; chart parsing remains patient scoped.
+   */
+  worldContext?: unknown;
 }
 

@@ -1,12 +1,16 @@
 import type { Info, RowActions } from "./StructuredInfo";
 import { SuppliedStatus } from "./StructuredInfo";
 import { DisplayValue } from "../display";
+import { clinicalTime } from "../clinical-formatters";
 
 const detailKeys = new Set([
   "Medication",
   "Dose",
   "Route",
   "Frequency",
+  "Instructions",
+  "Category",
+  "PRN indication",
   "Order status",
 ]);
 /** Medication details stay together; hour columns are already assigned by Lean. */
@@ -21,6 +25,16 @@ export function MarGrid({
     ...new Set(node.rows.flatMap((row) => row.map(([key]) => key))),
   ].filter((key) => !detailKeys.has(key));
   const hours = columns.map((key) => {
+    const iso =
+      /^(\d{4}-\d{2}-\d{2})[T ](\d{2}:\d{2})(?::\d{2})?\s*(Z|[+-]\d{2}:\d{2})?$/.exec(
+        key,
+      );
+    if (iso)
+      return {
+        key,
+        day: `${iso[1]}${iso[3] ? ` ${iso[3]}` : ""}`,
+        label: iso[2] ?? key,
+      };
     const match = /^(.*\S)\s+(\d{2}:\d{2})$/.exec(key);
     return { key, day: match?.[1] ?? "", label: match?.[2] ?? key };
   });
@@ -61,12 +75,19 @@ export function MarGrid({
                       rowSpan={group.day ? 1 : 2}
                       className={group.day ? "mar-day-heading" : undefined}
                     >
-                      {group.day || group.key}
+                      <span
+                        title={group.day || group.key}
+                        aria-label={group.day || group.key}
+                      >
+                        {clinicalTime(group.day || group.key)}
+                      </span>
                     </th>
                   ))
                 : columns.map((key) => (
                     <th key={key} scope="col">
-                      {key}
+                      <span title={key} aria-label={key}>
+                        {clinicalTime(key)}
+                      </span>
                     </th>
                   ))}
             </tr>
@@ -76,7 +97,9 @@ export function MarGrid({
                   .filter((hour) => hour.day)
                   .map((hour) => (
                     <th key={hour.key} scope="col" className="mar-hour-heading">
-                      {hour.label}
+                      <span title={hour.key} aria-label={hour.label}>
+                        {hour.label.replace(":", "")}
+                      </span>
                     </th>
                   ))}
               </tr>
@@ -153,7 +176,13 @@ export function MarGrid({
             {documentation.map((record, i) => (
               <li key={i}>
                 <strong>{record.medication}</strong>
-                <span className="mar-documentation-time">{record.time}</span>
+                <span
+                  className="mar-documentation-time"
+                  title={record.time}
+                  aria-label={record.time}
+                >
+                  {clinicalTime(record.time)}
+                </span>
                 <SuppliedStatus value={record.value} />
               </li>
             ))}

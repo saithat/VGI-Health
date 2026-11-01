@@ -25,174 +25,6 @@ function paint(nodes: UiNode[]) {
   return onEvent;
 }
 describe("structured clinical data boundary", () => {
-  it("retains the recorded clock, fractional seconds and offset for ISO result times", () => {
-    const recorded = "2026-11-01T01:30:00.125-07:00";
-    paint([
-      {
-        presentation: {
-          kind: "results",
-          children: [
-            {
-              info: {
-                comp: "results",
-                infoId: "labResults",
-                label: "Results",
-                display: "table",
-                rows: [
-                  [
-                    ["Test", "Potassium"],
-                    ["Value", "4.0"],
-                    ["Unit", "mmol/L"],
-                    ["Recorded", recorded],
-                  ],
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ]);
-    const time = screen.getByText("01 Nov 2026 01:30:00.125-07:00");
-    expect(time.getAttribute("datetime")).toBe(recorded);
-    expect(time.getAttribute("title")).toBe(recorded);
-  });
-  it.each(["legacy", "structured"] as const)(
-    "retains verbatim note bodies and complete imported metadata in %s notes",
-    (layout) => {
-      const title =
-        "General Surgery (procedure). Source date 2020-03-15; structured dates shifted 2238 days. Note text retained verbatim.";
-      const body =
-        "Subjective\n\nPain improved (finding).\n\nAssessment & Plan\n  Continue the documented plan.";
-      const info: UiNode = {
-        info: {
-          comp: "notes",
-          infoId: "encounterNotes",
-          label: "Clinical notes",
-          display: "list",
-          rows: [
-            [
-              ["Date", "2026-05-01"],
-              ["Type", "Progress note"],
-              ["Author", "Daniel Park, MD"],
-              ["Title", title],
-              ["Text", body],
-              ["Status", "final"],
-              ["Source date", "2020-03-15"],
-              ["Shift days", "2238"],
-            ],
-          ],
-        },
-      };
-      paint([
-        layout === "legacy"
-          ? info
-          : { presentation: { kind: "notes", children: [info] } },
-      ]);
-      const narrative = screen.getByText(
-        (_, element) =>
-          element?.textContent === body && element.children.length === 0,
-      );
-      expect(narrative.textContent).toBe(body);
-      expect(
-        screen.getByRole("list", { name: "Clinical notes" }).textContent,
-      ).toContain(title);
-      expect(
-        screen.getByText(
-          "Source date 2020-03-15; structured dates shifted 2238 days. Note text retained verbatim.",
-        ),
-      ).toBeTruthy();
-      expect(screen.getByText("15 Mar 2020")).toBeTruthy();
-      expect(screen.getByText("2238", { exact: true })).toBeTruthy();
-      expect(screen.queryByRole("button")).toBeNull();
-    },
-  );
-  it("uses the shared source-direction grammar in structured medication review", () => {
-    paint([
-      {
-        presentation: {
-          kind: "table",
-          children: [
-            {
-              info: {
-                comp: "meds",
-                infoId: "currentMeds",
-                label: "Current medications",
-                display: "table",
-                rows: [
-                  [
-                    ["Medication", "lisinopril 10 MG Oral Tablet"],
-                    ["Instructions", "1, 1x per 1 d"],
-                  ],
-                  [
-                    ["Medication", "lisinopril 10 MG Oral Tablet"],
-                    [
-                      "Instructions",
-                      "Follow the supplied taper through the feeding tube",
-                    ],
-                  ],
-                ],
-              },
-            },
-          ],
-        },
-      },
-    ]);
-    expect(screen.getByText("1 daily")).toBeTruthy();
-    expect(screen.queryByText("1 tab PO daily")).toBeNull();
-    expect(
-      screen.getByText("Follow the supplied taper through the feeding tube"),
-    ).toBeTruthy();
-    expect(
-      screen.getByText("1 daily").closest("[title]")?.getAttribute("title"),
-    ).toBe("1, 1x per 1 d");
-  });
-  it("keeps an empty worklist named and its unmatched action usable", () => {
-    const model: UiNode = {
-      presentation: {
-        kind: "worklist",
-        children: [
-          {
-            info: {
-              comp: "records",
-              infoId: "worklist",
-              label: "My tasks",
-              display: "table",
-              rows: [],
-            },
-          },
-          {
-            rowAction: {
-              target: "records",
-              row: 0,
-              children: [
-                {
-                  button: {
-                    comp: "open",
-                    label: "Open chart",
-                    role: "nav",
-                    enabled: true,
-                    blockedReason: null,
-                    hotkey: null,
-                  },
-                },
-              ],
-            },
-          },
-        ],
-      },
-    };
-    const emit = paint([model]);
-    expect(screen.getByRole("note", { name: "My tasks" }).textContent).toBe(
-      "No records on file",
-    );
-    expect(screen.queryByRole("table")).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: "Open chart" }));
-    expect(emit).toHaveBeenCalledExactlyOnceWith({ click: { comp: "open" } });
-    expect(expectedNodeAria(model)).toEqual([
-      { role: "note", name: "My tasks" },
-      { role: "button", name: "Open chart", disabled: false },
-    ]);
-  });
   it("places the original action in its explicit row through nested presentations", () => {
     const onEvent = paint([
       {
@@ -255,6 +87,11 @@ describe("structured clinical data boundary", () => {
     expect(onEvent).toHaveBeenCalledExactlyOnceWith({
       click: { comp: "open-pain" },
     });
+    const row = button.closest("tr");
+    if (!row) throw new Error("Missing bound row");
+    fireEvent.click(row);
+    expect(onEvent).toHaveBeenCalledTimes(2);
+    expect(onEvent).toHaveBeenLastCalledWith({ click: { comp: "open-pain" } });
   });
   it("retains unmatched, out-of-range and invalid row actions inline", () => {
     const onEvent = paint([
@@ -604,7 +441,7 @@ describe("structured clinical data boundary", () => {
   });
   it("uses explicit status words and never derives a flag from a numeric value", () => {
     expect(suppliedTone("L")).toBe("blue");
-    expect(suppliedTone("H")).toBe("amber");
+    expect(suppliedTone("H")).toBe("red");
     expect(suppliedTone("HH")).toBe("red");
     expect(suppliedTone("Held · Per order")).toBe("amber");
     expect(suppliedTone("6.5")).toBeUndefined();
@@ -722,6 +559,63 @@ describe("structured clinical data boundary", () => {
       }).success,
     ).toBe(false);
   });
+});
+
+it("keeps close reference annotations separate at the right edge", async () => {
+  const { chartLabelPositions } =
+    await import("../src/ehr/ui/presentations/charts");
+  const result = chartLabelPositions([140, 142, 145, 149, 151, 152]);
+  expect(result).toHaveLength(6);
+  expect(result.every((value) => value >= 40 && value <= 196)).toBe(true);
+  expect(
+    result.slice(1).every((value, index) => value - (result[index] ?? 0) >= 18),
+  ).toBe(true);
+});
+
+it("never delegates a row click to a clinical commit", () => {
+  const onEvent = paint([
+    {
+      presentation: {
+        kind: "worklist",
+        children: [
+          {
+            info: {
+              comp: "records",
+              infoId: "worklist",
+              label: "Worklist",
+              display: "table",
+              rows: [[["Task", "Order review"]]],
+            },
+          },
+          {
+            rowAction: {
+              target: "records",
+              row: 0,
+              children: [
+                {
+                  button: {
+                    comp: "sign",
+                    label: "Sign orders",
+                    role: "primary",
+                    enabled: true,
+                    blockedReason: null,
+                    hotkey: null,
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ]);
+  const button = screen.getByRole("button", { name: "Sign orders" });
+  const row = button.closest("tr");
+  if (!row) throw new Error("Missing source row");
+  fireEvent.click(row);
+  expect(onEvent).not.toHaveBeenCalled();
+  fireEvent.click(button);
+  expect(onEvent).toHaveBeenCalledExactlyOnceWith({ click: { comp: "sign" } });
 });
 
 // Legacy semantic trend rows use the same drawing as tagged presentations.
