@@ -2,6 +2,7 @@ import { defineConfig } from "@playwright/test";
 const port = Number(process.env.APP_TEST_PORT ?? 4179);
 export default defineConfig({
   testDir: "./e2e",
+  outputDir: `test-results/${port}`,
   fullyParallel: false,
   workers: 1,
   reporter: "list",

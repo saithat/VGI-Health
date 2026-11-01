@@ -4,6 +4,7 @@ import type {
   State,
   ScreenView,
 } from "../../../lean/generated/ehr-types";
+import type { UiScreen } from "../ehr/ui/types";
 import type { Html } from "../ehr/html";
 import type { Interp } from "./interp";
 
@@ -29,7 +30,10 @@ export function createSession(
   function readSnapshot(result: StepOutput["result"] | null = null) {
     const state: State = JSON.parse(stateJson);
     const view: ScreenView = JSON.parse(interp.view(...args, stateJson));
-    return { page: readPage(), state, view, result };
+    const ui: UiScreen | undefined = interp.renderUi
+      ? JSON.parse(interp.renderUi(...args, stateJson))
+      : undefined;
+    return { page: readPage(), ui, state, view, result };
   }
   let snapshot = readSnapshot();
   const listeners = new Set<() => void>();

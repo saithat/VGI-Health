@@ -617,3 +617,35 @@ statements, GenTS/sample strict TypeScript check, workspace build/lint, agent
 catalog-count assertion fails (expects 16 bad programs; main now has 24); its
 other 89 tests pass. That owning-lane repair and all unfinished composite work
 are explicit in `HANDOFF-lean-core.md`; full composite execution is not claimed.
+## Render: semantic UI boundary (section 10)
+
+- Added Init-only `UiNode` / `UiScreen` exactly as section 10, with JSON instances
+  and generated TypeScript exports. No field or constructor was changed.
+- `ehr_render_ui` and native `ehr render-ui` accept the existing RenderInput
+  envelope. `ehr render-screens --ui` emits semantic screen variants.
+- Empty action/field labels get a readable fallback. Extra button roles `toggle`,
+  `confirm`, and `ack` identify the existing interpreter events without adding
+  fields to the owner-approved node types. `nav` and `macro` retain their specified
+  roles. Tab labels occupy actual indexes, including sparse tab indexes.
+- The official GenTS generator already exports Render.Types after main's merge;
+  no core generator change was necessary. Generated output is regenerated.
+- Shown items are retained exactly once, with no semantic deduplication. Groups
+  and selected tab bodies nest children in component order; malformed orphan or
+  out-of-order components remain visible at workspace level. A component banner
+  is clinical info, not an additional banner landmark.
+- `NavSane` is a decidable checker-side predicate in Render.NavRules, not a
+  universal renderer theorem. Its evaluation reads the committed P1 release.
+
+### Required reviews and renderer contracts
+
+D2 is enforced even for a malformed program with a shown commit button and no
+review panel: the renderer appends a read-only info node for each applicable
+review not already counted by `infoShown`. This retains all original components,
+including duplicate panels; it never enables a commit or changes the interpreter
+state. The supplement and sidebar use the empty component id (no event source).
+T10's hidden-id statement therefore applies to nonempty component ids, with no
+certification or unique-id premise. An empty component id is not an addressable
+component. D1 guarantees identifier fields, not invented values: empty input
+identifiers remain empty. UiScreen has one banner field and UiNode has no banner
+constructor; the AppShell must place this landmark first. JSON object key order
+is not a layout instruction.

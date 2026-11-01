@@ -25,3 +25,18 @@ listed theorem uses only `propext`, `Classical.choice`, `Quot.sound`
 | A4 | A passive alert never pops up | **proven** for the interpreter (`A4_step`, `A4_run`, `A4_passive_never_popup`) | `lean/Ehr/Proofs/Alerts.lean` |
 
 Render proofs live under `lean/Ehr/Render/` to respect lane ownership. Each main theorem has `#print axioms`; concrete Tiny/FHIR examples discharge the hypotheses. No unfinished render proofs remain.
+
+Section 10 semantic renderer: **D1, D2, D3, D4, D6 and UiScreen T10/T11 are
+proven** in `lean/Ehr/Render/UiProofs.lean`, with satisfiable examples (including
+pending confirmations, actual FHIR records, interruptive/passive alerts, and a
+malformed missing-review program) and `#print axioms` in `UiTests.lean`.
+D2 adds complete read-only missing reviews without changing the interpreter.
+D1 guarantees name/DOB/MRN fields; it cannot invent absent source identifiers.
+T10 hidden-id absence applies to nonempty component ids; empty ids are reserved
+for read-only sidebar and safety review info. The actual component forest has
+an exact shown-item equivalence for every input, including malformed graphs.
+All 18 new main semantic theorems are registered in the render Comparator audit.
+D5 is intentionally **not** a universal renderer theorem: `NavSane spec prog`
+is decidable and ready for checker integration. P1 currently fails the 12-entry
+per-group limit; content/checker integration is requested, with no weakened rule.
+No unfinished render proof remains.
