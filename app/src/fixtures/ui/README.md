@@ -9,13 +9,15 @@ export fails on any hidden or blocked sample field. They are
 UiScreen objects, not API envelopes or raw PageNode trees. JSON constructors and
 field names match `lean/generated/ehr-types.ts`.
 
+To export initial and expanded screen variants for a full release review:
+
 ```sh
 lean/.lake/build/bin/ehr render-screens --ui \
   --spec releases/v1/spec.json --program releases/v1/personas/P1.json \
   --fhir fixtures/synthea/Aaron_Ankunding_4966bd28.json --out /tmp/p1-ui
 ```
 
-Copy `w1Rooming.json`, `w1Orders.json`, and `w1Sign.json` from that output.
+Use the regression exporter below to reproduce these populated samples.
 `confirm` and `ack` button roles map to those interpreter events. The
 `toggle` role uses Event.click (the interpreter toggles clicked group headers);
 other buttons also use click. Tab labels occupy actual tab indexes. Navigation entries carry real goto-button component IDs for Event.click.

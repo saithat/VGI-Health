@@ -168,7 +168,8 @@ def uiShellCtx : Ctx :=
          { id := "shell.side.meds", kind := .table "currentMeds", parent? := some "shell.sidebar", label := "Medications" },
          { id := "shell.side.allergies", kind := .panel "allergyList", parent? := some "shell.sidebar", label := "Allergies" },
          { id := "shell.allergyReview", kind := .group false false, label := "Allergies" },
-         { id := "shell.allergyRecords", kind := .panel "allergyList", parent? := some "shell.allergyReview", label := "Allergies" },
+         { id := "shell.allergyDetail", kind := .group false false, parent? := some "shell.allergyReview", label := "Allergies" },
+         { id := "shell.allergyRecords", kind := .panel "allergyList", parent? := some "shell.allergyDetail", label := "Allergies" },
          { id := "shell.medication", kind := .group false false, label := "Medication" },
          { id := "shell.drug", kind := .field "drug" (.fixed 0) .none, parent? := some "shell.medication", label := "Medication" },
          { id := "shell.allProblems", kind := .table "problemList", label := "Full problem list" },
@@ -195,6 +196,16 @@ def uiShellCtx : Ctx :=
 def uiShellScreen : UiScreen := renderUi uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.disp uiShellCtx.user uiShellCtx.s
 
 #guard uiNavGroup { uiSignItem with comp := { uiSignItem.comp with kind := .group false true, tag := "nav" } }
+-- A non-collapsible group is open in the interpreter regardless of its saved
+-- startCollapsed bit. Exercise the full shell, not just tag classification.
+def uiNavSavedCollapsedCtx : Ctx :=
+  { uiShellCtx with prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.map fun c =>
+      if c.id == "shell.nav" then { c with kind := .group false true } else c } } }
+
+#guard (renderUi uiNavSavedCollapsedCtx.sp uiNavSavedCollapsedCtx.prog uiNavSavedCollapsedCtx.facts
+    uiNavSavedCollapsedCtx.disp uiNavSavedCollapsedCtx.user uiNavSavedCollapsedCtx.s).nav ==
+    [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 #guard !(uiAtomsList uiShellScreen.workspace).any (fun n => match n with
@@ -221,6 +232,8 @@ def uiShellScreen : UiScreen := renderUi uiShellCtx.sp uiShellCtx.prog uiShellCt
   | .field "shell.drug" "Enter Medication" _ _ _ _ _ _ _ => true | _ => false)
 #guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
   | .info "shell.allergyRecords" "Records" _ _ _ => true | _ => false)
+#guard (uiAtomsList uiShellScreen.workspace).any (fun n => match n with
+  | .section "shell.allergyDetail" "Details" _ => true | _ => false)
 #guard uiRows uiShellCtx "controlledSigningQuantity" == uiRows uiShellCtx "orderSummary"
 #guard uiDate "2026-05-06T13:28:42-07:00" == "May 6, 2026 13:28"
 #guard uiDate "2024-02-29" == "Feb 29, 2024"

@@ -57,28 +57,34 @@ changes are merge resolutions retaining both lanes' export checks.
 - Generated TS samples pass strict tsc. Finished render sources have no sorry,
   admit, new axioms or native_decide.
 
-## In-progress verification (do not start a second Lake process)
+## Restart continuation
 
-The first post-simulator-merge `lake check` is still compiling
-`Ehr/Sim/PolicyTests.lean` (real CPU progress, not a stalled process). Root check
-session is 67513; a background functions cell **99** owns its polling. That cell
-will sequentially run the final `lake build`, **make wasm**, official API/P1 sample
-export, copy the three samples, and a fresh `lake check`. Do not poll the original
-session separately or start another Lake process while cell 99 is active.
-
-Logs: `/tmp/render-lake-check.log`, then `/tmp/render-final-{build,wasm,export,lake-check}.log`.
-The latest `/tmp/render-final-api` already has the complete 4,382-variant corpus
-covering 132 screens, clinical regressions and populated P1 input/sample JSON.
-The queued official export refreshes it after the build. SDK symlinks already
-point to `/home/saithat/Projects/VGI-wasm/.tools/{emsdk,lean4,libuv}`.
+- Integrated main's 45-screen content blueprint as `bc457f2` (pushed).
+- Reviewed the saved WIP. Added a full-render regression for non-collapsible
+  navigator groups with a saved startCollapsed bit. Identical direct nested
+  section titles now use a neutral inner heading without losing IDs/children.
+- The exporter can also load historical spec/program JSON, so the previous
+  132-screen / 4,382-variant corpus remains part of differential verification.
+- Targeted `LEAN_NUM_THREADS=1 lake build Ehr.Render` passes with axiom audits.
+  App build/lint/132 tests, agent typecheck/lint/31 tests, world build/lint, and
+  infra's seven tests pass before the final asset refresh.
+- **Full build is currently blocked by an owning-lane regression:**
+  `Ehr/Sim/PolicyTests.lean:31–32` fails canonical task completion and its floor
+  assertion after 830 seconds of evaluation. Both assertions are unchanged.
+  This is recorded in changes-requests.md; render cannot edit Sim/content.
+- The original background cells/sessions did not survive the restart. Cell 38
+  was stopped after the full-build failure to avoid repeating that expensive
+  failed build; its already-started Comparator process is finishing independently.
+  Logs: `/tmp/render-{final-build,targeted-build,comparator}.log`.
+- SDK symlinks still point to the authorized shared .tools SDK directories.
 
 ## Exactly what is left
 
-1. Finish the queued official build/WASM/export/kernel-check pipeline. Re-run the
-   final 35-statement Comparator. Run all four Node differential shards, audit
-   disjoint coverage of all 4,382 indexes and one WASM hash, and make wasm-check.
-   Re-run app build/lint/tests on final assets plus the three sample browser checks.
-   Commit/push generated WASM/assets and final handoff with Co-Authored-By footer.
+1. Finish Comparator, official exports for both canonical revisions, WASM build,
+   four differential shards per corpus with coverage/hash audits, wasm-check,
+   final app checks/screenshots and world tests. Attempt kernel check and record
+   the full-build blocker without weakening the failing assertions. Commit/push
+   generated assets and the final handoff with the required co-author footer.
 2. **App owner:** paint nav pairs as clickable buttons with Event.click(comp),
    open available navigator groups by default, and include entries in fidelity.
    The old screen-ID/active-screen accordion default otherwise hides all entries.
@@ -86,10 +92,13 @@ point to `/home/saithat/Projects/VGI-wasm/.tools/{emsdk,lean4,libuv}`.
 3. **Core/content:** InfoSpec still lacks verbatim text. Add optional text and
    provide the exact 21 CFR 1311.140(a)(3) notice, then render its body verbatim.
    Current source is an authoring instruction. Render must not fabricate it.
-4. **Checker/content:** integrate/certify D5 with the real interactive projection;
-   the old workflow overview still fails group limits. Nothing is truncated.
+4. **Checker/content:** integrate/certify D5 with the real interactive projection.
+   The new 45-screen overview diagnostic passes; it does not certify that projection.
 5. **App/infra:** prior exact Facts.patientId Synthea wristband-token request
    remains. Native/WASM acceptance/rejection stays in the differential suite.
+
+6. **Sim/content:** repair the canonical PolicyTests regression above; full build
+   and whole-project kernel check must pass after that integration.
 
 All cross-lane requests are in docs/design/changes-requests.md. App's primary
 compact-list-cell painting is resolved by main d3e0860. No unfinished render proof.

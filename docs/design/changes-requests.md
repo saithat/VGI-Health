@@ -1241,6 +1241,36 @@ independent commit controls. Please support provably always-open section ancesto
 for pinning before nesting required payloads; do not relax their actual visibility.
 Content's tests retain the existing root-pinning requirement.
 
+### Render continuation after the blueprint merge
+
+The render lane integrated content's 45-screen canonical and retains the prior
+132-screen / 4,382-variant corpus as an additional native/WASM regression input.
+The workflow overview `NavSane` diagnostic now passes on P1; this does **not**
+certify the actual clickable shell projection. Checker integration of that
+projection remains required. The new P1 blueprint's ordinary root goto controls
+remain workspace controls; render never invents events for the overview stepper.
+
+The existing app request is still open: `Screen.tsx:WorkflowNav` paints entries
+as non-clickable list text, and opens groups only when a component ID equals the
+current screen ID. Paint the supplied component IDs as `Event.click` buttons,
+open available groups, and observe their labels/events in fidelity checks.
+The existing core/content text request is also still open: `InfoSpec` has no
+literal text member. The source quotation above is reviewed content, but is not
+yet part of the spec consumed by native/WASM render. Add the spec field and bind
+the notice there; render must not substitute a heading or hard-coded legal body.
+
+Render also handles identical direct parent/child section titles with a neutral
+inner heading, retaining the section ID and every child. No guard, safety
+property, review requirement, or theorem statement was weakened.
+
+**Sim/content build regression:** after merging main's blueprint into render
+(`bc457f2`), `LEAN_NUM_THREADS=1 lake build` fails the existing assertions at
+`Ehr/Sim/PolicyTests.lean:31` (`canonicalDay.tasks.all completed`) and line 32
+(`canonicalDay.floor.zip canonicalDay.tasks` satisfies `below`). The module
+spent 830 seconds evaluating before reporting these failures. Please repair the
+canonical/simulator integration while retaining both assertions. Render's
+targeted `lake build Ehr.Render` passes. Render has not edited Sim or content.
+
 **WASM owner:** rebuild/refresh installed assets and source manifest after merging
 this content checkpoint. Core/Render runtime definitions and wire types were not
 changed here, but the manifest hashes content sources and is now stale. Native and

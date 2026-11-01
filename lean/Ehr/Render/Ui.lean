@@ -236,7 +236,7 @@ def uiItem (cx : Ctx) (it : ItemView) (kids : List UiNode) : List UiNode :=
       (uiLabel (((cx.sp.alert? a).map (·.label)).getD it.comp.label) "Clinical alert")
       (match (cx.sp.alert? a).map (·.tier) with
        | some Tier.interruptive => "interruptive" | some Tier.passive => "passive" | _ => "removable")]
-  | .group coll _ => if uiNavGroup it then [] else [.section it.comp.id (uiLabel it.comp.label "Section")
+  | .group coll _ => if uiNavGroup it then [] else [.section it.comp.id (uiTitledLabel cx it it.comp.label "Details" "Section")
       ((if coll then [.button it.comp.id (if it.expanded then "Collapse section" else "Expand section") "toggle" (uiEnabled cx it.comp.id) (uiBlocked cx it.comp.id) it.comp.hotkey?] else []) ++ if it.expanded then kids else [])]
   | .tabs =>
       let siblings := cx.v.items.filter (·.comp.parent? == some it.comp.id)
@@ -307,8 +307,8 @@ def uiWorkspace (cx : Ctx) : List UiNode :=
   let steps := uiSteps cx
   .stepper steps ((steps.map (·.1)).idxOf cx.s.screen) :: (uiComponentsWhere cx (uiInWorkspace cx) ++ uiMissingReviews cx)
 
-/-- The actual semantic UI sent to the browser. The banner is the first
-layout landmark; component banners become info nodes, never a second landmark. -/
+/-- The actual semantic UI sent to the browser. Program banners contribute to
+the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     (user : User) (s : State) : UiScreen :=
   let cx : Ctx := { sp, prog, facts, disp, user, s }

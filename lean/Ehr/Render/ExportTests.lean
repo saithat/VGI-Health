@@ -1,13 +1,20 @@
 import Ehr.Render.Cli
 import Ehr.Render.UiTests
 
-/-! Export the exact API inputs used for native/WASM differential tests. -/
+/-! Export the exact API inputs used for native/WASM differential tests.
+Optional third/fourth arguments select a historical spec/program JSON pair;
+the default always covers the current compiled canonical. P1 app samples always
+use the current release, independently of the selected differential corpus. -/
 def main (args : List String) : IO Unit := do
   let dir : System.FilePath := args.headD "/tmp/vgi-render-api"
   let bundle := args[1]?.getD "../fixtures/synthea/Aaron_Ankunding_4966bd28.json"
   IO.FS.createDirAll dir
-  let sp := Ehr.Specs.V1.specV1
-  let prog := Ehr.Canonical.canonicalV1
+  let sp ← match args[2]? with
+    | some path => Ehr.Render.Cli.readJson Ehr.Spec path
+    | none => pure Ehr.Specs.V1.specV1
+  let prog ← match args[3]? with
+    | some path => Ehr.Render.Cli.readJson Ehr.Program path
+    | none => pure Ehr.Canonical.canonicalV1
   let user : Ehr.User := { id := "render-test", role := .physician }
   let context : Ehr.Render.FactsContext := { today := "2026-10-31" }
   let b ← Ehr.Render.Cli.readJson Lean.Json bundle
@@ -15,6 +22,7 @@ def main (args : List String) : IO Unit := do
     | .ok r => pure r | .error e => throw (IO.userError e)
   let cases := prog.screens.flatMap fun sc =>
     (Ehr.Render.Cli.variants sp prog facts user sc).map fun (name, s) => (sc.id ++ "-" ++ name, s)
+  IO.println s!"Exporting {cases.length} variants across all {prog.screens.length} canonical screens"
   for (name, json) in [("spec", Lean.toJson sp), ("program", Lean.toJson prog),
       ("user", Lean.toJson user), ("context", Lean.toJson context), ("states", Lean.toJson cases)] do
     IO.FS.writeFile (dir / (name ++ ".json")) json.compress
