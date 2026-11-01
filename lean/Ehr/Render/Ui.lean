@@ -208,11 +208,13 @@ def uiNavGroup (it : ItemView) : Bool :=
   | _ => false
 
 /-- The pair-only nav wire format can represent enabled, ordinary click buttons.
+An explicit nav group or a nav segment in the semantic tag places the control.
 Controls with a hotkey or blocked reason stay in the workspace with all metadata. -/
 def uiNavButton (cx : Ctx) (it : ItemView) : Bool :=
   match it.comp.kind with
   | .button (.goto _) => uiEnabled cx it.comp.id && it.comp.hotkey?.isNone &&
-      cx.v.items.any (fun parent => uiNavGroup parent && it.comp.parent? == some parent.comp.id)
+      (cx.v.items.any (fun parent => uiNavGroup parent && it.comp.parent? == some parent.comp.id) ||
+        (it.comp.tag.splitOn ".").contains "nav")
   | _ => false
 
 def uiNavTitle (cx : Ctx) (it : ItemView) : String :=

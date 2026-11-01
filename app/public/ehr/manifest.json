@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "52a584e9e1f1e5ea233af0a2dc05401a5e89728c7832c70e4c78c009cf7f7269",
+  "leanSourceHash": "f27113f0f63292bd6a1a8fe33ba0113ae00e773c58e666a3e21a9a76669119f7",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "72476834fa5384ee3210a86198497c9c227feea88d01568509e8f1c7c75c235b",
@@ -187,11 +187,11 @@
     "lean/Ehr/Render/Presentations.lean": "6bdf3b3849222d6547f19eb60a20ecbd754d77e06c9b662d969c756c68015392",
     "lean/Ehr/Render/Proofs.lean": "73e66422de77c8db330c53937c340f8ea7892523f264275dea1b093731bf4a4e",
     "lean/Ehr/Render/Types.lean": "f42db13db5c0a69626583c6576e4955cb996b97b219bf9913c1819ac123e6072",
-    "lean/Ehr/Render/Ui.lean": "f4218bcb413743f2f704927b16057efad696c1e762d8f51156cb1ed8bf96d9e0",
+    "lean/Ehr/Render/Ui.lean": "ff6ff29d817b6ec1fe066331b54c18d6fd2fd956213c5113684f4830211fe454",
     "lean/Ehr/Render/UiContracts.lean": "eae9972b2988d409ce8dd2a31119fe8a0e364fd44071c0aa31bba3c6bf860385",
     "lean/Ehr/Render/UiData.lean": "a5ca10f9b1d47a58db918d29b5ec41b064f686d6fc92a53ac6f1ae2c11ea585d",
     "lean/Ehr/Render/UiProofs.lean": "8f1c53e98de1035484abb17955c66e73377a3e200b7a5162ffc56c2abf7a69ae",
-    "lean/Ehr/Render/UiTests.lean": "642b2b4fa0a56ea9d88e6eddab95bdd30c8a3ae9be7d597341973bf3d99f1102",
+    "lean/Ehr/Render/UiTests.lean": "2d7b513a6a48d571cab3161b6a62eab3101255f5f36ff006db2a8c44a61cf5d2",
     "lean/Ehr/Sim/Audit.lean": "67deda93e64b08d26ed13a7896606a742a858dc6824f11d22b322b8cb51d71a5",
     "lean/Ehr/Sim/Certificate.lean": "e685918d081fb1f887299b8a6f768ea04e3239338830dc32ec9db5131af024c2",
     "lean/Ehr/Sim/FactsTests.lean": "7139f5045bde039ac62334901972a80ebfeb3b30221c98cb24106668fdbad161",
@@ -248,7 +248,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "c1f251cd5230b08f53a21bf8e4778d3b8450c1c308312d65bc5e9772d61b980e",
+    "ehr-interp.wasm": "ec219fb07ff4437293066cc14d72ccbd04996a6fb5cdb483d95498a502bf0a12",
     "interp-loader.mjs": "898e0bd0c37b3520c95f7cdd78cefd6c23d17ef225275544c49cbcbd6d1f5b14",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

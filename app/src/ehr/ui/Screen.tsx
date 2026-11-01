@@ -4,7 +4,6 @@ import { useLayoutEffect } from "react";
 import {
   AppShell,
   Badge,
-  Button,
   Group,
   Modal,
   Text,
@@ -177,26 +176,34 @@ export function WorkflowNav({
       </Text>
       <div className="workflow-groups">
         {available.map(([group, items]) => (
-          <section key={group} role="region" aria-label={group}>
-            <h2 className="clinical-nav-heading">{group}</h2>
+          <section key={group} className="workflow-group" aria-label={group}>
+            <h2 className="nav-group-title">
+              <ClinicalIcon
+                name={
+                  /basket|result|request/i.test(group)
+                    ? "message"
+                    : /med|mar/i.test(group)
+                      ? "pill"
+                      : /schedule|round|surg/i.test(group)
+                        ? "clock"
+                        : "user"
+                }
+              />
+              {group}
+            </h2>
             <ul className="workflow-links" aria-label={`${group} screens`}>
               {items.map(([id, label]) => (
-                <li
-                  key={id}
-                  aria-current={label === title ? "page" : undefined}
-                >
-                  <Button
-                    variant="subtle"
-                    size="compact-xs"
-                    fullWidth
-                    justify="flex-start"
-                    className="clinical-nav-destination"
+                <li key={id}>
+                  <button
+                    type="button"
                     data-comp-id={id}
                     data-event="click"
+                    aria-current={label === title ? "page" : undefined}
                     onClick={() => onEvent({ click: { comp: id } })}
                   >
+                    <span aria-hidden="true" className="nav-dot" />
                     {label}
-                  </Button>
+                  </button>
                 </li>
               ))}
             </ul>

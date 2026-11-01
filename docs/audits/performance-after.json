@@ -2,9 +2,9 @@
   {
     "host": "127.0.0.1",
     "label": "cold dashboard",
-    "bytes": 265532,
+    "bytes": 263238,
     "requests": 18,
-    "interactiveMs": 855,
+    "interactiveMs": 854,
     "wasmRequests": 0
   },
   {
@@ -12,7 +12,7 @@
     "label": "EHR → dashboard",
     "bytes": 901,
     "requests": 9,
-    "interactiveMs": 217,
+    "interactiveMs": 214,
     "wasmRequests": 0
   },
   {
@@ -20,15 +20,15 @@
     "label": "dashboard → EHR",
     "bytes": 1052,
     "requests": 4,
-    "interactiveMs": 118,
+    "interactiveMs": 121,
     "wasmRequests": 0
   },
   {
     "host": "vgi-audit.example.ts.net",
     "label": "cold dashboard",
-    "bytes": 290982,
+    "bytes": 288518,
     "requests": 18,
-    "interactiveMs": 244,
+    "interactiveMs": 220,
     "wasmRequests": 0
   },
   {
@@ -36,7 +36,7 @@
     "label": "EHR → dashboard",
     "bytes": 901,
     "requests": 9,
-    "interactiveMs": 215,
+    "interactiveMs": 209,
     "wasmRequests": 0
   },
   {
@@ -44,7 +44,7 @@
     "label": "dashboard → EHR",
     "bytes": 1052,
     "requests": 4,
-    "interactiveMs": 123,
+    "interactiveMs": 118,
     "wasmRequests": 0
   }
 ]

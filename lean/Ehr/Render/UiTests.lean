@@ -235,6 +235,33 @@ def uiNavSavedCollapsedCtx : Ctx :=
     [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
+
+/-- Flat canonical navigation tags keep their existing event and move to the shell. -/
+def uiFlatNavCtx : Ctx :=
+  { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
+    { sc with components := sc.components.filterMap (fun c =>
+      if c.id == "shell.nav" then none
+      else some (if c.id == "shell.nav.next" then { c with parent? := none, tag := "shell.nav.next" } else c)) } } }
+
+/-- The same flat program rendered through the public semantic projection. -/
+def uiFlatNavScreen : UiScreen := renderUi uiFlatNavCtx.sp uiFlatNavCtx.prog uiFlatNavCtx.facts
+  uiFlatNavCtx.disp uiFlatNavCtx.user uiFlatNavCtx.s
+
+#guard uiFlatNavScreen.nav == [("Navigator", [("shell.nav.next", "Next screen")])]
+#guard !(uiAtomsList uiFlatNavScreen.workspace).any (fun n => match n with
+  | .button "shell.nav.next" _ _ _ _ _ => true | _ => false)
+#guard (step uiFlatNavCtx.sp uiFlatNavCtx.prog uiFlatNavCtx.facts uiFlatNavCtx.user .human
+    uiFlatNavCtx.s (.click "shell.nav.next")).1.screen == "next"
+/-- The actual enabled goto used by the flat navigator example. -/
+def uiFlatNavItem : ItemView :=
+  (uiFlatNavCtx.v.items.find? (·.comp.id == "shell.nav.next")).getD uiSignItem
+
+#guard uiNavButton uiFlatNavCtx uiFlatNavItem
+#guard !(uiNavButton uiFlatNavCtx { uiFlatNavItem with comp :=
+  { uiFlatNavItem.comp with kind := .button (.commit "signOrders") } })
+#guard !(uiNavButton uiFlatNavCtx { uiFlatNavItem with comp :=
+  { uiFlatNavItem.comp with hotkey? := some "Ctrl+N" } })
+
 #guard !(uiAtomsList uiShellScreen.workspace).any (fun n => match n with
   | .info _ _ "patientBanner" _ _ | .section "shell.nav" _ _ | .section "shell.sidebar" _ _ | .button "shell.nav.next" _ _ _ _ _ => true
   | _ => false)
