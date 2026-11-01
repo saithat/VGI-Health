@@ -51,4 +51,5 @@ __pycache__/
 runs/*
 !runs/mock/
 !runs/run1-P3/
+!runs/core-10day-live/
 !runs/world/

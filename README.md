@@ -409,6 +409,10 @@ running source. Once the writer has stopped, `--in-place` finalizes the run
 itself. Both modes need `TMPDIR` on the same filesystem as `runs/`, because
 publication is an atomic rename.
 
+`runs/core-10day-live/` is committed and is re-pushed after each published
+night while the five-persona run continues. It contains only completed days
+and nights; `manifest.json` states how many.
+
 See [DEMO](docs/DEMO.md). A clean-clone test (`scripts/clean-clone-test.sh`) clones
 local HEAD, installs and serves it offline. `make wasm-check` checks the committed
 WASM source binding; `make wasm` rebuilds it using the local toolchain.

@@ -1,0 +1,2163 @@
+{
+  "schemaVersion": 1,
+  "runId": "core-10day-live",
+  "releaseNaming": "integer",
+  "suite": "union-workflows-v1",
+  "releaseSource": {
+    "directory": "releases",
+    "reason": "Explicit release source, or current release source selected because run v0 differs from the frozen historical canonical."
+  },
+  "suiteSha256": "518d0ce85f5dcf8f691ac4bce6678d166d577f1172b8cd9770c375f7df4d385a",
+  "ehrSha256": "95caf8573b161d8d149b33b9d2d9dd74c78a5ba8122c59e1dd484dbdbc815f3e",
+  "geometryModelSha256": "c727993bd5511065d1ca00b93bf976a8caa9dbc203f8450c8b32899a80c64814",
+  "adapterSha256": "833d9c0c65a29740d379184656a3bbc17a9f0baad74d15c43f060ee8196d305b",
+  "taskLimits": {
+    "timeoutMs": 1000,
+    "bound": 1000
+  },
+  "aggregateScope": "Computed tasks only; unavailable tasks are excluded, with explicit coverage counts.",
+  "search": "Certified exact within reported space; full excludes Back, scrolling and search. Auto may use goalDirected or navigationDirected. No global-minimum claim for directed spaces.",
+  "measurement": "Clicks and keystrokes independently optimized. Other metrics replay the minimum-click path; Pixel travel is measured on the minimum-click trace where a matching Chromium atlas exists; it is not a movement minimum. Missing geometry is unavailable. Hotkeys used whenever available; no interruptions/detours. Screens count visits including initial screen and episode resets. Required fields count distinct required element/slot entries or confirmations per episode.",
+  "fixedChoices": "Native ehr min-clicks is also recorded. Benchmark adapter pins fixedValues in the derived Goals (the stock TaskChoices lacks diagnosis, service level and refill-count fields), then calls the same certified jointMinimum and public interpreter. No checker or clinical rules are reimplemented.",
+  "floor": "Ehr.Sim.floorMetrics for the same pinned goals and release. Ideal interface has one screen per clinical episode with no geometric floor claimed; field count excludes auto-linked nonhuman fields.",
+  "personas": [
+    {
+      "persona": "P1",
+      "iterations": [
+        {
+          "version": 0,
+          "label": "v0",
+          "specVersion": "v1",
+          "day": 1,
+          "night": null,
+          "source": "runs/core-10day-live/programs/P1/v0.json",
+          "programSha256": "824b16dca1786ddc7f871498c6a89349e29ff46f9dfa8a82770cae0fd5a80248",
+          "tasks": [
+            {
+              "id": "benchmark-W1-1",
+              "workflow": "W1",
+              "title": "Office visit, prescription with three refills",
+              "patientId": "2ab83e2b-38d9-fa35-e2b0-dfbfae463454",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W7-1",
+              "workflow": "W7",
+              "title": "Approve lisinopril refill",
+              "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W1",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W7",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 3,
+            "computed": 0,
+            "notComputed": 3
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 1,
+          "label": "v1",
+          "specVersion": "v1",
+          "day": 2,
+          "night": 1,
+          "source": "runs/core-10day-live/programs/P1/v1.json",
+          "programSha256": "b4387c7546d9fff3311f74b7433f712c8bb3ff9b0a9326473869ff10a02bb1ba",
+          "tasks": [
+            {
+              "id": "benchmark-W1-1",
+              "workflow": "W1",
+              "title": "Office visit, prescription with three refills",
+              "patientId": "2ab83e2b-38d9-fa35-e2b0-dfbfae463454",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W7-1",
+              "workflow": "W7",
+              "title": "Approve lisinopril refill",
+              "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W1",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W7",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 3,
+            "computed": 0,
+            "notComputed": 3
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 2,
+          "label": "v2",
+          "specVersion": "v1",
+          "day": 3,
+          "night": 2,
+          "source": "runs/core-10day-live/programs/P1/v2.json",
+          "programSha256": "009f6868789dda512853522ca2ba549eaf5f30a5db4f8042c62b9b651e14ee64",
+          "tasks": [
+            {
+              "id": "benchmark-W1-1",
+              "workflow": "W1",
+              "title": "Office visit, prescription with three refills",
+              "patientId": "2ab83e2b-38d9-fa35-e2b0-dfbfae463454",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W7-1",
+              "workflow": "W7",
+              "title": "Approve lisinopril refill",
+              "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W1",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W7",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 3,
+            "computed": 0,
+            "notComputed": 3
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        }
+      ],
+      "markers": []
+    },
+    {
+      "persona": "P2",
+      "iterations": [
+        {
+          "version": 0,
+          "label": "v0",
+          "specVersion": "v1",
+          "day": 1,
+          "night": null,
+          "source": "runs/core-10day-live/programs/P2/v0.json",
+          "programSha256": "69a2c6ea706a73e46c51dff267f22cad6b036e9f13488a330ba55c5f5e4d1e54",
+          "tasks": [
+            {
+              "id": "benchmark-W3-1",
+              "workflow": "W3",
+              "title": "ED evaluation and discharge",
+              "patientId": "f9af5423-5f36-8953-2fd2-8b134195c4a4",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W2",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W7",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W3",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 1,
+            "computed": 0,
+            "notComputed": 1
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 1,
+          "label": "v1",
+          "specVersion": "v1",
+          "day": 2,
+          "night": 1,
+          "source": "runs/core-10day-live/programs/P2/v1.json",
+          "programSha256": "da37f96c01244ef73b90c24de2140429335dd6bd0b7ccb03db6524c931b3dda2",
+          "tasks": [
+            {
+              "id": "benchmark-W3-1",
+              "workflow": "W3",
+              "title": "ED evaluation and discharge",
+              "patientId": "f9af5423-5f36-8953-2fd2-8b134195c4a4",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W2",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W7",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W3",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 1,
+            "computed": 0,
+            "notComputed": 1
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 2,
+          "label": "v2",
+          "specVersion": "v1",
+          "day": 3,
+          "night": 2,
+          "source": "runs/core-10day-live/programs/P2/v2.json",
+          "programSha256": "6d3fde4334c33798cd8cb53ec897461d9c45c84802bb5c92a60b4b7f1cce82dd",
+          "tasks": [
+            {
+              "id": "benchmark-W3-1",
+              "workflow": "W3",
+              "title": "ED evaluation and discharge",
+              "patientId": "f9af5423-5f36-8953-2fd2-8b134195c4a4",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W2",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W7",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W3",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 1,
+            "computed": 0,
+            "notComputed": 1
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        }
+      ],
+      "markers": []
+    },
+    {
+      "persona": "P3",
+      "iterations": [
+        {
+          "version": 0,
+          "label": "v0",
+          "specVersion": "v1",
+          "day": 1,
+          "night": null,
+          "source": "runs/core-10day-live/programs/P3/v0.json",
+          "programSha256": "401311ae180538f497a08eac8dcc348ee6e23685a5bf134e463dca35fe9ecefa",
+          "tasks": [
+            {
+              "id": "benchmark-W4-1",
+              "workflow": "W4",
+              "title": "High-alert insulin MAR pass and nursing assessment",
+              "patientId": "c61efda8-512e-c6b3-4fba-676206c5894f",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W2",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W7",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W4",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 1,
+            "computed": 0,
+            "notComputed": 1
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 1,
+          "label": "v1",
+          "specVersion": "v1",
+          "day": 2,
+          "night": 1,
+          "source": "runs/core-10day-live/programs/P3/v1.json",
+          "programSha256": "c528a48c32f80ce83ee1fea194fca66dc6418accc48c0ef1f2a6ffd636fe762f",
+          "tasks": [
+            {
+              "id": "benchmark-W4-1",
+              "workflow": "W4",
+              "title": "High-alert insulin MAR pass and nursing assessment",
+              "patientId": "c61efda8-512e-c6b3-4fba-676206c5894f",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W2",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W7",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W4",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 1,
+            "computed": 0,
+            "notComputed": 1
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        }
+      ],
+      "markers": []
+    },
+    {
+      "persona": "P4",
+      "iterations": [
+        {
+          "version": 0,
+          "label": "v0",
+          "specVersion": "v1",
+          "day": 1,
+          "night": null,
+          "source": "runs/core-10day-live/programs/P4/v0.json",
+          "programSha256": "dc8b41efa8110492f70bbad0441761582607d12f41b974350f815be57bef5766",
+          "tasks": [
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W5-1",
+              "workflow": "W5",
+              "title": "Weight-based pediatric amoxicillin and influenza immunization",
+              "patientId": "54ba8038-9cf0-8916-1d86-a403c6cf96d0",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W7-1",
+              "workflow": "W7",
+              "title": "Approve lisinopril refill",
+              "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W5",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W7",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 3,
+            "computed": 0,
+            "notComputed": 3
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 1,
+          "label": "v1",
+          "specVersion": "v1",
+          "day": 2,
+          "night": 1,
+          "source": "runs/core-10day-live/programs/P4/v1.json",
+          "programSha256": "f9c5b92d0a01903b1f922c036ec3f059c748f3e39e631919a6a5a09f206edb21",
+          "tasks": [
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W5-1",
+              "workflow": "W5",
+              "title": "Weight-based pediatric amoxicillin and influenza immunization",
+              "patientId": "54ba8038-9cf0-8916-1d86-a403c6cf96d0",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W7-1",
+              "workflow": "W7",
+              "title": "Approve lisinopril refill",
+              "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W5",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W7",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 3,
+            "computed": 0,
+            "notComputed": 3
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 2,
+          "label": "v2",
+          "specVersion": "v1",
+          "day": 3,
+          "night": 2,
+          "source": "runs/core-10day-live/programs/P4/v2.json",
+          "programSha256": "c52a1902906beaf5943a03929fe537529567418e99d26e3da99fd6a1d2d35df4",
+          "tasks": [
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W5-1",
+              "workflow": "W5",
+              "title": "Weight-based pediatric amoxicillin and influenza immunization",
+              "patientId": "54ba8038-9cf0-8916-1d86-a403c6cf96d0",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W7-1",
+              "workflow": "W7",
+              "title": "Approve lisinopril refill",
+              "patientId": "db4b7b38-494a-eb5f-8668-f738e27e4e53",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W1",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W6",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W5",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W7",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 3,
+            "computed": 0,
+            "notComputed": 3
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        }
+      ],
+      "markers": []
+    },
+    {
+      "persona": "P5",
+      "iterations": [
+        {
+          "version": 0,
+          "label": "v0",
+          "specVersion": "v1",
+          "day": 1,
+          "night": null,
+          "source": "runs/core-10day-live/programs/P5/v0.json",
+          "programSha256": "4cfc952012fd5b85bcc299095e2a12430c27a6396404db9036cd3ef7bfae626e",
+          "tasks": [
+            {
+              "id": "benchmark-W1-1",
+              "workflow": "W1",
+              "title": "Office visit, prescription with three refills",
+              "patientId": "2ab83e2b-38d9-fa35-e2b0-dfbfae463454",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W6-1",
+              "workflow": "W6",
+              "title": "Surgical pre-op, operative note and discharge",
+              "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W6-2",
+              "workflow": "W6",
+              "title": "Surgical pre-op, operative note and discharge",
+              "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W6-3",
+              "workflow": "W6",
+              "title": "Surgical pre-op, operative note and discharge",
+              "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W7",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W1",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W6",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 3,
+                "computed": 0,
+                "notComputed": 3
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 5,
+            "computed": 0,
+            "notComputed": 5
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        },
+        {
+          "version": 1,
+          "label": "v1",
+          "specVersion": "v1",
+          "day": 2,
+          "night": 1,
+          "source": "runs/core-10day-live/programs/P5/v1.json",
+          "programSha256": "a4f7b3cda187bbfd021e0f012c689df6e92d9a92b6a8e3b4a984ecb1ba36c570",
+          "tasks": [
+            {
+              "id": "benchmark-W1-1",
+              "workflow": "W1",
+              "title": "Office visit, prescription with three refills",
+              "patientId": "2ab83e2b-38d9-fa35-e2b0-dfbfae463454",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W2-1",
+              "workflow": "W2",
+              "title": "Acknowledge a fixed low hemoglobin result",
+              "patientId": "77fea971-728c-dabf-3906-74e06485f7a9",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W6-1",
+              "workflow": "W6",
+              "title": "Surgical pre-op, operative note and discharge",
+              "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W6-2",
+              "workflow": "W6",
+              "title": "Surgical pre-op, operative note and discharge",
+              "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            },
+            {
+              "id": "benchmark-W6-3",
+              "workflow": "W6",
+              "title": "Surgical pre-op, operative note and discharge",
+              "patientId": "75d343d1-463d-3e74-2da8-80ba02140719",
+              "supported": true,
+              "status": "not-computed",
+              "reason": "search bound",
+              "detail": "task time limit",
+              "message": "not computed (search bound)",
+              "exact": false,
+              "space": null,
+              "keystrokeSpace": null,
+              "metrics": null,
+              "floor": null
+            }
+          ],
+          "skipped": [
+            {
+              "workflow": "W3",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W4",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W5",
+              "reason": "role projection: task commits not supported"
+            },
+            {
+              "workflow": "W7",
+              "reason": "role projection: task commits not supported"
+            }
+          ],
+          "workflows": [
+            {
+              "workflow": "W1",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W2",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 1,
+                "computed": 0,
+                "notComputed": 1
+              }
+            },
+            {
+              "workflow": "W6",
+              "metrics": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "floor": {
+                "clicks": null,
+                "keystrokes": null,
+                "scrolls": null,
+                "scrollPx": null,
+                "mouseTravelPx": null,
+                "screens": null,
+                "requiredFields": null,
+                "popups": null
+              },
+              "coverage": {
+                "expected": 3,
+                "computed": 0,
+                "notComputed": 3
+              }
+            }
+          ],
+          "coverage": {
+            "expected": 5,
+            "computed": 0,
+            "notComputed": 5
+          },
+          "total": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          },
+          "floor": {
+            "clicks": null,
+            "keystrokes": null,
+            "scrolls": null,
+            "scrollPx": null,
+            "mouseTravelPx": null,
+            "screens": null,
+            "requiredFields": null,
+            "popups": null
+          }
+        }
+      ],
+      "markers": []
+    }
+  ]
+}

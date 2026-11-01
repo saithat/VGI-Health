@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "ehrSha256": "95caf8573b161d8d149b33b9d2d9dd74c78a5ba8122c59e1dd484dbdbc815f3e",
+  "wasmSha256": "1e3c1db4deb56467f0005ea11b908df56495fbbe7555b2540d111492a27af71d",
+  "appSha256": "71e844bfb3cb5120aa86e5bb06cde0c9985e84ef944125b4ea6670d387a65e2e",
+  "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "programSha256": "11e9e306af97dcccafd3b81d9ea3a000bfecc5517513ea4da328234fb338de76",
+  "certificateSha256": "eec9343906dc13dfa97aec4e19454f97fd85c483b583b9aa9f7460f95514fece",
+  "certificationInputsSha256": "a50ca0a3210452cb8bbc654aae419ce3cee48feff27b29eb301ccc16d2906e85",
+  "sourceProgramSha256": "11e9e306af97dcccafd3b81d9ea3a000bfecc5517513ea4da328234fb338de76"
+}

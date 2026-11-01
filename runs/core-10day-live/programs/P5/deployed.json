@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "program": "programs/P5/v1.json",
+  "certificate": "certs/P5/v1.json",
+  "build": "certs/P5/v1.build.json",
+  "source": "programs/P5/v1.source.json"
+}
