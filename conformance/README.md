@@ -94,6 +94,8 @@ cases make a clearly labeled copy to inject a malicious macro/default or remove
 a panel to observe waiver/receipt behavior. These probe modifications are not
 claimed to carry the original certificate. The separate CURES probe checker
 audit records whether that specific modified program is accepted.
+`programSha256` hashes source file bytes; `testedProgramSha256` hashes compact
+parsed JSON. Normalize the source JSON before comparing those representations.
 `adapter-probe` supplies a mixed-patient FHIR bundle to test defensive scoping.
 An additional empty-medication workflow case deliberately demands more than the
 encoded per-line rule: its failure is a spec/workflow gap, not evidence that an
@@ -110,3 +112,7 @@ and proves the request input is readable while the held-out directory and run
 result are inaccessible. A dependency-graph assertion checks the real prompt,
 manual and backend builders for references to these files. Reporting reads only
 the already-written result; no agent prompt/manual gains access to the suite.
+
+The pound-weight case observes an invalid stored unit and a signing hard stop;
+that hard stop preempts a commit-time interruption. It does not claim that an
+unsafe pound-weight state can reach a successful acknowledgement/sign sequence.

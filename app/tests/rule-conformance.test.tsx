@@ -39,7 +39,7 @@ it("shows a per-revision failure badge and the observed outcome", () => {
       revision={2}
     />,
   );
-  expect(screen.getByText("Rule conformance: 1 failures")).toBeTruthy();
+  expect(screen.getByText("Rule conformance: 1 failure")).toBeTruthy();
   expect(screen.getByText(/Patient A allergy appeared in B/)).toBeTruthy();
   expect(screen.getByRole("link").getAttribute("href")).toBe(
     "/runs/run1-P3/conformance.json",

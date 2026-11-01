@@ -24,7 +24,7 @@ export function RuleConformanceBadge({
       <summary>
         <span className={`dash-badge ${target.failed ? "fail" : "pass"}`}>
           Rule conformance:{" "}
-          {target.failed ? `${target.failed} failures` : "all pass"}
+          {target.failed ? `${target.failed} failure${target.failed === 1 ? "" : "s"}` : "all pass"}
         </span>
       </summary>
       <p>
