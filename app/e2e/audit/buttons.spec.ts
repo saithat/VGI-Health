@@ -158,7 +158,8 @@ test("app shell: every shell control has an effect or an explained disabled stat
       const back = page
         .getByRole("button", { name: /Back to worklist/ })
         .first();
-      if (await back.isVisible()) await audit.click(back, undefined, "app");
+      await back.waitFor();
+      await audit.click(back, undefined, "app");
       await audit.click(
         page.getByRole("button", { name: "Sign out", exact: true }),
         undefined,
@@ -552,6 +553,11 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     await page
       .locator('div[aria-busy="true"]')
       .waitFor({ state: "hidden", timeout: 30000 });
+    const resourceClose = page.getByRole("button", {
+      name: "Close saved resource",
+      exact: true,
+    });
+    if (await resourceClose.isVisible()) await resourceClose.click();
     const close = page.getByRole("button", {
       name: "Close live encounter",
       exact: true,

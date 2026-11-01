@@ -275,6 +275,7 @@ function Chart({
         </Button>
       </div>
       <Drawer
+        zIndex={1100}
         opened={panel}
         onClose={() => setPanel(false)}
         title="Live Medplum encounter"
@@ -321,7 +322,7 @@ function Chart({
         onClose={() => setResourceOpen(false)}
         title="Saved Medplum resource"
         size="xl"
-        zIndex={350}
+        zIndex={1200}
         closeButtonProps={{ "aria-label": "Close saved resource" }}
       >
         {resourceError ? (
