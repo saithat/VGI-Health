@@ -19,10 +19,12 @@ export function PatientPicker({
   onChange: (patient: Patient) => void;
 }) {
   const [search, setSearch] = useState("");
+  const [source, setSource] = useState("");
   const [flags, setFlags] = useState<string[]>([]);
   const patients = catalog.patients.filter(
     (patient) =>
       patient.name.toLowerCase().includes(search.toLowerCase()) &&
+      (!source || patient.source === source) &&
       flags.every((flag) =>
         Object.entries(patient.flags).some(
           ([name, enabled]) => name === flag && enabled,
@@ -32,7 +34,7 @@ export function PatientPicker({
   return (
     <fieldset className="patient-picker">
       <legend>
-        Patient · {catalog.patients.length} committed Synthea fixtures
+        Patient · {catalog.patients.length} committed synthetic patients
       </legend>
       <label>
         Search by name{" "}
@@ -41,6 +43,15 @@ export function PatientPicker({
           value={search}
           onChange={(event) => setSearch(event.currentTarget.value)}
         />
+      </label>
+      <label>
+        Data source{" "}
+        <select aria-label="Patient source" value={source}
+          onChange={(event) => setSource(event.currentTarget.value)}>
+          <option value="">All sources</option>
+          <option value="synthea">Synthea</option>
+          <option value="synthetic-hospital">Synthetic Hospital</option>
+        </select>
       </label>
       <div className="patient-filters">
         {["pediatric", "allergic", "anticoagulated", "surgical"].map((flag) => (
@@ -78,7 +89,7 @@ export function PatientPicker({
           {patients.map((patient) => (
             <option key={patient.id} value={patient.id}>
               {patient.name} · {patient.age} · {patient.sex} ·{" "}
-              {patient.encounterClass}
+              {patient.encounterClass} · {patient.source === "synthetic-hospital" ? "Synthetic Hospital" : "Synthea"}
             </option>
           ))}
         </select>

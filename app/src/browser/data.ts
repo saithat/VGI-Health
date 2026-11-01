@@ -18,6 +18,8 @@ const patientSchema = z.object({
   age: z.number(),
   sex: z.string(),
   file: z.string(),
+  bundlePath: z.string().regex(/^fixtures\/(?:synthea|synthetic-hospital)\/[\w.-]+\.json$/),
+  source: z.enum(["synthea", "synthetic-hospital"]),
   encounterClass: z.string(),
   flags: z.object({
     pediatric: z.boolean(),

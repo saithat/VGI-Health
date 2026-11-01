@@ -24,3 +24,6 @@ test-results/
 
 # Clinical UI review screenshots
 app/shots/
+
+# Pinned Synthetic Hospital upstream downloads
+.cache/synthetic-hospital/
