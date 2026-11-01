@@ -1,0 +1,36 @@
+{
+  "source": "911f34c4ac65a508543c4b3b90c373a0cd16534d",
+  "verified": [
+    {
+      "persona": "P1",
+      "sourceId": 1683,
+      "name": "Quinn Reed",
+      "birthDate": "1998-10-31"
+    },
+    {
+      "persona": "P2",
+      "sourceId": 1675,
+      "name": "Riley Ellis",
+      "birthDate": "1996-10-31"
+    },
+    {
+      "persona": "P3",
+      "sourceId": 1689,
+      "name": "Riley Bennett",
+      "birthDate": "1996-10-31"
+    },
+    {
+      "persona": "P4",
+      "sourceId": 2346,
+      "name": "Cameron Nguyen",
+      "birthDate": "2018-10-31"
+    },
+    {
+      "persona": "P5",
+      "sourceId": 1725,
+      "name": "Casey Ellis",
+      "birthDate": "1998-10-31"
+    }
+  ],
+  "errors": []
+}

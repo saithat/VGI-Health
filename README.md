@@ -177,6 +177,15 @@ clinical correctness or real certification. See [BRIEF §13](BRIEF.md#13-trusted
   redistributable". Cite: Park, Chen, Dettmers. *Synthetic Hospital: An Open,
   Verifiable, Physician-Validated Longitudinal EHR Benchmark.* Preprint, 2026.
   https://arxiv.org/abs/2609.30027 · https://github.com/sparkcpark/synthetic_hospital
+  Pinned source: `911f34c4ac65a508543c4b3b90c373a0cd16534d`.
+  We converted and loaded **150 patients, 637 encounters/notes, 4,383 resources**
+  into local Medplum; primary persona selections are 30 each for P1–P5,
+  including 34 pediatric patients. The committed FHIR cohort is 6.68 MB,
+  uncompressed, with source tags and per-patient Provenance. Opt in with
+  `make seed SYNTHETIC_HOSPITAL=1` (also supported by `make install`), or run
+  `make load-synthetic-hospital`. Mapping, checksums and limitations:
+  [import guide](scripts/synthetic-hospital/README.md). Full Notes/history display
+  is planned in [HANDOFF-data.md](HANDOFF-data.md); this phase imports the records.
   (see its CITATION.cff). Its Epic-style simulator is an API, not a UI. We took
   only its chart organization as a reference (chart summary, encounters, problem
   list; results for labs, imaging and pathology; orders) and copied no code or

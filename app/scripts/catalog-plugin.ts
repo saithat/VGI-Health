@@ -38,7 +38,7 @@ export function catalogPlugin(): Plugin {
     },
     async closeBundle() {
       const output = resolve(root, "app/dist");
-      for (const directory of ["releases", "programs", "fixtures/synthea"]) {
+      for (const directory of ["releases", "programs", "fixtures/synthea", "fixtures/synthetic-hospital"]) {
         await cp(resolve(root, directory), resolve(output, directory), {
           recursive: true,
         });

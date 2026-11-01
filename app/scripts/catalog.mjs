@@ -110,9 +110,17 @@ export async function buildCatalog() {
     });
   }
   const index = await readJson("fixtures/synthea/index.json");
+  const hospital = await readJson("fixtures/synthetic-hospital/index.json");
+  if (hospital.referenceDate !== index.referenceDate)
+    throw new Error("Fixture reference dates disagree");
   const patients = await Promise.all(
-    index.patients.map(async (patient) => {
-      const bundle = await readJson(`fixtures/synthea/${patient.file}`);
+    [
+      ...index.patients.map((patient) => ({ ...patient,
+        source: "synthea", bundlePath: `fixtures/synthea/${patient.file}` })),
+      ...hospital.patients.map((patient) => ({ ...patient,
+        source: "synthetic-hospital", bundlePath: `fixtures/synthetic-hospital/${patient.file}` })),
+    ].map(async (patient) => {
+      const bundle = await readJson(patient.bundlePath);
       const encounters = bundle.entry
         .map((e) => e.resource)
         .filter((r) => r.resourceType === "Encounter")
