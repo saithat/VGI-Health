@@ -9,7 +9,7 @@ The finished implementation theorems use only `propext`, `Classical.choice`, `Qu
 |---|---|---|---|
 | Composite expansion | Source properties are the properties of successful expansion; non-use components are retained exactly | Candidate proofs compile with permitted axiom audits in `Core/composites-pending.patch`; not integrated into checker-owned `Satisfies`, full `lake check`, or Comparator. Blocked on constructor/render compatibility and owning-lane integration; no `sorry` or new axioms. | lean-core / check |
 | T0 | The interpreter never performs a commit unless its review and human-only requirements are met | **proven** for the interpreter (`T0_commit_needs_guard`, plain-logic form `commitGuard_iff`, units/human-only corollary `T0_entry_values`; stronger allowed-value equivalence `commitGuard_iff_values` and value corollaries `T0_entry_values_allowed`, `T0_entry_values_perLine`, with the constraint on the same confirmed capture) | `lean/Ehr/Proofs/T0.lean` |
-| T1 | If the checker accepts a program, it satisfies properties 1–12 | **in progress**: full soundness proved for properties 1–5 and 7–12, plus all decidable structural clauses, commit entry/review/cosign/alert obligations, reachable-screen and CR-6 request invariants. The five expanded contract families are proved by `commitContracts`; actual human entry construction is proved by `human_enter`/`human_entry_exists`. Remaining: general completability (property 6), including navigation/reveal, archived-line invariants and finite alert discharge; assemble full theorem and Comparator statement. No unfinished theorem is asserted as proven. | `lean/Ehr/Check/{RuleSound,GuardSound,ScreenSound,PinSound,PartialSound,BudgetSound,SeveritySound,RequestSound,WritesSound,EnterOnceSound,HumanSound,HumanEventsSound,AlertSound}.lean` |
+| T1 | If the checker accepts a program, it satisfies properties 1–12 | **in progress**: full soundness proved for properties 1–5 and 7–12, plus all decidable structural clauses, commit entry/review/cosign/alert obligations, reachable-screen and CR-6 request invariants. The five expanded contract families are proved by `commitContracts`; actual human entry construction is proved by `human_enter`/`human_entry_exists`. Remaining: general completability (property 6), including navigation/reveal, archived-line invariants and joint entry repair; finite alert discharge is now proved by `human_finish_ready`; assemble full theorem and Comparator statement. No unfinished theorem is asserted as proven. | `lean/Ehr/Check/{RuleSound,GuardSound,ScreenSound,PinSound,PartialSound,BudgetSound,SeveritySound,RequestSound,WritesSound,EnterOnceSound,HumanSound,HumanEventsSound,AlertSound}.lean` |
 | T2 | A review prompt is skipped only with a valid receipt | **proven** for the interpreter: an applicable review requirement whose info was not shown was covered by a valid receipt (same version, inside the window, allowed role) or a human-entered waiver (`T2_receipts_sound`); `shownOnCommit` without a waiver means shown (`T2_shownOnCommit_shown`) | `lean/Ehr/Proofs/T2.lean` |
 | T3 | Human-only steps are never automated | **proven** for the interpreter: macro steps and macro runs never commit, ack, create receipts, or capture human-only values (`T3_macro_step`, `T3_macro_run`); prefill never captures human-only values (`T3_prefill_never_human_only`); a cosign is by a human and a different user (`T3_cosign_distinct`). Checker-side "rejects such programs" is part of T1. | `lean/Ehr/Proofs/T3.lean`, `T0.lean` |
 | T4 | `ehr deploy` publishes only programs with an ok verdict | **proven** (`T4_publish_only_if_ok`, `T4_rejected_not_published`, `T4_published_certificate`; axioms: propext, Classical.choice, Quot.sound) | `lean/Ehr/Proofs/CheckDeploy.lean` |
@@ -125,3 +125,41 @@ is the scalar construction lemma; its explicit non-dose/non-selector premises
 reflect the new relational constraint. General constructive T1 for relational
 inputs remains part of the already unfinished completion construction. No safety
 theorem is parked by this change, and Statements has no additional dose diff.
+
+## T1 completion milestone: proved fragment and exact remaining obligation
+
+`Ehr.Check.Scalar.completable` proves all-records, all-reachable-states completion
+for the actual one-screen scalar clinical program, with one human-only entry,
+a pinned allergy review (either review mode), and one alert with **any condition
+and any tier**. Entry kinds include text, flag, code, every quantity unit,
+identity, cosign and targeted scans. Medication scans retain `RecordAllowsScans`.
+Medication-dose values are excluded: they need a selected formulary drug.
+There are no per-line requirements, allowed-value lists, encounter cosign routes,
+waiver-only reviews or additional temporal/relational contracts in this fragment.
+This is a structural family, not all programs accepted by the core profile.
+
+`satisfies_of_checked_scalar` derives all thirteen properties from checker
+acceptance without a completion premise. `scalar_identity_satisfies` discharges
+its premises on a nonempty clinical program; `scalar_identity_required` proves
+its required commit list is nonempty for every physician and patient record.
+`human_clear_popup`, `popupCandidates_ack` and `human_finish_ready` are reusable
+construction lemmas. The last supports all alert conditions and tiers, removes
+duplicated pending keys too, and terminates by pending-list length.
+
+The exact general obligation remains below, recorded **only in this document**;
+no unfinished source declaration is imported by any default target. A future
+scratch source must use a separate non-default library, like VerificationAudit.
+
+```lean
+-- In namespace Ehr.Check; imports Ehr.Check.Sound.
+theorem accepted_completable (sp : Spec) (prev : Option Program) (can p : Program)
+    (h : check sp prev can p = .ok) : Completable sp can p := by
+  sorry
+```
+
+What is missing is extraction and composition of the checker's navigation/reveal
+paths, compatible captures for multiple requirements and allowed-value lists,
+per-line/archived-line repair, and encounter/waiver routes. The finite alert
+construction is finished, but its ready-guard and lookup-consistency premises
+still need to be supplied after that general repair construction. Neither
+`Completable` nor any checker rule has been weakened.

@@ -161,3 +161,12 @@ end VerificationAudit
 -- Property 6 has no acceptance theorem. Audit its definition explicitly.
 #spec_surface Ehr.Props.Completable
 #spec_surface Ehr.Props.Satisfies
+
+#spec_surface Ehr.Check.human_finish_ready
+#audit_axioms Ehr.Check.human_finish_ready
+#spec_surface Ehr.Check.Scalar.completable
+#audit_axioms Ehr.Check.Scalar.completable
+#spec_surface Ehr.Check.satisfies_of_checked_scalar
+#audit_axioms Ehr.Check.satisfies_of_checked_scalar
+#spec_surface Ehr.Check.scalar_identity_satisfies
+#audit_axioms Ehr.Check.scalar_identity_satisfies

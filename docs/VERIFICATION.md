@@ -2,7 +2,7 @@
 
 The proofs cover the Lean interpreter that decides screen contents and handles events. The browser runs this code through WebAssembly. They do not prove that the hospital's rules are complete or that care is clinically correct.
 
-**The main gap is completion:** checker acceptance proves properties 1–5 and 7–13. The theorem for all thirteen still **assumes property 6**, that the user can finish. Do not describe acceptance alone as a proof of all thirteen.
+**General completion remains open.** Acceptance now proves all thirteen properties for the scalar clinical fragment (`satisfies_of_checked_scalar`): one flat screen, one unrestricted scalar entry (all kinds except medication dose), a pinned allergy review in either mode, and one alert with any condition and tier. The general assembly theorem still assumes property 6. This fragment is not the entire core profile; see the exact remaining lemma in `TODO_PROOFS.md`.
 
 ## 1. What is proved: the short review
 
@@ -40,7 +40,7 @@ The 18 theorems in [`lean/comparator.json`](../lean/comparator.json):
 | 3. `WritesOnly` | Declared and reachable captures, commits and new receipts stay within the spec and role permissions. | `Properties.lean:157`; C, `accepted_writesOnly` |
 | 4. `ReviewsBeforeCommit` | Commits meet their reviews, and a shown commit button already has its unwaived reviews met. | `Properties.lean:181`; C, `accepted_reviewsBeforeCommit` |
 | 5. `HumanOnlyKept` | Human-only entry, signing, acknowledgment and distinct-user cosigning cannot be automated, and the program does not attempt it. | `Properties.lean:236`; C, `accepted_humanOnlyKept` |
-| 6. `Completable` | From every reachable state, each required, role-allowed unfinished commit has a human event path to completion, provided the record supplies any needed medication scan. | `Properties.lean:261`; **no acceptance proof** |
+| 6. `Completable` | From every reachable state, each required, role-allowed unfinished commit has a human event path to completion, provided the record supplies any needed medication scan. | `Properties.lean:261`; fragment: `Scalar.completable` / `satisfies_of_checked_scalar`; general acceptance proof open |
 | 7. `UnitsRight` | Whole-episode quantity requirements use the declared unit, and record quantity prefills use `weightToday`. | `Properties.lean:288`; C, `accepted_units` |
 | 8. `WithinBudgets` | Reachable-screen popup requests do not exceed the canonical count, and moved component tags stay within the stability budget. | `Properties.lean:312`; C, `accepted_budgets` |
 | 9. A1 `AlertsFire` | Interruptive keys are acknowledged before commit, firing passive alerts are shown on targeted screens, and macros do not target alerts. | `Properties.lean:342`; C, `accepted_alertsFire` |
@@ -99,7 +99,7 @@ Read these definitions first:
 
 ## 3. Axioms
 
-The fresh audit found **only `propext`, `Classical.choice`, `Quot.sound` in all 48 audited theorems**. These support reasoning about equal propositions, choices and quotients. Each theorem's exact output is in the generated appendix. There is no `sorryAx`, native-computation axiom, or extra assumption declared as an axiom in these proofs. Logical premises such as completion remain premises even when this axiom audit is clean.
+The fresh audit found **only `propext`, `Classical.choice`, `Quot.sound` in all 52 audited theorems**. These support reasoning about equal propositions, choices and quotients. Each theorem's exact output is in the generated appendix. There is no `sorryAx`, native-computation axiom, or extra assumption declared as an axiom in these proofs. Logical premises such as completion remain premises even when this axiom audit is clean.
 
 The challenge files intentionally contain `sorry` placeholders; [`Solution.lean`](../lean/Solution.lean) imports the proved implementations instead. This audit does not import the challenge files. A clean axiom list is not a new Comparator or whole-project `lake check` result; the earlier reported results are in [`docs/STATUS.md:75`](STATUS.md#L75).
 
@@ -124,8 +124,8 @@ The challenge files intentionally contain `sorry` placeholders; [`Solution.lean`
 | `A4_step` | Missing a concrete example explicitly discharging `PopupNotPassive` before applying this step theorem. |
 | `A4_run` | No proof conditions; a concrete Tiny spec is used by the passive-rule run example at `Alerts.lean:374`. |
 | `A4_passive_never_popup` | Complete lookup/tier conditions and theorem application at `Alerts.lean:370`, `:374`. |
-| All twelve `accepted_*` theorems | Their common acceptance premise is discharged by `decide` in the assembled `Satisfies` example, `lean/Ehr/Check/Sound.lean:55`; **this spec has no required commits**, so it is a weak usefulness witness. |
-| `satisfies_of_checked_completable` | Both premises are discharged in that same example; completion holds because there are no required commits. A nonempty all-records/all-reachable-states completion witness is missing. |
+| All twelve `accepted_*` theorems | Complete on a nonempty clinical program: `scalar_identity_satisfies` discharges acceptance by `decide` and proves all thirteen properties; `scalar_identity_required` proves the required commit list is nonempty for every physician and record. |
+| `satisfies_of_checked_completable` | Complete: `scalar_identity_satisfies` supplies acceptance and the all-records/all-reachable-states proof `Scalar.completable`, with a human-only identity entry, shown allergy review, and interruptive allergy alert. |
 | D1 | No proof conditions; concrete banner example at `lean/Ehr/Render/UiTests.lean:28`. |
 | D2 workspace / required-info / commit-review | Complete examples at `UiTests.lean:254`, `:109`, `:32`, respectively. |
 | D3 honest-actions / all-buttons | Partial: `UiTests.lean:38` specializes the context but still quantifies over nodes and their presence; no single concrete button example supplies all premises. |
@@ -195,7 +195,8 @@ Two other scope decisions matter: the temporary core profile removes most catalo
 
 ## 8. Gaps against CLAUDE.md §§4 and 7
 
-- [ ] **Finish T1:** prove completion from acceptance instead of assuming it (`lean/Ehr/Check/Sound.lean:16`; `Props/Properties.lean:261`). Add a nonempty clinical example satisfying all premises.
+- [x] **T1 fragment and nonempty witness:** `Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`, `scalar_identity_required`. The fragment covers scalar kinds except medication doses, both review modes, every alert condition and tier. `human_finish_ready` proves finite alert discharge for the real interpreter.
+- [ ] **General T1:** arbitrary accepted navigation/reveal, multiple compatible entry requirements, per-line/archived-line repair, and encounter/waiver routes. The precise `accepted_completable` lemma is recorded in `TODO_PROOFS.md`; no completion assumption or checker rule was weakened.
 - [ ] **Complete the hypothesis examples:** the partial/missing rows in section 4 need complete concrete applications, especially cosign, receipt/shown-review, A4 step, D3, D6 labels and T4 certificate (`Proofs/T0.lean:418`, `T2.lean:87`, `Alerts.lean:304`, `Render/UiTests.lean:38`, `:73`, `Proofs/CheckDeploy.lean:66`).
 - [ ] **Name examples:** most are anonymous (`Props/Examples.lean:65`, `Proofs/T0.lean:403`, `Render/UiTests.lean:28`); many demonstrate a clause rather than the entire property.
 - [ ] **Restore current bad-output proofs:** repair parked witnesses, prove the current CURES mutation and intended Schedule II completion failure, and add full-profile negative proofs for feature seeds (`EhrHeavy.lean:1`, `Check/AdditionalBadProofs.lean:29`, `Canonical/BadPrograms.lean:110`, `:154`).
@@ -214,134 +215,146 @@ The following block is replaced by the script. The commit and content hash ident
 
 <!-- BEGIN GENERATED AUDIT -->
 
-Generated at `37743f840b7eb0cec48d5934b3caf49d151c832c`. Source SHA-256: `336131a15c896b1880081ed921784bed52972045ebbff75b7cb6542a859c1a28`.
+Generated at `6519b3798acf7b81f0451a538d28ad97af8c9129`. Source SHA-256: `f427d821a4c6faa6cb28455860985a8c2c2ea7be434fae651c462b10302bd8a6`.
 
-48 theorems audited; 50 statement surfaces; 32 distinct lists; 555 distinct definitions/types overall; 2–443 per statement. 67 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
+52 theorems audited; 54 statement surfaces; 36 distinct lists; 583 distinct definitions/types overall; 2–469 per statement. 72 project modules compiled or reused, one Lean process at a time. The two extra surfaces are property definitions, not proved theorems.
 
 Counts include named project definitions and types. Compiler helpers, instances, constructors and projections are omitted from the display after traversal. Library definitions are traversed but not listed. Proof bodies are followed only for the axiom column. `P` = propext; `C` = Classical.choice; `Q` = Quot.sound; `none` = no axioms. Each S-list below gives its complete list as shared B-groups; each definition is printed once. No names are removed by this grouping.
 
 | Declaration | Source | Surface / count | Axioms |
 |---|---|---|---|
-| `Ehr.Proofs.T0_commit_needs_guard` | [lean/Ehr/Proofs/T0.lean:151](../lean/Ehr/Proofs/T0.lean#L151) | S1 / 254 | C, Q, P |
-| `Ehr.Proofs.commitGuard_iff` | [lean/Ehr/Proofs/T0.lean:162](../lean/Ehr/Proofs/T0.lean#L162) | S2 / 196 | C, Q, P |
-| `Ehr.Proofs.T0_entry_values` | [lean/Ehr/Proofs/T0.lean:348](../lean/Ehr/Proofs/T0.lean#L348) | S3 / 253 | C, Q, P |
-| `Ehr.Proofs.T3_cosign_distinct` | [lean/Ehr/Proofs/T0.lean:375](../lean/Ehr/Proofs/T0.lean#L375) | S3 / 253 | C, Q, P |
-| `Ehr.Proofs.T2_receipts_sound` | [lean/Ehr/Proofs/T2.lean:52](../lean/Ehr/Proofs/T2.lean#L52) | S4 / 255 | C, Q, P |
-| `Ehr.Proofs.T2_shownOnCommit_shown` | [lean/Ehr/Proofs/T2.lean:66](../lean/Ehr/Proofs/T2.lean#L66) | S3 / 253 | C, Q, P |
-| `Ehr.Proofs.T3_macro_step` | [lean/Ehr/Proofs/T3.lean:159](../lean/Ehr/Proofs/T3.lean#L159) | S5 / 254 | C, Q, P |
-| `Ehr.Proofs.T3_macro_run` | [lean/Ehr/Proofs/T3.lean:171](../lean/Ehr/Proofs/T3.lean#L171) | S5 / 254 | C, Q, P |
-| `Ehr.Proofs.T3_prefill_never_human_only` | [lean/Ehr/Proofs/T3.lean:184](../lean/Ehr/Proofs/T3.lean#L184) | S6 / 57 | C, Q, P |
-| `Ehr.Proofs.T6_macro_is_fold` | [lean/Ehr/Proofs/T6.lean:42](../lean/Ehr/Proofs/T6.lean#L42) | S7 / 255 | C, Q, P |
-| `Ehr.Proofs.runMacro_ok_iff` | [lean/Ehr/Proofs/T6.lean:73](../lean/Ehr/Proofs/T6.lean#L73) | S7 / 255 | C, Q, P |
-| `Ehr.Proofs.T6_macro_run_safe` | [lean/Ehr/Proofs/T6.lean:126](../lean/Ehr/Proofs/T6.lean#L126) | S5 / 254 | C, Q, P |
-| `Ehr.Proofs.A2_view_firing` | [lean/Ehr/Proofs/Alerts.lean:27](../lean/Ehr/Proofs/Alerts.lean#L27) | S8 / 231 | C, Q, P |
-| `Ehr.Proofs.A2_view_shown` | [lean/Ehr/Proofs/Alerts.lean:40](../lean/Ehr/Proofs/Alerts.lean#L40) | S8 / 231 | C, Q, P |
-| `Ehr.Proofs.A2_popup_holds` | [lean/Ehr/Proofs/Alerts.lean:281](../lean/Ehr/Proofs/Alerts.lean#L281) | S3 / 253 | C, Q, P |
-| `Ehr.Proofs.A4_step` | [lean/Ehr/Proofs/Alerts.lean:304](../lean/Ehr/Proofs/Alerts.lean#L304) | S9 / 254 | C, Q, P |
-| `Ehr.Proofs.A4_run` | [lean/Ehr/Proofs/Alerts.lean:319](../lean/Ehr/Proofs/Alerts.lean#L319) | S10 / 257 | C, Q, P |
-| `Ehr.Proofs.A4_passive_never_popup` | [lean/Ehr/Proofs/Alerts.lean:337](../lean/Ehr/Proofs/Alerts.lean#L337) | S11 / 256 | C, Q, P |
-| `Ehr.Check.accepted_wellFormed` | [lean/Ehr/Check/PartialSound.lean:39](../lean/Ehr/Check/PartialSound.lean#L39) | S12 / 396 | C, Q, P |
-| `Ehr.Check.accepted_capturesAllOnce` | [lean/Ehr/Check/EnterOnceSound.lean:120](../lean/Ehr/Check/EnterOnceSound.lean#L120) | S13 / 383 | C, Q, P |
-| `Ehr.Check.accepted_writesOnly` | [lean/Ehr/Check/WritesSound.lean:270](../lean/Ehr/Check/WritesSound.lean#L270) | S14 / 376 | C, Q, P |
-| `Ehr.Check.accepted_reviewsBeforeCommit` | [lean/Ehr/Check/PartialSound.lean:49](../lean/Ehr/Check/PartialSound.lean#L49) | S15 / 401 | C, Q, P |
-| `Ehr.Check.accepted_humanOnlyKept` | [lean/Ehr/Check/HumanEventsSound.lean:167](../lean/Ehr/Check/HumanEventsSound.lean#L167) | S16 / 382 | C, Q, P |
-| `Ehr.Check.accepted_units` | [lean/Ehr/Check/PartialSound.lean:58](../lean/Ehr/Check/PartialSound.lean#L58) | S17 / 379 | C, Q, P |
-| `Ehr.Check.accepted_budgets` | [lean/Ehr/Check/BudgetSound.lean:48](../lean/Ehr/Check/BudgetSound.lean#L48) | S18 / 375 | C, Q, P |
-| `Ehr.Check.accepted_alertsFire` | [lean/Ehr/Check/PartialSound.lean:64](../lean/Ehr/Check/PartialSound.lean#L64) | S19 / 396 | C, Q, P |
-| `Ehr.Check.accepted_noFalseAlarms` | [lean/Ehr/Check/AlertSound.lean:169](../lean/Ehr/Check/AlertSound.lean#L169) | S20 / 392 | C, Q, P |
-| `Ehr.Check.accepted_noRepeatInterruptions` | [lean/Ehr/Check/AlertSound.lean:175](../lean/Ehr/Check/AlertSound.lean#L175) | S21 / 379 | C, Q, P |
-| `Ehr.Check.accepted_severityTiers` | [lean/Ehr/Check/SeveritySound.lean:29](../lean/Ehr/Check/SeveritySound.lean#L29) | S22 / 376 | C, Q, P |
-| `Ehr.Check.accepted_navigation` | [lean/Ehr/Check/NavigationSound.lean:7](../lean/Ehr/Check/NavigationSound.lean#L7) | S23 / 371 | C, Q, P |
-| `Ehr.Check.satisfies_of_checked_completable` | [lean/Ehr/Check/Sound.lean:16](../lean/Ehr/Check/Sound.lean#L16) | S24 / 443 | C, Q, P |
-| `Ehr.Render.D1_landmark` | [lean/Ehr/Render/UiProofs.lean:78](../lean/Ehr/Render/UiProofs.lean#L78) | S25 / 307 | C, Q, P |
-| `Ehr.Render.D2_workspace_required` | [lean/Ehr/Render/UiProofs.lean:298](../lean/Ehr/Render/UiProofs.lean#L298) | S26 / 309 | C, Q, P |
-| `Ehr.Render.D2_required_info` | [lean/Ehr/Render/UiProofs.lean:327](../lean/Ehr/Render/UiProofs.lean#L327) | S27 / 311 | C, Q, P |
-| `Ehr.Render.D2_commit_review` | [lean/Ehr/Render/UiProofs.lean:430](../lean/Ehr/Render/UiProofs.lean#L430) | S27 / 311 | C, Q, P |
-| `Ehr.Render.D3_honest_actions` | [lean/Ehr/Render/UiProofs.lean:383](../lean/Ehr/Render/UiProofs.lean#L383) | S28 / 312 | C, Q, P |
-| `Ehr.Render.D3_all_buttons` | [lean/Ehr/Render/UiProofs.lean:509](../lean/Ehr/Render/UiProofs.lean#L509) | S28 / 312 | C, Q, P |
-| `Ehr.Render.D4_interruptive_modal` | [lean/Ehr/Render/UiProofs.lean:392](../lean/Ehr/Render/UiProofs.lean#L392) | S25 / 307 | C, Q, P |
-| `Ehr.Render.D4_passive_no_modal` | [lean/Ehr/Render/UiProofs.lean:402](../lean/Ehr/Render/UiProofs.lean#L402) | S25 / 307 | C, Q, P |
-| `Ehr.Render.D4_passive_inline` | [lean/Ehr/Render/UiProofs.lean:485](../lean/Ehr/Render/UiProofs.lean#L485) | S27 / 311 | C, Q, P |
-| `Ehr.Render.D6_clear_fields` | [lean/Ehr/Render/UiProofs.lean:410](../lean/Ehr/Render/UiProofs.lean#L410) | S27 / 311 | C, Q, P |
-| `Ehr.Render.D6_field_labels` | [lean/Ehr/Render/UiProofs.lean:519](../lean/Ehr/Render/UiProofs.lean#L519) | S27 / 311 | C, Q, P |
-| `Ehr.Proofs.T4_publish_only_if_ok` | [lean/Ehr/Proofs/CheckDeploy.lean:26](../lean/Ehr/Proofs/CheckDeploy.lean#L26) | S29 / 384 | C, Q, P |
-| `Ehr.Proofs.T4_rejected_not_published` | [lean/Ehr/Proofs/CheckDeploy.lean:41](../lean/Ehr/Proofs/CheckDeploy.lean#L41) | S29 / 384 | C, Q, P |
-| `Ehr.Proofs.T4_published_certificate` | [lean/Ehr/Proofs/CheckDeploy.lean:51](../lean/Ehr/Proofs/CheckDeploy.lean#L51) | S30 / 383 | C, Q, P |
-| `Ehr.Check.tiny_bad_catalog` | [lean/Ehr/Check/TinyRejections.lean:8](../lean/Ehr/Check/TinyRejections.lean#L8) | S31 / 383 | C, Q, P |
-| `Ehr.Check.tiny_bad_role` | [lean/Ehr/Check/TinyRejections.lean:16](../lean/Ehr/Check/TinyRejections.lean#L16) | S31 / 383 | C, Q, P |
-| `Ehr.Check.tiny_bad_automation` | [lean/Ehr/Check/TinyRejections.lean:21](../lean/Ehr/Check/TinyRejections.lean#L21) | S31 / 383 | C, Q, P |
+| `Ehr.Proofs.T0_commit_needs_guard` | [lean/Ehr/Proofs/T0.lean:151](../lean/Ehr/Proofs/T0.lean#L151) | S1 / 265 | C, Q, P |
+| `Ehr.Proofs.commitGuard_iff` | [lean/Ehr/Proofs/T0.lean:162](../lean/Ehr/Proofs/T0.lean#L162) | S2 / 206 | C, Q, P |
+| `Ehr.Proofs.T0_entry_values` | [lean/Ehr/Proofs/T0.lean:363](../lean/Ehr/Proofs/T0.lean#L363) | S3 / 264 | C, Q, P |
+| `Ehr.Proofs.T3_cosign_distinct` | [lean/Ehr/Proofs/T0.lean:391](../lean/Ehr/Proofs/T0.lean#L391) | S3 / 264 | C, Q, P |
+| `Ehr.Proofs.T2_receipts_sound` | [lean/Ehr/Proofs/T2.lean:52](../lean/Ehr/Proofs/T2.lean#L52) | S4 / 266 | C, Q, P |
+| `Ehr.Proofs.T2_shownOnCommit_shown` | [lean/Ehr/Proofs/T2.lean:66](../lean/Ehr/Proofs/T2.lean#L66) | S3 / 264 | C, Q, P |
+| `Ehr.Proofs.T3_macro_step` | [lean/Ehr/Proofs/T3.lean:159](../lean/Ehr/Proofs/T3.lean#L159) | S5 / 265 | C, Q, P |
+| `Ehr.Proofs.T3_macro_run` | [lean/Ehr/Proofs/T3.lean:171](../lean/Ehr/Proofs/T3.lean#L171) | S5 / 265 | C, Q, P |
+| `Ehr.Proofs.T3_prefill_never_human_only` | [lean/Ehr/Proofs/T3.lean:184](../lean/Ehr/Proofs/T3.lean#L184) | S6 / 70 | C, Q, P |
+| `Ehr.Proofs.T6_macro_is_fold` | [lean/Ehr/Proofs/T6.lean:42](../lean/Ehr/Proofs/T6.lean#L42) | S7 / 266 | C, Q, P |
+| `Ehr.Proofs.runMacro_ok_iff` | [lean/Ehr/Proofs/T6.lean:73](../lean/Ehr/Proofs/T6.lean#L73) | S7 / 266 | C, Q, P |
+| `Ehr.Proofs.T6_macro_run_safe` | [lean/Ehr/Proofs/T6.lean:126](../lean/Ehr/Proofs/T6.lean#L126) | S5 / 265 | C, Q, P |
+| `Ehr.Proofs.A2_view_firing` | [lean/Ehr/Proofs/Alerts.lean:27](../lean/Ehr/Proofs/Alerts.lean#L27) | S8 / 240 | C, Q, P |
+| `Ehr.Proofs.A2_view_shown` | [lean/Ehr/Proofs/Alerts.lean:40](../lean/Ehr/Proofs/Alerts.lean#L40) | S8 / 240 | C, Q, P |
+| `Ehr.Proofs.A2_popup_holds` | [lean/Ehr/Proofs/Alerts.lean:281](../lean/Ehr/Proofs/Alerts.lean#L281) | S3 / 264 | C, Q, P |
+| `Ehr.Proofs.A4_step` | [lean/Ehr/Proofs/Alerts.lean:304](../lean/Ehr/Proofs/Alerts.lean#L304) | S9 / 265 | C, Q, P |
+| `Ehr.Proofs.A4_run` | [lean/Ehr/Proofs/Alerts.lean:319](../lean/Ehr/Proofs/Alerts.lean#L319) | S10 / 268 | C, Q, P |
+| `Ehr.Proofs.A4_passive_never_popup` | [lean/Ehr/Proofs/Alerts.lean:337](../lean/Ehr/Proofs/Alerts.lean#L337) | S11 / 267 | C, Q, P |
+| `Ehr.Check.accepted_wellFormed` | [lean/Ehr/Check/PartialSound.lean:39](../lean/Ehr/Check/PartialSound.lean#L39) | S12 / 409 | C, Q, P |
+| `Ehr.Check.accepted_capturesAllOnce` | [lean/Ehr/Check/EnterOnceSound.lean:120](../lean/Ehr/Check/EnterOnceSound.lean#L120) | S13 / 397 | C, Q, P |
+| `Ehr.Check.accepted_writesOnly` | [lean/Ehr/Check/WritesSound.lean:270](../lean/Ehr/Check/WritesSound.lean#L270) | S14 / 389 | C, Q, P |
+| `Ehr.Check.accepted_reviewsBeforeCommit` | [lean/Ehr/Check/PartialSound.lean:49](../lean/Ehr/Check/PartialSound.lean#L49) | S15 / 414 | C, Q, P |
+| `Ehr.Check.accepted_humanOnlyKept` | [lean/Ehr/Check/HumanEventsSound.lean:167](../lean/Ehr/Check/HumanEventsSound.lean#L167) | S16 / 395 | C, Q, P |
+| `Ehr.Check.accepted_units` | [lean/Ehr/Check/PartialSound.lean:58](../lean/Ehr/Check/PartialSound.lean#L58) | S17 / 392 | C, Q, P |
+| `Ehr.Check.accepted_budgets` | [lean/Ehr/Check/BudgetSound.lean:48](../lean/Ehr/Check/BudgetSound.lean#L48) | S18 / 388 | C, Q, P |
+| `Ehr.Check.accepted_alertsFire` | [lean/Ehr/Check/PartialSound.lean:64](../lean/Ehr/Check/PartialSound.lean#L64) | S19 / 409 | C, Q, P |
+| `Ehr.Check.accepted_noFalseAlarms` | [lean/Ehr/Check/AlertSound.lean:169](../lean/Ehr/Check/AlertSound.lean#L169) | S20 / 405 | C, Q, P |
+| `Ehr.Check.accepted_noRepeatInterruptions` | [lean/Ehr/Check/AlertSound.lean:175](../lean/Ehr/Check/AlertSound.lean#L175) | S21 / 392 | C, Q, P |
+| `Ehr.Check.accepted_severityTiers` | [lean/Ehr/Check/SeveritySound.lean:29](../lean/Ehr/Check/SeveritySound.lean#L29) | S22 / 389 | C, Q, P |
+| `Ehr.Check.accepted_navigation` | [lean/Ehr/Check/NavigationSound.lean:7](../lean/Ehr/Check/NavigationSound.lean#L7) | S23 / 384 | C, Q, P |
+| `Ehr.Check.satisfies_of_checked_completable` | [lean/Ehr/Check/Sound.lean:17](../lean/Ehr/Check/Sound.lean#L17) | S24 / 458 | C, Q, P |
+| `Ehr.Render.D1_landmark` | [lean/Ehr/Render/UiProofs.lean:78](../lean/Ehr/Render/UiProofs.lean#L78) | S25 / 321 | C, Q, P |
+| `Ehr.Render.D2_workspace_required` | [lean/Ehr/Render/UiProofs.lean:301](../lean/Ehr/Render/UiProofs.lean#L301) | S26 / 323 | C, Q, P |
+| `Ehr.Render.D2_required_info` | [lean/Ehr/Render/UiProofs.lean:330](../lean/Ehr/Render/UiProofs.lean#L330) | S27 / 325 | C, Q, P |
+| `Ehr.Render.D2_commit_review` | [lean/Ehr/Render/UiProofs.lean:433](../lean/Ehr/Render/UiProofs.lean#L433) | S27 / 325 | C, Q, P |
+| `Ehr.Render.D3_honest_actions` | [lean/Ehr/Render/UiProofs.lean:386](../lean/Ehr/Render/UiProofs.lean#L386) | S28 / 326 | C, Q, P |
+| `Ehr.Render.D3_all_buttons` | [lean/Ehr/Render/UiProofs.lean:512](../lean/Ehr/Render/UiProofs.lean#L512) | S28 / 326 | C, Q, P |
+| `Ehr.Render.D4_interruptive_modal` | [lean/Ehr/Render/UiProofs.lean:395](../lean/Ehr/Render/UiProofs.lean#L395) | S25 / 321 | C, Q, P |
+| `Ehr.Render.D4_passive_no_modal` | [lean/Ehr/Render/UiProofs.lean:405](../lean/Ehr/Render/UiProofs.lean#L405) | S25 / 321 | C, Q, P |
+| `Ehr.Render.D4_passive_inline` | [lean/Ehr/Render/UiProofs.lean:488](../lean/Ehr/Render/UiProofs.lean#L488) | S27 / 325 | C, Q, P |
+| `Ehr.Render.D6_clear_fields` | [lean/Ehr/Render/UiProofs.lean:413](../lean/Ehr/Render/UiProofs.lean#L413) | S27 / 325 | C, Q, P |
+| `Ehr.Render.D6_field_labels` | [lean/Ehr/Render/UiProofs.lean:522](../lean/Ehr/Render/UiProofs.lean#L522) | S27 / 325 | C, Q, P |
+| `Ehr.Proofs.T4_publish_only_if_ok` | [lean/Ehr/Proofs/CheckDeploy.lean:26](../lean/Ehr/Proofs/CheckDeploy.lean#L26) | S29 / 397 | C, Q, P |
+| `Ehr.Proofs.T4_rejected_not_published` | [lean/Ehr/Proofs/CheckDeploy.lean:41](../lean/Ehr/Proofs/CheckDeploy.lean#L41) | S29 / 397 | C, Q, P |
+| `Ehr.Proofs.T4_published_certificate` | [lean/Ehr/Proofs/CheckDeploy.lean:51](../lean/Ehr/Proofs/CheckDeploy.lean#L51) | S30 / 396 | C, Q, P |
+| `Ehr.Check.tiny_bad_catalog` | [lean/Ehr/Check/TinyRejections.lean:8](../lean/Ehr/Check/TinyRejections.lean#L8) | S31 / 397 | C, Q, P |
+| `Ehr.Check.tiny_bad_role` | [lean/Ehr/Check/TinyRejections.lean:16](../lean/Ehr/Check/TinyRejections.lean#L16) | S31 / 397 | C, Q, P |
+| `Ehr.Check.tiny_bad_automation` | [lean/Ehr/Check/TinyRejections.lean:21](../lean/Ehr/Check/TinyRejections.lean#L21) | S31 / 397 | C, Q, P |
 | `Ehr.Props.Completable` | [lean/Ehr/Props/Properties.lean:261](../lean/Ehr/Props/Properties.lean#L261) | S32 / 2 | definition |
 | `Ehr.Props.Satisfies` | [lean/Ehr/Props/Properties.lean:428](../lean/Ehr/Props/Properties.lean#L428) | S32 / 2 | definition |
+| `Ehr.Check.human_finish_ready` | [lean/Ehr/Check/Completion.lean:52](../lean/Ehr/Check/Completion.lean#L52) | S33 / 265 | C, Q, P |
+| `Ehr.Check.Scalar.completable` | [lean/Ehr/Check/ScalarCompletion.lean:71](../lean/Ehr/Check/ScalarCompletion.lean#L71) | S34 / 288 | C, Q, P |
+| `Ehr.Check.satisfies_of_checked_scalar` | [lean/Ehr/Check/Sound.lean:35](../lean/Ehr/Check/Sound.lean#L35) | S35 / 469 | C, Q, P |
+| `Ehr.Check.scalar_identity_satisfies` | [lean/Ehr/Check/Sound.lean:45](../lean/Ehr/Check/Sound.lean#L45) | S36 / 394 | C, Q, P |
 
-**S1 (254):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47)
+**S1 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B48](#audit-b48), [B49](#audit-b49), [B50](#audit-b50), [B51](#audit-b51)
 
-**S2 (196):** [B1](#audit-b1), [B3](#audit-b3), [B13](#audit-b13), [B45](#audit-b45), [B46](#audit-b46)
+**S2 (206):** [B1](#audit-b1), [B3](#audit-b3), [B15](#audit-b15), [B48](#audit-b48), [B49](#audit-b49)
 
-**S3 (253):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B45](#audit-b45), [B47](#audit-b47)
+**S3 (264):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51)
 
-**S4 (255):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B31](#audit-b31), [B45](#audit-b45), [B47](#audit-b47)
+**S4 (266):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B33](#audit-b33), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51)
 
-**S5 (254):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B44](#audit-b44), [B45](#audit-b45), [B47](#audit-b47)
+**S5 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51)
 
-**S6 (57):** [B1](#audit-b1), [B12](#audit-b12), [B13](#audit-b13), [B44](#audit-b44), [B47](#audit-b47)
+**S6 (70):** [B1](#audit-b1), [B14](#audit-b14), [B15](#audit-b15), [B47](#audit-b47), [B50](#audit-b50), [B51](#audit-b51)
 
-**S7 (255):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B37](#audit-b37), [B45](#audit-b45), [B47](#audit-b47)
+**S7 (266):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B40](#audit-b40), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51)
 
-**S8 (231):** [B1](#audit-b1), [B3](#audit-b3), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B44](#audit-b44)
+**S8 (240):** [B1](#audit-b1), [B3](#audit-b3), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B47](#audit-b47)
 
-**S9 (254):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B35](#audit-b35), [B45](#audit-b45), [B47](#audit-b47)
+**S9 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B37](#audit-b37), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51)
 
-**S10 (257):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B35](#audit-b35), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49)
+**S10 (268):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B37](#audit-b37), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53)
 
-**S11 (256):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49)
+**S11 (267):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53)
 
-**S12 (396):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B19](#audit-b19), [B21](#audit-b21), [B27](#audit-b27), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S12 (409):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B21](#audit-b21), [B23](#audit-b23), [B29](#audit-b29), [B31](#audit-b31), [B32](#audit-b32), [B34](#audit-b34), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S13 (383):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B18](#audit-b18), [B20](#audit-b20), [B23](#audit-b23), [B27](#audit-b27), [B28](#audit-b28), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S13 (397):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B20](#audit-b20), [B22](#audit-b22), [B25](#audit-b25), [B29](#audit-b29), [B30](#audit-b30), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S14 (376):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B19](#audit-b19), [B27](#audit-b27), [B36](#audit-b36), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S14 (389):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B21](#audit-b21), [B29](#audit-b29), [B39](#audit-b39), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S15 (401):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B19](#audit-b19), [B20](#audit-b20), [B22](#audit-b22), [B23](#audit-b23), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B32](#audit-b32), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S15 (414):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B21](#audit-b21), [B22](#audit-b22), [B24](#audit-b24), [B25](#audit-b25), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B34](#audit-b34), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S16 (382):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B20](#audit-b20), [B23](#audit-b23), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S16 (395):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B22](#audit-b22), [B25](#audit-b25), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S17 (379):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B20](#audit-b20), [B23](#audit-b23), [B24](#audit-b24), [B27](#audit-b27), [B28](#audit-b28), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S17 (392):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B22](#audit-b22), [B25](#audit-b25), [B26](#audit-b26), [B29](#audit-b29), [B30](#audit-b30), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S18 (375):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B30](#audit-b30), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S18 (388):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B32](#audit-b32), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S19 (396):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B15](#audit-b15), [B16](#audit-b16), [B19](#audit-b19), [B23](#audit-b23), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S19 (409):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B17](#audit-b17), [B18](#audit-b18), [B21](#audit-b21), [B25](#audit-b25), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S20 (392):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B15](#audit-b15), [B17](#audit-b17), [B19](#audit-b19), [B27](#audit-b27), [B29](#audit-b29), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S20 (405):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B17](#audit-b17), [B19](#audit-b19), [B21](#audit-b21), [B29](#audit-b29), [B31](#audit-b31), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S21 (379):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B19](#audit-b19), [B27](#audit-b27), [B28](#audit-b28), [B33](#audit-b33), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S21 (392):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B21](#audit-b21), [B29](#audit-b29), [B30](#audit-b30), [B35](#audit-b35), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S22 (376):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B19](#audit-b19), [B27](#audit-b27), [B34](#audit-b34), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S22 (389):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B21](#audit-b21), [B29](#audit-b29), [B36](#audit-b36), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S23 (371):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S23 (384):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S24 (443):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B21](#audit-b21), [B22](#audit-b22), [B23](#audit-b23), [B24](#audit-b24), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B36](#audit-b36), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49)
+**S24 (458):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B10](#audit-b10), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B21](#audit-b21), [B22](#audit-b22), [B23](#audit-b23), [B24](#audit-b24), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B34](#audit-b34), [B35](#audit-b35), [B36](#audit-b36), [B38](#audit-b38), [B39](#audit-b39), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53)
 
-**S25 (307):** [B1](#audit-b1), [B3](#audit-b3), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B38](#audit-b38), [B43](#audit-b43), [B44](#audit-b44)
+**S25 (321):** [B1](#audit-b1), [B3](#audit-b3), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B41](#audit-b41), [B46](#audit-b46), [B47](#audit-b47), [B50](#audit-b50)
 
-**S26 (309):** [B1](#audit-b1), [B3](#audit-b3), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B38](#audit-b38), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44)
+**S26 (323):** [B1](#audit-b1), [B3](#audit-b3), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B41](#audit-b41), [B44](#audit-b44), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B50](#audit-b50)
 
-**S27 (311):** [B1](#audit-b1), [B3](#audit-b3), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B38](#audit-b38), [B40](#audit-b40), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44)
+**S27 (325):** [B1](#audit-b1), [B3](#audit-b3), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B41](#audit-b41), [B43](#audit-b43), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B50](#audit-b50)
 
-**S28 (312):** [B1](#audit-b1), [B3](#audit-b3), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B38](#audit-b38), [B39](#audit-b39), [B40](#audit-b40), [B42](#audit-b42), [B43](#audit-b43), [B44](#audit-b44)
+**S28 (326):** [B1](#audit-b1), [B3](#audit-b3), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B41](#audit-b41), [B42](#audit-b42), [B43](#audit-b43), [B45](#audit-b45), [B46](#audit-b46), [B47](#audit-b47), [B50](#audit-b50)
 
-**S29 (384):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B7](#audit-b7), [B8](#audit-b8), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S29 (397):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B8](#audit-b8), [B9](#audit-b9), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S30 (383):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B8](#audit-b8), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B43](#audit-b43), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48)
+**S30 (396):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B5](#audit-b5), [B6](#audit-b6), [B9](#audit-b9), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B46](#audit-b46), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52)
 
-**S31 (383):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B8](#audit-b8), [B9](#audit-b9), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B21](#audit-b21), [B22](#audit-b22), [B23](#audit-b23), [B24](#audit-b24), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B32](#audit-b32), [B33](#audit-b33), [B34](#audit-b34), [B36](#audit-b36), [B43](#audit-b43), [B44](#audit-b44), [B45](#audit-b45), [B47](#audit-b47), [B48](#audit-b48), [B49](#audit-b49)
+**S31 (397):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B9](#audit-b9), [B10](#audit-b10), [B11](#audit-b11), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B21](#audit-b21), [B22](#audit-b22), [B23](#audit-b23), [B24](#audit-b24), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B34](#audit-b34), [B35](#audit-b35), [B36](#audit-b36), [B38](#audit-b38), [B39](#audit-b39), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53)
 
-**S32 (2):** [B13](#audit-b13)
+**S32 (2):** [B15](#audit-b15)
+
+**S33 (265):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B53](#audit-b53)
+
+**S34 (288):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B7](#audit-b7), [B9](#audit-b9), [B10](#audit-b10), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B21](#audit-b21), [B27](#audit-b27), [B29](#audit-b29), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B53](#audit-b53)
+
+**S35 (469):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B6](#audit-b6), [B7](#audit-b7), [B9](#audit-b9), [B10](#audit-b10), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B21](#audit-b21), [B22](#audit-b22), [B23](#audit-b23), [B24](#audit-b24), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B34](#audit-b34), [B35](#audit-b35), [B36](#audit-b36), [B38](#audit-b38), [B39](#audit-b39), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53)
+
+**S36 (394):** [B1](#audit-b1), [B2](#audit-b2), [B3](#audit-b3), [B4](#audit-b4), [B7](#audit-b7), [B9](#audit-b9), [B10](#audit-b10), [B12](#audit-b12), [B13](#audit-b13), [B14](#audit-b14), [B15](#audit-b15), [B16](#audit-b16), [B17](#audit-b17), [B18](#audit-b18), [B19](#audit-b19), [B20](#audit-b20), [B21](#audit-b21), [B22](#audit-b22), [B23](#audit-b23), [B24](#audit-b24), [B25](#audit-b25), [B26](#audit-b26), [B27](#audit-b27), [B28](#audit-b28), [B29](#audit-b29), [B30](#audit-b30), [B31](#audit-b31), [B32](#audit-b32), [B34](#audit-b34), [B35](#audit-b35), [B36](#audit-b36), [B38](#audit-b38), [B39](#audit-b39), [B46](#audit-b46), [B47](#audit-b47), [B48](#audit-b48), [B50](#audit-b50), [B51](#audit-b51), [B52](#audit-b52), [B53](#audit-b53)
 
 <a id="audit-b1"></a>
 <details>
-<summary>B1: 45 shared definitions and types</summary>
+<summary>B1: 56 shared definitions and types</summary>
 
-`Ehr.Action`, `Ehr.AlertId`, `Ehr.Captured`, `Ehr.CodeTable`, `Ehr.CommitId`, `Ehr.CompId`, `Ehr.Component`, `Ehr.ElementId`, `Ehr.ElementSpec`, `Ehr.Facts`, `Ehr.InfoId`, `Ehr.Kind`, `Ehr.MacroId`, `Ehr.Prefill`, `Ehr.Program.compsOf`, `Ehr.Program.screen?`, `Ehr.Receipt`, `Ehr.Screen`, `Ehr.ScreenId`, `Ehr.Slot`, `Ehr.Spec.element?`, `Ehr.State`, `Ehr.UnitKind`, `Ehr.UserId`, `Ehr.Validation`, `Ehr.Validation.brecOn.go`, `Ehr.Value`, `Ehr.ValueKind`, `Ehr.decimalValid`, `Ehr.digitVal`, `Ehr.digitsVal`, `Ehr.elementValueValid`, `Ehr.freqPerDay`, `Ehr.gtinValid`, `Ehr.isoDateValid`, `Ehr.leapYear`, `Ehr.lexicalValue`, `Ehr.needsHuman`, `Ehr.parseTenths`, `Ehr.parseTenthsChars`, `Ehr.parseValue`, `Ehr.udiValid`, `Ehr.validDate`, `Ehr.validationCapture`, `Ehr.validationHolds`
+`Ehr.Action`, `Ehr.AlertId`, `Ehr.Captured`, `Ehr.CodeTable`, `Ehr.CommitId`, `Ehr.CompId`, `Ehr.Component`, `Ehr.DoseUnitRule`, `Ehr.DrugInfo`, `Ehr.ElementId`, `Ehr.ElementSpec`, `Ehr.Facts`, `Ehr.InfoId`, `Ehr.Kind`, `Ehr.MacroId`, `Ehr.Prefill`, `Ehr.Program.compsOf`, `Ehr.Program.screen?`, `Ehr.Receipt`, `Ehr.Screen`, `Ehr.ScreenId`, `Ehr.Slot`, `Ehr.Spec.element?`, `Ehr.State`, `Ehr.UnitKind`, `Ehr.UnitKind.name`, `Ehr.UserId`, `Ehr.Validation`, `Ehr.Validation.brecOn.go`, `Ehr.Value`, `Ehr.ValueKind`, `Ehr.decimalValid`, `Ehr.digitVal`, `Ehr.digitsVal`, `Ehr.doseDrug?`, `Ehr.doseUnitValueValid`, `Ehr.doseUnitsAt`, `Ehr.doseValueValid`, `Ehr.drugDoseUnits`, `Ehr.drugElement`, `Ehr.elementValueValid`, `Ehr.formulary`, `Ehr.freqPerDay`, `Ehr.gtinValid`, `Ehr.isoDateValid`, `Ehr.leapYear`, `Ehr.lexicalValue`, `Ehr.lookupDrug`, `Ehr.needsHuman`, `Ehr.parseTenths`, `Ehr.parseTenthsChars`, `Ehr.parseValue`, `Ehr.udiValid`, `Ehr.validDate`, `Ehr.validationCapture`, `Ehr.validationHolds`
 
 </details>
 
@@ -355,17 +368,17 @@ Counts include named project definitions and types. Compiler helpers, instances,
 
 <a id="audit-b3"></a>
 <details>
-<summary>B3: 147 shared definitions and types</summary>
+<summary>B3: 146 shared definitions and types</summary>
 
-`Ehr.AlertCond`, `Ehr.AlertSpec`, `Ehr.ArtifactBinding`, `Ehr.BusinessCalendar`, `Ehr.ClinicalAge`, `Ehr.ClinicalFacts`, `Ehr.ClinicalFacts.field`, `Ehr.ClinicalField`, `Ehr.ClinicalObservation`, `Ehr.ClinicalPredicate`, `Ehr.ClinicalPredicate.brecOn.go`, `Ehr.ClockAnchor`, `Ehr.ClockRenewal`, `Ehr.ClockStamp`, `Ehr.CommitSpec`, `Ehr.CommitSpec.encounterRoleAllowed`, `Ehr.DisplayReq`, `Ehr.DisplayScope`, `Ehr.DrugInfo`, `Ehr.EncounterRoleRule`, `Ehr.EntryReq`, `Ehr.EventEvidence`, `Ehr.EventId`, `Ehr.EventRef`, `Ehr.ExpiryDuration`, `Ehr.ExpiryReq`, `Ehr.IdentifierCategory`, `Ehr.InfoPayload`, `Ehr.InfoSpec`, `Ehr.Kind.ctorElimType`, `Ehr.MonthCutoff`, `Ehr.ObligationStatus`, `Ehr.OrderClock`, `Ehr.OrderClock.anchorStamp`, `Ehr.OrderInstanceId`, `Ehr.PatientIdentity`, `Ehr.PayloadContract`, `Ehr.PayloadFieldReq`, `Ehr.PayloadIdentifier`, `Ehr.PayloadRow`, `Ehr.RenewalPolicy`, `Ehr.ReviewMode`, `Ehr.ReviewReq`, `Ehr.Role`, `Ehr.Size`, `Ehr.Spec.commit?`, `Ehr.Spec.info?`, `Ehr.State.tabOf`, `Ehr.TemporalDirection`, `Ehr.TemporalReq`, `Ehr.Tier`, `Ehr.TimeMetric`, `Ehr.User`, `Ehr.Value.nonEmpty`, `Ehr.Visibility`, `Ehr.When`, `Ehr.WorkflowPhase`, `Ehr.actionLabelOk`, `Ehr.alertKeys`, `Ehr.allergyMatch`, `Ehr.bannerInfo`, `Ehr.businessLocalDay`, `Ehr.cappedDoseBound`, `Ehr.capturedSatisfies`, `Ehr.capturedWeightKg?`, `Ehr.clinicalApplies`, `Ehr.clinicalCode`, `Ehr.clinicalEval`, `Ehr.clinicalSourceValid`, `Ehr.commitRoleOk`, `Ehr.defaultsOk`, `Ehr.displayActive`, `Ehr.displayReqMet`, `Ehr.displayScopeActive`, `Ehr.displayShown`, `Ehr.displaysOk`, `Ehr.doseElement`, `Ehr.doseOutOfRange`, `Ehr.drugClasses`, `Ehr.drugElement`, `Ehr.drugsInPlay`, `Ehr.duplicate`, `Ehr.encounterMatches`, `Ehr.encounterRolesOk`, `Ehr.entriesOk`, `Ehr.entryMet`, `Ehr.entryValueAllowed`, `Ehr.epochNow`, `Ehr.eventTime`, `Ehr.expiryCutoff`, `Ehr.expiryStatus`, `Ehr.extraGuard`, `Ehr.factVersion`, `Ehr.fieldRequired`, `Ehr.formulary`, `Ehr.freqElement`, `Ehr.guardBase`, `Ehr.hasGoodEntry`, `Ehr.hasValidReceipt`, `Ehr.highMme`, `Ehr.identityText`, `Ehr.inClass`, `Ehr.infoPayload`, `Ehr.infoShown`, `Ehr.infoVersion`, `Ehr.interacts`, `Ehr.isHighAlert`, `Ehr.isLbWeight`, `Ehr.keyAt`, `Ehr.layoutShown`, `Ehr.layoutShownAux`, `Ehr.lineDoseMgTenths?`, `Ehr.lineFreqPerDay?`, `Ehr.lineMatches`, `Ehr.lookupDrug`, `Ehr.mmeFactor`, `Ehr.monthDays`, `Ehr.naloxoneLine`, `Ehr.namedClinicalCode`, `Ehr.nowMin`, `Ehr.orderLines`, `Ehr.ownVisible`, `Ehr.parentOpen`, `Ehr.payloadComplete`, `Ehr.payloadField`, `Ehr.payloadFieldMet`, `Ehr.primaryClass`, `Ehr.receiptValid`, `Ehr.renewalValid`, `Ehr.reviewMet`, `Ehr.reviewsOk`, `Ehr.roleOk`, `Ehr.scanMatches`, `Ehr.showsInfo`, `Ehr.stampMinute`, `Ehr.stampValid`, `Ehr.temporalOrdering`, `Ehr.temporalStatus`, `Ehr.timeDistance`, `Ehr.validationsOk`, `Ehr.valueAccepted`, `Ehr.valueSatisfies`, `Ehr.waived`, `Ehr.weightBasedDrug`, `Ehr.weightElement`, `Ehr.weightKgTenths?`, `Ehr.whenHolds`
+`Ehr.AlertCond`, `Ehr.AlertSpec`, `Ehr.ArtifactBinding`, `Ehr.BusinessCalendar`, `Ehr.ClinicalAge`, `Ehr.ClinicalFacts`, `Ehr.ClinicalFacts.field`, `Ehr.ClinicalField`, `Ehr.ClinicalObservation`, `Ehr.ClinicalPredicate`, `Ehr.ClinicalPredicate.brecOn.go`, `Ehr.ClockAnchor`, `Ehr.ClockRenewal`, `Ehr.ClockStamp`, `Ehr.CommitSpec`, `Ehr.DisplayReq`, `Ehr.DisplayScope`, `Ehr.EncounterRoleRule`, `Ehr.EntryReq`, `Ehr.EventEvidence`, `Ehr.EventId`, `Ehr.EventRef`, `Ehr.ExpiryDuration`, `Ehr.ExpiryReq`, `Ehr.IdentifierCategory`, `Ehr.InfoPayload`, `Ehr.InfoSpec`, `Ehr.Kind.ctorElimType`, `Ehr.MonthCutoff`, `Ehr.ObligationStatus`, `Ehr.OrderClock`, `Ehr.OrderClock.anchorStamp`, `Ehr.OrderInstanceId`, `Ehr.PatientIdentity`, `Ehr.PayloadContract`, `Ehr.PayloadFieldReq`, `Ehr.PayloadIdentifier`, `Ehr.PayloadRow`, `Ehr.RenewalPolicy`, `Ehr.ReviewMode`, `Ehr.ReviewReq`, `Ehr.Role`, `Ehr.Size`, `Ehr.Spec.commit?`, `Ehr.Spec.info?`, `Ehr.State.tabOf`, `Ehr.TemporalDirection`, `Ehr.TemporalReq`, `Ehr.Tier`, `Ehr.TimeMetric`, `Ehr.User`, `Ehr.Value.nonEmpty`, `Ehr.Visibility`, `Ehr.When`, `Ehr.WorkflowPhase`, `Ehr.actionLabelOk`, `Ehr.alertKeys`, `Ehr.allergyMatch`, `Ehr.bannerInfo`, `Ehr.businessLocalDay`, `Ehr.cappedDoseBound`, `Ehr.capturedSatisfies`, `Ehr.capturedWeightKg?`, `Ehr.clinicalApplies`, `Ehr.clinicalCode`, `Ehr.clinicalEval`, `Ehr.clinicalSourceValid`, `Ehr.commitRoleOk`, `Ehr.defaultsOk`, `Ehr.displayActive`, `Ehr.displayReqMet`, `Ehr.displayScopeActive`, `Ehr.displayShown`, `Ehr.displaysOk`, `Ehr.doseElement`, `Ehr.doseOutOfRange`, `Ehr.drugClasses`, `Ehr.drugsInPlay`, `Ehr.duplicate`, `Ehr.encounterMatches`, `Ehr.encounterRolesOk`, `Ehr.encounterRouteAvailable`, `Ehr.entriesOk`, `Ehr.entryDirectMet`, `Ehr.entryMet`, `Ehr.entryValueAllowed`, `Ehr.entryWaiver`, `Ehr.epochNow`, `Ehr.eventTime`, `Ehr.expiryCutoff`, `Ehr.expiryStatus`, `Ehr.extraGuard`, `Ehr.factVersion`, `Ehr.fieldRequired`, `Ehr.freqElement`, `Ehr.guardBase`, `Ehr.hasGoodEntry`, `Ehr.hasValidReceipt`, `Ehr.highMme`, `Ehr.humanWaiverMet`, `Ehr.identityText`, `Ehr.inClass`, `Ehr.infoPayload`, `Ehr.infoShown`, `Ehr.infoVersion`, `Ehr.interacts`, `Ehr.isHighAlert`, `Ehr.isLbWeight`, `Ehr.keyAt`, `Ehr.layoutShown`, `Ehr.layoutShownAux`, `Ehr.lineDoseMgTenths?`, `Ehr.lineFreqPerDay?`, `Ehr.lineMatches`, `Ehr.mmeFactor`, `Ehr.monthDays`, `Ehr.naloxoneLine`, `Ehr.namedClinicalCode`, `Ehr.nowMin`, `Ehr.orderLines`, `Ehr.ownVisible`, `Ehr.parentOpen`, `Ehr.payloadComplete`, `Ehr.payloadField`, `Ehr.payloadFieldMet`, `Ehr.primaryClass`, `Ehr.receiptValid`, `Ehr.renewalValid`, `Ehr.reviewMet`, `Ehr.reviewsOk`, `Ehr.roleOk`, `Ehr.scanMatches`, `Ehr.showsInfo`, `Ehr.stampMinute`, `Ehr.stampValid`, `Ehr.temporalOrdering`, `Ehr.temporalStatus`, `Ehr.timeDistance`, `Ehr.validationsOk`, `Ehr.valueAccepted`, `Ehr.valueSatisfies`, `Ehr.waived`, `Ehr.weightBasedDrug`, `Ehr.weightElement`, `Ehr.weightKgTenths?`, `Ehr.whenHolds`
 
 </details>
 
 <a id="audit-b4"></a>
 <details>
-<summary>B4: 41 shared definitions and types</summary>
+<summary>B4: 39 shared definitions and types</summary>
 
-`Ehr.AlertSpec.targetsScreen`, `Ehr.DesignRules`, `Ehr.Kind.catalogTag`, `Ehr.Props.DeclaredWritesInSpec`, `Ehr.Props.HumanMustEnter`, `Ehr.Props.IdsUnique`, `Ehr.Props.LinkedNotRetyped`, `Ehr.Props.NavigationSane`, `Ehr.Props.NoAlertSuppression`, `Ehr.Props.NoAutomationAttempts`, `Ehr.Props.NoHumanRequest`, `Ehr.Props.NoInterruptivePopupRequests`, `Ehr.Props.NoPassivePopupRequests`, `Ehr.Props.QuantityPrefillsKeepUnits`, `Ehr.Props.ReferencesResolve`, `Ehr.Props.SpecIdsUnique`, `Ehr.Props.StabilityBudget`, `Ehr.Props.alertOf?`, `Ehr.Props.allComps`, `Ehr.Props.clickTarget?`, `Ehr.Props.commitButtons`, `Ehr.Props.commitOf?`, `Ehr.Props.fieldOf?`, `Ehr.Props.gotoOf?`, `Ehr.Props.gotoStep?`, `Ehr.Props.isContainer`, `Ehr.Props.isQuantity`, `Ehr.Props.kindName`, `Ehr.Props.macroOf?`, `Ehr.Props.movedTags`, `Ehr.Props.placeOf`, `Ehr.Props.popupRequestCount`, `Ehr.Props.recordFactOf?`, `Ehr.Props.requiredCommits`, `Ehr.Props.reviewOf?`, `Ehr.Props.setTarget?`, `Ehr.Props.stepTarget?`, `Ehr.Render.NavSane`, `Ehr.Render.uiOverviewNav`, `Ehr.Render.workflowLabel`, `Ehr.entryRelevantForRole`
+`Ehr.AlertSpec.targetsScreen`, `Ehr.CommitSpec.encounterRoleAllowed`, `Ehr.Kind.catalogTag`, `Ehr.Props.DeclaredWritesInSpec`, `Ehr.Props.HumanMustEnter`, `Ehr.Props.IdsUnique`, `Ehr.Props.LinkedNotRetyped`, `Ehr.Props.NavigationSane`, `Ehr.Props.NoAlertSuppression`, `Ehr.Props.NoAutomationAttempts`, `Ehr.Props.NoHumanRequest`, `Ehr.Props.NoInterruptivePopupRequests`, `Ehr.Props.NoPassivePopupRequests`, `Ehr.Props.QuantityPrefillsKeepUnits`, `Ehr.Props.ReferencesResolve`, `Ehr.Props.SpecIdsUnique`, `Ehr.Props.StabilityBudget`, `Ehr.Props.alertOf?`, `Ehr.Props.allComps`, `Ehr.Props.clickTarget?`, `Ehr.Props.commitOf?`, `Ehr.Props.fieldOf?`, `Ehr.Props.gotoOf?`, `Ehr.Props.gotoStep?`, `Ehr.Props.isContainer`, `Ehr.Props.isQuantity`, `Ehr.Props.kindName`, `Ehr.Props.macroOf?`, `Ehr.Props.movedTags`, `Ehr.Props.placeOf`, `Ehr.Props.popupRequestCount`, `Ehr.Props.recordFactOf?`, `Ehr.Props.reviewOf?`, `Ehr.Props.setTarget?`, `Ehr.Props.stepTarget?`, `Ehr.Render.NavSane`, `Ehr.Render.uiOverviewNav`, `Ehr.Render.workflowLabel`, `Ehr.entryRelevantForRole`
 
 </details>
 
@@ -379,81 +392,81 @@ Counts include named project definitions and types. Compiler helpers, instances,
 
 <a id="audit-b6"></a>
 <details>
-<summary>B6: 74 shared definitions and types</summary>
+<summary>B6: 75 shared definitions and types</summary>
 
-`Ehr.Check.FilteredPopupRequests`, `Ehr.Check.Finding`, `Ehr.Check.Hop`, `Ehr.Check.Rule`, `Ehr.Check.additionalCompletionIssue`, `Ehr.Check.allGotoEdges`, `Ehr.Check.badHumanPrefill`, `Ehr.Check.badMacroStep`, `Ehr.Check.badReference`, `Ehr.Check.badWrite`, `Ehr.Check.bfs`, `Ehr.Check.bfsAux`, `Ehr.Check.bfsRound`, `Ehr.Check.check`, `Ehr.Check.clinicalUsesCapture`, `Ehr.Check.commitScreens`, `Ehr.Check.compFinding`, `Ehr.Check.completeForWithReach`, `Ehr.Check.completeViaWithReach`, `Ehr.Check.compsWithId`, `Ehr.Check.counterexample`, `Ehr.Check.drugSlots`, `Ehr.Check.entryValuesPossible`, `Ehr.Check.findComp`, `Ehr.Check.firstFinding`, `Ehr.Check.fixedShown`, `Ehr.Check.fixedShownAux`, `Ehr.Check.fixedSlot`, `Ehr.Check.followHops`, `Ehr.Check.hasNewLine`, `Ehr.Check.isGotoPath`, `Ehr.Check.isOpenGroup`, `Ehr.Check.landmarksPinned`, `Ehr.Check.linkedSourcesTyped`, `Ehr.Check.macroButton`, `Ehr.Check.macroFinding`, `Ehr.Check.navigationFinding`, `Ehr.Check.openFieldOn`, `Ehr.Check.openGotoEdges`, `Ehr.Check.openReach`, `Ehr.Check.openReachTable`, `Ehr.Check.parentsFixed`, `Ehr.Check.passivePinned`, `Ehr.Check.passiveScreensKept`, `Ehr.Check.pathTo`, `Ehr.Check.pinnedForReview`, `Ehr.Check.plain`, `Ehr.Check.popupComponents`, `Ehr.Check.popupTier`, `Ehr.Check.receiptHideSafe`, `Ehr.Check.recordSourcesDeclared`, `Ehr.Check.repairSlots`, `Ehr.Check.repairsSlot`, `Ehr.Check.replayFacts`, `Ehr.Check.replayOk`, `Ehr.Check.replayUser`, `Ehr.Check.revealAndClick`, `Ehr.Check.revealEvents`, `Ehr.Check.revealable`, `Ehr.Check.revealableAux`, `Ehr.Check.reviewsPinned`, `Ehr.Check.reviewsPinnedOn`, `Ehr.Check.rules`, `Ehr.Check.shortPathTo`, `Ehr.Check.tableReach`, `Ehr.Check.universallyValid`, `Ehr.Check.verifiedReachable`, `Ehr.Check.waiverHasNonemptyValue`, `Ehr.ClinicalPredicate.ctorElimType`, `Ehr.ClinicalPredicate.noConfusionType`, `Ehr.Program.catalogTags`, `Ehr.Program.inCatalog`, `Ehr.Verdict`, `Ehr.When.ctorElimType`
+`Ehr.Check.FilteredPopupRequests`, `Ehr.Check.Finding`, `Ehr.Check.Hop`, `Ehr.Check.Rule`, `Ehr.Check.additionalCompletionIssue`, `Ehr.Check.allGotoEdges`, `Ehr.Check.badHumanPrefill`, `Ehr.Check.badMacroStep`, `Ehr.Check.badReference`, `Ehr.Check.badWrite`, `Ehr.Check.bfs`, `Ehr.Check.bfsAux`, `Ehr.Check.bfsRound`, `Ehr.Check.check`, `Ehr.Check.clinicalUsesCapture`, `Ehr.Check.commitScreens`, `Ehr.Check.compFinding`, `Ehr.Check.completeForWithReach`, `Ehr.Check.completeViaWithReach`, `Ehr.Check.compsWithId`, `Ehr.Check.counterexample`, `Ehr.Check.drugSlots`, `Ehr.Check.entryValuesPossible`, `Ehr.Check.findComp`, `Ehr.Check.firstFinding`, `Ehr.Check.fixedShown`, `Ehr.Check.fixedShownAux`, `Ehr.Check.fixedSlot`, `Ehr.Check.followHops`, `Ehr.Check.hasNewLine`, `Ehr.Check.isGotoPath`, `Ehr.Check.isOpenGroup`, `Ehr.Check.landmarksPinned`, `Ehr.Check.linkedSourcesTyped`, `Ehr.Check.macroButton`, `Ehr.Check.macroFinding`, `Ehr.Check.navigationFinding`, `Ehr.Check.openEncounterField`, `Ehr.Check.openFieldOn`, `Ehr.Check.openGotoEdges`, `Ehr.Check.openReach`, `Ehr.Check.openReachTable`, `Ehr.Check.parentsFixed`, `Ehr.Check.passivePinned`, `Ehr.Check.passiveScreensKept`, `Ehr.Check.pathTo`, `Ehr.Check.pinnedForReview`, `Ehr.Check.plain`, `Ehr.Check.popupComponents`, `Ehr.Check.popupTier`, `Ehr.Check.receiptHideSafe`, `Ehr.Check.recordSourcesDeclared`, `Ehr.Check.repairSlots`, `Ehr.Check.repairsSlot`, `Ehr.Check.replayFacts`, `Ehr.Check.replayOk`, `Ehr.Check.replayUser`, `Ehr.Check.revealAndClick`, `Ehr.Check.revealEvents`, `Ehr.Check.revealable`, `Ehr.Check.revealableAux`, `Ehr.Check.reviewsPinned`, `Ehr.Check.reviewsPinnedOn`, `Ehr.Check.rules`, `Ehr.Check.shortPathTo`, `Ehr.Check.tableReach`, `Ehr.Check.universallyValid`, `Ehr.Check.verifiedReachable`, `Ehr.Check.waiverHasNonemptyValue`, `Ehr.ClinicalPredicate.ctorElimType`, `Ehr.ClinicalPredicate.noConfusionType`, `Ehr.Program.catalogTags`, `Ehr.Program.inCatalog`, `Ehr.Verdict`, `Ehr.When.ctorElimType`
 
 </details>
 
 <a id="audit-b7"></a>
 <details>
-<summary>B7: 1 shared definitions and types</summary>
+<summary>B7: 9 shared definitions and types</summary>
 
-`Ehr.Check.Target.publishes`
+`Ehr.Check.Scalar.alert`, `Ehr.Check.Scalar.button`, `Ehr.Check.Scalar.element`, `Ehr.Check.Scalar.entry`, `Ehr.Check.Scalar.field`, `Ehr.Check.Scalar.program`, `Ehr.Check.Scalar.review`, `Ehr.Check.Scalar.screen`, `Ehr.Check.Scalar.spec`
 
 </details>
 
 <a id="audit-b8"></a>
 <details>
-<summary>B8: 2 shared definitions and types</summary>
+<summary>B8: 1 shared definitions and types</summary>
 
-`Ehr.ComponentDef`, `Ehr.Friction`
+`Ehr.Check.Target.publishes`
 
 </details>
 
 <a id="audit-b9"></a>
 <details>
-<summary>B9: 12 shared definitions and types</summary>
+<summary>B9: 2 shared definitions and types</summary>
 
-`Ehr.Examples.Tiny.amoxMacro`, `Ehr.Examples.Tiny.orderScreen`, `Ehr.Examples.Tiny.prescribers`, `Ehr.Examples.Tiny.program`, `Ehr.Examples.Tiny.roomingScreen`, `Ehr.Examples.Tiny.signScreen`, `Ehr.Examples.Tiny.spec`, `Ehr.Props.Examples.goodMacro`, `Ehr.Props.Examples.goodOrderScreen`, `Ehr.Props.Examples.goodProgram`, `Ehr.Props.Examples.goodSignScreen`, `Ehr.Props.Examples.pinTinyAlerts`
+`Ehr.ComponentDef`, `Ehr.Friction`
 
 </details>
 
 <a id="audit-b10"></a>
 <details>
-<summary>B10: 12 shared definitions and types</summary>
+<summary>B10: 3 shared definitions and types</summary>
 
-`Ehr.ItemView`, `Ehr.PayloadGroup`, `Ehr.PayloadView`, `Ehr.ScreenView`, `Ehr.SelectedPayloadRow`, `Ehr.actionStatus`, `Ehr.capturedAt?`, `Ehr.depthAux`, `Ehr.infoPinned`, `Ehr.itemView`, `Ehr.payloadView`, `Ehr.view`
+`Ehr.DesignRules`, `Ehr.Props.commitButtons`, `Ehr.Props.requiredCommits`
 
 </details>
 
 <a id="audit-b11"></a>
 <details>
-<summary>B11: 22 shared definitions and types</summary>
+<summary>B11: 12 shared definitions and types</summary>
 
-`Ehr.Macro`, `Ehr.ObligationView`, `Ehr.Program.macro?`, `Ehr.Role.name`, `Ehr.Spec.alert?`, `Ehr.StepResult`, `Ehr.UnitKind.name`, `Ehr.alertHolds`, `Ehr.canPopup`, `Ehr.clickAlert`, `Ehr.compShown`, `Ehr.currentLineComplete`, `Ehr.encounterRoleFailure?`, `Ehr.entryReason`, `Ehr.guardReason`, `Ehr.hasOrderAt`, `Ehr.obligationViews`, `Ehr.popupCandidates`, `Ehr.priorAuthCaptured`, `Ehr.priorAuthElement`, `Ehr.programPopsUp`, `Ehr.serviceOrderAt`
+`Ehr.Examples.Tiny.amoxMacro`, `Ehr.Examples.Tiny.orderScreen`, `Ehr.Examples.Tiny.prescribers`, `Ehr.Examples.Tiny.program`, `Ehr.Examples.Tiny.roomingScreen`, `Ehr.Examples.Tiny.signScreen`, `Ehr.Examples.Tiny.spec`, `Ehr.Props.Examples.goodMacro`, `Ehr.Props.Examples.goodOrderScreen`, `Ehr.Props.Examples.goodProgram`, `Ehr.Props.Examples.goodSignScreen`, `Ehr.Props.Examples.pinTinyAlerts`
 
 </details>
 
 <a id="audit-b12"></a>
 <details>
-<summary>B12: 2 shared definitions and types</summary>
+<summary>B12: 12 shared definitions and types</summary>
 
-`Ehr.PrefillPolicy`, `Ehr.resolveSlot`
+`Ehr.ItemView`, `Ehr.PayloadGroup`, `Ehr.PayloadView`, `Ehr.ScreenView`, `Ehr.SelectedPayloadRow`, `Ehr.actionStatus`, `Ehr.capturedAt?`, `Ehr.depthAux`, `Ehr.infoPinned`, `Ehr.itemView`, `Ehr.payloadView`, `Ehr.view`
 
 </details>
 
 <a id="audit-b13"></a>
 <details>
-<summary>B13: 2 shared definitions and types</summary>
+<summary>B13: 21 shared definitions and types</summary>
 
-`Ehr.Program`, `Ehr.Spec`
+`Ehr.Macro`, `Ehr.ObligationView`, `Ehr.Program.macro?`, `Ehr.Role.name`, `Ehr.Spec.alert?`, `Ehr.StepResult`, `Ehr.alertHolds`, `Ehr.canPopup`, `Ehr.clickAlert`, `Ehr.compShown`, `Ehr.currentLineComplete`, `Ehr.encounterRoleFailure?`, `Ehr.entryReason`, `Ehr.guardReason`, `Ehr.hasOrderAt`, `Ehr.obligationViews`, `Ehr.popupCandidates`, `Ehr.priorAuthCaptured`, `Ehr.priorAuthElement`, `Ehr.programPopsUp`, `Ehr.serviceOrderAt`
 
 </details>
 
 <a id="audit-b14"></a>
 <details>
-<summary>B14: 3 shared definitions and types</summary>
+<summary>B14: 2 shared definitions and types</summary>
 
-`Ehr.Props.AlertBudget`, `Ehr.Props.ReachableScreen`, `Ehr.Props.WithinBudgets`
+`Ehr.PrefillPolicy`, `Ehr.resolveSlot`
 
 </details>
 
 <a id="audit-b15"></a>
 <details>
-<summary>B15: 1 shared definitions and types</summary>
+<summary>B15: 2 shared definitions and types</summary>
 
-`Ehr.Props.AlertShownInline`
+`Ehr.Program`, `Ehr.Spec`
 
 </details>
 
@@ -461,103 +474,103 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B16: 3 shared definitions and types</summary>
 
-`Ehr.Props.AlertsFire`, `Ehr.Props.InterruptiveHandled`, `Ehr.Props.PassiveShownInline`
+`Ehr.Props.AlertBudget`, `Ehr.Props.ReachableScreen`, `Ehr.Props.WithinBudgets`
 
 </details>
 
 <a id="audit-b17"></a>
 <details>
-<summary>B17: 2 shared definitions and types</summary>
+<summary>B17: 1 shared definitions and types</summary>
 
-`Ehr.Props.AlertsOnlyWhenTrue`, `Ehr.Props.NoFalseAlarms`
+`Ehr.Props.AlertShownInline`
 
 </details>
 
 <a id="audit-b18"></a>
 <details>
-<summary>B18: 6 shared definitions and types</summary>
+<summary>B18: 3 shared definitions and types</summary>
 
-`Ehr.Props.AllowedEntryValue`, `Ehr.Props.CapturesAllOnce`, `Ehr.Props.CommitCapturesAll`, `Ehr.Props.CountsFor`, `Ehr.Props.EnteredOnce`, `Ehr.Props.EntryMetIn`
+`Ehr.Props.AlertsFire`, `Ehr.Props.InterruptiveHandled`, `Ehr.Props.PassiveShownInline`
 
 </details>
 
 <a id="audit-b19"></a>
 <details>
-<summary>B19: 1 shared definitions and types</summary>
+<summary>B19: 2 shared definitions and types</summary>
 
-`Ehr.Props.Always`
+`Ehr.Props.AlertsOnlyWhenTrue`, `Ehr.Props.NoFalseAlarms`
 
 </details>
 
 <a id="audit-b20"></a>
 <details>
-<summary>B20: 1 shared definitions and types</summary>
+<summary>B20: 7 shared definitions and types</summary>
 
-`Ehr.Props.Applies`
+`Ehr.Props.AllowedEntryValue`, `Ehr.Props.CapturesAllOnce`, `Ehr.Props.CommitCapturesAll`, `Ehr.Props.CountsFor`, `Ehr.Props.EnteredOnce`, `Ehr.Props.EntryDirectMetIn`, `Ehr.Props.EntryMetIn`
 
 </details>
 
 <a id="audit-b21"></a>
 <details>
-<summary>B21: 5 shared definitions and types</summary>
+<summary>B21: 1 shared definitions and types</summary>
 
-`Ehr.Props.CatalogOnly`, `Ehr.Props.LandmarksShown`, `Ehr.Props.RequiredWithinDepth`, `Ehr.Props.WellFormed`, `Ehr.Props.WithinClicks`
+`Ehr.Props.Always`
 
 </details>
 
 <a id="audit-b22"></a>
 <details>
-<summary>B22: 7 shared definitions and types</summary>
+<summary>B22: 1 shared definitions and types</summary>
 
-`Ehr.Props.CommitButtonShown`, `Ehr.Props.CommitReviewsMet`, `Ehr.Props.CommitScreenShowsReviews`, `Ehr.Props.ReceiptCovers`, `Ehr.Props.ReviewMetIn`, `Ehr.Props.ReviewsBeforeCommit`, `Ehr.Props.Waived`
+`Ehr.Props.Applies`
 
 </details>
 
 <a id="audit-b23"></a>
 <details>
-<summary>B23: 1 shared definitions and types</summary>
+<summary>B23: 5 shared definitions and types</summary>
 
-`Ehr.Props.CommitHappens`
+`Ehr.Props.CatalogOnly`, `Ehr.Props.LandmarksShown`, `Ehr.Props.RequiredWithinDepth`, `Ehr.Props.WellFormed`, `Ehr.Props.WithinClicks`
 
 </details>
 
 <a id="audit-b24"></a>
 <details>
-<summary>B24: 2 shared definitions and types</summary>
+<summary>B24: 7 shared definitions and types</summary>
 
-`Ehr.Props.CommitUnitsRight`, `Ehr.Props.UnitsRight`
+`Ehr.Props.CommitButtonShown`, `Ehr.Props.CommitReviewsMet`, `Ehr.Props.CommitScreenShowsReviews`, `Ehr.Props.ReceiptCovers`, `Ehr.Props.ReviewMetIn`, `Ehr.Props.ReviewsBeforeCommit`, `Ehr.Props.Waived`
 
 </details>
 
 <a id="audit-b25"></a>
 <details>
-<summary>B25: 6 shared definitions and types</summary>
+<summary>B25: 1 shared definitions and types</summary>
 
-`Ehr.Props.CommitsStayReachable`, `Ehr.Props.Completable`, `Ehr.Props.Episode.afterHuman`, `Ehr.Props.RecordAllowsScans`, `Ehr.Props.Satisfies`, `Ehr.Props.requiredCommitsFor`
+`Ehr.Props.CommitHappens`
 
 </details>
 
 <a id="audit-b26"></a>
 <details>
-<summary>B26: 5 shared definitions and types</summary>
+<summary>B26: 2 shared definitions and types</summary>
 
-`Ehr.Props.CosignIsSecondUser`, `Ehr.Props.Episode.start`, `Ehr.Props.HumanOnlyKept`, `Ehr.Props.HumanStepsByHuman`, `Ehr.Props.OnlyHumanCommitsAndAcks`
+`Ehr.Props.CommitUnitsRight`, `Ehr.Props.UnitsRight`
 
 </details>
 
 <a id="audit-b27"></a>
 <details>
-<summary>B27: 2 shared definitions and types</summary>
+<summary>B27: 6 shared definitions and types</summary>
 
-`Ehr.Props.Episode`, `Ehr.Props.Reachable`
+`Ehr.Props.CommitsStayReachable`, `Ehr.Props.Completable`, `Ehr.Props.Episode.afterHuman`, `Ehr.Props.RecordAllowsScans`, `Ehr.Props.requiredCommitsFor`, `Ehr.commitRolePossible`
 
 </details>
 
 <a id="audit-b28"></a>
 <details>
-<summary>B28: 2 shared definitions and types</summary>
+<summary>B28: 5 shared definitions and types</summary>
 
-`Ehr.Props.Episode.next`, `Ehr.Props.EveryStep`
+`Ehr.Props.CosignIsSecondUser`, `Ehr.Props.Episode.start`, `Ehr.Props.HumanOnlyKept`, `Ehr.Props.HumanStepsByHuman`, `Ehr.Props.OnlyHumanCommitsAndAcks`
 
 </details>
 
@@ -565,15 +578,15 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B29: 2 shared definitions and types</summary>
 
-`Ehr.Props.Episode.screen`, `Ehr.Props.ShowsSome`
+`Ehr.Props.Episode`, `Ehr.Props.Reachable`
 
 </details>
 
 <a id="audit-b30"></a>
 <details>
-<summary>B30: 1 shared definitions and types</summary>
+<summary>B30: 2 shared definitions and types</summary>
 
-`Ehr.Props.GotoPath`
+`Ehr.Props.Episode.next`, `Ehr.Props.EveryStep`
 
 </details>
 
@@ -581,7 +594,7 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B31: 2 shared definitions and types</summary>
 
-`Ehr.Props.HumanWaiverFor`, `Ehr.Props.ValidReceiptFor`
+`Ehr.Props.Episode.screen`, `Ehr.Props.ShowsSome`
 
 </details>
 
@@ -589,31 +602,31 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B32: 1 shared definitions and types</summary>
 
-`Ehr.Props.InfoShown`
+`Ehr.Props.GotoPath`
 
 </details>
 
 <a id="audit-b33"></a>
 <details>
-<summary>B33: 3 shared definitions and types</summary>
+<summary>B33: 2 shared definitions and types</summary>
 
-`Ehr.Props.InterruptsOnce`, `Ehr.Props.NoRepeatInterruptions`, `Ehr.Props.PopupRequestedOnce`
+`Ehr.Props.HumanWaiverFor`, `Ehr.Props.ValidReceiptFor`
 
 </details>
 
 <a id="audit-b34"></a>
 <details>
-<summary>B34: 2 shared definitions and types</summary>
+<summary>B34: 1 shared definitions and types</summary>
 
-`Ehr.Props.PassiveNeverPopsUp`, `Ehr.Props.SeverityTiers`
+`Ehr.Props.InfoShown`
 
 </details>
 
 <a id="audit-b35"></a>
 <details>
-<summary>B35: 1 shared definitions and types</summary>
+<summary>B35: 3 shared definitions and types</summary>
 
-`Ehr.Props.PopupNotPassive`
+`Ehr.Props.InterruptsOnce`, `Ehr.Props.NoRepeatInterruptions`, `Ehr.Props.PopupRequestedOnce`
 
 </details>
 
@@ -621,47 +634,47 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B36: 2 shared definitions and types</summary>
 
-`Ehr.Props.WritesAllowed`, `Ehr.Props.WritesOnly`
+`Ehr.Props.PassiveNeverPopsUp`, `Ehr.Props.SeverityTiers`
 
 </details>
 
 <a id="audit-b37"></a>
 <details>
-<summary>B37: 2 shared definitions and types</summary>
+<summary>B37: 1 shared definitions and types</summary>
 
-`Ehr.Props.foldMacro`, `Ehr.Props.macroAct`
+`Ehr.Props.PopupNotPassive`
 
 </details>
 
 <a id="audit-b38"></a>
 <details>
-<summary>B38: 75 shared definitions and types</summary>
+<summary>B38: 1 shared definitions and types</summary>
 
-`Ehr.Render.AllergyRow`, `Ehr.Render.BannerInfo`, `Ehr.Render.Ctx`, `Ehr.Render.Ctx.v`, `Ehr.Render.Display`, `Ehr.Render.EncRow`, `Ehr.Render.GrowthPoint`, `Ehr.Render.ImmRow`, `Ehr.Render.InputType`, `Ehr.Render.LabRow`, `Ehr.Render.MedRow`, `Ehr.Render.ProblemRow`, `Ehr.Render.ProcRow`, `Ehr.Render.TrendPoint`, `Ehr.Render.UiBranch`, `Ehr.Render.UiNode`, `Ehr.Render.UiScreen`, `Ehr.Render.ValueKindName`, `Ehr.Render.VitalRow`, `Ehr.Render.actionRole`, `Ehr.Render.allergyCells`, `Ehr.Render.blockedReason`, `Ehr.Render.fieldKind`, `Ehr.Render.infoLabel`, `Ehr.Render.medCells`, `Ehr.Render.problemCells`, `Ehr.Render.renderUi`, `Ehr.Render.uiAllergySummary`, `Ehr.Render.uiBanner`, `Ehr.Render.uiBlocked`, `Ehr.Render.uiButton`, `Ehr.Render.uiCaptureText`, `Ehr.Render.uiChars`, `Ehr.Render.uiClinicalBanner`, `Ehr.Render.uiComponentsWhere`, `Ehr.Render.uiDate`, `Ehr.Render.uiEnabled`, `Ehr.Render.uiField`, `Ehr.Render.uiFieldKind`, `Ehr.Render.uiFullInfoShown`, `Ehr.Render.uiHundredths`, `Ehr.Render.uiInWorkspace`, `Ehr.Render.uiInfo`, `Ehr.Render.uiItem`, `Ehr.Render.uiItemInfo`, `Ehr.Render.uiItemRows`, `Ehr.Render.uiLatestVitals`, `Ehr.Render.uiMedSummary`, `Ehr.Render.uiMissingReviews`, `Ehr.Render.uiModal`, `Ehr.Render.uiNav`, `Ehr.Render.uiNavButton`, `Ehr.Render.uiNavGroup`, `Ehr.Render.uiNavTitle`, `Ehr.Render.uiNest`, `Ehr.Render.uiOrderInfo`, `Ehr.Render.uiOrderRows`, `Ehr.Render.uiPayloadRows`, `Ehr.Render.uiProblemSummary`, `Ehr.Render.uiReasonText`, `Ehr.Render.uiRequiredReviews`, `Ehr.Render.uiRows`, `Ehr.Render.uiRows.valueTextQty`, `Ehr.Render.uiSide`, `Ehr.Render.uiSideAt`, `Ehr.Render.uiSideAt.go`, `Ehr.Render.uiSteps`, `Ehr.Render.uiSummaryRows`, `Ehr.Render.uiTagIs`, `Ehr.Render.uiTakesChildren`, `Ehr.Render.uiTitledLabel`, `Ehr.Render.uiWorkspace`, `Ehr.Render.unitName`, `Ehr.Render.valueText`, `Ehr.Render.vitalCells`
+`Ehr.Props.Satisfies`
 
 </details>
 
 <a id="audit-b39"></a>
 <details>
-<summary>B39: 1 shared definitions and types</summary>
+<summary>B39: 2 shared definitions and types</summary>
 
-`Ehr.Render.UiActionHonest`
+`Ehr.Props.WritesAllowed`, `Ehr.Props.WritesOnly`
 
 </details>
 
 <a id="audit-b40"></a>
 <details>
-<summary>B40: 3 shared definitions and types</summary>
+<summary>B40: 2 shared definitions and types</summary>
 
-`Ehr.Render.UiPresent`, `Ehr.Render.uiBannerAtom`, `Ehr.Render.uiNavAtoms`
+`Ehr.Props.foldMacro`, `Ehr.Props.macroAct`
 
 </details>
 
 <a id="audit-b41"></a>
 <details>
-<summary>B41: 1 shared definitions and types</summary>
+<summary>B41: 79 shared definitions and types</summary>
 
-`Ehr.Render.UiWorkspacePresent`
+`Ehr.Render.AllergyRow`, `Ehr.Render.BannerInfo`, `Ehr.Render.Ctx`, `Ehr.Render.Ctx.v`, `Ehr.Render.Display`, `Ehr.Render.EncRow`, `Ehr.Render.GrowthPoint`, `Ehr.Render.HistoryRow`, `Ehr.Render.ImmRow`, `Ehr.Render.InputType`, `Ehr.Render.LabRow`, `Ehr.Render.MedRow`, `Ehr.Render.NoteRow`, `Ehr.Render.ProblemRow`, `Ehr.Render.ProcRow`, `Ehr.Render.TrendPoint`, `Ehr.Render.UiBranch`, `Ehr.Render.UiNode`, `Ehr.Render.UiScreen`, `Ehr.Render.ValueKindName`, `Ehr.Render.VitalRow`, `Ehr.Render.actionRole`, `Ehr.Render.allergyCells`, `Ehr.Render.blockedReason`, `Ehr.Render.fieldKind`, `Ehr.Render.historyCells`, `Ehr.Render.infoLabel`, `Ehr.Render.medCells`, `Ehr.Render.noteCells`, `Ehr.Render.problemCells`, `Ehr.Render.renderUi`, `Ehr.Render.uiAllergySummary`, `Ehr.Render.uiBanner`, `Ehr.Render.uiBlocked`, `Ehr.Render.uiButton`, `Ehr.Render.uiCaptureText`, `Ehr.Render.uiChars`, `Ehr.Render.uiClinicalBanner`, `Ehr.Render.uiComponentsWhere`, `Ehr.Render.uiDate`, `Ehr.Render.uiEnabled`, `Ehr.Render.uiField`, `Ehr.Render.uiFieldKind`, `Ehr.Render.uiFullInfoShown`, `Ehr.Render.uiHundredths`, `Ehr.Render.uiInWorkspace`, `Ehr.Render.uiInfo`, `Ehr.Render.uiItem`, `Ehr.Render.uiItemInfo`, `Ehr.Render.uiItemRows`, `Ehr.Render.uiLatestVitals`, `Ehr.Render.uiMedSummary`, `Ehr.Render.uiMissingReviews`, `Ehr.Render.uiModal`, `Ehr.Render.uiNav`, `Ehr.Render.uiNavButton`, `Ehr.Render.uiNavGroup`, `Ehr.Render.uiNavTitle`, `Ehr.Render.uiNest`, `Ehr.Render.uiOrderInfo`, `Ehr.Render.uiOrderRows`, `Ehr.Render.uiPayloadRows`, `Ehr.Render.uiProblemSummary`, `Ehr.Render.uiReasonText`, `Ehr.Render.uiRequiredReviews`, `Ehr.Render.uiRows`, `Ehr.Render.uiRows.valueTextQty`, `Ehr.Render.uiSide`, `Ehr.Render.uiSideAt`, `Ehr.Render.uiSideAt.go`, `Ehr.Render.uiSteps`, `Ehr.Render.uiSummaryRows`, `Ehr.Render.uiTagIs`, `Ehr.Render.uiTakesChildren`, `Ehr.Render.uiTitledLabel`, `Ehr.Render.uiWorkspace`, `Ehr.Render.unitName`, `Ehr.Render.valueText`, `Ehr.Render.vitalCells`
 
 </details>
 
@@ -669,15 +682,15 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B42: 1 shared definitions and types</summary>
 
-`Ehr.Render.uiAtomsList`
+`Ehr.Render.UiActionHonest`
 
 </details>
 
 <a id="audit-b43"></a>
 <details>
-<summary>B43: 1 shared definitions and types</summary>
+<summary>B43: 3 shared definitions and types</summary>
 
-`Ehr.Render.uiLabel`
+`Ehr.Render.UiPresent`, `Ehr.Render.uiBannerAtom`, `Ehr.Render.uiNavAtoms`
 
 </details>
 
@@ -685,7 +698,7 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B44: 1 shared definitions and types</summary>
 
-`Ehr.Spec.isHumanOnly`
+`Ehr.Render.UiWorkspacePresent`
 
 </details>
 
@@ -693,7 +706,7 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B45: 1 shared definitions and types</summary>
 
-`Ehr.alertsAcked`
+`Ehr.Render.uiAtomsList`
 
 </details>
 
@@ -701,29 +714,61 @@ Counts include named project definitions and types. Compiler helpers, instances,
 <details>
 <summary>B46: 1 shared definitions and types</summary>
 
-`Ehr.commitGuard`
+`Ehr.Render.uiLabel`
 
 </details>
 
 <a id="audit-b47"></a>
 <details>
-<summary>B47: 7 shared definitions and types</summary>
+<summary>B47: 1 shared definitions and types</summary>
 
-`Ehr.hasEntry`, `Ehr.linkedSource?`, `Ehr.prefillField`, `Ehr.prefillRecord`, `Ehr.prefillScreen`, `Ehr.prefillValueValid`, `Ehr.recordValue`
+`Ehr.Spec.isHumanOnly`
 
 </details>
 
 <a id="audit-b48"></a>
 <details>
-<summary>B48: 2 shared definitions and types</summary>
+<summary>B48: 1 shared definitions and types</summary>
 
-`Ehr.init`, `Ehr.startExpanded`
+`Ehr.alertsAcked`
 
 </details>
 
 <a id="audit-b49"></a>
 <details>
 <summary>B49: 1 shared definitions and types</summary>
+
+`Ehr.commitGuard`
+
+</details>
+
+<a id="audit-b50"></a>
+<details>
+<summary>B50: 1 shared definitions and types</summary>
+
+`Ehr.doseInputUnit?`
+
+</details>
+
+<a id="audit-b51"></a>
+<details>
+<summary>B51: 8 shared definitions and types</summary>
+
+`Ehr.hasEntry`, `Ehr.linkedSource?`, `Ehr.parseElementValue`, `Ehr.prefillField`, `Ehr.prefillRecord`, `Ehr.prefillScreen`, `Ehr.prefillValueValid`, `Ehr.recordValue`
+
+</details>
+
+<a id="audit-b52"></a>
+<details>
+<summary>B52: 2 shared definitions and types</summary>
+
+`Ehr.init`, `Ehr.startExpanded`
+
+</details>
+
+<a id="audit-b53"></a>
+<details>
+<summary>B53: 1 shared definitions and types</summary>
 
 `Ehr.runAll`
 
