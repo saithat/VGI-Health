@@ -137,3 +137,10 @@ statements independently of the solution. D5 belongs to the checker: decidable
 `NavSane spec prog` in NavRules checks real nav labels, group sizes, and orphans.
 Its P1 report currently fails the 12-entry limit (14 W1, 17 W3, 18 W6); no entries
 are truncated. The content/checker integration request is tracked separately.
+
+Field kind strings preserve `identity`, `scan`, and `cosign`. Formulary inputs
+carry `code:<name>|<name>...`, taken directly from Lean's formulary; other coded
+inputs use `code`. This keeps the original entry semantics and choices without
+requiring React to reconstruct domain data. The clinical banner includes allergy
+records/reactions/status and code status from Facts.record's `codeStatus` value,
+or explicit `Not recorded` if unavailable. It never assumes full code.

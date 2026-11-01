@@ -1,7 +1,8 @@
 // Run after ExportTests.lean, wasm/build-ehr.sh and wasm/install-into-app.sh.
 // Compares the real native/WASM APIs; no duplicate clinical logic.
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { loadEhrInterp } from '../../../app/public/ehr/interp-loader.mjs';
@@ -85,7 +86,13 @@ function checkUi(ui, view, program, display, name) {
   if (ui.modal) assert.ok(walk([ui.modal]).some((n) => n.button?.role === 'ack' && n.button.enabled));
 }
 console.log(`Native/WASM facts match for all ${bundleCount} Synthea bundles.`);
-const states = data('states');
+const allStates = data('states');
+const shardCount = Number(process.env.EHR_RENDER_SHARD_COUNT ?? 1);
+const shardIndex = Number(process.env.EHR_RENDER_SHARD_INDEX ?? 0);
+assert.ok(Number.isInteger(shardCount) && shardCount >= 1 && shardCount <= 8);
+assert.ok(Number.isInteger(shardIndex) && shardIndex >= 0 && shardIndex < shardCount);
+const stateIndices = allStates.flatMap((_, i) => i % shardCount === shardIndex ? [i] : []);
+const states = stateIndices.map((i) => allStates[i]);
 let checkedStates = 0;
 for (const [name, state] of states) {
   const input = { ...common, display, state };
@@ -101,7 +108,7 @@ for (const [name, state] of states) {
 const scanElement = common.spec.elements.find((e) => e.kind?.scan?.target === 'wristband');
 assert.ok(scanElement);
 let scanChecked = false;
-for (const [name, state] of states.filter(([name]) => name.endsWith('-expanded'))) {
+for (const [name, state] of allStates.filter(([name]) => name.endsWith('-expanded'))) {
   const screen = common.program.screens.find((s) => s.id === state.screen);
   const component = screen.components.find((c) => c.kind?.field?.element === scanElement.id);
   if (!component) continue;
@@ -123,4 +130,8 @@ for (const [name, state] of states.filter(([name]) => name.endsWith('-expanded')
 assert.ok(scanChecked, 'a shown canonical RN wristband field was exercised');
 assert.ok(JSON.parse(ehr.call('ehr_render_ui', '{}')).error);
 for (const method of ['facts', 'render']) assert.ok(JSON.parse(ehr[method]('{}')).error);
+if (process.env.EHR_RENDER_SHARD_REPORT) {
+  const wasmSha256 = createHash('sha256').update(readFileSync('app/public/ehr/ehr-interp.wasm')).digest('hex');
+  writeFileSync(process.env.EHR_RENDER_SHARD_REPORT, JSON.stringify({shardIndex, shardCount, bundleCount, stateIndices, total: allStates.length, wasmSha256}));
+}
 console.log(`Native/WASM equivalence: ${bundleCount} Synthea bundles, ${states.length} canonical HTML + semantic UI variants; stable patient/row ids, actual RN wristband acceptance/rejection and error envelopes passed.`);

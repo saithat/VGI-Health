@@ -810,3 +810,17 @@ affordance; do not invent a second confirm control from pendingConfirm or the
 ARIA fidelity check will see extra buttons. Use the generated types instead of
 a parallel handwritten UI union. The existing generic WASM `.call` method can
 invoke `ehr_render_ui` directly; no convenience wrapper change is required.
+
+## Render/app integration resolution
+
+Merged the app owner's `f810f92` changes. The catalog expectation, generated UI
+types, empty read-only info IDs, confirm/ack mapping, and explicit-confirm
+painting are integrated. All **124** app unit tests and **8** P1 desktop/narrow
+ARIA fidelity checks pass. Group toggles correctly dispatch **Event.click**;
+the earlier request for Event.toggle was a documentation error, now corrected.
+
+Render preserves identity/scan/cosign field kinds and the existing formulary
+choices in the kind string, and supplies allergy/code-status banner fields.
+The app's remaining navigation Event request belongs to lean-core. Source
+labels that contain legal authoring instructions belong to content: render
+must show the interpreter's clinical text rather than fabricate legal text.

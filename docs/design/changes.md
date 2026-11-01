@@ -582,3 +582,19 @@ component. D1 guarantees identifier fields, not invented values: empty input
 identifiers remain empty. UiScreen has one banner field and UiNode has no banner
 constructor; the AppShell must place this landmark first. JSON object key order
 is not a layout instruction.
+
+### App integration follow-up
+
+Merged app-owned semantic painter and fidelity gate (`f810f92`) into render;
+app build/lint and all 124 unit tests now pass, including the 24-seed catalog.
+The real P1 rooming/orders/sign samples pass 8 desktop/narrow ARIA checks.
+Group-header buttons dispatch the existing `Event.click` (there is no
+`Event.toggle`); confirm and ack roles select their actual events.
+
+The semantic field kind now preserves `identity`, `scan`, and `cosign`, and
+`code:<choice>|<choice>...` carries the existing Lean formulary choices. This
+uses section 10's existing String field; no UiNode type change was made. Other
+coded sets retain the previous free-code entry behavior. The clinical banner
+also emits allergy records with reactions/status, and explicit code status
+from `Facts.record["codeStatus"]` when supplied, otherwise `Not recorded`.
+React does not need to infer these clinical fields.
