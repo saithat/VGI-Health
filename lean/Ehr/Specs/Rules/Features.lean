@@ -7,421 +7,421 @@ namespace Ehr.Specs.Rules.Features
 
 /-- Law: 42 CFR §482.13(a)(1). Catalog: cms-482.13-a1-rights-notice.
 Record that the patient or appropriate representative was informed of patient rights before care is furnished or discontinued whenever possible.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal001 : TemporalReq :=
   { id := "cms-482.13-a1-rights-notice:temporal001", subject := { event := "rights.informed", artifactKey := "recordRightsNotice" }, anchor := { event := "care.start", artifactKey := "recordRightsNotice" }, minOffset := -43200, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.not (.riskEquals "rightsNoticeNotPossible" "yes")), direction? := none }
 
 /-- Law: 42 CFR §482.13(e)(7). Catalog: cms-482.13-e7-attending-consult.
 Create a consultation obligation as soon as possible when the attending did not order the restraint or seclusion.
-Hospital policy: as soon as possible means the same minute; source does not prescribe a numeric deadline. -/
+Hospital policy: as soon as possible means the same minute; source does not prescribe a numeric deadline. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal002 : TemporalReq :=
   { id := "cms-482.13-e7-attending-consult:temporal002", subject := { event := "restraint.attendingConsult", artifactKey := "signRestraintOrder" }, anchor := { event := "restraint.start", artifactKey := "signRestraintOrder" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.riskEquals "restraintNotOrderedByAttending" "yes"), direction? := none }
 
 /-- Law: 42 CFR §482.13(e)(8)(ii). Catalog: cms-482.13-e8ii-assessment-24h.
 After 24 hours of violent/self-destructive restraint or seclusion, require the authorized responsible practitioner to see and assess the patient before a new order.
-Hospital policy: assessment must be within the hour preceding the new order after 24 hours. -/
+Hospital policy: assessment must be within the hour preceding the new order after 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal003 : TemporalReq :=
   { id := "cms-482.13-e8ii-assessment-24h:temporal003", subject := { event := "restraint.responsibleAssessment", artifactKey := "signRestraintOrder" }, anchor := { event := "restraint.newOrder", artifactKey := "signRestraintOrder" }, minOffset := -60, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.riskEquals "restraintBeyond24Hours" "yes"), direction? := none }
 
 /-- Law: 42 CFR §482.13(e)(12). Catalog: cms-482.13-e12-face-to-face-hour.
 Track a face-to-face evaluation within one hour of initiation for violent/self-destructive behavior; evaluator must meet the regulatory qualifications.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal004 : TemporalReq :=
   { id := "cms-482.13-e12-face-to-face-hour:temporal004", subject := { event := "restraint.faceToFace", artifactKey := "recordRestraintEvaluation" }, anchor := { event := "restraint.start", artifactKey := "recordRestraintEvaluation" }, minOffset := 0, maxOffset := 60, deadline := 60, metric := .minutes, when? := some (.riskEquals "violentRestraint" "yes"), direction? := none }
 
 /-- Law: 42 CFR §482.13(e)(16)(i). Catalog: cms-482.13-e16i-document-evaluation.
 Document the one-hour medical and behavioral evaluation for violent/self-destructive restraint or seclusion.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal005 : TemporalReq :=
   { id := "cms-482.13-e16i-document-evaluation:temporal005", subject := { event := "restraint.evaluationDocumented", artifactKey := "recordRestraintEvaluation" }, anchor := { event := "restraint.start", artifactKey := "recordRestraintEvaluation" }, minOffset := 0, maxOffset := 60, deadline := 60, metric := .minutes, when? := some (.riskEquals "violentRestraint" "yes"), direction? := none }
 
 /-- Law: 42 CFR §482.13(e)(14). Catalog: cms-482.13-e14-rn-consult.
 When a trained RN performs the face-to-face evaluation, track consultation with the attending or responsible licensed practitioner as soon as possible afterward.
-Hospital policy: as soon as possible means the same minute. -/
+Hospital policy: as soon as possible means the same minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal006 : TemporalReq :=
   { id := "cms-482.13-e14-rn-consult:temporal006", subject := { event := "restraint.rnConsult", artifactKey := "recordRestraintEvaluation" }, anchor := { event := "restraint.faceToFace", artifactKey := "recordRestraintEvaluation" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.riskEquals "rnRestraintEvaluator" "yes"), direction? := none }
 
 /-- Law: 42 CFR §482.24(c)(4)(viii). Catalog: cms-482.24-c4viii-complete-30days.
 Track completion of the medical record no later than 30 days after discharge.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal007 : TemporalReq :=
   { id := "cms-482.24-c4viii-complete-30days:temporal007", subject := { event := "record.completed", artifactKey := "completeMedicalRecord" }, anchor := { event := "discharge", artifactKey := "completeMedicalRecord" }, minOffset := 0, maxOffset := 43200, deadline := 43200, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 42 CFR §482.24(c)(4)(i)(A). Catalog: cms-482.24-c4iA-history-physical-timing.
 Require a completed H&P within the 30-day-before/24-hour-after admission or registration window, filed within 24 hours after admission/registration and before surgery or anesthesia services, subject to the qualifying outpatient assessment alternative.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal008 : TemporalReq :=
   { id := "cms-482.24-c4iA-history-physical-timing:temporal008", subject := { event := "hp.completed", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "admission", artifactKey := "verifyPreoperativeRecord" }, minOffset := -43200, maxOffset := 1440, deadline := 1440, metric := .minutes, when? := some (.not (.riskEquals "qualifyingOutpatientAssessmentAlternative" "yes")), direction? := none }
 
 /-- Law: 42 CFR §482.24(c)(4)(i)(A). Catalog: cms-482.24-c4iA-history-physical-timing.
 Require a completed H&P within the 30-day-before/24-hour-after admission or registration window, filed within 24 hours after admission/registration and before surgery or anesthesia services, subject to the qualifying outpatient assessment alternative.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal009 : TemporalReq :=
   { id := "cms-482.24-c4iA-history-physical-timing:temporal009", subject := { event := "hp.filed", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -43200, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.not (.riskEquals "qualifyingOutpatientAssessmentAlternative" "yes")), direction? := none }
 
 /-- Law: 42 CFR §482.24(c)(4)(i)(B). Catalog: cms-482.24-c4iB-hp-update-timing.
 When the H&P was completed within 30 days before admission/registration, place the updated examination, including changes, in the record within 24 hours after admission/registration and before surgery/anesthesia, subject to the qualifying outpatient alternative.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal010 : TemporalReq :=
   { id := "cms-482.24-c4iB-hp-update-timing:temporal010", subject := { event := "hp.updateFiled", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "admission", artifactKey := "verifyPreoperativeRecord" }, minOffset := 0, maxOffset := 1440, deadline := 1440, metric := .minutes, when? := some (.not (.riskEquals "qualifyingOutpatientAssessmentAlternative" "yes")), direction? := none }
 
 /-- Law: 42 CFR §482.24(c)(4)(i)(B). Catalog: cms-482.24-c4iB-hp-update-timing.
 When the H&P was completed within 30 days before admission/registration, place the updated examination, including changes, in the record within 24 hours after admission/registration and before surgery/anesthesia, subject to the qualifying outpatient alternative.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal011 : TemporalReq :=
   { id := "cms-482.24-c4iB-hp-update-timing:temporal011", subject := { event := "hp.updateFiled", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -43200, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.not (.riskEquals "qualifyingOutpatientAssessmentAlternative" "yes")), direction? := none }
 
 /-- Law: 42 CFR §482.24(c)(4)(i)(A). Catalog: cms-482.24-c4iA-history-physical-timing.
 Require a completed H&P within the 30-day-before/24-hour-after admission or registration window, filed within 24 hours after admission/registration and before surgery or anesthesia services, subject to the qualifying outpatient assessment alternative.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal012 : TemporalReq :=
   { id := "cms-482.24-c4iA-history-physical-timing:temporal012", subject := { event := "hp.filed", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "admission", artifactKey := "verifyPreoperativeRecord" }, minOffset := -43200, maxOffset := 1440, deadline := 1440, metric := .minutes, when? := some (.not (.riskEquals "qualifyingOutpatientAssessmentAlternative" "yes")), direction? := none }
 
 /-- Law: 42 CFR §482.51(b)(2). Catalog: cms-482.51-b2-consent-before-surgery.
 Require the properly executed operation consent in the chart before surgery, with the regulatory emergency exception.
-Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path. -/
+Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal013 : TemporalReq :=
   { id := "cms-482.51-b2-consent-before-surgery:temporal013", subject := { event := "surgicalConsent.filed", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -2628000, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.not (.riskEquals "direSurgicalEmergency" "yes")), direction? := none }
 
 /-- Law: 22 CCR §70223(d)(3), (e). Catalog: ca-title22-70223-written-surgical-consent.
 Before surgery, verify that written informed consent for that procedure is in the record, with the dire-emergency exception in subsection (e).
-Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path. -/
+Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal014 : TemporalReq :=
   { id := "ca-title22-70223-written-surgical-consent:temporal014", subject := { event := "surgicalConsent.filed", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -2628000, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.not (.riskEquals "direSurgicalEmergency" "yes")), direction? := none }
 
 /-- Law: 42 CFR §482.51(b)(6). Catalog: cms-482.51-b6-immediate-report.
 Track that the operative report is written or dictated immediately following surgery.
-Hospital policy: immediately is the same recorded minute; later transcription/filing is a separate event. -/
+Hospital policy: immediately is the same recorded minute; later transcription/filing is a separate event. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal015 : TemporalReq :=
   { id := "cms-482.51-b6-immediate-report:temporal015", subject := { event := "operativeReport.writtenOrDictated", artifactKey := "signOpNote" }, anchor := { event := "surgery.end", artifactKey := "signOpNote" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 42 CFR §482.52(b)(1). Catalog: cms-482.52-b1-pre-48hours.
 Require a preanesthesia evaluation completed and documented by a person qualified under §482.52(a), performed within 48 hours before surgery or an anesthesia-requiring procedure.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal016 : TemporalReq :=
   { id := "cms-482.52-b1-pre-48hours:temporal016", subject := { event := "preanesthesia.completed", artifactKey := "signAnesthesiaRecord" }, anchor := { event := "surgery.start", artifactKey := "signAnesthesiaRecord" }, minOffset := -2880, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 42 CFR §482.52(b)(3). Catalog: cms-482.52-b3-post-48hours.
 Track completion and documentation of a postanesthesia evaluation by a person qualified under §482.52(a) no later than 48 hours after surgery/anesthesia-requiring procedure.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal017 : TemporalReq :=
   { id := "cms-482.52-b3-post-48hours:temporal017", subject := { event := "postanesthesia.documented", artifactKey := "signPostAnesthesiaNote" }, anchor := { event := "surgery.end", artifactKey := "signPostAnesthesiaNote" }, minOffset := 0, maxOffset := 2880, deadline := 2880, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70751(g). Catalog: ca-title22-70751-complete-two-weeks.
 Track record deficiencies and complete the medical record promptly, no later than two weeks following discharge.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal018 : TemporalReq :=
   { id := "ca-title22-70751-complete-two-weeks:temporal018", subject := { event := "record.completed", artifactKey := "completeMedicalRecord" }, anchor := { event := "discharge", artifactKey := "completeMedicalRecord" }, minOffset := 0, maxOffset := 20160, deadline := 20160, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70751(g). Catalog: ca-title22-70751-authenticate-two-weeks.
 Require authentication or signature by a licensed practitioner acting within scope no later than two weeks following discharge.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal019 : TemporalReq :=
   { id := "ca-title22-70751-authenticate-two-weeks:temporal019", subject := { event := "record.authenticated", artifactKey := "completeMedicalRecord" }, anchor := { event := "discharge", artifactKey := "completeMedicalRecord" }, minOffset := 0, maxOffset := 20160, deadline := 20160, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70215(a)(1). Catalog: ca-title22-70215-shift-assessment.
 Ensure an RN assessment is performed and its findings documented in the medical record each shift.
-Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. -/
+Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal020 : TemporalReq :=
   { id := "ca-title22-70215-shift-assessment:temporal020", subject := { event := "nursing.assessmentDocumented", artifactKey := "chartAssessment" }, anchor := { event := "shift.start", artifactKey := "chartAssessment" }, minOffset := 0, maxOffset := 720, deadline := 720, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70215(a)(1). Catalog: ca-title22-70215-transfer-assessment.
 Require and document an RN assessment on receipt of a patient transferred to another care area.
-Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. -/
+Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal021 : TemporalReq :=
   { id := "ca-title22-70215-transfer-assessment:temporal021", subject := { event := "nursing.transferAssessment", artifactKey := "recordNursingTransition" }, anchor := { event := "transfer.received", artifactKey := "recordNursingTransition" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70215(b). Catalog: ca-title22-70215-admission-nursing-process.
 Initiate the nursing process through an RN at admission.
-Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. -/
+Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal022 : TemporalReq :=
   { id := "ca-title22-70215-admission-nursing-process:temporal022", subject := { event := "nursing.processInitiated", artifactKey := "recordNursingTransition" }, anchor := { event := "admission", artifactKey := "recordNursingTransition" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70223(d). Catalog: ca-title22-70223-verify-identity.
 Before commencing surgery, require the anesthesia administrator, or surgeon when no general anesthetic is administered, to verify patient identity.
-Hospital policy additionally limits verification lookback to 24 hours. -/
+Hospital policy additionally limits verification lookback to 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal023 : TemporalReq :=
   { id := "ca-title22-70223-verify-identity:temporal023", subject := { event := "identity.verified", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -1440, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70223(d). Catalog: ca-title22-70223-verify-site.
 Before commencing surgery, require the anesthesia administrator, or surgeon when no general anesthetic is administered, to verify operative site.
-Hospital policy additionally limits verification lookback to 24 hours. -/
+Hospital policy additionally limits verification lookback to 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal024 : TemporalReq :=
   { id := "ca-title22-70223-verify-site:temporal024", subject := { event := "site.verified", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -1440, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70223(d). Catalog: ca-title22-70223-verify-side.
 Before commencing surgery, require the anesthesia administrator, or surgeon when no general anesthetic is administered, to verify operative side.
-Hospital policy additionally limits verification lookback to 24 hours. -/
+Hospital policy additionally limits verification lookback to 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal025 : TemporalReq :=
   { id := "ca-title22-70223-verify-side:temporal025", subject := { event := "side.verified", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -1440, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70223(d)(1), (e). Catalog: ca-title22-70223-hp-24-hours.
 Before surgery, verify a recorded interval H&P performed and recorded within the preceding 24 hours, preserving emergency care in dire circumstances.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal026 : TemporalReq :=
   { id := "ca-title22-70223-hp-24-hours:temporal026", subject := { event := "intervalHp.recorded", artifactKey := "signOrders" }, anchor := { event := "surgery.start", artifactKey := "signOrders" }, minOffset := -1440, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.and (.factEquals .service "preop") (.not (.riskEquals "direSurgicalEmergency" "yes"))), direction? := none }
 
 /-- Law: 22 CCR §70223(d)(1), (e). Catalog: ca-title22-70223-hp-24-hours.
 Before surgery, verify a recorded interval H&P performed and recorded within the preceding 24 hours, preserving emergency care in dire circumstances.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal027 : TemporalReq :=
   { id := "ca-title22-70223-hp-24-hours:temporal027", subject := { event := "intervalHp.performed", artifactKey := "signOrders" }, anchor := { event := "surgery.start", artifactKey := "signOrders" }, minOffset := -1440, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.and (.factEquals .service "preop") (.not (.riskEquals "direSurgicalEmergency" "yes"))), direction? := none }
 
 /-- Law: 22 CCR §70223(d)(2), (e). Catalog: ca-title22-70223-screening-72-hours.
 Verify patient-appropriate screening tests were accomplished and recorded within 72 hours before surgery, preserving emergency care in dire circumstances.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal028 : TemporalReq :=
   { id := "ca-title22-70223-screening-72-hours:temporal028", subject := { event := "screening.recorded", artifactKey := "verifyPreoperativeRecord" }, anchor := { event := "surgery.start", artifactKey := "verifyPreoperativeRecord" }, minOffset := -4320, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.not (.riskEquals "direSurgicalEmergency" "yes")), direction? := none }
 
 /-- Law: 22 CCR §70263(g). Catalog: ca-title22-70263-verbal-prompt-record.
 Record each verbal drug order promptly in the patient medical record.
-Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. -/
+Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal029 : TemporalReq :=
   { id := "ca-title22-70263-verbal-prompt-record:temporal029", subject := { event := "verbalOrder.recorded", artifactKey := "recordVerbalOrder" }, anchor := { event := "verbalOrder.given", artifactKey := "recordVerbalOrder" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70263(g). Catalog: ca-title22-70263-verbal-countersign-48h.
 Track every verbal drug order until its prescriber or furnisher countersigns within 48 hours.
-Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. -/
+Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal030 : TemporalReq :=
   { id := "ca-title22-70263-verbal-countersign-48h:temporal030", subject := { event := "verbalOrder.countersigned", artifactKey := "recordVerbalOrder" }, anchor := { event := "verbalOrder.given", artifactKey := "recordVerbalOrder" }, minOffset := 0, maxOffset := 2880, deadline := 2880, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70263(h). Catalog: ca-title22-70263-standing-signed.
 Require prompt prescriber signature on the patient-specific standing drug orders.
-Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. -/
+Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal031 : TemporalReq :=
   { id := "ca-title22-70263-standing-signed:temporal031", subject := { event := "standingOrder.signed", artifactKey := "signStandingOrder" }, anchor := { event := "standingOrder.initiated", artifactKey := "signStandingOrder" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70233(a)(2). Catalog: ca-title22-70233-preinduction-review.
 Require review of the patient condition immediately before inducing anesthesia.
-Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. -/
+Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal032 : TemporalReq :=
   { id := "ca-title22-70233-preinduction-review:temporal032", subject := { event := "preinduction.review", artifactKey := "signAnesthesiaRecord" }, anchor := { event := "anesthesia.induction", artifactKey := "signAnesthesiaRecord" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70707.1(a)(4). Catalog: ca-title22-70707-1-sterilization-minimum-wait.
 For sterilization outside the specified exceptions, require at least 30 days between informed consent and the procedure.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal033 : TemporalReq :=
   { id := "ca-title22-70707-1-sterilization-minimum-wait:temporal033", subject := { event := "sterilization.consent", artifactKey := "authorizeSterilization" }, anchor := { event := "sterilization.procedure", artifactKey := "authorizeSterilization" }, minOffset := -259200, maxOffset := -43200, deadline := -43200, metric := .minutes, when? := some (.and (.not (.riskEquals "sterilizationEmergencyAbdominal" "yes")) (.not (.riskEquals "sterilizationElectiveShortWait" "yes"))), direction? := none }
 
 /-- Law: 22 CCR §70707.1(a)(4). Catalog: ca-title22-70707-1-sterilization-maximum-wait.
 For sterilization outside the specified exceptions, require that no more than 180 days have passed since informed consent.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal034 : TemporalReq :=
   { id := "ca-title22-70707-1-sterilization-maximum-wait:temporal034", subject := { event := "sterilization.consent", artifactKey := "authorizeSterilization" }, anchor := { event := "sterilization.procedure", artifactKey := "authorizeSterilization" }, minOffset := -259200, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 22 CCR §70707.1(a)(4)(A)2.. Catalog: ca-title22-70707-1-sterilization-emergency-72h.
 When using the emergency-abdominal-surgery exception, require at least 72 hours since written sterilization consent.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal035 : TemporalReq :=
   { id := "ca-title22-70707-1-sterilization-emergency-72h:temporal035", subject := { event := "sterilization.consent", artifactKey := "authorizeSterilization" }, anchor := { event := "sterilization.procedure", artifactKey := "authorizeSterilization" }, minOffset := -259200, maxOffset := -4320, deadline := -4320, metric := .minutes, when? := some (.riskEquals "sterilizationEmergencyAbdominal" "yes"), direction? := none }
 
 /-- Law: 22 CCR §70707.6(a)(3). Catalog: ca-title22-70707-6-medi-cal-no-elective-short-wait.
 For Medi-Cal sterilization, disallow the elective voluntary written shorter-than-30-day request allowed to non-Medi-Cal patients.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal036 : TemporalReq :=
   { id := "ca-title22-70707-6-medi-cal-no-elective-short-wait:temporal036", subject := { event := "sterilization.consent", artifactKey := "authorizeSterilization" }, anchor := { event := "sterilization.procedure", artifactKey := "authorizeSterilization" }, minOffset := -259200, maxOffset := -43200, deadline := -43200, metric := .minutes, when? := some (.factEquals .payer "Medi-Cal"), direction? := none }
 
 /-- Law: 22 CCR §70707.3(b)(1). Catalog: ca-title22-70707-3-no-postpartum-24h.
 Do not obtain sterilization informed consent within 24 hours postpartum.
-Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved. -/
+Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal037 : TemporalReq :=
   { id := "ca-title22-70707-3-no-postpartum-24h:temporal037", subject := { event := "sterilization.consent", artifactKey := "recordSterilizationConsent" }, anchor := { event := "delivery", artifactKey := "recordSterilizationConsent" }, minOffset := 1440, maxOffset := 2628000, deadline := 2628000, metric := .minutes, when? := some (.riskEquals "recentDelivery" "yes"), direction? := none }
 
 /-- Law: 22 CCR §70707.3(b)(1). Catalog: ca-title22-70707-3-no-postabortion-24h.
 Do not obtain sterilization informed consent within 24 hours postabortion.
-Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved. -/
+Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal038 : TemporalReq :=
   { id := "ca-title22-70707-3-no-postabortion-24h:temporal038", subject := { event := "sterilization.consent", artifactKey := "recordSterilizationConsent" }, anchor := { event := "abortion", artifactKey := "recordSterilizationConsent" }, minOffset := 1440, maxOffset := 2628000, deadline := 2628000, metric := .minutes, when? := some (.riskEquals "recentAbortion" "yes"), direction? := none }
 
 /-- Law: California Business & Professions Code §688(f). Catalog: ca-statutes-bpc-688-failure-reason.
 For a controlled prescription not electronically transmitted, document the reason as soon as practicable; track the statutory deadline tied to the end of the preventing technological/electrical failure.
-One working-day deadline; a reason recorded during the failure is permitted. -/
+One working-day deadline; a reason recorded during the failure is permitted. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal039 : TemporalReq :=
   { id := "ca-statutes-bpc-688-failure-reason:temporal039", subject := { event := "transmissionFailure.reasonRecorded", artifactKey := "recordTransmissionFailure" }, anchor := { event := "transmissionFailure.ended", artifactKey := "recordTransmissionFailure" }, minOffset := -43200, maxOffset := 1, deadline := 1, metric := .businessDays "hospital-CA", when? := none, direction? := some (.either) }
 
 /-- Law: California Health & Safety Code §11165.4(a)(1)(A)(iii). Catalog: ca-statutes-hsc-11165-4-delegate-review-record.
 If the practitioner did not directly access CURES, record that the practitioner reviewed the report supplied by another authorized CURES user within 24 hours of the controlled prescription.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal040 : TemporalReq :=
   { id := "ca-statutes-hsc-11165-4-delegate-review-record:temporal040", subject := { event := "cures.practitionerReviewed", artifactKey := "recordDelegatedCuresReview" }, anchor := { event := "prescription.issued", artifactKey := "recordDelegatedCuresReview" }, minOffset := -1440, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: California Business & Professions Code §2290.5(b). Catalog: ca-statutes-bpc-2290-5-telehealth-inform.
 Before initiating telehealth delivery, inform the patient about using telehealth.
-Hospital policy: re-establish consent in the preceding 30 days. -/
+Hospital policy: re-establish consent in the preceding 30 days. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal041 : TemporalReq :=
   { id := "ca-statutes-bpc-2290-5-telehealth-inform:temporal041", subject := { event := "telehealth.informed", artifactKey := "recordTelehealthConsent" }, anchor := { event := "telehealth.start", artifactKey := "recordTelehealthConsent" }, minOffset := -43200, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: California Business & Professions Code §2290.5(b). Catalog: ca-statutes-bpc-2290-5-telehealth-consent.
 Obtain the patient’s verbal or written consent to telehealth before delivering care by that mode.
-Hospital policy: re-establish consent in the preceding 30 days. -/
+Hospital policy: re-establish consent in the preceding 30 days. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal042 : TemporalReq :=
   { id := "ca-statutes-bpc-2290-5-telehealth-consent:temporal042", subject := { event := "telehealth.consented", artifactKey := "recordTelehealthConsent" }, anchor := { event := "telehealth.start", artifactKey := "recordTelehealthConsent" }, minOffset := -43200, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: California Health & Safety Code §123130(a). Catalog: ca-statutes-hsc-123130-summary-deadline.
 If electing a statutory summary rather than full-record access, make it available within ten working days; only extraordinary length/recent-discharge grounds allow a notified extension, capped at 30 days.
-Hospital policy uses the ordinary ten-working-day deadline even when a statutory extension might be available. -/
+Hospital policy uses the ordinary ten-working-day deadline even when a statutory extension might be available. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal043 : TemporalReq :=
   { id := "ca-statutes-hsc-123130-summary-deadline:temporal043", subject := { event := "summary.available", artifactKey := "provideRecordSummary" }, anchor := { event := "summary.requested", artifactKey := "provideRecordSummary" }, minOffset := 0, maxOffset := 10, deadline := 10, metric := .businessDays "hospital-CA", when? := none, direction? := some (.after) }
 
 /-- Law: California Probate Code §4731(a). Catalog: ca-statutes-prob-4731-record-directive.
 Promptly record a known advance directive, its revocation, or a surrogate designation/disqualification in the health record.
-Hospital policy: promptly means the same recorded minute. -/
+Hospital policy: promptly means the same recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal044 : TemporalReq :=
   { id := "ca-statutes-prob-4731-record-directive:temporal044", subject := { event := "advanceDirective.recorded", artifactKey := "recordAdvanceCareDecision" }, anchor := { event := "advanceDirective.learned", artifactKey := "recordAdvanceCareDecision" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: California Probate Code §4732. Catalog: ca-statutes-prob-4732-capacity-determination.
 When the primary physician makes or learns a capacity/recovery or other instruction/authority-affecting determination, promptly record it.
-Hospital policy: promptly means the same recorded minute. -/
+Hospital policy: promptly means the same recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal045 : TemporalReq :=
   { id := "ca-statutes-prob-4732-capacity-determination:temporal045", subject := { event := "capacity.recorded", artifactKey := "recordAdvanceCareDecision" }, anchor := { event := "capacity.learned", artifactKey := "recordAdvanceCareDecision" }, minOffset := 0, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 21 CFR §1306.11(d)(4). Catalog: federal-rx-1306-11-emergency-followup.
 After an emergency oral Schedule II authorization, cause the required follow-up prescription to be delivered to the dispensing pharmacist within seven days.
- -/
+ Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal046 : TemporalReq :=
   { id := "federal-rx-1306-11-emergency-followup:temporal046", subject := { event := "emergencyPrescription.delivered", artifactKey := "signEmergencyRxFollowup" }, anchor := { event := "emergencyPrescription.oralAuthorization", artifactKey := "signEmergencyRxFollowup" }, minOffset := 0, maxOffset := 10080, deadline := 10080, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 42 U.S.C. §300aa-26(d). Catalog: federal-rx-300aa-26-vis-before-dose.
 Provide the appropriate vaccine information materials to the child’s legal representative or adult recipient before administering the covered vaccine.
-Hospital policy additionally requires VIS provision within 30 days before this dose. -/
+Hospital policy additionally requires VIS provision within 30 days before this dose. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal047 : TemporalReq :=
   { id := "federal-rx-300aa-26-vis-before-dose:temporal047", subject := { event := "vis.provided", artifactKey := "recordImmunization" }, anchor := { event := "vaccine.administered", artifactKey := "recordImmunization" }, minOffset := -43200, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Law: 45 CFR §164.524(b)(2)(i). Catalog: federal-rx-164-524-access-deadline.
 Act on a patient’s designated-record-set access request within 30 days by providing requested access if granted or a compliant written denial if denied, subject to the authorized extension.
-Hospital policy retains the ordinary 30-day deadline; does not use the extension. -/
+Hospital policy retains the ordinary 30-day deadline; does not use the extension. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal048 : TemporalReq :=
   { id := "federal-rx-164-524-access-deadline:temporal048", subject := { event := "access.providedOrDenied", artifactKey := "completeAccessResponse" }, anchor := { event := "access.requested", artifactKey := "completeAccessResponse" }, minOffset := 0, maxOffset := 43200, deadline := 43200, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 4, p. 6). Catalog: entrenched-npg-timeout-team-agreement.
 Require team agreement on the correct patient identity.
-Hospital policy: time-out in the minute immediately preceding the procedure. -/
+Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal049 : TemporalReq :=
   { id := "entrenched-npg-timeout-team-agreement:temporal049", subject := { event := "timeout.identityAgreement", artifactKey := "verifySurgicalTimeout" }, anchor := { event := "procedure.start", artifactKey := "verifySurgicalTimeout" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 4, p. 6). Catalog: entrenched-npg-timeout-site-agreement.
 Require team agreement on the correct procedure site.
-Hospital policy: time-out in the minute immediately preceding the procedure. -/
+Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal050 : TemporalReq :=
   { id := "entrenched-npg-timeout-site-agreement:temporal050", subject := { event := "timeout.siteAgreement", artifactKey := "verifySurgicalTimeout" }, anchor := { event := "procedure.start", artifactKey := "verifySurgicalTimeout" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 4, p. 6). Catalog: entrenched-npg-timeout-procedure-agreement.
 Require team agreement on the procedure to be done.
-Hospital policy: time-out in the minute immediately preceding the procedure. -/
+Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal051 : TemporalReq :=
   { id := "entrenched-npg-timeout-procedure-agreement:temporal051", subject := { event := "timeout.procedureAgreement", artifactKey := "verifySurgicalTimeout" }, anchor := { event := "procedure.start", artifactKey := "verifySurgicalTimeout" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital National Performance Goals, effective January 2026; NPG.01.06.03 EP 3, p. 6). Catalog: entrenched-npg-timeout-performer-change.
 Repeat time-out when another same-patient procedure has a different performer.
-Hospital policy: time-out in the minute immediately preceding the procedure. -/
+Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal052 : TemporalReq :=
   { id := "entrenched-npg-timeout-performer-change:temporal052", subject := { event := "timeout.repeatedForPerformer", artifactKey := "verifySurgicalTimeout" }, anchor := { event := "procedure.start", artifactKey := "verifySurgicalTimeout" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.riskEquals "differentPerformer" "yes"), direction? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital NPG.01.01.01 EP 1, effective January 2026, p. 1). Catalog: entrenched-npg-two-identifiers.
 Verify at least two person-specific identifiers when providing care.
-Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. -/
+Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal053 : TemporalReq :=
   { id := "entrenched-npg-two-identifiers:temporal053", subject := { event := "identity.twoPersonIdentifiers", artifactKey := "verifyCareIdentity" }, anchor := { event := "care.start", artifactKey := "verifyCareIdentity" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital NPG.01.06.02 EPs 1–3, effective January 2026, p. 5). Catalog: entrenched-npg-site-mark-before-procedure.
 Mark the site before applicable invasive procedures.
-Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. -/
+Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal054 : TemporalReq :=
   { id := "entrenched-npg-site-mark-before-procedure:temporal054", subject := { event := "site.marked", artifactKey := "verifySurgicalTimeout" }, anchor := { event := "procedure.start", artifactKey := "verifySurgicalTimeout" }, minOffset := -1440, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure. (ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 3(a)–(b), p. 5). Catalog: entrenched-ismp-weight-measured.
 Obtain measured weight at admission and appropriate encounters.
-Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. -/
+Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal055 : TemporalReq :=
   { id := "entrenched-ismp-weight-measured:temporal055", subject := { event := "weight.measured", artifactKey := "verifyEncounterWeight" }, anchor := { event := "encounter.start", artifactKey := "verifyEncounterWeight" }, minOffset := 0, maxOffset := 1440, deadline := 1440, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal medication-safety standard of care: ISMP documents recurrent fatal dosing errors; preventable medication harm creates malpractice exposure. (ISMP Targeted Medication Safety Best Practices for Hospitals 2026–2027, Best Practice 3(a)–(b), p. 5). Catalog: entrenched-ismp-weight-not-historical.
 Avoid relying on historical weight for the encounter.
-Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. -/
+Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal056 : TemporalReq :=
   { id := "entrenched-ismp-weight-not-historical:temporal056", subject := { event := "weight.measured", artifactKey := "verifyEncounterWeight" }, anchor := { event := "encounter.start", artifactKey := "verifyEncounterWeight" }, minOffset := 0, maxOffset := 1440, deadline := 1440, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Joint Commission hospital accreditation, used for Medicare deemed status; losing accreditation creates participation and contracting risk. (Joint Commission Hospital NPG.06.02.01 EP 7, effective January 2026, p. 21). Catalog: entrenched-npg-pain-intervention-response.
 Evaluate and document the response to pain interventions.
-Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. -/
+Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal057 : TemporalReq :=
   { id := "entrenched-npg-pain-intervention-response:temporal057", subject := { event := "pain.responseDocumented", artifactKey := "recordPainResponse" }, anchor := { event := "pain.intervention", artifactKey := "recordPainResponse" }, minOffset := 0, maxOffset := 60, deadline := 60, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Leapfrog hospital purchaser/public-reporting standard used in hospital selection and contracting; applies to hospitals pursuing that standard, not a verified term of every payer contract. (Leapfrog Hospital Survey 2026 v9.2, version 2, Section 2 BCMA standard item 3, p. 58). Catalog: entrenched-leapfrog-bcma-wrong-time.
 Provide bedside BCMA decision support for wrong time.
-Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. -/
+Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal058 : TemporalReq :=
   { id := "entrenched-leapfrog-bcma-wrong-time:temporal058", subject := { event := "medication.administered", artifactKey := "administerMed" }, anchor := { event := "medication.scheduled", artifactKey := "administerMed" }, minOffset := -30, maxOffset := 30, deadline := 30, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction). Catalog: entrenched-who-oximeter.
 Confirm the pulse oximeter is attached and functioning.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal059 : TemporalReq :=
   { id := "entrenched-who-oximeter:temporal059", subject := { event := "oximeter.functionConfirmed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "anesthesia.induction", artifactKey := "verifySurgicalChecklist" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction). Catalog: entrenched-who-allergy.
 Confirm known allergies before anesthesia induction.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal060 : TemporalReq :=
   { id := "entrenched-who-allergy:temporal060", subject := { event := "allergies.confirmed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "anesthesia.induction", artifactKey := "verifySurgicalChecklist" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction). Catalog: entrenched-who-airway.
 Assess difficult airway risk before induction.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal061 : TemporalReq :=
   { id := "entrenched-who-airway:temporal061", subject := { event := "airway.assessed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "anesthesia.induction", artifactKey := "verifySurgicalChecklist" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before induction). Catalog: entrenched-who-blood-loss.
 Assess blood-loss risk exceeding 500 mL, or 7 mL/kg in children.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal062 : TemporalReq :=
   { id := "entrenched-who-blood-loss:temporal062", subject := { event := "bloodLoss.assessed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "anesthesia.induction", artifactKey := "verifySurgicalChecklist" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision). Catalog: entrenched-who-antibiotic.
 Confirm indicated antibiotic prophylaxis within the last 60 minutes.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal063 : TemporalReq :=
   { id := "entrenched-who-antibiotic:temporal063", subject := { event := "prophylaxis.administered", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "incision", artifactKey := "verifySurgicalChecklist" }, minOffset := -60, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.riskEquals "prophylaxisIndicated" "yes"), direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision). Catalog: entrenched-who-team.
 Confirm team introductions by name and role.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal064 : TemporalReq :=
   { id := "entrenched-who-team:temporal064", subject := { event := "team.introduced", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "incision", artifactKey := "verifySurgicalChecklist" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision). Catalog: entrenched-who-sterility.
 Confirm sterility including indicator results.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal065 : TemporalReq :=
   { id := "entrenched-who-sterility:temporal065", subject := { event := "sterility.confirmed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "incision", artifactKey := "verifySurgicalChecklist" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before skin incision). Catalog: entrenched-who-imaging.
 Display essential imaging when applicable.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal066 : TemporalReq :=
   { id := "entrenched-who-imaging:temporal066", subject := { event := "essentialImaging.displayed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "incision", artifactKey := "verifySurgicalChecklist" }, minOffset := -1, maxOffset := 0, deadline := 0, metric := .minutes, when? := some (.riskEquals "essentialImagingRequired" "yes"), direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR). Catalog: entrenched-who-counts.
 Verbally confirm completion of the instrument count.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal067 : TemporalReq :=
   { id := "entrenched-who-counts:temporal067", subject := { event := "instruments.countConfirmed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "patient.leavesOR", artifactKey := "verifySurgicalChecklist" }, minOffset := -60, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR). Catalog: entrenched-who-specimen.
 Read specimen labels aloud, including patient name.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal068 : TemporalReq :=
   { id := "entrenched-who-specimen:temporal068", subject := { event := "specimen.labelsReadAloud", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "patient.leavesOR", artifactKey := "verifySurgicalChecklist" }, minOffset := -60, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR). Catalog: entrenched-who-sponge-count.
 Verbally confirm completion of the sponge count.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal069 : TemporalReq :=
   { id := "entrenched-who-sponge-count:temporal069", subject := { event := "sponges.countConfirmed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "patient.leavesOR", artifactKey := "verifySurgicalChecklist" }, minOffset := -60, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
 /-- Entrenched: Near-universal surgical checklist standard of care with wrong-site/retained-item malpractice exposure; Leapfrog 2026 Section 3B requires an adapted WHO checklist for specified complex procedures. Applies where this WHO item is retained in the adopted checklist. (WHO Surgical Safety Checklist, revised January 2009, p. 1; Before patient leaves OR). Catalog: entrenched-who-needle-count.
 Verbally confirm completion of the needle count.
-Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. -/
+Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods. -/
 def temporal070 : TemporalReq :=
   { id := "entrenched-who-needle-count:temporal070", subject := { event := "needles.countConfirmed", artifactKey := "verifySurgicalChecklist" }, anchor := { event := "patient.leavesOR", artifactKey := "verifySurgicalChecklist" }, minOffset := -60, maxOffset := 0, deadline := 0, metric := .minutes, when? := none, direction? := none }
 
@@ -429,7 +429,7 @@ def temporal070 : TemporalReq :=
 For violent or self-destructive restraint/seclusion, enforce the 4-hour order/renewal limit for patients aged 18 or older; apply more restrictive state limits.
 Original issue/start/first-fill anchors survive episodes/transfers. Backend release/auto-stop and practitioner qualification remain trusted adapter/authorization duties. -/
 def expiry001 : ExpiryReq :=
-  { id := "cms-482.13-e8iA-adult-four-hours", orderKey := "violentRestraint", anchor := .started, duration := .minutes 240, when? := some (.ageBetween 18 150), renewal? := some ({ event := "restraint.renewed", validForMinutes := 240 }), reassessment? := none, maxOriginalMinutes? := some (1440) }
+  { id := "cms-482.13-e8iA-adult-four-hours", orderKey := "violentRestraint", anchor := .started, duration := .minutes 240, when? := some (.not (.ageBetween 0 17)), renewal? := some ({ event := "restraint.renewed", validForMinutes := 240 }), reassessment? := none, maxOriginalMinutes? := some (1440) }
 
 /-- Law: 42 CFR §482.13(e)(8)(i)(B). Catalog: cms-482.13-e8iB-age9-17-two-hours.
 For violent or self-destructive restraint/seclusion, enforce the 2-hour order/renewal limit for patients aged 9–17; apply more restrictive state limits.
@@ -609,7 +609,7 @@ def elementPediatricBedApproval : ElementSpec :=
 For a patient older than 13 placed in an approved pediatric-bed space, require pediatrician approval in unusual circumstances and record the reason.
 Eligibility failures cannot be attested away: the invalid branch has an empty allowed set. Use the separate refused-treatment decision for non-treatment. -/
 def predicateEntry010 : EntryReq :=
-  { commit := "authorizePediatricBed", element := "pediatricBedApproval", when := .clinical (.ageBetween 14 150), allowed? := none }
+  { commit := "authorizePediatricBed", element := "pediatricBedApproval", when := .clinical (.not (.ageBetween 0 13)), allowed? := none }
 
 /-- Law: 22 CCR §70547(i). Catalog: ca-title22-70547-newborn-oxygen-order.
 Before giving oxygen to a newborn, require a written physician order.
@@ -651,7 +651,7 @@ def predicateEntry013Human : EntryReq :=
 When Medi-Cal funds are used for sterilization, require the individual to be at least 21 when consent is obtained.
 Eligibility failures cannot be attested away: the invalid branch has an empty allowed set. Use the separate refused-treatment decision for non-treatment. -/
 def predicateEntry013Eligibility : EntryReq :=
-  { commit := "recordSterilizationConsent", element := "sterilizationConsentEligible", when := .clinical (.not (.or (.not (.factEquals .payer "Medi-Cal")) (.ageBetween 21 150))), allowed? := some ([]) }
+  { commit := "recordSterilizationConsent", element := "sterilizationConsentEligible", when := .clinical (.not (.or (.not (.factEquals .payer "Medi-Cal")) (.not (.ageBetween 0 20)))), allowed? := some ([]) }
 
 /-- Law: 22 CCR §70707.3(b)(1). Catalog: ca-title22-70707-3-no-labor.
 Do not obtain sterilization informed consent while the individual is in labor.
@@ -1969,9 +1969,10 @@ def expiryFor (key : CommitId) : List ExpiryReq :=
 /-- Product design property. Strengthening preserves existing obligations. -/
 def strengthenCommit (c : CommitSpec) : CommitSpec :=
   { c with
-    temporal? := some (c.temporal?.getD [] ++ temporalFor c.id)
+    temporal? := some (c.temporal?.getD [] ++ temporalFor c.id ++
+      (if ["signScheduleIISeries", "signEmergencyRxFollowup", "authorizeDirectDispensing", "authorizeSelfAdministration", "authorizeBedsideMedication", "authorizePatientOwnedMedication", "authorizeOudDirectDispensing", "signOralLiquidPrescription", "signFormattedPrescription", "signOralMethotrexate"].contains c.id then temporalFor "signOrders" else []))
     expiry? := some (c.expiry?.getD [] ++ expiryFor c.id)
-    actionLabel? := if c.id == "signOrders" then some prescriptionSigningLabel else c.actionLabel? }
+    actionLabel? := if ["signOrders", "signScheduleIISeries", "signEmergencyRxFollowup", "signOralLiquidPrescription", "signFormattedPrescription", "signOralMethotrexate"].contains c.id then some prescriptionSigningLabel else c.actionLabel? }
 
 /-- Product design property. Validation is conjoined with any existing contract. -/
 def strengthenElement (e : ElementSpec) : ElementSpec :=

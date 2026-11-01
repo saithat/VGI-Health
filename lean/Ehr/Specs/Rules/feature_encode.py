@@ -25,6 +25,11 @@ def emit(id,name,typ,body,note=''):
  chunks.append('\n/-- '+label+'. Catalog: '+', '.join(r['sourceIds'])+'.\n'+r['proposedRule'].replace('-/','- /')+'\n'+note.replace('-/','- /')+' -/\n'+f'def {name} : {typ} :=\n  '+body+'\n')
  manifest[id].append(name)
  objs[id].append(dict(name=name,type=typ))
+ if typ == 'EntryReq':
+  for field in ('commit','element'):
+   match=re.search(field+r' := (\"(?:[^\"\\]|\\.)*\")',body)
+   assert match, (name, field)
+   objs[id][-1][field]=json.loads(match[1])
 # Explicit event and expiry ids survive Lean JSON export for audit.
 for n,t in enumerate(TEMP):
  name=f'temporal{n+1:03d}';t['name']=name
@@ -136,7 +141,7 @@ for key,typ,values in [('elements','ElementSpec',[v[0] for v in elements.values(
 chunks.append('\n/-- Product design property. Dedicated documentation actions keep human identity. -/\ndef newCommitIds : List CommitId := '+ls([q(c) for c in new])+'\n')
 chunks.append('\n/-- Product design property. Event windows by commit. -/\ndef temporalFor (key : CommitId) : List TemporalReq :=\n  '+ls(['('+q(t['commit'])+', '+t['name']+')' for t in TEMP])+'.filterMap (fun (c, r) => if c == key then some r else none)\n')
 chunks.append('\n/-- Product design property. Durable clocks by commit. -/\ndef expiryFor (key : CommitId) : List ExpiryReq :=\n  '+ls(['('+q(e['commit'])+', '+e['name']+')' for e in EXP])+'.filterMap (fun (c, r) => if c == key then some r else none)\n')
-chunks.append('\n/-- Product design property. Strengthening preserves existing obligations. -/\ndef strengthenCommit (c : CommitSpec) : CommitSpec :=\n  { c with\n    temporal? := some (c.temporal?.getD [] ++ temporalFor c.id)\n    expiry? := some (c.expiry?.getD [] ++ expiryFor c.id)\n    actionLabel? := if c.id == "signOrders" then some prescriptionSigningLabel else c.actionLabel? }\n')
+chunks.append('\n/-- Product design property. Strengthening preserves existing obligations. -/\ndef strengthenCommit (c : CommitSpec) : CommitSpec :=\n  { c with\n    temporal? := some (c.temporal?.getD [] ++ temporalFor c.id ++\n      (if ["signScheduleIISeries", "signEmergencyRxFollowup", "authorizeDirectDispensing", "authorizeSelfAdministration", "authorizeBedsideMedication", "authorizePatientOwnedMedication", "authorizeOudDirectDispensing", "signOralLiquidPrescription", "signFormattedPrescription", "signOralMethotrexate"].contains c.id then temporalFor "signOrders" else []))\n    expiry? := some (c.expiry?.getD [] ++ expiryFor c.id)\n    actionLabel? := if ["signOrders", "signScheduleIISeries", "signEmergencyRxFollowup", "signOralLiquidPrescription", "signFormattedPrescription", "signOralMethotrexate"].contains c.id then some prescriptionSigningLabel else c.actionLabel? }\n')
 chunks.append('\n/-- Product design property. Validation is conjoined with any existing contract. -/\ndef strengthenElement (e : ElementSpec) : ElementSpec :=\n  '+ls(['('+q(e)+', '+name+')' for e,name,_ in validations])+'.foldl (fun el (key, v) =>\n    if el.id == key then { el with validation? := some (el.validation?.map (fun old => Validation.and old v) |>.getD v) } else el) e\n')
 chunks.append('\nend Ehr.Specs.Rules.Features\n')
 (ROOT/'lean/Ehr/Specs/Rules/Features.lean').write_text(''.join(chunks))

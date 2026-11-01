@@ -51,7 +51,7 @@ def withPanels (s : Screen) : List Component :=
       if name == "care" || workflow == s.workflow || (workflow == "shell" && s.id == "home")
       then some d.info else none
   (reviews ++ displays).eraseDups.filterMap fun i =>
-    let pinned := displays.contains i
+    let pinned := true
     let present := s.components.any fun c =>
       showsInfo i c.kind && (!pinned || (c.parent?.isNone && c.visibility == .always))
     if present then none else some (panel s.id ("feature." ++ i) i

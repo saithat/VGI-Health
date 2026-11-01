@@ -105,4 +105,18 @@ def selectedPatient : State := run [.enter "home.feature.patientSelected" (.flag
   | some p, some contract => payloadComplete p contract hospital w1 &&
       !payloadComplete { p with availability := [] } contract hospital w1
   | _, _ => false
+/-- The adult restraint rule has no invented upper age limit. -/
+def olderAdult : Facts := { expiredRestraint with
+  identity := { expiredRestraint.identity with ageYears := 151 }
+  clinical? := expiredRestraint.clinical?.map fun c =>
+    { c with age? := some { years := 151, source := FeatureExamples.observation "age" } } }
+#guard expiryStatus olderAdult (init specV1 canonicalV1 olderAdult physician)
+  Specs.Rules.Features.expiry001 == .overdue
+
+/-- Editing a dependency invalidates an already captured supply-days calculation. -/
+def directSupply : State := featureReady "authorizeOudDirectDispensing"
+def changedSupply : State := more directSupply
+  [.enter "feature.authorizeOudDirectDispensing.feature.dispenseQuantity" (.qty 40 .none)]
+#guard (finish directSupply "feature.authorizeOudDirectDispensing" "authorizeOudDirectDispensing").commits == ["authorizeOudDirectDispensing"]
+#guard (finish changedSupply "feature.authorizeOudDirectDispensing" "authorizeOudDirectDispensing").commits == []
 end Ehr.Canonical.Tests

@@ -69,7 +69,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.13-b2-treatment-refusal",
@@ -896,7 +896,7 @@
         "id": "cms-482.13-e7-attending-consult:temporal002"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: as soon as possible means the same minute; source does not prescribe a numeric deadline."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: as soon as possible means the same minute; source does not prescribe a numeric deadline. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.13-e8iA-adult-four-hours",
@@ -1178,7 +1178,7 @@
         "id": "cms-482.13-e8ii-assessment-24h:temporal003"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: assessment must be within the hour preceding the new order after 24 hours."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: assessment must be within the hour preceding the new order after 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.13-e9-early-discontinue",
@@ -1358,7 +1358,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.13-e14-rn-consult",
@@ -1423,7 +1423,7 @@
         "id": "cms-482.13-e14-rn-consult:temporal006"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: as soon as possible means the same minute."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: as soon as possible means the same minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.13-e16i-document-evaluation",
@@ -1488,7 +1488,7 @@
         "id": "cms-482.13-e16i-document-evaluation:temporal005"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.13-e16ii-document-behavior",
@@ -4228,7 +4228,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.24-c4iA-history-physical-timing",
@@ -4312,7 +4312,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.24-c4iB-hp-update-timing",
@@ -4382,7 +4382,7 @@
         "id": "cms-482.24-c4iB-hp-update-timing:temporal011"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.24-c4v-consent-record",
@@ -6459,7 +6459,7 @@
         "id": "cms-482.51-b2-consent-before-surgery:temporal013"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.51-b6-techniques",
@@ -6817,7 +6817,7 @@
         "id": "cms-482.51-b6-immediate-report:temporal015"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: immediately is the same recorded minute; later transcription/filing is a separate event."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: immediately is the same recorded minute; later transcription/filing is a separate event. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.51-b6-surgeon-signature",
@@ -6939,7 +6939,7 @@
         "id": "cms-482.52-b1-pre-48hours:temporal016"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.52-b2-intraop-record",
@@ -7055,7 +7055,7 @@
         "id": "cms-482.52-b3-post-48hours:temporal017"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "cms-482.55-c1-emergency-protocols",
@@ -11200,7 +11200,7 @@
         "id": "ca-title22-70751-complete-two-weeks:temporal018"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70751-authenticate-two-weeks",
@@ -11267,7 +11267,7 @@
         "id": "ca-title22-70751-authenticate-two-weeks:temporal019"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70751-exclusive-key",
@@ -11456,7 +11456,7 @@
         "id": "ca-title22-70215-shift-assessment:temporal020"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70215-transfer-assessment",
@@ -11528,7 +11528,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70215-rn-assessment",
@@ -11654,7 +11654,7 @@
         "id": "ca-title22-70215-admission-nursing-process:temporal022"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: maximum 12-hour shift; admission/transfer work is immediate in the recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70215-discharge-teaching",
@@ -12240,7 +12240,7 @@
         "id": "ca-title22-70223-verify-identity:temporal023"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally limits verification lookback to 24 hours."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally limits verification lookback to 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70223-verify-site",
@@ -12303,7 +12303,7 @@
         "id": "ca-title22-70223-verify-site:temporal024"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally limits verification lookback to 24 hours."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally limits verification lookback to 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70223-verify-side",
@@ -12366,7 +12366,7 @@
         "id": "ca-title22-70223-verify-side:temporal025"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally limits verification lookback to 24 hours."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally limits verification lookback to 24 hours. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70223-hp-24-hours",
@@ -12436,7 +12436,7 @@
         "id": "ca-title22-70223-hp-24-hours:temporal027"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70223-screening-72-hours",
@@ -12499,7 +12499,7 @@
         "id": "ca-title22-70223-screening-72-hours:temporal028"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70223-written-surgical-consent",
@@ -12562,7 +12562,7 @@
         "id": "ca-title22-70223-written-surgical-consent:temporal014"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps the consent lookback at five years; lawful emergency is a separate documented path. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70263-order-drug",
@@ -13132,7 +13132,7 @@
         "id": "ca-title22-70263-verbal-prompt-record:temporal029"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70263-verbal-giver",
@@ -13380,7 +13380,7 @@
         "id": "ca-title22-70263-verbal-countersign-48h:temporal030"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70263-verbal-authorized-receiver",
@@ -13829,7 +13829,7 @@
         "id": "ca-title22-70263-standing-signed:temporal031"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70263-standing-in-record",
@@ -14661,7 +14661,7 @@
         "id": "ca-title22-70233-preinduction-review:temporal032"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly/immediately uses the same recorded minute where no numeric statutory period is specified. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70233-anesthesia-events",
@@ -16530,7 +16530,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70707-1-sterilization-maximum-wait",
@@ -16593,7 +16593,7 @@
         "id": "ca-title22-70707-1-sterilization-maximum-wait:temporal034"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70707-1-sterilization-understanding",
@@ -16731,7 +16731,7 @@
         "id": "ca-title22-70707-1-sterilization-emergency-72h:temporal035"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70707-6-medi-cal-sterilization-age",
@@ -16864,7 +16864,7 @@
         "id": "ca-title22-70707-6-medi-cal-no-elective-short-wait:temporal036"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70707-3-no-labor",
@@ -17002,7 +17002,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70707-3-no-postabortion-24h",
@@ -17065,7 +17065,7 @@
         "id": "ca-title22-70707-3-no-postabortion-24h:temporal038"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy caps lookback at five years; the minimum 24-hour exclusion is preserved. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-title22-70707-3-no-impaired-consent",
@@ -19354,7 +19354,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. One working-day deadline; a reason recorded during the failure is permitted."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. One working-day deadline; a reason recorded during the failure is permitted. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-statutes-bpc-688-ed-electronic-issuance",
@@ -19894,7 +19894,9 @@
       },
       {
         "name": "supplyInput90",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "authorizeDirectDispensing",
+        "element": "dispenseQuantity"
       },
       {
         "name": "elementDispenseDose",
@@ -19902,7 +19904,9 @@
       },
       {
         "name": "supplyInput91",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "authorizeDirectDispensing",
+        "element": "dispenseDose"
       },
       {
         "name": "elementDispenseFrequency",
@@ -19910,7 +19914,9 @@
       },
       {
         "name": "frequencyInput92",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "authorizeDirectDispensing",
+        "element": "dispenseFrequency"
       }
     ],
     "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
@@ -20121,15 +20127,21 @@
       },
       {
         "name": "supplyInput93",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "authorizeOudDirectDispensing",
+        "element": "dispenseQuantity"
       },
       {
         "name": "supplyInput94",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "authorizeOudDirectDispensing",
+        "element": "dispenseDose"
       },
       {
         "name": "frequencyInput95",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "authorizeOudDirectDispensing",
+        "element": "dispenseFrequency"
       },
       {
         "name": "commitAuthorizeOudDirectDispensing",
@@ -20424,7 +20436,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-statutes-bpc-2290-5-telehealth-inform",
@@ -20491,7 +20503,7 @@
         "id": "ca-statutes-bpc-2290-5-telehealth-inform:temporal041"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: re-establish consent in the preceding 30 days."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: re-establish consent in the preceding 30 days. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-statutes-bpc-2290-5-telehealth-consent",
@@ -20558,7 +20570,7 @@
         "id": "ca-statutes-bpc-2290-5-telehealth-consent:temporal042"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: re-establish consent in the preceding 30 days."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: re-establish consent in the preceding 30 days. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-statutes-bpc-2290-5-telehealth-document",
@@ -22024,7 +22036,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy uses the ordinary ten-working-day deadline even when a statutory extension might be available."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy uses the ordinary ten-working-day deadline even when a statutory extension might be available. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-statutes-civ-56-101-preserve-edits",
@@ -23468,7 +23480,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly means the same recorded minute."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly means the same recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-statutes-prob-4731-retain-directive-copy",
@@ -23596,7 +23608,7 @@
         "id": "ca-statutes-prob-4732-capacity-determination:temporal045"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly means the same recorded minute."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: promptly means the same recorded minute. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "ca-statutes-prob-4673-directive-execution-date",
@@ -29971,7 +29983,7 @@
         "id": "federal-rx-1306-11-emergency-followup:temporal046"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. "
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work.  Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "federal-rx-1306-11-emergency-label",
@@ -35885,7 +35897,7 @@
         "id": "federal-rx-300aa-26-vis-before-dose:temporal047"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally requires VIS provision within 30 days before this dose."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy additionally requires VIS provision within 30 days before this dose. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "federal-rx-170-315-cpoe-med",
@@ -37310,7 +37322,9 @@
       },
       {
         "name": "formulationEntry",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "signOralLiquidPrescription",
+        "element": "liquidFormulation"
       },
       {
         "name": "commitSignOralLiquidPrescription",
@@ -38195,7 +38209,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy retains the ordinary 30-day deadline; does not use the extension."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy retains the ordinary 30-day deadline; does not use the extension. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "federal-rx-164-524-electronic-format",
@@ -39654,7 +39668,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-npg-timeout-performer-change",
@@ -39723,7 +39737,7 @@
         "id": "entrenched-npg-timeout-performer-change:temporal052"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-npg-timeout-site-agreement",
@@ -39792,7 +39806,7 @@
         "id": "entrenched-npg-timeout-site-agreement:temporal050"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-npg-timeout-procedure-agreement",
@@ -39861,7 +39875,7 @@
         "id": "entrenched-npg-timeout-procedure-agreement:temporal051"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: time-out in the minute immediately preceding the procedure. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-npg-two-identifiers",
@@ -39945,7 +39959,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-npg-site-mark-before-procedure",
@@ -40014,7 +40028,7 @@
         "id": "entrenched-npg-site-mark-before-procedure:temporal054"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-npg-medrec-resolve-discrepancies",
@@ -40230,7 +40244,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-ismp-weight-not-historical",
@@ -40305,7 +40319,7 @@
         "id": "entrenched-ismp-weight-not-historical:temporal056"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-oximeter",
@@ -40379,7 +40393,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-allergy",
@@ -40448,7 +40462,7 @@
         "id": "entrenched-who-allergy:temporal060"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-airway",
@@ -40517,7 +40531,7 @@
         "id": "entrenched-who-airway:temporal061"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-blood-loss",
@@ -40586,7 +40600,7 @@
         "id": "entrenched-who-blood-loss:temporal062"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-antibiotic",
@@ -40655,7 +40669,7 @@
         "id": "entrenched-who-antibiotic:temporal063"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-team",
@@ -40724,7 +40738,7 @@
         "id": "entrenched-who-team:temporal064"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-sterility",
@@ -40793,7 +40807,7 @@
         "id": "entrenched-who-sterility:temporal065"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-imaging",
@@ -40862,7 +40876,7 @@
         "id": "entrenched-who-imaging:temporal066"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-counts",
@@ -40931,7 +40945,7 @@
         "id": "entrenched-who-counts:temporal067"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-specimen",
@@ -41000,7 +41014,7 @@
         "id": "entrenched-who-specimen:temporal068"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-sponge-count",
@@ -41069,7 +41083,7 @@
         "id": "entrenched-who-sponge-count:temporal069"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-who-needle-count",
@@ -41138,7 +41152,7 @@
         "id": "entrenched-who-needle-count:temporal070"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy: checks in the preceding minute; counts/specimens within the preceding hour. Prophylaxis retains the source 60-minute window. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-ismp-mtx-teachback",
@@ -41753,7 +41767,7 @@
         "type": "CommitSpec"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-tjc-pain-reassessment-criteria",
@@ -43700,7 +43714,7 @@
         "id": "entrenched-leapfrog-bcma-wrong-time:temporal058"
       }
     ],
-    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number."
+    "encodingNote": "Spec v1 closed AST; v1.1/v2 inherit. Trusted current-version record adapters, physical care, credentials and persistence remain owning-lane work. Hospital policy supplies the numeric encounter/response/due-time window; source supports the safety objective, not this exact number. Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods."
   },
   {
     "id": "entrenched-leapfrog-bcma-second-nurse",
@@ -45368,7 +45382,9 @@
       },
       {
         "name": "pediatricWeightEntry",
-        "type": "EntryReq"
+        "type": "EntryReq",
+        "commit": "calculatePediatricDose",
+        "element": "weight"
       },
       {
         "name": "commitCalculatePediatricDose",

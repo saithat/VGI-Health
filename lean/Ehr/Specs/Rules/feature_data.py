@@ -9,7 +9,9 @@ import json
 q = lambda s: json.dumps(s, ensure_ascii=False)
 def risk(name, code='yes'): return f'.riskEquals {q(name)} {q(code)}'
 def fact(name, code): return f'.factEquals .{name} {q(code)}'
-def age(lo, hi): return f'.ageBetween {lo} {hi}'
+def age(lo, hi):
+    # Adult/lower-bound rules have no invented upper age limit.
+    return f'.not (.ageBetween 0 {lo-1})' if hi == 150 else f'.ageBetween {lo} {hi}'
 def both(*xs):
     if len(xs)==1: return xs[0]
     return f'.and ({xs[0]}) ({both(*xs[1:])})'
@@ -17,7 +19,7 @@ def either(a,b): return f'.or ({a}) ({b})'
 def no(x): return f'.not ({x})'
 TEMP=[]; PAT=[]; VAL=[]; EXP=[]; DISPLAY=[]; SKIP={}
 def temporal(id, commit, subject, anchor, lo, hi, *, key=None, when=None, metric='.minutes', direction=None, deadline=None, note=''):
-    TEMP.append(dict(id=id,commit=commit,subject=subject,anchor=anchor,lo=lo,hi=hi,key=key or commit,when=when,metric=metric,direction=direction,deadline=hi if deadline is None else deadline,note=note))
+    TEMP.append(dict(id=id,commit=commit,subject=subject,anchor=anchor,lo=lo,hi=hi,key=key or commit,when=when,metric=metric,direction=direction,deadline=hi if deadline is None else deadline,note=note+' Numeric bounds not stated by the source are stricter local hospital policy, not statutory periods.'))
 def patient(id, commit, element, label, *, when=None, legal=None, allowed=None, kind='.text', sample='Discussed with patient; documented plan and follow-up.', target='Observation.valueString'):
     PAT.append(dict(id=id,commit=commit,element=element,label=label,when=when,legal=legal,allowed=allowed,kind=kind,sample=sample,target=target))
 def validation(id, element, expr, *, commit=None, label=None, kind='.text', sample='2026-10-31', when=None, default=None, note=''):
