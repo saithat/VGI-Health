@@ -24,10 +24,40 @@ def program (kind : UiPresentationKind) (info title : String) : Program :=
         [{ id := "banner", kind := .banner, tag := "banner" },
          { id := "records", kind := .table info, label := title, tag := "present." ++ kind.tag }] }] }
 
+/-- A normal source group supplies both panes of an In Basket screen. -/
+def inBasketProgram : Program :=
+  { Examples.Tiny.program with
+    id := "in-basket-example", start := "example", screens :=
+      [{ id := "example", title := "In Basket", workflow := "W2", components :=
+        [{ id := "banner", kind := .banner, tag := "banner" },
+         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.columns" },
+         { id := "folders", parent? := some "basket", kind := .panel "inBasketFolders", label := "My Messages", tag := "present.folderList" },
+         { id := "messages", parent? := some "basket", kind := .table "inBasketMessages", label := "Results • In Basket", tag := "present.messages" }] }] }
+
+/-- Each source row has a real chart-navigation control with its original event. -/
+def rowActionsProgram : Program :=
+  { Examples.Tiny.program with
+    id := "worklist-row-actions", start := "example", screens :=
+      [{ id := "example", title := "My Worklist", workflow := "W3", components :=
+        [{ id := "banner", kind := .banner, tag := "banner" },
+         { id := "worklist", kind := .group false false, label := "Patient Tasks", tag := "present.worklist" },
+         { id := "records", parent? := some "worklist", kind := .table "worklist", label := "My Worklist", tag := "present.worklist" },
+         { id := "open-mar", parent? := some "worklist", kind := .button (.goto "mar-detail"), label := "Open MAR", tag := "present.row|records|0" },
+         { id := "open-pain", parent? := some "worklist", kind := .button (.goto "pain-detail"), label := "Open assessment", tag := "present.row|records|1" },
+         { id := "open-vitals", parent? := some "worklist", kind := .button (.goto "vitals-detail"), label := "Open vitals", tag := "present.row|records|2" }] }] ++
+       [("mar-detail", "Medication Administration Record", "mar"),
+        ("pain-detail", "Pain Assessment", "flowsheet"),
+        ("vitals-detail", "Recorded Vitals", "vitals")].map fun (id, title, info) =>
+          { id, title, workflow := "W3", components :=
+            [{ id := "banner", kind := .banner, tag := "banner" },
+             { id := "detail", kind := .table info, label := title, tag := "detail" },
+             { id := "back", kind := .button (.goto "example"), label := "Back to worklist", tag := "back" }] } }
+
 mutual
 /-- Strip only layout wrappers for the same-record before view. -/
 def unstyled : UiNode → List UiNode
   | .presentation _ children => unstyledList children
+  | .rowAction _ _ children => unstyledList children
   | .section id title children => [.section id title (unstyledList children)]
   | .columns children => [.columns (unstyledList children)]
   | .tabs id labels selected children => [.tabs id labels selected (unstyledList children)]
@@ -82,5 +112,21 @@ def main (args : List String) : IO Unit := do
     let screen := runRenderUi input
     IO.FS.writeFile (out / (kind.tag ++ ".json")) (toJson screen).pretty
     IO.FS.writeFile (out / (kind.tag ++ "-before.json")) (toJson { screen with workspace := unstyledList screen.workspace }).pretty
+  if let some (_, base) := inputs.getLast? then
+    let input := { base with program := inBasketProgram, state := init base.spec inBasketProgram base.facts base.user }
+    inputs := inputs ++ [("inBasket", input)]
+    let screen := runRenderUi input
+    IO.FS.writeFile (out / "inBasket.json") (toJson screen).pretty
+    IO.FS.writeFile (out / "inBasket-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
+    let input := { base with program := rowActionsProgram, state := init base.spec rowActionsProgram base.facts base.user }
+    inputs := inputs ++ [("rowActions", input)]
+    let screen := runRenderUi input
+    for (control, target) in [("open-mar", "mar-detail"), ("open-pain", "pain-detail"), ("open-vitals", "vitals-detail")] do
+      let (next, _) := Ehr.step input.spec input.program input.facts input.user .human input.state (.click control)
+      unless next.screen == target do throw (IO.userError s!"Row action failed: {control}")
+      let (back, _) := Ehr.step input.spec input.program input.facts input.user .human next (.click "back")
+      unless back.screen == "example" do throw (IO.userError s!"Return failed: {control}")
+    IO.FS.writeFile (out / "rowActions.json") (toJson screen).pretty
+    IO.FS.writeFile (out / "rowActions-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
   IO.FS.writeFile (out / "api-inputs.jsonl") ("\n".intercalate (inputs.map encodeJson) ++ "\n")
-  IO.println s!"Exported {cases.length} structured examples and before views to {out}"
+  IO.println s!"Exported {inputs.length} structured examples and before views to {out}"

@@ -2225,6 +2225,8 @@ export const UiPresentationKindValues = ["table", "schedule", "trackBoard", "orS
 export type UiNode =
   /** A layout hint around ordinary semantic nodes; never a visibility filter. */
   | { presentation: { kind: UiPresentationKind; children: UiNode[] } }
+  /** Place existing controls with a source info row; unmatched controls stay inline. */
+  | { rowAction: { target: CompId; row: number; children: UiNode[] } }
   | { section: { id: string; title: string; children: UiNode[] } }
   | { columns: { children: UiNode[] } }
   | { tabs: { id: string; labels: string[]; selected: number; body: UiNode[] } }

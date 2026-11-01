@@ -560,6 +560,8 @@ inductive UiPresentationKind
 inductive UiNode
   /-- A layout hint around ordinary semantic nodes; never a visibility filter. -/
   | presentation (kind : UiPresentationKind) (children : List UiNode)
+  /-- Place existing controls with a source info row; unmatched controls stay inline. -/
+  | rowAction (target : CompId) (row : Nat) (children : List UiNode)
   | section (id : String) (title : String) (children : List UiNode)
   | columns (children : List UiNode)
   | tabs (id : String) (labels : List String) (selected : Nat) (body : List UiNode)
