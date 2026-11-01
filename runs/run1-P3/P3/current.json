@@ -1,4 +1,4 @@
-{"version": 6,
+{"version": 7,
  "start": "home",
  "specVersion": "v2",
  "screens":
@@ -5685,7 +5685,7 @@
      "tab": 0,
      "size": "normal",
      "label": "Interaction information",
-     "kind": {"alert": {"popup": true, "alert": "minorInteractionPopup"}},
+     "kind": {"alert": {"popup": false, "alert": "minorInteractionPopup"}},
      "id": "w4Admin.alert.minorInteraction"},
     {"visibility": "always",
      "tag": "w4Admin.fiveRights",

@@ -79,3 +79,5 @@ The first v2 migration proposal passed the checker, but the old-program min-clic
 Day 7 completed on certified numeric v5 under v2. Recheck of v4 failed `reviewsBeforeCommit`: `abxIndication` was not shown on `w4Admin` before `administerMed`. The real Codex migration inserted one always-visible `abxIndication` panel after dose details. It certified on its first candidate, kept all three earlier customization decisions, used no fallback, and passed all 696 page states at both viewports. The original completed migration call was reused with `promptMatched: true` and is explicitly attributed in the decision record.
 
 Day 8 completed on certified numeric v6. Night 7 deployed the task-first flowsheet assessment layout; validation day 8: 128.7s saved, 0 clicks, 0 keystrokes, 117 scrolls. All changes still passed the native checker and the complete screen gate.
+
+Day 9 completed on certified numeric v7. Night 8 made only the spec-permitted removable reminder passive; validation day 9: 16.3s saved, 6 clicks, 0 keystrokes, 3 scrolls.

@@ -19,7 +19,7 @@ const summary = skipSummary ? null : await read(`runs/${run}/summary.json`);
 const final = summary?.timelines.find(t => t.persona === persona).days.at(-1).programVersion;
 const browser = await chromium.launch({ headless: true });
 const inventory = (await read(`${out}/recordings-${run}.json`).catch(() => ({ recordings: [] }))).recordings;
-const pause = page => page.waitForTimeout(1400);
+const pause = page => page.waitForTimeout(900);
 const comp = (page, id) => page.locator(`[data-comp-id="${id}"][data-event]`);
 async function click(page, locator) { await locator.scrollIntoViewIfNeeded(); await pause(page); await locator.click(); await pause(page); }
 async function fill(page, id, value) { await pause(page); await comp(page, id).fill(value); await pause(page); }
@@ -87,7 +87,7 @@ try {
     const interesting = decisions.filter(r => r.outcome === 'deployed').sort((a, b) => score(b) - score(a))[0] ?? decisions.find(r => r.mode === 'migrate') ?? decisions[0];
     await click(page, timeline.getByRole('button', { name: new RegExp(`Night ${interesting?.night ?? 1}$`) }));
     await expect(page.getByRole('heading', { name: 'Why', exact: true })).toBeVisible();
-    await page.mouse.wheel(0, 470); await pause(page);
+    await page.mouse.wheel(0, 470); await page.waitForTimeout(4000);
   });
   await record('03-counterexample', async page => {
     await dashboard(page, 'Counterexamples');
@@ -114,6 +114,18 @@ try {
     await expect(card.locator('.paired-screens .ehr-shell')).toHaveCount(2);
     await click(page, card.locator('.migration-patch summary'));
     await page.mouse.wheel(0, 350); await pause(page);
+    const migration = await read(`runs/${run}/decisions/night-${String(manifest.releaseDays.v2 - 1).padStart(2, '0')}/${persona}.json`);
+    const migrated = await read(`runs/${run}/programs/${persona}/v${migration.versionAfter}.json`);
+    const screenId = migration.release.recheck.screens.at(-1);
+    const changed = migrated.screens.find(screen => screen.id === screenId)?.components.find(c => c.kind.panel?.info === 'abxIndication' || c.kind.field?.element === 'abxIndication');
+    if (changed) {
+      await click(page, card.locator('.migration-patch summary'));
+      const panes = card.locator('.paired-screens > div');
+      const prior = panes.nth(0).locator(`[data-comp-id="${screenId}.dose"]`).first();
+      if (await prior.count()) await prior.scrollIntoViewIfNeeded();
+      await panes.nth(1).locator(`[data-comp-id="${changed.id}"]`).first().scrollIntoViewIfNeeded();
+      await page.waitForTimeout(3000);
+    }
     const cert = card.locator('.certificate summary');
     if (await cert.count()) await click(page, cert);
     await page.mouse.wheel(0, 450); await pause(page);
