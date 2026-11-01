@@ -1,44 +1,44 @@
 {
   "scope": "Initially shown acute buttons, inactive tabs and unmasked search inputs, all three current releases and both role projections; native interpreter events. Search must return semantic query/results without changing captures, receipts, commits or the order slot. ARIA/visibility and painter event-mapping are separate gates. Empty-form disabled clinical commits are audited for a reason; completed clinical paths are covered by the full world simulation.",
-  "sourceRevision": "4055c6ddaa3c57bcea8e2c97958ffa38f9572f21",
-  "sourceTreeDirty": true,
-  "binarySha256": "c70e91c780d4bc1ef22dcf5827ad9eedd79c2473a4e3d18b1e00f0d1242d816b",
+  "sourceRevision": "bd408b01f8aead3ed86238d943c6434b4165c52b",
+  "sourceTreeDirty": false,
+  "binarySha256": "7d1c745d54014d950fc1aae2678fa7435d52498f96968f77defce6e61c38a777",
   "programs": [
     {
       "release": "v1",
       "persona": "P2",
       "path": "releases/v1/personas/P2.json",
-      "sha256": "7a5944795922fba787d4de791f812dc073723b0b77bcba3d3b2dc03b389d99d3"
+      "sha256": "94aa9cb84e9ea82d47a787ab0c079394e726fa599959e2e65f0229291c7abb76"
     },
     {
       "release": "v1",
       "persona": "P3",
       "path": "releases/v1/personas/P3.json",
-      "sha256": "e2e84eef7b827a801cb1f8f32c129622dc2e1298cbb6420a4bc11b5c1f6c11b9"
+      "sha256": "4b680e7d57189db4429c4400e417a192ee6b985ae124d789c4cd1a027f954b01"
     },
     {
       "release": "v2",
       "persona": "P2",
       "path": "releases/v2/personas/P2.json",
-      "sha256": "a23c1303bc849744f032ba25ecf063a638cf81690fcf0ad89ff093ee4a15ac0a"
+      "sha256": "fecab4f23f20ec669ea7bf2b4c5483fac3598a96e6a0b53b96fc142ee721c026"
     },
     {
       "release": "v2",
       "persona": "P3",
       "path": "releases/v2/personas/P3.json",
-      "sha256": "fbbd253172f7673b911ca8c184eb5cae99edca0e094639370892c938abd19169"
+      "sha256": "9cc317932809ef108ad51a9cbe4b6eb01c3244389f200e67b95dbae8d271e78f"
     },
     {
       "release": "v3",
       "persona": "P2",
       "path": "releases/v3/personas/P2.json",
-      "sha256": "5cf59059c7072fbd800ec15bfb17d8e01698a04690a93ceed4b70f27199cd308"
+      "sha256": "aae884139c220961708d284351b94ccc203b07ccae87be9730e67a896d5c8437"
     },
     {
       "release": "v3",
       "persona": "P3",
       "path": "releases/v3/personas/P3.json",
-      "sha256": "83470fd2ad1ae23aa42309f4fb656024217a9cc2d4d6eb265b5c553bd2a427c1"
+      "sha256": "5e603a110363aa3a90192e86c8e48bbe9f03865215cd32fabe152b9962f4b496"
     }
   ],
   "fixtures": [
@@ -78,16 +78,17 @@
     }
   ],
   "screens": 36,
-  "clicked": 363,
+  "clicked": 369,
   "tabs": 228,
   "searches": 39,
-  "disabled": 23,
+  "disabled": 17,
   "results": [
     {
       "release": "v1",
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
+        "w3TrackBoard.back",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
@@ -96,12 +97,7 @@
         "w3TrackBoard.nav.w3Disposition",
         "w3TrackBoard.open"
       ],
-      "disabled": [
-        {
-          "comp": "w3TrackBoard.back",
-          "reason": "no previous screen"
-        }
-      ],
+      "disabled": [],
       "tabs": [
         "w3TrackBoard.chart/1",
         "w3TrackBoard.chart/2",
@@ -331,18 +327,14 @@
         "w4Worklist.unitContext",
         "w4Worklist.allergyGroup",
         "w4Worklist.review.allergyList",
+        "w4Worklist.back",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
         "w4Worklist.nav.w4Handoff",
         "w4Worklist.toMar"
       ],
-      "disabled": [
-        {
-          "comp": "w4Worklist.back",
-          "reason": "no previous screen"
-        }
-      ],
+      "disabled": [],
       "tabs": [
         "w4Worklist.chart/1",
         "w4Worklist.chart/2",
@@ -477,6 +469,7 @@
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
+        "w3TrackBoard.back",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
@@ -485,12 +478,7 @@
         "w3TrackBoard.nav.w3Disposition",
         "w3TrackBoard.open"
       ],
-      "disabled": [
-        {
-          "comp": "w3TrackBoard.back",
-          "reason": "no previous screen"
-        }
-      ],
+      "disabled": [],
       "tabs": [
         "w3TrackBoard.chart/1",
         "w3TrackBoard.chart/2",
@@ -725,18 +713,14 @@
         "w4Worklist.unitContext",
         "w4Worklist.allergyGroup",
         "w4Worklist.review.allergyList",
+        "w4Worklist.back",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
         "w4Worklist.nav.w4Handoff",
         "w4Worklist.toMar"
       ],
-      "disabled": [
-        {
-          "comp": "w4Worklist.back",
-          "reason": "no previous screen"
-        }
-      ],
+      "disabled": [],
       "tabs": [
         "w4Worklist.chart/1",
         "w4Worklist.chart/2",
@@ -871,6 +855,7 @@
       "persona": "P2",
       "screen": "w3TrackBoard",
       "clicked": [
+        "w3TrackBoard.back",
         "w3TrackBoard.home",
         "w3TrackBoard.nav.w3Triage",
         "w3TrackBoard.nav.w3Provider",
@@ -879,12 +864,7 @@
         "w3TrackBoard.nav.w3Disposition",
         "w3TrackBoard.open"
       ],
-      "disabled": [
-        {
-          "comp": "w3TrackBoard.back",
-          "reason": "no previous screen"
-        }
-      ],
+      "disabled": [],
       "tabs": [
         "w3TrackBoard.chart/1",
         "w3TrackBoard.chart/2",
@@ -1119,18 +1099,14 @@
         "w4Worklist.unitContext",
         "w4Worklist.allergyGroup",
         "w4Worklist.review.allergyList",
+        "w4Worklist.back",
         "w4Worklist.home",
         "w4Worklist.nav.w4Mar",
         "w4Worklist.nav.w4Flowsheet",
         "w4Worklist.nav.w4Handoff",
         "w4Worklist.toMar"
       ],
-      "disabled": [
-        {
-          "comp": "w4Worklist.back",
-          "reason": "no previous screen"
-        }
-      ],
+      "disabled": [],
       "tabs": [
         "w4Worklist.chart/1",
         "w4Worklist.chart/2",

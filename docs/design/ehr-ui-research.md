@@ -728,6 +728,14 @@ Final integration checkpoint (implementation `bdd32fb8`, main `1721e64a`): defau
 
 The complete six-profile control audit records **2,789** working interactions, **114** explained disabled states, **0 dead controls** and **0 errors** across **243** sampled clinical configurations. RN2 completes its full **48**-configuration sample. Queued states outside the configured cap remain explicit in the receipt; this is a bounded control audit, separate from exhaustive supplied-task replay. The actual unsafe allergy-review edit is rejected for **reviewsBeforeCommit**, and its counterexample replay passes. Fast regression and local/synthetic-host performance checks pass. [Final integration verification](../audits/acute-integration-verification.json) and [visual identities/before-after evidence](../audits/acute-integration-visuals.json) bind the exact implementation, inputs, images and reports.
 
+### Current-main cleanup and patient-selection integration (2026-11-01, morning)
+
+Integrated main `8ce36d968b0e992bc2b5b3003e86223c2d9b7dbd`, retaining its clinical-date display, live department lists, metrics and conformance changes. Screenshot modify/delete conflicts follow main's curated deletion. No deleted screenshot gallery is restored. The curated `app/shots/final/P2-landing.png` already shows a populated ED board with room, chief complaint, colored ESI, arrival, nurse/provider, pending studies and disposition.
+
+Acute checks now project a patient directory from the same supplied FHIR chart, choose its patient through ordinary workspace lookup/open events, then use existing goto targets. Numeric ESI/pain choices, source-bound panels, unconfirmed nursing outlines and SBAR remain covered. The native audit checks 36 release/persona acute screens, including explained blocked commits, tabs and real search results. Source API parity includes the selected chart context.
+
+The real Medplum transaction suite exposed loss of a supplied encounter and admission bed during initial chart selection. The bridge now preserves an existing encounter for the supplied patient and its bed only on the same encounter; an explicit source worklist encounter still takes precedence. All six real transaction tests pass, including admission into the chosen Location and rollback after an optimistic-lock failure. No Lean spec, rule, theorem statement or clinical guard is edited by this integration fix. Current gate evidence is recorded separately from earlier milestone receipts.
+
 ## Canonical realism: P1 PCP and P4 pediatric NP (ambulatory)
 
 Research and implementation pass: 2026-11-01, AMB lane. This is one vendor

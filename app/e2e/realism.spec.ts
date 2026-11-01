@@ -23,7 +23,7 @@ function infoNodes(nodes: UiNode[]): NodeOf<"info">[] {
 test("shared shell and browser visual review", async ({ page }) => {
   test.skip(!process.env.REALISM_SHOTS, "Opt-in visual review capture");
   test.setTimeout(120000);
-  const folder = `shots/realism/shell/${process.env.REALISM_SHOTS}`;
+  const folder = process.env.REALISM_OUTPUT_DIR ?? `shots/realism/shell/${process.env.REALISM_SHOTS}`;
   mkdirSync(folder, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const [name, route] of [
