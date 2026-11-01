@@ -30,6 +30,8 @@ async function render(page: Page, screen: UiScreen) {
   await page.waitForTimeout(220);
 }
 function nodes(tree: UiNode): UiNode[] {
+  if ("presentation" in tree)
+    return [tree, ...tree.presentation.children.flatMap(nodes)];
   if ("section" in tree) return [tree, ...tree.section.children.flatMap(nodes)];
   if ("columns" in tree) return [tree, ...tree.columns.children.flatMap(nodes)];
   if ("tabs" in tree) return [tree, ...tree.tabs.body.flatMap(nodes)];

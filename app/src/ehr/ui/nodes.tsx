@@ -1,4 +1,4 @@
-import { useId, useState } from "react";
+import { useContext, useId, useState } from "react";
 import {
   Alert,
   Badge,
@@ -23,6 +23,10 @@ import { entryEvent } from "./events";
 import { ClinicalIcon } from "./Icons";
 import { DisplayValue, severityTone, statusTone } from "./display";
 import { clinicalTokens } from "./theme";
+import {
+  PresentationContext,
+  StructuredInfo,
+} from "./presentations/StructuredInfo";
 import type { NodeOf, UiNode } from "./types";
 
 export type Emit = (event: Event) => void;
@@ -379,6 +383,8 @@ function InfoTable({ node }: { node: NodeOf<"info"> }) {
   );
 }
 export function InfoNode({ node }: Props<"info">) {
+  const presentation = useContext(PresentationContext);
+  if (presentation) return <StructuredInfo node={node} kind={presentation} />;
   const values = node.rows
     .flatMap((row) =>
       row
@@ -591,6 +597,12 @@ export function UiNodeView({
   confirmProvided?: boolean;
 }) {
   switch (true) {
+    case "presentation" in node:
+      return (
+        <PresentationContext.Provider value={node.presentation.kind}>
+          <UiChildren nodes={node.presentation.children} onEvent={onEvent} />
+        </PresentationContext.Provider>
+      );
     case "section" in node:
       return <SectionNode node={node.section} onEvent={onEvent} />;
     case "columns" in node:

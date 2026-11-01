@@ -53,7 +53,10 @@ def main (args : List String) : IO Unit := do
     let some it := (Ehr.view p1spec p1 facts user ordered).items.find? (fun it =>
       it.shown && match it.comp.kind with | .field e _ _ => e == element | _ => false)
       | throw (IO.userError s!"sample field not shown: {element}")
-    let some value := Ehr.parseValue el.kind text | throw (IO.userError s!"invalid sample value: {element}")
+    -- Native-unit medication doses need the unit selected by the actual state.
+    let inputKind := if el.kind == .medicationDose then
+      .quantity ((Ehr.doseInputUnit? ordered it.slot).getD .none) else el.kind
+    let some value := Ehr.parseValue inputKind text | throw (IO.userError s!"invalid sample value: {element}")
     let (next, result) := Ehr.step p1spec p1 facts user .human ordered (.enter it.comp.id value)
     if result != .ok then throw (IO.userError s!"sample entry blocked: {element}: {reprStr result}")
     ordered := next
