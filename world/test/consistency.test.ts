@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { dataReason } from "./data";
+import { beforeAll, describe, expect, it } from "vitest";
 import { PERSONAS } from "../src/schema";
 import { DAYS, FIXTURE_INDEX, SYNTHEA_INDEX, run, schedule, stateOf } from "./helpers";
 
@@ -7,8 +8,11 @@ const CASES = [
   { seed: 1, index: SYNTHEA_INDEX },
 ];
 
-describe.each(CASES)("cross-persona consistency ($index, seed $seed)", ({ seed, index }) => {
-  const r = run(seed, index);
+CASES.forEach(({ seed, index }) => {
+  const reason = dataReason(index);
+  describe.skipIf(Boolean(reason))(`cross-persona consistency (${index}, seed ${seed})${reason ? ` (${reason})` : ""}`, () => {
+  let r: ReturnType<typeof run>;
+  beforeAll(() => { r = run(seed, index); });
 
   it("every admitted patient is on P3's census the next day, with ward tasks", () => {
     let checked = 0;
@@ -156,4 +160,5 @@ describe.each(CASES)("cross-persona consistency ($index, seed $seed)", ({ seed, 
     expect(ib5.handled).toBeLessThanOrEqual(5);
     expect(ib5.backlogAfter).toBe(ib4.backlogAfter + ib5.arrived - ib5.handled);
   });
+});
 });

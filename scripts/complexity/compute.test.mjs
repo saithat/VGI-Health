@@ -1,3 +1,4 @@
+import { dataReason } from '../test-data.mjs';
 import { complexityReleaseLabels } from '../historical-releases.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -5,7 +6,7 @@ import { readFile } from 'node:fs/promises';
 
 const load = async p => JSON.parse(await readFile(new URL(`../../${p}`, import.meta.url), 'utf8'));
 
-test('fixed cases cover W1–W7 with concrete clinical choices and a single surgery patient', async () => {
+test('fixed cases cover W1–W7 with concrete clinical choices and a single surgery patient', { skip: dataReason('programs/benchmarks') }, async () => {
   const suite = await load('programs/benchmarks/suite.json');
   assert.deepEqual(suite.cases.map(c => c.workflow), ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']);
   assert.equal(new Set(suite.cases.find(c => c.id === 'W6').steps.map(s => s.patientId)).size, 1);
@@ -13,7 +14,7 @@ test('fixed cases cover W1–W7 with concrete clinical choices and a single surg
   assert.equal(suite.cases.find(c => c.id === 'W4').steps[0].choices.administer[0].drug, 'insulin lispro');
 });
 
-test('P3 report includes all certified iterations, scoped minima, high-alert cosign and release markers', async () => {
+test('P3 report includes all certified iterations, scoped minima, high-alert cosign and release markers', { skip: dataReason('runs/run1-P3') }, async () => {
   const report = complexityReleaseLabels(await load('runs/run1-P3/complexity.json'));
   const person = report.personas[0];
   assert.equal(person.persona, 'P3');
@@ -35,7 +36,7 @@ test('P3 report includes all certified iterations, scoped minima, high-alert cos
   assert.ok(person.markers.some(m => m.properties.includes('humanOnlyKept')));
 });
 
-test('canonical report covers every workflow once and actually enters pinned values', async () => {
+test('canonical report covers every workflow once and actually enters pinned values', { skip: dataReason('programs/benchmarks') }, async () => {
   const canonical = await load('programs/benchmarks/canonical-complexity.json');
   assert.equal(canonical.iterations.length, 3);
   for (const iteration of canonical.iterations) {

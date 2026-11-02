@@ -79,7 +79,7 @@ export function ReplayScreen({
         throw new Error(binding.key === bindingKey ? binding.error : "Verifying certified build…");
       if (!run.replay)
         throw new Error(
-          "This run needs replay.json with spec, bundle, user and same-task traces. See app/README.md.",
+          "This run needs replay.json with spec, bundle, user and same-task traces. See README.md, Replay mode.",
         );
       const contexts = run.replay.contexts.filter((c) => c.persona === persona);
       const context =

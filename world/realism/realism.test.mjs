@@ -1,15 +1,17 @@
+import { dataReason } from "../test/data.ts";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
 import { read, hash, resourceKey, SYSTEM, EXT } from './common.mjs';
 import { reconcileBundle, ingredient } from './reconcile.mjs';
 import { ROOT, augment } from './generate.mjs';
+const skip = dataReason("fixtures/clinical", "fixtures/synthea", "fixtures/synthetic-hospital", "runs/world/2");
+const codes=r=>r.code?.coding?.map(c=>c.code)??[];
+
+test('all 324 charts have a reviewed allergy state, PCP, coverage and reconciled active medications', { skip },()=>{
 const clinical=read(resolve(ROOT,'fixtures/clinical/overrides.json'));
 const index=read(resolve(ROOT,'fixtures/clinical/index.json'));
 const overrides=new Map(clinical.entry.map(e=>[e.key,e]));
-const codes=r=>r.code?.coding?.map(c=>c.code)??[];
-
-test('all 324 charts have a reviewed allergy state, PCP, coverage and reconciled active medications',()=>{
   let nka=0,stopped=0;
   for(const source of read(resolve(ROOT,'fixtures/clinical/audit.json')).sourceFiles) {
     const raw=read(resolve(ROOT,source.file));
@@ -43,7 +45,8 @@ test('all 324 charts have a reviewed allergy state, PCP, coverage and reconciled
   assert.ok(nka>200); assert.ok(stopped>100); assert.equal(index.patients.length,324);
 });
 
-test('all ten day graphs have full lists, role assignments, standing orders, senders and complete refill records',()=>{
+test('all ten day graphs have full lists, role assignments, standing orders, senders and complete refill records', { skip },()=>{
+const clinical=read(resolve(ROOT,'fixtures/clinical/overrides.json'));
   let dnr=0;
   const clinicalKeys=new Set(clinical.entry.filter(e=>e.action!=='withdraw').map(e=>e.key));
   for(let day=1;day<=10;day++) {
@@ -103,7 +106,8 @@ test('all ten day graphs have full lists, role assignments, standing orders, sen
   assert.ok(dnr>0);
 });
 
-test('regeneration is byte reproducible and never changes schedules or imported fixtures',()=>{
+test('regeneration is byte reproducible and never changes schedules or imported fixtures', { skip },()=>{
+  const clinical=read(resolve(ROOT,'fixtures/clinical/overrides.json'));
   const manifest=read(resolve(ROOT,'runs/world/2/manifest.json'));
   const before=manifest.files.map(f=>hash(read(resolve(ROOT,'runs/world/2',f))));
   const overlayHash=hash(clinical);
@@ -115,7 +119,7 @@ test('regeneration is byte reproducible and never changes schedules or imported 
 import { readFileSync } from 'node:fs';
 const __read=f=>readFileSync(resolve(ROOT,f),'utf8');
 
-test('background organ-removal cases respect imported history and prior context days',()=>{
+test('background organ-removal cases respect imported history and prior context days', { skip },()=>{
   const history=new Map();
   const index=read(resolve(ROOT,'fixtures/synthetic-hospital/index.json'));
   for(const p of index.patients) {
@@ -136,7 +140,7 @@ test('background organ-removal cases respect imported history and prior context 
   }
 });
 
-test('department background cases do not double-book the clinic surgeon and actual case times are preserved',()=>{
+test('department background cases do not double-book the clinic surgeon and actual case times are preserved', { skip },()=>{
   for(let day=1;day<=10;day++) {
     const state=read(resolve(ROOT,`runs/world/2/state-day-${day}.json`));
     const rs=read(resolve(ROOT,`runs/world/2/context/day-${String(day).padStart(2,'0')}.json`)).entry.map(e=>e.resource);

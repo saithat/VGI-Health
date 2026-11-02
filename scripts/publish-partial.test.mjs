@@ -1,3 +1,4 @@
+import { dataReason } from './test-data.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,writeFile,readFile,rm} from 'node:fs/promises';
@@ -37,7 +38,7 @@ async function fixture(t){
 test('stable JSON refuses a half-written source',async t=>{
  const root=await mkdtemp(path.join(tmpdir(),'partial-json-'));t.after(()=>rm(root,{recursive:true,force:true}));const file=path.join(root,'incomplete.json');await writeFile(file,'{"partial":');await assert.rejects(stableJson(file),SyntaxError);
 });
-test('prefix includes full day 2 after full night 1 and excludes future staged versions',async t=>{
+test('prefix includes full day 2 after full night 1 and excludes future staged versions', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {root,source}=await fixture(t),before=await readFile(path.join(source,'manifest.json'));
  const prefix=await collectPrefix(source);assert.equal(prefix.daysCompleted,2);assert.equal(prefix.nightsCompleted,1);
  assert(!prefix.files.has('programs/P1/v2.json'));assert.equal(prefix.days.length,4);
@@ -47,33 +48,33 @@ test('prefix includes full day 2 after full night 1 and excludes future staged v
  assert.deepEqual(await readFile(path.join(source,'manifest.json')),before);
  assert.equal((await collectPrefix(source)).signature,prefix.signature);
 });
-test('partial/missing persona day or night cannot enter the published prefix',async t=>{
+test('partial/missing persona day or night cannot enter the published prefix', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {source}=await fixture(t);await writeFile(path.join(source,'days/day-02/P2.json'),'{');
  let prefix=await collectPrefix(source);assert.equal(prefix.daysCompleted,1);assert.equal(prefix.nightsCompleted,1);assert(!prefix.files.has('days/day-02/P1.json'));
  await rm(path.join(source,'decisions/night-01/P2.json'));prefix=await collectPrefix(source);assert.equal(prefix.nightsCompleted,0);assert(!prefix.files.has('decisions/night-01/P1.json'));assert(!prefix.files.has('programs/P1/v1.json'));
 });
-test('decision-before-pointer crash window is excluded; invalid certificate is never copied',async t=>{
+test('decision-before-pointer crash window is excluded; invalid certificate is never copied', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {source}=await fixture(t);await write(path.join(source,'programs/P2/deployed.json'),{version:0});
  let prefix=await collectPrefix(source);assert.equal(prefix.nightsCompleted,0);
  await write(path.join(source,'programs/P2/deployed.json'),{version:2});
  const cert=path.join(source,'certs/P2/v1.json'),row=JSON.parse(await readFile(cert));await write(cert,{...row,programHash:'wrong'});
  prefix=await collectPrefix(source);assert.equal(prefix.nightsCompleted,0);assert(!prefix.files.has('programs/P2/v1.json'));
 });
-test('idempotent publisher returns an existing exact prefix without native work',async t=>{
+test('idempotent publisher returns an existing exact prefix without native work', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {root,source}=await fixture(t),prefix=await collectPrefix(source);await materialize(prefix,path.join(root,'runs/copy'),'copy',source);for(const file of ['replay.json','trajectories/index.json','trajectories/verification.json','complexity.json'])await write(path.join(root,'runs/copy',file),{});
  const result=await publishPartial({root,run:source,into:'copy'});assert.equal(result.snapshotSha256,prefix.signature);
  await assert.rejects(publishPartial({root,run:source,into:'live'}),/Source equals destination/);
 });
 
-test('in-place publication retains all original incomplete data and rollback restores the source',async t=>{
+test('in-place publication retains all original incomplete data and rollback restores the source', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {root,source}=await fixture(t),stage=path.join(root,'stage');await write(path.join(source,'pending/incomplete.json'),{original:true});await write(path.join(stage,'manifest.json'),{status:'partial'});
  const backup=await swapped(stage,source,true);assert.deepEqual(JSON.parse(await readFile(path.join(backup,'pending/incomplete.json'))),{original:true});assert.equal(JSON.parse(await readFile(path.join(source,'manifest.json'))).status,'partial');
  await assert.rejects(swapped(path.join(root,'missing-stage'),source,false));assert.equal(JSON.parse(await readFile(path.join(source,'manifest.json'))).status,'partial');
 });
-test('a day using an unrecorded future deployment is excluded',async t=>{
+test('a day using an unrecorded future deployment is excluded', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {source}=await fixture(t),file=path.join(source,'days/day-02/P2.json'),row=JSON.parse(await readFile(file));await write(file,{...row,programVersion:2});const prefix=await collectPrefix(source);assert.equal(prefix.daysCompleted,1);assert.match(prefix.stopReason,/preceding committed deployment/);
 });
-test('watch is read-only, skips unchanged prefixes and stops cleanly on SIGTERM',async t=>{
+test('watch is read-only, skips unchanged prefixes and stops cleanly on SIGTERM', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {root,source}=await fixture(t),prefix=await collectPrefix(source),target=path.join(root,'runs/copy');await materialize(prefix,target,'copy',source);
  for(const file of ['replay.json','trajectories/index.json','trajectories/verification.json','complexity.json'])await write(path.join(target,file),{});
  const before=await readFile(path.join(source,'manifest.json'));
@@ -85,11 +86,11 @@ test('watch is read-only, skips unchanged prefixes and stops cleanly on SIGTERM'
  await assert.rejects(readFile(path.join(root,'runs/.publish-copy.lock')),/ENOENT/);
 });
 
-test('stopped finalization invokes conformance and current-build rebind, propagating refusals',async()=>{
+test('stopped finalization invokes conformance and current-build rebind, propagating refusals', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async()=>{
  const calls=[],execute=async(binary,args,options)=>{calls.push({binary,args,options});return {stdout:'',stderr:''};};
  await finalizeStopped({root:'/repo',id:'stopped',binary:'/repo/lean/ehr',execute});assert.deepEqual(calls.map(c=>c.args),[['conformance','--run','stopped','--run-only','--jobs','5'],['--filter','agent','rebind','--run','stopped']]);assert(calls.every(c=>c.options.cwd==='/repo'&&c.options.env.EHR_FAKE==='0'&&c.options.env.EHR_BIN==='/repo/lean/ehr'));
  let count=0;await assert.rejects(finalizeStopped({root:'/repo',id:'stopped',binary:'/ehr',execute:async()=>{if(++count===2)throw new Error('CURRENT SCREEN GATE REFUSED');return {stdout:'',stderr:''};}}),/CURRENT SCREEN GATE REFUSED/);
 });
-test('an invalid deploy marker cannot make a staged night appear committed',async t=>{
+test('an invalid deploy marker cannot make a staged night appear committed', { skip: dataReason('runs/world/2/personas', 'runs/mock/decisions') },async t=>{
  const {source}=await fixture(t);await write(path.join(source,'programs/P2/deployed.json'),{});const prefix=await collectPrefix(source);assert.equal(prefix.nightsCompleted,0);
 });

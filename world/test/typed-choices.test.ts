@@ -1,12 +1,19 @@
+import { dataReason } from "./data";
 import { PRIOR_AUTH_RELEASE_DAY } from "../src/releases";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { getString } from "../src/json";
 import { isControlled, serviceOrder } from "../src/formulary";
 import { OrderChoiceSchema } from "../src/schema";
 import { allTasks, FIXTURE_INDEX, run, SYNTHEA_INDEX } from "./helpers";
 
-describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("typed decisions (%s)", (index) => {
-  const tasks = allTasks(run(1, index));
+[FIXTURE_INDEX, SYNTHEA_INDEX].forEach((index) => {
+  const reason = dataReason(index);
+  describe.skipIf(Boolean(reason))(`typed decisions (${index})${reason ? ` (${reason})` : ""}`, () => {
+  let tasks: ReturnType<typeof allTasks>;
+  beforeAll(() => {
+  tasks = allTasks(run(1, index));
+
+  });
 
   it("uses typed pain, holds/refusals, surgical stages and refill reasons", () => {
     expect(tasks.some((t) => t.choices.painScore !== undefined)).toBe(true);
@@ -60,6 +67,7 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("typed decisions (%s)", (index) =>
       expect(["accepted", "declined"]).toContain(getString(r, "valueCodeableConcept", "coding", 0, "code"));
     }
   });
+});
 });
 
 it("rejects service orders disguised as medications or with missing service codes", () => {

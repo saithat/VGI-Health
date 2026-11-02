@@ -1,3 +1,4 @@
+import { dataReason } from '../test-data.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -7,7 +8,7 @@ import { loadInterpreter, verifyTask } from './index.mjs';
 const read = async p => JSON.parse(await readFile(new URL(`../../${p}`, import.meta.url), 'utf8'));
 const directory = 'runs/run1-P3/trajectories';
 
-test('index schema covers all 424 tasks and exact event slices with complete context coverage', async () => {
+test('index schema covers all 424 tasks and exact event slices with complete context coverage', { skip: dataReason('runs/run1-P3/trajectories') }, async () => {
   const index = trajectoryIndexSchema.parse(await read(`${directory}/index.json`));
   assert.equal(index.tasks.length, 424);
   assert.deepEqual([...new Set(index.tasks.map(t => t.day))], [1,2,3,4,5,6,7,8,9,10]);
@@ -43,7 +44,7 @@ test('index schema covers all 424 tasks and exact event slices with complete con
   assert.equal(trajectoryIndexSchema.safeParse(invalid).success, false);
 });
 
-test('real WASM determinism across three releases, episode resets and baseline trajectories', async () => {
+test('real WASM determinism across three releases, episode resets and baseline trajectories', { skip: dataReason('runs/run1-P3/trajectories') }, async () => {
   const index = trajectoryIndexSchema.parse(await read(`${directory}/index.json`));
   const interp = await loadInterpreter();
   for (const day of [1, 4, 7]) {

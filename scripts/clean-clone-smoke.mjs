@@ -1,11 +1,37 @@
+// Restore ignored data before installing dependencies in a clean clone.
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import console from "node:console";
+
+const root = fileURLToPath(new URL("../", import.meta.url));
+const dataPaths = ["runs", "fixtures", "programs", "verdicts.json"];
+const missing = dataPaths.filter((path) => !existsSync(join(root, path)));
+if (missing.length === dataPaths.length) {
+  const scratch = mkdtempSync(join(tmpdir(), "vgi-archive-"));
+  try {
+    const archive = join(scratch, "data.tar");
+    execFileSync("git", ["archive", "--output", archive, "hackathon-final", ...dataPaths], {
+      cwd: root, stdio: "inherit",
+    });
+    execFileSync("tar", ["-xf", archive, "-C", root], { stdio: "inherit" });
+    console.log("Restored runs, fixtures, programs and verdicts.json from hackathon-final.");
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
+} else if (missing.length) {
+  throw new Error(`Partial archive data: missing ${missing.join(", ")}. Extract with git archive hackathon-final runs fixtures programs verdicts.json | tar -x`);
+}
+if (process.argv[2] === "--extract-data") process.exit(0);
+
 // Resolve the browser dependency from its owning workspace package.
 import { createRequire } from "node:module";
 const require = createRequire(new URL("../app/package.json", import.meta.url));
 const { chromium, expect: baseExpect } = require("@playwright/test");
 const expect = baseExpect.configure({ timeout: 30_000 });
 import { URL } from "node:url";
-import console from "node:console";
-
 const base = process.argv[2];
 if (!base)
   throw new Error(

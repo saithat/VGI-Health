@@ -1,4 +1,5 @@
-import { test } from 'node:test';
+import { dataReason } from '../../scripts/test-data.mjs';
+import { before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
@@ -6,8 +7,13 @@ import { buildResources, loadWorld, options, seed, seededResources, printWorklis
 import { REPO_ROOT } from './lib.mjs';
 
 const world = resolve(REPO_ROOT, 'runs/world/1');
-const patients = Object.fromEntries(JSON.parse(readFileSync(resolve(REPO_ROOT, 'fixtures/synthea/index.json'))).patients
+const skip = dataReason('fixtures/synthea', 'runs/world/1');
+let patients;
+before(() => {
+  if (skip) return;
+patients = Object.fromEntries(JSON.parse(readFileSync(resolve(REPO_ROOT, 'fixtures/synthea/index.json'))).patients
   .map((p) => [p.id, `Patient/server-${p.id}`]));
+});
 const practitioners = Object.fromEntries(['P1', 'P2', 'P3', 'RN2', 'P4', 'P5'].map((p) => [p, `Practitioner/${p}`]));
 const resources = (day = 1) => buildResources(loadWorld({ world, day }), patients, practitioners);
 const worklist = (entries, code) => entries.filter((e) => e.resource.meta.tag.some((t) => t.system === WORKLIST_SYSTEM && t.code === code)).map((e) => e.resource);
@@ -16,7 +22,7 @@ const references = (v) => {
   return [...(v.reference ? [v.reference] : []), ...Object.values(v).flatMap(references)];
 };
 
-test('all ten world days have complete references, unique identifiers, and real Patient links', () => {
+test('all ten world days have complete references, unique identifiers, and real Patient links', { skip }, () => {
   for (let day = 1; day <= 10; day++) {
     const entries = resources(day);
     const urls = new Set(entries.map((e) => e.fullUrl));
@@ -34,7 +40,7 @@ test('all ten world days have complete references, unique identifiers, and real 
   }
 });
 
-test('day 1 preserves world worklists, abnormal results, triage pounds, MAR and future OR dates', () => {
+test('day 1 preserves world worklists, abnormal results, triage pounds, MAR and future OR dates', { skip }, () => {
   const entries = resources();
   assert.equal(worklist(entries, 'P1-appointments').length, 20);
   assert.equal(worklist(entries, 'P1-inbasket').length, 5); // three scheduled reviews + two carried items
@@ -61,7 +67,7 @@ test('day 1 preserves world worklists, abnormal results, triage pounds, MAR and 
   assert.deepEqual(resources(), entries);
 });
 
-test('conditional transactions respect eight-entry limit and resolve prior-batch dependencies; rerun writes nothing', async () => {
+test('conditional transactions respect eight-entry limit and resolve prior-batch dependencies; rerun writes nothing', { skip }, async () => {
   const stored = [];
   const external = new Set([...Object.values(patients), ...Object.values(practitioners)]);
   let writes = 0;
@@ -103,7 +109,7 @@ test('invalid day/flags fail before writes', () => {
   assert.throws(() => loadWorld({ world, day: 11 }));
 });
 
-test('busy days retain unhandled abnormal results and refill requests', () => {
+test('busy days retain unhandled abnormal results and refill requests', { skip }, () => {
   const data = loadWorld({ world, day: 5 });
   const entries = resources(5);
   const backlogResults = data.state.inBasketBacklog.filter((i) => i.kind === 'result').length;
@@ -114,7 +120,7 @@ test('busy days retain unhandled abnormal results and refill requests', () => {
     data.schedules.P1.tasks.filter((t) => t.workflow === 'W7').length + backlogRefills);
 });
 
-test('worklist queries AND the day tag with the worklist tag', async () => {
+test('worklist queries AND the day tag with the worklist tag', { skip }, async () => {
   const client = { async search(type, params) {
     assert.ok(params instanceof URLSearchParams);
     assert.equal(params.getAll('_tag')[0], `${WORLD_SYSTEM}|day1`);

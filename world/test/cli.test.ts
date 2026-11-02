@@ -1,3 +1,4 @@
+import { dataReason } from "./data";
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -7,7 +8,9 @@ import { z } from "zod";
 import { loadWorld } from "../../agent/src/world";
 import { DayScheduleSchema, PERSONAS } from "../src/schema";
 
-it("exports a deterministic agent-loadable world and removes stale days on regeneration", async () => {
+it("exports a deterministic agent-loadable world and removes stale days on regeneration", async (context) => {
+  const reason = dataReason("fixtures/synthetic-hospital");
+  if (reason) context.skip(reason);
   const out = mkdtempSync(join(tmpdir(), "world-cli-"));
   const gen = (days: number) => {
     const result = spawnSync(process.execPath, ["--import", "tsx", "src/cli.ts", "--seed", "1", "--days", String(days), "--out", out, "--quiet"], {

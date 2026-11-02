@@ -1,3 +1,4 @@
+import { dataReason } from '../test-data.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, readdir, mkdtemp, writeFile, rm } from 'node:fs/promises';
@@ -105,7 +106,7 @@ test('selection is independent of source row order and validates size and identi
   assert.throws(() => selectCohort([row, row], 1));
   assert.throws(() => convertPatient({ ...row, encounters: [] }, options));
 });
-test('committed cohort integrity, persona coverage and FHIR note/resource counts', async () => {
+test('committed cohort integrity, persona coverage and FHIR note/resource counts', { skip: dataReason('fixtures/synthetic-hospital') }, async () => {
   const index = JSON.parse(await readFile(resolve(root, 'fixtures/synthetic-hospital/index.json'), 'utf8'));
   const formulary = readFormulary(await readFile(resolve(root, 'lean/Ehr/Formulary.lean'), 'utf8'));
   assert.equal(Object.keys(formulary).length, 25);
