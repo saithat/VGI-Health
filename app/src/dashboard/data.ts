@@ -343,15 +343,3 @@ export async function submitBreakAttempt(
     throw new Error(z.object({ error: z.string() }).parse(body).error);
   return liveBreakSchema.parse(body);
 }
-
-/** Dedicated loopback study server only; participant payloads never enter run readers. */
-export async function studyRequest<T = unknown>(operation: "config" | "session", body?: unknown): Promise<T> {
-  const response = await fetch(`/api/study/${operation}`, {
-    method: body === undefined ? "GET" : "POST",
-    headers: { "Content-Type": "application/json" },
-    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-    cache: "no-store",
-  });
-  if (!response.ok) throw Error(`Study ${operation}: HTTP ${response.status}`);
-  return response.json();
-}
