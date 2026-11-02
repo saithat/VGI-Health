@@ -1,0 +1,656 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "manualHash": "bebdde82f91cb622a1159153d6367ca6521cc5bd6c0eba0941ed8c00bd7c4a3d",
+    "ruleContextHash": "68a575f5d3afe14a958aa91a0a8c0418a2ac0e7d1efe434f5ab4a7745afee0ea",
+    "ruleProfile": "core"
+  },
+  "runId": "core-10day-live",
+  "night": 6,
+  "persona": "P3",
+  "owner": "P3",
+  "mode": "migrate",
+  "specVersion": "v3",
+  "versionBefore": 2,
+  "versionAfter": 3,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P3",
+    "trainDays": [
+      1,
+      3,
+      5
+    ],
+    "programVersion": 2,
+    "totals": {
+      "tasks": 78,
+      "completed": 78,
+      "clicks": 1059,
+      "keystrokes": 2068,
+      "scrolls": 1179,
+      "popups": 38,
+      "overrides": 3,
+      "searches": 35,
+      "backtracks": 44,
+      "klmDeciSec": 115301,
+      "mouseTravelPx": 541307.11,
+      "scrollPx": 1180360
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 25,
+          "completed": 25,
+          "clicks": 313,
+          "keystrokes": 594,
+          "scrolls": 376,
+          "popups": 8,
+          "overrides": 0,
+          "searches": 8,
+          "backtracks": 7,
+          "klmDeciSec": 38861,
+          "mouseTravelPx": 170524.05000000002,
+          "scrollPx": 375837
+        }
+      },
+      {
+        "day": 3,
+        "load": "normal",
+        "programVersion": 1,
+        "metrics": {
+          "tasks": 29,
+          "completed": 29,
+          "clicks": 396,
+          "keystrokes": 806,
+          "scrolls": 430,
+          "popups": 13,
+          "overrides": 1,
+          "searches": 18,
+          "backtracks": 18,
+          "klmDeciSec": 37132,
+          "mouseTravelPx": 192947.84000000003,
+          "scrollPx": 433729
+        }
+      },
+      {
+        "day": 5,
+        "load": "normal",
+        "programVersion": 2,
+        "metrics": {
+          "tasks": 24,
+          "completed": 24,
+          "clicks": 350,
+          "keystrokes": 668,
+          "scrolls": 373,
+          "popups": 17,
+          "overrides": 2,
+          "searches": 9,
+          "backtracks": 19,
+          "klmDeciSec": 39308,
+          "mouseTravelPx": 177835.22,
+          "scrollPx": 370794
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 72.4,
+      "keystrokes": 159.9,
+      "scrolls": 0,
+      "klmDeciSec": 177.6
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W4",
+        "tasks": 78,
+        "avgClicks": 13.6,
+        "avgKeystrokes": 26.5,
+        "avgScrolls": 15.1,
+        "avgKlmSec": 147.8,
+        "avgMouseTravelPx": 6939.8,
+        "avgScrollPx": 15132.8
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w4Admin",
+        "events": 765,
+        "klmSec": 0,
+        "share": 9.808
+      },
+      {
+        "screen": "w4Flowsheet",
+        "events": 448,
+        "klmSec": 0,
+        "share": 5.744
+      },
+      {
+        "screen": "chartSummary",
+        "events": 330,
+        "klmSec": 0,
+        "share": 4.231
+      },
+      {
+        "screen": "w4Mar",
+        "events": 120,
+        "klmSec": 0,
+        "share": 1.538
+      },
+      {
+        "screen": "w4Worklist",
+        "events": 186,
+        "klmSec": 0,
+        "share": 2.385
+      },
+      {
+        "screen": "w4Handoff",
+        "events": 12,
+        "klmSec": 0,
+        "share": 0.154
+      },
+      {
+        "screen": "chartReview",
+        "events": 7,
+        "klmSec": 0,
+        "share": 0.09
+      },
+      {
+        "screen": "home",
+        "events": 4,
+        "klmSec": 0,
+        "share": 0.051
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "allergyList",
+        "created": 11,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [],
+    "alertOverrides": [
+      {
+        "alert": "highAlertAdmin",
+        "popups": 35
+      },
+      {
+        "alert": "minorInteractionPopup",
+        "popups": 3
+      }
+    ],
+    "totalOverrides": 3,
+    "backtracks": [
+      {
+        "screen": "w4Handoff",
+        "count": 8
+      },
+      {
+        "screen": "w4Flowsheet",
+        "count": 1
+      },
+      {
+        "screen": "w4Mar",
+        "count": 1
+      }
+    ],
+    "complaints": [],
+    "orderMix": []
+  },
+  "hypothesis": "The current administration screen fails v3 because antibiotic indication is missing before commit. One always-visible panel beside the dose details satisfies the new review requirement while preserving this user's direct-dose shortcut and flowsheet ordering.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "p3-v3-antibiotic-indication@m1",
+        "summary": "R3-3: Show antibiotic indication immediately after MAR dose details before administration.",
+        "moveType": "migrate",
+        "rationale": "Adds only the required read-only panel, outside tabs and collapsed groups, with no receipt condition. Moves zero existing components and preserves customizations.",
+        "targets": [
+          "w4Admin"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.dose]+",
+            "value": {
+              "id": "w4Admin.antibioticIndication",
+              "kind": {
+                "panel": {
+                  "info": "abxIndication"
+                }
+              },
+              "label": "Antibiotic indication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w4Admin.antibioticIndication"
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": null,
+      "componentsMoved": 0
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "p3-v3-antibiotic-indication@m1"
+    ],
+    "rationale": "The current administration screen fails v3 because antibiotic indication is missing before commit. One always-visible panel beside the dose details satisfies the new review requirement while preserving this user's direct-dose shortcut and flowsheet ordering.",
+    "rejectedAlternatives": [],
+    "choiceBy": "llm"
+  },
+  "predicted": {
+    "clicks": 0,
+    "keystrokes": 0,
+    "scrolls": 0,
+    "klmDeciSec": 0,
+    "mouseTravelPx": null,
+    "scrollPx": null
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidateIds": [
+          "p3-v3-antibiotic-indication@m1"
+        ],
+        "source": "migration",
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w4Admin]/components/[id=w4Admin.dose]+",
+            "value": {
+              "id": "w4Admin.antibioticIndication",
+              "kind": {
+                "panel": {
+                  "info": "abxIndication"
+                }
+              },
+              "label": "Antibiotic indication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w4Admin.antibioticIndication"
+            }
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 5,
+      "load": "normal",
+      "before": {
+        "tasks": 13,
+        "completed": 13,
+        "clicks": 200,
+        "keystrokes": 372,
+        "scrolls": 231,
+        "popups": 7,
+        "overrides": 1,
+        "searches": 7,
+        "backtracks": 5,
+        "klmDeciSec": 18256,
+        "mouseTravelPx": 96937.61999999998,
+        "scrollPx": 243041
+      },
+      "after": {
+        "tasks": 13,
+        "completed": 13,
+        "clicks": 187,
+        "keystrokes": 372,
+        "scrolls": 211,
+        "popups": 7,
+        "overrides": 1,
+        "searches": 7,
+        "backtracks": 9,
+        "klmDeciSec": 17857,
+        "mouseTravelPx": 91773.73999999999,
+        "scrollPx": 218047
+      },
+      "saving": {
+        "clicks": 13,
+        "keystrokes": 0,
+        "scrolls": 20,
+        "klmDeciSec": 399,
+        "mouseTravelPx": 5163.88,
+        "scrollPx": 24994
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 78.6,
+          "keystrokes": 179.7,
+          "scrolls": 0,
+          "klmDeciSec": 188.1
+        },
+        "after": {
+          "clicks": 67,
+          "keystrokes": 179.7,
+          "scrolls": 0,
+          "klmDeciSec": 181.8
+        }
+      }
+    },
+    "improved": true,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "Release canonical comparison; full completion required on every deploy."
+  },
+  "measured": {
+    "validation": {
+      "day": 5,
+      "load": "normal",
+      "before": {
+        "tasks": 13,
+        "completed": 13,
+        "clicks": 200,
+        "keystrokes": 372,
+        "scrolls": 231,
+        "popups": 7,
+        "overrides": 1,
+        "searches": 7,
+        "backtracks": 5,
+        "klmDeciSec": 18256,
+        "mouseTravelPx": 96937.61999999998,
+        "scrollPx": 243041
+      },
+      "after": {
+        "tasks": 13,
+        "completed": 13,
+        "clicks": 187,
+        "keystrokes": 372,
+        "scrolls": 211,
+        "popups": 7,
+        "overrides": 1,
+        "searches": 7,
+        "backtracks": 9,
+        "klmDeciSec": 17857,
+        "mouseTravelPx": 91773.73999999999,
+        "scrollPx": 218047
+      },
+      "saving": {
+        "clicks": 13,
+        "keystrokes": 0,
+        "scrolls": 20,
+        "klmDeciSec": 399,
+        "mouseTravelPx": 5163.88,
+        "scrollPx": 24994
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 78.6,
+          "keystrokes": 179.7,
+          "scrolls": 0,
+          "klmDeciSec": 188.1
+        },
+        "after": {
+          "clicks": 67,
+          "keystrokes": 179.7,
+          "scrolls": 0,
+          "klmDeciSec": 181.8
+        }
+      }
+    },
+    "test": {
+      "day": 8,
+      "load": "blind-measurement",
+      "before": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 524,
+        "keystrokes": 1017,
+        "scrolls": 581,
+        "popups": 14,
+        "overrides": 1,
+        "searches": 20,
+        "backtracks": 11,
+        "klmDeciSec": 44267,
+        "mouseTravelPx": 245824.26,
+        "scrollPx": 597084
+      },
+      "after": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 515,
+        "keystrokes": 1017,
+        "scrolls": 527,
+        "popups": 14,
+        "overrides": 1,
+        "searches": 20,
+        "backtracks": 16,
+        "klmDeciSec": 43797,
+        "mouseTravelPx": 240164.17000000004,
+        "scrollPx": 541246
+      },
+      "saving": {
+        "clicks": 9,
+        "keystrokes": 0,
+        "scrolls": 54,
+        "klmDeciSec": 470,
+        "mouseTravelPx": 5660.09,
+        "scrollPx": 55838
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 61.7,
+          "keystrokes": 166.9,
+          "scrolls": 0,
+          "klmDeciSec": 203.9
+        },
+        "after": {
+          "clicks": 59,
+          "keystrokes": 166.9,
+          "scrolls": 0,
+          "klmDeciSec": 200.7
+        }
+      }
+    },
+    "testNoAgent": {
+      "day": 8,
+      "load": "blind-measurement-no-agent",
+      "before": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 524,
+        "keystrokes": 1017,
+        "scrolls": 581,
+        "popups": 14,
+        "overrides": 1,
+        "searches": 20,
+        "backtracks": 11,
+        "klmDeciSec": 44267,
+        "mouseTravelPx": 245824.26,
+        "scrollPx": 597084
+      },
+      "after": {
+        "tasks": 38,
+        "completed": 38,
+        "clicks": 515,
+        "keystrokes": 1017,
+        "scrolls": 527,
+        "popups": 14,
+        "overrides": 1,
+        "searches": 20,
+        "backtracks": 16,
+        "klmDeciSec": 43797,
+        "mouseTravelPx": 240164.17000000004,
+        "scrollPx": 541246
+      },
+      "saving": {
+        "clicks": 9,
+        "keystrokes": 0,
+        "scrolls": 54,
+        "klmDeciSec": 470,
+        "mouseTravelPx": 5660.09,
+        "scrollPx": 55838
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 61.7,
+          "keystrokes": 166.9,
+          "scrolls": 0,
+          "klmDeciSec": 203.9
+        },
+        "after": {
+          "clicks": 59,
+          "keystrokes": 166.9,
+          "scrolls": 0,
+          "klmDeciSec": 200.7
+        }
+      }
+    },
+    "minClicks": [],
+    "predictionHeld": null,
+    "predictionNote": ""
+  },
+  "userResponse": {
+    "response": "not-offered",
+    "probability": 0,
+    "reason": "regulatory migration: the user cannot keep a non-conforming version"
+  },
+  "certificate": {
+    "specVersion": "v3",
+    "specHash": "fnv1a64:4185fe08609ba09c",
+    "programHash": "fnv1a64:9546e66708f03ee7",
+    "verdict": "ok",
+    "checkerVersion": "check-1",
+    "time": "2026-11-02T00:36:34Z"
+  },
+  "screenCheck": {
+    "status": "pass",
+    "mode": "real",
+    "bundles": [
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Ashly_Rippin_149fcc1f.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Abdul_Sauer_d0fe99e5.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Albert_Weber_84816a36.json"
+    ],
+    "pages": 367,
+    "failingScreens": [],
+    "failingFiles": [],
+    "message": "367 page trees passed"
+  },
+  "deployed": {
+    "version": 3,
+    "program": "programs/P3/v3.json",
+    "certificate": "certs/P3/v3.json",
+    "build": "certs/P3/v3.build.json",
+    "source": "programs/P3/v3.source.json"
+  },
+  "outcome": "migrated",
+  "release": {
+    "id": "v3",
+    "specVersion": "v3",
+    "recheck": {
+      "status": "fail",
+      "property": "reviewsBeforeCommit",
+      "message": "abxIndication is not shown on screen w4Admin when administerMed is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "w4Worklist.documentSelectedDose"
+          }
+        },
+        {
+          "click": {
+            "comp": "w4Admin.commit.administerMed"
+          }
+        }
+      ],
+      "screens": [
+        "w4Worklist",
+        "w4Admin"
+      ],
+      "verdict": {
+        "violation": {
+          "property": "reviewsBeforeCommit",
+          "message": "abxIndication is not shown on screen w4Admin when administerMed is clicked: it must be on the screen, not in a closed tab or collapsed group, and legible",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "w4Worklist.documentSelectedDose"
+              }
+            },
+            {
+              "click": {
+                "comp": "w4Admin.commit.administerMed"
+              }
+            }
+          ],
+          "screens": [
+            "w4Worklist",
+            "w4Admin"
+          ]
+        }
+      }
+    },
+    "items": [
+      "R3-3"
+    ],
+    "surfaced": null,
+    "customizationsKept": [
+      "night 1: Open documentation for the selected dose directly from the worklist.; Place new flowsheet documentation before historical tables."
+    ],
+    "customizationsDropped": [],
+    "fallback": false,
+    "flaggedUser": false
+  },
+  "flags": [
+    "reporting: theoretical minima are post-run only; no search attempted overnight"
+  ],
+  "llmCalls": [
+    {
+      "callId": "night-06/P3/migrate-1",
+      "purpose": "migrate",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 201284,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-06/P3/migrate-1.json"
+    }
+  ],
+  "createdAt": "2026-11-02T00:33:05.203Z",
+  "sourceRunId": "core-10day"
+}

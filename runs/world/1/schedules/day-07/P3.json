@@ -1,0 +1,1484 @@
+{
+  "day": 7,
+  "persona": "P3",
+  "load": "normal",
+  "tasks": [
+    {
+      "id": "d07-P3-W4-001",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 30,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment",
+          "newOrdersReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-036",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "c096a68f-5a2a-0d37-9bd0-e3b6050bbede",
+      "startMin": 30,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment",
+          "newOrdersReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-008",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "d8360f8d-89b3-5e5f-7e44-2220c29943cd",
+      "startMin": 33,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment",
+          "newOrdersReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-041",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "80f2db06-6086-7fd1-c09d-645dcec05a52",
+      "startMin": 33,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment",
+          "newOrdersReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-013",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "a9b473ca-5ad8-e161-3869-9c4b5f2e4831",
+      "startMin": 36,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-047",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "ff9a6ba9-323a-b7e8-558f-95c04c19ee3c",
+      "startMin": 36,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment",
+          "newOrdersReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-019",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "9f7444b4-37df-2e80-61b4-55e3750b0be4",
+      "startMin": 39,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 3
+    },
+    {
+      "id": "d07-P3-W4-052",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "bd48d701-6218-21b8-ca16-78df4a4ce5b2",
+      "startMin": 39,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment",
+          "newOrdersReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-026",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "542ced6f-56ea-59dd-2657-8df20f617d6c",
+      "startMin": 42,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment",
+          "newOrdersReview"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-032",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "4b207b0a-a9a0-41a6-02ae-4214e3e0c44b",
+      "startMin": 45,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals",
+          "assessment"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-029",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "542ced6f-56ea-59dd-2657-8df20f617d6c",
+      "startMin": 89,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "painScore": 5
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-002",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 120,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "ceftriaxone",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "community-acquired-pneumonia"
+          },
+          {
+            "drug": "azithromycin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "community-acquired-pneumonia"
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d07-P3-W4-037",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "c096a68f-5a2a-0d37-9bd0-e3b6050bbede",
+      "startMin": 120,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "enoxaparin",
+            "doseTenths": 800,
+            "unit": "mg",
+            "route": "SC",
+            "freq": "q12h",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-009",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "d8360f8d-89b3-5e5f-7e44-2220c29943cd",
+      "startMin": 123,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "lisinopril",
+            "doseTenths": 100,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false,
+            "holdReason": "sbp-below-100"
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-042",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "80f2db06-6086-7fd1-c09d-645dcec05a52",
+      "startMin": 123,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "enoxaparin",
+            "doseTenths": 400,
+            "unit": "mg",
+            "route": "SC",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-014",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "a9b473ca-5ad8-e161-3869-9c4b5f2e4831",
+      "startMin": 126,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "ceftriaxone",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "community-acquired-pneumonia"
+          },
+          {
+            "drug": "azithromycin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "community-acquired-pneumonia"
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 3
+    },
+    {
+      "id": "d07-P3-W4-048",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "ff9a6ba9-323a-b7e8-558f-95c04c19ee3c",
+      "startMin": 126,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "ceftriaxone",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "pyelonephritis"
+          },
+          {
+            "drug": "lisinopril",
+            "doseTenths": 100,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-053",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "bd48d701-6218-21b8-ca16-78df4a4ce5b2",
+      "startMin": 129,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "enoxaparin",
+            "doseTenths": 400,
+            "unit": "mg",
+            "route": "SC",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-027",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "542ced6f-56ea-59dd-2657-8df20f617d6c",
+      "startMin": 132,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "ceftriaxone",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "pyelonephritis"
+          },
+          {
+            "drug": "enoxaparin",
+            "doseTenths": 400,
+            "unit": "mg",
+            "route": "SC",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-033",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "4b207b0a-a9a0-41a6-02ae-4214e3e0c44b",
+      "startMin": 135,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "ceftriaxone",
+            "doseTenths": 10000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "community-acquired-pneumonia"
+          },
+          {
+            "drug": "azithromycin",
+            "doseTenths": 5000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q24h",
+            "prn": false,
+            "indication": "community-acquired-pneumonia"
+          },
+          {
+            "drug": "lisinopril",
+            "doseTenths": 200,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "daily",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d07-P3-W4-030",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "542ced6f-56ea-59dd-2657-8df20f617d6c",
+      "startMin": 149,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "painReassessment"
+        ],
+        "painScore": 0
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-050",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "ff9a6ba9-323a-b7e8-558f-95c04c19ee3c",
+      "startMin": 252,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "painScore": 3
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-010",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "d8360f8d-89b3-5e5f-7e44-2220c29943cd",
+      "startMin": 303,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-049",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "ff9a6ba9-323a-b7e8-558f-95c04c19ee3c",
+      "startMin": 306,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-020",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "9f7444b4-37df-2e80-61b4-55e3750b0be4",
+      "startMin": 309,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-051",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "ff9a6ba9-323a-b7e8-558f-95c04c19ee3c",
+      "startMin": 312,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "painReassessment"
+        ],
+        "painScore": 0
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-034",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "4b207b0a-a9a0-41a6-02ae-4214e3e0c44b",
+      "startMin": 315,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-011",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "d8360f8d-89b3-5e5f-7e44-2220c29943cd",
+      "startMin": 330,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "oxycodone",
+            "doseTenths": 50,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q4h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "painScore": 7
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-016",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "a9b473ca-5ad8-e161-3869-9c4b5f2e4831",
+      "startMin": 341,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "painScore": 3
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d07-P3-W4-006",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 356,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "lorazepam",
+            "doseTenths": 5,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q8h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d07-P3-W4-006-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d"
+          },
+          "effectiveDateTime": "2026-11-10T12:56:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "anxiety"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d07-P3-W4-006-clinical-1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "sedationScore"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d"
+          },
+          "effectiveDateTime": "2026-11-10T12:56:00-08:00",
+          "valueInteger": 1
+        }
+      ],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-012",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "d8360f8d-89b3-5e5f-7e44-2220c29943cd",
+      "startMin": 390,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "painReassessment"
+        ],
+        "painScore": 4
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d07-P3-W4-017",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "a9b473ca-5ad8-e161-3869-9c4b5f2e4831",
+      "startMin": 401,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "painReassessment"
+        ],
+        "painScore": 0
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-003",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 420,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "heparin",
+            "doseTenths": 50000,
+            "unit": "units",
+            "route": "SC",
+            "freq": "q8h",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 3
+    },
+    {
+      "id": "d07-P3-W4-038",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "c096a68f-5a2a-0d37-9bd0-e3b6050bbede",
+      "startMin": 420,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d07-P3-W4-043",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "80f2db06-6086-7fd1-c09d-645dcec05a52",
+      "startMin": 423,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "cefazolin",
+            "doseTenths": 20000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q8h",
+            "prn": false,
+            "indication": "cellulitis"
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d07-P3-W4-015",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "a9b473ca-5ad8-e161-3869-9c4b5f2e4831",
+      "startMin": 426,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "heparin",
+            "doseTenths": 50000,
+            "unit": "units",
+            "route": "SC",
+            "freq": "q8h",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-021",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "9f7444b4-37df-2e80-61b4-55e3750b0be4",
+      "startMin": 429,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "cefazolin",
+            "doseTenths": 20000,
+            "unit": "mg",
+            "route": "IV",
+            "freq": "q8h",
+            "prn": false,
+            "indication": "cellulitis"
+          },
+          {
+            "drug": "heparin",
+            "doseTenths": 50000,
+            "unit": "units",
+            "route": "SC",
+            "freq": "q8h",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-054",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "bd48d701-6218-21b8-ca16-78df4a4ce5b2",
+      "startMin": 429,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-004",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 431,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "painScore": 3
+      },
+      "todayResources": [],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-028",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "542ced6f-56ea-59dd-2657-8df20f617d6c",
+      "startMin": 432,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-035",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "4b207b0a-a9a0-41a6-02ae-4214e3e0c44b",
+      "startMin": 435,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "vitals"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 3
+    },
+    {
+      "id": "d07-P3-W4-023",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "9f7444b4-37df-2e80-61b4-55e3750b0be4",
+      "startMin": 444,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "painScore": 4
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-044",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "80f2db06-6086-7fd1-c09d-645dcec05a52",
+      "startMin": 488,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "acetaminophen",
+            "doseTenths": 6500,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q6h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [],
+        "painScore": 3
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-005",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 491,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "painReassessment"
+        ],
+        "painScore": 0
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-024",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "9f7444b4-37df-2e80-61b4-55e3750b0be4",
+      "startMin": 504,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "painReassessment"
+        ],
+        "painScore": 0
+      },
+      "todayResources": [],
+      "interruptions": 2
+    },
+    {
+      "id": "d07-P3-W4-039",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "c096a68f-5a2a-0d37-9bd0-e3b6050bbede",
+      "startMin": 505,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "lorazepam",
+            "doseTenths": 5,
+            "unit": "mg",
+            "route": "PO",
+            "freq": "q8h",
+            "prn": true
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [
+        {
+          "resourceType": "Observation",
+          "id": "d07-P3-W4-039-clinical-0",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "prnReason"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/c096a68f-5a2a-0d37-9bd0-e3b6050bbede"
+          },
+          "effectiveDateTime": "2026-11-10T15:25:00-08:00",
+          "valueCodeableConcept": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "anxiety"
+              }
+            ]
+          }
+        },
+        {
+          "resourceType": "Observation",
+          "id": "d07-P3-W4-039-clinical-1",
+          "meta": {
+            "tag": [
+              {
+                "system": "urn:vgi:world",
+                "code": "synthetic-today"
+              }
+            ]
+          },
+          "status": "final",
+          "code": {
+            "coding": [
+              {
+                "system": "urn:vgi:world:clinical",
+                "code": "sedationScore"
+              }
+            ]
+          },
+          "subject": {
+            "reference": "Patient/c096a68f-5a2a-0d37-9bd0-e3b6050bbede"
+          },
+          "effectiveDateTime": "2026-11-10T15:25:00-08:00",
+          "valueInteger": 1
+        }
+      ],
+      "interruptions": 1
+    },
+    {
+      "id": "d07-P3-W4-045",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "80f2db06-6086-7fd1-c09d-645dcec05a52",
+      "startMin": 548,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "painReassessment"
+        ],
+        "painScore": 0
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-022",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "9f7444b4-37df-2e80-61b4-55e3750b0be4",
+      "startMin": 609,
+      "choices": {
+        "orders": [],
+        "administer": [
+          {
+            "drug": "insulin lispro",
+            "doseTenths": 40,
+            "unit": "units",
+            "route": "SC",
+            "freq": "TIDAC",
+            "prn": false
+          }
+        ],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": []
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-007",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "af4c2b90-c73d-b0f2-a38e-cbbb11f54c1d",
+      "startMin": 690,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "handoff"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-018",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "a9b473ca-5ad8-e161-3869-9c4b5f2e4831",
+      "startMin": 694,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "handoff"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-025",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "9f7444b4-37df-2e80-61b4-55e3750b0be4",
+      "startMin": 696,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "handoff"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-031",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "542ced6f-56ea-59dd-2657-8df20f617d6c",
+      "startMin": 698,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "handoff"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-040",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "c096a68f-5a2a-0d37-9bd0-e3b6050bbede",
+      "startMin": 702,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "handoff"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    },
+    {
+      "id": "d07-P3-W4-046",
+      "day": 7,
+      "persona": "P3",
+      "workflow": "W4",
+      "patientId": "80f2db06-6086-7fd1-c09d-645dcec05a52",
+      "startMin": 704,
+      "choices": {
+        "orders": [],
+        "administer": [],
+        "ackResult": false,
+        "immunizations": [],
+        "noteSections": [
+          "handoff"
+        ]
+      },
+      "todayResources": [],
+      "interruptions": 0
+    }
+  ]
+}

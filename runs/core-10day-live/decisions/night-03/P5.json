@@ -1,0 +1,573 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "manualHash": "bebdde82f91cb622a1159153d6367ca6521cc5bd6c0eba0941ed8c00bd7c4a3d",
+    "ruleContextHash": "b3403ff5794d99d40175b50278638a21673468eabace2ee2639082a0e66d0906",
+    "ruleProfile": "core"
+  },
+  "runId": "core-10day-live",
+  "night": 3,
+  "persona": "P5",
+  "owner": "P5",
+  "mode": "surface-feature",
+  "specVersion": "v2",
+  "versionBefore": 1,
+  "versionAfter": 2,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P5",
+    "trainDays": [
+      1,
+      3
+    ],
+    "programVersion": 1,
+    "totals": {
+      "tasks": 24,
+      "completed": 24,
+      "clicks": 674,
+      "keystrokes": 3687,
+      "scrolls": 1067,
+      "popups": 24,
+      "overrides": 7,
+      "searches": 23,
+      "backtracks": 1,
+      "klmDeciSec": 47959,
+      "mouseTravelPx": 239736.83000000002,
+      "scrollPx": 997583
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 12,
+          "completed": 12,
+          "clicks": 286,
+          "keystrokes": 1747,
+          "scrolls": 431,
+          "popups": 11,
+          "overrides": 7,
+          "searches": 12,
+          "backtracks": 0,
+          "klmDeciSec": 22857,
+          "mouseTravelPx": 97649.3,
+          "scrollPx": 415064
+        }
+      },
+      {
+        "day": 3,
+        "load": "busy",
+        "programVersion": 1,
+        "metrics": {
+          "tasks": 12,
+          "completed": 12,
+          "clicks": 388,
+          "keystrokes": 1940,
+          "scrolls": 636,
+          "popups": 13,
+          "overrides": 0,
+          "searches": 11,
+          "backtracks": 1,
+          "klmDeciSec": 25102,
+          "mouseTravelPx": 142087.53,
+          "scrollPx": 582519
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 48.7,
+      "keystrokes": 7361.5,
+      "scrolls": 0,
+      "klmDeciSec": 494.6
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W1",
+        "tasks": 20,
+        "avgClicks": 18.7,
+        "avgKeystrokes": 135.9,
+        "avgScrolls": 26.9,
+        "avgKlmSec": 145.5,
+        "avgMouseTravelPx": 6313.2,
+        "avgScrollPx": 26223.2
+      },
+      {
+        "workflow": "W6",
+        "tasks": 4,
+        "avgClicks": 75,
+        "avgKeystrokes": 242.3,
+        "avgScrolls": 132.3,
+        "avgKlmSec": 471.5,
+        "avgMouseTravelPx": 28368.2,
+        "avgScrollPx": 118280
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w1Orders",
+        "events": 686,
+        "klmSec": 0,
+        "share": 28.583
+      },
+      {
+        "screen": "w1Close",
+        "events": 210,
+        "klmSec": 0,
+        "share": 8.75
+      },
+      {
+        "screen": "w1Exam",
+        "events": 147,
+        "klmSec": 0,
+        "share": 6.125
+      },
+      {
+        "screen": "w1Hpi",
+        "events": 105,
+        "klmSec": 0,
+        "share": 4.375
+      },
+      {
+        "screen": "w1MedRec",
+        "events": 71,
+        "klmSec": 0,
+        "share": 2.958
+      },
+      {
+        "screen": "w1Rooming",
+        "events": 83,
+        "klmSec": 0,
+        "share": 3.458
+      },
+      {
+        "screen": "w1Sign",
+        "events": 95,
+        "klmSec": 0,
+        "share": 3.958
+      },
+      {
+        "screen": "chartSummary",
+        "events": 96,
+        "klmSec": 0,
+        "share": 4
+      },
+      {
+        "screen": "w6Discharge",
+        "events": 26,
+        "klmSec": 0,
+        "share": 1.083
+      },
+      {
+        "screen": "home",
+        "events": 49,
+        "klmSec": 0,
+        "share": 2.042
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "allergyList",
+        "created": 3,
+        "reprompted": 0
+      },
+      {
+        "info": "currentMeds",
+        "created": 3,
+        "reprompted": 0
+      },
+      {
+        "info": "curesReport",
+        "created": 3,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [],
+    "alertOverrides": [
+      {
+        "alert": "doseRangeOrder",
+        "popups": 12
+      },
+      {
+        "alert": "highAlertOrderNotice",
+        "popups": 1
+      },
+      {
+        "alert": "healthMaintenancePopup",
+        "popups": 7
+      },
+      {
+        "alert": "interactionOrder",
+        "popups": 4
+      }
+    ],
+    "totalOverrides": 7,
+    "backtracks": [],
+    "complaints": [
+      {
+        "text": "d03-P5-W6-005: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      }
+    ],
+    "orderMix": [
+      {
+        "drug": "oxycodone",
+        "count": 4
+      },
+      {
+        "drug": "acetaminophen",
+        "count": 3
+      },
+      {
+        "drug": "ibuprofen",
+        "count": 3
+      },
+      {
+        "drug": "hydromorphone",
+        "count": 1
+      },
+      {
+        "drug": "ondansetron",
+        "count": 1
+      },
+      {
+        "drug": "enoxaparin",
+        "count": 1
+      }
+    ]
+  },
+  "hypothesis": "P5's recorded orders are medications, with no demonstrated imaging/procedure authorization work or prior-auth bottleneck. The largest interaction burden is scrolling in W6. Surfacing optional authorization controls would add content without evidence of fewer clicks, scrolls, or pointer travel; keep the feature absent.",
+  "candidates": [],
+  "chosen": {
+    "candidateIds": [],
+    "rationale": "P5's recorded orders are medications, with no demonstrated imaging/procedure authorization work or prior-auth bottleneck. The largest interaction burden is scrolling in W6. Surfacing optional authorization controls would add content without evidence of fewer clicks, scrolls, or pointer travel; keep the feature absent.",
+    "rejectedAlternatives": [],
+    "choiceBy": "llm"
+  },
+  "predicted": null,
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 0,
+        "candidateIds": [],
+        "source": "recertify",
+        "patch": [],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 3,
+      "load": "busy",
+      "before": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 139,
+        "keystrokes": 861,
+        "scrolls": 210,
+        "popups": 1,
+        "overrides": 1,
+        "searches": 5,
+        "backtracks": 1,
+        "klmDeciSec": 9146,
+        "mouseTravelPx": 53013.47,
+        "scrollPx": 200282
+      },
+      "after": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 137,
+        "keystrokes": 861,
+        "scrolls": 202,
+        "popups": 0,
+        "overrides": 0,
+        "searches": 5,
+        "backtracks": 1,
+        "klmDeciSec": 9054,
+        "mouseTravelPx": 52471.369999999995,
+        "scrollPx": 190607
+      },
+      "saving": {
+        "clicks": 2,
+        "keystrokes": 0,
+        "scrolls": 8,
+        "klmDeciSec": 92,
+        "mouseTravelPx": 542.1,
+        "scrollPx": 9675
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 65.5,
+          "keystrokes": 12200,
+          "scrolls": 0,
+          "klmDeciSec": 596.6
+        },
+        "after": {
+          "clicks": 63.1,
+          "keystrokes": 12200,
+          "scrolls": 0,
+          "klmDeciSec": 589.6
+        }
+      }
+    },
+    "improved": false,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "agent decided not to surface the feature for this user"
+  },
+  "measured": {
+    "validation": {
+      "day": 3,
+      "load": "busy",
+      "before": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 139,
+        "keystrokes": 861,
+        "scrolls": 210,
+        "popups": 1,
+        "overrides": 1,
+        "searches": 5,
+        "backtracks": 1,
+        "klmDeciSec": 9146,
+        "mouseTravelPx": 53013.47,
+        "scrollPx": 200282
+      },
+      "after": {
+        "tasks": 7,
+        "completed": 7,
+        "clicks": 137,
+        "keystrokes": 861,
+        "scrolls": 202,
+        "popups": 0,
+        "overrides": 0,
+        "searches": 5,
+        "backtracks": 1,
+        "klmDeciSec": 9054,
+        "mouseTravelPx": 52471.369999999995,
+        "scrollPx": 190607
+      },
+      "saving": {
+        "clicks": 2,
+        "keystrokes": 0,
+        "scrolls": 8,
+        "klmDeciSec": 92,
+        "mouseTravelPx": 542.1,
+        "scrollPx": 9675
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 65.5,
+          "keystrokes": 12200,
+          "scrolls": 0,
+          "klmDeciSec": 596.6
+        },
+        "after": {
+          "clicks": 63.1,
+          "keystrokes": 12200,
+          "scrolls": 0,
+          "klmDeciSec": 589.6
+        }
+      }
+    },
+    "test": {
+      "day": 4,
+      "load": "blind-measurement",
+      "before": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 505,
+        "keystrokes": 1687,
+        "scrolls": 899,
+        "popups": 23,
+        "overrides": 6,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 28569,
+        "mouseTravelPx": 209475.16,
+        "scrollPx": 851108
+      },
+      "after": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 489,
+        "keystrokes": 1687,
+        "scrolls": 866,
+        "popups": 15,
+        "overrides": 0,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 27969,
+        "mouseTravelPx": 209011.37,
+        "scrollPx": 800990
+      },
+      "saving": {
+        "clicks": 16,
+        "keystrokes": 0,
+        "scrolls": 33,
+        "klmDeciSec": 600,
+        "mouseTravelPx": 463.79,
+        "scrollPx": 50118
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 46.4,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 410
+        },
+        "after": {
+          "clicks": 41.7,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 399.3
+        }
+      }
+    },
+    "testNoAgent": {
+      "day": 4,
+      "load": "blind-measurement-no-agent",
+      "before": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 505,
+        "keystrokes": 1687,
+        "scrolls": 886,
+        "popups": 23,
+        "overrides": 6,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 28448,
+        "mouseTravelPx": 210933.74000000002,
+        "scrollPx": 822700
+      },
+      "after": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 489,
+        "keystrokes": 1687,
+        "scrolls": 866,
+        "popups": 15,
+        "overrides": 0,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 27969,
+        "mouseTravelPx": 209011.37,
+        "scrollPx": 800990
+      },
+      "saving": {
+        "clicks": 16,
+        "keystrokes": 0,
+        "scrolls": 20,
+        "klmDeciSec": 479,
+        "mouseTravelPx": 1922.37,
+        "scrollPx": 21710
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 46.4,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 407.8
+        },
+        "after": {
+          "clicks": 41.7,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 399.3
+        }
+      }
+    },
+    "minClicks": [],
+    "predictionHeld": null,
+    "predictionNote": ""
+  },
+  "userResponse": {
+    "response": "not-offered",
+    "probability": 0,
+    "reason": "no change to offer"
+  },
+  "certificate": {
+    "specVersion": "v2",
+    "specHash": "fnv1a64:2198833001ec4406",
+    "programHash": "fnv1a64:aa06777a2059d2a3",
+    "verdict": "ok",
+    "checkerVersion": "check-1",
+    "time": "2026-11-01T23:06:12Z"
+  },
+  "screenCheck": {
+    "status": "pass",
+    "mode": "real",
+    "bundles": [
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Ashly_Rippin_149fcc1f.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Abdul_Sauer_d0fe99e5.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Albert_Weber_84816a36.json"
+    ],
+    "pages": 1435,
+    "failingScreens": [],
+    "failingFiles": [],
+    "message": "1435 page trees passed"
+  },
+  "deployed": {
+    "version": 2,
+    "program": "programs/P5/v2.json",
+    "certificate": "certs/P5/v2.json",
+    "build": "certs/P5/v2.build.json",
+    "source": "programs/P5/v2.source.json"
+  },
+  "outcome": "not-surfaced",
+  "release": {
+    "id": "v2",
+    "specVersion": "v2",
+    "recheck": {
+      "status": "pass",
+      "property": null,
+      "message": null,
+      "counterexample": null,
+      "screens": null,
+      "verdict": "ok"
+    },
+    "items": [],
+    "surfaced": false,
+    "customizationsKept": [],
+    "customizationsDropped": [],
+    "fallback": false,
+    "flaggedUser": false
+  },
+  "flags": [
+    "reporting: theoretical minima are post-run only; no search attempted overnight"
+  ],
+  "llmCalls": [
+    {
+      "callId": "night-03/P5/surface-0",
+      "purpose": "surface",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 527751,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-03/P5/surface-0.json"
+    }
+  ],
+  "createdAt": "2026-11-01T22:56:04.307Z",
+  "sourceRunId": "core-10day"
+}

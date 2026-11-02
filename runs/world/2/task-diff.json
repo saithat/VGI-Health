@@ -1,0 +1,409 @@
+{
+  "baselineCommit": "81691fbbeeb08d906bf4b2d43e8e8e152af9a735",
+  "compared": "Complete DaySchedule JSON including every task id, patient, persona, day, startMin, choices, interruptions and todayResources; agent aliases also identical",
+  "schedules": 50,
+  "tasks": 1284,
+  "changedSchedules": 0,
+  "rows": [
+    {
+      "day": 1,
+      "persona": "P1",
+      "tasks": 42,
+      "beforeSha256": "370969c68d9c422326ba66c9327cb29c474acdfc2f1d17208c8e17378021c94c",
+      "afterSha256": "370969c68d9c422326ba66c9327cb29c474acdfc2f1d17208c8e17378021c94c",
+      "identical": true
+    },
+    {
+      "day": 1,
+      "persona": "P2",
+      "tasks": 22,
+      "beforeSha256": "54159eff7d3c099c782bd30c3ee76f8a9a771609c13b04c4e6b6730941604a84",
+      "afterSha256": "54159eff7d3c099c782bd30c3ee76f8a9a771609c13b04c4e6b6730941604a84",
+      "identical": true
+    },
+    {
+      "day": 1,
+      "persona": "P3",
+      "tasks": 38,
+      "beforeSha256": "0cb92a75cafdc086d4498bc2a2d726d676d1a44fb6f910e513c45b9bedc89016",
+      "afterSha256": "0cb92a75cafdc086d4498bc2a2d726d676d1a44fb6f910e513c45b9bedc89016",
+      "identical": true
+    },
+    {
+      "day": 1,
+      "persona": "P4",
+      "tasks": 22,
+      "beforeSha256": "0a23bd18492450130d67a81ddba80ec5730f551ba58a958aeec0d5dded8a2f5f",
+      "afterSha256": "0a23bd18492450130d67a81ddba80ec5730f551ba58a958aeec0d5dded8a2f5f",
+      "identical": true
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "tasks": 18,
+      "beforeSha256": "071e90b7c749c4bd16c17027102fea85c1edc5951d21e50f0e3d9bd4ab13c911",
+      "afterSha256": "071e90b7c749c4bd16c17027102fea85c1edc5951d21e50f0e3d9bd4ab13c911",
+      "identical": true
+    },
+    {
+      "day": 2,
+      "persona": "P1",
+      "tasks": 40,
+      "beforeSha256": "940dbbb19a640fdedad125ef94d546ccfb88f9cef0a5cc6248805a19a70418cd",
+      "afterSha256": "940dbbb19a640fdedad125ef94d546ccfb88f9cef0a5cc6248805a19a70418cd",
+      "identical": true
+    },
+    {
+      "day": 2,
+      "persona": "P2",
+      "tasks": 18,
+      "beforeSha256": "6040a512f01ad6b58e1b80a8cb87a9f4a1727dcf4ac146379f07935989790d5e",
+      "afterSha256": "6040a512f01ad6b58e1b80a8cb87a9f4a1727dcf4ac146379f07935989790d5e",
+      "identical": true
+    },
+    {
+      "day": 2,
+      "persona": "P3",
+      "tasks": 51,
+      "beforeSha256": "0d167de7302019f73d3a6fe23b61a284c5f1e4f4b3b69436a88e517929e8e983",
+      "afterSha256": "0d167de7302019f73d3a6fe23b61a284c5f1e4f4b3b69436a88e517929e8e983",
+      "identical": true
+    },
+    {
+      "day": 2,
+      "persona": "P4",
+      "tasks": 20,
+      "beforeSha256": "a6c730b88ae1c47ee042c3a7a89c8716a410283ac465b9956f9c80059935dcb4",
+      "afterSha256": "a6c730b88ae1c47ee042c3a7a89c8716a410283ac465b9956f9c80059935dcb4",
+      "identical": true
+    },
+    {
+      "day": 2,
+      "persona": "P5",
+      "tasks": 14,
+      "beforeSha256": "e22d5a091ae8d810e1d66cfecfee5d98fb697057251548b5100e5e897107b722",
+      "afterSha256": "e22d5a091ae8d810e1d66cfecfee5d98fb697057251548b5100e5e897107b722",
+      "identical": true
+    },
+    {
+      "day": 3,
+      "persona": "P1",
+      "tasks": 35,
+      "beforeSha256": "1331148b7dd45a8b36934657411c73f53799af952de73afcfaecce9518770423",
+      "afterSha256": "1331148b7dd45a8b36934657411c73f53799af952de73afcfaecce9518770423",
+      "identical": true
+    },
+    {
+      "day": 3,
+      "persona": "P2",
+      "tasks": 18,
+      "beforeSha256": "523991c2ed836e88441f35492331395754d1a9afa037fff6893836b1be1ed828",
+      "afterSha256": "523991c2ed836e88441f35492331395754d1a9afa037fff6893836b1be1ed828",
+      "identical": true
+    },
+    {
+      "day": 3,
+      "persona": "P3",
+      "tasks": 44,
+      "beforeSha256": "c7fa8f81af2c46df99b072f3ef692d8587eaa6f8e5f8dcaad1be89396b6a5c04",
+      "afterSha256": "c7fa8f81af2c46df99b072f3ef692d8587eaa6f8e5f8dcaad1be89396b6a5c04",
+      "identical": true
+    },
+    {
+      "day": 3,
+      "persona": "P4",
+      "tasks": 19,
+      "beforeSha256": "6f3f7f5561390951d58d78aca50bdce00823af161416d488cffab796ea61194e",
+      "afterSha256": "6f3f7f5561390951d58d78aca50bdce00823af161416d488cffab796ea61194e",
+      "identical": true
+    },
+    {
+      "day": 3,
+      "persona": "P5",
+      "tasks": 19,
+      "beforeSha256": "19c7d0b03bfa57607d44ade90c22cc053fe0bb63cecd773ec1e3157838977984",
+      "afterSha256": "19c7d0b03bfa57607d44ade90c22cc053fe0bb63cecd773ec1e3157838977984",
+      "identical": true
+    },
+    {
+      "day": 4,
+      "persona": "P1",
+      "tasks": 40,
+      "beforeSha256": "448d61a8247fac07dc8b101ed15f792f36614facbb8fb7cda74911a2f0fdbf5a",
+      "afterSha256": "448d61a8247fac07dc8b101ed15f792f36614facbb8fb7cda74911a2f0fdbf5a",
+      "identical": true
+    },
+    {
+      "day": 4,
+      "persona": "P2",
+      "tasks": 13,
+      "beforeSha256": "67932ff72a661edf56cedb603828fd19b509a7213748a25e350f6ee21b9eb134",
+      "afterSha256": "67932ff72a661edf56cedb603828fd19b509a7213748a25e350f6ee21b9eb134",
+      "identical": true
+    },
+    {
+      "day": 4,
+      "persona": "P3",
+      "tasks": 41,
+      "beforeSha256": "c4d3a30e4690f371f0e6fa9cd86ad1c0040ab4bd7922b45dc1854a8e40b733a2",
+      "afterSha256": "c4d3a30e4690f371f0e6fa9cd86ad1c0040ab4bd7922b45dc1854a8e40b733a2",
+      "identical": true
+    },
+    {
+      "day": 4,
+      "persona": "P4",
+      "tasks": 17,
+      "beforeSha256": "0163310354ed0548ed31b177c870414ec9218036c6ff443b0182bddbe628b156",
+      "afterSha256": "0163310354ed0548ed31b177c870414ec9218036c6ff443b0182bddbe628b156",
+      "identical": true
+    },
+    {
+      "day": 4,
+      "persona": "P5",
+      "tasks": 11,
+      "beforeSha256": "d0478381c2951fb6fa043317e3302fdf2538d2c81ffc5fc23ab807abe374cb2f",
+      "afterSha256": "d0478381c2951fb6fa043317e3302fdf2538d2c81ffc5fc23ab807abe374cb2f",
+      "identical": true
+    },
+    {
+      "day": 5,
+      "persona": "P1",
+      "tasks": 23,
+      "beforeSha256": "b7a2606457852d77a5921bbe4f4175c79448e14c8fe6f036e447a7eaec856228",
+      "afterSha256": "b7a2606457852d77a5921bbe4f4175c79448e14c8fe6f036e447a7eaec856228",
+      "identical": true
+    },
+    {
+      "day": 5,
+      "persona": "P2",
+      "tasks": 20,
+      "beforeSha256": "b0657e9ca15fbaf24240c967da15d475881cfb067250e770281605fa3af86ea6",
+      "afterSha256": "b0657e9ca15fbaf24240c967da15d475881cfb067250e770281605fa3af86ea6",
+      "identical": true
+    },
+    {
+      "day": 5,
+      "persona": "P3",
+      "tasks": 37,
+      "beforeSha256": "30bd7bc5438ee2ad9f239813b02c19ae1a01dfad2db5e41ea67014df11c8c969",
+      "afterSha256": "30bd7bc5438ee2ad9f239813b02c19ae1a01dfad2db5e41ea67014df11c8c969",
+      "identical": true
+    },
+    {
+      "day": 5,
+      "persona": "P4",
+      "tasks": 19,
+      "beforeSha256": "bbb9930f91357af093e62118a34b039924e3995e45784273edfb2adacc03898b",
+      "afterSha256": "bbb9930f91357af093e62118a34b039924e3995e45784273edfb2adacc03898b",
+      "identical": true
+    },
+    {
+      "day": 5,
+      "persona": "P5",
+      "tasks": 17,
+      "beforeSha256": "2f95a8d56c72e1d8545253687a2e00f62e045d4d84b26e42e4987c7ed7b8381b",
+      "afterSha256": "2f95a8d56c72e1d8545253687a2e00f62e045d4d84b26e42e4987c7ed7b8381b",
+      "identical": true
+    },
+    {
+      "day": 6,
+      "persona": "P1",
+      "tasks": 41,
+      "beforeSha256": "ee21b51c2493adfd59a7dd9a5dac4a22691b4ed50708ac1f6f22a572c66706c1",
+      "afterSha256": "ee21b51c2493adfd59a7dd9a5dac4a22691b4ed50708ac1f6f22a572c66706c1",
+      "identical": true
+    },
+    {
+      "day": 6,
+      "persona": "P2",
+      "tasks": 21,
+      "beforeSha256": "190e8701824fef3946d7c6b36d3117bb5ebb6ac960448f2e99668ca0817e79f9",
+      "afterSha256": "190e8701824fef3946d7c6b36d3117bb5ebb6ac960448f2e99668ca0817e79f9",
+      "identical": true
+    },
+    {
+      "day": 6,
+      "persona": "P3",
+      "tasks": 32,
+      "beforeSha256": "5d622654ee77fe4a46f70d50ac63e28dcfe8f69f1f6a57b8e8deb7bb90770ce7",
+      "afterSha256": "5d622654ee77fe4a46f70d50ac63e28dcfe8f69f1f6a57b8e8deb7bb90770ce7",
+      "identical": true
+    },
+    {
+      "day": 6,
+      "persona": "P4",
+      "tasks": 18,
+      "beforeSha256": "4a39e679d8f2a4a5f5d6b40d40575817c3b2c51dc539d9f624d3ad5d15a7a432",
+      "afterSha256": "4a39e679d8f2a4a5f5d6b40d40575817c3b2c51dc539d9f624d3ad5d15a7a432",
+      "identical": true
+    },
+    {
+      "day": 6,
+      "persona": "P5",
+      "tasks": 11,
+      "beforeSha256": "5300840ff76f2a11b5194fa2376ac4a2db02687d58784392ce1408cebdbf1865",
+      "afterSha256": "5300840ff76f2a11b5194fa2376ac4a2db02687d58784392ce1408cebdbf1865",
+      "identical": true
+    },
+    {
+      "day": 7,
+      "persona": "P1",
+      "tasks": 40,
+      "beforeSha256": "c8b8e8f662774189620868b42f8b1be982b79f039daf68938a737e84ef97ae4d",
+      "afterSha256": "c8b8e8f662774189620868b42f8b1be982b79f039daf68938a737e84ef97ae4d",
+      "identical": true
+    },
+    {
+      "day": 7,
+      "persona": "P2",
+      "tasks": 18,
+      "beforeSha256": "1c8255801c84824f0b10a9e9d489eb375155ee295ffc09b827d55d2693db8d53",
+      "afterSha256": "1c8255801c84824f0b10a9e9d489eb375155ee295ffc09b827d55d2693db8d53",
+      "identical": true
+    },
+    {
+      "day": 7,
+      "persona": "P3",
+      "tasks": 54,
+      "beforeSha256": "1461581deea1bccfdf6ed9829f53102b45e974b8ef0c69ede949a8453a99d291",
+      "afterSha256": "1461581deea1bccfdf6ed9829f53102b45e974b8ef0c69ede949a8453a99d291",
+      "identical": true
+    },
+    {
+      "day": 7,
+      "persona": "P4",
+      "tasks": 17,
+      "beforeSha256": "a35c842bc13d5405ffe07e8b0998ec6f1a4306b203f24d3abb8727d18c63b281",
+      "afterSha256": "a35c842bc13d5405ffe07e8b0998ec6f1a4306b203f24d3abb8727d18c63b281",
+      "identical": true
+    },
+    {
+      "day": 7,
+      "persona": "P5",
+      "tasks": 14,
+      "beforeSha256": "3db640cbdb695e83531924ea53f31e85f4a01dd346860fefcfb6143ca31863a5",
+      "afterSha256": "3db640cbdb695e83531924ea53f31e85f4a01dd346860fefcfb6143ca31863a5",
+      "identical": true
+    },
+    {
+      "day": 8,
+      "persona": "P1",
+      "tasks": 39,
+      "beforeSha256": "8cb39f7f60fa221f40efe666a0172f576ba09dcb3e854a7bf71bf3d3dac3ed44",
+      "afterSha256": "8cb39f7f60fa221f40efe666a0172f576ba09dcb3e854a7bf71bf3d3dac3ed44",
+      "identical": true
+    },
+    {
+      "day": 8,
+      "persona": "P2",
+      "tasks": 15,
+      "beforeSha256": "c2bf81eede276811cb538f1c114c5198f07601a184d2b17dfafbcbdb7fe42cc7",
+      "afterSha256": "c2bf81eede276811cb538f1c114c5198f07601a184d2b17dfafbcbdb7fe42cc7",
+      "identical": true
+    },
+    {
+      "day": 8,
+      "persona": "P3",
+      "tasks": 38,
+      "beforeSha256": "7ccef070dce06cfbb172d2e8860b1672c5d2e09f9f806bdd63353407edfb6714",
+      "afterSha256": "7ccef070dce06cfbb172d2e8860b1672c5d2e09f9f806bdd63353407edfb6714",
+      "identical": true
+    },
+    {
+      "day": 8,
+      "persona": "P4",
+      "tasks": 15,
+      "beforeSha256": "8c3bb2bbf2edfe228d2e1781a04bee41716055934fed97a86a06bad9f16040f4",
+      "afterSha256": "8c3bb2bbf2edfe228d2e1781a04bee41716055934fed97a86a06bad9f16040f4",
+      "identical": true
+    },
+    {
+      "day": 8,
+      "persona": "P5",
+      "tasks": 12,
+      "beforeSha256": "e958715781fe112ff7c144bda085699ba84b938d37a5741bc5f35b712b2e1c36",
+      "afterSha256": "e958715781fe112ff7c144bda085699ba84b938d37a5741bc5f35b712b2e1c36",
+      "identical": true
+    },
+    {
+      "day": 9,
+      "persona": "P1",
+      "tasks": 39,
+      "beforeSha256": "7e757399f322406dd3d69c3a16bda965a442dcf61bb4ffa9ecf3ad213614b0bf",
+      "afterSha256": "7e757399f322406dd3d69c3a16bda965a442dcf61bb4ffa9ecf3ad213614b0bf",
+      "identical": true
+    },
+    {
+      "day": 9,
+      "persona": "P2",
+      "tasks": 12,
+      "beforeSha256": "bf6644cd524b5ce766c09379b44fefedab922f080f22227b34f9b02d795adcb5",
+      "afterSha256": "bf6644cd524b5ce766c09379b44fefedab922f080f22227b34f9b02d795adcb5",
+      "identical": true
+    },
+    {
+      "day": 9,
+      "persona": "P3",
+      "tasks": 44,
+      "beforeSha256": "f3ddc0b60bf1eba95d7f3cc073fa61040d0f204d0d8a6ccbe84cbbf558162eb1",
+      "afterSha256": "f3ddc0b60bf1eba95d7f3cc073fa61040d0f204d0d8a6ccbe84cbbf558162eb1",
+      "identical": true
+    },
+    {
+      "day": 9,
+      "persona": "P4",
+      "tasks": 12,
+      "beforeSha256": "f570212f95a28fe1601bf85b4bc55577a4c88724dc70adaf505fcadb3118ef1c",
+      "afterSha256": "f570212f95a28fe1601bf85b4bc55577a4c88724dc70adaf505fcadb3118ef1c",
+      "identical": true
+    },
+    {
+      "day": 9,
+      "persona": "P5",
+      "tasks": 11,
+      "beforeSha256": "ab1edc2e58fb784600dbcd13afb5988d77a2c6c98f835570bea197908436202e",
+      "afterSha256": "ab1edc2e58fb784600dbcd13afb5988d77a2c6c98f835570bea197908436202e",
+      "identical": true
+    },
+    {
+      "day": 10,
+      "persona": "P1",
+      "tasks": 39,
+      "beforeSha256": "ef7c12cbeaad13c25f929ff54c4e6c1d33f95998758c597ae1f2fa48c490492a",
+      "afterSha256": "ef7c12cbeaad13c25f929ff54c4e6c1d33f95998758c597ae1f2fa48c490492a",
+      "identical": true
+    },
+    {
+      "day": 10,
+      "persona": "P2",
+      "tasks": 14,
+      "beforeSha256": "71e7f4021733ac63079d28ac9d0dcf00886bea0a2fa316214c1ae5b87dd88a87",
+      "afterSha256": "71e7f4021733ac63079d28ac9d0dcf00886bea0a2fa316214c1ae5b87dd88a87",
+      "identical": true
+    },
+    {
+      "day": 10,
+      "persona": "P3",
+      "tasks": 45,
+      "beforeSha256": "0cd63e2a3bab7c209d544a7cfb96544cc92056e945ba9dd4b189e1dc0651717f",
+      "afterSha256": "0cd63e2a3bab7c209d544a7cfb96544cc92056e945ba9dd4b189e1dc0651717f",
+      "identical": true
+    },
+    {
+      "day": 10,
+      "persona": "P4",
+      "tasks": 16,
+      "beforeSha256": "9e987c643e98d505cd3c5c0fb43af01ca2d33e8c505fa0a43439605a50ce7b95",
+      "afterSha256": "9e987c643e98d505cd3c5c0fb43af01ca2d33e8c505fa0a43439605a50ce7b95",
+      "identical": true
+    },
+    {
+      "day": 10,
+      "persona": "P5",
+      "tasks": 9,
+      "beforeSha256": "ecbaac35025edb689c6bf524dfb6dd93696ec4e460dc8233d228d3f1e79ad884",
+      "afterSha256": "ecbaac35025edb689c6bf524dfb6dd93696ec4e460dc8233d228d3f1e79ad884",
+      "identical": true
+    }
+  ]
+}

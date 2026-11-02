@@ -1,0 +1,865 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "manualHash": "bebdde82f91cb622a1159153d6367ca6521cc5bd6c0eba0941ed8c00bd7c4a3d",
+    "ruleContextHash": "1ad136a9ea7252e85e7a361463a46725b48f301ad4f5c4a03c2d54830c7e5e6e",
+    "ruleProfile": "core"
+  },
+  "runId": "core-10day-live",
+  "night": 6,
+  "persona": "P1",
+  "owner": "P1",
+  "mode": "migrate",
+  "specVersion": "v3",
+  "versionBefore": 4,
+  "versionAfter": 5,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P1",
+    "trainDays": [
+      1,
+      3,
+      5
+    ],
+    "programVersion": 4,
+    "totals": {
+      "tasks": 66,
+      "completed": 66,
+      "clicks": 1682,
+      "keystrokes": 7722,
+      "scrolls": 2172,
+      "popups": 49,
+      "overrides": 14,
+      "searches": 33,
+      "backtracks": 49,
+      "klmDeciSec": 89247,
+      "mouseTravelPx": 670343.9199999999,
+      "scrollPx": 3152644
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 28,
+          "completed": 28,
+          "clicks": 791,
+          "keystrokes": 2994,
+          "scrolls": 1073,
+          "popups": 34,
+          "overrides": 14,
+          "searches": 29,
+          "backtracks": 17,
+          "klmDeciSec": 39211,
+          "mouseTravelPx": 295715.33999999997,
+          "scrollPx": 1408598
+        }
+      },
+      {
+        "day": 3,
+        "load": "normal",
+        "programVersion": 2,
+        "metrics": {
+          "tasks": 23,
+          "completed": 23,
+          "clicks": 381,
+          "keystrokes": 2218,
+          "scrolls": 400,
+          "popups": 2,
+          "overrides": 0,
+          "searches": 2,
+          "backtracks": 15,
+          "klmDeciSec": 22157,
+          "mouseTravelPx": 171526.83999999994,
+          "scrollPx": 900907
+        }
+      },
+      {
+        "day": 5,
+        "load": "busy",
+        "programVersion": 4,
+        "metrics": {
+          "tasks": 15,
+          "completed": 15,
+          "clicks": 510,
+          "keystrokes": 2510,
+          "scrolls": 699,
+          "popups": 13,
+          "overrides": 0,
+          "searches": 2,
+          "backtracks": 17,
+          "klmDeciSec": 27879,
+          "mouseTravelPx": 203101.74,
+          "scrollPx": 843139
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 55.5,
+      "keystrokes": 2888.1,
+      "scrolls": 0,
+      "klmDeciSec": 418.7
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W1",
+        "tasks": 37,
+        "avgClicks": 31.6,
+        "avgKeystrokes": 179,
+        "avgScrolls": 39.1,
+        "avgKlmSec": 180.9,
+        "avgMouseTravelPx": 12394.8,
+        "avgScrollPx": 46153.8
+      },
+      {
+        "workflow": "W2",
+        "tasks": 12,
+        "avgClicks": 9,
+        "avgKeystrokes": 31.9,
+        "avgScrolls": 9.7,
+        "avgKlmSec": 43.1,
+        "avgMouseTravelPx": 4567.2,
+        "avgScrollPx": 56056.5
+      },
+      {
+        "workflow": "W7",
+        "tasks": 17,
+        "avgClicks": 23.9,
+        "avgKeystrokes": 42.2,
+        "avgScrolls": 35.9,
+        "avgKlmSec": 100.7,
+        "avgMouseTravelPx": 9231.2,
+        "avgScrollPx": 45427.9
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w1Orders",
+        "events": 1221,
+        "klmSec": 0,
+        "share": 18.5
+      },
+      {
+        "screen": "w1Exam",
+        "events": 186,
+        "klmSec": 0,
+        "share": 2.818
+      },
+      {
+        "screen": "w1Close",
+        "events": 277,
+        "klmSec": 0,
+        "share": 4.197
+      },
+      {
+        "screen": "w1Hpi",
+        "events": 151,
+        "klmSec": 0,
+        "share": 2.288
+      },
+      {
+        "screen": "w1Rooming",
+        "events": 294,
+        "klmSec": 0,
+        "share": 4.455
+      },
+      {
+        "screen": "w1Sign",
+        "events": 178,
+        "klmSec": 0,
+        "share": 2.697
+      },
+      {
+        "screen": "chartSummary",
+        "events": 240,
+        "klmSec": 0,
+        "share": 3.636
+      },
+      {
+        "screen": "w1MedRec",
+        "events": 158,
+        "klmSec": 0,
+        "share": 2.394
+      },
+      {
+        "screen": "w2Result",
+        "events": 42,
+        "klmSec": 0,
+        "share": 0.636
+      },
+      {
+        "screen": "w7Decision",
+        "events": 84,
+        "klmSec": 0,
+        "share": 1.273
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "lastVisit",
+        "created": 5,
+        "reprompted": 0
+      },
+      {
+        "info": "adherence",
+        "created": 5,
+        "reprompted": 0
+      },
+      {
+        "info": "allergyList",
+        "created": 26,
+        "reprompted": 0
+      },
+      {
+        "info": "currentMeds",
+        "created": 26,
+        "reprompted": 0
+      },
+      {
+        "info": "curesReport",
+        "created": 8,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [
+      {
+        "query": "task",
+        "count": 32,
+        "screens": [
+          "w1Close",
+          "chartSummary",
+          "chartReview",
+          "w1Sign",
+          "home",
+          "w7Decision",
+          "w1Rooming"
+        ]
+      }
+    ],
+    "alertOverrides": [
+      {
+        "alert": "interactionOrder",
+        "popups": 8
+      },
+      {
+        "alert": "doseRangeOrder",
+        "popups": 22
+      },
+      {
+        "alert": "highAlertOrderNotice",
+        "popups": 6
+      },
+      {
+        "alert": "healthMaintenancePopup",
+        "popups": 11
+      },
+      {
+        "alert": "refillCareGapPopup",
+        "popups": 2
+      }
+    ],
+    "totalOverrides": 14,
+    "backtracks": [
+      {
+        "screen": "w1Close",
+        "count": 21
+      },
+      {
+        "screen": "w1Exam",
+        "count": 2
+      },
+      {
+        "screen": "w1Rooming",
+        "count": 2
+      },
+      {
+        "screen": "w1Labs",
+        "count": 4
+      },
+      {
+        "screen": "w1MedRec",
+        "count": 1
+      },
+      {
+        "screen": "w2Message",
+        "count": 8
+      },
+      {
+        "screen": "w7Queue",
+        "count": 1
+      },
+      {
+        "screen": "w1Hpi",
+        "count": 1
+      }
+    ],
+    "complaints": [],
+    "orderMix": [
+      {
+        "drug": "metformin",
+        "count": 5
+      },
+      {
+        "drug": "amoxicillin",
+        "count": 5
+      },
+      {
+        "drug": "acetaminophen",
+        "count": 5
+      },
+      {
+        "drug": "hydrocodone-acetaminophen",
+        "count": 3
+      },
+      {
+        "drug": "warfarin",
+        "count": 1
+      },
+      {
+        "drug": "oxycodone",
+        "count": 1
+      },
+      {
+        "drug": "lisinopril",
+        "count": 1
+      },
+      {
+        "drug": "atorvastatin",
+        "count": 1
+      },
+      {
+        "drug": "albuterol",
+        "count": 1
+      },
+      {
+        "drug": "ibuprofen",
+        "count": 1
+      }
+    ]
+  },
+  "hypothesis": "The v2 fork cannot complete antibiotic order signing under v3 because it lacks a reachable abxIndication field for each current order line. Adding the coded picker and per-line signing summary implements the release while preserving P1's shortcuts, inline result message, receipts, and safety controls. Human confirmation remains required for every antibiotic line, including pre-op orders.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "p1-v3-antibiotic-migration@m1",
+        "summary": "R3-1/R3-4: add the current-line antibiotic indication picker, including for pre-op orders. R3-2: show per-line antibiotic indications at signing. R3-3 adds no physician administration UI requirement.",
+        "moveType": "migrate",
+        "rationale": "Two component additions implement the vendor migration without moving existing components or changing prior customizations, macros, alerts, or human-only steps. Physical savings cannot be established from the supplied geometry; this patch restores completion.",
+        "targets": [
+          "w1Orders",
+          "w1Sign"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prn]+",
+            "value": {
+              "id": "w1Orders.abxIndication",
+              "kind": {
+                "field": {
+                  "element": "abxIndication",
+                  "slot": "current",
+                  "prefill": "none"
+                }
+              },
+              "label": "Antibiotic indication (required for antibiotics)",
+              "parent": "w1Orders.medication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w1Orders.abxIndication"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Sign]/components/[id=w1Sign.orders]+",
+            "value": {
+              "id": "w1Sign.antibioticIndications",
+              "kind": {
+                "table": {
+                  "info": "abxIndication"
+                }
+              },
+              "label": "Order indications (per antibiotic line)",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w1Sign.antibioticIndications"
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": null,
+      "componentsMoved": 0
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "p1-v3-antibiotic-migration@m1"
+    ],
+    "rationale": "The v2 fork cannot complete antibiotic order signing under v3 because it lacks a reachable abxIndication field for each current order line. Adding the coded picker and per-line signing summary implements the release while preserving P1's shortcuts, inline result message, receipts, and safety controls. Human confirmation remains required for every antibiotic line, including pre-op orders.",
+    "rejectedAlternatives": [],
+    "choiceBy": "llm"
+  },
+  "predicted": {
+    "clicks": 0,
+    "keystrokes": 0,
+    "scrolls": 0,
+    "klmDeciSec": 0,
+    "mouseTravelPx": null,
+    "scrollPx": null
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 1,
+        "candidateIds": [
+          "p1-v3-antibiotic-migration@m1"
+        ],
+        "source": "migration",
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prn]+",
+            "value": {
+              "id": "w1Orders.abxIndication",
+              "kind": {
+                "field": {
+                  "element": "abxIndication",
+                  "slot": "current",
+                  "prefill": "none"
+                }
+              },
+              "label": "Antibiotic indication (required for antibiotics)",
+              "parent": "w1Orders.medication",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w1Orders.abxIndication"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Sign]/components/[id=w1Sign.orders]+",
+            "value": {
+              "id": "w1Sign.antibioticIndications",
+              "kind": {
+                "table": {
+                  "info": "abxIndication"
+                }
+              },
+              "label": "Order indications (per antibiotic line)",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w1Sign.antibioticIndications"
+            }
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 5,
+      "load": "busy",
+      "before": {
+        "tasks": 8,
+        "completed": 8,
+        "clicks": 258,
+        "keystrokes": 1256,
+        "scrolls": 368,
+        "popups": 8,
+        "overrides": 3,
+        "searches": 7,
+        "backtracks": 10,
+        "klmDeciSec": 16225,
+        "mouseTravelPx": 107542.82999999999,
+        "scrollPx": 482854
+      },
+      "after": {
+        "tasks": 8,
+        "completed": 8,
+        "clicks": 237,
+        "keystrokes": 1228,
+        "scrolls": 314,
+        "popups": 5,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 9,
+        "klmDeciSec": 15292,
+        "mouseTravelPx": 101713.24,
+        "scrollPx": 402068
+      },
+      "saving": {
+        "clicks": 21,
+        "keystrokes": 28,
+        "scrolls": 54,
+        "klmDeciSec": 933,
+        "mouseTravelPx": 5829.59,
+        "scrollPx": 80786
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 67.5,
+          "keystrokes": 3488.6,
+          "scrolls": 0,
+          "klmDeciSec": 548
+        },
+        "after": {
+          "clicks": 53.9,
+          "keystrokes": 3408.6,
+          "scrolls": 0,
+          "klmDeciSec": 510.7
+        }
+      }
+    },
+    "improved": true,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "Release canonical comparison; full completion required on every deploy."
+  },
+  "measured": {
+    "validation": {
+      "day": 5,
+      "load": "busy",
+      "before": {
+        "tasks": 8,
+        "completed": 8,
+        "clicks": 258,
+        "keystrokes": 1256,
+        "scrolls": 368,
+        "popups": 8,
+        "overrides": 3,
+        "searches": 7,
+        "backtracks": 10,
+        "klmDeciSec": 16225,
+        "mouseTravelPx": 107542.82999999999,
+        "scrollPx": 482854
+      },
+      "after": {
+        "tasks": 8,
+        "completed": 8,
+        "clicks": 237,
+        "keystrokes": 1228,
+        "scrolls": 314,
+        "popups": 5,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 9,
+        "klmDeciSec": 15292,
+        "mouseTravelPx": 101713.24,
+        "scrollPx": 402068
+      },
+      "saving": {
+        "clicks": 21,
+        "keystrokes": 28,
+        "scrolls": 54,
+        "klmDeciSec": 933,
+        "mouseTravelPx": 5829.59,
+        "scrollPx": 80786
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 67.5,
+          "keystrokes": 3488.6,
+          "scrolls": 0,
+          "klmDeciSec": 548
+        },
+        "after": {
+          "clicks": 53.9,
+          "keystrokes": 3408.6,
+          "scrolls": 0,
+          "klmDeciSec": 510.7
+        }
+      }
+    },
+    "test": {
+      "day": 8,
+      "load": "blind-measurement",
+      "before": {
+        "tasks": 39,
+        "completed": 39,
+        "clicks": 746,
+        "keystrokes": 3021,
+        "scrolls": 888,
+        "popups": 24,
+        "overrides": 8,
+        "searches": 22,
+        "backtracks": 24,
+        "klmDeciSec": 39677,
+        "mouseTravelPx": 313822.99000000005,
+        "scrollPx": 1646601
+      },
+      "after": {
+        "tasks": 39,
+        "completed": 37,
+        "clicks": 652,
+        "keystrokes": 2973,
+        "scrolls": 741,
+        "popups": 9,
+        "overrides": 0,
+        "searches": 10,
+        "backtracks": 16,
+        "klmDeciSec": 36500,
+        "mouseTravelPx": 285805.70000000007,
+        "scrollPx": 1201893
+      },
+      "saving": {
+        "clicks": 94,
+        "keystrokes": 48,
+        "scrolls": 147,
+        "klmDeciSec": 3177,
+        "mouseTravelPx": 28017.29,
+        "scrollPx": 444708
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 106.8,
+          "keystrokes": 5396.8,
+          "scrolls": 0,
+          "klmDeciSec": 599.1
+        },
+        "after": {
+          "clicks": 57.9,
+          "keystrokes": 4619,
+          "scrolls": 0,
+          "klmDeciSec": 451.2
+        }
+      }
+    },
+    "testNoAgent": {
+      "day": 8,
+      "load": "blind-measurement-no-agent",
+      "before": {
+        "tasks": 39,
+        "completed": 39,
+        "clicks": 746,
+        "keystrokes": 3021,
+        "scrolls": 888,
+        "popups": 24,
+        "overrides": 8,
+        "searches": 22,
+        "backtracks": 24,
+        "klmDeciSec": 39677,
+        "mouseTravelPx": 313822.99000000005,
+        "scrollPx": 1646601
+      },
+      "after": {
+        "tasks": 39,
+        "completed": 37,
+        "clicks": 652,
+        "keystrokes": 2973,
+        "scrolls": 741,
+        "popups": 9,
+        "overrides": 0,
+        "searches": 10,
+        "backtracks": 16,
+        "klmDeciSec": 36500,
+        "mouseTravelPx": 285805.70000000007,
+        "scrollPx": 1201893
+      },
+      "saving": {
+        "clicks": 94,
+        "keystrokes": 48,
+        "scrolls": 147,
+        "klmDeciSec": 3177,
+        "mouseTravelPx": 28017.29,
+        "scrollPx": 444708
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 106.8,
+          "keystrokes": 5396.8,
+          "scrolls": 0,
+          "klmDeciSec": 599.1
+        },
+        "after": {
+          "clicks": 57.9,
+          "keystrokes": 4619,
+          "scrolls": 0,
+          "klmDeciSec": 451.2
+        }
+      }
+    },
+    "minClicks": [],
+    "predictionHeld": null,
+    "predictionNote": ""
+  },
+  "userResponse": {
+    "response": "not-offered",
+    "probability": 0,
+    "reason": "regulatory migration: the user cannot keep a non-conforming version"
+  },
+  "certificate": {
+    "specVersion": "v3",
+    "specHash": "fnv1a64:4185fe08609ba09c",
+    "programHash": "fnv1a64:6b15011414327d5b",
+    "verdict": "ok",
+    "checkerVersion": "check-1",
+    "time": "2026-11-02T00:39:20Z"
+  },
+  "screenCheck": {
+    "status": "pass",
+    "mode": "real",
+    "bundles": [
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Ashly_Rippin_149fcc1f.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Abdul_Sauer_d0fe99e5.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Albert_Weber_84816a36.json"
+    ],
+    "pages": 981,
+    "failingScreens": [],
+    "failingFiles": [],
+    "message": "981 page trees passed"
+  },
+  "deployed": {
+    "version": 5,
+    "program": "programs/P1/v5.json",
+    "certificate": "certs/P1/v5.json",
+    "build": "certs/P1/v5.build.json",
+    "source": "programs/P1/v5.source.json"
+  },
+  "outcome": "migrated",
+  "release": {
+    "id": "v3",
+    "specVersion": "v3",
+    "recheck": {
+      "status": "fail",
+      "property": "completable",
+      "message": "commit signOrders: order slot Ehr.Slot.current has no field the user can reach for abxIndication",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w1Rooming"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Rooming.nav.w1Orders"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Orders.toSign"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Sign.commit.signOrders"
+          }
+        }
+      ],
+      "screens": [
+        "home",
+        "w1Rooming",
+        "w1Orders",
+        "w1Sign"
+      ],
+      "verdict": {
+        "violation": {
+          "property": "completable",
+          "message": "commit signOrders: order slot Ehr.Slot.current has no field the user can reach for abxIndication",
+          "counterexample": [
+            {
+              "click": {
+                "comp": "home.work.w1Rooming"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Rooming.nav.w1Orders"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Orders.toSign"
+              }
+            },
+            {
+              "click": {
+                "comp": "w1Sign.commit.signOrders"
+              }
+            }
+          ],
+          "screens": [
+            "home",
+            "w1Rooming",
+            "w1Orders",
+            "w1Sign"
+          ]
+        }
+      }
+    },
+    "items": [
+      "R3-1",
+      "R3-4",
+      "R3-2",
+      "R3-3"
+    ],
+    "surfaced": null,
+    "customizationsKept": [
+      "night 1: Open refill requests directly in the complete response workspace.; Remove the three removable reminders observed interrupting P1.",
+      "night 2: Open the complete signing workspace directly from medication orders.",
+      "night 4: Allow patient messages directly beside result actions.; Use valid existing review receipts on the signing screen."
+    ],
+    "customizationsDropped": [],
+    "fallback": false,
+    "flaggedUser": false
+  },
+  "flags": [
+    "reporting: theoretical minima are post-run only; no search attempted overnight"
+  ],
+  "llmCalls": [
+    {
+      "callId": "night-06/P1/migrate-1",
+      "purpose": "migrate",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 363335,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-06/P1/migrate-1.json"
+    }
+  ],
+  "createdAt": "2026-11-02T00:33:05.124Z",
+  "sourceRunId": "core-10day"
+}

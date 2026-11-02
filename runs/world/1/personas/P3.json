@@ -1,0 +1,10 @@
+{
+  "id": "P3",
+  "role": "rn",
+  "keyboardShare": 10,
+  "reviewsAllergiesEarly": true,
+  "scansSidebar": true,
+  "backtrackRate": 90,
+  "searchWhenBuried": false,
+  "overrideRate": 400
+}

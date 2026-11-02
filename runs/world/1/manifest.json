@@ -1,0 +1,485 @@
+{
+  "generator": "world@0.1.0",
+  "seed": 1,
+  "days": 10,
+  "startDate": "2026-11-02",
+  "fixtures": {
+    "index": "fixtures/synthea/index.json",
+    "source": "synthea",
+    "patients": 174,
+    "adults": 124,
+    "pediatric": 50,
+    "worldAssignedHomeMeds": []
+  },
+  "perDay": [
+    {
+      "day": 1,
+      "date": "2026-11-02",
+      "weekday": "Mon",
+      "events": [
+        "day-1-canonical-ui",
+        "appendicitis-consult-P2-to-P5",
+        "monday-surge",
+        "flu-week"
+      ],
+      "loads": {
+        "P1": "busy",
+        "P2": "busy",
+        "P3": "busy",
+        "P4": "busy",
+        "P5": "busy"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 3,
+          "W7": 19,
+          "W1": 20
+        },
+        "P2": {
+          "W3": 22
+        },
+        "P3": {
+          "W4": 38
+        },
+        "P4": {
+          "W5": 22
+        },
+        "P5": {
+          "W6": 3,
+          "W1": 15
+        }
+      }
+    },
+    {
+      "day": 2,
+      "date": "2026-11-03",
+      "weekday": "Tue",
+      "events": [
+        "flu-week"
+      ],
+      "loads": {
+        "P1": "normal",
+        "P2": "busy",
+        "P3": "normal",
+        "P4": "busy",
+        "P5": "normal"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 11,
+          "W7": 10,
+          "W1": 19
+        },
+        "P2": {
+          "W3": 18
+        },
+        "P3": {
+          "W4": 51
+        },
+        "P4": {
+          "W5": 20
+        },
+        "P5": {
+          "W6": 13,
+          "W2": 1
+        }
+      }
+    },
+    {
+      "day": 3,
+      "date": "2026-11-04",
+      "weekday": "Wed",
+      "events": [
+        "flu-week"
+      ],
+      "loads": {
+        "P1": "normal",
+        "P2": "normal",
+        "P3": "normal",
+        "P4": "busy",
+        "P5": "busy"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 13,
+          "W1": 19,
+          "W7": 3
+        },
+        "P2": {
+          "W3": 18
+        },
+        "P3": {
+          "W4": 44
+        },
+        "P4": {
+          "W5": 19
+        },
+        "P5": {
+          "W6": 5,
+          "W1": 14
+        }
+      }
+    },
+    {
+      "day": 4,
+      "date": "2026-11-05",
+      "weekday": "Thu",
+      "events": [
+        "vendor-release-v1.1-prior-auth",
+        "flu-week"
+      ],
+      "loads": {
+        "P1": "normal",
+        "P2": "quiet",
+        "P3": "quiet",
+        "P4": "normal",
+        "P5": "normal"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 9,
+          "W1": 18,
+          "W7": 13
+        },
+        "P2": {
+          "W3": 13
+        },
+        "P3": {
+          "W4": 41
+        },
+        "P4": {
+          "W5": 17
+        },
+        "P5": {
+          "W6": 7,
+          "W2": 4
+        }
+      }
+    },
+    {
+      "day": 5,
+      "date": "2026-11-06",
+      "weekday": "Fri",
+      "events": [
+        "P1-covers-urgent-care",
+        "flu-week"
+      ],
+      "loads": {
+        "P1": "busy",
+        "P2": "busy",
+        "P3": "normal",
+        "P4": "busy",
+        "P5": "normal"
+      },
+      "taskCounts": {
+        "P1": {
+          "W1": 18,
+          "W2": 2,
+          "W7": 3
+        },
+        "P2": {
+          "W3": 20
+        },
+        "P3": {
+          "W4": 37
+        },
+        "P4": {
+          "W5": 19
+        },
+        "P5": {
+          "W6": 2,
+          "W1": 14,
+          "W2": 1
+        }
+      }
+    },
+    {
+      "day": 6,
+      "date": "2026-11-09",
+      "weekday": "Mon",
+      "events": [
+        "monday-surge"
+      ],
+      "loads": {
+        "P1": "busy",
+        "P2": "busy",
+        "P3": "busy",
+        "P4": "busy",
+        "P5": "busy"
+      },
+      "taskCounts": {
+        "P1": {
+          "W7": 22,
+          "W1": 19
+        },
+        "P2": {
+          "W3": 21
+        },
+        "P3": {
+          "W4": 32
+        },
+        "P4": {
+          "W5": 18
+        },
+        "P5": {
+          "W6": 9,
+          "W2": 2
+        }
+      }
+    },
+    {
+      "day": 7,
+      "date": "2026-11-10",
+      "weekday": "Tue",
+      "events": [
+        "vendor-release-v2-antibiotic-indication"
+      ],
+      "loads": {
+        "P1": "normal",
+        "P2": "busy",
+        "P3": "normal",
+        "P4": "normal",
+        "P5": "normal"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 6,
+          "W7": 16,
+          "W1": 18
+        },
+        "P2": {
+          "W3": 18
+        },
+        "P3": {
+          "W4": 54
+        },
+        "P4": {
+          "W5": 17
+        },
+        "P5": {
+          "W1": 13,
+          "W6": 1
+        }
+      }
+    },
+    {
+      "day": 8,
+      "date": "2026-11-11",
+      "weekday": "Wed",
+      "events": [],
+      "loads": {
+        "P1": "normal",
+        "P2": "normal",
+        "P3": "normal",
+        "P4": "normal",
+        "P5": "normal"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 10,
+          "W7": 12,
+          "W1": 17
+        },
+        "P2": {
+          "W3": 15
+        },
+        "P3": {
+          "W4": 38
+        },
+        "P4": {
+          "W5": 15
+        },
+        "P5": {
+          "W6": 9,
+          "W2": 3
+        }
+      }
+    },
+    {
+      "day": 9,
+      "date": "2026-11-12",
+      "weekday": "Thu",
+      "events": [],
+      "loads": {
+        "P1": "quiet",
+        "P2": "quiet",
+        "P3": "quiet",
+        "P4": "quiet",
+        "P5": "quiet"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 14,
+          "W7": 8,
+          "W1": 17
+        },
+        "P2": {
+          "W3": 12
+        },
+        "P3": {
+          "W4": 44
+        },
+        "P4": {
+          "W5": 12
+        },
+        "P5": {
+          "W6": 2,
+          "W1": 9
+        }
+      }
+    },
+    {
+      "day": 10,
+      "date": "2026-11-13",
+      "weekday": "Fri",
+      "events": [],
+      "loads": {
+        "P1": "normal",
+        "P2": "normal",
+        "P3": "normal",
+        "P4": "normal",
+        "P5": "normal"
+      },
+      "taskCounts": {
+        "P1": {
+          "W2": 13,
+          "W7": 9,
+          "W1": 17
+        },
+        "P2": {
+          "W3": 14
+        },
+        "P3": {
+          "W4": 45
+        },
+        "P4": {
+          "W5": 16
+        },
+        "P5": {
+          "W6": 6,
+          "W2": 3
+        }
+      }
+    }
+  ],
+  "files": [
+    "world.json",
+    "personas/P1.json",
+    "personas/P2.json",
+    "personas/P3.json",
+    "personas/P4.json",
+    "personas/P5.json",
+    "state-day-0.json",
+    "state-day-1.json",
+    "day-1-P1.json",
+    "schedules/day-01/P1.json",
+    "day-1-P2.json",
+    "schedules/day-01/P2.json",
+    "day-1-P3.json",
+    "schedules/day-01/P3.json",
+    "day-1-P4.json",
+    "schedules/day-01/P4.json",
+    "day-1-P5.json",
+    "schedules/day-01/P5.json",
+    "state-day-2.json",
+    "day-2-P1.json",
+    "schedules/day-02/P1.json",
+    "day-2-P2.json",
+    "schedules/day-02/P2.json",
+    "day-2-P3.json",
+    "schedules/day-02/P3.json",
+    "day-2-P4.json",
+    "schedules/day-02/P4.json",
+    "day-2-P5.json",
+    "schedules/day-02/P5.json",
+    "state-day-3.json",
+    "day-3-P1.json",
+    "schedules/day-03/P1.json",
+    "day-3-P2.json",
+    "schedules/day-03/P2.json",
+    "day-3-P3.json",
+    "schedules/day-03/P3.json",
+    "day-3-P4.json",
+    "schedules/day-03/P4.json",
+    "day-3-P5.json",
+    "schedules/day-03/P5.json",
+    "state-day-4.json",
+    "day-4-P1.json",
+    "schedules/day-04/P1.json",
+    "day-4-P2.json",
+    "schedules/day-04/P2.json",
+    "day-4-P3.json",
+    "schedules/day-04/P3.json",
+    "day-4-P4.json",
+    "schedules/day-04/P4.json",
+    "day-4-P5.json",
+    "schedules/day-04/P5.json",
+    "state-day-5.json",
+    "day-5-P1.json",
+    "schedules/day-05/P1.json",
+    "day-5-P2.json",
+    "schedules/day-05/P2.json",
+    "day-5-P3.json",
+    "schedules/day-05/P3.json",
+    "day-5-P4.json",
+    "schedules/day-05/P4.json",
+    "day-5-P5.json",
+    "schedules/day-05/P5.json",
+    "state-day-6.json",
+    "day-6-P1.json",
+    "schedules/day-06/P1.json",
+    "day-6-P2.json",
+    "schedules/day-06/P2.json",
+    "day-6-P3.json",
+    "schedules/day-06/P3.json",
+    "day-6-P4.json",
+    "schedules/day-06/P4.json",
+    "day-6-P5.json",
+    "schedules/day-06/P5.json",
+    "state-day-7.json",
+    "day-7-P1.json",
+    "schedules/day-07/P1.json",
+    "day-7-P2.json",
+    "schedules/day-07/P2.json",
+    "day-7-P3.json",
+    "schedules/day-07/P3.json",
+    "day-7-P4.json",
+    "schedules/day-07/P4.json",
+    "day-7-P5.json",
+    "schedules/day-07/P5.json",
+    "state-day-8.json",
+    "day-8-P1.json",
+    "schedules/day-08/P1.json",
+    "day-8-P2.json",
+    "schedules/day-08/P2.json",
+    "day-8-P3.json",
+    "schedules/day-08/P3.json",
+    "day-8-P4.json",
+    "schedules/day-08/P4.json",
+    "day-8-P5.json",
+    "schedules/day-08/P5.json",
+    "state-day-9.json",
+    "day-9-P1.json",
+    "schedules/day-09/P1.json",
+    "day-9-P2.json",
+    "schedules/day-09/P2.json",
+    "day-9-P3.json",
+    "schedules/day-09/P3.json",
+    "day-9-P4.json",
+    "schedules/day-09/P4.json",
+    "day-9-P5.json",
+    "schedules/day-09/P5.json",
+    "state-day-10.json",
+    "day-10-P1.json",
+    "schedules/day-10/P1.json",
+    "day-10-P2.json",
+    "schedules/day-10/P2.json",
+    "day-10-P3.json",
+    "schedules/day-10/P3.json",
+    "day-10-P4.json",
+    "schedules/day-10/P4.json",
+    "day-10-P5.json",
+    "schedules/day-10/P5.json",
+    "manifest.json"
+  ]
+}

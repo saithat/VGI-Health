@@ -1,0 +1,829 @@
+{
+  "interactionModel": {
+    "viewport": [
+      1440,
+      900
+    ],
+    "pointer": "Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation",
+    "scroll": "Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets",
+    "time": "raw only; not used"
+  },
+  "status": "partial",
+  "parallel": true,
+  "personaWorkers": 5,
+  "screenWorkersPerPersona": 6,
+  "fingerprints": {
+    "interactionModel": "0bc5ee6317edb966f23ce0b40ed2ed557b35dc9c1d81bd4b7685fda16239354f",
+    "agent": "7b7748fcdad16eb7254eaa46fa3b2bd1a3df3379cb2b2939b32b55a1ad5bae1e",
+    "screenHarness": "3da98a3ff24f29abd5c1febbc6f86e316728d9dac788d3ccd136895cb93cff1b",
+    "screenTests": "65a6f5723648ad0b89e71b8c93d393f5029a493b6fb49268e994c6fe06c4a76b",
+    "playwright": "2a538ebc2f1f8dbc09d3fbeb93f15a02d3244194568094d449ba02af8d254a91",
+    "fixtures": "4d3fa8e6eae3bae6de6a42c0ce5653a5d522c60eac4e2c205f0444911dea9876",
+    "ehr": "95caf8573b161d8d149b33b9d2d9dd74c78a5ba8122c59e1dd484dbdbc815f3e",
+    "releases": {
+      "v1": "4606315eb55e368f6479f697541bd5b30075b238e159c12dd694c0b327158959",
+      "v2": "33e8c997ea9f2fd76e988d1c4cc9d0a1d42752f7a7702d4d7d6612162d50eaf2",
+      "v3": "efdb3d26700c737abb821499102a3ecc19adff66c8b248b98fa2069ee42dc2a7"
+    },
+    "world": "7f4f9dabc4ad609422fb5be4598e54a30a285bb9f4022b72b078bc074dc3e26d",
+    "app": "71e844bfb3cb5120aa86e5bb06cde0c9985e84ef944125b4ea6670d387a65e2e",
+    "wasm": "1e3c1db4deb56467f0005ea11b908df56495fbbe7555b2540d111492a27af71d"
+  },
+  "measurementProtocol": {
+    "name": "past-calibration-blind-even-days-v1",
+    "calibrationDays": [
+      1,
+      3,
+      5,
+      7,
+      9
+    ],
+    "measurementDays": [
+      2,
+      4,
+      6,
+      8,
+      10
+    ],
+    "validation": "Every third task of the most recent past odd calibration day; never shown to the designer or included in headline metrics. Independent validation seed namespace.",
+    "training": "Remaining tasks of past odd calibration days only. Even-day traces/schedules never enter selection prompts.",
+    "tests": "Next even measurement day, only when the accepted version is actually measured there. Night 9 is measured on day 10, not an absent day 11. Superseded/unmeasured versions are reported explicitly."
+  },
+  "mode": "REAL",
+  "releaseIds": {
+    "base": "v1",
+    "feature": "v2",
+    "migration": "v3"
+  },
+  "noAgentRequired": true,
+  "buildBindingRequired": true,
+  "runId": "core-10day-live",
+  "createdAt": "2026-11-01T21:48:34.599Z",
+  "resumes": [
+    "2026-11-02T04:43:28.396Z"
+  ],
+  "days": 10,
+  "personas": [
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5"
+  ],
+  "world": "/home/saithat/Projects/VGI-Health/runs/world/2",
+  "worldSeed": 1,
+  "worldIsFake": false,
+  "backend": "codex",
+  "model": "gpt-6.1-sol",
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "seedPolicy": "until-each-rejected",
+  "releaseDays": {
+    "v2": 4,
+    "v3": 7
+  },
+  "warning": "stopped/partial: 10 of 10 days",
+  "nightDeploys": 28,
+  "infrastructureErrors": [],
+  "llmErrors": [],
+  "transcriptAudit": {
+    "status": "pass",
+    "transcripts": 80,
+    "results": [
+      {
+        "file": "llm/night-01/P1/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P1/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P2/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P2/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P3/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P3/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P4/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P4/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P5/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-01/P5/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P1/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P1/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P2/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P2/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P3/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P3/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P4/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P4/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P5/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-02/P5/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-03/P1/surface-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-03/P2/surface-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-03/P3/surface-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-03/P4/surface-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-03/P5/surface-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P1/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P1/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P2/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P2/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P3/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P3/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P4/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P4/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P5/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-04/P5/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P1/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P1/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P2/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P2/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P3/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P3/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P4/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P4/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P5/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-05/P5/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-06/P1/migrate-1.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-06/P2/migrate-1.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-06/P3/migrate-1.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-06/P4/migrate-1.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-06/P5/migrate-1.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P1/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P1/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P2/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P2/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P3/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P3/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P4/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P4/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P5/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-07/P5/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P1/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P1/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P2/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P2/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P3/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P3/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P4/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P4/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P5/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-08/P5/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P1/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P1/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P2/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P2/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P3/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P3/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P4/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P4/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P5/choose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      },
+      {
+        "file": "llm/night-09/P5/propose-0.json",
+        "status": "pass",
+        "outsideTempReadAudit": "no file-read/tool events",
+        "forbiddenToolEvents": 0,
+        "toolEvents": [],
+        "confinement": "bwrap-private-request-directory",
+        "policy": "No tool events allowed; all filesystem reads outside request/runtime denied by OS"
+      }
+    ]
+  },
+  "daysPlanned": 10,
+  "daysCompleted": 10,
+  "nightsCompleted": 9,
+  "sourceRun": "core-10day",
+  "sourceDirectory": "/home/saithat/Projects/VGI-Health/runs/core-10day",
+  "sourceStatus": "completed",
+  "stopReason": null,
+  "partialNote": "stopped/partial: 10 of 10 days",
+  "note": "stopped/partial: 10 of 10 days",
+  "publishedAt": "2026-11-02T06:42:49.315Z",
+  "snapshotSha256": "9f76ee4a5738aebf6dc160ca93b6503aadd7f25de1a619ff839a33f85058e629",
+  "originalArchive": "/home/saithat/Projects/run-tmp/publish-core-10day-live-LbeA7k.previous"
+}
