@@ -1,5 +1,5 @@
 import { readFile, stat } from "node:fs/promises";
-import { brotliCompress, gzip } from "node:zlib";
+import { brotliCompress, gzip, constants } from "node:zlib";
 import { promisify } from "node:util";
 import type { IncomingMessage, ServerResponse } from "node:http";
 
@@ -43,7 +43,12 @@ export async function sendArtifact(
   let entry = cache.get(key);
   if (!entry || entry.stamp !== stamp) {
     const body = typeof source === "string" ? await readFile(source) : source;
-    entry = { stamp, body, br: await br(body), gzip: await gz(body) };
+    // On-demand run JSON must not pay Brotli's default quality-11 search cost.
+    const [compressedBr, compressedGzip] = await Promise.all([
+      br(body, { params: { [constants.BROTLI_PARAM_QUALITY]: 4 } }),
+      gz(body),
+    ]);
+    entry = { stamp, body, br: compressedBr, gzip: compressedGzip };
     if (cache.size >= 64) cache.delete(cache.keys().next().value ?? "");
     cache.set(key, entry);
   }

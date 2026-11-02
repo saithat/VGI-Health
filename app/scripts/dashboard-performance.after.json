@@ -1,0 +1,586 @@
+{
+  "base": "http://127.0.0.1:5194",
+  "run": "core-10day-live",
+  "persona": "P1",
+  "viewport": "1440x900",
+  "browser": "156.0.8078.4",
+  "note": "Wall includes a fixed 500 ms settling window after UI readiness and two frames; CDP TaskDuration is renderer main-thread CPU; bytes are CDP encodedDataLength (headers + compressed payload). First action clears browser HTTP cache; later actions retain it. Server caches may be warm.",
+  "rows": [
+    {
+      "name": "first Evolution",
+      "wallMs": 1404,
+      "bytes": 515140,
+      "decodedBodyBytes": 6940900,
+      "mainThreadMs": 240,
+      "scriptMs": 74,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:5194/dashboard?run=core-10day-live&persona=P1&view=Evolution",
+          "bytes": 862
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/styles-C2i_EZ8M.css",
+          "bytes": 534
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/app-WfVWd7M_.js",
+          "bytes": 6726
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbvMgOm.css",
+          "bytes": 29911
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbYwDiZ.js",
+          "bytes": 62844
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/workload-CreLZyt2.css",
+          "bytes": 753
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BsHIApAL.css",
+          "bytes": 9152
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Dashboard-OvNtKaOO.css",
+          "bytes": 2629
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Dashboard-BM9PFe_o.js",
+          "bytes": 26385
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/data-vdoZXQSt.js",
+          "bytes": 3063
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schema-DYvTqIF8.js",
+          "bytes": 4964
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/workload-6vGB5XSV.js",
+          "bytes": 3793
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/wasmInterp-Degfn8fV.js",
+          "bytes": 2821
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schemas-DfGUSdvy.js",
+          "bytes": 39141
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/types-C2mpEhRc.js",
+          "bytes": 1046
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/fhir-DlvQBax0.js",
+          "bytes": 1272
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/painter-C9EGZIjj.js",
+          "bytes": 1848
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BOa4J8GI.js",
+          "bytes": 65462
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/index.json",
+          "bytes": 6525
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/default.json",
+          "bytes": 361
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/summary.json",
+          "bytes": 168845
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/conformance.json",
+          "bytes": 76203
+        }
+      ]
+    },
+    {
+      "name": "Evolution → Trajectories (default task)",
+      "wallMs": 1898,
+      "bytes": 715502,
+      "decodedBodyBytes": 7027093,
+      "mainThreadMs": 379,
+      "scriptMs": 141,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectories-DMhjv_OF.css",
+          "bytes": 1506
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Trajectories-BFJ9fbpV.js",
+          "bytes": 4019
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectories-CTaamTSJ.js",
+          "bytes": 4646
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/TrajectoryFrame-BGpbkDoX.js",
+          "bytes": 4445
+        },
+        {
+          "url": "http://127.0.0.1:5194/ehr/interp-loader.mjs?v=26b854bc9b52c64e42a667c9a19576de5849dc03c151603c53722027f2619857",
+          "bytes": 1078
+        },
+        {
+          "url": "http://127.0.0.1:5194/ehr/ehr-interp.mjs",
+          "bytes": 16670
+        },
+        {
+          "url": "http://127.0.0.1:5194/ehr/ehr-interp.wasm?v=26b854bc9b52c64e42a667c9a19576de5849dc03c151603c53722027f2619857",
+          "bytes": 489552
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/index.json",
+          "bytes": 81901
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/tasks/d01-P1-W2-021.json",
+          "bytes": 15271
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v1.json",
+          "bytes": 8250
+        },
+        {
+          "url": "http://127.0.0.1:5194/fixtures/synthea/Ahmad_Schiller_77fea971.json",
+          "bytes": 11098
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.json",
+          "bytes": 22747
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "bytes": 2600
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "bytes": 372
+        },
+        {
+          "url": "http://127.0.0.1:5194/build.json",
+          "bytes": 375
+        },
+        {
+          "url": "http://127.0.0.1:5194/ehr/manifest.json",
+          "bytes": 11600
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "bytes": 430
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "bytes": 675
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "bytes": 22747
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/geometry/11e9e306af97dcccafd3b81d9ea3a000bfecc5517513ea4da328234fb338de76.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/slices/tasks/d01-P1-W2-021.json",
+          "bytes": 13480
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbYwDiZ.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schemas-DfGUSdvy.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BOa4J8GI.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/types-C2mpEhRc.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schema-DYvTqIF8.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/TrajectoryFrame-BGpbkDoX.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbvMgOm.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BsHIApAL.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-DCP6avwF.css",
+          "bytes": 561
+        },
+        {
+          "url": "http://127.0.0.1:5194/trajectory-frame.html",
+          "bytes": 606
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-C9d_GYGv.js",
+          "bytes": 873
+        }
+      ]
+    },
+    {
+      "name": "open another trajectory",
+      "wallMs": 966,
+      "bytes": 74462,
+      "decodedBodyBytes": 2404457,
+      "mainThreadMs": 392,
+      "scriptMs": 105,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/tasks/d01-P1-W7-022.json",
+          "bytes": 25717
+        },
+        {
+          "url": "http://127.0.0.1:5194/fixtures/synthea/Gino_Kshlerin_db4b7b38.json",
+          "bytes": 24847
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "bytes": 261
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "bytes": 255
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "bytes": 257
+        },
+        {
+          "url": "http://127.0.0.1:5194/build.json",
+          "bytes": 267
+        },
+        {
+          "url": "http://127.0.0.1:5194/ehr/manifest.json",
+          "bytes": 267
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "bytes": 256
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "bytes": 263
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/geometry/11e9e306af97dcccafd3b81d9ea3a000bfecc5517513ea4da328234fb338de76.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/slices/tasks/d01-P1-W7-022.json",
+          "bytes": 21812
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-C9d_GYGv.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbYwDiZ.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schemas-DfGUSdvy.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BOa4J8GI.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/types-C2mpEhRc.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schema-DYvTqIF8.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/TrajectoryFrame-BGpbkDoX.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbvMgOm.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BsHIApAL.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-DCP6avwF.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/trajectory-frame.html",
+          "bytes": 260
+        }
+      ]
+    },
+    {
+      "name": "Trajectories → Compare (pair)",
+      "wallMs": 1384,
+      "bytes": 209542,
+      "decodedBodyBytes": 5379821,
+      "mainThreadMs": 545,
+      "scriptMs": 171,
+      "requests": [
+        {
+          "url": "http://127.0.0.1:5194/assets/CompareTrajectories-3dPPdXSq.css",
+          "bytes": 1534
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/CompareTrajectories-Bf3NBbaH.js",
+          "bytes": 6063
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/revision-diff-Dm6U2dCA.js",
+          "bytes": 3102
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "bytes": 261
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "bytes": 261
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/tasks/d10-P1-W2-018.json",
+          "bytes": 15069
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/world/2/schedules/day-01/P1.json",
+          "bytes": 5321
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "bytes": 255
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/world/2/schedules/day-10/P1.json",
+          "bytes": 4971
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "bytes": 257
+        },
+        {
+          "url": "http://127.0.0.1:5194/build.json",
+          "bytes": 267
+        },
+        {
+          "url": "http://127.0.0.1:5194/ehr/manifest.json",
+          "bytes": 267
+        },
+        {
+          "url": "http://127.0.0.1:5194/fixtures/synthea/Bob_Schuster_c096a68f.json",
+          "bytes": 11242
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v3.json",
+          "bytes": 8600
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v5.json",
+          "bytes": 22687
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "bytes": 256
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "bytes": 261
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "bytes": 263
+        },
+        {
+          "url": "http://127.0.0.1:5194/build.json",
+          "bytes": 267
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.build.json",
+          "bytes": 372
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.json",
+          "bytes": 433
+        },
+        {
+          "url": "http://127.0.0.1:5194/ehr/manifest.json",
+          "bytes": 267
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.build.1.json",
+          "bytes": 674
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v5.source.json",
+          "bytes": 22685
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/geometry/3f370b3610e464860dab25564ae36c833ba1374b468b20af6707b976f5391e1c.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945/slices/tasks/d10-P1-W2-018.json",
+          "bytes": 12745
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-C9d_GYGv.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbYwDiZ.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schemas-DfGUSdvy.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BOa4J8GI.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/types-C2mpEhRc.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schema-DYvTqIF8.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/TrajectoryFrame-BGpbkDoX.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbvMgOm.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BsHIApAL.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-DCP6avwF.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-C9d_GYGv.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbYwDiZ.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schemas-DfGUSdvy.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BOa4J8GI.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/types-C2mpEhRc.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/schema-DYvTqIF8.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/TrajectoryFrame-BGpbkDoX.js",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/ehr-CJbvMgOm.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/Screen-BsHIApAL.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/assets/trajectoryFrame-DCP6avwF.css",
+          "bytes": 0
+        },
+        {
+          "url": "http://127.0.0.1:5194/trajectory-frame.html",
+          "bytes": 260
+        },
+        {
+          "url": "http://127.0.0.1:5194/trajectory-frame.html",
+          "bytes": 260
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v1.json",
+          "bytes": 22560
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v2.json",
+          "bytes": 22666
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v3.json",
+          "bytes": 22666
+        },
+        {
+          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v4.json",
+          "bytes": 22750
+        }
+      ]
+    },
+    {
+      "name": "Compare → Releases",
+      "wallMs": 568,
+      "bytes": 0,
+      "decodedBodyBytes": 0,
+      "mainThreadMs": 17,
+      "scriptMs": 6,
+      "requests": []
+    },
+    {
+      "name": "Releases → Compare",
+      "wallMs": 580,
+      "bytes": 0,
+      "decodedBodyBytes": 0,
+      "mainThreadMs": 49,
+      "scriptMs": 6,
+      "requests": []
+    },
+    {
+      "name": "Compare → Trajectories",
+      "wallMs": 566,
+      "bytes": 0,
+      "decodedBodyBytes": 0,
+      "mainThreadMs": 39,
+      "scriptMs": 5,
+      "requests": []
+    },
+    {
+      "name": "Trajectories → Evolution",
+      "wallMs": 567,
+      "bytes": 0,
+      "decodedBodyBytes": 0,
+      "mainThreadMs": 19,
+      "scriptMs": 10,
+      "requests": []
+    }
+  ]
+}

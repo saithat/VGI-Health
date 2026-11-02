@@ -43,6 +43,10 @@ const presentations = process.env.EHR_PRESENTATION_BUNDLE
       JSON.parse(readFileSync(process.env.EHR_PRESENTATION_BUNDLE, "utf8")),
     )
   : null;
+// Policy input belongs to the operator, not to the proposed screen/program.
+const urgentAlertIds = z.array(z.string().min(1)).parse(
+  JSON.parse(process.env.EHR_URGENT_ALERT_IDS ?? "[]"),
+);
 const minimum = Number(process.env.EHR_MIN_FONT_PX ?? 12);
 if (!Number.isFinite(minimum) || minimum < 12)
   throw new Error("Legibility minimum must be at least 12px");
@@ -57,6 +61,7 @@ async function render(page: Page, screen: UiScreen) {
   await page.waitForTimeout(220);
 }
 function nodes(tree: UiNode): UiNode[] {
+  if ("timeline" in tree) return [tree, ...tree.timeline.children.flatMap(nodes)];
   if ("valueSet" in tree)
     return [tree, ...tree.valueSet.children.flatMap(nodes)];
   if ("chartReferences" in tree)
@@ -70,6 +75,43 @@ function nodes(tree: UiNode): UiNode[] {
   if ("tabs" in tree) return [tree, ...tree.tabs.body.flatMap(nodes)];
   return [tree];
 }
+/** Check the current moment without scrolling an urgent demand into view. */
+async function urgentVisibility(page: Page, screen: UiScreen, policy = urgentAlertIds) {
+  const demands = [...screen.workspace, ...screen.side, ...(screen.modal ? [screen.modal] : [])]
+    .flatMap(nodes).flatMap((node) => {
+      if ("alert" in node && policy.includes(node.alert.alertId))
+        return [{ kind: "alert", id: node.alert.alertId }];
+      if ("button" in node && node.button.role === "ack" && policy.includes(node.button.comp))
+        return [{ kind: "ack", id: node.button.comp }];
+      return [];
+    });
+  const failures = await page.evaluate(({ demands, minimum }) => {
+    const errors: string[] = [];
+    for (const demand of demands) {
+      const candidates = Array.from(document.querySelectorAll<HTMLElement>(
+        demand.kind === "alert" ? "[data-alert-id]" : "[data-comp-id][data-event='ack']",
+      )).filter((element) => element.getAttribute(
+        demand.kind === "alert" ? "data-alert-id" : "data-comp-id",
+      ) === demand.id);
+      const perceived = candidates.some((element) => {
+        if (element.closest("[inert], [hidden], [aria-hidden='true']")) return false;
+        const rect = element.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0 || rect.top < 0 || rect.left < 0 ||
+          rect.bottom > innerHeight || rect.right > document.documentElement.clientWidth) return false;
+        for (let parent: HTMLElement | null = element; parent; parent = parent.parentElement) {
+          const style = getComputedStyle(parent);
+          if (style.visibility !== "visible" || style.display === "none" || Number(style.opacity) === 0) return false;
+        }
+        const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        return Number.parseFloat(getComputedStyle(element).fontSize) >= minimum && !!hit && element.contains(hit);
+      });
+      if (!perceived) errors.push(`Urgent alert ${demand.id}: not perceived at the current moment`);
+    }
+    return errors;
+  }, { demands, minimum });
+  expect(failures).toEqual([]);
+}
+
 async function visibility(page: Page) {
   const failures = await page.evaluate((min) => {
     const errors: string[] = [];
@@ -169,6 +211,7 @@ for (const file of fixtures)
     await page.goto("/screen-check.html");
     await page.waitForFunction(() => typeof window.renderUi === "function");
     await render(page, screen);
+    if (!/-geometry\.json$/.test(file)) await urgentVisibility(page, screen);
     if(process.env.EHR_GEOMETRY_DIR && testInfo.project.name==='desktop'){
       const sha=createHash('sha256').update(readFileSync(file)).digest('hex');
       const geometry=await captureGeometry(page,screen.screen??resolve(file).split("/").at(-1)?.replace(".json","")??file,`${file}:${sha}`);
@@ -622,4 +665,46 @@ test.describe("clinical presentation", () => {
     expect(contrast.length).toBeGreaterThan(20);
     expect(contrast.filter(({ ratio }) => ratio < 4.5)).toEqual([]);
   });
+});
+
+test("timeline gate retains ordered detail and detects hidden or reordered children", async ({ page }) => {
+  const screen = uiScreenSchema.parse(JSON.parse(readFileSync(resolve("src/fixtures/ui/semantic-timeline.json"), "utf8")));
+  await page.goto("/screen-check.html");
+  await page.waitForFunction(() => typeof window.renderUi === "function");
+  await render(page, screen);
+  const baseline = expectedAria(screen);
+  expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(baseline);
+  const events = page.getByRole("list", { name: "Clinical timeline events" });
+  await expect(events.locator(":scope > li")).toHaveCount(6);
+  await expect(events).toContainText("Penicillin");
+  await expect(events).toContainText("Rash");
+  await expect(page.getByRole("button", { name: "Sign", exact: true })).toBeDisabled();
+  await visibility(page);
+  // A visual implementation that hides a full review must fail the independent gate.
+  const first = events.locator(":scope > li").first();
+  await first.evaluate((el) => { (el as HTMLElement).hidden = true; });
+  expect(observedAria(await page.locator("body").ariaSnapshot())).not.toEqual(baseline);
+  await first.evaluate((el) => { (el as HTMLElement).hidden = false; });
+  await events.evaluate((el) => { if (el.firstElementChild) el.append(el.firstElementChild); });
+  expect(observedAria(await page.locator("body").ariaSnapshot())).not.toEqual(baseline);
+});
+
+
+test("urgency gate rejects out-of-view demands without scrolling them into view", async ({ page }) => {
+  const screen: UiScreen = { banner: [], nav: [], title: "Urgent demand", side: [], modal: null,
+    workspace: [{ timeline: { title: "Clinical timeline", children: [
+      { alert: { comp: "warning", alertId: "interaction", label: "Interaction", severity: "passive" } },
+    ] } }] };
+  await page.goto("/screen-check.html");
+  await page.waitForFunction(() => typeof window.renderUi === "function");
+  await render(page, screen);
+  await urgentVisibility(page, screen, ["interaction"]);
+  const style = await page.addStyleTag({ content: ".clinical-alert { margin-top: 200vh !important; }" });
+  await expect(urgentVisibility(page, screen, ["interaction"])).rejects.toThrow();
+  await style.evaluate((element) => element.parentNode?.removeChild(element));
+  await urgentVisibility(page, screen, ["interaction"]);
+  await render(page, { ...screen, modal: { section: { id: "other", title: "Other alert", children: [
+    { button: { comp: "other", label: "Acknowledge", role: "ack", enabled: true, blockedReason: null, hotkey: null } },
+  ] } } });
+  await expect(urgentVisibility(page, screen, ["interaction"])).rejects.toThrow();
 });

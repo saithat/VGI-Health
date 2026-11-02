@@ -65,3 +65,13 @@ Navigation follow-up: `origin/lane/render` at `97f1b38` still exports
 send destination screen IDs as component clicks. Once that contract lands,
 render metadata-bearing entries as keyboard-operable buttons, dispatch exactly
 `{ click: { comp } }`, and extend `types.ts`/`fidelity.ts` and event tests together.
+
+The opt-in `timeline` constructor paints a labeled ordered list of complete
+children. Its Lean admission proof is `Ehr/Sem/Timeline.lean`; the independent
+ARIA projection is in `fidelity.ts`. It preserves source order without deriving
+timestamps, clinical state or new events. An expanded group tagged
+`layout.timeline` (or a namespaced suffix) enters the
+constructor through ordinary native/WASM `renderUi`; `renderTimelineUi` also
+provides a whole-workspace wrapper. The canonical browser fixture is exported
+by `lake env lean --run Ehr/Sem/ExportTimeline.lean`; `program-screen` selects
+the accepted program's actual signing screen.

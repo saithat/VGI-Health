@@ -1,3 +1,4 @@
+import { Timeline } from "./Timeline";
 import { useContext, useId, useState } from "react";
 import { usePresentation } from "./presentations";
 import { isCardColumns } from "./layout";
@@ -823,6 +824,7 @@ export function AlertNode({ node }: Props<"alert">) {
       data-comp-id={node.comp}
       className="clinical-alert"
       data-alert-tone={color}
+      data-alert-id={node.alertId}
       icon={
         <ClinicalIcon
           name={
@@ -967,6 +969,13 @@ export function StockUiNodeView({
   confirmProvided?: boolean;
 }) {
   switch (true) {
+    case "timeline" in node:
+      return (
+        <Timeline
+          node={node.timeline}
+          render={(child) => <UiChildren nodes={[child]} onEvent={onEvent} />}
+        />
+      );
     case "presentation" in node:
       return <PresentationNode node={node.presentation} onEvent={onEvent} />;
     case "valueSet" in node:

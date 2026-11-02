@@ -1267,3 +1267,10 @@
   .clinical-navbar .nav-footer { flex: 0 1 auto; margin: 0; padding: 0 4px; }
   .clinical-app main:has(> .clinical-workspace > .clinical-workspace-body > .clinical-field:first-child [data-comp-id$=".chartSearch"]) > .clinical-workspace-heading { min-height: 42px; }
 }
+
+/* Timeline admission contract: source order and all detail stay in normal flow. */
+.clinical-timeline { min-width: 0; }
+.clinical-timeline > h2 { font-size: 1rem; margin: 0 0 1rem; }
+.clinical-timeline > ol { list-style: none; margin: 0; padding: 0 0 0 1rem; border-left: 2px solid #526e82; }
+.clinical-timeline > ol > li { position: relative; min-width: 0; margin: 0 0 1rem; padding: 0 0 0 0.75rem; }
+.clinical-timeline > ol > li::before { content: ""; position: absolute; left: -1.35rem; top: 0.5rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #526e82; }

@@ -130,12 +130,17 @@ code.
 | Claim | Status | Where |
 |---|---|---|
 | Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
+| Native commit-check acceptance implies the guard holds on the supplied current FHIR projection | 🟢 **Proved** for the prototype; freshness, authenticated state and persistence remain trusted integration obligations | `Commit/Check.lean` (`accepted_current_guard`); [concurrency design](docs/design/concurrency.md) |
+| Persisted commits pass the guard on the record version written against | ⚪ **Designed, in progress**; live writes still use the client guard (G3) | [Concurrency design](docs/design/concurrency.md) |
+| Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Medplum correspondence is in progress | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
 | Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
 | Alerts: popups only for true conditions, never for passive alerts, acknowledgments persist | 🟢 **Proved** (A2, A4 for every run; A1, A3 via checker acceptance) | `Proofs/Alerts.lean`; `Check/AlertSound.lean`, `Check/SeveritySound.lean` |
 | A program is deployed only if the checker accepts it, with a certificate naming that spec and program | 🟢 **Proved** (the plan; not crash-atomic file writes) | `Proofs/CheckDeploy.lean` (T4) |
 | Checker acceptance implies properties 1–5 and 7–13 for every patient record and every reachable state | 🟢 **Proved** | `Check/*Sound.lean` (`accepted_*`) |
 | Checker acceptance implies property 6, "every required task can be completed" | 🟡 **Proved for defined fragments only** (scalar fields, fixed order lines, receipts, many alerts, macros/prefills); general case **open** | `Check/Sound.lean`, `Check/ScalarCompletion.lean`, `Check/FixedLineCompletion.lean` |
 | The screen tree keeps the patient banner, required reviews, honest buttons, modal vs inline alerts, labeled fields (D1–D4, D6) | 🟢 **Proved**, for the semantic screen tree | `Render/UiProofs.lean` |
+| Layout-independent information/action semantics, with explicit perception and view-step bounds | 🟡 **Proved** D1–D4/D6 bridges at abstract exposed moments; actual exposure is an explicit hypothesis; positive and negative examples | `Sem/Screen.lean`, `Sem/Bridge.lean`, `Sem/Trace.lean`, `Sem/Examples.lean` |
+| Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
 | The browser's accessibility tree equals Lean's screen tree; every control works | 🔵 **Checked** (browser tests, button audit) | `app/e2e/` |
@@ -293,9 +298,30 @@ still requires a separate proof. Current releases use the **core** rule profile.
 Browser drawing, record adapters and clinical rule completeness are outside
 these proofs. Allowed proof axioms are propext, Quot.sound and Classical.choice.
 
+## Semantic properties and extensions (in progress)
+
+[Semantic UI design](docs/design/semantic-ui.md) defines layout-independent
+perception, bounded reachability and urgency alongside the unchanged hospital
+properties. Tree presence alone does not prove viewport exposure or legibility.
+New primitives require Lean meaning/preservation proofs, a DOM painter and an
+independent screen-gate rule. [Ehr/Sem](lean/Ehr/Sem/) now contains the current-language bridge, including
+D1–D4/D6 implications, structural converses for information and action honesty,
+and concrete positive/rejected examples. `Sem/Trace.lean` preserves the clinical
+review obligation and relates completion to finite interpreter event counts.
+The admitted `layout.timeline` group tag emits an ordered full-detail timeline
+through the existing native/WASM renderer. `Sem/Timeline.lean` proves semantic
+preservation, and `Sem/TimelineProgram.lean` proves checker acceptance for a
+canonical program. DOM fidelity remains checked; physical perception needs
+exposure evidence, and general completion remains open. The operator can supply
+`EHR_URGENT_ALERT_IDS` as a JSON array: the screen gate checks those emitted
+demands at the initial moment without scrolling, and binds the policy into its
+cache key. This sampled check does not prove visibility at all future moments.
+Painter/interpreter
+changes invalidate recorded build bindings: rebuild and rebind before replay.
+
 ## Frontend and backend
 
-The stack has no application server with business logic of its own. The
+The current live stack has no application server with business logic of its own. The
 screen logic runs in the browser as the Lean interpreter compiled to
 WebAssembly. Medplum is the only backend, and it stores FHIR resources. The
 React app does two jobs: it moves JSON between the two, and it draws the tree
@@ -386,6 +412,41 @@ sequenceDiagram
 The `alt`/`else` box lists the three possible outcomes of one click: a screen-only change, exactly one
 saved write, or a refused or failed write (nothing is saved and the screen keeps its prior state).
 
+### Commit authority and shared workflows (in progress)
+
+[Concurrency design](docs/design/concurrency.md) specifies a native Lean commit
+checker behind a future authenticated service as the only Medplum writer. The
+native `ehr commit-check` prototype reads a JSON request on stdin and returns
+accept (recomputed staged state and resource URL/If-Match pairs) or reject
+(guard, event, version or chart-binding reason). It projects the supplied current
+FHIR bundle and proves acceptance implies the existing guard holds on that
+projection. The wrapper must supply authenticated session state, release, user,
+context and complete current reads. The command performs no writes. The design
+retains the per-session WASM interpreter and adds current-record guard checking,
+patient serialization, shared workflow controls and FHIR version preconditions.
+The deployment target is that no commit is persisted unless its guard holds on
+the record version written against. The executable [multi-actor model](lean/Ehr/Multi/Model.lean)
+proves scheduled-dose uniqueness and bed exclusivity over all finite
+interleavings of its atomic actions, including competing actors and bed reuse.
+`Multi/Tests.lean` includes a provably unsafe stale-read schedule. This model is
+not yet connected to FHIR persistence; G3 remains open until the service mediates
+all writes.
+
+After `cd lean && lake build`, run
+`TMPDIR=/home/saithat/Projects/run-tmp python3 scripts/test-commit-check.py` from
+the repository root for native JSON boundary tests. To inspect a valid request
+and response from `lean/`:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+lake env lean --run Ehr/Commit/Example.lean > "$TMPDIR/commit-request.json"
+.lake/build/bin/ehr commit-check < "$TMPDIR/commit-request.json"
+```
+
+This work adds native-only modules without rebuilding the recorded browser
+artifacts. The all-source Lean/WASM staleness check requires a WASM rebuild for
+a fresh browser build; no recorded certificates or app assets are rebound here.
+
 ### Lean in the browser
 
 - **Build.** `make wasm` runs `lake build <root>:c` for the API roots
@@ -419,7 +480,7 @@ saved write, or a refused or failed write (nothing is saved and the screen keeps
 2. **Render.** `init` gives a state. `renderUi(spec, program, facts, user,
    state)` turns it into a `UiScreen`: a tree of semantic nodes such as the
    banner, alerts, result grids, order composers, worklists and navigators
-   (13 presentation kinds). A disabled control carries the reason Lean gives
+   (13 presentation kinds plus the admitted timeline container). A disabled control carries the reason Lean gives
    for it.
 3. **Paint.** `app/src/ehr/ui` draws the tree with Mantine, through an
    exhaustive switch over the generated node union. The painter holds no
@@ -467,10 +528,10 @@ step 2.
     retryable failure for data that was already stored.
 - **Not proved.** The commit mapper is tested, not proved, so it is part of
   the trusted surface.
-- **Client-side guard.** The commit guard runs in the client. Medplum
+- **Client-side guard.** The live commit guard runs in the client. Medplum
   accepts any write that the signed-in user's access policy allows. Running
-  the same Lean guard on the server (as a proxy or Medplum Bot) is not done;
-  see gap G3.
+  the same Lean guard in the live server write path is not done. The isolated
+  native `commit-check` prototype above does not mediate these writes; see G3.
 
 ### Replay mode (`/ehr`, `/browse`, `/dashboard`)
 
@@ -578,6 +639,38 @@ and the agent's changes linked to the moments they matter. Compare links are
 bookmarkable, e.g.
 `/dashboard?view=compare&run=core-10day-live&persona=P1&workflow=W1&left=d01-P1-W1-001&right=d03-P1-W1-001&comparison=cross-day`
 (primary care clinic visit, baseline day 1 vs. revision 2 on day 3).
+
+Trajectories uses the dashboard persona picker plus workflow, day, revision and
+completion filters, task-id/workflow/patient search, and sorting by clicks,
+scrolls or click savings against the same-task no-agent arm. Lists render at most
+40 tasks per page. Filters and the selected task are bookmarkable; for example,
+`/dashboard?view=Trajectories&run=core-10day-live&persona=P1&trajectoryDay=&trajectoryWorkflow=W1&completed=false&task=d07-P1-W1-004`.
+Incomplete recordings remain inspectable and visibly marked (11 in
+`core-10day-live`); Compare suggests only completed tasks within one workflow.
+Both replay views show recorded-vs-no-agent outcomes matched by persona, day
+and task id. Savings require both arms to complete. A metrics-only no-agent arm
+does not acquire an invented replay context; side-by-side playback uses exported
+trajectories where available.
+
+Replay geometry is served as per-task slices, preserving state selection,
+component aliases, scrollers and source hashes. Derived slices live under
+`runs/<id>/.cache/geometry/`, invalidate when the atlas or task file changes, and
+can be deleted to regenerate them. The run inventory excludes `.cache` and is
+cached for five seconds. A shared 96-entry JSON cache coalesces requests for
+30 seconds, and trajectory-index validation is reused across views. Installed
+build evidence, certification/rejection pointers and presentation/source evidence
+are fetched fresh for every verification; build-binding and geometry identity
+checks remain in force. On-demand JSON uses Brotli quality 4 with ETag
+revalidation. Trajectories and Compare remain lazy-loaded; visited players stay
+mounted only for the current run/persona, pause when hidden, ignore hidden
+keyboard input, and refresh their index on reactivation after cache expiry.
+
+The rerunnable Playwright/CDP benchmark is
+`node app/scripts/dashboard-benchmark.mjs http://127.0.0.1:5194 output.json`
+after `make run APP_PORT=5194`. It records wall time, transferred/decoded bytes
+and renderer main-thread time for each action. See the
+[measurement report](app/scripts/dashboard-performance.md) for cold-load and
+section-switch results, methodology, tradeoffs and validation commands.
 
 For the offline catalog alone,
 use `pnpm install && make run`. The dashboard opens the newest complete run (`core-10day-live`); the earlier

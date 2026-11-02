@@ -114,6 +114,12 @@ theorem uiRefillComparison_preservesSource (cx : Ctx) (rows : List (List (String
 
 @[simp] theorem uiAtomsList_nil : uiAtomsList [] = [] := by simp [uiAtomsList]
 @[simp] theorem uiAtomsList_cons (n ns) : uiAtomsList (n :: ns) = uiAtoms n ++ uiAtomsList ns := by simp [uiAtomsList]
+/-- Timeline admission does not add or remove any information/action atom. -/
+@[simp] theorem uiTimelineChildren_atoms (tag kids) :
+    uiAtomsList (uiTimelineChildren tag kids) = uiAtomsList kids := by
+  unfold uiTimelineChildren
+  split <;> simp [uiAtoms]
+
 /-- A column layout adds only its layout atom and retains every child's atoms. -/
 @[simp] theorem uiColumnChildren_atoms (tag kids) :
     uiAtomsList (uiColumnChildren tag kids) =
@@ -697,6 +703,8 @@ theorem uiNotes_complete (cx : Ctx) (r : NoteRow) (hr : r ∈ cx.disp.notes)
   · exact ⟨comp, label, display, rows, hm, hf ▸ List.mem_map.mpr ⟨r, hr, rfl⟩⟩
   · exact ⟨comp, label, display, rows, hm, hs ▸ List.mem_map.mpr ⟨r, hr, rfl⟩⟩
 
+#print axioms uiTimelineChildren_atoms
+#print axioms uiColumnChildren_atoms
 #print axioms uiNotes_complete
 
 end Ehr.Render

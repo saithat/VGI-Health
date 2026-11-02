@@ -1,10 +1,18 @@
-import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
-import { useEffect, useRef, useState } from "react";
+import { TaskControlSummary } from "./TaskControlSummary";
+import { loadTrajectoryIndex } from "./trajectory-index";
+import {
+  noAgentMetrics,
+  controlKey,
+  clickSavings,
+  filterTrajectories,
+  type TrajectoryFilters,
+} from "./trajectory-filter";
+import { workflowNames } from "./trajectory-compare";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { InterpFactory } from "./replay";
 import { loadWasmInterp } from "../core/wasmInterp";
-import { readRunJson } from "./data";
+import type { RunData } from "./data";
 import {
-  trajectoryIndexSchema,
   type TrajectoryEntry,
   type TrajectoryIndex,
 } from "./trajectories-data";
@@ -16,9 +24,11 @@ function TaskPlayback({
   runId,
   entry,
   factory,
+  active,
 }: {
   runId: string;
   entry: TrajectoryEntry;
+  active: boolean;
   factory?: InterpFactory | undefined;
 }) {
   const [loaded, setLoaded] = useState<LoadedTrajectory | null>(null);
@@ -67,7 +77,10 @@ function TaskPlayback({
     compare ? (entry.baseline?.eventCount ?? 0) : 0,
   );
   useEffect(() => {
-    if (!playing) return;
+    if (!active) setPlaying(false);
+  }, [active]);
+  useEffect(() => {
+    if (!active || !playing) return;
     const timer = window.setInterval(
       () =>
         setCount((n) => {
@@ -80,7 +93,7 @@ function TaskPlayback({
       1000 / speed,
     );
     return () => window.clearInterval(timer);
-  }, [playing, max, speed]);
+  }, [active, playing, max, speed]);
   useEffect(() => {
     const changed = () =>
       setFullscreen(document.fullscreenElement === player.current);
@@ -97,6 +110,7 @@ function TaskPlayback({
         return;
       }
       if (
+        !active ||
         !loaded ||
         event.altKey ||
         event.ctrlKey ||
@@ -124,7 +138,7 @@ function TaskPlayback({
     };
     window.addEventListener("keydown", keydown);
     return () => window.removeEventListener("keydown", keydown);
-  }, [loaded, count, max]);
+  }, [active, loaded, count, max]);
   return (
     <div ref={player} className="trajectory-playback" tabIndex={-1}>
       <h3>
@@ -293,13 +307,17 @@ function TaskPlayback({
 }
 export function Trajectories({
   initialDay = 1,
+  active = true,
   runId,
   persona,
   factory,
+  noAgentDays,
 }: {
   runId: string;
   persona: string;
+  noAgentDays?: RunData["noAgentDays"];
   initialDay?: number;
+  active?: boolean;
   factory?: InterpFactory | undefined;
 }) {
   const [ownFactory, setOwnFactory] = useState<InterpFactory>();
@@ -319,39 +337,103 @@ export function Trajectories({
   }, [factory]);
   const [index, setIndex] = useState<TrajectoryIndex | null>(null);
   const [error, setError] = useState("");
-  const [day, setDay] = useState(
-    Number.isInteger(initialDay) && initialDay >= 1 && initialDay <= 10
-      ? initialDay
-      : 1,
+  const [filters, setFilters] = useState<TrajectoryFilters>(() => {
+    const query = new URLSearchParams(location.search);
+    return {
+      day: query.get("trajectoryDay") ?? query.get("day") ?? String(initialDay),
+      workflow: query.get("trajectoryWorkflow") ?? query.get("workflow") ?? "",
+      revision: query.get("trajectoryRevision") ?? query.get("revision") ?? "",
+      completed: query.get("completed") ?? "",
+      search: query.get("search") ?? "",
+      sort: query.get("sort") ?? "recorded",
+    };
+  });
+  const [selected, setSelected] = useState(
+    () => new URLSearchParams(location.search).get("task") ?? "",
   );
-  const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState("");
+  const [page, setPage] = useState(0);
+  const update = (key: keyof TrajectoryFilters, value: string) => {
+    setFilters((current) => ({ ...current, [key]: value }));
+    setSelected("");
+    setPage(0);
+  };
+  const controls = useMemo(() => noAgentMetrics(noAgentDays), [noAgentDays]);
   useEffect(() => {
-    let active = true;
-    void readRunJson(`/runs/${runId}/trajectories/index.json`)
-      .then((raw) => {
-        const data = trajectoryReleaseLabels(trajectoryIndexSchema.parse(raw));
-        if (data.runId !== runId)
-          throw new Error("Trajectory index belongs to another run");
-        if (active) setIndex(data);
+    if (!active) return;
+    let alive = true;
+    void loadTrajectoryIndex(runId)
+      .then((data) => {
+        if (alive) setIndex(data);
       })
       .catch((e: unknown) => {
-        if (active) setError(String(e));
+        if (alive) setError(String(e));
       });
     return () => {
-      active = false;
+      alive = false;
     };
-  }, [runId]);
-  const tasks = index?.tasks.filter((t) => t.persona === persona) ?? [];
-  const days = [...new Set(tasks.map((t) => t.day))];
-  const visible = tasks.filter(
-    (t) =>
-      t.day === day &&
-      `${t.id} ${t.workflow} ${t.patient.syntheaId}`
-        .toLowerCase()
-        .includes(search.toLowerCase()),
+  }, [runId, active]);
+  const tasks = useMemo(
+    () => index?.tasks.filter((t) => t.persona === persona) ?? [],
+    [index, persona],
   );
-  const entry = visible.find((t) => t.id === selected) ?? visible[0];
+  const days = [...new Set(tasks.map((t) => t.day))].sort((a, b) => a - b);
+  const workflows = [...new Set(tasks.map((t) => t.workflow))].sort();
+  const revisions = [...new Set(tasks.map((t) => t.programVersion))].sort(
+    (a, b) => a - b,
+  );
+  useEffect(() => {
+    if (!index || !tasks.length) return;
+    setFilters((current) => {
+      const workflow =
+        current.workflow &&
+        !tasks.some((task) => task.workflow === current.workflow)
+          ? ""
+          : current.workflow;
+      const revision =
+        current.revision &&
+        !tasks.some((task) => task.programVersion === Number(current.revision))
+          ? ""
+          : current.revision;
+      return workflow === current.workflow && revision === current.revision
+        ? current
+        : { ...current, workflow, revision };
+    });
+  }, [index, tasks]);
+  const visible = useMemo(
+    () => filterTrajectories(tasks, filters, controls),
+    [tasks, filters, controls],
+  );
+  const pageSize = 40;
+  const selectedIndex = visible.findIndex((t) => t.id === selected);
+  const currentPage =
+    selectedIndex >= 0
+      ? Math.floor(selectedIndex / pageSize)
+      : Math.min(page, Math.max(0, Math.ceil(visible.length / pageSize) - 1));
+  const pageTasks = visible.slice(
+    currentPage * pageSize,
+    (currentPage + 1) * pageSize,
+  );
+  const entry = visible.find((t) => t.id === selected) ?? pageTasks[0];
+  const control = entry ? controls.get(controlKey(entry)) : undefined;
+  useEffect(() => {
+    if (!active) return;
+    const params = new URLSearchParams(location.search);
+    params.set("view", "Trajectories");
+    params.set("run", runId);
+    params.set("persona", persona);
+    const names: Record<string, string> = {
+      day: "trajectoryDay",
+      workflow: "trajectoryWorkflow",
+      revision: "trajectoryRevision",
+    };
+    // Keep single-task filters separate from Compare's day/revision hints.
+    for (const key of ["day", "workflow", "revision"]) params.delete(key);
+    for (const [key, value] of Object.entries(filters))
+      params.set(names[key] ?? key, value);
+    if (entry) params.set("task", entry.id);
+    else params.delete("task");
+    history.replaceState(null, "", `/dashboard?${params}`);
+  }, [active, runId, persona, filters, entry]);
   return (
     <section className="trajectories" aria-label="All task trajectories">
       <p>
@@ -362,47 +444,113 @@ export function Trajectories({
         </a>
       </p>
       <p>
-        {tasks.length} logged tasks for {persona}. Select a day and task to load
-        its exact replay context.
+        {tasks.length} logged tasks for {persona}.{" "}
+        {tasks.filter((t) => !t.completed).length} incomplete. Select a task to
+        load its exact replay context.
       </p>
-      <div className="trajectory-controls">
+      <div className="trajectory-controls trajectory-filters">
         <label>
           Day{" "}
           <select
             aria-label="Trajectory day"
-            disabled={days.length < 2}
-            title={days.length < 2 ? "No other recorded days" : undefined}
-            value={day}
-            onChange={(e) => {
-              setDay(Number(e.target.value));
-              setSelected("");
-            }}
+            value={filters.day}
+            onChange={(e) => update("day", e.target.value)}
           >
-            {days.map((d) => (
-              <option key={d} value={d}>
-                Day {d}
+            <option value="">All days</option>
+            {days.map((day) => (
+              <option key={day} value={day}>
+                Day {day}
               </option>
             ))}
+          </select>
+        </label>
+        <label>
+          Workflow{" "}
+          <select
+            aria-label="Trajectory workflow"
+            value={filters.workflow}
+            onChange={(e) => update("workflow", e.target.value)}
+          >
+            <option value="">All workflows</option>
+            {workflows.map((id) => (
+              <option key={id} value={id}>
+                {id} · {workflowNames[id] ?? id}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Revision{" "}
+          <select
+            aria-label="Trajectory revision"
+            value={filters.revision}
+            onChange={(e) => update("revision", e.target.value)}
+          >
+            <option value="">All revisions</option>
+            {revisions.map((rev) => (
+              <option key={rev} value={rev}>
+                rev {rev}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Status{" "}
+          <select
+            aria-label="Trajectory completion"
+            value={filters.completed}
+            onChange={(e) => update("completed", e.target.value)}
+          >
+            <option value="">All tasks</option>
+            <option value="true">Completed</option>
+            <option value="false">Incomplete</option>
           </select>
         </label>
         <label>
           Search tasks{" "}
           <input
             type="search"
-            disabled={!index || !tasks.length}
-            title={
-              !index
-                ? "Loading trajectory index"
-                : !tasks.length
-                  ? "No trajectories recorded for this persona"
-                  : undefined
-            }
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Task, workflow or patient"
+            value={filters.search}
+            onChange={(e) => update("search", e.target.value)}
+            placeholder="Task id, workflow or patient"
           />
         </label>
+        <label>
+          Sort{" "}
+          <select
+            aria-label="Trajectory sort"
+            value={filters.sort}
+            onChange={(e) => update("sort", e.target.value)}
+          >
+            <option value="recorded">Recorded order</option>
+            <option value="clicks-desc">Most clicks</option>
+            <option value="clicks-asc">Fewest clicks</option>
+            <option value="scrolls-desc">Most scrolls</option>
+            <option value="savings-desc">Click savings vs no-agent</option>
+          </select>
+        </label>
+        <button
+          onClick={() => {
+            setFilters({
+              day: "",
+              workflow: "",
+              revision: "",
+              completed: "",
+              search: "",
+              sort: "recorded",
+            });
+            setSelected("");
+            setPage(0);
+          }}
+        >
+          Clear filters
+        </button>
       </div>
+      <p role="status">
+        {visible.length} matching tasks ·{" "}
+        {visible.length ? currentPage * pageSize + 1 : 0}–
+        {Math.min((currentPage + 1) * pageSize, visible.length)} shown
+      </p>
       {index && <p className="trajectory-caption">{index.minimumDefinition}</p>}
       {error && (
         <p role="alert">
@@ -414,13 +562,14 @@ export function Trajectories({
         role="listbox"
         aria-label="Recorded tasks"
       >
-        {visible.map((t) => (
+        {pageTasks.map((t) => (
           <button
             role="option"
             aria-selected={entry?.id === t.id}
             disabled={entry?.id === t.id}
             title={entry?.id === t.id ? "Current trajectory" : undefined}
             key={t.id}
+            className={t.completed ? "" : "trajectory-incomplete"}
             onClick={() => setSelected(t.id)}
           >
             <strong>
@@ -431,16 +580,45 @@ export function Trajectories({
               {t.metrics.keystrokes}/{t.theoreticalMinimum.keystrokes} keys ·{" "}
               {t.metrics.mouseTravelPx ?? "—"}px mouse · {t.metrics.scrolls}{" "}
               scrolls / {t.metrics.scrollPx ?? "—"}px ·{" "}
-              {t.completed ? "Completed" : "Incomplete"}
+              {t.completed ? "Completed" : "Incomplete · goals not met"}
+              {clickSavings(t, controls.get(controlKey(t))) !== null &&
+                ` · ${clickSavings(t, controls.get(controlKey(t)))?.toFixed(1)}% fewer clicks vs no-agent`}
             </span>
           </button>
         ))}
       </div>
+      {visible.length > pageSize && (
+        <div className="trajectory-controls" aria-label="Task pages">
+          <button
+            disabled={currentPage === 0}
+            onClick={() => {
+              setSelected("");
+              setPage(currentPage - 1);
+            }}
+          >
+            Previous tasks
+          </button>
+          <span>
+            Page {currentPage + 1} / {Math.ceil(visible.length / pageSize)}
+          </span>
+          <button
+            disabled={(currentPage + 1) * pageSize >= visible.length}
+            onClick={() => {
+              setSelected("");
+              setPage(currentPage + 1);
+            }}
+          >
+            Next tasks
+          </button>
+        </div>
+      )}
       {!visible.length && index && <p>No matching trajectories.</p>}
+      {entry && <TaskControlSummary entry={entry} control={control} />}
       {entry && (
         <TaskPlayback
           key={`${runId}-${persona}-${entry.id}`}
           runId={runId}
+          active={active}
           entry={entry}
           factory={factory ?? ownFactory}
         />

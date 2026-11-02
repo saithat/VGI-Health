@@ -11,6 +11,7 @@ export function isCardColumns(nodes: UiNode[]): boolean {
     )
       return false;
     if ("button" in node) return ["nav", "toggle"].includes(node.button.role);
+    if ("timeline" in node) return node.timeline.children.every(readOnly);
     if ("section" in node) return node.section.children.every(readOnly);
     if ("columns" in node) return node.columns.children.every(readOnly);
     if ("presentation" in node)

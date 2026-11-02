@@ -578,6 +578,8 @@ structure UiChartReference where
 
 /-- Semantic EHR nodes. Only the selected tab body is emitted. -/
 inductive UiNode
+  /-- Ordered full-detail events; timeline never filters, sorts or invents timestamps. -/
+  | timeline (title : String) (children : List UiNode)
   /-- A layout hint around ordinary semantic nodes; never a visibility filter. -/
   | presentation (kind : UiPresentationKind) (children : List UiNode)
   /-- Choices decorate the original field; they do not enter or validate it. -/

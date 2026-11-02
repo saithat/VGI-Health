@@ -48,9 +48,18 @@ def uiOverviewTag (tag : String) : Bool :=
   let parts := tag.splitOn "."
   (parts.zip parts.tail).any (fun (a, b) => a == "layout" && b == "overview")
 
+/-- A proof-admitted timeline is a layout choice on an ordinary expanded group. -/
+def uiTimelineTag (tag : String) : Bool :=
+  tag == "layout.timeline" || tag.endsWith ".layout.timeline"
+
+/-- Timeline children retain complete source order, without sorting or filtering. -/
+def uiTimelineChildren (tag : String) (children : List UiNode) : List UiNode :=
+  if uiTimelineTag tag then [.timeline "Clinical timeline" children] else children
+
 /-- Columns change layout only; every child remains present in source order. -/
 def uiColumnChildren (tag : String) (children : List UiNode) : List UiNode :=
-  if uiColumnTag tag then [.columns children] else children
+  if uiColumnTag tag then [.columns (uiTimelineChildren tag children)]
+  else uiTimelineChildren tag children
 
 /-- An explicit row tag names an info component and zero-based source row. -/
 def uiRowTarget? (tag : String) : Option (CompId × Nat) := do

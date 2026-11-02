@@ -1,3 +1,4 @@
+import Ehr.Sem.TimelineProgram
 import Ehr.Canonical.PresetTests
 import Ehr.Basic
 import Ehr.Core.Types
@@ -43,6 +44,8 @@ import Ehr.Check.SimAudit
 import Ehr.Check.ProfileGoalsTests
 import Ehr.Check.DoseTests
 import Ehr.Check.EncounterRoleTests
+import Ehr.Multi.Tests
+import Ehr.Commit.Tests
 
 /-!
 Default library: interpreter, rule data, proofs and executable regressions.

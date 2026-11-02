@@ -23,23 +23,32 @@ export interface CompareOption {
   task: TrajectoryEntry;
 }
 export function comparisonOptions(tasks: TrajectoryEntry[]): CompareOption[] {
-  return tasks.flatMap((task) => [
-    { key: task.id, entry: task, source: "recorded" as const, task },
-    ...(task.baseline
-      ? [
-          {
-            key: `${task.id}:baseline`,
-            entry: task.baseline,
-            source: "baseline" as const,
-            task,
-          },
-        ]
-      : []),
-  ]);
+  return tasks
+    .filter((task) => task.completed && task.metrics.completed)
+    .flatMap((task) => [
+      { key: task.id, entry: task, source: "recorded" as const, task },
+      ...(task.baseline?.completed &&
+      task.baseline.metrics.completed &&
+      task.baseline.workflow === task.workflow
+        ? [
+            {
+              key: `${task.id}:baseline`,
+              entry: task.baseline,
+              source: "baseline" as const,
+              task,
+            },
+          ]
+        : []),
+    ]);
 }
 export const pairedTask = (task: TrajectoryEntry) =>
   Boolean(
-    task.baseline &&
+    task.completed &&
+    task.metrics.completed &&
+    task.baseline?.completed &&
+    task.baseline.metrics.completed &&
+    task.baseline.workflow === task.workflow &&
+    task.baseline.persona === task.persona &&
     task.baseline.id === task.id &&
     task.baseline.day === task.day &&
     task.baseline.patient.syntheaId === task.patient.syntheaId,
@@ -79,7 +88,12 @@ export function defaultComparison(
     );
     return left ? { left, right } : null;
   }
-  const recorded = options.filter((option) => option.source === "recorded");
+  const recorded = options.filter(
+    (option) =>
+      option.source === "recorded" &&
+      option.entry.workflow === right.entry.workflow &&
+      option.entry.persona === right.entry.persona,
+  );
   const baseline = recorded.filter(
     (option) => option.entry.programVersion === 0,
   );
