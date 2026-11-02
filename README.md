@@ -140,6 +140,8 @@ code.
 | Checker acceptance implies property 6, "every required task can be completed" | 🟡 **Proved for defined fragments only** (scalar fields, fixed order lines, receipts, many alerts, macros/prefills); general case **open** | `Check/Sound.lean`, `Check/ScalarCompletion.lean`, `Check/FixedLineCompletion.lean` |
 | The screen tree keeps the patient banner, required reviews, honest buttons, modal vs inline alerts, labeled fields (D1–D4, D6) | 🟢 **Proved**, for the semantic screen tree | `Render/UiProofs.lean` |
 | Layout-independent information/action semantics, with explicit perception and view-step bounds | 🟡 **Proved** D1–D4/D6 bridges at abstract exposed moments; actual exposure is an explicit hypothesis; positive and negative examples | `Sem/Screen.lean`, `Sem/Bridge.lean`, `Sem/Trace.lean`, `Sem/Examples.lean` |
+| Active urgent alerts remain perceivable at every reachable view moment | 🟡 **Proved under explicit current-presentation/pinned-layout evidence** for renderUi modal and passive-inline kinds; full active-condition coverage and real browser geometry remain open; all 77 ID assignments **pending owner review** | `Specs/AlertUrgency.lean`, `Sem/Urgency.lean`; [policy and sources](docs/design/alert-urgency.md) |
+| WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; canonical gate fails** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
 | Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
@@ -241,7 +243,7 @@ flowchart LR
     LOGS["training-day traces<br/>(odd days only)"]:::trusted
     LLM["Codex in bwrap sandbox<br/>proposes JSON patches to the UI program"]:::untrusted
     GATE1["ehr check: Lean checker<br/>(certificate: spec + program hashes)"]:::proved
-    GATE2["screen gate: Chromium renders every<br/>reachable state; ARIA tree = UiScreen"]:::checked
+    GATE2["screen gate: Chromium renders each<br/>exported tree; ARIA tree = UiScreen"]:::checked
     DEPLOY["ehr deploy: atomic pointer,<br/>build binding (WASM + app hashes)"]:::proved
     MEASURE["ehr simulate on blind even days<br/>vs certified baseline + no-agent control"]:::trusted
     LOGS --> LLM --> GATE1 --> GATE2 --> DEPLOY --> MEASURE
@@ -287,7 +289,7 @@ FHIR transaction and sent to Medplum.
 **One night, end to end.** The agent sees only training days and the rules
 (generated capabilities manual), proposes patches, and merges compatible ones
 into one candidate program. The native checker must accept it (properties
-1–13; T4 ties deploy to acceptance), every reachable screen must pass the
+1–13; T4 ties deploy to acceptance), every exported clinical state must pass the
 browser gate, and validation must not lose task completion. Only then is the
 candidate deployed for that clinician's next login; it is measured on blind
 days against the certified baseline and a no-agent control.
@@ -312,10 +314,40 @@ The admitted `layout.timeline` group tag emits an ordered full-detail timeline
 through the existing native/WASM renderer. `Sem/Timeline.lean` proves semantic
 preservation, and `Sem/TimelineProgram.lean` proves checker acceptance for a
 canonical program. DOM fidelity remains checked; physical perception needs
-exposure evidence, and general completion remains open. The operator can supply
-`EHR_URGENT_ALERT_IDS` as a JSON array: the screen gate checks those emitted
-demands at the initial moment without scrolling, and binds the policy into its
-cache key. This sampled check does not prove visibility at all future moments.
+exposure evidence, and general completion remains open.
+
+[Alert urgency policy](docs/design/alert-urgency.md) classifies all 17 alert kinds
+(77 exact IDs including full-catalog inherited variants), with sources and explicit
+law/guidance/hospital-policy labels; the entire proposal is **pending owner review**.
+`Sem/Urgency.lean` requires perception at every reachable moment while the clinical
+condition is active. Current modal/passive-inline render proofs require pinned
+viewport/legibility/occlusion evidence and presentation coverage in every state;
+today's programs do not establish those assumptions generally. Acknowledgment
+alone does not resolve a condition. The gate checks the proposed urgent IDs before
+scrolling and again after finite scroll/focus samples. `EHR_URGENT_ALERT_IDS` adds
+operator IDs; it cannot remove the baseline. Browser samples do not prove the
+all-moments invariant or recover active conditions omitted from exported trees.
+Policy content enters the screen-cache key.
+
+The owner-selected physical policy uses WCAG 2.2 AA SC 2.5.8 (24×24 CSS px),
+1.4.3 (4.5:1 text), 1.4.11 (3:1 essential non-text), 1.4.4/1.4.10
+(resize/reflow). Every supplied clinical state is measured at tablet 768px and
+desktop 1280/1440/1600/1920px, with 320/640px reflow equivalents and text-only
+200% resize probes. Reports name element IDs and measured violations; complex
+paint effects require review. This is a bounded browser gate, not full WCAG
+certification. [Canonical audit findings](docs/design/alert-urgency-findings.md)
+record the unchanged painter's results. Run
+`node scripts/audit-alert-policy.mjs "$TMPDIR/policy-canonical"` after building
+to reproduce the native release exports
+and gate; add `--personas` for the 15 role-specific candidates.
+Set `EHR_PHYSICAL_REPORT` for durable per-state measurements when using
+`app/scripts/screen-check.mjs --ui` directly. Exact duplicate trees share browser
+measurements; the audit manifest maps every export to its checked tree.
+The new policy/proof modules do not change WASM API dependencies. `make wasm`
+refreshes the all-source manifest; executable WASM assets and `appSha256` are
+unchanged. Gate/policy cache contexts change; existing run certificates are not
+rebound by this audit.
+
 Painter/interpreter
 changes invalidate recorded build bindings: rebuild and rebind before replay.
 
@@ -584,7 +616,7 @@ and Vite plugins in `app/scripts/` serve the artifacts:
 - **The `ehr` binary** (`lean/.lake/build/bin/ehr`) is the same Lean
   compiled natively. These offline tools use it:
   - the agent: `check`, `deploy`, `simulate`, `min-clicks`;
-  - the screen gate: `render-screens` exports every reachable state, then
+  - the screen gate: `render-screens` exports representative view variants for each screen/context, then
     Playwright loads each one in the built app and compares the
     accessibility tree with the `UiScreen`;
   - the held-out conformance suite;
@@ -709,7 +741,7 @@ Set `TMPDIR` to disk-backed scratch space and run only one Lean process in a
 checkout at a time:
 
 ```sh
-export LEAN_NUM_THREADS=4
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
 (cd lean && lake build)
 pnpm --filter app lint && pnpm --filter app exec tsc --noEmit
 pnpm --filter agent lint && pnpm --filter agent typecheck
@@ -733,9 +765,14 @@ pnpm --filter app test:buttons
 pnpm --filter app audit:performance
 ```
 
-`app/scripts/screen-check.mjs` checks exactly the supplied native screen trees,
-at desktop and narrow widths, for visibility, legibility, occlusion and component
-fidelity. The agent enumerates the candidate states before calling this gate.
+`app/scripts/screen-check.mjs` checks exactly the supplied native screen trees
+for desktop/narrow fidelity and the physical-policy viewport matrix above. It
+reports visibility, legibility, occlusion, target-size/contrast and reflow findings.
+The worker count is capped at six. Large export lists use file manifests and
+sequential 64-tree batches to bound process environments and report-controller
+memory. Structured findings determine the CLI verdict; a successful measurement
+collection does not imply policy compliance. The agent enumerates the candidate states
+before calling this gate.
 `docs/audits/` retains the control-regression and performance-report inputs consumed
 by these commands; dated one-off audits are under `docs/hackathon/`.
 
