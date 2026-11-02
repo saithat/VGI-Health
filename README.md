@@ -721,6 +721,17 @@ preserves clinical component kinds; a separate identity-based movement check
 retains the stability budget even if an operator renames tags. No Lean or
 certified application source changes are needed.
 
+The [implementation notes](docs/design/exploration-tools.md) record the
+OpenEvolve/ShinkaEvolve evaluation, MAP-Elites objective, model licenses,
+external ML environment, CPU/GPU server commands and calibration protocol.
+`explore/cli.ts` reuses the isolated Codex (`default` service tier) or Claude
+backend, native Lean check, whole-version screen gate and world simulator.
+`make decision-server` starts a local open-model scorer; `make explore-test`
+checks the harness. Decision models rank candidates and score recorded visible
+actions; Lean remains the only certification gate. TabPFN is an optional local
+screening adapter; Jev is an unconfigured stub that makes no calls.
+
+
 ```sh
 TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
 TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts

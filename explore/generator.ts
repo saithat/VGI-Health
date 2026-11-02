@@ -2,11 +2,12 @@ import { programSchema, type Program, type Spec } from '../agent/src/schema.js';
 import { fieldElement, infoOf, kindTag, gotoOf } from '../agent/src/program.js';
 import { parsePoint, unsupported, type DesignPoint, type Workflow } from './design.js';
 import { taskContract } from './tasks.js';
+import { bindTasks, type TaskBinding } from './bindings.js';
 export interface Candidate {
   point: DesignPoint;
   workflows: Workflow[];
   program: Program;
-  taskMapping: Record<string, string[]>;
+  taskMapping: Record<string, TaskBinding>;
   sandbox: null | { deployable: false; customComponents: string[]; contract: ReturnType<typeof taskContract> };
 }
 /** No semantic escape strings. Unsupported concrete primitives live only in a sandbox manifest. */
@@ -17,9 +18,13 @@ export function generate(point: DesignPoint, workflows: Workflow[], baseline: Pr
   if (missing.length && point.tier !== 'sandbox') throw Error(`Needs extension: ${missing.join(', ')}`);
   const program = structuredClone(baseline);
   program.version++;
-  const taskMapping: Record<string, string[]> = {};
+
   for (const screen of program.screens.filter(s => workflows.includes(s.workflow as Workflow))) {
-    taskMapping[screen.id] = screen.components.map(c => c.id);
+    if (point.layout === 'document' && screen.components.some(c => fieldElement(c) === 'hpi') &&
+      !screen.components.some(c => infoOf(c) === 'noteSummary')) {
+      screen.components.push({id:`explore.${screen.id}.noteDocument`,kind:{panel:{info:'noteSummary'}},
+        label:'Current encounter note — full document',tag:'layout.document',tab:0,size:'normal',visibility:'always'});
+    }
     for (const c of screen.components) {
       if (point.density === 'compact' && kindTag(c.kind) === 'field') c.size = 'compact';
       // Navigation and context/sidebar groups keep their own structural contracts.
@@ -28,7 +33,7 @@ export function generate(point: DesignPoint, workflows: Workflow[], baseline: Pr
       if (clinical && kindTag(c.kind) === 'group' && screen.components.some(x => x.parent === c.id)) {
         if (layout === 'columns' || layout === 'timeline') c.tag += `.layout.${layout}`;
       }
-      if (layout === 'document' && ['priorNotes','noteSummary','storyLastNote'].includes(infoOf(c) ?? '')) c.tag = 'layout.document';
+      if (layout === 'document' && infoOf(c) === 'noteSummary') c.tag = 'layout.document';
       if (point.input === 'keyboard' && gotoOf(c)) {
         // Unique per screen; schema and checker retain action authority.
         c.hotkey = `Alt+${screen.components.filter(x => gotoOf(x)).indexOf(c) + 1}`;
@@ -37,7 +42,7 @@ export function generate(point: DesignPoint, workflows: Workflow[], baseline: Pr
   }
   const ids = new Set(program.screens.flatMap(s => s.components.map(c => c.id)));
   if (Object.keys(point.taskLayouts).some(k => !ids.has(k))) throw Error('Unknown task layout target');
-  const candidate = { point, workflows, program: programSchema.parse(program), taskMapping,
+  const candidate = { point, workflows, program: programSchema.parse(program), taskMapping: bindTasks(program, workflows, point),
     sandbox: point.tier === 'sandbox' ? { deployable: false as const, customComponents: missing,
       contract: taskContract(spec, baseline, workflows) } : null };
   validateCandidate(candidate, baseline, spec);

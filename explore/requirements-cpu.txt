@@ -1,0 +1,5 @@
+# Install torch separately using the CPU index; all packages live in run-tmp/explore-venv.
+transformers==4.57.6
+fastapi==0.128.0
+uvicorn==0.40.0
+tabpfn==9.2.0

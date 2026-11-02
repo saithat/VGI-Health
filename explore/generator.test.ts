@@ -10,7 +10,8 @@ const spec = specSchema.parse(JSON.parse(readFileSync('releases/v1/spec.json','u
 test('four realized layout families preserve clinical kinds and all commit contracts', () => {
   for (const p of seedPoints()) {
     const c = generate(p,['W3'],baseline,spec);
-    assert.deepEqual(c.program.screens.flatMap(s=>s.components.map(c=>c.kind)),baseline.screens.flatMap(s=>s.components.map(c=>c.kind)));
+    const original=new Map(baseline.screens.flatMap(s=>s.components.map(c=>[c.id,c.kind] as const)));
+    for(const x of c.program.screens.flatMap(s=>s.components))if(original.has(x.id))assert.deepEqual(x.kind,original.get(x.id));
     assert.deepEqual(taskContract(spec,c.program,['W3']).contracts,taskContract(spec,baseline,['W3']).contracts);
   }
 });

@@ -75,8 +75,8 @@ the final UI is the versioned renderer + viewport + exported interpreter state.
 | temporal view | encounter, longitudinal, aligned | Encounter views and full historical tables/trends exist; timeline preserves supplied order without inventing dates. True aligned axes/filter/semantic zoom need missing-data/full-detail proofs and empirical geometry. |
 
 An abstract request is not evidence of realization. The initial compiler supports
-list navigation with stack/columns/document, timeline navigation with timeline
-layout (an ordered review path), mouse/keyboard, spec alerts, normal/compact,
+list navigation with stack/columns/document/timeline layout (an ordered
+review path, without temporal routing), mouse/keyboard, spec alerts, normal/compact,
 single patient, encounter/longitudinal. It rejects incompatible certified points;
 unsupported points produce an explicitly sandboxed custom-component manifest
 around a clinical program. A sandbox manifest never acquires a certificate from

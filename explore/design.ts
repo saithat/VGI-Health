@@ -40,7 +40,7 @@ export function parsePoint(value: unknown): DesignPoint {
 }
 export function unsupported(p: DesignPoint): string[] {
   return [
-    ...(!['list', 'timeline'].includes(p.navigation) ? [`navigation:${p.navigation}`] : []),
+    ...(p.navigation !== 'list' ? [`navigation:${p.navigation}`] : []),
     ...([p.layout, ...Object.values(p.taskLayouts)].filter(x => !['stack','columns','document','timeline'].includes(x)).map(x => `layout:${x}`)),
     ...(p.navigation === 'timeline' && p.layout !== 'timeline' ? ['timeline navigation requires timeline layout'] : []),
     ...(p.input === 'voice' ? ['input:voice'] : []),
