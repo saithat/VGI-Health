@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "26eaa5c8346576528ef64846e9b3b5374688f765b933d7ecf7ff3b40b973cd78",
+  "leanSourceHash": "5386f2c21de54afc6ed96d1e369cc80f564064815e33cd9becc2821486455a56",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "34dc959bbd641d1048cc8511ac3a3fb233a6c105f63afdb31ff3f0579859b5ed",
@@ -218,7 +218,7 @@
     "lean/Ehr/Sem/Timeline.lean": "1f76b36951499b754aea386535b37c0f4863c808c940c2f570c09eaf28990dbe",
     "lean/Ehr/Sem/TimelineProgram.lean": "b6c720d5159b3c92ab1326ed0f2873f486edfa1b808c31c02de9d47290fd8dab",
     "lean/Ehr/Sem/Trace.lean": "ae294028a484be7b9ee27106f0fe634b3151a095813f4720f73bab0a3b4917fd",
-    "lean/Ehr/Sem/Urgency.lean": "baa765f928b66e08287f0b404803855e117006a4ef8d7e950601cfa63f49e207",
+    "lean/Ehr/Sem/Urgency.lean": "8c002e4f9cbebb25d2a4f1f4aeb919073e3d541b0b3ae1e0ae3efc6ce409477c",
     "lean/Ehr/Sem/UrgencyExamples.lean": "ccd3861e9069b6d5300ffaede9c34f8aafea88054affe68961fe720e263482ee",
     "lean/Ehr/Sim/Audit.lean": "67deda93e64b08d26ed13a7896606a742a858dc6824f11d22b322b8cb51d71a5",
     "lean/Ehr/Sim/Certificate.lean": "e685918d081fb1f887299b8a6f768ea04e3239338830dc32ec9db5131af024c2",

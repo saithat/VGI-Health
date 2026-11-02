@@ -110,7 +110,10 @@ barcoding requirements for drug labels. ISMP and SAFER are labeled guidance.
 
 [Sem/Urgency.lean](../../lean/Ehr/Sem/Urgency.lean) defines `AlertActive` from
 clinical `alertKeys`, independently of whether the renderer emits the warning.
-`ContinuousUrgency` quantifies every reachable interpreter state, every finite
+`AlertActive` deliberately does not limit activity to the associated commit
+being offered or to its workflow; that applicability/lifecycle scope is also
+pending owner review. `ContinuousUrgency` quantifies every reachable interpreter
+state, every finite
 view path (including zero steps), and each still-active urgent rule. Modal
 meaning requires its labeled attention boundary **and** enabled acknowledgment;
 inline meaning retains the rule's severity. Acknowledgment does not by itself
@@ -124,8 +127,15 @@ membership comes from existing D4 render theorems; the model assumes actual
 viewport intersection, legibility, lack of occlusion and stable presentation
 through view steps. It does not derive these from tree presence.
 
+`other_alert_blocked_by_modal` proves that an open interruptive modal cannot
+expose a different alert at any moment, including `exposed`.
+`urgencyAt_obstructed_by_modal` derives failure of `UrgencyAt` when that other
+rule is active and urgent. Simultaneously active urgent rules
+therefore require more than pinning the current single popup.
+
 **Open:** today's programs do not establish that model for all active urgent
-conditions before a popup, after acknowledgment, behind another modal or on
+conditions before a popup, after acknowledgment, while their associated commit
+is not offered, behind another modal or on
 hidden tabs/screens. Urgent interruptive inline presentation is not covered by
 the passive-inline lemma. Navigation to a different presentation needs new
 coverage/layout evidence. Browser scroll/focus samples cannot prove all possible
@@ -176,7 +186,11 @@ The default urgent IDs come from the reviewed-source proposal. Operator
 `EHR_URGENT_ALERT_IDS` adds IDs and cannot subtract the baseline. Policy content
 and gate sources enter the cache context. The urgency samples check emitted
 alerts and acknowledgments initially, after scroll start/mid/end and each
-enabled focus target; absent active conditions cannot be recovered from exported
+enabled focus target; The adapter checks each emitted presentation. A hidden duplicate inline warning
+under its own matching modal may therefore be rejected even though the
+condition-level `UrgentDemand` disjunction accepts the modal. This conservative
+adapter mismatch remains open; review such reports before treating them as
+condition-level urgency violations. Absent active conditions cannot be recovered from exported
 UiScreen JSON and remain the stronger Lean contract's coverage gap.
 
 Regenerate policy after a Lean policy edit:

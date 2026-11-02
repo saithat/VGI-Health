@@ -134,6 +134,28 @@ theorem render_continuous_urgency (ep : Props.Episode) (disp : Display)
         edge (initial s) layout n target reach
       exact Or.inl (by simpa [passive] using h)
 
+/-- The current single modal cannot expose another alert, even at the abstract
+fully exposed moment. Concurrent urgent conditions need a richer presentation;
+pinning the one existing popup cannot discharge that coverage obligation. -/
+theorem other_alert_blocked_by_modal (cx : Ctx) (front other : AlertSpec) (key : String) (m : Moment)
+    (popup : cx.v.popup? = some (front.id, key)) (lookup : cx.sp.alert? front.id = some front)
+    (interruptive : front.tier = .interruptive) (different : other.id ≠ front.id) :
+    ¬ UrgentDemand cx m other := by
+  have modal := D4_interruptive_modal cx front.id key front popup lookup interruptive
+  simp [UrgentDemand, AlertShown, ModalAck, Perceives, active, meaning, rendered,
+    modal, uiAtoms, observe, different]
+
+/-- A distinct active urgent rule defeats the point obligation under the current
+single-modal renderer, independently of viewport/contrast evidence. -/
+theorem urgencyAt_obstructed_by_modal (cx : Ctx) (front other : AlertSpec) (key : String) (m : Moment)
+    (popup : cx.v.popup? = some (front.id, key)) (lookup : cx.sp.alert? front.id = some front)
+    (interruptive : front.tier = .interruptive) (different : other.id ≠ front.id)
+    (member : other ∈ cx.sp.alerts) (urgent : Specs.AlertUrgency.tier other.id = some .urgent)
+    (activeOther : AlertActive cx other) : ¬ UrgencyAt cx m := by
+  intro h
+  exact other_alert_blocked_by_modal cx front other key m popup lookup interruptive different
+    (h other member urgent activeOther)
+
 /-- The strengthened property includes the initial obligation. -/
 theorem continuous_initial (ep disp edge initial) (h : ContinuousUrgency ep disp edge initial)
     (s : State) (reachable : Props.Reachable ep s) :
@@ -144,5 +166,7 @@ theorem continuous_initial (ep disp edge initial) (h : ContinuousUrgency ep disp
 #print axioms render_modal_continuous
 #print axioms render_inline_continuous
 #print axioms render_continuous_urgency
+#print axioms other_alert_blocked_by_modal
+#print axioms urgencyAt_obstructed_by_modal
 #print axioms continuous_initial
 end Ehr.Sem

@@ -322,8 +322,10 @@ law/guidance/hospital-policy labels; the entire proposal is **pending owner revi
 `Sem/Urgency.lean` requires perception at every reachable moment while the clinical
 condition is active. Current modal/passive-inline render proofs require pinned
 viewport/legibility/occlusion evidence and presentation coverage in every state;
-today's programs do not establish those assumptions generally. Acknowledgment
-alone does not resolve a condition. The gate checks the proposed urgent IDs before
+today's programs do not establish those assumptions generally. A kernel proof
+also shows that the current single modal cannot expose a different alert, even
+at an abstract fully exposed moment; simultaneous urgent conditions need new
+presentation coverage. Acknowledgment alone does not resolve a condition. The gate checks the proposed urgent IDs before
 scrolling and again after finite scroll/focus samples. `EHR_URGENT_ALERT_IDS` adds
 operator IDs; it cannot remove the baseline. Browser samples do not prove the
 all-moments invariant or recover active conditions omitted from exported trees.
@@ -336,10 +338,10 @@ desktop 1280/1440/1600/1920px, with 320/640px reflow equivalents and text-only
 200% resize probes. Reports name element IDs and measured violations; complex
 paint effects require review. This is a bounded browser gate, not full WCAG
 certification. [Canonical audit findings](docs/design/alert-urgency-findings.md)
-record the unchanged painter's results. Run
+record the unchanged painter's results: 8,418 exports (2,673 distinct trees),
+32,094 matrix cases; both template and persona batches fail. Run
 `node scripts/audit-alert-policy.mjs "$TMPDIR/policy-canonical"` after building
-to reproduce the native release exports
-and gate; add `--personas` for the 15 role-specific candidates.
+to reproduce the native release exports and gate; add `--personas` for the 15 role-specific candidates.
 Set `EHR_PHYSICAL_REPORT` for durable per-state measurements when using
 `app/scripts/screen-check.mjs --ui` directly. Exact duplicate trees share browser
 measurements; the audit manifest maps every export to its checked tree.
