@@ -1,3 +1,4 @@
+import { UrgentStrip } from "./UrgentStrip";
 import { sectionTone } from "./display";
 import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
@@ -439,8 +440,10 @@ function StockUiScreenView({
           </div>
         </AppShell.Main>
       </div>
+      <UrgentStrip nodes={screen.urgent ?? []} onEvent={onEvent} />
       <Modal.Root
         opened={modal !== null}
+        trapFocus={!screen.urgent?.length}
         onClose={() => {}}
         closeOnClickOutside={false}
         closeOnEscape={false}
@@ -453,7 +456,10 @@ function StockUiScreenView({
         transitionProps={{ duration: 0 }}
       >
         <Modal.Overlay backgroundOpacity={0.24} />
-        <Modal.Content style={{ ...clinicalCssVariables }}>
+        <Modal.Content
+          aria-modal={!screen.urgent?.length}
+          style={{ ...clinicalCssVariables }}
+        >
           <Modal.Header role="presentation">
             <Modal.Title>
               {modal

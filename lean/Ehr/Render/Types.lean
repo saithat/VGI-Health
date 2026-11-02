@@ -632,6 +632,7 @@ structure UiScreen where
   workspace : List UiNode
   side : List UiNode
   modal : Option UiNode
+  urgent? : Option (List UiNode) := none
   deriving Repr, Inhabited
 
 /-! ## API records -/

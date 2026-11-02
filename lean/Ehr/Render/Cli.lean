@@ -1,7 +1,7 @@
 import Ehr.Render.Api
 import Ehr.Cli.Sim
-import Ehr.Specs.V1
-import Ehr.Canonical.Program
+import Ehr.Specs.CriticalResults
+import Ehr.Canonical.Urgency
 import Ehr.Examples.Tiny
 
 namespace Ehr.Render.Cli
@@ -116,11 +116,11 @@ def run (args : List String) : IO UInt32 := do
     let bundlePath ← required "--fhir"
     let dir : System.FilePath := ← required "--out"
     let sp ← match specPath with
-      | "v1" => pure Specs.V1.specV1
+      | "v1" => pure Specs.CriticalResults.specV1
       | "tiny" => pure Examples.Tiny.spec
       | path => readJson Spec path
     let prog ← match progPath with
-      | "canonical" => pure Canonical.canonicalV1
+      | "canonical" => pure Canonical.Urgency.canonicalV1
       | "tiny" => pure Examples.Tiny.program
       | path => readJson Program path
     let user ← match opts.lookup "--user" with
@@ -169,7 +169,9 @@ def run (args : List String) : IO UInt32 := do
                 patient? := facts.sourcePatientId?, bound? := facts.sourcePatientId?,
                 activity := Workspace.primary prog, target? := some state.screen } }
               renderPatientWorkspace sp { prog with patientSelection? := some true } facts disp user selected
-            else renderUi sp prog facts disp user state
+            else
+              let effective := CriticalRuntime.effectiveFacts facts state
+              withUrgentStrip sp effective user state (renderUi sp prog effective disp user state)
           IO.FS.writeFile (dir / (name ++ ".json")) (toJson ui).pretty
           count := count + 1
           continue

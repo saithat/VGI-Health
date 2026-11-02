@@ -1,7 +1,7 @@
 # Alert urgency and physical interaction policy
 
-**Status: pending owner review — the entire classification below.** Source review
-2026-11-02. These are proposed hospital attention defaults, not clinical advice or
+**Status: APPROVED by the owner on 2026-11-02.** Source review
+2026-11-02. These are hospital attention defaults, not clinical advice or
 a legal certification. Severity (`interruptive`, `passive`, `removable`) remains
 unchanged. Urgency does not authorize a popup, acknowledgment, override or write.
 
@@ -41,11 +41,11 @@ an all-moments viewport invariant. Every tier decision here is **hospital policy
 
 ## Complete classification
 
-Each row is **pending owner review**, with decision authority **hospital policy
+Each row is **APPROVED by the owner on 2026-11-02**, with decision authority **hospital policy
 (not law)**. Sources in this table refer to the concrete linked provisions above.
 No row claims that regulation decides the continuous-visibility tier.
 
-| Alert kind / ID | Proposed urgency | Concrete basis and local rationale |
+| Alert kind / ID | Approved urgency | Concrete basis and local rationale |
 |---|---|---|
 | `drugAllergyOrder` | urgent | [ONC (a)(4)(i)][onc], [SAFER 2.1][safer]: contraindication before prescribing; retain warning while the match remains active. |
 | `drugAllergyAdmin` | urgent | [CMS 482.23(c)(1)][cms], [SAFER 2.1][safer]: administration safety context; ONC CPOE criterion is not an administration mandate. |
@@ -61,9 +61,10 @@ No row claims that regulation decides the continuous-visibility tier.
 | `highAlertOrderNotice` | advisory | [ISMP BP 19][ismp], [SAFER 2.1][safer]: generic policy notice, distinct from an actual dose/allergy warning; no legal urgency tier found. |
 | `activeRxPopup` | advisory | [SAFER 2.1][safer]: expected active prescription during refill; no legal urgency tier found. |
 | `refillCareGapPopup` | advisory | [SAFER 2.1][safer]: care-gap duplicate outside the preventive workflow; no legal urgency tier found. |
-| `minorInteractionPopup` | advisory | [SAFER 2.1][safer]: spec describes minor information already handled by prescriber. Its coarse `.interaction` trigger does not itself prove clinical severity; owner must review this mismatch. |
-| `pediatricGrowthCurveOutlier` | urgent | [ISMP BP 3(e), p. 5][ismp]: weight/growth consistency CDS. Full catalog only; continuous exposure is proposed local policy. |
-| `significantWeightChange` | urgent | [ISMP BP 3(e), p. 5][ismp]: comparison with prior encounter weight. Full catalog only; continuous exposure is proposed local policy. |
+| `minorInteractionPopup` | advisory | [SAFER 2.1][safer]: spec describes minor information already handled by prescriber. The successor spec uses `.minorInteraction`: explicit minor evidence is required, and severe source evidence or a formulary hazard excludes this advisory path. |
+| `pediatricGrowthCurveOutlier` | urgent | [ISMP BP 3(e), p. 5][ismp]: weight/growth consistency CDS. Full catalog only; continuous exposure is approved local policy. |
+| `criticalResult` | urgent | [NPG.01.02.01 EPs 1–2][critical], [CLIA 493.1291(g)][clia]: timely reporting, named recipients, escalation and assessment; the continuous strip is hospital policy. |
+| `significantWeightChange` | urgent | [ISMP BP 3(e), p. 5][ismp]: comparison with prior encounter weight. Full catalog only; continuous exposure is approved local policy. |
 
 `Rules/Cms`, `Title22`, `CaStatutes`, `Federal`, and `Entrenched` declare empty
 alert lists. `Rules/Features` adds the last two rows. V2/V3 preserve V1 alerts.
@@ -77,25 +78,51 @@ row's sources and urgency: the six signing kinds `drugAllergyOrder`,
 `authorizePatientOwnedMedication`, `authorizeOudDirectDispensing`,
 `signOralLiquidPrescription`, `signFormattedPrescription`, `signOralMethotrexate`.
 
-Thus **77 IDs, 17 kinds** are classified. The exact expanded list with source
+Thus **78 IDs, 18 kinds** are classified. The exact expanded list with source
 labels is [alert-urgency.json](alert-urgency.json), generated from
 [Specs/AlertUrgency.lean](../../lean/Ehr/Specs/AlertUrgency.lean). Kernel coverage
 checks include the complete catalog and each released spec, with no catch-all
-classification for unknown IDs. Core release JSON contains 15 base alerts.
+classification for unknown IDs. Successor core release JSON contains 16 base alerts. The approved export uses `approvedAssignments`; the original 77-row Lean proposal is retained unchanged as historical evidence because protected specs are additive only.
 
 ## Critical results and California scope
 
-There is **no critical-result AlertSpec** in these lists. `ackResult`,
-`resultDetail`, `resultTrend` and `resultAbnormalFlags` are actions/reviews, not
-alert kinds. This classification must not imply critical-result delivery exists.
-[Joint Commission hospital NPG.01.02.01, EPs 1–2, p. 1](https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9)
-requires timely critical-result reporting, defined recipients/time limits and
-assessment of timeliness. This is accreditation, not law; it succeeded hospital
-NPSG.02.03.01 in January 2026. A future critical-result alert should be proposed
-urgent, with delivery/escalation and resolution distinct from a UI acknowledgment.
-CLIA's [42 CFR 493.1291(g)](https://www.ecfr.gov/current/title-42/section-493.1291#p-493.1291(g))
-imposes immediate laboratory notification for life-threatening/panic results;
-that laboratory duty is not fulfilled by a pinned EHR widget alone.
+`Specs/CriticalResults.lean` adds the urgent `criticalResult` kind and successor
+V1–V3 specs, preserving all original spec definitions. Critical-result reporting
+is a separate workflow from `ackResult` and ordinary alert acknowledgment.
+[Joint Commission hospital NPG.01.02.01, EPs 1–2, p. 1][critical] requires a
+procedure defining critical results, reporting participants and acceptable time,
+and assessment of reporting timeliness. It succeeded NPSG.02.03.01 in January
+2026. [CLIA 42 CFR 493.1291(g)][clia] requires immediate laboratory notification
+for life-threatening/panic results. A strip alone cannot fulfill these duties.
+
+`Multi/Critical.lean` models immediate service delivery, receipt, UI
+acknowledgment, covering-clinician escalation and a clinician's documented
+clinical action. Resolution requires a notified responsible/covering identity,
+receipt and nonblank action documentation. Receipt, acknowledgment and timeout
+never create resolution. The model records who acted and when; it trusts the
+clinician's assertion that the documented clinical action occurred.
+
+The simulated reporting bound is **30 model minutes**, a local scenario policy,
+not a duration specified by either authority. `FairService` requires a delivery
+and timeout service at each minute after finite actor interleavings. With fixed
+result identity, `eventually_resolved_or_escalated` proves resolution or escalation
+by the original deadline. `bounded_follow_through` strengthens this to recorded event timestamps in an executable fair schedule with arbitrary finite actor interleavings. No response from a clinician is assumed. The result is
+not a theorem about real-time network delivery, an unattended browser, or durable
+production dispatch; a production timer, authenticated routing, shared store and
+timeliness monitoring must refine this executable model.
+
+The canonical semantic renderer supplies receipt, escalation status, documented
+action and resolution controls. The shared native/WASM `runStep` API routes these
+to the multi-actor reducer independently of the certified commit interpreter.
+Workflow state is episode state, not a server notification ledger. Exact source snapshot identity prevents a corrected observation from inheriting an earlier resolution. Clinical
+commits and `ackResult` do not resolve it. A critical FHIR flag (`HH`, `LL`, `AA`)
+creates a warning even without routing; absent recipients leave an explicit
+manual-notification finding and cannot authorize resolution. The synthetic
+`critical-result-route` extension supplies the model clock and clinician IDs.
+The first P1 result task each simulated day gains a critical potassium result
+(6.8 mmol/L), retaining original task choices, random draws and state history.
+Historical W2 simulation goals still measure `ackResult`; they do not certify
+critical-result follow-through. New model/API regressions exercise the latter. `Canonical/Urgency.lean` adds the required inline source component to W2 successor programs; all fifteen role baselines pass the unchanged checker.
 
 California [H&S Code 1339.63(a)](https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=HSC&sectionNum=1339.63)
 requires medication-error reduction planning. The repository's California review
@@ -110,37 +137,28 @@ barcoding requirements for drug labels. ISMP and SAFER are labeled guidance.
 
 [Sem/Urgency.lean](../../lean/Ehr/Sem/Urgency.lean) defines `AlertActive` from
 clinical `alertKeys`, independently of whether the renderer emits the warning.
-`AlertActive` deliberately does not limit activity to the associated commit
-being offered or to its workflow; that applicability/lifecycle scope is also
-pending owner review. `ContinuousUrgency` quantifies every reachable interpreter
-state, every finite
-view path (including zero steps), and each still-active urgent rule. Modal
-meaning requires its labeled attention boundary **and** enabled acknowledgment;
-inline meaning retains the rule's severity. Acknowledgment does not by itself
-remove the activity requirement.
+The approved policy retains activity independently of acknowledgment and
+navigation. `Render/UrgentStrip.lean` enumerates **all** active urgent rules from
+the current facts snapshot, including rules whose commits are not offered.
+`Core/CriticalRuntime.effectiveFacts` reconciles critical workflow state and
+model time before rendering; a resolved critical result leaves the active list.
 
-`render_modal_continuous` and `render_inline_continuous` prove the current
-presentations under explicit `Pinned` layout evidence at every reached moment.
-`render_continuous_urgency` assembles the full property when every active urgent
-rule has one of those presentations in every reachable state. Structural
-membership comes from existing D4 render theorems; the model assumes actual
-viewport intersection, legibility, lack of occlusion and stable presentation
-through view steps. It does not derive these from tree presence.
+The original `render_modal_continuous`, `render_inline_continuous` and
+`other_alert_blocked_by_modal` theorems remain unchanged. They describe the old
+single-modal renderer and its obstruction. Production uses the additive
+`withUrgentStrip` renderer and `Sem/UrgentStrip.lean` layered semantics: strip
+facts remain active alongside unrelated modal content. An urgent popup's guarded
+acknowledgment moves into the strip, preserving the interpreter's gate.
 
-`other_alert_blocked_by_modal` proves that an open interruptive modal cannot
-expose a different alert at any moment, including `exposed`.
-`urgencyAt_obstructed_by_modal` derives failure of `UrgencyAt` when that other
-rule is active and urgent. Simultaneously active urgent rules
-therefore require more than pinning the current single popup.
-
-**Open:** today's programs do not establish that model for all active urgent
-conditions before a popup, after acknowledgment, while their associated commit
-is not offered, behind another modal or on
-hidden tabs/screens. Urgent interruptive inline presentation is not covered by
-the passive-inline lemma. Navigation to a different presentation needs new
-coverage/layout evidence. Browser scroll/focus samples cannot prove all possible
-moments, transitions, arbitrary user zoom or continuous time. Existing clinical
-properties, specs, statements and comparator obligations remain intact.
+`active_urgent_in_strip` derives structural coverage from clinical activity,
+without presentation assumptions. `strip_continuous_perceivability` proves every
+simultaneously active urgent alert perceivable through arbitrary view paths;
+`reachable_strip_continuous` lifts this over every reachable interpreter state.
+The explicit `StripLayout` model retains the strip while allowing the workspace and dialog to change arbitrarily. It requires the complete finite strip to fit the
+viewport, remain legible and occupy an unoccluded layer at every reached moment.
+This closes the semantic modal-obstruction gap. It does not prove CSS geometry,
+infinite capacity, arbitrary zoom, or continuity between browser samples. The
+screen gate measures finite scroll/focus samples and rejects overflow/occlusion.
 
 ## Physical policy and measured scope
 
@@ -182,16 +200,11 @@ retain exact measurements under a painter/assertion/policy/browser/configuration
 context; failed measurements can be reused without creating passing whole-version
 receipts.
 
-The default urgent IDs come from the reviewed-source proposal. Operator
+The default urgent IDs come from the owner-approved policy. Operator
 `EHR_URGENT_ALERT_IDS` adds IDs and cannot subtract the baseline. Policy content
 and gate sources enter the cache context. The urgency samples check emitted
 alerts and acknowledgments initially, after scroll start/mid/end and each
-enabled focus target; The adapter checks each emitted presentation. A hidden duplicate inline warning
-under its own matching modal may therefore be rejected even though the
-condition-level `UrgentDemand` disjunction accepts the modal. This conservative
-adapter mismatch remains open; review such reports before treating them as
-condition-level urgency violations. Absent active conditions cannot be recovered from exported
-UiScreen JSON and remain the stronger Lean contract's coverage gap.
+enabled focus target. The adapter accepts any visible presentation of the same alert ID, including its pinned strip copy. Exports now carry all active urgent IDs in `urgent`, independent of hidden workflow components. Finite browser samples remain distinct from the universal Lean layout hypothesis.
 
 Regenerate policy after a Lean policy edit:
 
@@ -222,3 +235,16 @@ Canonical release findings and exact verification commands are recorded in
 [cms]: https://www.ecfr.gov/current/title-42/section-482.23#p-482.23(c)(1)
 [safer]: https://www.healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf
 [ismp]: https://online.ecri.org/hubfs/ISMP/Resources/ISMP_TargetedMedicationSafetyBestPractices_Hospitals.pdf
+
+[critical]: https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9
+[clia]: https://www.ecfr.gov/current/title-42/section-493.1291#p-493.1291(g)
+
+`node scripts/audit-alert-policy.mjs "$TMPDIR/urgency-policy-audit" --urgency-only`
+exports every canonical source variant, then measures each distinct
+strip/modal/banner presentation using its largest body as scroll stress, plus
+all critical workflow snapshots. `urgency-selection.json` records the full
+membership and chosen cases. This focused audit measures urgency; it also
+reports physical findings for those representatives. It is not whole-version
+approval. Omit the flag for the full supplied-state physical matrix owned by the
+physical-policy lane. The tracked [follow-through report](urgency-follow-through.md)
+records this lane's final scope and results.

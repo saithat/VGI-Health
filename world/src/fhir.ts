@@ -3,7 +3,7 @@
  * (`Task.todayResources`): triage and clinic weights, lab results, newly
  * reported allergies, refill-request Tasks, consents, imaging reports.
  */
-import { dateTimeOf } from "./calendar";
+import { dateTimeOf, SHIFTS } from "./calendar";
 import type { Json } from "./schema";
 import type { OrderChoice } from "./schema";
 
@@ -213,5 +213,26 @@ export function imagingReport(id: string, patientId: string, day: number, clock:
     issued: dateTimeOf(day, clock + 40),
     conclusion,
     conclusionCode: [{ coding: [{ system: SNOMED, code: snomed, display: conclusion }] }],
+  };
+}
+
+/** Synthetic critical-result route; 30 minutes is local simulation policy.
+ * The source records the reporting clock, recipients and result identity. */
+export function criticalResultObservation(id: string, patientId: string, day: number, availableAt: number): Json {
+  const observation = labObservation(id, patientId, day, SHIFTS.P1.startClock + availableAt, "potassium", 6.8, "H");
+  if (typeof observation !== "object" || observation === null || Array.isArray(observation)) throw new Error("Observation object required");
+  return {
+    ...observation,
+    issued: dateTimeOf(day, SHIFTS.P1.startClock + availableAt),
+    interpretation: [{ coding: [{ system: INTERP, code: "HH", display: "Critical high" }] }],
+    extension: [{
+      url: "https://vgi.health/fhir/StructureDefinition/critical-result-route",
+      extension: [
+        { url: "responsible", valueString: "P1" },
+        { url: "covering", valueString: "P2" },
+        { url: "availableAt", valueInteger: availableAt },
+        { url: "limit", valueInteger: 30 },
+      ],
+    }],
   };
 }

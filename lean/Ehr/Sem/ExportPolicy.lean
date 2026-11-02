@@ -12,8 +12,9 @@ def sourceJson (s : AlertUrgency.Source) : Json := Json.mkObj [
 
 def main : IO Unit := do
   let policy := Json.mkObj [
-    ("status", toJson "pending owner review"),
-    ("assignments", toJson (AlertUrgency.assignments.map fun p => Json.mkObj [
+    ("status", toJson "APPROVED by the owner on 2026-11-02"),
+    ("policyStatus", toJson "APPROVED by the owner on 2026-11-02"),
+    ("assignments", toJson (AlertUrgency.approvedAssignments.map fun p => Json.mkObj [
       ("id", toJson p.id), ("urgency", toJson (match p.urgency with
         | .urgent => "urgent" | .workflow => "workflow" | .advisory => "advisory")),
       ("decision", sourceJson p.decision), ("context", toJson (p.context.map sourceJson)),

@@ -144,7 +144,9 @@ code.
 | Checker acceptance implies property 6, "every required task can be completed" | 🟡 **Proved for defined fragments only** (scalar fields, fixed order lines, receipts, many alerts, macros/prefills); general case **open** | `Check/Sound.lean`, `Check/ScalarCompletion.lean`, `Check/FixedLineCompletion.lean` |
 | The screen tree keeps the patient banner, required reviews, honest buttons, modal vs inline alerts, labeled fields (D1–D4, D6) | 🟢 **Proved**, for the semantic screen tree | `Render/UiProofs.lean` |
 | Layout-independent information/action semantics, with explicit perception and view-step bounds | 🟡 **Proved** D1–D4/D6 bridges at abstract exposed moments; actual exposure is an explicit hypothesis; positive and negative examples | `Sem/Screen.lean`, `Sem/Bridge.lean`, `Sem/Trace.lean`, `Sem/Examples.lean` |
-| Active urgent alerts remain perceivable at every reachable view moment | 🟡 **Proved under explicit current-presentation/pinned-layout evidence** for renderUi modal and passive-inline kinds; full active-condition coverage and real browser geometry remain open; all 77 ID assignments **pending owner review** | `Specs/AlertUrgency.lean`, `Sem/Urgency.lean`; [policy and sources](docs/design/alert-urgency.md) |
+| Active urgent alerts remain perceivable at every reachable view moment | 🟢 **Proved for the additive pinned-strip renderer under explicit finite-fit/legibility/unoccluded layout evidence**, including simultaneous alerts, navigation and acknowledgment; browser geometry is sampled; all 78 ID assignments **approved by the owner on 2026-11-02** | `Specs/AlertUrgency.lean`, `Sem/UrgentStrip.lean`; [policy and sources](docs/design/alert-urgency.md) |
+| Critical results are delivered and resolved or escalated by the configured bound; UI acknowledgment never resolves them | 🟢 **Proved for the multi-actor workflow under fair minute service**; recipient authentication, durable dispatch and clinical action truth remain integration obligations | `Multi/Critical.lean`, `Specs/CriticalResults.lean`; [workflow scope](docs/design/alert-urgency.md) |
+| Minor-interaction advisory requires explicit minor severity; severe evidence/formulary hazards exclude it | 🟢 **Proved** for the successor trigger | `Proofs/InteractionSeverity.lean` |
 | WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; canonical gate fails** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
 | Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
@@ -155,6 +157,35 @@ code.
 | The hospital rules are complete and clinically right | 🔴 **Not proved**: the rules are a reviewed spec (core profile; catalog rules switched off) | `Specs/` |
 | The simulated clinicians and workload numbers reflect real people | 🔴 **Not proved**: historical deterministic Lean policies and round-two seeded decision-model policies; no human validation; measured geometry at 1440×900 | `Sim/` |
 | The AI agent is correct or honest | 🔴 **Not assumed**: it is untrusted; only checker-accepted programs deploy | `agent/` |
+
+The urgency follow-through successor specs are exported by `ehr spec-export v1|v2|v3`
+and retained in `releases/`. Original protected spec definitions and Comparator
+obligations remain unchanged. `Canonical/Urgency.lean` adds the critical inline
+component to successor W2 screens; all fifteen role baselines pass the checker.
+`lake env lean --run Ehr/Tools/ExportUrgency.lean` regenerates only tracked
+release artifacts. The approved policy has 78 IDs, including urgent
+critical results. The canonical painter receives an all-active `urgent` strip
+from Lean; its layout must fit every displayed alert, and the screen gate checks
+finite scroll/focus samples. Critical results have separate receipt, timeout
+escalation and documented-clinician-action resolution in episode state. Ordinary
+UI acknowledgment and `ackResult` leave them unresolved. The first daily P1
+result task includes a synthetic panic potassium result and named P1/P2 route;
+its 30-minute escalation limit is local simulation policy. Production dispatch,
+authentication, persistence and a fair real-time scheduler remain integration
+work; historical W2 goal completion does not establish critical resolution.
+
+These changes alter the certified application and Lean/WASM hashes. Recorded
+certificates require fresh validation; historical certificates are not rebound.
+See [urgency verification](docs/design/urgency-follow-through.md) for exact checks,
+findings and integration limits. Run with disk-backed scratch and bounded Lean:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+(cd lean && lake build && lake comparator)
+node scripts/audit-alert-policy.mjs "$TMPDIR/urgency-policy-audit" --urgency-only
+JOBS=4 make wasm
+make wasm-check
+```
 
 ## Assurance by layer, and gaps to deployment
 
@@ -321,20 +352,19 @@ preservation, and `Sem/TimelineProgram.lean` proves checker acceptance for a
 canonical program. DOM fidelity remains checked; physical perception needs
 exposure evidence, and general completion remains open.
 
-[Alert urgency policy](docs/design/alert-urgency.md) classifies all 17 alert kinds
-(77 exact IDs including full-catalog inherited variants), with sources and explicit
-law/guidance/hospital-policy labels; the entire proposal is **pending owner review**.
-`Sem/Urgency.lean` requires perception at every reachable moment while the clinical
-condition is active. Current modal/passive-inline render proofs require pinned
-viewport/legibility/occlusion evidence and presentation coverage in every state;
-today's programs do not establish those assumptions generally. A kernel proof
-also shows that the current single modal cannot expose a different alert, even
-at an abstract fully exposed moment; simultaneous urgent conditions need new
-presentation coverage. Acknowledgment alone does not resolve a condition. The gate checks the proposed urgent IDs before
-scrolling and again after finite scroll/focus samples. `EHR_URGENT_ALERT_IDS` adds
-operator IDs; it cannot remove the baseline. Browser samples do not prove the
-all-moments invariant or recover active conditions omitted from exported trees.
-Policy content enters the screen-cache key.
+[Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
+(78 exact IDs including inherited variants), with explicit law, accreditation,
+guidance and hospital-policy labels. It is **APPROVED by the owner on 2026-11-02**.
+The historical `Sem/Urgency.lean` single-modal obstruction proof remains intact.
+The additive `Sem/UrgentStrip.lean` model proves coverage of all active urgent
+rules alongside unrelated modals and continuous perception under explicit finite
+viewport-fit, legibility and non-occlusion evidence. Production exports include
+that strip before and after acknowledgment and independently of navigation.
+Critical-result resolution requires a separate documented clinician action; a
+changed source observation starts a new unresolved workflow. Browser scroll,
+focus, width and text-resize samples check geometry; they do not prove all
+possible moments. `EHR_URGENT_ALERT_IDS` can add operator IDs without removing
+the approved baseline. Policy content enters the screen-cache key.
 
 The owner-selected physical policy uses WCAG 2.2 AA SC 2.5.8 (24×24 CSS px),
 1.4.3 (4.5:1 text), 1.4.11 (3:1 essential non-text), 1.4.4/1.4.10

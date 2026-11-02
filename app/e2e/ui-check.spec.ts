@@ -98,6 +98,7 @@ async function urgentFindings(
   const demands = [
     ...screen.workspace,
     ...screen.side,
+    ...(screen.urgent ?? []),
     ...(screen.modal ? [screen.modal] : []),
   ]
     .flatMap(nodes)
@@ -287,7 +288,8 @@ type PhysicalFinding = { sc: string; id: string; detail: string };
 /** Fixed owner policy, exported from Lean; no candidate-controlled thresholds. */
 const policyData = z
   .object({
-    status: z.literal("pending owner review"),
+    status: z.literal("APPROVED by the owner on 2026-11-02"),
+    policyStatus: z.literal("APPROVED by the owner on 2026-11-02"),
     assignments: z.array(
       z.object({
         id: z.string(),
@@ -1304,6 +1306,7 @@ async function urgencySamples(
   const hasDemand = [
     ...screen.workspace,
     ...screen.side,
+    ...(screen.urgent ?? []),
     ...(screen.modal ? [screen.modal] : []),
   ]
     .flatMap(nodes)
@@ -1662,4 +1665,66 @@ test("physical gate detects undersized targets, text and essential boundary cont
       (f) => f.sc === "1.4.11" && f.id.startsWith("probe-input/"),
     ),
   ).toBe(true);
+});
+
+test("concurrent urgent strip survives scroll, focus, acknowledgment and another dialog", async ({
+  page,
+}) => {
+  const alerts: UiNode[] = [
+    "drugAllergyOrder",
+    "interactionOrder",
+    "criticalResult",
+  ].map((id) => ({
+    alert: {
+      comp: `urgent:${id}`,
+      alertId: id,
+      label: `Active ${id}`,
+      severity: "interruptive",
+    },
+  }));
+  const screen: UiScreen = {
+    banner: [],
+    nav: [],
+    title: "Concurrent alerts",
+    side: [],
+    workspace: [],
+    urgent: alerts,
+    modal: {
+      section: {
+        id: "unrelated",
+        title: "Another workflow",
+        children: [
+          {
+            button: {
+              comp: "other",
+              label: "Acknowledge",
+              role: "ack",
+              enabled: true,
+              blockedReason: null,
+              hotkey: null,
+            },
+          },
+        ],
+      },
+    },
+  };
+  await page.goto("/screen-check.html");
+  await page.waitForFunction(() => typeof window.renderUi === "function");
+  await render(page, screen);
+  await urgentVisibility(page, screen);
+  expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
+    expectedAria(screen),
+  );
+  await page.getByRole("button", { name: "Acknowledge" }).focus();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await urgentVisibility(page, screen);
+  // A UI acknowledgment closes the boundary; all three clinical conditions persist.
+  await render(page, { ...screen, modal: null });
+  await urgentVisibility(page, screen);
+  await page.locator('[data-alert-id="interactionOrder"]').evaluate((el) => {
+    if (el instanceof HTMLElement) el.hidden = true;
+  });
+  expect(await urgentFindings(page, screen)).toContain(
+    "Urgent alert interactionOrder: not perceived at the current moment",
+  );
 });
