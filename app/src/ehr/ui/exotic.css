@@ -1,0 +1,163 @@
+.research {
+  font: 15px/1.5 system-ui;
+  color: #152c40;
+  background: #edf3f7;
+  min-height: 100vh;
+  padding: 16px;
+}
+.research * {
+  box-sizing: border-box;
+}
+.research-label {
+  padding: 8px;
+  background: #16384b;
+  color: white;
+  letter-spacing: 0.05em;
+}
+.research-panes {
+  display: grid;
+  gap: 16px;
+}
+.research article {
+  background: white;
+  border: 1px solid #a8bccb;
+  padding: 12px;
+  min-width: 0;
+}
+.research-banner {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  background: #dcecf5;
+  padding: 12px;
+  border-bottom: 3px solid #26768b;
+}
+.research-banner span {
+  display: flex;
+  flex-direction: column;
+  overflow-wrap: anywhere;
+}
+.research-banner small {
+  text-transform: uppercase;
+  font-size: 12px;
+}
+.research h1 {
+  font-size: 23px;
+}
+.research button,
+.research input {
+  font: inherit;
+  min-height: 36px;
+}
+.research nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.research-zones {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(200px, 0.4fr);
+  gap: 16px;
+  align-items: start;
+}
+.research-zones > * {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.research-spatial .research-zones > aside {
+  position: sticky;
+  top: 105px;
+  max-height: calc(100vh - 125px);
+  overflow: auto;
+  border: 2px solid #26768b;
+  padding: 12px;
+  background: #f4fbfd;
+}
+.research-spatial .research-zones > section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.research-board .research-panes {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+}
+.research-board article {
+  max-height: 82vh;
+  overflow: auto;
+}
+.research-board .research-zones {
+  grid-template-columns: 1fr;
+}
+.command-palette {
+  border: 2px solid #26768b;
+  background: #eff9fc;
+  padding: 12px;
+}
+.command-palette label,
+.command-palette input {
+  display: block;
+  width: 100%;
+}
+.command-palette ul {
+  list-style: none;
+  padding: 0;
+  max-height: 240px;
+  overflow: auto;
+}
+.command-palette li {
+  padding: 5px;
+}
+.command-palette [data-selected="true"] {
+  outline: 2px solid #26768b;
+}
+.command-palette li span {
+  display: block;
+  color: #743521;
+}
+.command-palette button:disabled {
+  color: #4f4f4f;
+}
+.time-axis {
+  width: 100%;
+  background: #eef6fa;
+}
+.time-axis text {
+  font-size: 15px;
+  fill: #152c40;
+}
+.research time {
+  font-weight: bold;
+}
+.research-modal {
+  position: fixed;
+  inset: 15% 10%;
+  z-index: 100;
+  overflow: auto;
+  background: white;
+  box-shadow: 0 0 0 100vmax #102334bb;
+  padding: 24px;
+}
+@media (max-width: 900px) {
+  .time-axis text {
+    display: none;
+  }
+  .research-board .research-panes,
+  .research-zones,
+  .research-spatial .research-zones > section {
+    grid-template-columns: 1fr;
+  }
+  .research-spatial .research-zones > aside {
+    position: static;
+    max-height: none;
+  }
+  .research-board article {
+    max-height: none;
+  }
+  .research {
+    padding: 6px;
+  }
+}
