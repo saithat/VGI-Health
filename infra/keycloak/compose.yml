@@ -9,6 +9,7 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: vgi-admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Run node infra/keycloak/setup.mjs}
       KEYCLOAK_PERSONA_PASSWORD: ${KEYCLOAK_PERSONA_PASSWORD:?Run node infra/keycloak/setup.mjs}
+      KEYCLOAK_4WEST_PASSWORD: ${KEYCLOAK_4WEST_PASSWORD:?Run node infra/keycloak/setup.mjs}
       KC_HOSTNAME: http://localhost:8180
       JAVA_OPTS_KC_HEAP: '-Xms128m -Xmx384m'
     volumes:

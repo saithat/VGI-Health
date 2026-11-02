@@ -10,9 +10,9 @@ export function exportFhir(patient: string, snapshot: Obj, events: Obj[]) {
     identifier: { system: 'urn:vgi:patient-stream', value: `${patient}@${snapshot.version}` },
     entry: [
       ...snapshot.snapshot.bundle.entry,
-      ...events.filter(e => e.event.kind === 'command').map(e => ({ resource: {
+      ...events.filter(e => ['command', 'adt'].includes(e.event.kind)).map(e => ({ resource: {
         resourceType: 'Basic', id: e.transactionId, meta: { versionId: String(e.version), profile: ['urn:vgi:profile:accepted-command'] },
-        code: { coding: [{ system: 'urn:vgi:command', code: e.event.guard.input.commit }] },
+        code: { coding: [{ system: 'urn:vgi:command', code: e.event.kind === 'command' ? e.event.guard.input.commit : Object.keys(e.event.input?.command ?? e.event.command)[0] }] },
         subject: { reference: `Patient/${patient}` },
         extension: [{ url: 'urn:vgi:accepted-command', valueString: JSON.stringify(e) }],
       } })),

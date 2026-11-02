@@ -1,5 +1,6 @@
 import Ehr.Sem.UrgencyExamples
 import Ehr.Commit.MarTests
+import Ehr.Commit.AdtTests
 import Ehr.Sem.Exotic
 import Ehr.Sem.TimelineProgram
 import Ehr.Canonical.PresetTests

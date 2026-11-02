@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { z } from 'zod';
 
 export type Obj = Record<string, any>; // Opaque Lean/FHIR JSON; Lean validates codecs.
+export const adtRole = z.enum(['chargeNurse', 'bedManager', 'admittingClerk']);
 const id = z.string().regex(/^[A-Za-z0-9.-]{1,64}$/);
 export const version = z.number().int().min(0).max(2147483646);
 const nat = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
@@ -13,14 +14,16 @@ const shared = z.discriminatedUnion('kind', [
 export const configSchema = z.object({
   tenant: id,
   oidc: z.object({ issuer: z.url(), audience: z.string().min(1), clientId: z.string().min(1) }).strict().optional(),
+  units: z.record(id, z.object({ name: z.string().min(1), marOnService: z.boolean() }).strict()).optional(),
+  adt: z.object({ patients: z.array(id).min(1).max(64), beds: z.array(z.object({ id: nat, unit: id }).strict()).min(1).max(64) }).strict().optional(),
   actors: z.array(z.object({
-    token: z.string().min(24).optional(), subject: id.optional(), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon']) }).strict(),
-    modelId: nat, patients: z.array(id),
+    token: z.string().min(24).optional(), subject: id.optional(), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon', 'chargeNurse', 'bedManager', 'admittingClerk']) }).strict(),
+    modelId: nat, patients: z.array(id), units: z.array(id).optional(), adtRoles: z.array(adtRole).optional(),
   }).strict()).min(1),
   releases: z.record(id, z.object({
     spec: z.record(z.string(), z.any()), program: z.record(z.string(), z.any()),
     workflows: z.record(id, z.object({ commit: id, shared: shared.optional(),
-      mar: z.object({ patient: id, medicationRequest: id, encounter: id, scheduledTime: z.iso.datetime({ offset: true }) }).strict().optional(),
+      mar: z.object({ unit: id.optional(), patient: id, medicationRequest: id, encounter: id, scheduledTime: z.iso.datetime({ offset: true }) }).strict().optional(),
     }).strict()),
   }).strict()),
 }).strict().superRefine((c, ctx) => {
@@ -34,9 +37,18 @@ export const configSchema = z.object({
     ctx.addIssue({ code: 'custom', message: 'prototype actors require static tokens' });
   if (new Set(c.actors.map(a => a.subject).filter(Boolean)).size !== c.actors.filter(a => a.subject).length)
     ctx.addIssue({ code: 'custom', message: 'duplicate OIDC subject' });
+  if (c.adt) {
+    if (new Set(c.adt.patients).size !== c.adt.patients.length || new Set(c.adt.beds.map(b => b.id)).size !== c.adt.beds.length)
+      ctx.addIssue({ code: 'custom', message: 'duplicate ADT identifiers' });
+    if (c.adt.beds.some(b => !c.units?.[b.unit])) ctx.addIssue({ code: 'custom', message: 'unknown ADT unit' });
+    for (const r of Object.values(c.releases)) for (const w of Object.values(r.workflows))
+      if (w.shared && w.shared.kind !== 'dose') ctx.addIssue({ code: 'custom', message: 'ADT forbids legacy bed writers' });
+  }
   const doses = new Map<string, string>();
   const occurrences = new Map<string, string>();
   for (const r of Object.values(c.releases)) for (const w of Object.values(r.workflows)) {
+    if (c.units && w.mar && !w.mar.unit) ctx.addIssue({ code: 'custom', message: 'unit-configured deployments require explicit MAR units' });
+    if (w.mar?.unit && !c.units?.[w.mar.unit]) ctx.addIssue({ code: 'custom', message: 'unknown MAR unit' });
     if (w.mar && (!c.oidc || w.commit !== 'administerMed' || w.shared?.kind !== 'dose'))
       ctx.addIssue({ code: 'custom', message: 'MAR requires OIDC and a scheduled dose workflow' });
     if (w.mar && w.shared?.kind === 'dose') {
@@ -94,3 +106,18 @@ export class Fault extends Error {
   code: string;
   constructor(status: number, code: string, message = code) { super(message); this.status = status; this.code = code; }
 }
+
+export const adtCommandInput = z.object({
+  requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/),
+  // A complete board read vector prevents stale UI intent from silently rebasing.
+  expected: z.array(z.object({ key: z.string().min(1).max(100), version }).strict()).min(1).max(128),
+  action: z.enum(['admit', 'assign', 'transfer', 'release', 'discharge', 'clean', 'ready']),
+  patient: id, bed: nat.optional(), source: nat.optional(),
+}).strict().superRefine((c, ctx) => {
+  if ((c.action !== 'discharge' && c.bed === undefined) ||
+      (c.action === 'transfer' && c.source === undefined) ||
+      (c.action !== 'transfer' && c.source !== undefined) ||
+      (c.action === 'discharge' && c.bed !== undefined))
+    ctx.addIssue({ code: 'custom', message: 'incorrect ADT operands' });
+});
+export type AdtCommand = z.infer<typeof adtCommandInput>;

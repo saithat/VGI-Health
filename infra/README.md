@@ -299,7 +299,7 @@ patients are searchable by every live persona. See the
 `keycloak/compose.yml` is a separate `vgi-keycloak` project with a persistent dev
 volume, loopback port 8180 and pinned Keycloak 26.4.7 (768 MB limit, 384 MB heap).
 It imports `keycloak/vgi-realm.json` on first startup. The realm contains the six
-personas with stable subject IDs and Lean realm roles: P1/P2 physician, P3/RN2 rn,
+original personas plus the ADT/4 West accounts described below. The original personas are with stable subject IDs and Lean realm roles: P1/P2 physician, P3/RN2 rn,
 P4 np, P5 surgeon. The public `vgi-mar` client enables Authorization Code + S256
 PKCE, disables implicit/password grants and adds the commit-service audience.
 
@@ -310,7 +310,8 @@ docker compose --env-file .env -f infra/keycloak/compose.yml up -d
 curl --fail http://localhost:8180/realms/vgi/.well-known/openid-configuration
 ```
 
-Setup creates random `KEYCLOAK_ADMIN_PASSWORD` and `KEYCLOAK_PERSONA_PASSWORD` in
+Setup creates random `KEYCLOAK_ADMIN_PASSWORD`, `KEYCLOAK_PERSONA_PASSWORD` and
+`KEYCLOAK_4WEST_PASSWORD` in
 the untracked root `.env`, preserves existing keys and limits file access to its
 owner. The realm references the persona password through an environment
 placeholder; there are no committed credentials or browser client secrets.
@@ -333,3 +334,27 @@ two-nurse browser test, use the
 [W4 setup](../services/commit/README.md#w4-mar-and-keycloak). No Medplum identity,
 FHIR transaction or database reset is required for this W4 path. Other workflows
 continue using the existing Medplum setup above.
+
+### ADT roles and 4 West RNs
+
+The realm export also includes `bed-manager`, `charge-nurse`, `admitting-clerk`,
+the `4-west-rn` group and synthetic `4west-rn1`, `4west-rn2`, `charge-4west`,
+`bed-manager`, `admitting-clerk` users. `setup.mjs` creates a separate
+`KEYCLOAK_4WEST_PASSWORD` for new dev accounts. Existing realms require the
+additive migration; startup import does not update them:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+node infra/keycloak/provision-adt.mjs --running-dev
+```
+
+This reuses the existing local container's bootstrap credential in memory,
+preserves old passwords/roles, adds the managed admin-only-editable `units`
+profile attribute and token mapper, merges ADT redirects and captures actual
+subject IDs in `$TMPDIR/4west-subjects.json`. With an externally supplied admin
+password, omit `--running-dev`; `KEYCLOAK_URL` and `KEYCLOAK_SUBJECTS` override the
+base URL and manifest location. Run the migrator after a fresh realm import too,
+to install the managed unit profile. It is idempotent and never resets volumes.
+The [rollout guide](../docs/design/adt-rollout.md) documents service unit flags,
+operator scopes, generated synthetic inputs, verification and rollback. No real
+RN identity or clinical census is inferred from these synthetic accounts.

@@ -78,6 +78,7 @@ export class Store {
     const items = [];
     for (const [release, r] of Object.entries(this.config.releases)) for (const [workflow, w] of Object.entries(r.workflows)) {
       if (!w.mar || !actor.patients.includes(w.mar.patient)) continue;
+      if (w.mar.unit && (!this.config.units?.[w.mar.unit]?.marOnService || !actor.units?.includes(w.mar.unit))) continue;
       const p = await this.read(actor, w.mar.patient);
       items.push({ release, workflow, ...w.mar, version: p.version,
         patientResource: p.snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === 'Patient')?.resource,
@@ -92,6 +93,10 @@ export class Store {
           })).map((e: Obj) => e.resource) });
     }
     return { items };
+  }
+  requireMarUnit(actor: Actor, w: Obj) {
+    if (w.mar?.unit && (!this.config.units?.[w.mar.unit]?.marOnService || !actor.units?.includes(w.mar.unit)))
+      throw new Fault(403, 'mar_unit_disabled_or_forbidden');
   }
   private requireMarBinding(snapshot: Obj, workflow: Obj) {
     if (workflow.mar && !(snapshot.marBindings ?? []).some((b: Obj) => digest(b) === digest({ shared: workflow.shared, mar: workflow.mar })))
@@ -142,6 +147,7 @@ export class Store {
     this.authorize(actor, input.patient);
     const w = this.release(input.release).workflows[input.workflow];
     if (actor.user.role !== 'rn' || !w?.mar || w.mar.patient !== input.patient) throw new Fault(403, 'role_forbidden');
+    this.requireMarUnit(actor, w);
     return transaction(this.db, async c => {
       const p = await this.stream(c, `patient:${input.patient}`, true);
       this.requireMarBinding(p.snapshot, w);
@@ -161,7 +167,14 @@ export class Store {
         AND e.version>$3 AND e.version<=s.version ORDER BY e.version LIMIT 128) e), '[]'::jsonb) AS events
       FROM commit_streams s WHERE s.tenant=$1 AND s.key=$2`, [this.config.tenant, `patient:${patient}`, after]);
     if (!r.rowCount) throw new Fault(404, 'stream_not_provisioned');
-    return r.rows[0];
+    const row = r.rows[0];
+    const board = this.config.adt;
+    const fullBoardAccess = board && actor.adtRoles?.length && board.patients.every(p => actor.patients.includes(p)) &&
+      board.beds.every(b => actor.units?.includes(b.unit));
+    if (!fullBoardAccess) row.events = row.events.map((e: Obj) => e.event.kind !== 'adt' ? e : { ...e,
+      event: { kind: 'adt', actor: e.event.actor, requestId: e.event.requestId, command: e.event.input.command,
+        patient: e.event.accepted.state.patients.find((p: Obj) => p.id === patient) } });
+    return row;
   }
   async outcome(actor: Actor, requestId: string) {
     const r = await this.db.query('SELECT outcome,patient FROM commit_requests WHERE tenant=$1 AND actor=$2 AND request_id=$3',
@@ -176,6 +189,8 @@ export class Store {
     const release = this.release(input.release);
     const w = release.workflows[input.workflow];
     if (!Object.hasOwn(release.workflows, input.workflow) || !w) throw new Fault(404, 'workflow_not_found');
+    if (!['rn', 'physician', 'np', 'surgeon'].includes(actor.user.role)) throw new Fault(403, 'role_forbidden');
+    this.requireMarUnit(actor, w);
     if (w.mar && (actor.user.role !== 'rn' || w.mar.patient !== input.patient)) throw new Fault(403, 'mar_scope_forbidden');
     return transaction(this.db, async c => {
       // Hold the same row lock used by commits so session snapshot/version agree.
@@ -206,6 +221,7 @@ export class Store {
     if (digest(release) !== s.release_hash) throw new Fault(409, 'release_changed');
     const workflow = release.workflows[s.workflow];
     if (!workflow) throw new Fault(409, 'release_changed');
+    this.requireMarUnit(actor, workflow);
     return { s, release, workflow };
   }
   private async reconstruct(actor: Actor, release: Obj, patient: Obj, s: Obj) {
@@ -275,6 +291,7 @@ export class Store {
       let marInput: Obj | undefined;
       const transactionId = randomUUID();
       if (workflow.mar) {
+        this.requireMarUnit(actor, workflow);
         this.requireMarBinding(p.snapshot, workflow);
         if (actor.user.role !== 'rn' || workflow.shared?.kind !== 'dose') throw new Fault(403, 'role_forbidden');
         const capture = decision.accept.state.captured.find((c: Obj) => c.element === 'highAlertCosign' && c.confirmed);
