@@ -147,7 +147,7 @@ code.
 | Active urgent alerts remain perceivable at every reachable view moment | 🟢 **Proved for the additive pinned-strip renderer under explicit finite-fit/legibility/unoccluded layout evidence**, including simultaneous alerts, navigation and acknowledgment; browser geometry is sampled; all 78 ID assignments **approved by the owner on 2026-11-02** | `Specs/AlertUrgency.lean`, `Sem/UrgentStrip.lean`; [policy and sources](docs/design/alert-urgency.md) |
 | Critical results are delivered and resolved or escalated by the configured bound; UI acknowledgment never resolves them | 🟢 **Proved for the multi-actor workflow under fair minute service**; recipient authentication, durable dispatch and clinical action truth remain integration obligations | `Multi/Critical.lean`, `Specs/CriticalResults.lean`; [workflow scope](docs/design/alert-urgency.md) |
 | Minor-interaction advisory requires explicit minor severity; severe evidence/formulary hazards exclude it | 🟢 **Proved** for the successor trigger | `Proofs/InteractionSeverity.lean` |
-| WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; canonical gate fails** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
+| WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; enforced by default** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
 | Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
@@ -373,17 +373,25 @@ desktop 1280/1440/1600/1920px, with 320/640px reflow equivalents and text-only
 200% resize probes. Reports name element IDs and measured violations; complex
 paint effects require review. This is a bounded browser gate, not full WCAG
 certification. [Canonical audit findings](docs/design/alert-urgency-findings.md)
-record the unchanged painter's results: 8,418 exports (2,673 distinct trees),
-32,094 matrix cases; both template and persona batches fail. Run
+record the baseline: 8,418 exports (2,673 distinct trees), 32,094 matrix cases.
+The [WCAG repair report](docs/audits/wcag-2026-11-02.md) records the repaired
+painter's counts, verification and remaining urgency/integration findings.
+Physical findings fell from 451,695/368,914 (templates/personas) to zero across
+32,094 matrix records. The gates retain 900/540 urgency findings; the full browser
+suite still has urgency and local live/recorded-build integration failures.
+
+Dense controls retain a 24px target floor, including card-navigation overrides; labels
+and line boxes grow with resized text.
+Chrome uses opaque solid fills; chart grids, points and reference interval outlines
+use contrasting strokes. Run
 `node scripts/audit-alert-policy.mjs "$TMPDIR/policy-canonical"` after building
 to reproduce the native release exports and gate; add `--personas` for the 15 role-specific candidates.
 Set `EHR_PHYSICAL_REPORT` for durable per-state measurements when using
 `app/scripts/screen-check.mjs --ui` directly. Exact duplicate trees share browser
 measurements; the audit manifest maps every export to its checked tree.
-The new policy/proof modules do not change WASM API dependencies. `make wasm`
-refreshes the all-source manifest; executable WASM assets and `appSha256` are
-unchanged. Gate/policy cache contexts change; existing run certificates are not
-rebound by this audit.
+These painter repairs change `appSha256` and invalidate recorded app bindings.
+Lean/WASM sources and executable assets are unchanged. Gate/policy cache contexts
+also change; existing run certificates are not rebound by this audit.
 
 Painter/interpreter
 changes invalidate recorded build bindings: rebuild and rebind before replay.
@@ -1026,12 +1034,18 @@ verification.
 at desktop and narrow widths, for visibility, legibility, occlusion and component
 fidelity, and (when urgent alert IDs are configured) continuous perceivability of
 urgent alerts. The WCAG 2.2 AA physical-policy matrix (target size, contrast,
-reflow at the viewports above) is **opt-in and report-only** while the canonical
-UI still has findings: `EHR_PHYSICAL_POLICY=1` runs it and reports findings;
-`EHR_ENFORCE_PHYSICAL=1` additionally fails the gate on any finding. Enforcement
-becomes the default once the canonical UI passes. The worker count is capped at
-six; large export lists use file manifests and sequential 64-tree batches. The
-agent enumerates the candidate states before calling this gate.
+reflow at the viewports above) **runs and fails on findings by default**.
+`EHR_ENFORCE_PHYSICAL=0` explicitly selects diagnostic report-only measurements;
+`EHR_PHYSICAL_POLICY=0` explicitly disables the matrix. Both settings enter the
+whole-tree cache context, so a bypass receipt cannot satisfy the default gate.
+Physical sample caches bind the app, assertions, policy, browser and configuration;
+they persist under `$TMPDIR/ehr-physical-samples` (override with
+`EHR_PHYSICAL_SAMPLE_CACHE`). Failed measurements never mint passing whole-tree
+receipts. The worker count is capped at six; large export lists use file manifests
+and sequential 64-tree batches. Independent regression controls run once per
+invocation; every tree gets both fidelity projects and the full physical matrix.
+JSON reports include total and per-batch elapsed milliseconds. The agent enumerates
+the candidate states before calling this gate.
 `docs/audits/` retains the control-regression and performance-report inputs consumed
 by these commands; dated one-off audits are under `docs/hackathon/`.
 

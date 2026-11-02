@@ -15,8 +15,9 @@ import { spawnSync } from "node:child_process";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 if (!process.env.TMPDIR)
   throw new Error("Set TMPDIR to disk-backed scratch space");
-const output = process.argv[2]
-  ? resolve(process.argv[2])
+const destination = process.argv.slice(2).find((arg) => !arg.startsWith("--"));
+const output = destination
+  ? resolve(destination)
   : mkdtempSync(resolve(process.env.TMPDIR, "policy-canonical-"));
 mkdirSync(output, { recursive: true });
 const index = JSON.parse(

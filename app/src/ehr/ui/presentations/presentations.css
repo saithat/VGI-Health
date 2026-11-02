@@ -12,7 +12,7 @@
   border: 1px solid var(--p-border);
   border-radius: 3px;
   font-size: 12px;
-  line-height: 16px;
+  line-height: 1.333333;
 }
 .presentation-trackBoard {
   container-name: clinical-board;
@@ -27,7 +27,7 @@
   color: var(--p-ink);
   border-bottom: 1px solid var(--p-border);
   font-size: 13px;
-  line-height: 18px;
+  line-height: 1.384615;
   font-weight: 650;
 }
 .presentation-table-wrap {
@@ -38,7 +38,7 @@
   width: 100%;
   table-layout: fixed;
   font-size: 12px;
-  line-height: 17px;
+  line-height: 1.416667;
   font-variant-numeric: tabular-nums;
 }
 .presentation-table th {
@@ -219,7 +219,7 @@
   border-radius: 2px;
   font-weight: 600;
   font-size: 12px;
-  line-height: 17px;
+  line-height: 1.416667;
   white-space: pre-line;
 }
 .tone-blue {
@@ -307,13 +307,13 @@
   flex-basis: 100%;
   font-weight: 600;
   font-size: 14px;
-  line-height: 20px;
+  line-height: 1.428571;
 }
 .presentation-note-body {
   flex-basis: 100%;
   padding: 10px 0;
   font-size: 13px;
-  line-height: 20px;
+  line-height: 1.538462;
 }
 .presentation-note-body dd {
   white-space: pre-wrap;
@@ -323,7 +323,7 @@
   color: var(--p-muted, var(--clinical-muted, #526171));
   font-size: 12px;
   font-weight: 400;
-  line-height: 18px;
+  line-height: 1.5;
   margin-top: 3px;
 }
 .presentation-note-footer {
@@ -377,7 +377,7 @@
   font-family: inherit;
 }
 .chart-grid {
-  stroke: var(--p-border);
+  stroke: #718096;
   stroke-width: 1;
 }
 .chart-reference {
@@ -393,13 +393,13 @@
 }
 .chart-patient-point {
   fill: var(--p-blue);
-  stroke: #fff;
+  stroke: var(--p-blue);
   stroke-width: 1.5;
 }
 .presentation-chart-source {
   color: var(--p-muted);
   font-size: 12px;
-  line-height: 17px;
+  line-height: 1.416667;
   margin: 6px 0 0;
 }
 /* Dense desktop grids become complete labeled record blocks on narrow screens. */
@@ -514,7 +514,7 @@
 }
 .mar-medication-name {
   font-size: 13px;
-  line-height: 18px;
+  line-height: 1.384615;
   font-weight: 600;
   margin-bottom: 3px;
 }
@@ -581,9 +581,11 @@
   font-weight: 400;
 }
 
+/* Reference intervals retain their boundary alongside labeled percentile curves. */
 .chart-reference-band {
-  fill: #f1ecf7;
-  fill-opacity: 0.7;
+  fill: none;
+  stroke: #756590;
+  stroke-width: 1;
 }
 /* The legacy MAR's fixed cell height must not constrain the reflowed detail block. */
 .clinical-presentation[data-info-id] .presentation-table td {
@@ -594,7 +596,7 @@
   margin: 0;
   padding: 7px 10px;
   font-size: 12px;
-  line-height: 18px;
+  line-height: 1.5;
   font-weight: 600;
   color: var(--p-muted);
   border-bottom: 1px solid var(--p-border);
@@ -702,10 +704,10 @@
 }
 
 /* Shared density and status palette; no clinical state is inferred here. */
-.presentation-heading { padding: 4px 6px; line-height: 18px; }
-.presentation-table { line-height: 16px; }
+.presentation-heading { padding: 4px 6px; line-height: 1.5; }
+.presentation-table { line-height: 1.333333; }
 .presentation-table :is(th, td) { padding: 3px 5px; }
-.presentation-status { padding: 1px 4px; min-height: 18px; line-height: 16px; }
+.presentation-status { padding: 1px 4px; min-height: 18px; line-height: 1.333333; }
 .presentation-table .status-red, .presentation-abnormal-high, .result-high, .result-critical { font-weight: 750; }
 .presentation-notes article { padding: 6px 8px; }
 .mar-order-details { display: flex; flex-wrap: wrap; gap: 1px 8px; }

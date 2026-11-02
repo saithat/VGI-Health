@@ -84,3 +84,13 @@ keeps the chart inert while allowing the strip to remain perceivable; its focus
 trap and `aria-modal` declaration account for this separate active layer. The
 screen gate rejects any strip warning outside the viewport or under another
 surface. Finite capacity/zoom are measured, not inferred from CSS or tree presence.
+
+The screen gate also enforces the owner-selected WCAG 2.2 AA matrix by default:
+24×24 CSS px enabled targets, 4.5:1 text, 3:1 control/state/chart paint, 320px
+reflow and 200% text resize. Text line boxes, badges, button labels and inputs
+grow with type while preserving compact baseline spacing. Checkbox inputs are
+24px themselves. A browser regression checks short navigation labels inside
+card columns at desktop and narrow widths. Solid chrome and contrasting chart strokes permit numerical
+contrast measurement; reference intervals retain outlines and labeled curves.
+See the [repair report](../../../../docs/audits/wcag-2026-11-02.md) for sampled
+coverage and the separately owned urgent-alert/integration findings.

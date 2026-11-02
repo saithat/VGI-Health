@@ -1,6 +1,9 @@
 # Alert policy verification and canonical findings
 
 Run date: 2026-11-02. Urgency classification: **pending owner review**.
+This is the pre-repair baseline. The subsequent
+[WCAG repair report](../audits/wcag-2026-11-02.md) records painter changes,
+physical enforcement and rerun evidence.
 The [policy](alert-urgency.md) documents source authority, exact constants,
 proof assumptions and measured limits. No canonical program, clinical painter,
 threshold or existing clinical specification was changed to obtain a pass.
