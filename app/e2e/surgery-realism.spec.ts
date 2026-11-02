@@ -35,7 +35,12 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
       audit: "buttons",
     })}`,
   );
-  await enterPatientChart(page, "Aaron");
+  await enterPatientChart(page, "38529840");
+  expect(
+    await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().state.patientContext?.bound,
+    ),
+  ).toBe("7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf");
   await navigateClinicalScreen(page, "w6PreOp");
   const nav = page.locator("nav [data-comp-id]");
   const assertSourceNavigation = async () => {

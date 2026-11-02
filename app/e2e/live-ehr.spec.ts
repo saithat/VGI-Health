@@ -12,9 +12,14 @@ async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
   await page.goto(
     `/ehr?${new URLSearchParams({ mode: "replay", inspect: "1", release: "v1", program, persona: "P1", audit: "buttons" })}`,
   );
-  if (await enterPatientChart(page, "Aaron"))
+  if (await enterPatientChart(page, "47839287"))
     await navigateClinicalScreen(page, "w1Rooming");
   else await component(page, "home.work.w1Rooming").click();
+  expect(
+    await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().state.patientContext?.bound,
+    ),
+  ).toBe("4966bd28-61bc-8f51-3aab-1328a32ea2e7");
   await component(page, "w1Rooming.weight").fill("93.4");
   for (const screen of ["w1Rooming", "w1MedRec", "w1Hpi", "w1Exam"])
     await component(page, `${screen}.next`).click();

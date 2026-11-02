@@ -744,6 +744,8 @@ the backend URL and reason. Both canonical baseline and personalized login
 paths are exercised. Personalized live journeys and recorded trajectory checks
 require current build bindings; use `make rebind RUN=<id>` to revalidate stale
 recordings after building the app. A rejected rebind remains a test failure.
+Replay signing and surgical journeys select their original fixture MRNs and
+assert the bound patient IDs; live search/review retains the named patients.
 
 Structured presentation fidelity, contrast and wrapping checks, plus the five
 canonical chart-review tab journeys, run in the default browser suite at both

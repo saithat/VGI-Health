@@ -14,6 +14,9 @@ async function openClinic(
   await page.goto(`/?audit=buttons${inspect ? "&inspect=1" : ""}`);
   await page.getByRole("button", { name: /^P5 · / }).click();
   await enterPatientChart(page, name);
+  await expect(
+    page.getByRole("banner", { name: "Patient banner", exact: true }),
+  ).toContainText(name === "Aaron" ? "Ankunding" : "Abshire");
   await navigateClinicalScreen(page, "w1Rooming");
 }
 

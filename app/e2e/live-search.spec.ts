@@ -12,6 +12,9 @@ for (const name of ["Aaron", "Terrance"]) {
     await page.goto("/?audit=buttons");
     await page.getByRole("button", { name: /^P1 · / }).click();
     await enterPatientChart(page, name);
+    await expect(
+      page.getByRole("banner", { name: "Patient banner", exact: true }),
+    ).toContainText(name === "Aaron" ? "Ankunding" : "Abshire");
     await expect(page.locator(".clinical-app")).toBeVisible();
     const search = page.getByRole("textbox", {
       name: "Search chart",

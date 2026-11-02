@@ -54,6 +54,9 @@ for (const baseline of [false, true]) {
     await expect(
       page.getByRole("banner", { name: "Patient banner" }),
     ).toContainText("Aaron");
+    await expect(
+      page.getByRole("banner", { name: "Patient banner", exact: true }),
+    ).toContainText("Ankunding");
     expect(errors).toEqual([]);
   });
 }
@@ -76,6 +79,9 @@ test("baseline entry opens the selected clinician's certified role view", async 
     page.getByRole("heading", { name: "My Patients / MAR", level: 1 }),
   ).toBeVisible();
   await enterPatientChart(page, "Aaron");
+  await expect(
+    page.getByRole("banner", { name: "Patient banner", exact: true }),
+  ).toContainText("Ankunding");
   await expect(page.locator(".clinical-app")).toBeVisible();
   expect(
     await page.evaluate(() => window.__buttonAuditSession?.program),
