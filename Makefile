@@ -104,3 +104,12 @@ wasm-check:
 .PHONY: rebind
 rebind:
 	pnpm --filter agent rebind --run $(RUN)
+
+# Exploration is offline research; never deploys. ML packages live outside the repo.
+.PHONY: decision-server explore-test
+decision-server:
+	sh explore/decision-server.sh $(DECISION_ARGS)
+
+explore-test:
+	TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
+	TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts

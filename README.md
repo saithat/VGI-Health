@@ -728,6 +728,48 @@ and the synthetic source data.
 These software proofs do not establish clinical correctness.
 
 
+## Exploration (early)
+
+The [formal design space](docs/design/design-space.md) fixes W1–W7 task contracts
+and separates task, abstract, concrete and final interfaces. New exploration
+uses department × role workloads and a portfolio across navigation/layout
+families; reviewed publication is on a slow cadence, independent of search.
+Historical nightly per-persona runs above remain the original experiment.
+Proved Lean layout, empirically checked renderers and simulation-only sandbox
+candidates have separate assurance tiers. No exploration result is deployed.
+
+`explore/design.ts` defines typed dimensions and one-hot descriptors;
+`explore/tasks.ts` extracts unchanged release commit contracts; and
+`explore/generator.ts` compiles design points plus workflow sets into ordinary
+programs. Unsupported primitives yield explicit sandbox manifests. Generation
+preserves clinical component kinds; a separate identity-based movement check
+retains the stability budget even if an operator renames tags. No Lean or
+certified application source changes are needed.
+
+The [implementation notes](docs/design/exploration-tools.md) record the
+OpenEvolve/ShinkaEvolve evaluation, MAP-Elites objective, model licenses,
+external ML environment, CPU/GPU server commands and calibration protocol.
+`explore/cli.ts` reuses the isolated Codex (`default` service tier) or Claude
+backend, native Lean check, whole-version screen gate and world simulator.
+`make decision-server` starts a local open-model scorer; `make explore-test`
+checks the harness. Decision models rank candidates and score recorded visible
+actions; Lean remains the only certification gate. TabPFN is an optional local
+screening adapter; Jev is an unconfigured stub that makes no calls.
+The [first ED portfolio](docs/design/exploration-first-ed.md) contains four
+checker-accepted layout families (stack, columns, timeline, document), all
+completing 40/40 synthetic W3 tasks after screen checks. Five Codex calls and an
+explicit budget repair produced the portfolio; both rejected proposals remain
+in the untracked run report. Native effort estimates and tiny-model calibration
+are early diagnostics, not human usability or deployment evidence.
+
+
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
+TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
+```
+
+
 ## Development checks
 
 Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check

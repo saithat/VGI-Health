@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-11-02",
+  "models": [
+    {"id":"Mapika/decider-0.8b","revision":"a0a01d6f8135298f400a8c856b355793012ae971","license":"apache-2.0","source":"https://huggingface.co/Mapika/decider-0.8b","status":"license verified; not run; specialized letter-logit readout needs its own adapter"},
+    {"id":"convaiinnovations/laya-typed-decisions","revision":"e929ae5cf69bc34259cd2f95c9e91145b818b1f0","license":"apache-2.0","source":"https://huggingface.co/convaiinnovations/laya-typed-decisions","status":"license verified; not run; ModernBERT assessor is not an autoregressive chat model"},
+    {"id":"microsoft/Microsoft-Decision-1","license":null,"source":"https://huggingface.co/microsoft/Microsoft-Decision-1","status":"Hugging Face API and page return 401; no weight license verified; not used"},
+    {"id":"HuggingFaceTB/SmolLM2-135M-Instruct","revision":"12fd25f77366fa6b3b4b768ec3050bf629380bac","license":"apache-2.0","source":"https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct","status":"real CPU endpoint and frozen-model calibration smoke; not a clinical decision model"},
+    {"id":"Prior-Labs/TabPFN-v2-clf","revision":"275f19d2add9c2c0de38f9ebaded3856599fa2e7","license":"Prior Labs License 1.1 (Apache-derived with enhanced attribution)","source":"https://huggingface.co/Prior-Labs/TabPFN-v2-clf/blob/main/LICENSE.txt","status":"explicit v2 adapter; never silently selects the current default weights"}
+  ],
+  "tabpfnCode":{"version":"9.2.0","license":"Apache-2.0","source":"https://github.com/PriorLabs/TabPFN"},
+  "tabpfnLatestWeights":{"license":"non-commercial; separate from code and v2","source":"https://github.com/PriorLabs/TabPFN#license","status":"not used"}
+}
