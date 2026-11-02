@@ -1,15 +1,20 @@
+import {
+  enterPatientChart,
+  navigateClinicalScreen,
+} from "./clinical-navigation";
 import { test, expect, type Page } from "@playwright/test";
 
-const adult = "4966bd28-61bc-8f51-3aab-1328a32ea2e7";
 function component(page: Page, id: string) {
   return page.locator(`[data-comp-id="${id}"][data-event]`);
 }
 async function openSign(page: Page, program = "releases/v1/personas/P1.json") {
   test.setTimeout(120000);
   await page.goto(
-    `/ehr?${new URLSearchParams({ mode: "replay", inspect: "1", release: "v1", program, persona: "P1", patient: adult })}`,
+    `/ehr?${new URLSearchParams({ mode: "replay", inspect: "1", release: "v1", program, persona: "P1", audit: "buttons" })}`,
   );
-  await component(page, "home.work.w1Rooming").click();
+  if (await enterPatientChart(page, "Aaron"))
+    await navigateClinicalScreen(page, "w1Rooming");
+  else await component(page, "home.work.w1Rooming").click();
   await component(page, "w1Rooming.weight").fill("93.4");
   for (const screen of ["w1Rooming", "w1MedRec", "w1Hpi", "w1Exam"])
     await component(page, `${screen}.next`).click();
@@ -99,16 +104,20 @@ test("bad 01: unopened allergy tab hides the list and Lean blocks signing", asyn
 test("P3 persona URL selects an inpatient fixture and reaches the MAR", async ({
   page,
 }) => {
-  await page.goto("/?mode=replay&inspect=1&persona=P3");
-  await page.getByRole("button", { name: "Inspector", exact: true }).click();
-  await expect(page.locator(".patient-switcher summary")).toContainText("IMP");
-  await page
-    .getByRole("button", { name: "Close inspector", exact: true })
-    .click();
+  await page.goto("/ehr?mode=replay&inspect=1&persona=P3&audit=buttons");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Unit Census & MAR",
+    "My Patients / MAR",
   );
-  await component(page, "w4Worklist.toMar").click();
+  await enterPatientChart(page);
+  const state = await page.evaluate(
+    () => window.__buttonAuditSession?.snapshot().state,
+  );
+  expect(state?.patientContext?.bound).toBe(state?.patientContext?.patient);
+  expect(state?.patientContext?.bound).toBeTruthy();
+  await expect(
+    page.getByRole("banner", { name: "Patient banner", exact: true }),
+  ).toContainText(/Inpatient|IMP/);
+  await navigateClinicalScreen(page, "w4Mar");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     /MAR|Medication administration/i,
   );

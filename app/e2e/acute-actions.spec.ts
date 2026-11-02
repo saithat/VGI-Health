@@ -25,12 +25,16 @@ const root = resolve("..");
 const read = (file: string) => JSON.parse(readFileSync(file, "utf8"));
 const native = <T>(command: string, input: unknown): T =>
   JSON.parse(
-    execFileSync(join(root, "lean/.lake/build/bin/ehr"), [command], {
-      input: JSON.stringify(input),
-      maxBuffer: 32e6,
-      timeout: 30000,
-      env: { ...process.env, LEAN_NUM_THREADS: "4" },
-    }).toString(),
+    execFileSync(
+      process.env.EHR_BIN ?? join(root, "lean/.lake/build/bin/ehr"),
+      [command],
+      {
+        input: JSON.stringify(input),
+        maxBuffer: 32e6,
+        timeout: 30000,
+        env: { ...process.env, LEAN_NUM_THREADS: "4" },
+      },
+    ).toString(),
   );
 function fixtureFacts(persona: string): FactsOutput {
   const input = {

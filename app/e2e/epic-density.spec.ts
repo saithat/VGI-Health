@@ -1,10 +1,11 @@
+import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import { test, expect } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import type {} from "../src/core/buttonAudit";
-const phase = process.env.EPIC_DENSITY_SHOTS;
+const phase = process.env.EPIC_DENSITY_SHOTS ?? "after";
+const capture = Boolean(process.env.EPIC_DENSITY_SHOTS);
 for (const persona of ["P1", "P2", "P3", "P4", "P5"])
   test(`${persona} canonical chart density`, async ({ page }) => {
-    test.skip(!phase, "Opt-in density review");
     test.setTimeout(90000);
     await page.goto(
       `/ehr?mode=replay&persona=${persona}&program=releases/v3/personas/${persona}.json&audit=buttons`,
@@ -24,15 +25,18 @@ for (const persona of ["P1", "P2", "P3", "P4", "P5"])
         page.getByRole("heading", { name: "Chart Summary", exact: true }),
       ).toBeVisible();
     const folder = `shots/final/epic-${phase}`;
-    mkdirSync(folder, { recursive: true });
-    if (phase === "after") {
-      const ui = await page.evaluate(() => window.__buttonAuditSession?.snapshot().ui);
+    if (capture) mkdirSync(folder, { recursive: true });
+    if (capture && phase === "after") {
+      const ui = await page.evaluate(
+        () => window.__buttonAuditSession?.snapshot().ui,
+      );
       writeFileSync(`${folder}/${persona}-summary.ui.json`, JSON.stringify(ui));
     }
-    await page.screenshot({
-      path: `${folder}/${persona}-chart.png`,
-      animations: "disabled",
-    });
+    if (capture)
+      await page.screenshot({
+        path: `${folder}/${persona}-chart.png`,
+        animations: "disabled",
+      });
     if (phase === "after") {
       await page
         .getByRole("button", { name: "Chart Review", exact: true })
@@ -52,10 +56,21 @@ for (const persona of ["P1", "P2", "P3", "P4", "P5"])
       ]) {
         await page.getByRole("tab", { name, exact: true }).click();
         await expect(page.getByRole("main")).toBeVisible();
+        await expect(
+          page.getByRole("tab", { name, exact: true }),
+        ).toHaveAttribute("aria-selected", "true");
+        const ui = await page.evaluate(
+          () => window.__buttonAuditSession?.snapshot().ui,
+        );
+        if (!ui) throw new Error("Missing chart review semantic screen");
+        expect(
+          observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
+        ).toEqual(expectedAria(ui));
       }
-      await page.screenshot({
-        path: `${folder}/${persona}-chart-review.png`,
-        animations: "disabled",
-      });
+      if (capture)
+        await page.screenshot({
+          path: `${folder}/${persona}-chart-review.png`,
+          animations: "disabled",
+        });
     }
   });

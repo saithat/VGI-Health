@@ -1,31 +1,21 @@
+import { enterPatientChart } from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
 import { Audit } from "./audit/driver";
-import { backendAvailable } from "../src/data/medplum";
+import {
+  backendAvailable,
+  backendDownReason,
+  signInBaseline,
+} from "./live-backend";
 import type {} from "../src/core/buttonAudit";
 
 for (const name of ["Aaron", "Terrance"]) {
   test(`live chart search: ${name}, first input and restored checkpoint`, async ({
     page,
   }) => {
-    test.skip(!(await backendAvailable()), "Local Medplum is down");
+    test.skip(!(await backendAvailable()), backendDownReason);
     await page.goto("/?audit=buttons");
-    await page.getByRole("button", { name: /^P1 · / }).click();
-    await page.getByLabel("Patient search", { exact: true }).fill(name);
-    await page
-      .getByRole("button", { name: "Search patients", exact: true })
-      .click();
-    await page
-      .getByRole("button", {
-        name: new RegExp(
-          `${name}.*${name === "Aaron" ? "Ankunding" : "Abshire"}`,
-        ),
-      })
-      .first()
-      .click();
-    await page
-      .getByRole("button", { name: "Start new encounter", exact: true })
-      .click();
-    await page.getByRole("button", { name: "Open EHR", exact: true }).click();
+    await signInBaseline(page, "P1");
+    await enterPatientChart(page, name);
     await expect(page.locator(".clinical-app")).toBeVisible();
     const search = page.getByRole("textbox", {
       name: "Search chart",

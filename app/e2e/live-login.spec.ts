@@ -1,10 +1,15 @@
+import { enterPatientChart } from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
-import { backendAvailable } from "../src/data/medplum";
+import {
+  backendAvailable,
+  backendDownReason,
+  signInBaseline,
+} from "./live-backend";
 
 test("default route shows persona sign-in, baseline entry and offline links", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/?audit=buttons");
   await expect(
     page.getByRole("heading", { name: "Choose a clinician" }),
   ).toBeVisible();
@@ -25,30 +30,22 @@ test("default route shows persona sign-in, baseline entry and offline links", as
     page.getByRole("link", { name: /Demo \/ replay/ }),
   ).toHaveAttribute("href", "/browse");
 });
-test("local P1 quick-login, patient search, real chart and session restoration", async ({
+test("local P1 baseline login, patient search, real chart and session restoration", async ({
   page,
 }) => {
-  test.skip(!(await backendAvailable()), "Local Medplum is down");
+  test.skip(!(await backendAvailable()), backendDownReason);
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
-  await page.getByRole("button", { name: /^P1 · / }).click();
+  await page.goto("/?audit=buttons");
+  await signInBaseline(page, "P1");
   await expect(
-    page.getByRole("heading", { name: "Today's clinic · In-basket · Refills" }),
+    page.getByRole("heading", { name: "Schedule", level: 1 }),
   ).toBeVisible();
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Today's clinic · In-basket · Refills" }),
+    page.getByRole("heading", { name: "Schedule", level: 1 }),
   ).toBeVisible();
-  await page.getByLabel("Patient search", { exact: true }).fill("Aaron");
-  await page
-    .getByRole("button", { name: "Search patients", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: /Aaron.*Ankunding/ })
-    .first()
-    .click();
-  await page.getByRole("button", { name: "Open EHR" }).click();
+  await enterPatientChart(page, "Aaron");
   await expect(
     page.getByRole("banner", { name: "Patient banner" }),
   ).toBeVisible({ timeout: 30000 });
@@ -61,7 +58,7 @@ test("local P1 quick-login, patient search, real chart and session restoration",
 test("baseline entry opens the selected clinician's certified role view", async ({
   page,
 }) => {
-  test.skip(!(await backendAvailable()), "Local Medplum is down");
+  test.skip(!(await backendAvailable()), backendDownReason);
   await page.goto("/?audit=buttons");
   await page
     .getByLabel("Baseline clinician", { exact: true })
@@ -73,17 +70,9 @@ test("baseline entry opens the selected clinician's certified role view", async 
     })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Ward census · Medication worklist" }),
+    page.getByRole("heading", { name: "My Patients / MAR", level: 1 }),
   ).toBeVisible();
-  await page.getByLabel("Patient search", { exact: true }).fill("Aaron");
-  await page
-    .getByRole("button", { name: "Search patients", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: /Aaron.*Ankunding/ })
-    .first()
-    .click();
-  await page.getByRole("button", { name: "Open EHR", exact: true }).click();
+  await enterPatientChart(page, "Aaron");
   await expect(page.locator(".clinical-app")).toBeVisible();
   expect(
     await page.evaluate(() => window.__buttonAuditSession?.program),

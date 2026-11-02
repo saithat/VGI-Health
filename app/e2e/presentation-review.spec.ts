@@ -4,20 +4,18 @@ import { uiScreenSchema } from "../src/ehr/ui/types";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 import type {} from "../src/ehr/offline";
 
-test.skip(
-  !process.env.EHR_PRESENT_SHOTS,
-  "Run with EHR_PRESENT_SHOTS=1 for visual review",
-);
 const files = readdirSync("src/fixtures/presentations").filter((file) =>
   file.endsWith(".json"),
 );
-const width = Number(process.env.EHR_PRESENT_WIDTH ?? "1440");
+const width = process.env.EHR_PRESENT_WIDTH
+  ? Number(process.env.EHR_PRESENT_WIDTH)
+  : undefined;
 for (const file of files) {
   test(`structured presentation review: ${file}`, async ({ page }) => {
     const screen = uiScreenSchema.parse(
       JSON.parse(readFileSync(`src/fixtures/presentations/${file}`, "utf8")),
     );
-    await page.setViewportSize({ width, height: 900 });
+    if (width) await page.setViewportSize({ width, height: 900 });
     await page.goto("/screen-check.html");
     await page.waitForFunction(() => typeof window.renderUi === "function");
     await page.evaluate((screen) => window.renderUi(screen), screen);
@@ -64,18 +62,22 @@ for (const file of files) {
         });
       });
     expect(unreadable).toEqual([]);
-    mkdirSync("shots/realism/present", { recursive: true });
-    const name =
-      file.replace(/\.json$/, "") + (width === 1440 ? "" : `-${width}`);
-    await page.screenshot({
-      path: `shots/realism/present/${name}.png`,
-      animations: "disabled",
-    });
-    await page.screenshot({
-      path: `shots/realism/present/${name}-full.png`,
-      fullPage: true,
-      animations: "disabled",
-    });
+    if (process.env.EHR_PRESENT_SHOTS) {
+      mkdirSync("shots/realism/present", { recursive: true });
+      const shotWidth = width ?? page.viewportSize()?.width ?? 1440;
+      const name =
+        file.replace(/\.json$/, "") +
+        (shotWidth === 1440 ? "" : `-${shotWidth}`);
+      await page.screenshot({
+        path: `shots/realism/present/${name}.png`,
+        animations: "disabled",
+      });
+      await page.screenshot({
+        path: `shots/realism/present/${name}-full.png`,
+        fullPage: true,
+        animations: "disabled",
+      });
+    }
     const brokenWords = await page
       .locator(".presentation-status, .presentation-table th")
       .evaluateAll((elements) =>

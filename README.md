@@ -733,6 +733,23 @@ pnpm --filter app test:buttons
 pnpm --filter app audit:performance
 ```
 
+Browser tests accept `APP_TEST_PORT` for an isolated Vite server and `--workers=4`
+for bounded parallel execution. Native browser actions and revision checks use
+`EHR_BIN` when supplied, otherwise `lean/.lake/build/bin/ehr`. Live checks load
+the repo-root `.env`: browser login needs its `VITE_MEDPLUM_*` values and
+`VGI_USER_PASSWORD`; `test:live` also needs `MEDPLUM_CLIENT_ID` and
+`MEDPLUM_CLIENT_SECRET`. Missing credentials fail with a setup error when the
+backend is available. An unavailable Medplum healthcheck skips live cases with
+the backend URL and reason. Canonical baseline login exercises chart workflows
+independently of archived personalized build bindings; recorded trajectory
+checks still enforce those bindings.
+
+Structured presentation fidelity, contrast and wrapping checks, plus the five
+canonical chart-review tab journeys, run in the default browser suite at both
+project widths. `EHR_PRESENT_SHOTS=1` and `EPIC_DENSITY_SHOTS=after` additionally
+capture review images. Other historical before/after capture suites remain
+opt-in; their skips do not certify those review inputs.
+
 `app/scripts/screen-check.mjs` checks exactly the supplied native screen trees,
 at desktop and narrow widths, for visibility, legibility, occlusion and component
 fidelity. The agent enumerates the candidate states before calling this gate.

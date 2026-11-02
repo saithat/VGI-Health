@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test";
 test("browser opens P3 day 5 and leaves patient selection inside the EHR", async ({
   page,
 }) => {
-  await page.goto("/browse");
+  await page.goto("/browse?run=run1-P3");
   await expect(
     page.getByRole("heading", { name: "Open a clinical UI" }),
   ).toBeVisible();
@@ -55,7 +55,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
 test("release grid orders v1 v2 v3 and exposes the vendor as a reference", async ({
   page,
 }) => {
-  await page.goto("/browse");
+  await page.goto("/browse?run=run1-P3");
   const grid = page.getByRole("table", { name: "" });
   await expect(grid.locator("thead th")).toHaveText([
     "View",
@@ -84,7 +84,7 @@ test("recorded changes and check-only history use actual artifacts and native ve
   page,
 }) => {
   test.setTimeout(120000);
-  await page.goto("/browse");
+  await page.goto("/browse?run=run1-P3");
   const card = page.getByRole("complementary", {
     name: "Selected revision details",
   });
@@ -154,7 +154,7 @@ test("recorded changes and check-only history use actual artifacts and native ve
 test("timeline change comparison screenshot", async ({ page }) => {
   test.skip(!process.env.HISTORY_SHOTS, "Opt-in history screenshot");
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/browse");
+  await page.goto("/browse?run=run1-P3");
   await expect(
     page.getByLabel("Before and after changes", { exact: true }),
   ).toBeVisible();

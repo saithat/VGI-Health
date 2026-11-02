@@ -1,7 +1,16 @@
+import {
+  backendAvailable,
+  backendDownReason,
+  signInBaseline,
+} from "./live-backend";
 import { expect, test } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import type {} from "../src/core/buttonAudit";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
+
+test.beforeEach(async () => {
+  test.skip(!(await backendAvailable()), backendDownReason);
+});
 
 for (const [persona, activity, caption] of [
   ["P1", "scheduleTasks", "Schedule"],
@@ -28,9 +37,7 @@ for (const [persona, activity, caption] of [
         writes.push(`${request.method()} ${new URL(request.url()).pathname}`);
     });
     await page.goto("/?audit=buttons");
-    await page
-      .getByRole("button", { name: new RegExp(`^${persona} ·`) })
-      .click();
+    await signInBaseline(page, persona);
     await expect(
       page.getByLabel("Patient search by name or MRN", { exact: true }),
     ).toBeVisible({ timeout: 30000 });

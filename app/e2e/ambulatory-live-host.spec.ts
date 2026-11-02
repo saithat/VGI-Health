@@ -1,3 +1,4 @@
+import { backendAvailable, backendDownReason } from "./live-backend";
 import { mkdirSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 import { catalogSchema, defaultPatient } from "../src/browser/data";
@@ -19,6 +20,7 @@ for (const { persona, screen, inspecting } of cases) {
     request,
   }) => {
     test.skip(!phase, "Opt-in connected synthetic-patient visual review");
+    test.skip(!(await backendAvailable()), backendDownReason);
     await page.setViewportSize({ width: 1440, height: 900 });
     // Matched before/after saves use distinct review minutes. Receipts remain real
     // human clicks and persisted writes; a same-minute repeat is idempotent.
