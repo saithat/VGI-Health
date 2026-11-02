@@ -1,8 +1,0 @@
-{
-  "specVersion": "v1",
-  "specHash": "MOCK-spec-v1",
-  "programHash": "MOCK-P4-v1",
-  "verdict": "ok",
-  "checkerVersion": "MOCK-not-a-checker",
-  "time": "2026-10-31T12:00:00Z"
-}

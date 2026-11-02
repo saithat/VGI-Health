@@ -495,7 +495,7 @@ and Vite plugins in `app/scripts/` serve the artifacts:
   tools (`src/dashboard`, `src/browser`), the emitted code of third-party
   rendering libraries (React, Mantine, …), and `pnpm-lock.yaml`,
   `vite.config.ts` and `index.html`. `.env` values and the clone path do not
-  enter it. As a result, a fresh clone builds the exact app the committed runs are
+  enter it. As a result, a fresh clone builds the exact app the recorded runs are
   bound to, and every recorded replay plays without re-certification. Editing the
   dashboard leaves certificates valid. Editing the painter, session, data
   adapters, styles or dependencies invalidates them. The interpreter is bound
@@ -560,6 +560,7 @@ a C toolchain, and Docker with Compose and a running daemon.
 ```sh
 git clone https://github.com/saithat/VGI-Health.git
 cd VGI-Health
+git archive hackathon-final runs fixtures programs verdicts.json | tar -x   # data, see Data
 make install && make run
 ```
 
@@ -591,9 +592,7 @@ running source. Once the writer has stopped, `--in-place` finalizes the run
 itself. Both modes need `TMPDIR` on the same filesystem as `runs/`, because
 publication is an atomic rename.
 
-`runs/core-10day-live/` is committed and is re-pushed after each published
-night while the five-persona run continues. It contains only completed days
-and nights; `manifest.json` states how many.
+Runs are written to `runs/`, which is not tracked (see Data).
 
 See [DEMO](docs/DEMO.md). A clean-clone test (`scripts/clean-clone-test.sh`) clones
 local HEAD, installs and serves it offline. `make wasm-check` checks the committed
@@ -602,6 +601,28 @@ WASM source binding; `make wasm` rebuilds it using the local toolchain.
 The trusted system includes the reviewed hospital spec, Lean and Emscripten,
 FHIR adapters, Node/React/browser, Docker/Medplum and the synthetic source data.
 These software proofs do not establish clinical correctness.
+
+
+## Data
+
+Data is not tracked in git after the `hackathon-final` tag. That covers:
+- `runs/`: recorded runs and generated worlds;
+- `fixtures/`: FHIR patient bundles;
+- `programs/`: canonical, sample, benchmark and known-bad program exports;
+- `verdicts.json`.
+
+The tag contains all of it as submitted. To replay the completed run, either check
+out `hackathon-final`, or extract the data into a `main` checkout without
+tracking it:
+
+```sh
+git archive hackathon-final runs fixtures programs verdicts.json | tar -x
+```
+
+Without this data, `make install` loads no patients, and the dashboard and
+conformance suite have nothing to read. 23 tests read recorded data and fail
+without it (6 app, 14 agent, 3 world); every other test passes. The world generator
+(`world/`), release programs (`releases/`) and all code remain tracked.
 
 ## Data sources and credits
 
@@ -624,7 +645,7 @@ see the [AMA licensing requirements](https://www.ama-assn.org/practice-managemen
   Pinned source: `911f34c4ac65a508543c4b3b90c373a0cd16534d`.
   We converted and loaded **150 patients, 637 encounters/notes, 4,383 resources**
   into local Medplum; primary persona selections are 30 each for P1–P5,
-  including 34 pediatric patients. The committed FHIR cohort is 6.68 MB,
+  including 34 pediatric patients. The converted FHIR cohort is 6.68 MB,
   uncompressed, with source tags and per-patient Provenance. Opt in with
   `make seed SYNTHETIC_HOSPITAL=1` (also supported by `make install`), or run
   `make load-synthetic-hospital`. Mapping, checksums and limitations:

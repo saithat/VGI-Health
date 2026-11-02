@@ -33,7 +33,6 @@ app/shots/realism/*
 !app/shots/realism/present/
 !app/shots/final/
 # Local content-addressed screen-gate receipts
-runs/screen-check-cache/
 
 # Pinned Synthetic Hospital upstream downloads
 .cache/synthetic-hospital/
@@ -48,9 +47,9 @@ runs/screen-check-cache/
 __pycache__/
 *.pyc
 /.cache/
-runs/*
-!runs/mock/
-!runs/run1-P3/
-!runs/core-10day-live/
-!runs/world/
-runs/*/rebind/
+
+# Data is not tracked in git (owner, 2026-11-02). It lives outside the repo; see README "Data".
+/runs/
+/fixtures/
+/programs/
+/verdicts.json
