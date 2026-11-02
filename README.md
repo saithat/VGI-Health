@@ -4,6 +4,61 @@ An EHR whose screens adapt to each clinician's work. An overnight (whenever the 
 proposes UI changes; the Lean checker blocks changes that violate the hospital
 rules. The same Lean interpreter runs natively and in the browser as WebAssembly.
 
+## How it works
+
+The hospital defines the clinical obligations. The AI proposes how to arrange
+the interface around them: navigation, grouping, density and permitted
+shortcuts. Every proposed interface goes through the same checker and runs
+through the same interpreter.
+
+### A proposed change must pass before deployment
+
+```mermaid
+flowchart TB
+  AI["AI proposes interface changes<br/>from interaction traces"]
+  RULES["Hospital rulebook"] --> CHECK{"Lean checker<br/>accepts?"}
+  AI --> CHECK
+  CHECK -->|"No"| REPAIR["Return a finding<br/>Revise or discard"]
+  REPAIR -.-> AI
+  CHECK -->|"Yes"| TEST["Simulation + browser checks"]
+  TEST -->|"Fail"| KEEP["Keep the current interface"]
+  TEST -->|"Pass"| VERSION(["Publish a new version<br/>for this clinician"])
+
+  classDef proposed fill:#fde2e1,stroke:#b42318,color:#5c100b
+  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
+  classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
+  class AI proposed
+  class CHECK proved
+  class TEST checked
+```
+
+The agent supplies proposals; the existing proofs justify specific guarantees
+from checker acceptance. A new interface reuses those proofs. For example, a
+shortcut may reduce navigation while retaining a required allergy review;
+hiding that review at signing fails the check when the rule requires it shown.
+Repair attempts are bounded; a failed proposal is not published.
+
+### Every clinical commit is checked again during use
+
+```mermaid
+flowchart TB
+  EVENT(["User clicks Sign"]) --> GUARD{"Lean checks<br/>the current guard"}
+  GUARD -->|"Missing prerequisite"| BLOCK["Block the commit"]
+  GUARD -->|"Needs acknowledgment"| ALERT["Show the alert<br/>Require human acknowledgment"]
+  ALERT -->|"Acknowledge + retry"| GUARD
+  GUARD -->|"All requirements met"| COMMIT(["Interpreter permits the commit"])
+
+  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
+  class GUARD,COMMIT proved
+```
+
+Interface approval leaves the runtime guard in force: a receipt can expire or
+a required value can still be missing. In live mode, the app stages a permitted
+commit and accepts the committed state only after its FHIR transaction succeeds.
+The save, rollback and refresh paths are integration-tested; replay never writes
+to Medplum. Preventing an invalid commit is separate from proving that a task
+can always be completed. General completion remains open.
+
 ## Read the Lean
 
 Start with these files, in order:
@@ -92,45 +147,44 @@ code.
 
 ## Assurance by layer, and gaps to deployment
 
-Each layer of the stack, from the clinician to the database, by the strongest
-evidence that covers it. A theorem quantifies over all patients, users and
-event sequences, but covers only the definitions in its statement; the layers
-around the interpreter rest on tests or on trusted components.
+Theorems cover the inputs and definitions in their statements. The diagram
+separates proved properties of the Lean code from the surrounding tests and
+trusted components; it does not mark any whole layer as completely verified.
 
 ```mermaid
 flowchart TB
   classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
   classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
   classDef trusted fill:#eeeeee,stroke:#777,color:#222
-  classDef gap fill:#fde2e1,stroke:#b42318,color:#5c100b
 
-  U["Clinician"]:::gap
-  B["Browser + React drawing<br/>🔵 tested: accessibility tree = Lean's screen tree;<br/>every control works (button audit)"]:::checked
-  W["WebAssembly build of the Lean code<br/>⚪ trusted: Lean compiler + Emscripten;<br/>🔵 tested: native and WASM agree on every recorded event"]:::trusted
-  I["Lean interpreter: screen contents, events, signing<br/>🟢 proved for every patient, user and click sequence:<br/>no sign-off without required entries, reviews and alert acks;<br/>automation can't do human-only steps; alerts only when true"]:::proved
-  C["Nightly checker on each AI-proposed UI<br/>🟢 proved: acceptance implies 12 of 13 safety properties;<br/>🟡 'every task can be finished': proved for common cases only"]:::proved
-  R["Hospital rules (CURES, naloxone, kg weight, …)<br/>⚪ written by hand and reviewed; 🔴 not proved complete or clinically right"]:::trusted
-  F["FHIR mapping + Medplum database<br/>⚪ trusted, tested (not proved)"]:::trusted
+  R["Reviewed hospital rulebook<br/>Clinical content trusted"]:::trusted
+  C["Lean checker<br/>12 of 13 acceptance implications proved"]:::proved
+  W["Lean compiler, runtime and Emscripten<br/>Toolchain trusted; native/WASM agreement tested"]:::trusted
+  I["Lean interpreter and screen model<br/>Selected execution and rendering properties proved"]:::proved
+  B["React display<br/>Browser fidelity and accessibility tested"]:::checked
+  F["FHIR mapper and Medplum<br/>Integration tested; external effects not proved"]:::trusted
 
-  U --> B --> W --> I --> F
-  C -. "only accepted UIs reach clinicians" .-> I
   R --> C
   R --> I
-
-  subgraph GAPS["🔴 Gaps before real-world deployment"]
-    direction TB
-    G1["Rules: only the core rule set is on;<br/>a hospital must review completeness and clinical content"]:::gap
-    G2["Users: savings are from simulated clinicians,<br/>not a study with real staff"]:::gap
-    G3["Integration: Medplum, not Epic or Oracle Health;<br/>no SSO, audit, uptime or security review"]:::gap
-    G4["Proof gaps: general 'task can be finished',<br/>crash-safe deploy, browser drawing itself"]:::gap
-    G5["Regulation: clinical decision support and<br/>software-as-medical-device review not done"]:::gap
-  end
+  C -. "Accepted interface program" .-> I
+  W -. "Runs the compiled code" .-> I
+  I -->|"Semantic screen tree"| B
+  B -->|"User events"| I
+  I -->|"Staged commit"| F
 ```
 
-Green: Lean theorem. Blue: tests or per-program checks, covering only what was
-executed. Grey: trusted components (compilers, runtime, database). Red: not
-covered. The agent sits outside the trusted base: deployment requires checker
-acceptance, and the interpreter's guard applies regardless of the deployed UI.
+Green identifies specified properties proved in Lean. Blue identifies tests
+and per-program checks, covering what was executed. Grey identifies trusted
+content or components, which may also have tests. The dashboard and UI browser
+are React/TypeScript; their surrounding interface is tested, not proved in Lean.
+
+The remaining deployment gaps include:
+
+- Clinical review of the active core rule set; much of the full catalog is off.
+- Evaluation with real clinical staff; reported savings use simulated clinicians.
+- Production integration, authentication, audit, availability and security review.
+- General task completion, crash-safe publication and end-to-end browser proofs.
+- Review of applicable clinical decision support and medical software requirements.
 
 ## Architecture
 
@@ -138,6 +192,9 @@ One Lean code base is the single source of truth. It is compiled twice: to a
 native `ehr` binary (checker, simulator, deploy) and, through Lean → C →
 Emscripten, to WebAssembly that the browser runs. React only draws the
 semantic screen tree Lean returns; it holds no clinical logic.
+
+<details>
+<summary>Detailed module architecture</summary>
 
 ```mermaid
 flowchart LR
@@ -210,6 +267,8 @@ flowchart LR
 ```
 
 Colors match the table: green proved in Lean, blue checked, grey trusted, red untrusted.
+
+</details>
 
 **One event, end to end.** A click in the browser calls the WASM `step` (the
 same `Interp.step` the proofs are about). If the event is a commit, the
