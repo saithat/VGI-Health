@@ -32,7 +32,8 @@ function expectedRowPlacement(
   const actions: NodeOf<"rowAction">[] = [];
   const scan = (nodes: UiNode[], view: UiPresentationKind) => {
     for (const node of nodes) {
-      if ("presentation" in node)
+      if ("timeline" in node) scan(node.timeline.children, view);
+      else if ("presentation" in node)
         scan(node.presentation.children, node.presentation.kind);
       else if ("valueSet" in node) scan(node.valueSet.children, view);
       else if ("chartReferences" in node)
@@ -79,6 +80,12 @@ export function expectedNodeAria(
   inheritedConfirms: ReadonlySet<string> = new Set(),
 ): AriaEntry[] {
   switch (true) {
+    case "timeline" in node:
+      return nest(
+        entry("region", node.timeline.title),
+        nest(entry("list", `${node.timeline.title} events`),
+          expectedChildrenAria(node.timeline.children, presentation, placement, inheritedConfirms)),
+      );
     case "valueSet" in node:
       return expectedChildrenAria(
         node.valueSet.children,

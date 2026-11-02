@@ -68,7 +68,7 @@ theorem D4_semantic (cx : Ctx) (a key : String) (rule : AlertSpec)
     (hp : cx.v.popup? = some (a, key)) (hr : cx.sp.alert? a = some rule)
     (ht : rule.tier = .interruptive) : ModalAck (meaning (rendered cx)) exposed a := by
   have h := D4_interruptive_modal cx a key rule hp hr ht
-  simp [ModalAck, Perceives, active, meaning, rendered, h, uiAtoms, uiAtomsList, observe, exposed]
+  simp [ModalAck, Perceives, active, meaning, rendered, h, uiAtoms, uiAtomsList, observe, exposed, uiLabel_nonempty]
 
 theorem D4_passive_semantic (cx : Ctx) (a key : String) (rule : AlertSpec)
     (hp : cx.v.popup? = some (a, key)) (hr : cx.sp.alert? a = some rule)

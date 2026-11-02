@@ -70,8 +70,8 @@ continues to use `ReviewMetIn`, not a visual badge. `Honest` checks every offere
 action against the interpreter's existing `UiActionHonest`; `FieldsClear`
 requires nonempty field labels while D6 additionally preserves source,
 confirmation and human-only flags. `Banner` requires the patient's identifying
-fields. `ModalAck` requires the labeled enabled acknowledgment in the active
-boundary; `Nonmodal` expresses absence of that boundary. Severity and urgency
+fields. `ModalAck` requires the labeled enabled acknowledgment and a nonempty clinical
+attention label in the active boundary; `Nonmodal` expresses absence of that boundary. Severity and urgency
 are separate: a passive warning may be urgent without becoming a popup.
 
 | Existing requirement | Semantic counterpart and limits |
@@ -96,6 +96,11 @@ are separate: a passive warning may be urgent without becoming a popup.
 | D4 passive_no_modal / passive_inline | Nonmodal / passive alert information present; actual perception requires exposure. |
 | D6 clear_fields / field_labels | Exact capture/source/confirmation flags and FieldsClear; labels do not by themselves prove typographic legibility. |
 | T10 / T11 supporting render results | Hidden controls absent; displayed records retain full source rows (or explicitly identified summaries). |
+
+`Sem/Trace.lean` also combines the original commit-review trace obligation with
+complete review content in every reachable nonmodal rendered signing view, and
+proves finite interpreter-event completion equivalent to the original completion
+property. This provides no uniform event bound and no physical step bound.
 
 The Lean bridge proves the applicable render implications and structural
 converses; it does not assert equivalence for stronger physical properties.
@@ -123,14 +128,39 @@ A new primitive must supply:
    legibility/visibility rules; positive and adversarial browser checks at both
    desktop and narrow viewports. This tested refinement remains trusted.
 
+`Sem/Admission.lean` supplies a `PresentationExtension` package: a pure screen
+transformer and a kernel proof of equality of meaning. `timelineAdmission`
+inhabits that interface; `renderTimelineUi` renders through it. This is the
+strong presentation-only case of the contract. A primitive that changes view
+states must extend the contract with transition simulation and exposure
+obligations; equality of meaning alone does not establish real geometry.
+
 The first extension is an ordered clinical timeline: a labeled region around
 ordinary children, preserving their supplied order and full detail. It neither
 sorts undated data nor fabricates dates. `timelineScreen` wraps the workspace;
 its meaning is identical, so proofs transport every moment-based predicate and
 reachability graph under the same exposure evidence. `renderTimelineUi` applies
-it to renderUi; it is an opt-in Lean renderer, not yet an overnight-program tag
-or the default WASM entry point. This small extension establishes the admission
-pattern; richer zoom/filter behavior would require additional proofs.
+it to renderUi. Ordinary programs can also opt in on an expanded group with
+`tag := "layout.timeline"` (or a namespaced suffix). That path uses the existing
+per-session interpreter, native renderer and WASM API; collapse still follows
+the original interpreter rules. The transparent-child lemma keeps the original
+D-theorems and checker obligations intact. `Sem/TimelineProgram.lean` proves
+checker acceptance of a canonical signing program and its semantic review and
+action guarantees. The browser fixtures include both the standalone wrapper and
+that program's actual output, exported by `Sem/ExportTimeline.lean` (argument
+`program-screen` selects the latter). The independent screen gate checks region
+and list ancestry, child order, complete source cells and legibility; adversarial
+hidden/reordered children fail. This small extension establishes the admission
+pattern; richer zoom/filter behavior requires additional proofs. Actual urgency
+exposure remains conditional on a measured moment and human-owned urgent IDs.
+The operator may supply `EHR_URGENT_ALERT_IDS` (a JSON array, not program data).
+Before geometry measurement or scroll-into-view checks, the gate requires each
+emitted designated demand to be unoccluded and wholly within the viewport.
+Background demands hidden by another modal fail. The policy enters the screen
+cache key. The accompanying adversarial checks exercise off-viewport and
+modal-occluded demands. This initial-moment check does not establish an
+all-moments urgency invariant; continuous/scroll/focus coverage remains future
+work for the measured-view adapter.
 
 ## Target design space
 

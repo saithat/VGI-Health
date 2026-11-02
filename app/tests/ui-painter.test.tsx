@@ -1651,3 +1651,25 @@ it("draws each semantic navigator destination as its exact declared click", () =
   });
   expect(screen.queryByRole("button", { name: "ED Navigator" })).toBeNull();
 });
+
+it("timeline forwards exact child events and retains complete source cells", async () => {
+  const model = uiScreenSchema.parse((await import("../src/fixtures/ui/semantic-timeline.json")).default);
+  const emit = vi.fn();
+  render(<MantineProvider><UiScreenView screen={model} onEvent={emit} /></MantineProvider>);
+  expect(screen.getByRole("list", { name: "Clinical timeline events" }).textContent).toContain("Rash");
+  fireEvent.click(screen.getByRole("button", { name: "Continue" }));
+  expect(emit).toHaveBeenCalledExactlyOnceWith({ click: { comp: "next" } });
+  expect((screen.getByRole("button", { name: "Sign" }) as HTMLButtonElement).disabled).toBe(true);
+});
+
+it("timeline retains sibling confirmation identity without synthesizing a second control", () => {
+  const emit = vi.fn();
+  const node: UiNode = { timeline: { title: "Confirm review", children: [
+    { field: { ...field, comp: "weight", label: "Weight", pendingConfirm: true } },
+    { button: { comp: "weight", label: "Confirm prefilled value", role: "confirm", enabled: true, blockedReason: null, hotkey: null } },
+  ] } };
+  render(<MantineProvider><UiNodeView node={node} onEvent={emit} /></MantineProvider>);
+  expect(screen.getAllByRole("button")).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "Confirm prefilled value" }));
+  expect(emit).toHaveBeenCalledExactlyOnceWith({ confirm: { comp: "weight" } });
+});

@@ -1,4 +1,4 @@
-import Ehr.Sem.Bridge
+import Ehr.Sem.Trace
 
 namespace Ehr.Sem.Examples
 open Ehr Render
@@ -82,6 +82,24 @@ theorem action_bad : ¬ ActionWithin empty noSteps 0 exposed "next" := by
   cases hw
   simpa [Perceives, empty, emptyUi, goodUi, meaning, active, baseAtoms, uiAtomsList,
     uiAtoms, uiNavAtoms, uiBannerAtom, observe] using hp.1
+
+
+/-- One deliberate transition can expose a different tab/screen's content. -/
+def reveal : View → View → Prop := fun a b =>
+  a.screen = empty ∧ b.screen = good ∧ b.moment = exposed
+
+theorem available_one_step : Available empty reveal 1 exposed (.information "allergyList" rows) := by
+  refine ⟨1, Nat.le_refl _, ⟨good, exposed⟩, ?_, information_good⟩
+  exact .step ⟨rfl, rfl, rfl⟩ (.refl _)
+
+/-- A missing modal title fails the attention contract even with an ack button. -/
+def blankModalUi := { goodUi with modal := some (.section "interaction" ""
+  [.button "interaction" "Acknowledge" "ack" true none none]) }
+theorem blank_modal_bad : ¬ ModalAck (meaning blankModalUi) exposed "interaction" := by
+  simp [ModalAck, meaning, blankModalUi, active, uiAtoms, uiAtomsList, observe]
+
+#print axioms available_one_step
+#print axioms blank_modal_bad
 
 #print axioms information_good
 #print axioms information_bad

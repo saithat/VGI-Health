@@ -11,6 +11,7 @@ inductive Fact where
   | action (id label role : String) (enabled : Bool) (reason hotkey : Option String)
   | field (id label kind : String) (value unit source : Option String) (pending human required : Bool)
   | alert (id : AlertId) (label severity : String)
+  | attention (id label : String)
   | identity (fields : List (String × String))
   | decoration
   deriving DecidableEq, Repr
@@ -21,6 +22,7 @@ def observe : UiNode → Fact
   | .field id label kind value unit source pending human required =>
       .field id label kind value unit source pending human required
   | .alert _ id label severity => .alert id label severity
+  | .section id label _ => .attention id label
   | _ => .decoration
 
 structure Screen where
@@ -101,7 +103,8 @@ def FieldsClear (s : Screen) : Prop := ∀ f ∈ supplied s, FieldClear f
 def Nonmodal (s : Screen) : Prop := s.foreground = none
 
 def ModalAck (s : Screen) (m : Moment) (id : AlertId) : Prop :=
-  s.foreground.isSome = true ∧ Perceives s m (.action id "Acknowledge" "ack" true none none)
+  s.foreground.isSome = true ∧ Perceives s m (.action id "Acknowledge" "ack" true none none) ∧
+    ∃ label, label ≠ "" ∧ Perceives s m (.attention id label)
 
 /-- Severity stays attached to its alert identity; urgency is a separate policy. -/
 def AlertShown (s : Screen) (m : Moment) (id label tier : String) : Prop :=

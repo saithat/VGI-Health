@@ -16,6 +16,9 @@ const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
     z.strictObject({
+      timeline: z.strictObject({ title: label, children: z.array(uiNodeSchema) }),
+    }),
+    z.strictObject({
       valueSet: z.strictObject({
         options: z.array(z.strictObject({ code: label, label })),
         allowCustom: z.boolean(),
