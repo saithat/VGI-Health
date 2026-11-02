@@ -1,0 +1,32 @@
+VGI synthetic EHR interface pilot — participant information and consent
+Version/date: [VERSION AND DATE]
+Institution / responsible investigator: [INSTITUTION AND INVESTIGATOR]
+Study contact: [STUDY CONTACT]
+Independent participant-rights contact: [INSTITUTIONAL CONTACT]
+Institutional determination / approval reference: [REFERENCE OR DOCUMENTED DETERMINATION]
+
+Purpose
+We are studying how clinicians choose their next interface action and how much effort four experimental EHR designs require. Our computer models have not been validated against people. This is a software usability pilot, not an assessment of your clinical competence or a clinical treatment study.
+
+What you will do
+You will practice four designs, then complete four synthetic emergency-department cases, one per design, and answer brief workload and usability questions after each measured case. Allow about 60–90 minutes including breaks. The facilitator will explain the controls and task goals. You may stop a task, skip any question by ending participation, take a break between blocks, or withdraw at any time.
+
+All patients and clinical records in this activity are synthetic. Do not enter any real patient information, names, contact details, passwords, or other confidential information. Do not use this software to make decisions for real patients.
+
+What we record
+With your permission, the local study software records a pseudonymous participant ID, allocation slot, interface actions and synthetic values entered, counts of mouse clicks and key presses, aggregate mouse movement and scrolling, elapsed time and hidden-tab time, blocked actions, task completion, and questionnaire answers. It stores browser viewport dimensions. It does not record audio, video, screen video, individual key values, or your real identity. Synthetic clinical entry values remain in the interaction trace. The facilitator may keep a separate recruitment/contact list outside the study data, under institutional access rules.
+
+Risks and benefits
+You may experience fatigue, frustration, or concern about being observed. You may pause between tasks or stop without giving a reason. There is a small privacy risk if local study files are accessed without permission. This is not an employee performance evaluation; supervisors will not receive individual results. There is no expected direct benefit; the results may inform future interface and simulation research.
+
+Voluntary participation and compensation
+Participation is voluntary. Declining, stopping, or withdrawing will not affect your employment, training, clinical privileges, or relationship with the institution.
+Compensation and any conditions: [COMPENSATION OR NONE]
+
+Storage, access and withdrawal
+Records stay on an access-controlled local research computer in runs/study-<date>/, with no clinical backend writes or automatic uploads. Authorized readers: [RESEARCH TEAM / ROLES]. Retention and deletion date: [RETENTION PERIOD AND DATE]. Backup location and deletion policy: [LOCAL BACKUP POLICY]. Planned reporting: [INTERNAL ONLY / PUBLICATION PLAN]. Only aggregate results will be shared; small samples can still carry re-identification risk. Any sharing of individual traces requires separate institutional review and consent.
+
+To request deletion before [WITHDRAWAL CUTOFF], contact [STUDY CONTACT] and give your participant ID. The Withdraw button stops collection and marks your record withdrawn; it does not itself delete earlier local checkpoints. The facilitator can delete those checkpoints and derived reports. After irreversible aggregation or publication, removing your contribution may no longer be possible.
+
+Consent
+I am an adult clinician eligible for this pilot. I have read this information, have had an opportunity to ask questions, understand what will be recorded, and voluntarily agree to participate. Checking the consent box records this agreement and the consent version locally. I can keep a copy of this information. I understand that the institution determines whether an electronic checkbox is an acceptable consent procedure for this activity.
