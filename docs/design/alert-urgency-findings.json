@@ -1,0 +1,251 @@
+{
+  "batches": [
+    {
+      "label": "All-workflow templates",
+      "status": "fail",
+      "exports": 4806,
+      "uniqueTrees": 1820,
+      "measurements": 18720,
+      "findings": {
+        "contrast-review": 349155,
+        "1.4.4/1.4.10": 33024,
+        "1.4.11": 55260,
+        "2.5.8": 14256,
+        "urgency": 900
+      },
+      "requiredViewportFindings": {
+        "contrast-review": 193975,
+        "1.4.11": 30700,
+        "2.5.8": 7920,
+        "urgency": 500
+      },
+      "statesWithFinding": {
+        "1.4.4/1.4.10": 1820,
+        "contrast-review": 1820,
+        "1.4.11": 878,
+        "2.5.8": 834,
+        "urgency": 20
+      },
+      "phases": {
+        "active": 16380,
+        "background-probe": 2340
+      },
+      "artifacts": "/home/saithat/Projects/run-tmp/policy-canonical-verified"
+    },
+    {
+      "label": "Role-specific candidates",
+      "status": "fail",
+      "exports": 3612,
+      "uniqueTrees": 1290,
+      "measurements": 13374,
+      "findings": {
+        "contrast-review": 264195,
+        "1.4.4/1.4.10": 22036,
+        "1.4.11": 73017,
+        "2.5.8": 9666,
+        "urgency": 540
+      },
+      "requiredViewportFindings": {
+        "contrast-review": 146775,
+        "1.4.11": 40565,
+        "2.5.8": 5370,
+        "urgency": 300
+      },
+      "statesWithFinding": {
+        "1.4.4/1.4.10": 1290,
+        "contrast-review": 1290,
+        "1.4.11": 599,
+        "2.5.8": 547,
+        "urgency": 12
+      },
+      "phases": {
+        "active": 11610,
+        "background-probe": 1764
+      },
+      "artifacts": "/home/saithat/Projects/run-tmp/policy-personas-verified"
+    }
+  ],
+  "examples": {
+    "contrast-review": [
+      {
+        "sc": "contrast-review",
+        "id": "chartReview.chartWorkspace.chartSummary/button",
+        "detail": "Unsupported image/opacity/filter/blend needs pixel review",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "contrast-review",
+        "id": "html:nth-of-type(1)/body:nth-of-type(1)/div:nth-of-type(1)/div:nth-of-type(1)/div:nth-of-type(1)/main:nth-of-type(1)/div:nth-of-type(1)",
+        "detail": "Unsupported image/opacity/filter/blend needs pixel review",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "contrast-review",
+        "id": "chartReview.recordTabs.encounterHistory/div:nth-of-type(1)/table:nth-of-type(1)/thead:nth-of-type(1)/tr:nth-of-type(1)/th:nth-of-type(1)",
+        "detail": "Unsupported image/opacity/filter/blend needs pixel review",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "contrast-review",
+        "id": "chartReview.recordTabs.encounterHistory/div:nth-of-type(1)/table:nth-of-type(1)/thead:nth-of-type(1)/tr:nth-of-type(1)/th:nth-of-type(2)",
+        "detail": "Unsupported image/opacity/filter/blend needs pixel review",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      }
+    ],
+    "1.4.4/1.4.10": [
+      {
+        "sc": "1.4.4/1.4.10",
+        "id": "html:nth-of-type(1)/body:nth-of-type(1)/div:nth-of-type(1)/div:nth-of-type(1)/div:nth-of-type(1)/header:nth-of-type(1)/div:nth-of-type(2)/div:nth-of-type(3)/div:nth-of-type(1)/span:nth-of-type(1)",
+        "detail": "text clipped by html:nth-of-type(1)/body:nth-of-type(1)/div:nth-of-type(1)/div:nth-of-type(1)/div:nth-of-type(1)/header:nth-of-type(1)/div:nth-of-type(2)/div:nth-of-type(3)/div:nth-of-type(1)/span:nth-of-type(1): Allergies: Allergic disposition; Bee venom; Mold; House dust",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-expanded.json",
+        "width": 1280,
+        "textPercent": 200,
+        "phase": "active"
+      },
+      {
+        "sc": "1.4.4/1.4.10",
+        "id": "doseRangeOrder/span:nth-of-type(1)/span:nth-of-type(1)",
+        "detail": "text clipped by doseRangeOrder/span:nth-of-type(1)/span:nth-of-type(1): Acknowledge",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-popup-doseRangeOrder.json",
+        "width": 1280,
+        "textPercent": 200,
+        "phase": "active"
+      },
+      {
+        "sc": "1.4.4/1.4.10",
+        "id": "chartReview.chartWorkspace.chartSummary/span:nth-of-type(1)/span:nth-of-type(1)",
+        "detail": "text clipped by chartReview.chartWorkspace.chartSummary/span:nth-of-type(1)/span:nth-of-type(1): Summary",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-popup-doseRangeOrder.json",
+        "width": 1280,
+        "textPercent": 200,
+        "phase": "background-probe"
+      },
+      {
+        "sc": "1.4.4/1.4.10",
+        "id": "highAlertAdmin/span:nth-of-type(1)/span:nth-of-type(1)",
+        "detail": "text clipped by highAlertAdmin/span:nth-of-type(1)/span:nth-of-type(1): Acknowledge",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartReview-popup-highAlertAdmin.json",
+        "width": 1280,
+        "textPercent": 200,
+        "phase": "active"
+      }
+    ],
+    "1.4.11": [
+      {
+        "sc": "1.4.11",
+        "id": "chartSummary.card.chartVitals.data/div:nth-of-type(1)/figure:nth-of-type(1)/svg:nth-of-type(1)/g:nth-of-type(1)/line:nth-of-type(1)",
+        "detail": "graphic 1.4870:1 < 3:1",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartSummary-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "1.4.11",
+        "id": "chartSummary.card.chartVitals.data/div:nth-of-type(1)/figure:nth-of-type(1)/svg:nth-of-type(1)/g:nth-of-type(2)/line:nth-of-type(1)",
+        "detail": "graphic 1.4870:1 < 3:1",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartSummary-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "1.4.11",
+        "id": "chartSummary.card.chartVitals.data/div:nth-of-type(1)/figure:nth-of-type(1)/svg:nth-of-type(1)/g:nth-of-type(3)/line:nth-of-type(1)",
+        "detail": "graphic 1.4870:1 < 3:1",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartSummary-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "1.4.11",
+        "id": "chartSummary.card.chartVitals.data/div:nth-of-type(1)/figure:nth-of-type(1)/svg:nth-of-type(1)/g:nth-of-type(4)/line:nth-of-type(1)",
+        "detail": "graphic 1.4870:1 < 3:1",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/chartSummary-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      }
+    ],
+    "2.5.8": [
+      {
+        "sc": "2.5.8",
+        "id": "w1Labs.labFasting/input",
+        "detail": "16.00\u00d716.00 CSS px < 24\u00d724",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/w1Labs-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "2.5.8",
+        "id": "w1Orders.naloxoneEducation/input",
+        "detail": "16.00\u00d716.00 CSS px < 24\u00d724",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/w1Orders-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "2.5.8",
+        "id": "w1Orders.allergyReconfirmOrdering/input",
+        "detail": "16.00\u00d716.00 CSS px < 24\u00d724",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/w1Orders-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "2.5.8",
+        "id": "w1Rooming.advanceDirectiveAsked/input",
+        "detail": "16.00\u00d716.00 CSS px < 24\u00d724",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/w1Rooming-expanded.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      }
+    ],
+    "urgency": [
+      {
+        "sc": "urgency",
+        "id": "Urgent alert doseRangeOrder",
+        "detail": "initial: Urgent alert doseRangeOrder: not perceived at the current moment",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/w1Sign-popup-doseRangeOrder.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      },
+      {
+        "sc": "urgency",
+        "id": "Urgent alert highAlertAdmin",
+        "detail": "initial: Urgent alert highAlertAdmin: not perceived at the current moment",
+        "file": "/home/saithat/Projects/run-tmp/policy-canonical-verified/v1/canonical/adult-allergic/w4Admin-popup-highAlertAdmin.json",
+        "width": 768,
+        "textPercent": 100,
+        "phase": "active"
+      }
+    ]
+  },
+  "totals": {
+    "exports": 8418,
+    "distinctTrees": 2673,
+    "sharedTreesBetweenBatches": 437,
+    "matrixCases": 32094
+  },
+  "policyStatus": "pending owner review",
+  "appSha256": "e6a82b5e0a9d2d30d51859976efeac5103880dfe94f7d77942f9c66a6c0fd60a",
+  "leanSourceHash": "5386f2c21de54afc6ed96d1e369cc80f564064815e33cd9becc2821486455a56"
+}

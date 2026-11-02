@@ -105,7 +105,8 @@ property. This provides no uniform event bound and no physical step bound.
 The Lean bridge proves the applicable render implications and structural
 converses; it does not assert equivalence for stronger physical properties.
 Clinical properties already stated over effects/actor traces are reused, not
-renamed copies of widget predicates. Specs/Props/Statements are unchanged.
+renamed copies of widget predicates. Existing Specs/Props/Statements definitions
+are unchanged; attention/physical policy data are additive.
 
 ## Proof-gated extension interface
 
@@ -153,14 +154,26 @@ and list ancestry, child order, complete source cells and legibility; adversaria
 hidden/reordered children fail. This small extension establishes the admission
 pattern; richer zoom/filter behavior requires additional proofs. Actual urgency
 exposure remains conditional on a measured moment and human-owned urgent IDs.
-The operator may supply `EHR_URGENT_ALERT_IDS` (a JSON array, not program data).
-Before geometry measurement or scroll-into-view checks, the gate requires each
-emitted designated demand to be unoccluded and wholly within the viewport.
-Background demands hidden by another modal fail. The policy enters the screen
-cache key. The accompanying adversarial checks exercise off-viewport and
-modal-occluded demands. This initial-moment check does not establish an
-all-moments urgency invariant; continuous/scroll/focus coverage remains future
-work for the measured-view adapter.
+[Alert urgency policy](alert-urgency.md) supplies a complete source-labelled
+classification of 77 alert IDs, pending owner review. `Specs/AlertUrgency.lean`
+keeps this additive attention policy separate from existing severity/guard rules.
+`Sem/Urgency.lean` defines clinical activity independently of tree presence and
+requires perception at every reachable interpreter/view moment while active.
+Current modal and passive-inline render proofs establish it under explicit
+presentation-coverage and pinned-layout evidence for every reached moment.
+Initial perception is a consequence, not the complete obligation; a kernel
+counterexample shows initial success followed by failure on a single scroll.
+Today's programs have not established the model generally before popups, after
+acknowledgment, behind unrelated modals or on hidden screens.
+
+The screen gate uses that proposal's urgent IDs by default; operator
+`EHR_URGENT_ALERT_IDS` adds IDs. It checks emitted demands initially and after
+finite scroll/focus samples, preserving passive/nonmodal distinction. Policy
+content enters the cache key. This detects sampled violations and does not prove
+all possible moments or detect clinically active warnings omitted from the tree.
+The owner-selected WCAG 2.2 AA physical constants and desktop/tablet/reflow/resize
+matrix are documented in [the policy](alert-urgency.md); canonical violations
+remain [findings](alert-urgency-findings.md), not exceptions to the gate.
 
 ## Target design space
 
