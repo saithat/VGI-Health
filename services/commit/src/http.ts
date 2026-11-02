@@ -1,11 +1,12 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
+import { AdtStore } from './adt.ts';
 import { authenticator } from './auth.ts';
 import { EventEmitter } from 'node:events';
 import pg from 'pg';
 import { z } from 'zod';
 import { Store } from './store.ts';
 import { exportFhir } from './fhir.ts';
-import { Fault, cosignInput, commandInput, eventInput, sessionInput, version } from './types.ts';
+import { Fault, adtCommandInput, cosignInput, commandInput, eventInput, sessionInput, version } from './types.ts';
 
 /** LISTEN is a latency hint. Durable version reads plus periodic catch-up cover
  * disconnects, coalesced notifications and the LISTEN/snapshot startup race. */
@@ -56,6 +57,7 @@ function cursor(value: string | null | undefined) {
   return version.parse(Number(text));
 }
 export function server(store: Store, notifications: Notifications) {
+  const adt = new AdtStore(store);
   const streams = new Set<ServerResponse>();
   const authenticate = authenticator(store.config);
   const http = createServer(async (req, res) => {
@@ -63,7 +65,45 @@ export function server(store: Store, notifications: Notifications) {
       const actor = await authenticate(req.headers.authorization);
       const url = new URL(req.url!, 'http://localhost');
       const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
-      if (req.method === 'GET' && url.pathname === '/me') return json(res, 200, { user: actor.user, persona: actor.persona, name: actor.name });
+      if (req.method === 'GET' && url.pathname === '/me') return json(res, 200, { user: actor.user, persona: actor.persona, name: actor.name, adtRoles: actor.adtRoles, units: actor.units });
+      if (req.method === 'GET' && url.pathname === '/adt/board') return json(res, 200, await adt.read(actor));
+      if (req.method === 'POST' && url.pathname === '/adt/commands') {
+        const result = await adt.submit(actor, adtCommandInput.parse(await body(req)));
+        return json(res, result.status, result.body);
+      }
+      if (req.method === 'GET' && url.pathname === '/adt/events') {
+        const initial = await adt.read(actor);
+        let after = req.headers['last-event-id'] as string | undefined ?? url.searchParams.get('after') ?? '';
+        if (after && !/^[a-f0-9]{64}$/.test(after)) throw new Fault(400, 'invalid_cursor');
+        res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', Connection: 'keep-alive' });
+        res.flushHeaders();
+        streams.add(res);
+        let stopped = false, running = false, dirty = false;
+        const stop = () => { if (stopped) return; stopped = true; clearInterval(timer); notifications.off('wake', wake); streams.delete(res); res.end(); };
+        const pump = async () => {
+          if (running || stopped) return;
+          running = true;
+          try {
+            do {
+              dirty = false;
+              if (actor.expires && Date.now() >= actor.expires * 1000) { stop(); break; }
+              const board = await adt.read(actor);
+              if (after !== board.cursor) {
+                after = board.cursor;
+                if (!res.write(`id: ${after}\nevent: board\ndata: ${JSON.stringify(board)}\n\n`)) stop();
+              }
+            } while (dirty && !stopped);
+          } catch { stop(); } finally { running = false; }
+        };
+        const wake = () => { dirty = true; void pump(); };
+        const timer = setInterval(() => { if (!res.write(': keepalive\n\n')) stop(); else wake(); }, 2000);
+        notifications.on('wake', wake);
+        res.on('close', stop);
+        // Subscribe before catch-up; initial is authorization/preflight only.
+        void initial;
+        wake();
+        return;
+      }
       if (req.method === 'POST' && url.pathname === '/mar/cosigns') return json(res, 201, await store.cosign(actor, cosignInput.parse(await body(req))));
       if (req.method === 'GET' && url.pathname === '/mar') return json(res, 200, await store.marDirectory(actor));
       if (req.method === 'GET' && parts[0] === 'requests' && parts.length === 2) {

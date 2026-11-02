@@ -10,7 +10,11 @@ const issuer =
   import.meta.env.VITE_KEYCLOAK_ISSUER ?? "http://localhost:8180/realms/vgi";
 const clientId = "vgi-mar";
 const base = "/commit";
-const callback = () => `${location.origin}/?workflow=mar`;
+const workflow = () =>
+  new URLSearchParams(location.search).get("workflow") === "adt"
+    ? "adt"
+    : "mar";
+const callback = () => `${location.origin}/?workflow=${workflow()}`;
 const tokenSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
@@ -19,8 +23,20 @@ const tokenSchema = z.object({
 const userSchema = z.object({
   user: z.object({
     id: z.string(),
-    role: z.enum(["rn", "physician", "np", "surgeon"]),
+    role: z.enum([
+      "rn",
+      "physician",
+      "np",
+      "surgeon",
+      "chargeNurse",
+      "bedManager",
+      "admittingClerk",
+    ]),
   }),
+  adtRoles: z
+    .array(z.enum(["chargeNurse", "bedManager", "admittingClerk"]))
+    .optional(),
+  units: z.array(z.string()).optional(),
   persona: z.string().optional(),
   name: z.string().optional(),
 });
@@ -82,7 +98,7 @@ export async function restoreMar(): Promise<MarUser | undefined> {
     const code = query.get("code");
     if (!code) throw new Error("Missing authorization code");
     // Remove the one-use authorization code before any rendering or other requests.
-    history.replaceState(null, "", "/?workflow=mar");
+    history.replaceState(null, "", `/?workflow=${workflow()}`);
     await tokenRequest({
       grant_type: "authorization_code",
       code,
@@ -134,14 +150,20 @@ export async function marRequest(
       .parse(result);
     if (res.status === 409)
       throw new MarConflict(
-        error.reason === "dose_already_administered"
-          ? "This scheduled dose was already administered. MAR refreshed; review the recorded dose."
-          : "Another nurse changed this chart. MAR refreshed; review the current dose before continuing.",
+        path.startsWith("/adt")
+          ? "The bed board changed. Review its current state before continuing."
+          : error.reason === "dose_already_administered"
+            ? "This scheduled dose was already administered. MAR refreshed; review the recorded dose."
+            : "Another nurse changed this chart. MAR refreshed; review the current dose before continuing.",
       );
     const message =
-      error.reason === "invalid_mar_status_or_guard"
-        ? "Administration rejected. Use given, held or refused and complete the required checks."
-        : (error.reason ?? error.error ?? `MAR service returned ${res.status}`);
+      error.reason === "adt_guard"
+        ? "Placement rejected. Review the patient, bed status and your permitted actions."
+        : error.reason === "invalid_mar_status_or_guard"
+          ? "Administration rejected. Use given, held or refused and complete the required checks."
+          : (error.reason ??
+            error.error ??
+            `MAR service returned ${res.status}`);
     if (res.status < 500) throw new MarRejected(message);
     throw new Error(message);
   }
@@ -321,6 +343,60 @@ export function subscribeMar(
   void connect();
   return () => {
     controller.abort();
+    clearTimeout(timer);
+  };
+}
+
+/** Header-authenticated snapshot subscription, with opaque durable cursor. */
+export function subscribeService(
+  path: string,
+  cursor: string,
+  onData: (value: unknown) => void,
+  onError: (error: unknown) => void,
+) {
+  const abort = new AbortController();
+  let after = cursor;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  async function connect() {
+    try {
+      const res = await fetch(
+        `${base}${path}?after=${encodeURIComponent(after)}`,
+        {
+          headers: { Authorization: `Bearer ${await accessToken()}` },
+          signal: abort.signal,
+        },
+      );
+      if (!res.ok || !res.body)
+        throw new Error("Board updates unavailable. Reconnecting…");
+      const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+      let buffer = "";
+      while (!abort.signal.aborted) {
+        const next = await reader.read();
+        if (next.done) break;
+        buffer += next.value;
+        let end: number;
+        while ((end = buffer.indexOf("\n\n")) >= 0) {
+          const frame = buffer.slice(0, end);
+          buffer = buffer.slice(end + 2);
+          const data = frame.match(/^data: (.+)$/m);
+          const id = frame.match(/^id: (.+)$/m);
+          if (data?.[1] && id?.[1]) {
+            onData(JSON.parse(data[1]));
+            after = id[1];
+          }
+        }
+      }
+    } catch (error) {
+      if (!abort.signal.aborted) onError(error);
+    }
+    if (!abort.signal.aborted)
+      timer = setTimeout(() => {
+        void connect();
+      }, 2000);
+  }
+  void connect();
+  return () => {
+    abort.abort();
     clearTimeout(timer);
   };
 }

@@ -2,14 +2,15 @@
 
 Status: W4 medication administration is the first live workflow on the Postgres
 commit authority (2026-11-02). Identity for this path is Keycloak OIDC. FHIR is
-import/export; Medplum may be an asynchronous projection. Other workflows still
+import/export; Medplum may be an asynchronous projection. Administrative ADT now uses the same authority with a native reducer, multi-stream
+transactions and snapshot SSE. Other workflows still
 use the client-side guard and Medplum transaction path. G3 remains open there.
 
 ## Boundary and implementation scope
 
 `services/commit/` is a Node 22 HTTP host using `pg`, `jose` JWKS verification and
 a supervised, long-running `ehr serve` child. JSONL dispatch includes `init`,
-`step`, `facts`, `commit-check`, `multi-step`, `mar-context`, `mar-import-context` and `mar-commit`.
+`step`, `facts`, `commit-check`, `multi-step`, `mar-context`, `mar-import-context`, `mar-commit` and `adt-commit`.
 No TypeScript copy of the clinical guard or MAR reducer exists.
 
 `/?workflow=mar` and the P3/RN2 login buttons use Keycloak Authorization Code +
@@ -17,7 +18,8 @@ S256 PKCE. The public client has no secret and password grants are disabled.
 Access/refresh tokens stay in browser memory; only redirect state/verifier use
 session storage. The host pins issuer/JWKS URL, audience, RS256 algorithm and
 client, requires subject/expiry/issued-at, and refuses ID tokens. Lean `user.id`
-is the verified `sub`; exactly one recognized realm role supplies Lean's role.
+is the verified `sub`; exactly one recognized clinical realm role supplies Lean's role.
+Administrative-only identities use the separate ADT roles and cannot open clinical sessions.
 Operator provisioning binds that subject to model ID and patient scope. Those
 fields, spec/program releases and scheduled occurrences cannot come from HTTP
 bodies. Static credentials remain only for the earlier isolated service demo;
@@ -28,7 +30,7 @@ Setup, secret creation and exact commands are in the
 [infra README](../../infra/README.md#keycloak-for-w4).
 
 A session pins an operator-owned spec/program and patient version. The host
-reconstructs its authenticated interactions from `init`; every accepted command
+reconstructs its authenticated interactions from `init`; every accepted session command
 runs `Commit.check` against the locked current collection. W4 additionally runs
 `Commit.Mar.commit`: patient-stream MAR state reduces barcode-scanned,
 double-check-cosign, administered, held and refused events. A single command
@@ -91,7 +93,7 @@ All stream keys and request identities are tenant-scoped:
 | `commit_sessions (tenant,id)` | Actor, patient, release name/hash, workflow, base patient version, context, interaction log, revision and creation time. Session edits have revision checks; committed clinical events remain in `commit_events`. |
 | `dose:<patient>:<order>:<occurrence>` | Provisioned shared stream; the immutable scheduled occurrence includes all three identifiers. Snapshot uses the existing Lean `Multi.State` administration log. |
 | `commit_mar_cosigns` | Authenticated RN consent scoped to patient, workflow, release hash, patient version and five-minute expiry; the clinical event retains the resulting cosign evidence. |
-| `bed:<bed-id>` | Provisioned shared stream; snapshot uses `Multi.State` placements. Assign/release and the corresponding patient event commit atomically. |
+| `bed:<bed-id>` | In ADT tenants, `{id,unit,phase,occupant}` from the native ADT reducer. The patient snapshot holds `adt:{id,admitted,bed}`. Older isolated shared-bed tests use `Multi.State`; combined ADT/legacy-bed configurations are forbidden. |
 
 FHIR IDs and model IDs are distinct. Tenant-local patient model IDs and actor
 model IDs are unique; natural-number order/occurrence/bed IDs are operator-owned. MAR import pins the dose-to-order/explicit-time binding in the
@@ -173,8 +175,9 @@ statement in a transaction issued through the same checked-out `pg` client:
    one at a time in the same sorted total key order on every replica. Read
    snapshots only after acquiring their locks. Check caller versions and the
    session's base patient version. Session-event writes follow the same
-   session-before-stream lock hierarchy. Commands currently touch at most one
-   patient plus one shared stream; the lock algorithm supports a closed key set.
+   session-before-stream lock hierarchy. Legacy/MAR commands touch at most one
+   patient plus one shared stream. ADT locks its complete configured patient/bed
+   read set, then writes only changed streams (three for a transfer).
 4. Reconstruct state from the logged events on that chart. Project the locked
    bundle and run native `commit-check`. Use service UTC time for the current
    check; the interaction replay uses its captured session context. For W4 run `mar-commit` and check version-bound cosign consent. Run the
@@ -296,7 +299,7 @@ Existing theorem statements and hospital rules are unchanged:
 | `Commit.Mar.accepted_guard_at_written_version` | Every accepted MAR write passed `commitGuard` on its prepared bundle; its recorded read version equals the expected version and its write is that version plus one. SQL supplies the locked snapshot and persists exactly that result; this correspondence is tested, not proved. |
 | `Multi.step_invariant`, `Multi.run_invariant`, `Multi.reachable_invariant` | Dose-key uniqueness and bed-key uniqueness over the executable shared model's finite interleavings. Each persisted shared stream uses that same function. The host partitions independent dose/bed keys and tests their histories against Lean; no SQL refinement theorem is claimed. |
 
-The model does not prove physical administration, one bed per patient, appropriate
+The older `Multi` model does not prove physical administration, one bed per patient, appropriate
 doses, authorization, co-sign consent, fairness or liveness. Releasing another
 patient's bed stutters. The deliberately unsafe stale-read schedule in
 `Multi/Tests.lean` still demonstrates why preparation is insufficient.
@@ -336,9 +339,9 @@ No solver or trusted axiom was added here.
    Provision a new patient stream and immutable dose bindings, validate chart
    completeness and compare source/version projections before clinical use.
 2. Build reducers and invariant/guard proofs for assessments, orders, results,
-   disposition/bed movements, referrals, refills and remaining workflows. Preserve
+   clinical disposition, referrals, refills and remaining workflows. Preserve
    exact resource versions, source events and patient/encounter identity. Existing
-   shared-bed tests are a foundation, not a live bed cutover.
+   shared-bed tests remain separate from the new administrative ADT reducer.
 3. Shadow each workflow against Postgres and reconcile existing patient baselines.
    Validate production identity/access, review provenance and release certificates.
    Agreement is necessary but does not mediate writes.
@@ -355,3 +358,92 @@ This cutover changes certified app sources and the app hash. Existing recorded
 certificates are not rebound. Native Lean additions also change the broad source
 fingerprint used by WASM freshness checks. Protected Specs/Props/Statements and
 comparator definitions remain untouched.
+
+
+## Administrative ADT authority and 4 West rollout
+
+`Commit.Adt` defines a complete board as patient records with a single optional
+bed and bed records with a single optional occupant. `valid` requires unique
+patient/bed identifiers, admission before occupancy, referential integrity in
+both directions and occupied status exactly when a bed has an occupant.
+`guard` additionally checks role and command-specific state: admit starts from
+not-admitted/unplaced, assign starts admitted/unplaced, transfer owns its distinct
+source and targets a ready empty bed, release owns the bed, discharge requires
+admission, cleaning starts dirty/empty, and ready follows cleaning/empty.
+Released beds become dirty. Release retains admission; discharge ends it.
+
+`commit` validates the exact read vector, administrative guard and complete
+postcondition before returning one successor. Preservation is proved through
+this executable postcondition check; this is not a theorem that arbitrary calls
+to the unchecked `apply` function preserve safety. `commit_invariant`,
+`bed_exclusivity`, `bed_one_patient`, `patient_one_bed` and `reachable_invariant`
+establish the safety properties of accepted transitions. `transfer_atomic`
+identifies the full simultaneous move; `transfer_holds_target` establishes that
+the transferred patient's successor holds the destination. All printed theorem
+axioms are within propext/Classical.choice/Quot.sound. There are no new axioms,
+no changes to protected specs, and no connection to physical bed occupancy.
+Clinical authorization/orders/discharge planning remain separate obligations.
+
+`AdtStore` reads and locks the **whole configured board**, including negative
+placement reads, one row at a time in sorted order. The closed set is capped at
+64 patients and 64 beds. Every client submits the full displayed version vector;
+a missing, duplicate, reordered, extra or stale entry conflicts. The native input
+contains only these locked snapshots plus server-authenticated role. All changed
+streams advance exactly once using an additional SQL expected-version predicate.
+The transaction appends the native input/output and actor/request identity to
+each changed stream, records the durable outcome and notifies subscribers. A
+transfer writes exactly patient/source/target, sharing one transaction UUID.
+No automatic retry or rebase of clinical intent occurs. The coarse lock/vector
+scope is deliberately conservative; a future sharded implementation needs a
+proof/lock contract covering patients moving between boards. Operators must not
+run replicas with different board definitions or legacy bed writers in that tenant.
+
+`GET /adt/board` reads all configured streams in **one SQL statement**.
+`GET /adt/events` sends complete `event: board` snapshots with a SHA-256 digest
+of the ordered version vector as its opaque ID. `Last-Event-ID` overrides `after`.
+The listener registers before catch-up; notifications and a two-second poll read
+durable snapshots. A reconnect with an old digest gets the current complete board.
+This is snapshot synchronization, not a replay of every historical board state;
+the underlying ordered event journals remain durable. Token expiry closes SSE.
+Separate patient/bed HTTP requests cannot promise a cross-stream snapshot; clients
+must use the board endpoint for transfer-consistent reads.
+
+Keycloak `bed-manager` and `charge-nurse` permit all ADT operations;
+`admitting-clerk` permits admit/assign only. A charge nurse can also hold `rn`.
+Administrative roles are distinct from clinical Lean roles; generic clinical
+sessions reject an administrative-only identity. Signed unit claims intersect
+provisioned unit scope. Every board patient and unit must be authorized before
+GET, commands or SSE. Patient-scoped readers without complete administrative
+board access receive only their own ADT patient result/command in history/SSE
+and FHIR Basic exports; the full native replay context stays in the audit journal.
+There is no broad board-data leak through a routine patient-history endpoint.
+
+`units[unit].marOnService` and each MAR binding's `unit` provide the per-unit
+cutover gate. When units are configured, all MAR bindings must declare one.
+Unknown units fail configuration parsing; disabled/out-of-scope units have no
+directory items and cannot open sessions, append session evidence, cosign or
+write, including sessions opened before disablement. Durable existing outcomes
+remain reconcilable. Legacy unit-less isolated test configurations are supported;
+the 4 West rollout uses explicit unit bindings. Scheduled binding unit changes
+require baseline reconciliation rather than silently repointing a dose.
+
+The additive realm migrator provisions 4 West RN membership, admin-managed unit
+attributes/claims and ADT redirects without resetting the realm or old passwords.
+It captures actual subjects because the administrative user-creation API may
+allocate IDs different from an import file. Operator/service config and synthetic
+charts are generated in disk scratch. See [rollout](adt-rollout.md) for exact
+commands, deployment limitations and rollback. No Medplum data is touched.
+
+`adt.integration.test.ts` uses independent hosts/pools/native children and signed
+JWKS tokens, 12 seeded same-bed admission races and 12 transfer/discharge races.
+It asserts both safety invariants on concurrent board reads, tests late SQL
+rollback/idempotency, rejects stale/incomplete vectors and unauthorized scopes,
+checks patient audit redaction, resumes SSE, independently replays every accepted
+ADT transition and verifies gap-free versions/transaction pairing. The new
+`adt-service.spec.ts` exercises all seven operations, two roles receiving board
+updates and a provisioned 4 West RN opening service MAR on desktop and narrow
+screens against real Keycloak/Postgres/Lean. A second browser case drops a
+success response after persistence and verifies identical-payload reconciliation
+before further commands. `mar-unit.integration.test.ts`
+checks the unit flag on directory/session/cosign and a prepared final command.
+Integration files run serially to fit the existing database connection budget.
