@@ -24,18 +24,18 @@ async function checkLayout(page: Page) {
     );
   expect(tiny).toEqual([]);
 }
-test("real P3: four areas, version drawer, exact version EHR pair, and counterexample", async ({
+test("real P3: five areas, version drawer, exact version EHR pair, and counterexample", async ({
   page,
 }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/dashboard");
+  await page.goto("/dashboard?run=run1-P3");
   await expect(page.getByLabel("Recorded run")).toHaveValue("run1-P3");
   await expect(
     page.getByRole("heading", { name: "Evolution", exact: true }),
   ).toBeVisible();
   const nav = page.getByRole("navigation", { name: "Dashboard areas" });
-  await expect(nav.getByRole("button")).toHaveCount(4);
+  await expect(nav.getByRole("button")).toHaveCount(5);
   await expect(
     page
       .getByRole("group", { name: "Persona", exact: true })
@@ -78,7 +78,7 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
   await expect(
     pair.getByRole("heading", { name: "After · rev 3", exact: true }),
   ).toBeVisible();
-  await expect(pair.locator(".ehr-shell")).toHaveCount(2);
+  await expect(pair.locator(".clinical-shell")).toHaveCount(2);
   if (testInfo.project.name === "desktop")
     await page.screenshot({ path: "shots/dashboard-before-after.png" });
   await pair
@@ -103,10 +103,14 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
     name: "Replay counterexample",
     exact: true,
   });
-  await expect(replay.locator(".ehr-shell")).toHaveCount(1);
+  await expect(replay.locator(".clinical-shell")).toHaveCount(1);
   await replay.getByRole("button", { name: "Next event", exact: true }).click();
   await expect(replay.getByText(/^State 1 of /)).toBeVisible();
-  await expect(replay.getByRole("alert")).toHaveCount(0);
+  await expect(
+    replay.getByRole("alert", { name: "Care gaps due", exact: true }),
+  ).toBeVisible();
+  await expect(replay.getByRole("alert")).toHaveCount(1);
+  await expect(replay.getByRole("alertdialog")).toHaveCount(0);
   await replay.getByRole("button", { name: "Close EHR replay" }).click();
   await page.keyboard.press("Escape");
 
@@ -133,8 +137,15 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
   await expect(
     migration.getByRole("heading", { name: "After · rev 5", exact: true }),
   ).toBeVisible();
-  await expect(migration.locator(".ehr-shell")).toHaveCount(2);
-  await expect(migration.getByRole("alert")).toHaveCount(0);
+  await expect(migration.locator(".clinical-shell")).toHaveCount(2);
+  await expect(
+    migration.getByRole("alert", {
+      name: "High-alert medication: double check required",
+      exact: true,
+    }),
+  ).toHaveCount(2);
+  await expect(migration.getByRole("alert")).toHaveCount(2);
+  await expect(migration.getByRole("alertdialog")).toHaveCount(0);
   await migration.getByRole("button", { name: "Close EHR replay" }).click();
   await page.keyboard.press("Escape");
 
@@ -157,7 +168,7 @@ test("real P3: four areas, version drawer, exact version EHR pair, and counterex
   await expect(
     page
       .getByRole("dialog", { name: "Replay counterexample", exact: true })
-      .locator(".ehr-shell"),
+      .locator(".clinical-shell"),
   ).toHaveCount(1);
   await expect(page.getByRole("alert")).toHaveCount(0);
   expect(errors).toEqual([]);

@@ -14,6 +14,7 @@ def main():
     parser.add_argument('--model', default='HuggingFaceTB/SmolLM2-135M-Instruct')
     parser.add_argument('--revision', default='12fd25f77366fa6b3b4b768ec3050bf629380bac')
     parser.add_argument('--port', type=int, default=8787)
+    parser.add_argument('--device', choices=['auto', 'cpu', 'cuda'], default='auto')
     parser.add_argument('--tabpfn-training', type=Path)
     args = parser.parse_args()
     import torch
@@ -27,7 +28,8 @@ def main():
     if license_id not in ('apache-2.0', 'mit'):
         raise ValueError(f'Unapproved model license: {license_id}; review before use')
     tokenizer = AutoTokenizer.from_pretrained(args.model, revision=args.revision, trust_remote_code=False)
-    model = AutoModelForCausalLM.from_pretrained(args.model, revision=args.revision, trust_remote_code=False).eval()
+    device = 'cuda' if args.device == 'cuda' or (args.device == 'auto' and torch.cuda.is_available()) else 'cpu'
+    model = AutoModelForCausalLM.from_pretrained(args.model, revision=args.revision, trust_remote_code=False).to(device).eval()
     tab_models = {}
     training = []
     if args.tabpfn_training:
@@ -46,7 +48,7 @@ def main():
 
     @app.get('/health')
     def health():
-        return {'model': args.model, 'revision': info.sha, 'license': license_id, 'device': 'cpu',
+        return {'model': args.model, 'revision': info.sha, 'license': license_id, 'device': device,
                 'tabpfn': list(tab_models), 'training_rows': len(training)}
 
     @app.post('/v1/chat/completions')
@@ -55,11 +57,11 @@ def main():
         if not isinstance(options, list) or not 1 <= len(options) <= 10 or len(set(options)) != len(options):
             raise HTTPException(400, 'Supply 1–10 distinct decision_options')
         prompt = tokenizer.apply_chat_template(body['messages'], tokenize=False, add_generation_prompt=True)
-        prefix = tokenizer(prompt, return_tensors='pt', truncation=True, max_length=1024)['input_ids']
+        prefix = tokenizer(prompt, return_tensors='pt', truncation=True, max_length=1024)['input_ids'].to(device)
         scores = []
         with torch.inference_mode():
             for option in options:
-                suffix = tokenizer(str(option), add_special_tokens=False, return_tensors='pt')['input_ids']
+                suffix = tokenizer(str(option), add_special_tokens=False, return_tensors='pt')['input_ids'].to(device)
                 tokens = torch.cat((prefix, suffix), dim=1)
                 logits = model(tokens).logits[:, prefix.shape[1]-1:-1, :]
                 score = logits.log_softmax(-1).gather(-1, suffix.unsqueeze(-1)).sum().item()

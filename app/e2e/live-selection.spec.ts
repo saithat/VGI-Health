@@ -1,7 +1,12 @@
+import { backendAvailable, backendDownReason } from "./live-backend";
 import { expect, test } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import type {} from "../src/core/buttonAudit";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
+
+test.beforeEach(async () => {
+  test.skip(!(await backendAvailable()), backendDownReason);
+});
 
 for (const [persona, activity, caption] of [
   ["P1", "scheduleTasks", "Schedule"],

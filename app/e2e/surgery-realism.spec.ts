@@ -1,3 +1,7 @@
+import {
+  enterPatientChart,
+  navigateClinicalScreen,
+} from "./clinical-navigation";
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 
@@ -28,22 +32,31 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
       release: "v1",
       program: "releases/v1/personas/P5.json",
       persona: "P5",
-      patient: "7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf",
+      audit: "buttons",
     })}`,
   );
-  const nav = page.locator("nav [data-comp-id]");
-  await expect(nav).toHaveCount(4);
+  await enterPatientChart(page, "38529840");
   expect(
-    await nav.evaluateAll((nodes) =>
-      nodes.map((n) => n.getAttribute("data-comp-id")),
+    await page.evaluate(
+      () => window.__buttonAuditSession?.snapshot().state.patientContext?.bound,
     ),
-  ).toEqual([
-    "home.work.w6Schedule",
-    "home.work.w6Consults",
-    "home.work.w1Rooming",
-    "home.work.w2Inbasket",
-  ]);
-  await control(page, "home.openSelectedCase").click();
+  ).toBe("7cf1e4aa-23ea-3b40-5a62-7aa19e62c5bf");
+  await navigateClinicalScreen(page, "w6PreOp");
+  const nav = page.locator("nav [data-comp-id]");
+  const assertSourceNavigation = async () => {
+    const expected = await page.evaluate(() =>
+      window.__buttonAuditSession
+        ?.snapshot()
+        .ui?.nav.flatMap(([, items]) => items.map(([id]) => id)),
+    );
+    expect(expected?.length).toBeGreaterThan(0);
+    expect(
+      await nav.evaluateAll((nodes) =>
+        nodes.map((node) => node.getAttribute("data-comp-id")),
+      ),
+    ).toEqual(expected);
+  };
+  await assertSourceNavigation();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "Preprocedure",
   );
@@ -188,21 +201,7 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   await control(page, "w6Sign.nav.w6Schedule").click();
   await control(page, "w6Schedule.clinic").click();
   await control(page, "w1Rooming.nav.w1Hpi").click();
-  expect(
-    await nav.evaluateAll((nodes) =>
-      nodes.map((n) => n.getAttribute("data-comp-id")),
-    ),
-  ).toEqual(
-    [
-      "w1Rooming",
-      "w1MedRec",
-      "w1Hpi",
-      "w1Exam",
-      "w1Orders",
-      "w1Labs",
-      "w1Close",
-    ].map((target) => `w1Hpi.nav.${target}`),
-  );
+  await assertSourceNavigation();
   await expect(control(page, "w1Hpi.nav.w1Hpi")).toHaveAttribute(
     "aria-current",
     "page",

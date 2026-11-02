@@ -28,10 +28,14 @@ const input = inputs.find(([name]) => name === "rowActions")?.[1];
 if (!input) throw new Error("Missing row action source fixture");
 const native = <T>(command: string, value: unknown): T =>
   JSON.parse(
-    execFileSync(resolve("../lean/.lake/build/bin/ehr"), [command], {
-      input: JSON.stringify(value),
-      maxBuffer: 32e6,
-    }).toString(),
+    execFileSync(
+      process.env.EHR_BIN ?? resolve("../lean/.lake/build/bin/ehr"),
+      [command],
+      {
+        input: JSON.stringify(value),
+        maxBuffer: 32e6,
+      },
+    ).toString(),
   );
 
 test("every structured worklist action opens its real target and returns", async ({
