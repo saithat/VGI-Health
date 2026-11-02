@@ -1,0 +1,153 @@
+{
+  "generatedAt": "2026-11-01T18:11:50.417Z",
+  "summary": {
+    "targets": 23,
+    "scenarios": 200,
+    "passed": 1922,
+    "failed": 0,
+    "notApplicable": 2678
+  },
+  "canonical": {
+    "targets": 15,
+    "scenarios": 200,
+    "passed": 1575,
+    "failed": 0,
+    "notApplicable": 1425
+  },
+  "nativeSha256": "4e2d607a1de22de6c81422f3af4bcd919232d02c17aa0132caa84984bb886d10",
+  "inputBindings": [
+    {
+      "target": "canonical/v1/P1",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v1/P2",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v1/P3",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v1/P4",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v1/P5",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v2/P1",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v2/P2",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v2/P3",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v2/P4",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v2/P5",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v3/P1",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v3/P2",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v3/P3",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v3/P4",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "canonical/v3/P5",
+      "programAndSpecMatch": true,
+      "selectionMode": "in-ui-selection"
+    },
+    {
+      "target": "run1-P3/P3/v0",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    },
+    {
+      "target": "run1-P3/P3/v1",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    },
+    {
+      "target": "run1-P3/P3/v2",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    },
+    {
+      "target": "run1-P3/P3/v3",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    },
+    {
+      "target": "run1-P3/P3/v4",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    },
+    {
+      "target": "run1-P3/P3/v5",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    },
+    {
+      "target": "run1-P3/P3/v6",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    },
+    {
+      "target": "run1-P3/P3/v7",
+      "programAndSpecMatch": true,
+      "selectionMode": "legacy-preselected"
+    }
+  ],
+  "caseCoverage": "200 unique scenarios per input; original program/spec bindings verified",
+  "independentCanonicalRunsAgree": true,
+  "previousFiveGapFamilies": {
+    "scenarioIds": [
+      "entry.signOrders.dosingWeight",
+      "cures.procedure-eight-day",
+      "cures.unknown-exemption",
+      "workflow.empty-medication-signing",
+      "patient-switch.chart-scoping",
+      "weight.linked-source-refresh",
+      "refill.denial-via-approval-action"
+    ],
+    "passed": 83,
+    "failed": 0,
+    "notApplicable": 78
+  },
+  "positiveScenarioFailures": 0,
+  "failureScenarios": {}
+}
