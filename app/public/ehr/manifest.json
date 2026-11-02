@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "5386f2c21de54afc6ed96d1e369cc80f564064815e33cd9becc2821486455a56",
+  "leanSourceHash": "b949712b5c68434735afca8a4fd059e796e5fc6387641715989b7baff22ea4bc",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "34dc959bbd641d1048cc8511ac3a3fb233a6c105f63afdb31ff3f0579859b5ed",
@@ -132,6 +132,7 @@
     "lean/Ehr/Check/WritesSound.lean": "76eb4c4a686e6917c08e450bd89e3b9c1700fec3aa484577a19bcbf5c55e24df",
     "lean/Ehr/Cli/Check.lean": "e36251550521ef44c388fd85b84e5df852c870edf432f01bae1d17ab089898a3",
     "lean/Ehr/Cli/Commit.lean": "301bc1d3b05bcb8271f669966e6bc41975ca7baf7374a9b18249204f76dbd4c9",
+    "lean/Ehr/Cli/Serve.lean": "fa0f773b7ba4e46fea08c6e7091f03a2af887bd6de03334ccf74fe38d4e5795c",
     "lean/Ehr/Cli/Sim.lean": "7471609f4c8c2fec938c5cc998dcf798fac5df968b6c0d72e871aa099853bfc2",
     "lean/Ehr/Commit/Check.lean": "5e576946b4b6f84c2f1040bb681d97395f30e957ac9e5c4b6518ab3077500ce4",
     "lean/Ehr/Commit/Example.lean": "fdb3a82adfb55f939a63c5cc4fc217c0d670a598c28ec295af18fe0f24994be3",
@@ -257,7 +258,7 @@
     "lean/Ehr/Tools/ProfileGoals.lean": "5baae991adacc4ff07c2146a0439d8a1a9cf44a0c8d153efa7416a77435c9399",
     "lean/Ehr/Tools/Samples.lean": "6012715f67a465920f2672f5f1dd3dad62ea7e8dd1133d9aca8d56d04c6a8480",
     "lean/EhrHeavy.lean": "617421f280fd38254a717a1b54cbb9de9763b375fe0704d69137732e65c6ef22",
-    "lean/Main.lean": "ac3e66ac1bd659e85d6d7abaacd742105937541ddc9a334feee59e273a545517",
+    "lean/Main.lean": "20a0800712603c02d8bf84ec94ff8cb5b5b3ddb133a38c3a478fa3f13e600997",
     "lean/Solution.lean": "3980bf655878a98e635ebe2edd0e01d7f66684e3e3344224d93f38106681db43",
     "lean/Statements.lean": "42d968271109385e57e946911e6cd184edae0a87b500353331c62d86642b230c",
     "lean/lake-manifest.json": "52aef06e9f439eb62ae88a13d1c6af5c89e0d7eff16a84feae38d4099fe5f16d",
