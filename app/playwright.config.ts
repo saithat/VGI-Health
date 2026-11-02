@@ -1,5 +1,9 @@
 import { defineConfig } from "@playwright/test";
 const port = Number(process.env.APP_TEST_PORT ?? 4179);
+// Recorded certificates require the built renderer. Explicit 1 reuses an
+// existing build (the screen gate); explicit 0 opts into unbound development.
+const preview = process.env.APP_TEST_PREVIEW !== "0";
+const build = process.env.APP_TEST_PREVIEW ? "" : "pnpm run build && ";
 export default defineConfig({
   testDir: "./e2e",
   // The longer control/performance audits use their own preview/timeout config.
@@ -24,8 +28,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `pnpm exec vite ${process.env.APP_TEST_PREVIEW ? "preview" : ""} --host 127.0.0.1 --port ${port} --strictPort`,
+    command: `${build}pnpm exec vite ${preview ? "preview" : ""} --host 127.0.0.1 --port ${port} --strictPort`,
     url: `http://127.0.0.1:${port}/screen-check.html`,
     reuseExistingServer: false,
+    timeout: 120000,
   },
 });

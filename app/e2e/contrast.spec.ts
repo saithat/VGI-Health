@@ -1,3 +1,7 @@
+import {
+  enterPatientChart,
+  navigateClinicalScreen,
+} from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
 
 const roleScreens = [
@@ -13,7 +17,7 @@ for (const route of [
   "/dashboard?run=run1-P3",
   ...roleScreens.map(
     ([persona]) =>
-      `/ehr?mode=replay&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
+      `/ehr?mode=replay&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json&audit=buttons`,
   ),
 ]) {
   test(`visible text contrast: ${route}`, async ({ page }) => {
@@ -31,20 +35,9 @@ for (const route of [
       );
       const selected = roleScreens.find(([role]) => role === persona);
       if (!selected) throw new Error(`No contrast screen for ${persona}`);
-      const [, entry, destination] = selected;
-      const opener = page.locator(
-        `[data-comp-id="home.work.${entry}"][data-event]`,
-      );
-      if (await opener.count()) await opener.click();
-      else
-        await expect(
-          page.locator(
-            `button[data-comp-id="${entry}.nav.${destination}"][data-event]`,
-          ),
-        ).toBeVisible();
-      await page
-        .locator(`button[data-comp-id$=".nav.${destination}"][data-event]`)
-        .click();
+      const [, , destination] = selected;
+      await enterPatientChart(page);
+      await navigateClinicalScreen(page, destination);
     }
     const failures = await page.evaluate(() => {
       const rgb = (text: string) => (text.match(/[\d.]+/g) ?? []).map(Number);

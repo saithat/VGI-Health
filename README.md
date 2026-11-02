@@ -800,6 +800,34 @@ pnpm --filter app test:buttons
 pnpm --filter app audit:performance
 ```
 
+Browser tests build and serve production preview by default: development's
+`development-unbound` fingerprint deliberately refuses recorded certificates.
+`APP_TEST_PREVIEW=1` reuses a prebuilt preview (including in the screen gate);
+`APP_TEST_PREVIEW=0` explicitly selects unbound development. Tests accept
+`APP_TEST_PORT` for an isolated server and `--workers=4` for bounded parallel
+execution. Native browser actions and revision checks use
+`EHR_BIN` when supplied, otherwise `lean/.lake/build/bin/ehr`. Live checks load
+the repo-root `.env`: browser login needs its `VITE_MEDPLUM_*` values and
+`VGI_USER_PASSWORD`; `test:live` also needs `MEDPLUM_CLIENT_ID` and
+`MEDPLUM_CLIENT_SECRET`. Missing credentials fail with a setup error when the
+backend is available. An unavailable Medplum healthcheck skips live cases with
+the backend URL and reason. Both canonical baseline and personalized login
+paths are exercised. Personalized live journeys and recorded trajectory checks
+require current build bindings; use `make rebind RUN=<id>` to revalidate stale
+recordings after building the app. A rejected rebind remains a test failure.
+Replay signing and surgical journeys select their original fixture MRNs and
+assert the bound patient IDs; live search/review retains the named patients.
+
+Structured presentation fidelity, contrast and wrapping checks, plus the five
+canonical chart-review tab journeys, run in the default browser suite at both
+project widths. `EHR_PRESENT_SHOTS=1` and `EPIC_DENSITY_SHOTS=after` additionally
+capture review images. Other historical before/after capture suites remain
+opt-in; their skips do not certify those review inputs.
+
+The [browser suite repair report](docs/audits/e2e-repair-2026-11-02.md) records
+failure triage, the remaining skip inventory, live prerequisites and repeat-run
+verification.
+
 `app/scripts/screen-check.mjs` checks exactly the supplied native screen trees,
 at desktop and narrow widths, for visibility, legibility, occlusion and component
 fidelity. The agent enumerates the candidate states before calling this gate.

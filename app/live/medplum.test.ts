@@ -7,6 +7,7 @@ import {
   backendAvailable,
   bundleResources,
   executeTransaction,
+  environment,
   loadPatientBundle,
   loadWorklist,
   readResource,
@@ -26,10 +27,14 @@ import releaseSpec from "../../releases/v3/spec.json";
 import mapperSpec from "../tests/fixtures/spec-v3-full.json";
 
 const available = await backendAvailable();
+const backendDownReason = `Medplum is unavailable at ${environment.VITE_MEDPLUM_BASE_URL}; live coverage requires the local stack`;
+if (!available)
+  console.info(`Skipping live integration tests: ${backendDownReason}`);
 const json = async (path: string): Promise<unknown> =>
   JSON.parse(await readFile(new URL(`../../${path}`, import.meta.url), "utf8"));
 async function selectChart(
   session: Awaited<ReturnType<typeof createLiveSession>>,
+  destination = "w1Rooming",
 ) {
   await session.dispatch({ click: { comp: "workspace.lookup" } });
   await session.dispatch({
@@ -60,6 +65,12 @@ async function selectChart(
     throw new Error("Missing live test patient choice");
   await session.dispatch({ click: { comp: choice.button.comp } });
   expect(session.getSnapshot().state.patientContext?.bound).toBe(patient.id);
+  expect(session.getSnapshot().state.screen).toBe("chartSummary");
+  await session.dispatch({
+    click: { comp: `chartSummary.patientCare.${destination}` },
+  });
+  expect(session.getSnapshot().result).toBe("ok");
+  expect(session.getSnapshot().state.screen).toBe(destination);
 }
 const created: string[] = [];
 let user: LiveUser;
@@ -93,7 +104,9 @@ async function seed(resources: Resource[]): Promise<Resource[]> {
 }
 
 describe.skipIf(!available)(
-  "local Medplum with real WASM and transaction mapper",
+  available
+    ? "local Medplum with real WASM and transaction mapper"
+    : backendDownReason,
   () => {
     beforeAll(async () => {
       const clientId = process.env.MEDPLUM_CLIENT_ID;
@@ -462,7 +475,7 @@ describe.skipIf(!available)(
             "ok",
           );
         };
-        await selectChart(session);
+        await selectChart(session, "w3Triage");
         expect(session.getSnapshot().state.screen).toBe("w3Triage");
         const disposition = session
           .getSnapshot()

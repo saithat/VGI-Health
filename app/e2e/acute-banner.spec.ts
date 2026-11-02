@@ -1,4 +1,7 @@
-import { enterPatientChart } from "./clinical-navigation";
+import {
+  enterPatientChart,
+  navigateClinicalScreen,
+} from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
 
 for (const [persona, activity, commit] of [
@@ -13,14 +16,13 @@ for (const [persona, activity, commit] of [
       "Narrow views retain document flow",
     );
     await page.goto(
-      `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
+      `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json&audit=buttons`,
     );
     await enterPatientChart(page);
     await expect(page.locator(".clinical-shell")).toBeVisible({
       timeout: 30000,
     });
-    const activityLink = page.locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`);
-    if (await activityLink.count()) await activityLink.click();
+    await navigateClinicalScreen(page, activity);
     await page
       .locator(
         `[data-comp-id="${activity}.${persona === "P2" ? "toSign" : "openDue"}"][data-event="click"]`,
@@ -73,14 +75,13 @@ for (const [persona, activity, target] of [
     if (activity === "w4Handoff")
       await page.setViewportSize({ width: 1440, height: 700 });
     await page.goto(
-      `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json`,
+      `/ehr?mode=replay&release=v1&persona=${persona}&program=releases/v1/personas/${persona}.json&audit=buttons`,
     );
     await enterPatientChart(page);
     await expect(page.locator(".clinical-shell")).toBeVisible({
       timeout: 30000,
     });
-    const activityLink = page.locator(`button[data-comp-id$=".nav.${activity}"][data-event="click"]`);
-    if (await activityLink.count()) await activityLink.click();
+    await navigateClinicalScreen(page, activity);
     await page
       .locator(`[data-comp-id="${target}"]`)
       .first()
@@ -105,6 +106,10 @@ for (const [persona, activity, target] of [
     ).toBe(true);
     expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
     const navigation = page.locator(".workflow-groups");
+    // The dense shell puts navigation in normal document flow. Reveal it,
+    // then check the retained banner still cannot obscure any control.
+    await navigation.scrollIntoViewIfNeeded();
+    await expect(identity).toBeInViewport();
     await expect(navigation).toBeInViewport();
     expect(
       await navigation.locator("button").evaluateAll((buttons) =>

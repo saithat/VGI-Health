@@ -1,3 +1,7 @@
+import {
+  enterPatientChart,
+  navigateClinicalScreen,
+} from "./clinical-navigation";
 import { mkdirSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
@@ -12,6 +16,7 @@ test("canonical search returns semantic results and retains complete commit revi
     "/ehr?mode=replay&audit=buttons&release=v3&persona=P1&program=releases/v3/personas/P1.json",
   );
   await expect(page.locator(".clinical-app")).toBeVisible();
+  await enterPatientChart(page, "Aaron");
   const initial = await page.evaluate(
     () => window.__buttonAuditSession?.snapshot().state,
   );
@@ -52,12 +57,7 @@ test("canonical search returns semantic results and retains complete commit revi
     .getByRole("textbox", { name: "Search chart", exact: true })
     .fill("");
   await expect(results).toHaveCount(0);
-  await page
-    .locator('[data-comp-id="home.work.w1Rooming"][data-event]')
-    .click();
-  await page
-    .locator('button[data-comp-id$=".nav.w1Orders"][data-event]')
-    .click();
+  await navigateClinicalScreen(page, "w1Orders");
   await page
     .getByRole("textbox", { name: "Find orders", exact: true })
     .fill("METFORMIN");
