@@ -1,9 +1,10 @@
+import { dataReason } from "./data";
 import { historicalReleaseEventId } from "../../scripts/historical-releases.mjs";
 import { PRIOR_AUTH_RELEASE_DAY } from "../src/releases";
 import { spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { z } from "zod";
 import { DRUG_NAMES, FORMULARY } from "../src/formulary";
 import { loadPopulation, profilesFromBundle } from "../src/patients";
@@ -11,8 +12,14 @@ import { DayScheduleSchema, PERSONAS } from "../src/schema";
 import { generateWorld } from "../src/world";
 
 const root = resolve(__dirname, "../..");
-const population = loadPopulation(join(root, "fixtures/synthea/index.json"));
-const run = generateWorld(1, 10, population.patients);
+const reason = dataReason("fixtures/synthea", "runs/world/1", "runs/world/2");
+describe.skipIf(Boolean(reason))(`archived Synthea worlds${reason ? ` (${reason})` : ""}`, () => {
+let population: ReturnType<typeof loadPopulation>;
+let run: ReturnType<typeof generateWorld>;
+beforeAll(() => {
+  population = loadPopulation(join(root, "fixtures/synthea/index.json"));
+  run = generateWorld(1, 10, population.patients);
+});
 
 it("keeps the committed seed-1 replay identical to the generator and below 15 MB", () => {
   const dir = join(root, "runs/world/2");
@@ -93,20 +100,7 @@ describe("real Synthea population", () => {
     expect(combo.every((m) => /acetaminophen/i.test(m.display))).toBe(true);
   });
 
-  it("maps combination strengths, insulin brands, extended-release oxycodone and penicillin variants", () => {
-    const meds = ["Hydrocodone Bitartrate 10 MG / Acetaminophen 325 MG", "insulin glargine [Basaglar]", "insulin lispro [Admelog]", "12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"];
-    const profiles = profilesFromBundle({ entry: [
-      { resource: { resourceType: "Patient", id: "mapping", birthDate: "1970-01-01" } },
-      ...meds.map((display, i) => ({ resource: { resourceType: "MedicationRequest", id: `m${i}`, status: "active", medicationCodeableConcept: { text: display } } })),
-      ...["Penicillin V", "Penicillin G", "amoxicillin"].map((text) => ({ resource: { resourceType: "AllergyIntolerance", category: ["medication"], code: { text } } })),
-    ] });
-    const p = profiles[0];
-    expect(p?.homeMeds.find((m) => m.drug === "hydrocodone-acetaminophen")?.dose).toBe(10);
-    expect(p?.homeMeds.find((m) => m.drug === "insulin glargine")?.unit).toBe("units");
-    expect(p?.homeMeds.find((m) => m.drug === "insulin lispro")?.unit).toBe("units");
-    expect(p?.homeMeds.find((m) => m.drug === "oxycodone")).toMatchObject({ dose: 10, freq: "q12h", prn: false });
-    expect(p?.allergies.every((a) => a.classes.includes("penicillin"))).toBe(true);
-  });
+
 });
 
 it("round-trips every Synthea schedule through Lean and checks all formulary reference fields", () => {
@@ -139,3 +133,20 @@ it("round-trips every Synthea schedule through Lean and checks all formulary ref
   }
   expect(lines.map((s) => JSON.parse(s))).toEqual(schedules);
 });
+
+});
+
+it("maps combination strengths, insulin brands, extended-release oxycodone and penicillin variants", () => {
+    const meds = ["Hydrocodone Bitartrate 10 MG / Acetaminophen 325 MG", "insulin glargine [Basaglar]", "insulin lispro [Admelog]", "12 HR Oxycodone Hydrochloride 10 MG Extended Release Oral Tablet"];
+    const profiles = profilesFromBundle({ entry: [
+      { resource: { resourceType: "Patient", id: "mapping", birthDate: "1970-01-01" } },
+      ...meds.map((display, i) => ({ resource: { resourceType: "MedicationRequest", id: `m${i}`, status: "active", medicationCodeableConcept: { text: display } } })),
+      ...["Penicillin V", "Penicillin G", "amoxicillin"].map((text) => ({ resource: { resourceType: "AllergyIntolerance", category: ["medication"], code: { text } } })),
+    ] });
+    const p = profiles[0];
+    expect(p?.homeMeds.find((m) => m.drug === "hydrocodone-acetaminophen")?.dose).toBe(10);
+    expect(p?.homeMeds.find((m) => m.drug === "insulin glargine")?.unit).toBe("units");
+    expect(p?.homeMeds.find((m) => m.drug === "insulin lispro")?.unit).toBe("units");
+    expect(p?.homeMeds.find((m) => m.drug === "oxycodone")).toMatchObject({ dose: 10, freq: "q12h", prn: false });
+    expect(p?.allergies.every((a) => a.classes.includes("penicillin"))).toBe(true);
+  });

@@ -1,3 +1,4 @@
+import { dataReason } from "./data";
 import { readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -5,7 +6,9 @@ import { DayScheduleSchema, PERSONAS } from "../src/schema";
 
 const root = resolve(__dirname, "../..");
 
-describe.each([1, 2])("world %i surgical routing", (revision) => {
+[1, 2].forEach((revision) => {
+  const reason = dataReason(`runs/world/${revision}`);
+  describe.skipIf(Boolean(reason))(`world ${revision} surgical routing${reason ? ` (${reason})` : ""}`, () => {
   it("routes every pre-op or surgical-day step only to the surgical team (P5)", () => {
     let surgical = 0;
     let preop = 0;
@@ -26,4 +29,5 @@ describe.each([1, 2])("world %i surgical routing", (revision) => {
     expect(surgical).toBeGreaterThan(0);
     expect(preop).toBeGreaterThan(0);
   });
+});
 });

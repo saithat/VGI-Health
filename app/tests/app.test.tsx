@@ -1,6 +1,7 @@
+import { withData } from "./data";
 import { readdirSync } from "node:fs";
 // @vitest-environment node
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect } from "vitest";
 import { buildCatalog, readJson } from "../scripts/catalog.mjs";
 import { loadEhrInterp } from "../public/ehr/interp-loader.mjs";
 import {
@@ -13,9 +14,10 @@ import { createWasmInterp } from "../src/core/wasmInterp";
 import { createSession } from "../src/core/session";
 import type { UiNode } from "../src/ehr/ui/types";
 
-const catalog = catalogSchema.parse(await buildCatalog());
+let catalog: ReturnType<typeof catalogSchema.parse>;
 describe("offline live UI catalog", () => {
-  it("renders a nonempty chart search for every committed patient without runtime exceptions", async () => {
+  beforeAll(async () => { catalog = catalogSchema.parse(await buildCatalog()); });
+  withData("fixtures", "programs/bad", "runs/mock").it("renders a nonempty chart search for every committed patient without runtime exceptions", async () => {
     const interp = createWasmInterp(await loadEhrInterp());
     const spec = await readJson("releases/v3/spec.json");
     const program = await readJson("releases/v3/personas/P1.json");
@@ -102,7 +104,7 @@ describe("offline live UI catalog", () => {
       expect(result?.rows.length, patient.name).toBeLessThanOrEqual(26);
     }
   }, 240000);
-  it("includes canonical and all persona releases, bad programs, and recorded versions", () => {
+  withData("fixtures", "programs/bad", "runs/mock").it("includes canonical and all persona releases, bad programs, and recorded versions", () => {
     for (const release of ["v1", "v2", "v3"]) {
       expect(
         catalog.programs.filter((program) =>
@@ -136,7 +138,7 @@ describe("offline live UI catalog", () => {
     );
     expect(currentProgram(catalog, "P1", "mock").deployed).toBe(true);
   });
-  it("projects every committed bundle and renders every program with real Lean WASM", async () => {
+  withData("fixtures", "programs/bad", "runs/mock").it("projects every committed bundle and renders every program with real Lean WASM", async () => {
     const interp = createWasmInterp(await loadEhrInterp());
     const context = {
       today: catalog.referenceDate,

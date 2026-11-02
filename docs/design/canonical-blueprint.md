@@ -1,6 +1,6 @@
 # Canonical EHR screen blueprint
 
-Design proposal, 2026-10-31. Docs only: this does not change Lean, the spec, the renderer, bindings, or role permissions. Grounding: [research](ehr-ui-research.md), [style guide](visual-style.md), [BRIEF §§5–6](../../BRIEF.md), and [core model §10](core-model.md#10-semantic-ui-tree--minimal-design-rules-owner-decision-oct-31-supersedes-the-raw-html-page-tree-for-ehr-screens).
+Design proposal, 2026-10-31. Docs only: this does not change Lean, the spec, the renderer, bindings, or role permissions. Grounding: [research](ehr-ui-research.md), [style guide](visual-style.md), [BRIEF §§5–6](../hackathon/BRIEF.md), and [core model §10](core-model.md#10-semantic-ui-tree--minimal-design-rules-owner-decision-oct-31-supersedes-the-raw-html-page-tree-for-ehr-screens).
 
 ## Scope and reading key
 

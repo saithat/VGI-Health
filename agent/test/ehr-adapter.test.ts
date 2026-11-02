@@ -1,7 +1,7 @@
 import { RELEASE_IDS } from '../src/release-config.js';
 /**
  * The real `ehr` adapter against a stub binary: pins the native command
- * lines and output handling (documented in src/ehr.ts and STATUS.md) so the
+ * lines and output handling (documented in src/ehr.ts and docs/hackathon/agent-status.md) so the
  * Lean lane can diff its CLI against them.
  */
 import { chmod, readFile, writeFile } from 'node:fs/promises';

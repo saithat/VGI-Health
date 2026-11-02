@@ -1,10 +1,11 @@
+import { dataReason } from "./data";
 /**
  * Shape checks against core-model.md section 7. The zod schemas in
  * src/schema.ts mirror the Lean types (`Task`, `TaskChoices`, `OrderChoice`,
  * `DaySchedule`); they must be replaced by, or checked against, the schemas
  * generated from Lean once lane A emits them.
  */
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { getNumber, getString } from "../src/json";
 import { SHIFTS } from "../src/calendar";
 import { naloxoneCheck } from "../src/controlled";
@@ -93,10 +94,18 @@ function weightKg(t: { todayResources: unknown[] }): { value: number; unit: stri
   return undefined;
 }
 
-describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("clinical choices (%s)", (index) => {
-  const r = run(1, index);
-  const tasks = allTasks(r);
-  const orders = tasks.flatMap((t) => [...t.choices.orders, ...t.choices.administer]).filter((o) => o.kind !== "imaging" && o.kind !== "procedure");
+[FIXTURE_INDEX, SYNTHEA_INDEX].forEach((index) => {
+  const reason = dataReason(index);
+  describe.skipIf(Boolean(reason))(`clinical choices (${index})${reason ? ` (${reason})` : ""}`, () => {
+  let r: ReturnType<typeof run>;
+  let tasks: ReturnType<typeof allTasks>;
+  let orders: ReturnType<typeof allTasks>[number]["choices"]["orders"];
+  beforeAll(() => {
+  r = run(1, index);
+  tasks = allTasks(r);
+  orders = tasks.flatMap((t) => [...t.choices.orders, ...t.choices.administer]).filter((o) => o.kind !== "imaging" && o.kind !== "procedure");
+
+  });
 
   it("use only formulary drugs, routes and frequencies, with positive doses", () => {
     expect(DRUG_NAMES.length).toBe(25);
@@ -187,10 +196,18 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("clinical choices (%s)", (index) =
     }
   });
 });
+});
 
-describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("controlled substances (CURES / naloxone facts, %s)", (index) => {
-  const r = run(1, index);
-  const tasks = allTasks(r);
+[FIXTURE_INDEX, SYNTHEA_INDEX].forEach((index) => {
+  const reason = dataReason(index);
+  describe.skipIf(Boolean(reason))(`controlled substances (CURES / naloxone facts, ${index})${reason ? ` (${reason})` : ""}`, () => {
+  let r: ReturnType<typeof run>;
+  let tasks: ReturnType<typeof allTasks>;
+  beforeAll(() => {
+  r = run(1, index);
+  tasks = allTasks(r);
+
+  });
 
   it("every outpatient controlled prescription records its supply in days", () => {
     let n = 0;
@@ -252,4 +269,5 @@ describe.each([FIXTURE_INDEX, SYNTHEA_INDEX])("controlled substances (CURES / na
     expect(naloxoneCheck([oxy(10)], []).applies).toBe(false);
     expect(naloxoneCheck([oxy(5)], [{ drug: "alprazolam", dose: 0.5, unit: "mg", route: "PO", freq: "TID", prn: true, display: "", origin: "world" }]).applies).toBe(true);
   });
+});
 });

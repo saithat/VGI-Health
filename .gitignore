@@ -23,9 +23,6 @@ playwright-report/
 test-results/
 
 
-# Playwright recording intermediates
-docs/recordings/.video-*/
-docs/recordings/*-error.png
 # Clinical UI review screenshots
 app/shots/*
 !app/shots/realism/

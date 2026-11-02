@@ -1,3 +1,4 @@
+import { withData } from "./data";
 import { resolve } from "node:path";
 import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
@@ -9,7 +10,7 @@ import {
 import { versionsFor } from "../src/dashboard/workload";
 
 describe("dashboard loading budget", () => {
-  it("keeps paired/control measurements in the summary and hydrates original source for one persona", async () => {
+  withData("runs/run1-P3").it("keeps paired/control measurements in the summary and hydrates original source for one persona", async () => {
     const recorded = JSON.parse(
       await readFile(
         resolve(import.meta.dirname, "../../runs/run1-P3/days/day-01/P3.json"),
@@ -103,7 +104,7 @@ describe("dashboard loading budget", () => {
       })),
     ).rejects.toThrow("another run");
   });
-  it("hydrates the selected persona's day traces only when details open", async () => {
+  withData("runs/run1-P3").it("hydrates the selected persona's day traces only when details open", async () => {
     const recorded = JSON.parse(
       await readFile(
         resolve(import.meta.dirname, "../../runs/run1-P3/days/day-01/P3.json"),

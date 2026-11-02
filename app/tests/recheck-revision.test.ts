@@ -1,15 +1,16 @@
+import { withData } from "./data";
 // @vitest-environment node
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect } from "vitest";
 import { recheckRevision } from "../scripts/recheck-revision";
 const digest = async (file: string) =>
   createHash("sha256")
     .update(await readFile(resolve("..", file)))
     .digest("hex");
 describe("real native check-only history", () => {
-  it("checks a current baseline and an old revision without changing recorded artifacts", async () => {
+  withData("runs/run1-P3").it("checks a current baseline and an old revision without changing recorded artifacts", async () => {
     const files = [
       "releases/v3/personas/P1.json",
       "runs/run1-P3/programs/P3/v4.json",
@@ -29,7 +30,7 @@ describe("real native check-only history", () => {
     expect(old.verdict).not.toBe("ok");
     expect(await Promise.all(files.map(digest))).toEqual(before);
   }, 60000);
-  it("refuses arbitrary files, another persona and authored mock revisions", async () => {
+  withData("fixtures", "programs", "runs").it("refuses arbitrary files, another persona and authored mock revisions", async () => {
     await expect(recheckRevision("../../etc/passwd", "P3")).rejects.toThrow(
       "Choose a recorded revision",
     );
