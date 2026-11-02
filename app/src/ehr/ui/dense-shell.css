@@ -1,0 +1,620 @@
+/* Compact production chrome. Geometry and decoration never select clinical data. */
+.clinical-app,
+.clinical-modal {
+  font-size: 12px;
+  line-height: 16px;
+}
+.clinical-app .clinical-brand {
+  min-height: 26px;
+  padding: 3px 7px;
+  gap: 7px;
+}
+.clinical-app .clinical-encounter {
+  border: 0;
+  padding: 0 2px;
+}
+.clinical-app .clinical-banner-content {
+  min-height: 46px;
+  padding: 3px 6px;
+  gap: 3px 7px;
+}
+.clinical-app .patient-name {
+  font-size: 15px;
+  line-height: 18px;
+}
+.clinical-app .patient-avatar {
+  width: 26px;
+  height: 26px;
+}
+.clinical-app .patient-identity {
+  flex-basis: 265px;
+}
+.clinical-app .patient-identity .mantine-Group-root {
+  margin-top: 1px;
+  gap: 3px 9px;
+}
+.clinical-app .patient-banner-details {
+  gap: 2px 7px;
+}
+.clinical-app .banner-detail {
+  line-height: 15px;
+}
+.clinical-app .banner-pill {
+  padding: 1px 4px;
+}
+.clinical-app .allergy-badge {
+  min-height: 20px;
+  padding: 1px 4px;
+  line-height: 16px;
+}
+.clinical-app .clinical-shell {
+  grid-template-columns: minmax(0, 1fr);
+}
+.clinical-app .clinical-navbar {
+  border-right: 0;
+  padding: 0 5px;
+  background: #e5edf5;
+}
+.clinical-app .clinical-navbar .workflow-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+.clinical-app .workflow-group {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: start;
+  gap: 4px;
+  margin: 0;
+  padding: 2px 0;
+}
+.clinical-app .workflow-group + .workflow-group {
+  border-top: 1px solid var(--clinical-border);
+}
+.clinical-app .nav-group-title {
+  flex: 0 0 auto;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 5px;
+  font-size: 12px;
+  line-height: 16px;
+  border-left-width: 3px;
+}
+.clinical-app .nav-group-title .clinical-icon {
+  width: 13px;
+  height: 13px;
+}
+.clinical-app .workflow-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.clinical-app .workflow-links li {
+  min-height: 24px;
+}
+.clinical-app .workflow-links button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: auto;
+  min-height: 24px;
+  padding: 3px 6px;
+  font-size: 12px;
+  line-height: 16px;
+  border-radius: 4px 4px 0 0;
+  border: 1px solid #a8bbcb;
+  background: linear-gradient(#f9fcff, #e1ebf5);
+  color: #244e6d;
+}
+.clinical-app .workflow-links button[aria-current="page"] {
+  background: white;
+  border-bottom-color: white;
+  box-shadow: inset 0 2px var(--section-accent, var(--clinical-primary));
+}
+.clinical-app .workflow-links button:hover {
+  background: white;
+}
+.clinical-app .workflow-group[data-nav-kind="application"] {
+  background: #fafcfd;
+}
+.clinical-app
+  .workflow-group[data-nav-kind="application"]
+  .workflow-links
+  button {
+  border-color: transparent;
+  border-right-color: var(--clinical-border);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--clinical-ink);
+}
+.clinical-app
+  .workflow-group[data-nav-kind="application"]
+  .workflow-links
+  button:hover {
+  background: var(--clinical-selected);
+}
+.clinical-app main {
+  padding: 3px 5px 0;
+}
+.clinical-app .clinical-workspace-heading {
+  margin-bottom: 3px;
+  min-height: 25px;
+  gap: 3px;
+  padding: 2px 3px;
+  border-bottom: 1px solid var(--clinical-border);
+  background: linear-gradient(#f8fbfd, #e6eef5);
+}
+.clinical-app .clinical-workspace-heading h1 {
+  font-size: 14px;
+  line-height: 20px;
+}
+.clinical-app .clinical-workspace {
+  gap: 5px;
+}
+.clinical-app .clinical-workspace.with-side {
+  grid-template-columns: 160px minmax(0, 1fr);
+}
+.clinical-app .clinical-workspace-body {
+  gap: 4px;
+}
+.clinical-app .clinical-side {
+  gap: 4px;
+  padding: 3px;
+  background: #edf3f6;
+  border-radius: 0;
+}
+.clinical-app .storyboard-avatar {
+  display: grid;
+  place-items: center;
+  height: 48px;
+  width: 100%;
+  background: linear-gradient(135deg, #dce9ef, #c6d9e4);
+  color: #416479;
+  border: 1px solid #a8bdca;
+}
+.clinical-app .clinical-side .clinical-info {
+  min-width: 0;
+  border-radius: 0;
+}
+.clinical-app .clinical-side .clinical-info-label,
+.clinical-app .clinical-side .presentation-heading,
+.clinical-app .clinical-side .clinical-section-title h2 {
+  font-size: 12px;
+  line-height: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin: 0;
+  padding: 2px 3px;
+  color: var(--section-accent, #34576d);
+  background: #e0eaf0;
+  border-left: 3px solid var(--section-accent, #547e98);
+}
+.clinical-app .clinical-side [data-section-tone="red"] .clinical-info-label,
+.clinical-app .clinical-side [data-info-id*="allerg" i] > :is(h2, h3) {
+  color: var(--clinical-red-ink);
+  background: var(--clinical-red-tint);
+  border-left-color: var(--clinical-red-ink);
+}
+.clinical-app .clinical-side [data-info-id*="precaution" i] > :is(h2, h3),
+.clinical-app .clinical-side [data-info-id*="isolation" i] > :is(h2, h3) {
+  color: var(--clinical-orange-ink);
+  background: var(--clinical-orange-tint);
+  border-left-color: var(--clinical-orange-ink);
+}
+.clinical-app .clinical-side .clinical-info-list > li {
+  padding: 2px 1px;
+  line-height: 15px;
+}
+.clinical-app .clinical-side .clinical-summary > div {
+  display: block;
+  padding: 2px 1px;
+}
+.clinical-app .clinical-side .clinical-summary dt {
+  font-size: 12px;
+  line-height: 15px;
+}
+.clinical-app .clinical-side .clinical-summary dd {
+  font-size: 12px;
+  line-height: 15px;
+  margin: 0;
+}
+.clinical-app .clinical-side .clinical-empty {
+  padding: 2px 3px;
+  margin: 0;
+}
+.clinical-app .clinical-side .clinical-section-body {
+  padding: 3px;
+}
+.clinical-app .clinical-section {
+  border-radius: 1px;
+}
+.clinical-app .clinical-section-title {
+  padding: 1px 4px;
+  min-height: 22px;
+  border-left-width: 3px;
+}
+.clinical-app .clinical-section-title h2 {
+  font-size: 12px;
+  line-height: 18px;
+}
+.clinical-app .clinical-section-body {
+  padding: 3px 4px;
+  gap: 4px;
+}
+.clinical-app .clinical-info-label {
+  margin: 0 0 2px;
+  line-height: 16px;
+}
+.clinical-app .clinical-control .mantine-Input-input {
+  font-size: 12px;
+  line-height: 16px;
+  min-height: 24px;
+  height: 24px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+.clinical-app .clinical-control textarea.mantine-Input-input {
+  height: auto;
+}
+.clinical-app .clinical-control .mantine-InputWrapper-label {
+  font-size: 12px;
+  line-height: 16px;
+  margin-bottom: 1px;
+}
+.clinical-app .clinical-action button {
+  min-height: 24px;
+  padding: 2px 5px;
+  line-height: 16px;
+  font-size: 12px;
+}
+.clinical-app .clinical-navigation-bar {
+  padding: 2px 3px;
+  gap: 3px;
+}
+.clinical-app .clinical-status {
+  min-height: 16px;
+  padding: 0 3px;
+  line-height: 16px;
+  border-radius: 2px;
+}
+.clinical-app :is(.presentation-table, .clinical-table-scroll table) {
+  font-size: 12px;
+  line-height: 16px;
+}
+.clinical-app
+  :is(.presentation-table, .clinical-table-scroll table)
+  :is(th, td) {
+  height: 22px;
+  padding: 2px 4px;
+}
+.clinical-app :is(.presentation-table, .clinical-table-scroll table) th {
+  background: linear-gradient(#f7fafc, #e1eaf1);
+  border-right: 1px solid #d1dce5;
+  border-bottom: 1px solid #a8bbcb;
+}
+.clinical-app
+  :is(.presentation-table, .clinical-table-scroll table)
+  tbody
+  tr:nth-child(even) {
+  background: #f0f5f9;
+}
+.clinical-app .presentation-heading {
+  padding: 2px 4px;
+  font-size: 12px;
+  line-height: 18px;
+}
+.clinical-app .presentation-table .presentation-status {
+  padding: 0 3px;
+  line-height: 16px;
+}
+.clinical-app .mar-medication-name {
+  font-size: 12px;
+  line-height: 16px;
+}
+.clinical-app .clinical-tabs .mantine-Tabs-list {
+  gap: 2px;
+  padding: 2px 3px 0;
+  background: #e2ebf4;
+}
+.clinical-app .clinical-tabs .mantine-Tabs-tab {
+  min-height: 25px;
+  padding: 3px 7px;
+  border-radius: 4px 4px 0 0;
+  border-left: 1px solid #bacad7;
+  border-right: 1px solid #bacad7;
+  border-top-width: 2px;
+}
+.clinical-app .clinical-tabs .mantine-Tabs-tab[data-active] {
+  background: white;
+  color: var(--clinical-primary);
+}
+.clinical-app .clinical-tabs .mantine-Tabs-panel {
+  padding-top: 3px;
+}
+.clinical-app .workspace-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  padding: 2px 5px;
+  margin-top: 4px;
+  min-height: 22px;
+  font-size: 12px;
+  line-height: 16px;
+  background: #e1eaf1;
+  border-top: 1px solid #b6c7d5;
+}
+.clinical-app .workspace-footer > span + span {
+  padding-left: 10px;
+  border-left: 1px solid #b6c7d5;
+}
+.clinical-app .clinical-card-grid {
+  display: block;
+  column-count: 1;
+  column-gap: 5px;
+}
+.clinical-app .clinical-card-grid > .clinical-section {
+  break-inside: avoid;
+  margin-bottom: 5px;
+  border-left: 3px solid var(--section-accent, var(--clinical-primary));
+}
+.clinical-app
+  .clinical-card-grid
+  > .clinical-section
+  > .clinical-section-title {
+  border-left: 0;
+  background: #f9fbfc;
+  border-bottom: 1px solid #d5dfe7;
+}
+.clinical-app
+  .clinical-card-grid
+  > .clinical-section
+  > .clinical-section-title
+  h2 {
+  display: inline-block;
+  padding: 1px 5px;
+  border-radius: 2px;
+  background: var(--section-tint, var(--clinical-blue-tint));
+  color: var(--section-accent, var(--clinical-primary));
+}
+.clinical-app .clinical-card-grid .clinical-section-body {
+  display: block;
+  padding: 3px 5px;
+}
+.clinical-app .clinical-card-grid .clinical-navigation-bar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0;
+  gap: 1px 4px;
+  background: transparent;
+  border: 0;
+}
+.clinical-app .clinical-card-grid .clinical-navigation-action button {
+  border: 0;
+  border-radius: 0;
+  min-height: 22px;
+  padding: 2px 1px;
+  color: var(--clinical-primary);
+  background: transparent;
+  font-weight: 400;
+  text-align: left;
+}
+.clinical-app .clinical-card-grid .clinical-navigation-action button:hover {
+  background: var(--clinical-selected);
+  text-decoration: underline;
+}
+.clinical-app .clinical-card-grid .clinical-info-list {
+  columns: 2;
+  column-gap: 8px;
+}
+.clinical-app .clinical-card-grid .clinical-info-list > li {
+  break-inside: avoid;
+  padding: 2px 0;
+}
+@media (min-width: 900px) {
+  .clinical-app .clinical-card-grid {
+    column-count: 2;
+  }
+  .clinical-app .clinical-section-body > .clinical-field {
+    flex-basis: calc(50% - 4px);
+    min-width: min(160px, 100%);
+  }
+}
+@media (min-width: 1100px) {
+  .clinical-app
+    main:has(
+      > .clinical-workspace
+        > .clinical-workspace-body
+        > .clinical-field:first-child
+        [data-comp-id$=".chartSearch"]
+    )
+    > .clinical-workspace-heading {
+    min-height: 30px;
+    padding-right: 355px;
+  }
+  .clinical-app
+    .clinical-workspace-body
+    > .clinical-field:first-child:has([data-comp-id$=".chartSearch"]) {
+    top: 4px;
+    right: 8px;
+    width: 330px;
+  }
+  .clinical-app .field-search .mantine-InputWrapper-root {
+    display: grid;
+    grid-template-columns: auto minmax(100px, 1fr);
+    align-items: center;
+    gap: 5px;
+  }
+}
+@media (min-width: 1280px) {
+  .clinical-app .clinical-card-grid {
+    column-count: 3;
+  }
+  .clinical-app .clinical-section-body > .clinical-field {
+    flex-basis: calc(25% - 4px);
+    min-width: min(155px, 100%);
+  }
+  .clinical-app .clinical-section-body > .field-narrative {
+    flex-basis: 100%;
+  }
+  .clinical-app
+    .clinical-section-body:has(> .field-narrative ~ .field-narrative)
+    > .field-narrative {
+    flex-basis: calc(50% - 4px);
+    min-width: min(270px, 100%);
+  }
+}
+@media (max-width: 899px) {
+  .clinical-app .clinical-workspace.with-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .clinical-app .workflow-group {
+    flex-wrap: wrap;
+  }
+  .clinical-app .workflow-links {
+    width: 100%;
+  }
+}
+
+/* Persistent chrome reserves its measured height; it never covers chart rows. */
+.clinical-app main {
+  padding-bottom: 5px;
+}
+.clinical-app .workspace-footer {
+  position: static;
+  margin-top: 0;
+}
+.live-controls {
+  position: static;
+  padding: 3px 6px;
+  margin: 0;
+  gap: 4px;
+}
+@media (min-width: 1100px) {
+  .clinical-app .clinical-shell[data-pinned="true"] main {
+    padding-bottom: calc(var(--clinical-status-height, 24px) + 6px);
+  }
+  .clinical-app .clinical-shell[data-pinned="true"] .workspace-footer {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 25;
+  }
+  body:has(.live-controls)
+    .clinical-shell[data-pinned="true"]
+    .workspace-footer {
+    padding-left: 240px;
+    min-height: 30px;
+  }
+  body:has(.clinical-shell[data-pinned="true"]) .live-controls {
+    position: fixed;
+    left: 5px;
+    bottom: 2px;
+    right: auto;
+    padding: 0;
+    z-index: 26;
+    max-width: 230px;
+  }
+  .live-controls button {
+    min-height: 24px;
+    height: auto;
+    padding: 2px 5px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+.clinical-app .clinical-side .clinical-summary dd {
+  min-height: 16px;
+}
+.clinical-app .patient-identity {
+  flex: 0 1 310px;
+}
+.clinical-app .patient-banner-details {
+  flex: 1 1 660px;
+}
+.clinical-app .banner-detail {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  max-width: 270px;
+}
+.clinical-app .banner-detail .banner-label {
+  flex: 0 0 auto;
+}
+.clinical-app .workflow-links button .clinical-icon {
+  color: var(--section-accent, var(--clinical-primary));
+  flex-shrink: 0;
+}
+/* Native activity groups share one wrapping chart-tab row after the shortcuts. */
+.clinical-app .clinical-navbar .workflow-groups {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: start;
+  column-gap: 6px;
+}
+.clinical-app .workflow-group {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+.clinical-app .workflow-group[data-nav-kind="application"] {
+  flex-basis: 100%;
+}
+/* Index cards keep small desktop tables tabular; repeated mobile labels are
+   decorative CSS content, while all actual column headers and values remain. */
+@media (min-width: 900px) {
+  .clinical-app .clinical-card-grid .presentation-table:not(.presentation-mar) {
+    display: table;
+    table-layout: fixed;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    thead {
+    display: table-header-group;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    tbody {
+    display: table-row-group;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    tr {
+    display: table-row;
+    padding: 0;
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    :is(th, td) {
+    display: table-cell;
+    padding: 2px 3px;
+    vertical-align: top;
+    border-bottom: 1px solid var(--clinical-border);
+  }
+  .clinical-app
+    .clinical-card-grid
+    .presentation-table:not(.presentation-mar)
+    td::before {
+    content: none;
+  }
+  .clinical-app .clinical-card-grid .clinical-presentation {
+    border: 0;
+  }
+  .clinical-app .clinical-card-grid .presentation-heading {
+    background: transparent;
+    border: 0;
+    padding: 0 1px 2px;
+    font-weight: 400;
+    color: var(--clinical-muted);
+  }
+  .clinical-app .clinical-card-grid .presentation-chart svg text {
+    font-size: 23px;
+  }
+}

@@ -1,0 +1,565 @@
+.dashboard,
+.dash-review {
+  color: var(--clinical-ink);
+  font:
+    13px/18px system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.dashboard {
+  background: var(--clinical-canvas);
+  min-height: 100vh;
+}
+:where(.dashboard, .dash-review) * {
+  box-sizing: border-box;
+}
+:where(.dashboard, .dash-review) h1,
+:where(.dashboard, .dash-review) h2,
+:where(.dashboard, .dash-review) h3,
+:where(.dashboard, .dash-review) h4 {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+:where(.dashboard, .dash-review) p {
+  margin: 8px 0;
+}
+:where(.dashboard, .dash-review) a {
+  color: var(--clinical-primary);
+}
+:where(.dashboard, .dash-review) button:not(.ehr-shell button),
+:where(.dashboard, .dash-review) select:not(.ehr-shell select) {
+  font: inherit;
+  color: var(--clinical-ink);
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-control);
+  border-radius: 3px;
+  min-height: 32px;
+  padding: 4px 8px;
+  max-width: 100%;
+}
+:where(.dashboard, .dash-review) button:not(.ehr-shell button) {
+  cursor: pointer;
+}
+:where(.dashboard, .dash-review) button:not(.ehr-shell button):hover {
+  background: var(--clinical-hover);
+}
+:where(.dashboard, .dash-review) button:not(.ehr-shell button):disabled {
+  color: var(--clinical-muted);
+  background: var(--clinical-gray-tint);
+  cursor: default;
+}
+:where(.dashboard, .dash-review) :focus-visible {
+  outline: 2px solid var(--clinical-primary);
+  outline-offset: 2px;
+}
+:where(.dashboard, .dash-review) label:not(.ehr-shell label) {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-weight: 600;
+}
+:where(.dashboard, .dash-review) input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--clinical-primary);
+}
+.dash-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 8px 12px;
+  background: var(--clinical-banner);
+  border-bottom: 1px solid var(--clinical-border);
+}
+.dash-header h1 {
+  margin: 0;
+  padding-left: 12px;
+  border-left: 1px solid var(--clinical-control);
+}
+.dash-header label {
+  margin-left: auto;
+}
+.dash-brand {
+  font-weight: 600;
+  text-decoration: none;
+}
+.dash-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 4px 12px;
+  border-bottom: 1px solid var(--clinical-border);
+  background: var(--clinical-surface);
+}
+.dashboard .dash-tabs button {
+  border: 0;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
+  background: var(--clinical-surface);
+  font-size: 12px;
+}
+.dashboard .dash-tabs button[aria-current="page"] {
+  border-bottom-color: var(--clinical-primary);
+  background: var(--clinical-selected);
+  font-weight: 600;
+}
+.dash-content {
+  padding: 12px;
+  max-width: 1600px;
+  margin: auto;
+}
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+.section-heading h2,
+.section-heading h3 {
+  margin: 0;
+}
+.section-heading > span {
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.persona-selector {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.dashboard .persona-selector button {
+  border-radius: 12px;
+  min-width: 36px;
+  min-height: 28px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+.dashboard .persona-selector button[aria-pressed="true"]:enabled {
+  background: var(--clinical-selected);
+  border-color: var(--clinical-primary);
+  font-weight: 600;
+}
+.persona-selector > span {
+  color: var(--clinical-muted);
+  margin-left: 4px;
+  font-size: 12px;
+}
+.run-banner {
+  color: var(--clinical-muted);
+  font-size: 12px;
+}
+.dash-badge {
+  display: inline-block;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--clinical-gray-tint);
+  color: var(--clinical-muted);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 400;
+}
+.dash-badge.pass {
+  background: var(--clinical-green-tint);
+  color: var(--clinical-green-ink);
+}
+.dash-badge.fail,
+.failure-message {
+  background: var(--clinical-red-tint);
+  color: var(--clinical-red-ink);
+}
+.dash-badge.seeded {
+  background: var(--clinical-yellow-tint);
+  color: var(--clinical-yellow-ink);
+}
+.failure-message {
+  padding: 8px;
+  border-left: 3px solid var(--clinical-red-ink);
+}
+.version-history {
+  margin-top: 16px;
+  border: 1px solid var(--clinical-border);
+  border-radius: 3px;
+  background: var(--clinical-surface);
+}
+.version-history .section-heading {
+  padding: 8px 12px;
+  margin: 0;
+  background: var(--clinical-banner);
+}
+.version-row,
+.version-column-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 185px 185px 145px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--clinical-border);
+  font-size: 12px;
+}
+.version-column-head {
+  background: var(--clinical-hover);
+  color: var(--clinical-muted);
+}
+.version-open {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  border: 0;
+  min-width: 0;
+  padding: 2px 0;
+  background: transparent;
+  font-size: 12px;
+}
+.version-open strong {
+  color: var(--clinical-primary);
+}
+.version-open span {
+  overflow-wrap: anywhere;
+}
+.unchanged-row {
+  background: var(--clinical-hover);
+  color: var(--clinical-muted);
+}
+.dashboard .rejected-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  width: calc(100% - 24px);
+  margin-left: 24px;
+  border: 0;
+  border-bottom: 1px solid var(--clinical-border);
+  border-radius: 0;
+  text-align: left;
+  padding: 6px 12px;
+  color: var(--clinical-red-ink);
+  background: var(--clinical-red-tint);
+  font-size: 12px;
+}
+.rejected-row > span:nth-child(2) {
+  flex: 1;
+  min-width: 220px;
+}
+.version-history > .dash-note {
+  padding: 0 12px;
+}
+.dash-note {
+  color: var(--clinical-muted);
+  font-size: 12px;
+}
+.mobile-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+:where(.dashboard, .dash-review) table:not(.ehr-shell table) {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+  line-height: 16px;
+  background: var(--clinical-surface);
+}
+:where(.dashboard, .dash-review) caption {
+  text-align: left;
+  font-weight: 600;
+  padding: 8px 0;
+  color: var(--clinical-ink);
+}
+:where(.dashboard, .dash-review) th:not(.ehr-shell th),
+:where(.dashboard, .dash-review) td:not(.ehr-shell td) {
+  padding: 6px;
+  border-bottom: 1px solid var(--clinical-border);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+:where(.dashboard, .dash-review) thead:not(.ehr-shell thead) {
+  background: var(--clinical-banner);
+}
+:where(.dashboard, .dash-review) th:not(.ehr-shell th) {
+  font-weight: 600;
+}
+.release-table {
+  table-layout: fixed;
+}
+.release-table th:first-child {
+  width: 12%;
+}
+.release-table th:nth-child(2) {
+  width: 6%;
+}
+.release-table th:nth-child(3) {
+  width: 10%;
+}
+.release-table th:nth-child(4) {
+  width: 33%;
+}
+.release-table th:nth-child(5) {
+  width: 26%;
+}
+.release-table th:nth-child(6) {
+  width: 13%;
+}
+:where(.dashboard, .dash-review) .text-button {
+  color: var(--clinical-primary);
+  text-align: left;
+}
+:where(.dashboard, .dash-review) details {
+  margin: 8px 0;
+}
+:where(.dashboard, .dash-review) summary {
+  cursor: pointer;
+  min-height: 28px;
+  padding: 4px 0;
+}
+:where(.dashboard, .dash-review) pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 18px;
+  background: var(--clinical-hover);
+  padding: 8px;
+}
+:where(.dashboard, .dash-review) dl {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr);
+  gap: 4px 8px;
+  font-size: 12px;
+}
+:where(.dashboard, .dash-review) dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.dash-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.dash-drawer-title {
+  font-size: 13px;
+  font-weight: 600;
+}
+.why-flow > section {
+  border-top: 1px solid var(--clinical-border);
+  padding: 12px 0;
+}
+.step-label {
+  display: block;
+  color: var(--clinical-muted);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.candidate {
+  border: 1px solid var(--clinical-border);
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 3px;
+}
+.candidate.fail {
+  border-left: 3px solid var(--clinical-red-ink);
+}
+.paired-screens {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.paired-screens > section {
+  min-width: 0;
+}
+.paired-screens > section > h3 {
+  padding: 8px;
+  background: var(--clinical-banner);
+}
+.replay-screen {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+[data-replay-highlight="true"] {
+  outline: 2px solid var(--clinical-red-ink);
+  outline-offset: 2px;
+}
+.counter-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 12px;
+}
+.event-path {
+  padding-left: 20px;
+  margin: 0;
+}
+.event-path button {
+  overflow-wrap: anywhere;
+  text-align: left;
+  margin-bottom: 4px;
+  width: 100%;
+}
+.dash-review .event-path button[aria-current="step"] {
+  background: var(--clinical-selected);
+  border-color: var(--clinical-primary);
+}
+.break-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--clinical-border);
+  background: var(--clinical-surface);
+}
+.break-form label {
+  flex: 1;
+  min-width: 0;
+}
+.break-form select {
+  width: 100%;
+  text-overflow: ellipsis;
+}
+@media (max-width: 1000px) {
+  .version-row,
+  .version-column-head {
+    grid-template-columns: minmax(0, 1fr) 140px 140px 125px;
+  }
+  .release-table {
+    min-width: 950px;
+  }
+  .paired-screens {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 720px) {
+  .dash-header label {
+    margin-left: 0;
+  }
+  .dash-content {
+    padding: 8px;
+  }
+  .version-column-head {
+    display: none;
+  }
+  .version-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 8px;
+  }
+  .mobile-label {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+  .version-row .dash-badge {
+    justify-self: start;
+  }
+  .counter-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .event-path {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .rejected-row > span:nth-child(2) {
+    min-width: 0;
+    flex-basis: 100%;
+  }
+}
+
+.dashboard .version-row {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--clinical-border);
+  border-radius: 0;
+  padding: 6px 12px;
+  text-align: left;
+  font-size: 12px;
+}
+.dashboard .version-row.unchanged-row {
+  background: var(--clinical-hover);
+}
+.migration-row {
+  cursor: pointer;
+}
+.migration-row:hover {
+  background: var(--clinical-hover);
+}
+@media (max-width: 720px) {
+  .dashboard .version-row {
+    padding: 8px;
+  }
+}
+
+/* Application framing shared with the clinical workspace and UI browser. */
+.dash-header {
+  background: var(--clinical-appbar);
+  color: white;
+  min-height: 48px;
+  border-bottom-color: var(--clinical-appbar-hover);
+  padding: 8px 20px;
+}
+.dash-header a,
+.dash-header h1 {
+  color: white;
+}
+.dash-header h1 {
+  border-left-color: #b7caed;
+}
+.dash-header label {
+  color: white;
+}
+.dash-tabs {
+  background: var(--clinical-activity);
+  padding: 0 20px;
+}
+.dashboard .dash-tabs button {
+  background: transparent;
+  padding: 8px 14px;
+}
+.dashboard .dash-tabs button[aria-current="page"] {
+  background: var(--clinical-surface);
+  color: var(--clinical-primary);
+}
+.dashboard .section-heading {
+  border-left: 4px solid var(--clinical-primary);
+  padding: 8px 10px;
+  background: var(--clinical-section);
+  border-radius: 3px;
+}
+.dashboard table thead {
+  background: var(--clinical-activity);
+}
+.dashboard table tbody tr:nth-child(even) {
+  background: var(--clinical-hover);
+}
+
+.dash-description {
+  margin: 12px 20px;
+  color: var(--clinical-secondary, #526171);
+  font-size: 13px;
+  line-height: 1.5;
+}

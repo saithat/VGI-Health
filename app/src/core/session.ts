@@ -1,0 +1,177 @@
+import type {
+  Event,
+  StepOutput,
+  State,
+  FactsOutput,
+  PatientContext,
+  ScreenView,
+} from "../../../lean/generated/ehr-types";
+import type { UiScreen } from "../ehr/ui/types";
+import type { Html } from "../ehr/html";
+import type { Interp } from "./interp";
+import { installButtonAudit } from "./buttonAudit";
+
+/** Opaque interpreter state. No runtime certification or tree validation.
+ * The release pipeline validates JSON and checks rendered screens offline.
+ * Bundle JSON is forwarded unchanged; Lean owns facts and display projection.
+ */
+export function createSession(
+  interp: Interp,
+  spec: unknown,
+  program: unknown,
+  bundle: unknown,
+  user: unknown,
+  options?: {
+    loadPatient(
+      id: string,
+      context: PatientContext,
+      event?: Event,
+    ): Promise<FactsOutput>;
+    onError?(error: unknown): void;
+  },
+) {
+  let args = [
+    JSON.stringify(spec),
+    JSON.stringify(program),
+    JSON.stringify(bundle),
+    JSON.stringify(user),
+  ] as const;
+  let stateJson = interp.init(...args);
+  function readSnapshot(
+    result: StepOutput["result"] | null = null,
+    snapshotArgs = args,
+    snapshotState = stateJson,
+  ) {
+    const state: State = JSON.parse(snapshotState);
+    let page: Html | undefined;
+    let view: ScreenView | undefined;
+    const ui: UiScreen | undefined = interp.renderUi
+      ? JSON.parse(interp.renderUi(...snapshotArgs, snapshotState))
+      : undefined;
+    // The semantic painter uses `ui`. Generate legacy HTML and the inspector's
+    // detailed view only when a consumer asks for them. Capture this snapshot's
+    // inputs so reading an old snapshot after a click still returns its tree.
+    return {
+      get page(): Html {
+        return (page ??= JSON.parse(
+          interp.render(...snapshotArgs, snapshotState),
+        ));
+      },
+      get view(): ScreenView {
+        return (view ??= JSON.parse(
+          interp.view(...snapshotArgs, snapshotState),
+        ));
+      },
+      ui,
+      state,
+      result,
+    };
+  }
+  let snapshot = readSnapshot();
+  const listeners = new Set<() => void>();
+  let loadGeneration = 0;
+  function preview(event: Event): StepOutput {
+    return JSON.parse(interp.step(...args, stateJson, JSON.stringify(event)));
+  }
+  function accept(response: StepOutput, facts?: unknown, event?: Event) {
+    const nextArgs =
+      facts === undefined
+        ? args
+        : ([args[0], args[1], JSON.stringify(facts), args[3]] as const);
+    const nextState = JSON.stringify(response.state);
+    // Lean rendering is pure for identical inputs. A no-op step still updates
+    // the inspector result, but must not rebuild the entire clinical tree.
+    const previous = snapshot;
+    const nextSnapshot =
+      nextState === stateJson && nextArgs === args
+        ? {
+            get page() {
+              return previous.page;
+            },
+            get view() {
+              return previous.view;
+            },
+            ui: previous.ui,
+            state: previous.state,
+            result: response.result,
+          }
+        : readSnapshot(response.result, nextArgs, nextState);
+    const priorPatient = snapshot.state.patientContext?.patient;
+    args = nextArgs;
+    stateJson = nextState;
+    snapshot = nextSnapshot;
+    listeners.forEach((listener) => listener());
+    const selected = snapshot.state.patientContext?.patient;
+    if (selected !== priorPatient) {
+      const generation = ++loadGeneration;
+      const selectedContext = snapshot.state.patientContext;
+      if (selected && options && selectedContext) {
+        void options
+          .loadPatient(selected, selectedContext, event)
+          .then((projection) => {
+            if (
+              generation !== loadGeneration ||
+              snapshot.state.patientContext?.patient !== selected
+            )
+              return;
+            if (projection.facts.sourcePatientId !== selected)
+              throw new Error(
+                "The loaded chart does not match the selected patient",
+              );
+            const hydrated: StepOutput = JSON.parse(
+              interp.step(
+                args[0],
+                args[1],
+                JSON.stringify(projection),
+                args[3],
+                stateJson,
+                JSON.stringify({ scroll: { screen: snapshot.state.screen } }),
+              ),
+            );
+            accept(hydrated, projection);
+          })
+          .catch((error: unknown) => {
+            if (generation === loadGeneration) options.onError?.(error);
+          });
+      }
+    }
+  }
+  const checkpoints: {
+    args: typeof args;
+    state: string;
+    snapshot: typeof snapshot;
+  }[] = [];
+  installButtonAudit({
+    program,
+    snapshot: () => ({
+      state: snapshot.state,
+      result: snapshot.result,
+      ui: snapshot.ui,
+    }),
+    checkpoint: () =>
+      checkpoints.push({ args, state: stateJson, snapshot }) - 1,
+    restore(id) {
+      const saved = checkpoints[id];
+      if (!saved) throw new Error("Unknown audit checkpoint");
+      ++loadGeneration;
+      args = saved.args;
+      stateJson = saved.state;
+      snapshot = saved.snapshot;
+      listeners.forEach((listener) => listener());
+    },
+  });
+  return {
+    getSnapshot: () => snapshot,
+    subscribe(listener: () => void) {
+      listeners.add(listener);
+      return () => {
+        listeners.delete(listener);
+      };
+    },
+    preview,
+    accept,
+    dispatch(event: Event) {
+      accept(preview(event), undefined, event);
+    },
+  };
+}

@@ -1,0 +1,27 @@
+{"workspace":
+ [{"field":
+   {"value": null,
+    "unit": null,
+    "required": false,
+    "provenance": null,
+    "pendingConfirm": false,
+    "label": "Patient search by name or MRN",
+    "kind": "search",
+    "humanOnly": false,
+    "comp": "workspace.search"}},
+  {"presentation":
+   {"kind": "schedule",
+    "children":
+    [{"info":
+      {"rows": [],
+       "label": "Patient workspace",
+       "infoId": "scheduleTasks",
+       "display": "table",
+       "comp": "workspace.list"}}]}}],
+ "viewer": "Physician",
+ "title": "Patient workspace",
+ "side": [],
+ "screen": "workspace:",
+ "nav": [["Application activities", [["workspace.lookup", "Patient Lookup"]]]],
+ "modal": null,
+ "banner": []}

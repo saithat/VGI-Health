@@ -1,0 +1,715 @@
+/* Clinical data surfaces. Global shell colors remain owned by the shell lane. */
+.clinical-presentation {
+  container: clinical-records / inline-size;
+  --p-ink: var(--clinical-ink, #243341);
+  --p-muted: var(--clinical-muted, #526171);
+  --p-border: var(--clinical-border, #cbd5df);
+  --p-surface: var(--clinical-surface, #fff);
+  --p-blue: var(--clinical-primary, #245a81);
+  color: var(--p-ink);
+  min-width: 0;
+  background: var(--p-surface);
+  border: 1px solid var(--p-border);
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.presentation-trackBoard {
+  container-name: clinical-board;
+}
+.presentation-timeGrid {
+  container-name: clinical-mar;
+}
+.presentation-heading {
+  margin: 0;
+  padding: 7px 10px;
+  background: var(--clinical-banner, #e8eef2);
+  color: var(--p-ink);
+  border-bottom: 1px solid var(--p-border);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 650;
+}
+.presentation-table-wrap {
+  min-width: 0;
+}
+.presentation-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  font-size: 12px;
+  line-height: 17px;
+  font-variant-numeric: tabular-nums;
+}
+.presentation-table th {
+  padding: 6px 8px;
+  background: var(--clinical-hover, #f6f8fa);
+  font-weight: 600;
+  text-align: left;
+  vertical-align: bottom;
+  border-bottom: 1px solid var(--p-border);
+  overflow-wrap: anywhere;
+}
+.presentation-table td {
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--p-border);
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.presentation-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.presentation-table tbody tr:nth-child(even) {
+  background: var(--clinical-hover, #f6f8fa);
+}
+.presentation-table td[data-first] {
+  font-weight: 600;
+}
+.presentation-cell-value {
+  display: block;
+  white-space: pre-line;
+}
+.presentation-cell-value + .presentation-cell-value {
+  margin-top: 4px;
+}
+.presentation-missing {
+  color: var(--p-muted);
+  font-weight: 400;
+}
+.presentation-table [data-column="Dose"],
+.presentation-table [data-column="Value"],
+.presentation-table [data-column="Age/sex"],
+.presentation-table [data-column="Count"] {
+  font-variant-numeric: tabular-nums;
+}
+.table-schedule th:nth-child(2),
+.table-schedule td:nth-child(2) {
+  width: 17%;
+}
+.table-trackBoard [data-column="Patient"] {
+  width: 12.5%;
+}
+.table-trackBoard [data-column="Chief complaint"] {
+  width: 13.5%;
+}
+.table-trackBoard [data-column="Room"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="Acuity"],
+.table-trackBoard [data-column="Arrival"],
+.table-trackBoard [data-column="LOS"] {
+  width: 5.5%;
+}
+.table-trackBoard [data-column="RN"],
+.table-trackBoard [data-column="Provider"] {
+  width: 6.5%;
+}
+.table-trackBoard [data-column="Age/sex"] {
+  width: 6%;
+}
+.table-trackBoard [data-column="Labs"],
+.table-trackBoard [data-column="Imaging"],
+.table-trackBoard [data-column="Disposition"] {
+  width: 8%;
+}
+.table-trackBoard [data-column="Status"] {
+  width: 9%;
+}
+.table-trackBoard th,
+.table-trackBoard td {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+.table-schedule th:nth-child(6),
+.table-schedule td:nth-child(6) {
+  width: 18%;
+}
+.table-orSchedule th[data-column="Room"] {
+  width: 6%;
+}
+.table-orSchedule th[data-column="Start"] {
+  width: 8%;
+}
+.table-orSchedule th[data-column="Procedure"] {
+  width: 36%;
+}
+.table-orSchedule th[data-column="Status"] {
+  width: 10%;
+}
+.table-messages[data-columns="6"] th:nth-child(1) {
+  width: 19%;
+}
+.table-messages[data-columns="6"] th:nth-child(2) {
+  width: 17%;
+}
+.table-messages[data-columns="6"] th:nth-child(3) {
+  width: 29%;
+}
+.table-messages[data-columns="6"] th:nth-child(4) {
+  width: 12%;
+}
+.table-messages[data-columns="6"] th:nth-child(5) {
+  width: 9%;
+}
+.table-messages[data-columns="6"] th:nth-child(6) {
+  width: 14%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(1) {
+  width: 16%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(2) {
+  width: 16%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(3) {
+  width: 24%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(4) {
+  width: 9%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(5) {
+  width: 9%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(6) {
+  width: 11%;
+}
+.table-messages[data-columns="6"].with-row-actions th:nth-child(7) {
+  width: 15%;
+}
+.table-results [data-column="Test"] {
+  width: 28%;
+}
+.table-results [data-column="Unit"] {
+  width: 9%;
+}
+.table-results [data-column="Flag"] {
+  width: 6%;
+}
+.table-flowsheet [data-column="Measure"] {
+  width: 28%;
+}
+.table-flowsheet [data-column="Unit"] {
+  width: 9%;
+}
+.table-timeGrid th,
+.table-timeGrid td,
+.table-flowsheet th,
+.table-flowsheet td {
+  border-right: 1px solid var(--p-border);
+}
+.table-timeGrid th:first-child,
+.table-timeGrid td:first-child {
+  width: 22%;
+}
+.table-flowsheet th:first-child,
+.table-flowsheet td:first-child {
+  width: 24%;
+}
+.table-timeGrid td {
+  padding: 8px 6px;
+}
+.table-timeGrid .presentation-status {
+  display: block;
+  padding: 4px 5px;
+  border-left: 3px solid currentColor;
+}
+.presentation-status {
+  display: inline-block;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 17px;
+  white-space: pre-line;
+}
+.tone-blue {
+  color: var(--clinical-blue-ink, #245a81);
+  background: var(--clinical-blue-tint, #e8f1f8);
+}
+.tone-red {
+  color: var(--clinical-red-ink, #9c2833);
+  background: var(--clinical-red-tint, #fcecee);
+}
+.tone-green {
+  color: var(--clinical-green-ink, #256348);
+  background: var(--clinical-green-tint, #eaf5ee);
+}
+.tone-amber {
+  color: var(--clinical-yellow-ink, #825300);
+  background: var(--clinical-yellow-tint, #fff3d6);
+}
+.tone-violet {
+  color: var(--clinical-violet-ink, #65448b);
+  background: var(--clinical-violet-tint, #f1ecf7);
+}
+.tone-neutral {
+  color: var(--clinical-gray-ink, #526171);
+  background: var(--clinical-gray-tint, #edf0f3);
+}
+.presentation-folders,
+.presentation-notes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.presentation-folders li {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--p-border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.presentation-folders li:last-child {
+  border-bottom: 0;
+}
+.presentation-folder-name {
+  flex: 1 1 88px;
+  font-weight: 600;
+}
+.presentation-folder-count {
+  color: var(--p-blue);
+  font-variant-numeric: tabular-nums;
+}
+.presentation-folder-detail {
+  flex-basis: 100%;
+}
+.presentation-field-label {
+  color: var(--p-muted);
+  font-weight: 400;
+}
+.presentation-notes > li {
+  padding: 12px;
+  border-bottom: 1px solid var(--p-border);
+}
+.presentation-notes > li:last-child {
+  border-bottom: 0;
+}
+.presentation-notes dl {
+  margin: 0;
+  display: flex;
+  gap: 6px 16px;
+  flex-wrap: wrap;
+}
+.presentation-note-detail {
+  display: flex;
+  gap: 5px;
+}
+.presentation-notes dt {
+  color: var(--p-muted);
+  font-weight: 400;
+}
+.presentation-notes dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.presentation-note-title {
+  flex-basis: 100%;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+}
+.presentation-note-body {
+  flex-basis: 100%;
+  padding: 10px 0;
+  font-size: 13px;
+  line-height: 20px;
+}
+.presentation-note-body dd {
+  white-space: pre-wrap;
+}
+.presentation-note-provenance {
+  display: block;
+  color: var(--p-muted, var(--clinical-muted, #526171));
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 18px;
+  margin-top: 3px;
+}
+.presentation-note-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 6px 0 0;
+  color: var(--clinical-muted, #526171);
+  font-size: 12px;
+}
+.presentation-note-footer div {
+  display: flex;
+  gap: 5px;
+}
+.presentation-note-footer dd {
+  margin: 0;
+}
+.presentation-empty {
+  margin: 0;
+  padding: 7px 10px;
+}
+.presentation-charts {
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr));
+  gap: 12px;
+  border-bottom: 1px solid var(--p-border);
+}
+.presentation-chart {
+  margin: 0;
+  min-width: 0;
+}
+.presentation-chart figcaption {
+  font-size: 13px;
+  font-weight: 600;
+}
+.presentation-chart figcaption span {
+  color: var(--p-muted);
+  font-weight: 400;
+}
+.presentation-chart svg {
+  display: block;
+  width: 100%;
+  max-width: 700px;
+  height: auto;
+  overflow: visible;
+}
+.presentation-chart svg text {
+  fill: var(--p-muted);
+  font-size: 16px;
+  font-family: inherit;
+}
+.chart-grid {
+  stroke: var(--p-border);
+  stroke-width: 1;
+}
+.chart-reference {
+  stroke: #756590;
+  stroke-width: 1.5;
+  fill: none;
+  stroke-dasharray: 4 3;
+}
+.chart-patient-line {
+  stroke: var(--p-blue);
+  fill: none;
+  stroke-width: 2.5;
+}
+.chart-patient-point {
+  fill: var(--p-blue);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+.presentation-chart-source {
+  color: var(--p-muted);
+  font-size: 12px;
+  line-height: 17px;
+  margin: 6px 0 0;
+}
+/* Dense desktop grids become complete labeled record blocks on narrow screens. */
+@media (max-width: 900px) {
+  .presentation-table thead {
+    display: contents;
+  }
+  .presentation-table thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table th {
+    flex: 1 1 100px;
+    width: auto !important;
+  }
+  .presentation-table tbody,
+  .presentation-table tbody tr {
+    display: block;
+  }
+  .presentation-table tbody tr {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table td {
+    display: grid;
+    grid-template-columns: minmax(90px, 34%) minmax(0, 1fr);
+    gap: 6px;
+    width: auto !important;
+    border: 0;
+    padding: 4px 8px;
+  }
+  .presentation-table td::before {
+    content: attr(data-column);
+    font-weight: 400;
+    color: var(--p-muted);
+  }
+  .presentation-table .presentation-cell-value + .presentation-cell-value {
+    grid-column: 2;
+  }
+  .presentation-chart svg {
+    height: auto;
+  }
+}
+
+/* A patient sidebar can constrain a widget even in a wide browser window. */
+@container clinical-board (max-width: 1000px), clinical-mar (max-width: 800px), clinical-records (max-width: 650px) {
+  .presentation-table thead {
+    display: contents;
+  }
+  .presentation-table thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table th {
+    flex: 1 1 100px;
+    width: auto !important;
+  }
+  .presentation-table tbody,
+  .presentation-table tbody tr {
+    display: block;
+  }
+  .presentation-table tbody tr {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--p-border);
+  }
+  .presentation-table td {
+    display: grid;
+    grid-template-columns: minmax(90px, 34%) minmax(0, 1fr);
+    gap: 6px;
+    width: auto !important;
+    border: 0;
+    padding: 4px 8px;
+  }
+  .presentation-table td::before {
+    content: attr(data-column);
+    font-weight: 400;
+    color: var(--p-muted);
+  }
+  .presentation-table .presentation-cell-value + .presentation-cell-value {
+    grid-column: 2;
+  }
+}
+@container clinical-board (min-width: 650px) and (max-width: 1000px) {
+  .table-trackBoard tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.presentation-mar th:first-child {
+  width: 30%;
+}
+.mar-order-details {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+}
+.mar-order-details div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 5px;
+}
+.mar-order-details dt {
+  color: var(--p-muted);
+  font-weight: 400;
+}
+.mar-order-details dd {
+  margin: 0;
+}
+.mar-medication-name {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.mar-medication-name dt {
+  flex-basis: auto;
+
+  font-size: 12px;
+}
+.mar-medication-detail {
+  margin: 0;
+}
+.mar-order-details [data-order-detail="Frequency"],
+.mar-order-details [data-order-detail="Instructions"] {
+  flex-basis: 100%;
+}
+.presentation-mar td {
+  border-right: 1px solid var(--p-border);
+  padding: 6px 4px;
+}
+.presentation-mar .presentation-status {
+  display: block;
+  border-left: 3px solid currentColor;
+  padding: 3px 2px;
+}
+.presentation-mar th {
+  font-size: 12px;
+  padding-right: 4px;
+  padding-left: 4px;
+}
+.presentation-mar .mar-day-heading {
+  text-align: center;
+  background: var(--clinical-banner, #e8eef2);
+  border-right: 1px solid var(--p-border);
+}
+.presentation-mar .mar-hour-heading {
+  text-align: center;
+  padding: 5px 2px;
+}
+@media (max-width: 900px) {
+  .presentation-chart svg text {
+    font-size: 28px;
+  }
+}
+.presentation-mar .presentation-status {
+  font-weight: 400;
+}
+.mar-documentation {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mar-documentation li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 12px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--p-border);
+}
+.mar-documentation-time {
+  color: var(--p-muted);
+}
+.mar-documentation .presentation-status {
+  font-weight: 400;
+}
+
+.chart-reference-band {
+  fill: #f1ecf7;
+  fill-opacity: 0.7;
+}
+/* The legacy MAR's fixed cell height must not constrain the reflowed detail block. */
+.clinical-presentation[data-info-id] .presentation-table td {
+  height: auto;
+}
+
+.presentation-subheading {
+  margin: 0;
+  padding: 7px 10px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 600;
+  color: var(--p-muted);
+  border-bottom: 1px solid var(--p-border);
+  background: var(--p-surface);
+}
+.presentation-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: start;
+}
+.presentation-row-actions .clinical-action {
+  margin: 0;
+}
+.presentation-row-actions button {
+  white-space: normal;
+  height: auto;
+  min-height: 28px;
+  text-align: left;
+  padding: 4px 6px;
+}
+
+/* The columns exist in UiScreen; only their proportions belong to the painter. */
+.clinical-columns:has(.presentation-folderList) {
+  grid-template-columns: minmax(180px, 220px) minmax(0, 1fr);
+  align-items: start;
+}
+@media (max-width: 1100px) {
+  .clinical-columns:has(.presentation-folderList) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* A composed folder/messages view needs one clinical frame, not nested cards. */
+.clinical-section:has(
+  > .clinical-section-body > .clinical-columns .presentation-folderList
+) {
+  border: 0;
+  background: transparent;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-section:has(
+    > .clinical-section-body > .clinical-columns .presentation-folderList
+  )
+  > .clinical-section-body {
+  padding: 0;
+}
+.clinical-columns:has(.presentation-folderList) > .clinical-section {
+  border: 0;
+  background: transparent;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-title {
+  background: transparent;
+  border: 0;
+  padding: 0 0 8px;
+}
+.clinical-columns:has(.presentation-folderList)
+  > .clinical-section
+  > .clinical-section-body {
+  padding: 0;
+}
+
+/* Explicit flags decorate both the result and its flag, never infer a threshold. */
+.presentation-table .result-high td[data-column="Value"],
+.presentation-table .result-high td[data-column="Result"],
+.presentation-table .result-high td[data-column="Flag"] { color: #a12837; font-weight: 700; }
+.presentation-table .result-low td[data-column="Value"],
+.presentation-table .result-low td[data-column="Result"],
+.presentation-table .result-low td[data-column="Flag"] { color: #215b94; font-weight: 700; }
+.presentation-table .result-critical td { background: #fce7eb; }
+.presentation-table .result-critical td[data-column="Value"],
+.presentation-table .result-critical td[data-column="Result"],
+.presentation-table .result-critical td[data-column="Flag"] { color: #a12837; font-weight: 750; }
+.presentation-table .esi-1 { color: #a12837; background: #fce7eb; }
+.presentation-table .esi-3 { color: #795010; background: #fff0c4; }
+.presentation-table .esi-4 { color: #205e55; background: #e3f2e9; }
+.presentation-table .esi-5 { color: #215b94; background: #e8f1fa; }
+.table-trackBoard [data-column="Arrival"], .table-trackBoard [data-column="LOS"] { white-space: nowrap; overflow-wrap: normal; }
+.presentation-table tr:has([data-row-navigation="true"]) { cursor: pointer; }
+.presentation-table tr:has([data-row-navigation="true"]):hover { background: var(--clinical-selected); }
+.presentation-row-actions .mantine-Button-root { min-width: max-content; }
+@media (min-width: 901px) {
+  .presentation-table.with-row-actions { table-layout: auto; }
+  .presentation-table td { padding-top: 5px; padding-bottom: 5px; }
+}
+.presentation-table .esi-2 { color: #944908; background: #fff0e0; }
+.presentation-chart .chart-latest { color: var(--p-ink); font-weight: 600; }
+.presentation-timeGrid > .presentation-heading { background: #eee8f4; color: #543e70; }
+.presentation-flowsheet > .presentation-heading { background: #e7f3ef; color: #205e55; }
+.presentation-growth > .presentation-heading { background: #e7f3ef; color: #205e55; }
+.presentation-orSchedule > .presentation-heading { background: #fff0e0; color: #944908; }
+@media (min-width: 901px) {
+  .table-trackBoard [data-column="Arrival"] { width: 7.5%; }
+  .table-trackBoard [data-column="Arrival"] .presentation-cell-value,
+  .table-trackBoard [data-column="LOS"] .presentation-cell-value { white-space: nowrap; }
+}
+
+/* Shared density and status palette; no clinical state is inferred here. */
+.presentation-heading { padding: 4px 6px; line-height: 18px; }
+.presentation-table { line-height: 16px; }
+.presentation-table :is(th, td) { padding: 3px 5px; }
+.presentation-status { padding: 1px 4px; min-height: 18px; line-height: 16px; }
+.presentation-table .status-red, .presentation-abnormal-high, .result-high, .result-critical { font-weight: 750; }
+.presentation-notes article { padding: 6px 8px; }
+.mar-order-details { display: flex; flex-wrap: wrap; gap: 1px 8px; }
+.mar-order-details .mar-medication-name { flex-basis: 100%; margin-bottom: 1px; }
+.mar-order-details .mar-medication-detail { margin-top: 0; }
+.presentation-mar .presentation-status { padding: 2px; }
+.presentation-table tr:focus-within { background: var(--clinical-selected); box-shadow: inset 3px 0 var(--clinical-primary); }

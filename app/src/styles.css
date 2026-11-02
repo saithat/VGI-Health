@@ -1,0 +1,203 @@
+body {
+  margin: 0;
+  background: var(--clinical-canvas, #f3f5f7);
+  color: var(--clinical-ink, #243341);
+  font:
+    13px/1.5 system-ui,
+    sans-serif;
+}
+.live-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  z-index: 150;
+}
+.live-home nav {
+  flex-wrap: wrap;
+  align-items: center;
+}
+.worklist-scroll {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+.worklist-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+.worklist-table th,
+.worklist-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #d5dfe7;
+}
+.patient-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin-top: 24px;
+}
+.live-home select {
+  max-width: 100%;
+  padding: 8px;
+}
+.workspace-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: #142c42;
+  color: #edf5fa;
+}
+.persona-control {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.signin-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 25px;
+  background: var(--clinical-canvas, #f3f5f7);
+}
+.signin-brand {
+  font-size: 25px;
+  font-weight: 800;
+}
+.signin-brand span {
+  font-size: 12px;
+  margin-left: 7px;
+}
+.subtle {
+  color: #526e7b;
+}
+.workspace-toolbar a {
+  color: #e2f6ff;
+}
+.patient-switcher,
+.workspace-source {
+  margin: 12px 20px;
+}
+.live-workspace {
+  display: flex;
+  align-items: flex-start;
+}
+.live-page {
+  flex: 1;
+  min-width: 0;
+}
+.inspector {
+  flex: 0 0 340px;
+  box-sizing: border-box;
+  padding: 16px;
+  background: #f8fbfd;
+  border: 1px solid #b8cbd5;
+  max-height: 90vh;
+  overflow: auto;
+  position: sticky;
+  top: 0;
+}
+.inspector:not([open]) {
+  flex-basis: auto;
+}
+.inspector summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+.inspector h2 {
+  font-size: 14px;
+  border-top: 1px solid #cbd8e3;
+  padding-top: 12px;
+}
+.inspector pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+}
+@media (max-width: 900px) {
+  .live-workspace {
+    flex-direction: column-reverse;
+  }
+  .inspector {
+    position: static;
+    flex-basis: auto;
+    width: 100%;
+    max-height: 35vh;
+  }
+  .live-page {
+    width: 100%;
+  }
+}
+.inspector-toggle {
+  position: fixed;
+  right: 14px;
+  bottom: 10px;
+  z-index: 110;
+  box-shadow: 0 1px 6px #263f4d20;
+}
+.inspector-content {
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.inspector-content h2 {
+  font-size: 14px;
+  margin: 10px 0 0;
+  border-top: 1px solid #d6e1e8;
+  padding-top: 12px;
+}
+.inspector-content pre {
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+}
+
+.workspace-toolbar {
+  background: var(--clinical-appbar);
+  color: white;
+}
+.workspace-toolbar a {
+  color: white;
+}
+.baseline-persona-picker {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 14px;
+}
+.baseline-persona-picker select {
+  padding: 7px 8px;
+  min-height: 32px;
+  border: 1px solid var(--clinical-control);
+  border-radius: 4px;
+  background: white;
+  color: var(--clinical-ink);
+  font: inherit;
+}
+.signin-brand {
+  color: var(--clinical-appbar);
+}
+.worklist-table th {
+  background: var(--clinical-activity);
+}
+.worklist-table tbody tr:nth-child(even) {
+  background: var(--clinical-hover);
+}
+/* Keep save feedback clear of the patient banner and fixed chart controls. */
+.clinical-notifications[data-position="bottom-right"] {
+  bottom: 56px;
+}

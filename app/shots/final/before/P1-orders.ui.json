@@ -1,0 +1,1936 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Carter, Zulma Tricia"
+    ],
+    [
+      "DOB",
+      "Mar 4, 1943"
+    ],
+    [
+      "MRN",
+      "13761514"
+    ],
+    [
+      "Age / sex",
+      "83 / F"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Amir Hassan, Internal Medicine"
+    ],
+    [
+      "Coverage",
+      "VGI Medicare Advantage"
+    ],
+    [
+      "Last encounter",
+      "AMB"
+    ],
+    [
+      "Last provider",
+      "Dr. Tracy Wilderman"
+    ],
+    [
+      "Last location",
+      "Mass General Brigham Urgent Care LLC"
+    ],
+    [
+      "Encounter",
+      "Office Visit – Internal Medicine"
+    ],
+    [
+      "Department",
+      "Internal Medicine"
+    ],
+    [
+      "Allergies",
+      "No Known Allergies"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "80.9 kg · Oct 22, 2026 01:46"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|scheduleTasks",
+          "Schedule"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (5)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (21)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Schedule"
+        ]
+      ]
+    ],
+    [
+      "Visit navigator",
+      [
+        [
+          "w1Orders.nav.w1Rooming",
+          "Rooming"
+        ],
+        [
+          "w1Orders.nav.w1MedRec",
+          "Medications"
+        ],
+        [
+          "w1Orders.nav.w1Hpi",
+          "History / ROS"
+        ],
+        [
+          "w1Orders.nav.w1Exam",
+          "Exam / Assessment & Plan"
+        ],
+        [
+          "w1Orders.nav.w1Labs",
+          "Lab Orders"
+        ],
+        [
+          "w1Orders.nav.w1Close",
+          "Sign Visit"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w1Orders",
+  "side": [],
+  "title": "Orders",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w1Orders.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.chart.includeResolved",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Expand section",
+              "role": "toggle"
+            }
+          }
+        ],
+        "id": "w1Orders.chart.includeResolved",
+        "title": "Include resolved problems"
+      }
+    },
+    {
+      "field": {
+        "comp": "w1Orders.orderSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Find orders",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefList",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefLisinopril",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Lisinopril 10 mg daily",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefAtorvastatin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Atorvastatin 40 mg daily",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefMetformin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Metformin 500 mg BID",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefAmoxicillin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Amoxicillin 1 g TID × 10 days",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefAzithromycin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Azithromycin 500 mg daily × 5 days",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefIbuprofen",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Ibuprofen 600 mg TID",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefOxycodone",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Oxycodone 10 mg q6h PRN × 5 days",
+              "role": "macro"
+            }
+          }
+        ],
+        "id": "w1Orders.prefList",
+        "title": "Preference list"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.dosing",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.dosingWeight",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Dosing weight (kg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": "kg",
+              "value": null
+            }
+          }
+        ],
+        "id": "w1Orders.dosing",
+        "title": "Dosing"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.medication",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.drug",
+              "humanOnly": false,
+              "kind": "code:amoxicillin|cefazolin|ceftriaxone|azithromycin|vancomycin|lisinopril|metformin|atorvastatin|warfarin|apixaban|enoxaparin|heparin|insulin glargine|insulin lispro|morphine|hydromorphone|oxycodone|hydrocodone-acetaminophen|tramadol|lorazepam|alprazolam|ondansetron|acetaminophen|ibuprofen|albuterol",
+              "label": "Enter Medication",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.abxIndication",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Antibiotic indication (required for antibiotics)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.dose",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Dose",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.doseUnit",
+              "humanOnly": false,
+              "kind": "code:",
+              "label": "Dose unit",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.route",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Route",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "PO",
+                  "label": "Oral (PO)"
+                },
+                {
+                  "code": "IV",
+                  "label": "Intravenous (IV)"
+                },
+                {
+                  "code": "IM",
+                  "label": "Intramuscular (IM)"
+                },
+                {
+                  "code": "SC",
+                  "label": "Subcutaneous (SC)"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.freq",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Frequency",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "daily",
+                  "label": "Daily"
+                },
+                {
+                  "code": "bid",
+                  "label": "Twice daily (BID)"
+                },
+                {
+                  "code": "tid",
+                  "label": "Three times daily (TID)"
+                },
+                {
+                  "code": "qid",
+                  "label": "Four times daily (QID)"
+                },
+                {
+                  "code": "q4h",
+                  "label": "Every 4 hours"
+                },
+                {
+                  "code": "q6h",
+                  "label": "Every 6 hours"
+                },
+                {
+                  "code": "q8h",
+                  "label": "Every 8 hours"
+                },
+                {
+                  "code": "q12h",
+                  "label": "Every 12 hours"
+                },
+                {
+                  "code": "once",
+                  "label": "Once"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.prn",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "As needed (PRN)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "true",
+                  "label": "Yes"
+                },
+                {
+                  "code": "false",
+                  "label": "No"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.medication",
+        "title": "Medication"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.dispense",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.duration",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Duration",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "1 dose",
+                  "label": "One dose"
+                },
+                {
+                  "code": "3 days",
+                  "label": "3 days"
+                },
+                {
+                  "code": "5 days",
+                  "label": "5 days"
+                },
+                {
+                  "code": "7 days",
+                  "label": "7 days"
+                },
+                {
+                  "code": "10 days",
+                  "label": "10 days"
+                },
+                {
+                  "code": "14 days",
+                  "label": "14 days"
+                },
+                {
+                  "code": "30 days",
+                  "label": "30 days"
+                },
+                {
+                  "code": "90 days",
+                  "label": "90 days"
+                },
+                {
+                  "code": "ongoing",
+                  "label": "Ongoing"
+                }
+              ]
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.quantity",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Dispense quantity",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.refills",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Refills",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.substitution",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Generic substitution allowed",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "true",
+                  "label": "Yes"
+                },
+                {
+                  "code": "false",
+                  "label": "No"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.dispense",
+        "title": "Dispense"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.dx",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.pharmacy",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Pharmacy",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.indication",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Indication",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.orderDiagnosis",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Associated diagnosis (ICD-10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "I10",
+                  "label": "I10 — Essential (primary) hypertension"
+                },
+                {
+                  "code": "E11.9",
+                  "label": "E11.9 — Type 2 diabetes mellitus without complications"
+                },
+                {
+                  "code": "E78.5",
+                  "label": "E78.5 — Hyperlipidemia, unspecified"
+                },
+                {
+                  "code": "J06.9",
+                  "label": "J06.9 — Acute upper respiratory infection, unspecified"
+                },
+                {
+                  "code": "H66.90",
+                  "label": "H66.90 — Otitis media, unspecified, unspecified ear"
+                },
+                {
+                  "code": "J02.9",
+                  "label": "J02.9 — Acute pharyngitis, unspecified"
+                },
+                {
+                  "code": "Z00.00",
+                  "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings"
+                },
+                {
+                  "code": "Z00.129",
+                  "label": "Z00.129 — Encounter for routine child health examination without abnormal findings"
+                },
+                {
+                  "code": "R05.9",
+                  "label": "R05.9 — Cough, unspecified"
+                },
+                {
+                  "code": "R50.9",
+                  "label": "R50.9 — Fever, unspecified"
+                },
+                {
+                  "code": "R10.9",
+                  "label": "R10.9 — Unspecified abdominal pain"
+                },
+                {
+                  "code": "M54.50",
+                  "label": "M54.50 — Low back pain, unspecified"
+                },
+                {
+                  "code": "F41.9",
+                  "label": "F41.9 — Anxiety disorder, unspecified"
+                },
+                {
+                  "code": "F32.A",
+                  "label": "F32.A — Depression, unspecified"
+                },
+                {
+                  "code": "N39.0",
+                  "label": "N39.0 — Urinary tract infection, site not specified"
+                },
+                {
+                  "code": "R51.9",
+                  "label": "R51.9 — Headache, unspecified"
+                },
+                {
+                  "code": "J45.909",
+                  "label": "J45.909 — Unspecified asthma, uncomplicated"
+                },
+                {
+                  "code": "K21.9",
+                  "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.dx",
+        "title": "Pharmacy and diagnosis"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.controlled",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.curesExemptionReason",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "CURES not checked: exemption",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.naloxoneOffer",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Naloxone offered",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.naloxoneEducation",
+              "humanOnly": false,
+              "kind": "flag",
+              "label": "Overdose and naloxone education given",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w1Orders.controlled",
+        "title": "Controlled substances (CURES / naloxone)"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.more",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Expand section",
+              "role": "toggle"
+            }
+          }
+        ],
+        "id": "w1Orders.more",
+        "title": "Additional"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w1Orders.orderInfo.currentMeds",
+              "display": "table",
+              "infoId": "currentMeds",
+              "label": "Current meds",
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"
+                  ],
+                  [
+                    "Instructions",
+                    ""
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Digoxin 0.125 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    ""
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet [Percocet]"
+                  ],
+                  [
+                    "Instructions",
+                    "Every six hours (qualifier value)"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Furosemide 40 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    "Take as needed."
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Warfarin Sodium 5 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    ""
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Alendronic acid 10 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    ""
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "verapamil hydrochloride 80 MG Oral Tablet [Calan]"
+                  ],
+                  [
+                    "Instructions",
+                    "Take verapamil hydrochloride 80 MG Oral Tablet [Calan] by mouth daily."
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "lisinopril 10 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    "Take lisinopril 10 MG Oral Tablet by mouth daily."
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Tracy Wilderman"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "Simvastatin 10 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    "Take Simvastatin 10 MG Oral Tablet by mouth daily."
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Dec 12, 2025 00:46"
+                  ],
+                  [
+                    "Prescriber",
+                    "Dr. Nicholas Greenfelder"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.orderInfo",
+        "labels": [
+          "Current meds",
+          "CURES report",
+          "Recent labs"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "info": {
+        "comp": "w1Orders.pending",
+        "display": "table",
+        "infoId": "orderSummary",
+        "label": "Pending orders",
+        "rows": []
+      }
+    },
+    {
+      "field": {
+        "comp": "w1Orders.priorAuthRequest",
+        "humanOnly": false,
+        "kind": "flag",
+        "label": "Request authorization (human entry)",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "info": {
+        "comp": "w1Orders.priorAuthStatus",
+        "display": "list",
+        "infoId": "priorAuthStatus",
+        "label": "Prior-auth status",
+        "rows": [
+          [
+            [
+              "Prior authorization",
+              "Not requested"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "button": {
+        "blockedReason": "no order on this line",
+        "comp": "w1Orders.requestPriorAuth",
+        "enabled": false,
+        "hotkey": null,
+        "label": "Request prior authorization",
+        "role": "secondary"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.newLine",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Accept and add another order",
+        "role": "secondary"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w1Orders.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Oct 22, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Oct 22, 2026 02:44"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Oct 1, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Oct 1, 2026 02:46"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Sep 17, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Sep 17, 2026 02:20"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Sep 10, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Sep 10, 2026 02:39"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 27, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 27, 2026 02:20"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 9, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 9, 2026 02:16"
+                  ],
+                  [
+                    "Reason",
+                    "Chronic congestive heart failure (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Gabriel Reilly"
+                  ],
+                  [
+                    "Location",
+                    "Fitchburg Outpatient Clinic"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jun 11, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Jun 11, 2026 02:21"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "May 28, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "May 28, 2026 02:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "May 14, 2026 02:21"
+                  ],
+                  [
+                    "End",
+                    "May 14, 2026 03:53"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "May 7, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "May 7, 2026 02:32"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "IMP"
+                  ],
+                  [
+                    "Start",
+                    "Apr 17, 2026 09:10"
+                  ],
+                  [
+                    "End",
+                    "Apr 23, 2026 09:10"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Apr 9, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Apr 9, 2026 02:21"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Mar 26, 2026 01:46"
+                  ],
+                  [
+                    "End",
+                    "Mar 26, 2026 02:28"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Feb 12, 2026 00:46"
+                  ],
+                  [
+                    "End",
+                    "Feb 12, 2026 01:10"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Feb 10, 2026 00:46"
+                  ],
+                  [
+                    "End",
+                    "Feb 10, 2026 01:16"
+                  ],
+                  [
+                    "Reason",
+                    "Chronic congestive heart failure (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Gabriel Reilly"
+                  ],
+                  [
+                    "Location",
+                    "Fitchburg Outpatient Clinic"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Jan 29, 2026 00:46"
+                  ],
+                  [
+                    "End",
+                    "Jan 29, 2026 01:29"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Dec 12, 2025 00:46"
+                  ],
+                  [
+                    "End",
+                    "Dec 12, 2025 01:01"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Dec 11, 2025 00:46"
+                  ],
+                  [
+                    "End",
+                    "Dec 11, 2025 01:21"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Nov 27, 2025 00:46"
+                  ],
+                  [
+                    "End",
+                    "Nov 27, 2025 01:19"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Oct 30, 2025 01:46"
+                  ],
+                  [
+                    "End",
+                    "Oct 30, 2025 02:42"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Margarite Koepp"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Sep 4, 2025 01:46"
+                  ],
+                  [
+                    "End",
+                    "Sep 4, 2025 02:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 20, 2025 07:40"
+                  ],
+                  [
+                    "End",
+                    "Aug 20, 2025 09:10"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Nicholas Greenfelder"
+                  ],
+                  [
+                    "Location",
+                    "Cambridge Public Health Commission"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 29, 2024 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 29, 2024 02:34"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 24, 2023 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 24, 2023 02:36"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "AMB"
+                  ],
+                  [
+                    "Start",
+                    "Aug 18, 2022 01:46"
+                  ],
+                  [
+                    "End",
+                    "Aug 18, 2022 02:37"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Vito Barton"
+                  ],
+                  [
+                    "Location",
+                    "Davis Square Family Practice"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Medications",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.toSign",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Review and sign",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.to.w1Labs",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Lab orders",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    }
+  ]
+}

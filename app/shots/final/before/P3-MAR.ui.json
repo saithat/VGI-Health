@@ -1,0 +1,404 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Harber, Leanne"
+    ],
+    [
+      "DOB",
+      "Jul 28, 1973"
+    ],
+    [
+      "MRN",
+      "28255014"
+    ],
+    [
+      "Age / sex",
+      "53 / F"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Amir Hassan, Internal Medicine"
+    ],
+    [
+      "Coverage",
+      "VGI Community Health Plan"
+    ],
+    [
+      "Last encounter",
+      "IMP"
+    ],
+    [
+      "Last provider",
+      "Dr. Maya Chen, MD"
+    ],
+    [
+      "Last location",
+      "4W-01-A"
+    ],
+    [
+      "Encounter",
+      "Inpatient Stay – Hospital Medicine"
+    ],
+    [
+      "Department",
+      "Hospital Medicine"
+    ],
+    [
+      "Allergies",
+      "No Known Allergies"
+    ],
+    [
+      "Code status",
+      "Full Code"
+    ],
+    [
+      "Weight",
+      "71.5 kg · Oct 17, 2026 00:31"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|shiftWorklist",
+          "My Patients / MAR"
+        ],
+        [
+          "workspace.activity|unitCensus",
+          "Unit Census"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (2)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to My Patients / MAR"
+        ]
+      ]
+    ],
+    [
+      "Navigator",
+      [
+        [
+          "w4Mar.nav.w4Worklist",
+          "Worklist"
+        ],
+        [
+          "w4Mar.nav.w4Flowsheet",
+          "Flowsheet"
+        ],
+        [
+          "w4Mar.nav.w4Handoff",
+          "Handoff"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w4Mar",
+  "side": [
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "allergyList",
+        "label": "Allergies",
+        "rows": [
+          [
+            [
+              "Record",
+              "No Known Allergies"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "currentMeds",
+        "label": "Active medications",
+        "rows": [
+          [
+            [
+              "Record",
+              "Hydrochlorothiazide 25 MG Oral Tablet — Take Hydrochlorothiazide 25 MG Oral Tablet by mouth daily."
+            ]
+          ],
+          [
+            [
+              "Record",
+              "lisinopril 10 MG Oral Tablet — Take lisinopril 10 MG Oral Tablet by mouth daily."
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "problemList",
+        "label": "Problems",
+        "rows": [
+          [
+            [
+              "Record",
+              "Gingivitis (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic kidney disease stage 2 (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Microalbuminuria due to type 2 diabetes mellitus (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic kidney disease stage 1 (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Disorder of kidney due to diabetes mellitus (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Essential hypertension (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body mass index 30+ - obesity (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Dependent drug abuse (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "History of tubal ligation (situation) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Recurrent urinary tract infection (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Impacted molars (disorder) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic pain (finding) (active)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Chronic intractable migraine without aura (disorder) (active)"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "list",
+        "infoId": "vitals",
+        "label": "Recent vitals",
+        "rows": [
+          [
+            [
+              "Record",
+              "Body Height 161.2 cm (Oct 17, 2026 00:31)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Oct 17, 2026 00:31)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body Weight 71.5 kg (Oct 17, 2026 00:31)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Body mass index (BMI) [Ratio] 27.52 kg/m2 (Oct 17, 2026 00:31)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Blood pressure panel with all children optional 117/72 mm[Hg] (Oct 17, 2026 00:31)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Heart rate 98 /min (Oct 17, 2026 00:31)"
+            ]
+          ],
+          [
+            [
+              "Record",
+              "Respiratory rate 13 /min (Oct 17, 2026 00:31)"
+            ]
+          ]
+        ]
+      }
+    }
+  ],
+  "title": "MAR",
+  "viewer": "Registered nurse",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w4Mar.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "info": {
+        "comp": "w4Mar.grid",
+        "display": "table",
+        "infoId": "marSchedule",
+        "label": "MAR time grid",
+        "rows": []
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w4Mar.marTabs.prnHistory",
+              "display": "table",
+              "infoId": "prnHistory",
+              "label": "PRN history",
+              "rows": []
+            }
+          }
+        ],
+        "id": "w4Mar.marTabs",
+        "labels": [
+          "PRN history",
+          "Glucose",
+          "Coagulation labs"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Mar.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Mar.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w4Mar.chart.newOrders",
+              "display": "table",
+              "infoId": "newOrders",
+              "label": "New orders",
+              "rows": []
+            }
+          }
+        ],
+        "id": "w4Mar.chart",
+        "labels": [
+          "New orders",
+          "Results",
+          "Notes",
+          "Encounters"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Mar.openDue",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Open due medication",
+        "role": "nav"
+      }
+    }
+  ]
+}

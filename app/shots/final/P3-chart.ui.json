@@ -1,0 +1,3028 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Harber, Leanne"
+    ],
+    [
+      "DOB",
+      "Jul 28, 1973"
+    ],
+    [
+      "MRN",
+      "28255014"
+    ],
+    [
+      "Age / sex",
+      "53 / F"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Dr. Amir Hassan, Internal Medicine"
+    ],
+    [
+      "Coverage",
+      "VGI Community Health Plan"
+    ],
+    [
+      "Encounter",
+      "Inpatient"
+    ],
+    [
+      "Attending",
+      "Dr. Maya Chen, MD"
+    ],
+    [
+      "Location",
+      "4W-01-A"
+    ],
+    [
+      "Encounter type",
+      "Inpatient Stay – Hospital Medicine"
+    ],
+    [
+      "Department",
+      "Hospital Medicine"
+    ],
+    [
+      "Allergies",
+      "No Known Allergies"
+    ],
+    [
+      "Code status",
+      "Full Code"
+    ],
+    [
+      "Weight",
+      "71.5 kg · Oct 17, 2026 00:31"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Application activities",
+      [
+        [
+          "workspace.activity|shiftWorklist",
+          "My Patients / MAR"
+        ],
+        [
+          "workspace.activity|unitCensus",
+          "Unit Census"
+        ],
+        [
+          "workspace.activity|inBasketResults",
+          "In Basket · Results (2)"
+        ],
+        [
+          "workspace.activity|inBasketMessages",
+          "In Basket · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inBasketRxRequests",
+          "In Basket · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to My Patients / MAR"
+        ]
+      ]
+    ],
+    [
+      "Nursing Navigator",
+      [
+        [
+          "w4Mar.nav.w4Worklist",
+          "Unit Census & MAR"
+        ],
+        [
+          "w4Mar.nav.w4Flowsheet",
+          "Flowsheets"
+        ],
+        [
+          "w4Mar.nav.w4Handoff",
+          "Handoff / SBAR"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w4Mar.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w4Mar.chartWorkspace.chartReview",
+          "Chart Review"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w4Mar",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Harber, Leanne"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 53 / F"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 28255014"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Jul 28, 1973"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Full Code"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · No isolation"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "No Known Allergies"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Dr. Amir Hassan, Internal Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Dr. Maya Chen, MD"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Dr. Maya Chen, MD"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Registered nurse · Rosa Delgado, RN"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Inpatient Stay – Hospital Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Hospital Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · 4W-01-A"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Oct 29, 2026 21:50"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · 3d 3h (snapshot)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 71.5 kg · 2026-10-17T00:31:37-07:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body Height 161.2 cm (Oct 17, 2026 00:31)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Oct 17, 2026 00:31)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Weight 71.5 kg (Oct 17, 2026 00:31)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 27.52 kg/m2 (Oct 17, 2026 00:31)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 117/72 mm[Hg] (Oct 17, 2026 00:31)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 98 /min (Oct 17, 2026 00:31)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 13 /min (Oct 17, 2026 00:31)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 2"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic kidney disease stage 2 (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Microalbuminuria due to type 2 diabetes mellitus (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic kidney disease stage 1 (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Disorder of kidney due to diabetes mellitus (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Essential hypertension (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index 30+ - obesity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dependent drug abuse (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "History of tubal ligation (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Recurrent urinary tract infection (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Impacted molars (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic intractable migraine without aura (disorder) (active)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Oct 17, 2026 00:31 · History and physical note · Dr. Chris Haag · Unknown · \n2026-10-17\n\n# Chief Complaint\n- Hunger\n- Frequent Urination\n- Thirst\n- Fatigue\n\n\n# History of Present Illness\nLeanne is a 53 year-old nonhispanic white female. Patient has a history of overdose (disorder), medication review due (situation), acute viral pharyngitis (disorder), vi… (excerpt; full note in Chart Review) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w4Mar.storyboard.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w4Mar.storyboard",
+        "title": "Patient Storyboard"
+      }
+    }
+  ],
+  "title": "MAR",
+  "viewer": "Registered nurse",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w4Mar.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w4Mar.selectedDose",
+              "display": "list",
+              "infoId": "marDoseDetails",
+              "label": "Ordered dose and prior administration",
+              "rows": []
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w4Mar.openDue",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Document selected dose",
+              "role": "nav"
+            }
+          }
+        ],
+        "id": "w4Mar.doseActivity",
+        "title": "Selected medication task"
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "w4Mar.grid",
+              "display": "table",
+              "infoId": "marSchedule",
+              "label": "Medication administration record",
+              "rows": []
+            }
+          }
+        ],
+        "kind": "timeGrid"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w4Mar.marTabs.prnHistory",
+              "display": "table",
+              "infoId": "prnHistory",
+              "label": "PRN history",
+              "rows": []
+            }
+          }
+        ],
+        "id": "w4Mar.marTabs",
+        "labels": [
+          "PRN history",
+          "Glucose",
+          "Coagulation labs"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Mar.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w4Mar.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w4Mar.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Oct 29, 2026 21:50"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "hyperglycemia, type 2 diabetes"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Maya Chen, MD"
+                  ],
+                  [
+                    "Location",
+                    "4W-01-A"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 17, 2026 00:31"
+                  ],
+                  [
+                    "End",
+                    "Oct 17, 2026 01:24"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chris Haag"
+                  ],
+                  [
+                    "Location",
+                    "Greater Lowell Family Practice Pc"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 20, 2026 00:31"
+                  ],
+                  [
+                    "End",
+                    "Jun 20, 2026 01:12"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 13, 2026 14:39"
+                  ],
+                  [
+                    "End",
+                    "Mar 13, 2026 15:43"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 6, 2026 23:31"
+                  ],
+                  [
+                    "End",
+                    "Mar 7, 2026 00:16"
+                  ],
+                  [
+                    "Reason",
+                    "Patient referral for dental care (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 27, 2026 23:31"
+                  ],
+                  [
+                    "End",
+                    "Feb 27, 2026 23:46"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 20, 2026 23:31"
+                  ],
+                  [
+                    "End",
+                    "Feb 21, 2026 00:07"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 11, 2026 12:37"
+                  ],
+                  [
+                    "End",
+                    "Feb 11, 2026 13:39"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 7, 2025 23:31"
+                  ],
+                  [
+                    "End",
+                    "Nov 8, 2025 01:09"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 25, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Oct 25, 2025 01:02"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 11, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Oct 11, 2025 01:26"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chris Haag"
+                  ],
+                  [
+                    "Location",
+                    "Greater Lowell Family Practice Pc"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 27, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Sep 27, 2025 01:03"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 26, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Jul 26, 2025 01:18"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 12, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Jul 12, 2025 00:53"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 28, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Jun 28, 2025 01:08"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "May 10, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "May 10, 2025 01:31"
+                  ],
+                  [
+                    "Reason",
+                    "Patient referral for dental care (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 26, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Apr 26, 2025 01:03"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 15, 2025 00:31"
+                  ],
+                  [
+                    "End",
+                    "Mar 15, 2025 01:12"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 28, 2025 23:31"
+                  ],
+                  [
+                    "End",
+                    "Mar 1, 2025 00:07"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Tracy Wilderman"
+                  ],
+                  [
+                    "Location",
+                    "Mass General Brigham Urgent Care LLC"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 7, 2025 23:31"
+                  ],
+                  [
+                    "End",
+                    "Feb 8, 2025 00:44"
+                  ],
+                  [
+                    "Reason",
+                    "Gingivitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 24, 2025 23:31"
+                  ],
+                  [
+                    "End",
+                    "Jan 25, 2025 00:06"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 26, 2024 00:31"
+                  ],
+                  [
+                    "End",
+                    "Oct 26, 2024 01:15"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 5, 2024 00:31"
+                  ],
+                  [
+                    "End",
+                    "Oct 5, 2024 01:18"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chris Haag"
+                  ],
+                  [
+                    "Location",
+                    "Greater Lowell Family Practice Pc"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 14, 2024 00:31"
+                  ],
+                  [
+                    "End",
+                    "Sep 14, 2024 00:59"
+                  ],
+                  [
+                    "Reason",
+                    "Patient referral for dental care (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Carlton Koch"
+                  ],
+                  [
+                    "Location",
+                    "Tewksbury Hospital"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 30, 2023 00:31"
+                  ],
+                  [
+                    "End",
+                    "Sep 30, 2023 01:08"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chris Haag"
+                  ],
+                  [
+                    "Location",
+                    "Greater Lowell Family Practice Pc"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 24, 2022 00:31"
+                  ],
+                  [
+                    "End",
+                    "Sep 24, 2022 01:23"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Dr. Chris Haag"
+                  ],
+                  [
+                    "Location",
+                    "Greater Lowell Family Practice Pc"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w4Mar.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Meds",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "info": {
+        "comp": "w4Mar.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Inpatient Stay – Hospital Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Hospital Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "in-progress"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w4Mar.contextPanels.data.chartMarSchedule",
+                                "display": "table",
+                                "infoId": "chartMarSchedule",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Medication",
+                                      "Hydrochlorothiazide 25 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Dose",
+                                      "1"
+                                    ],
+                                    [
+                                      "Route",
+                                      ""
+                                    ],
+                                    [
+                                      "Frequency",
+                                      "Take Hydrochlorothiazide 25 MG Oral Tablet by mouth daily."
+                                    ],
+                                    [
+                                      "Scheduled",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "lisinopril 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Dose",
+                                      "1"
+                                    ],
+                                    [
+                                      "Route",
+                                      ""
+                                    ],
+                                    [
+                                      "Frequency",
+                                      "Take lisinopril 10 MG Oral Tablet by mouth daily."
+                                    ],
+                                    [
+                                      "Scheduled",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w4Mar.contextPanels.card.chartMarSchedule",
+                    "title": "MAR Schedule"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w4Mar.contextPanels.data.chartPRN",
+                                "display": "table",
+                                "infoId": "chartPRN",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w4Mar.contextPanels.card.chartPRN",
+                    "title": "PRN History"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w4Mar.contextPanels.data.relevantLabs",
+                                "display": "table",
+                                "infoId": "relevantLabs",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Test",
+                                      "Glucose [Mass/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "93.05"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Urea nitrogen [Mass/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "9.39"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Creatinine"
+                                    ],
+                                    [
+                                      "Value",
+                                      "1.856"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Calcium [Mass/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "9.47"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Sodium [Moles/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "143.64"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mmol/L"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Potassium [Moles/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "5.15"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mmol/L"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Chloride [Moles/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "102.75"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mmol/L"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Carbon dioxide, total [Moles/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "22.81"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mmol/L"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "22–29"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "eGFR (MDRD)"
+                                    ],
+                                    [
+                                      "Value",
+                                      "80.567"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mL/min/{1.73_m2}"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Appearance of Urine"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Cloudy urine (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Odor of Urine"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Urine smell ammoniacal (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Clarity of Urine"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Translucent (qualifier value)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Color of Urine"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Brown color (qualifier value)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Glucose [Mass/volume] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "1.404"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Glucose [Presence] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Urine glucose test = ++ (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Bilirubin.total [Mass/volume] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "1.1503"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Bilirubin.total [Presence] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Finding of bilirubin in urine (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Ketones [Mass/volume] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "15.001"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Ketones [Presence] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Urine ketone test = + (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Specific gravity of Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "1.0054"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "{nominal}"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "pH of Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "5.684"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "pH"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Protein [Mass/volume] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "263.79"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Protein [Presence] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Urine protein test = ++ (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Nitrite [Presence] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Nitrite not detected in urine (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Hemoglobin [Presence] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Blood not detected in urine (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Leukocyte esterase [Presence] in Urine by Test strip"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Urine leukocytes not detected (finding)"
+                                    ],
+                                    [
+                                      "Unit",
+                                      ""
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Cholesterol [Mass/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "166.07"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "0–199"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Triglyceride [Mass/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "118.7"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "0–149"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
+                                    ],
+                                    [
+                                      "Value",
+                                      "95.11"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "0–99"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Cholesterol in HDL [Mass/volume] in Serum or Plasma"
+                                    ],
+                                    [
+                                      "Value",
+                                      "47.22"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mg/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "40–1000"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Oct 17, 2026 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Leukocytes [#/volume] in Blood by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "9.6723"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "10*3/uL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "4.5–11"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Erythrocytes [#/volume] in Blood by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "4.0518"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "10*6/uL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Hemoglobin"
+                                    ],
+                                    [
+                                      "Value",
+                                      "12.553"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "g/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "12–17.5"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Hematocrit [Volume Fraction] of Blood by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "40.332"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "%"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "MCV [Entitic mean volume] in Red Blood Cells by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "85.928"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "fL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "MCH [Entitic mass] by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "30.276"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "pg"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "MCHC [Entitic Mass/volume] in Red Blood Cells by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "35.616"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "g/dL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Erythrocyte [DistWidth] in Blood by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "41.265"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "fL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Platelets [#/volume] in Blood by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "204.43"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "10*3/uL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      "150–450"
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Platelet distribution width [Entitic volume] in Blood by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "233.04"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "fL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Test",
+                                      "Platelet [Entitic mean volume] in Blood by Automated count"
+                                    ],
+                                    [
+                                      "Value",
+                                      "11.68"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "fL"
+                                    ],
+                                    [
+                                      "Flag",
+                                      ""
+                                    ],
+                                    [
+                                      "Range",
+                                      ""
+                                    ],
+                                    [
+                                      "Collected",
+                                      "Sep 30, 2023 00:31"
+                                    ],
+                                    [
+                                      "Resulted",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w4Mar.contextPanels.card.relevantLabs",
+                    "title": "Lab Triggers"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w4Mar.contextPanels.data.chartIO",
+                                "display": "table",
+                                "infoId": "chartIO",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w4Mar.contextPanels.card.chartIO",
+                    "title": "Intake / Output"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w4Mar.contextPanels",
+        "title": "Clinical Context"
+      }
+    }
+  ]
+}
