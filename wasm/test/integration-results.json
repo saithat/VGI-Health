@@ -1,0 +1,28 @@
+{
+  "browser": "156.0.8078.4",
+  "loadMs": 37.600000001490116,
+  "nativeComparisons": 3,
+  "crossOriginIsolated": false,
+  "assets": [
+    {
+      "url": "http://127.0.0.1:5187/src/ehr/painter.tsx",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5187/src/ehr/html.ts",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5187/ehr/interp-loader.mjs",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5187/ehr/ehr-interp.mjs",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:5187/ehr/ehr-interp.wasm",
+      "status": 200
+    }
+  ]
+}
