@@ -1,0 +1,56 @@
+# Lean
+lean/.lake/
+**/.lake/
+# Node
+node_modules/
+**/node_modules
+dist/
+.vite/
+*.tsbuildinfo
+# Tooling installed locally
+.tools
+# Secrets / local config
+.env
+.env.*
+!.env.example
+# Raw generated data (trimmed fixtures are committed)
+fixtures/raw/
+infra/synthea/output/
+# Misc
+*.log
+.DS_Store
+playwright-report/
+test-results/
+
+
+# Playwright recording intermediates
+docs/recordings/.video-*/
+docs/recordings/*-error.png
+# Clinical UI review screenshots
+app/shots/*
+!app/shots/realism/
+app/shots/realism/*
+!app/shots/realism/present/
+!app/shots/final/
+# Local content-addressed screen-gate receipts
+runs/screen-check-cache/
+
+# Pinned Synthetic Hospital upstream downloads
+.cache/synthetic-hospital/
+
+# Existing local native checker used by live agent attempts
+/.cache/native-checker/
+
+# Lane-local validation inputs and baseline executable
+.cache/content2/
+.cache/conformance/
+
+__pycache__/
+*.pyc
+/.cache/
+runs/*
+!runs/mock/
+!runs/run1-P3/
+!runs/core-10day-live/
+!runs/world/
+runs/*/rebind/

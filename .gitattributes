@@ -1,0 +1,4 @@
+# Generated Synthea fixtures (infra/synthea/trim.mjs): collapse in GitHub diffs and stats.
+fixtures/synthea/** linguist-generated=true
+docs/design/changes.md merge=union
+TODO_PROOFS.md merge=union
