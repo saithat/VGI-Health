@@ -1,9 +1,9 @@
 # Shared-world simulation: one EHR, many simulated users
 
-Status: **proposed, 2026-11-02. Needs owner review.** Sections 6 and 9 change
-the measurement protocol (`past-calibration-blind-even-days-v1`) and the
-meaning of the headline numbers. Nothing here changes specs, properties or
-release semantics.
+Status: **design accepted, 2026-11-02; implementation not started.** The owner
+answered the open questions on 2026-11-02 (section 9). Sections 6 and 9 define
+a new measurement protocol, separate from `past-calibration-blind-even-days-v1`.
+Nothing here changes specs, properties or release semantics.
 
 ## 1. Summary
 
@@ -60,9 +60,9 @@ Goals:
 
 - One clinical state per simulated day, shared by all actors and changed only
   through the commit reducers in Lean (no TypeScript copy of clinical logic).
-- Many actors per role, for example two RNs on 4 West and an attending for
-  co-sign. This gives department × role (the 2026-11-02 personalization unit)
-  something to vary.
+- Many actors per role: a department-sized unit (decision 6). This gives
+  department × role (the 2026-11-02 personalization unit) real variety to
+  learn from.
 - Work created by events, with real queueing: tasks start when the actor is
   free and the work exists.
 - Bit-for-bit deterministic for a given seed and set of programs; a run can be
@@ -100,8 +100,10 @@ Non-goals:
   clinical decisions) still come from the generator, keyed by origin, so they
   match across arms.
 - **Coupling rule.** "When event E commits, create work item W for role R at
-  time t + delay." This is simulation policy, not a spec rule; it is labeled
-  as such and versioned (`couplingVersion`).
+  time t + delay." This is simulation policy, not a spec rule, and it is
+  versioned (`couplingVersion`). Each rule is labeled "simulation
+  assumption". Where a published benchmark exists, the rule cites it, as the
+  alert-urgency list does; otherwise it is marked unsourced (decision 3).
 
 ## 5. Design
 
@@ -227,7 +229,7 @@ The dashboard's Trajectories view gets a swim-lane mode: actors on one shared
 timeline, with commit arrows between lanes. This can come later; the log
 already holds everything it needs.
 
-## 6. Measurement (owner decision needed)
+## 6. Measurement
 
 ### 6.1 Why the current comparison stops working
 
@@ -249,11 +251,21 @@ as causality allows.
 | **One-at-a-time** (×5) | only persona X on its revision, everyone else on v0 | how much of the effect belongs to persona X |
 
 That is 7 world-days per measurement day, which the estimate in 5.4 suggests
-takes minutes, not hours. The headline becomes the agent-world vs
-control-world difference. Per-persona attribution comes from the
-one-at-a-time worlds. The difference between the agent world and the sum of
-the one-at-a-time effects is reported as **interaction** (positive or
-negative), which is something the current design can't measure at all.
+takes minutes, not hours.
+
+**Headline (decision 1): how each persona's UI evolves inside a realistic
+shared EHR.** The primary result is, for each persona:
+
+- its revision timeline in the agent world (what changed, night by night);
+- its effort on matched work in the agent world vs the control world.
+
+The agent world is where every persona evolves at the same time, as it would
+in a hospital. The one-at-a-time worlds separate what a persona's own
+revision did from what it got from the others' revisions. The difference
+between the agent world and the sum of the one-at-a-time effects is reported
+as **interaction** (positive or negative), which the current design can't
+measure at all. System metrics (6.3) are the context for each persona's
+result, not a separate headline.
 
 ### 6.3 Metrics
 
@@ -287,8 +299,8 @@ These citations need to be checked when this is built.
 The odd/even split stays: odd days for calibration, even days for blind
 measurement. Two parts have to change:
 
-- **Validation holdout.** Today it is every third task of the latest odd day.
-  Tasks are no longer fixed, so the proposal is to hold out by **origin**:
+- **Validation holdout (decision 2).** Today it is every third task of the
+  latest odd day. Tasks are no longer fixed, so it holds out by **origin**:
   every third exogenous origin (and all work it causes) is held out of
   prompts and scored only in aggregate. To validate a candidate, the night
   re-runs that odd day as a one-at-a-time world with the candidate in place.
@@ -304,8 +316,8 @@ and the holdout returns aggregates only.
 - The night's observation step reads that persona's actors' traces from the
   shared log. Prompts get per-actor summaries plus the system metrics for
   work the persona touched (for example "doses you ordered were given 40 min
-  later on average"). Whether prompts may see the system metrics is a
-  question for the owner (section 9).
+  later on average"), from **training days only** (decision 4). Holdout
+  origins and blind even days stay out of prompts.
 - Certification, the screen check, `ehr deploy` and the no-agent release
   migration are unchanged; they work on single programs.
 - The nightly unit can stay per persona, or move to department × role
@@ -321,7 +333,7 @@ still passes in single-actor mode.
 | Phase | Scope | Done when |
 |---|---|---|
 | 0 | Steppable `Actor.next`; `ehr world-sim` in single-actor mode with fixed work items | byte-identical `DayResult` for all 50 world-2 persona-days |
-| 1 | Shared in-memory event log through `Commit.check` / `Commit.Mar.commit` / ADT. One coupling: inpatient orders signed by P2/P5 create P3 W4 occurrences. Two RNs on 4 West. Real queueing. | W4 work comes only from simulated orders; stale retries and late doses reported; timing measured |
+| 1 | Shared in-memory event log through `Commit.check` / `Commit.Mar.commit` / ADT. One coupling: inpatient orders signed by P2/P5 create P3 W4 occurrences. The 4 West RNs and their prescribers from the department staffing (decision 6). Real queueing. | W4 work comes only from simulated orders; stale retries and late doses reported; timing measured |
 | 2 | Results and critical-result loop, NP→attending co-sign queue, sourced interruptions | escalations and co-sign latency in `system.json` |
 | 3 | All seven workflows on coupling rules; demand/choice split in `world/src`; the seven arms | a 10-day five-persona run, agent vs control world, with attribution |
 | 4 | Agent loop on the shared world (observation, origin holdout, train estimate); swim-lane dashboard | one full run with the agent in the loop |
@@ -329,23 +341,50 @@ still passes in single-actor mode.
 Phases 0–1 are mostly Lean, with a small part in `world/src`. Phase 3 is
 mostly `world/src`. Phases 2 and 4 are mixed.
 
-## 9. Open questions for the owner
+## 9. Owner decisions (2026-11-02)
 
-1. **Headline metric.** Is agent-world vs control-world (system level) the
-   headline, with per-persona attribution second? Or does the per-persona,
-   per-task number stay the headline?
-2. **Holdout by origin** (6.4) in place of every third task. OK?
-3. **Coupling assumptions** (lab turnaround, pharmacy verification delay,
-   paging rules) are simulation policy. Should they be labeled the same way
-   as "hospital policy (not law)", or sourced like the alert-urgency list?
-4. **Prompt visibility.** May the nightly agent see system metrics, such as
-   downstream delays caused by its persona's work? It is useful signal, but
-   it widens what the designer optimizes.
-5. **Old runs.** Keep `core-10day-live` as the historical single-session
-   result, and report shared-world runs separately with a new protocol name?
-   The proposal is yes; the old numbers are not comparable.
-6. **Staffing.** How many actors per role for the first unit (proposal: 2 RNs,
-   1 ED physician, 1 surgeon, 1 PCP, 1 NP, 1 attending co-signer)?
+1. **Headline.** In the owner's words: "I want to see how the UI/UX evolves
+   per persona in a realistic shared EHR system." The headline is each
+   persona's revision timeline and its effort on matched work, agent world vs
+   control world (6.2). System-level metrics and interaction are context.
+2. **Holdout by origin** (6.4): approved.
+3. **Coupling assumptions:** label every one "simulation assumption". Cite a
+   published benchmark where one exists; otherwise mark it unsourced (4).
+4. **Prompt visibility:** the nightly agent may see downstream system metrics
+   for work its persona touched, from training days only (7).
+5. **Old runs:** `core-10day-live` stays as the historical single-session
+   result under its own protocol name. Shared-world runs are reported under a
+   new protocol name, and the numbers are not compared directly.
+6. **Staffing:** a larger, department-sized unit, so department × role
+   personalization has real variety (9.1).
+
+### 9.1 Department staffing
+
+This is a proposal within decision 6; the exact counts are adjustable.
+
+| Role (persona) | Actors | Unit |
+|---|---|---|
+| Inpatient RN (P3) | 4 | 4 West, day shift |
+| ED physician (P2) | 2 | ED |
+| PCP physician (P1) | 2 | adult clinic |
+| Pediatric NP (P4) | 2 | pediatric clinic |
+| General surgeon (P5) | 2 | surgery / OR |
+| Attending co-signer | 1 | co-sign only; on the canonical v0, not personalized |
+
+That is 13 actors. Two things follow from it:
+
+- **Different users in the same role.** Actors in one role share the role's
+  program revision (department × role), but not identical behavior. Each
+  actor's `PersonaParams` gets a seeded variation around its persona (keyboard
+  share, backtrack rate, review habits), as in the 24 seeded ED physicians of
+  exploration round two. The nightly loop mines across all actors in the
+  department × role.
+- **Demand scales with staff.** The generator is sized today for one clinician
+  per persona: about 40 PCP tasks, 18 ED encounters and ~50 W4 occurrences on
+  10 patients per day. Arrivals, clinic bookings and ward census scale with
+  staffing, so the work per actor stays realistic and is not split thinly
+  between more people. The scaling factors are simulation assumptions
+  (decision 3).
 
 ## 10. Not covered: making runs faster
 

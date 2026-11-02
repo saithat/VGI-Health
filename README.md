@@ -754,8 +754,8 @@ The five-persona run (`runs/core-10day-live/`) completed all **10 of 10 days** a
 In these runs each persona's day is simulated alone, against a fixed task list
 and frozen data, so no persona's work affects another's. The proposed
 [shared-world simulator](docs/design/shared-world-sim.md) would run every
-simulated clinician in one shared EHR state through the commit reducers. It is
-awaiting owner review.
+simulated clinician in one shared EHR state through the commit reducers. The
+design is accepted; implementation has not started.
 
 ## Run it
 
