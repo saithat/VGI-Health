@@ -130,6 +130,7 @@ code.
 | Claim | Status | Where |
 |---|---|---|
 | Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
+| Native commit-check acceptance implies the guard holds on the supplied current FHIR projection | 🟢 **Proved** for the prototype; freshness, authenticated state and persistence remain trusted integration obligations | `Commit/Check.lean` (`accepted_current_guard`); [concurrency design](docs/design/concurrency.md) |
 | Persisted commits pass the guard on the record version written against | ⚪ **Designed, in progress**; live writes still use the client guard (G3) | [Concurrency design](docs/design/concurrency.md) |
 | Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Medplum correspondence is in progress | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
 | Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
@@ -391,7 +392,13 @@ saved write, or a refused or failed write (nothing is saved and the screen keeps
 ### Commit authority and shared workflows (in progress)
 
 [Concurrency design](docs/design/concurrency.md) specifies a native Lean commit
-checker behind a future authenticated service as the only Medplum writer. It
+checker behind a future authenticated service as the only Medplum writer. The
+native `ehr commit-check` prototype reads a JSON request on stdin and returns
+accept (recomputed staged state and resource URL/If-Match pairs) or reject
+(guard, event, version or chart-binding reason). It projects the supplied current
+FHIR bundle and proves acceptance implies the existing guard holds on that
+projection. The wrapper must supply authenticated session state, release, user,
+context and complete current reads. The command performs no writes. The design
 retains the per-session WASM interpreter and adds current-record guard checking,
 patient serialization, shared workflow controls and FHIR version preconditions.
 The deployment target is that no commit is persisted unless its guard holds on
@@ -401,6 +408,21 @@ interleavings of its atomic actions, including competing actors and bed reuse.
 `Multi/Tests.lean` includes a provably unsafe stale-read schedule. This model is
 not yet connected to FHIR persistence; G3 remains open until the service mediates
 all writes.
+
+After `cd lean && lake build`, run
+`TMPDIR=/home/saithat/Projects/run-tmp python3 scripts/test-commit-check.py` from
+the repository root for native JSON boundary tests. To inspect a valid request
+and response from `lean/`:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+lake env lean --run Ehr/Commit/Example.lean > "$TMPDIR/commit-request.json"
+.lake/build/bin/ehr commit-check < "$TMPDIR/commit-request.json"
+```
+
+This work adds native-only modules without rebuilding the recorded browser
+artifacts. The all-source Lean/WASM staleness check requires a WASM rebuild for
+a fresh browser build; no recorded certificates or app assets are rebound here.
 
 ### Lean in the browser
 
@@ -483,10 +505,10 @@ step 2.
     retryable failure for data that was already stored.
 - **Not proved.** The commit mapper is tested, not proved, so it is part of
   the trusted surface.
-- **Client-side guard.** The commit guard runs in the client. Medplum
+- **Client-side guard.** The live commit guard runs in the client. Medplum
   accepts any write that the signed-in user's access policy allows. Running
-  the same Lean guard on the server (as a proxy or Medplum Bot) is not done;
-  see gap G3.
+  the same Lean guard in the live server write path is not done. The isolated
+  native `commit-check` prototype above does not mediate these writes; see G3.
 
 ### Replay mode (`/ehr`, `/browse`, `/dashboard`)
 

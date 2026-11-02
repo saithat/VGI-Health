@@ -2,6 +2,7 @@ import Ehr
 import Ehr.Api
 import Ehr.Cli.Check
 import Ehr.Cli.Sim
+import Ehr.Cli.Commit
 import Ehr.Render.Cli
 
 /-!
@@ -33,6 +34,7 @@ def usage : String :=
   "usage: ehr <command>\n" ++
   "  init                     stdin InitInput  -> State\n" ++
   "  step                     stdin StepInput  -> StepOutput\n" ++
+  "  commit-check             stdin Commit.Request -> accept/reject (no writes)\n" ++
   "  view                     stdin ViewInput  -> ScreenView\n" ++
   "  run-batch <file.jsonl>   BatchCase per line -> BatchStep per event (JSONL)\n" ++
   "  check --spec S --program P [--prev P0] --canonical C   -> Verdict (exit 0 ok, 1 not)\n" ++
@@ -80,6 +82,7 @@ def main (args : List String) : IO UInt32 := do
       | .ok out => IO.println (encodeJson out); return 0
   | ["init"] => stdinCommand InitInput State runInit
   | ["step"] => stdinCommand StepInput StepOutput runStep
+  | ["commit-check"] => stdinCommand Commit.Request Commit.Decision Cli.Commit.run
   | ["view"] => stdinCommand ViewInput ScreenView runView
   | ["run-batch", file] => runBatch file
   | "check" :: rest => Ehr.Cli.checkMain rest

@@ -66,10 +66,31 @@ insufficient. Lease loss invalidates the attempt. Patient revision CAS in the
 same transaction fences overlapping attempts and makes a crashed lock holder's
 old transaction fail. Re-read/recheck after conflicts; never retry old output.
 
-Patient locks do not protect a bed shared by different patients. Acquire all
+Locks and idempotency keys are tenant-scoped; a patient lock key is
+`(tenant, patientId)`. Patient locks do not protect a bed shared by different
+patients. Acquire all
 patient and shared workflow keys (bed, scheduled-dose, task, later claim) in a
 canonical total order, or use shared control resource CAS as the authority.
 Bed occupancy and encounter location must change together in one transaction.
+
+Proposed persisted controls use FHIR `Basic` resources with a dedicated VGI
+control profile and service-only access. Their `meta.versionId` is the CAS
+token. Derive resource IDs deterministically (UUIDv5 over tenant, control kind
+and canonical key), retain the full key in an identifier, and reject any
+ID/key mismatch. Provision controls before enabling their workflows:
+
+| Control | Persisted fields besides resource ID/version |
+|---|---|
+| Patient revision | `code=patient-revision`, `subject=Patient/id`, monotone generation and fencing-token extensions. Every patient mutation increments generation. |
+| Scheduled dose | `code=scheduled-dose`, patient subject, order reference, immutable scheduled-occurrence ID, state `unused`/`administered`, administration reference and actor on consumption. |
+| Bed | `code=bed-occupancy`, Location reference, optional occupant Patient reference. Mutate alongside Location status and Encounter location. |
+
+The existing Task's `owner`, `status` and version can serve as its claim
+control. Co-sign evidence must reference the exact order version and
+authenticated signer. All controls enter the transaction read/write set.
+Provisioning/reconciliation is privileged; an absent control is a refusal,
+never evidence that the dose or bed is available. These profile definitions
+and provisioning code are future implementation work.
 
 FHIR version conditions protect updated resources, not arbitrary read sets or
 the absence of a new allergy. Every writer must increment a patient revision
@@ -115,6 +136,12 @@ Clinical correctness, compiler correctness, Medplum behavior and FHIR mapping
 remain trusted. The current adapter's 52-bit review version digest can collide;
 exact vectors do not by themselves change receipt semantics. Production review
 evidence must bind the exact vector in addition to the existing receipt checks.
+Temporal guard inputs also require a defined clock boundary: the native theorem
+uses the supplied context time and session clock. Reconstruct their existing
+interpreter meaning on the server without counting elapsed time twice. If a
+rule must hold at the transaction's wall-clock instant, enforce its deadline
+inside a server-side transactional operation; a wrapper check before an HTTP
+request cannot prove that a deadline did not expire in transit.
 
 | Failure | Required behavior |
 |---|---|
@@ -211,3 +238,27 @@ The CLI read-set preconditions are a plan for a future wrapper, not transaction
 entries: it must CAS the revision controls and attach ETags to actual updates.
 It cannot protect phantoms or prove that a caller supplied a current complete
 bundle. Do not enable service writes until those deployment obligations hold.
+
+Steps 1–3 are implemented in this lane. The executable model and its tests are
+in `lean/Ehr/Multi/`; the checker, acceptance proofs and chart tests are in
+`lean/Ehr/Commit/`, with the native entry point in `lean/Ehr/Cli/Commit.lean`.
+The native response codec is `{"accept":{"preconditions":[{"url":"Patient/p",
+"ifMatch":"W/\"3\""}],"state":{...}}}` or `{"reject":{"reason":"..."}}`.
+`scripts/test-commit-check.py` exercises the compiled command's JSON boundary;
+`lean/Ehr/Commit/Example.lean` emits a valid internal request. Only a `collection`
+Bundle with one Patient and a usable version for every resource is supported;
+the wrapper must assemble it before invoking the checker. Version ordering is
+ignored, duplicate identities are rejected, and legacy before-states without
+patient-selection context are supported. The wrapper must establish their
+session/chart binding. No network service or FHIR writer is implemented here.
+
+The main theorem surfaces to review are:
+
+| Theorem | Definitions carrying its meaning |
+|---|---|
+| `Multi.reachable_invariant`, `Multi.run_invariant` | `DoseKey`, shared `State`, `Action`, executable `step`, `Reachable`/`run`, `Invariant`, `DosesUnique`, `BedsExclusive`. No clinical policy is imported into this model. |
+| `Commit.accepted_current_guard` | `Request`, `Current`, `Decision`, `check`, `prepare`, `currentVersions`/`resourceVersion`/`validId`/`sortedVersions`, `checkCurrent`, `preconditions`; existing `Render.Fhir.parseBundle`, `commitGuard` and human `step`, with their existing `Spec`, `Program`, `Facts`, `User`, session-state and guard dependencies. |
+
+The first family proves preservation of shared data uniqueness. The second
+proves the existing guard on the exact projection returned by preparation;
+it does not prove clinical policy, authenticity of inputs or external effects.
