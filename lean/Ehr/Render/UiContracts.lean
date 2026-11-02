@@ -17,6 +17,7 @@ mutual
 /-- Walk a semantic tree, retaining each container's identity with an empty
 body. Leaf nodes are unchanged. This observes presence, never browser styling. -/
 def uiAtoms : UiNode → List UiNode
+  | .timeline _ kids => uiAtomsList kids
   | .presentation _ kids => uiAtomsList kids
   | .valueSet _ _ kids => uiAtomsList kids
   | .chartReferences _ kids => uiAtomsList kids

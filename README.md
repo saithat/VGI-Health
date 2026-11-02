@@ -139,6 +139,8 @@ code.
 | Checker acceptance implies properties 1–5 and 7–13 for every patient record and every reachable state | 🟢 **Proved** | `Check/*Sound.lean` (`accepted_*`) |
 | Checker acceptance implies property 6, "every required task can be completed" | 🟡 **Proved for defined fragments only** (scalar fields, fixed order lines, receipts, many alerts, macros/prefills); general case **open** | `Check/Sound.lean`, `Check/ScalarCompletion.lean`, `Check/FixedLineCompletion.lean` |
 | The screen tree keeps the patient banner, required reviews, honest buttons, modal vs inline alerts, labeled fields (D1–D4, D6) | 🟢 **Proved**, for the semantic screen tree | `Render/UiProofs.lean` |
+| Layout-independent information/action semantics, with explicit perception and view-step bounds | 🟡 **Proved** D1–D4/D6 bridges at abstract exposed moments; actual exposure is an explicit hypothesis; positive and negative examples | `Sem/Screen.lean`, `Sem/Bridge.lean`, `Sem/Trace.lean`, `Sem/Examples.lean` |
+| Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
 | The browser's accessibility tree equals Lean's screen tree; every control works | 🔵 **Checked** (browser tests, button audit) | `app/e2e/` |
@@ -295,6 +297,27 @@ open gaps. Checker implications cover 12 of 13 properties; general completion
 still requires a separate proof. Current releases use the **core** rule profile.
 Browser drawing, record adapters and clinical rule completeness are outside
 these proofs. Allowed proof axioms are propext, Quot.sound and Classical.choice.
+
+## Semantic properties and extensions (in progress)
+
+[Semantic UI design](docs/design/semantic-ui.md) defines layout-independent
+perception, bounded reachability and urgency alongside the unchanged hospital
+properties. Tree presence alone does not prove viewport exposure or legibility.
+New primitives require Lean meaning/preservation proofs, a DOM painter and an
+independent screen-gate rule. [Ehr/Sem](lean/Ehr/Sem/) now contains the current-language bridge, including
+D1–D4/D6 implications, structural converses for information and action honesty,
+and concrete positive/rejected examples. `Sem/Trace.lean` preserves the clinical
+review obligation and relates completion to finite interpreter event counts.
+The admitted `layout.timeline` group tag emits an ordered full-detail timeline
+through the existing native/WASM renderer. `Sem/Timeline.lean` proves semantic
+preservation, and `Sem/TimelineProgram.lean` proves checker acceptance for a
+canonical program. DOM fidelity remains checked; physical perception needs
+exposure evidence, and general completion remains open. The operator can supply
+`EHR_URGENT_ALERT_IDS` as a JSON array: the screen gate checks those emitted
+demands at the initial moment without scrolling, and binds the policy into its
+cache key. This sampled check does not prove visibility at all future moments.
+Painter/interpreter
+changes invalidate recorded build bindings: rebuild and rebind before replay.
 
 ## Frontend and backend
 
@@ -457,7 +480,7 @@ a fresh browser build; no recorded certificates or app assets are rebound here.
 2. **Render.** `init` gives a state. `renderUi(spec, program, facts, user,
    state)` turns it into a `UiScreen`: a tree of semantic nodes such as the
    banner, alerts, result grids, order composers, worklists and navigators
-   (13 presentation kinds). A disabled control carries the reason Lean gives
+   (13 presentation kinds plus the admitted timeline container). A disabled control carries the reason Lean gives
    for it.
 3. **Paint.** `app/src/ehr/ui` draws the tree with Mantine, through an
    exhaustive switch over the generated node union. The painter holds no

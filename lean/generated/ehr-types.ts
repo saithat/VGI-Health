@@ -208,6 +208,9 @@ export interface ClinicalObservation {
   version: number;
 }
 
+/**
+ * Age in years with the record source used to establish it.
+ */
 export interface ClinicalAge {
   years: number;
   source: ClinicalObservation;
@@ -257,6 +260,9 @@ export type IdentifierCategory =
 /** All values of `IdentifierCategory`. */
 export const IdentifierCategoryValues = ["patient", "encounter", "order", "drug", "product", "prescriber", "pharmacy"] as const;
 
+/**
+ * A required payload field, with optional value and availability checks.
+ */
 export interface PayloadFieldReq {
   field: string;
   /**
@@ -278,12 +284,18 @@ export interface PayloadContract {
   groupBy?: string;
 }
 
+/**
+ * A categorized identifier with its system and value.
+ */
 export interface PayloadIdentifier {
   category: IdentifierCategory;
   system: string;
   value: string;
 }
 
+/**
+ * One identified payload row, its order slot, values and availability evidence.
+ */
 export interface PayloadRow {
   id: string;
   slot: number;
@@ -306,11 +318,17 @@ export interface InfoPayload {
   rows: PayloadRow[];
 }
 
+/**
+ * The current named phase of a workflow.
+ */
 export interface WorkflowPhase {
   workflow: string;
   phase: string;
 }
 
+/**
+ * The commit or workflow phase where a display requirement applies.
+ */
 export type DisplayScope =
   | { commit: { id: CommitId } }
   | { phase: { workflow: string; name: string } };
@@ -329,16 +347,25 @@ export interface DisplayReq {
   selectionElement?: ElementId;
 }
 
+/**
+ * A payload row and whether a confirmed selection marks it.
+ */
 export interface SelectedPayloadRow {
   row: PayloadRow;
   selected: boolean;
 }
 
+/**
+ * Rows sharing a display grouping key.
+ */
 export interface PayloadGroup {
   key: string;
   rows: SelectedPayloadRow[];
 }
 
+/**
+ * The source payload and its grouped rows for display.
+ */
 export interface PayloadView {
   source: InfoPayload;
   groups: PayloadGroup[];
@@ -462,6 +489,9 @@ export type ObligationStatus =
 /** All values of `ObligationStatus`. */
 export const ObligationStatusValues = ["met", "missing", "invalid", "overdue"] as const;
 
+/**
+ * A requirement status for one commit, reported to the screen view.
+ */
 export interface ObligationView {
   commit: CommitId;
   requirement: string;
@@ -473,6 +503,9 @@ export interface ObligationView {
  */
 export type OrderInstanceId = string;
 
+/**
+ * The original order timestamp from which expiry is measured.
+ */
 export type ClockAnchor =
   | "issued"
   | "started"
@@ -504,6 +537,9 @@ export interface MonthCutoff {
   stamp: ClockStamp;
 }
 
+/**
+ * A renewal event with actor, time and record version.
+ */
 export interface ClockRenewal {
   event: EventId;
   time: number;
@@ -525,10 +561,16 @@ export interface OrderClock {
   renewals: ClockRenewal[];
 }
 
+/**
+ * An expiry interval measured in minutes or calendar months.
+ */
 export type ExpiryDuration =
   | { minutes: { duration: number } }
   | { calendarMonths: { months: number } };
 
+/**
+ * The renewal event required and how long its evidence remains valid.
+ */
 export interface RenewalPolicy {
   event: EventId;
   validForMinutes: number;
@@ -2348,6 +2390,8 @@ export interface UiChartReference {
  * Semantic EHR nodes. Only the selected tab body is emitted.
  */
 export type UiNode =
+  /** Ordered full-detail events; timeline never filters, sorts or invents timestamps. */
+  | { timeline: { title: string; children: UiNode[] } }
   /** A layout hint around ordinary semantic nodes; never a visibility filter. */
   | { presentation: { kind: UiPresentationKind; children: UiNode[] } }
   /** Choices decorate the original field; they do not enter or validate it. */

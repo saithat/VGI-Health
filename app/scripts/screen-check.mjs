@@ -28,7 +28,7 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
     playwright: digest(readFileSync(resolve(appDir, "node_modules/@playwright/test/package.json"))),
     presentations: process.env.EHR_PRESENTATION_BUNDLE ? digest(readFileSync(process.env.EHR_PRESENTATION_BUNDLE)) : null,
     node: process.version, platform: process.platform,
-    minimumFont: process.env.EHR_MIN_FONT_PX ?? "12", projects: ["desktop", "narrow"],
+    minimumFont: process.env.EHR_MIN_FONT_PX ?? "12", urgentAlertIds: process.env.EHR_URGENT_ALERT_IDS ?? "[]", projects: ["desktop", "narrow"],
   });
   const directory = resolve(process.env.EHR_SCREEN_CACHE_DIR ?? resolve(appDir, "../runs/screen-check-cache"), context);
   const entries = files.map((file) => {
