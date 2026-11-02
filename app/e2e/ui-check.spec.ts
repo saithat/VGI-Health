@@ -37,13 +37,16 @@ const supplied = z
         : (process.env.EHR_UI_FILES ?? "[]"),
     ),
   );
-const fixtures = supplied.length
-  ? supplied
-  : ["src/fixtures/ui", "src/fixtures/punch"].flatMap((directory) =>
-      readdirSync(directory)
-        .filter((name) => name.endsWith(".json"))
-        .map((name) => resolve(directory, name)),
-    );
+// An explicitly empty manifest means every candidate was cached: run controls
+// only, rather than silently loading the app's unrelated default fixtures.
+const fixtures =
+  process.env.EHR_UI_MANIFEST || process.env.EHR_UI_FILES
+    ? supplied
+    : ["src/fixtures/ui", "src/fixtures/punch"].flatMap((directory) =>
+        readdirSync(directory)
+          .filter((name) => name.endsWith(".json"))
+          .map((name) => resolve(directory, name)),
+      );
 const presentations = process.env.EHR_PRESENTATION_BUNDLE
   ? presentationBundleSchema.parse(
       JSON.parse(readFileSync(process.env.EHR_PRESENTATION_BUNDLE, "utf8")),
@@ -360,7 +363,7 @@ async function physicalBounds(
       }
       return path.reverse().join("/");
     };
-    const visible = (el: Element) => {
+    const measureVisible = (el: Element) => {
       if (el.closest("[hidden], [inert], [aria-hidden='true'], script, style"))
         return false;
       if (!el.getClientRects().length) return false;
@@ -372,6 +375,26 @@ async function physicalBounds(
         )
           return false;
       return true;
+    };
+    // A measurement is synchronous and never mutates the DOM. Reuse exact
+    // layout/visibility reads within it, including repeated text ancestors.
+    const boxes = new Map<Element, DOMRect>();
+    const bounds = (el: Element) => {
+      let box = boxes.get(el);
+      if (!box) {
+        box = el.getBoundingClientRect();
+        boxes.set(el, box);
+      }
+      return box;
+    };
+    const visibility = new Map<Element, boolean>();
+    const visible = (el: Element) => {
+      let value = visibility.get(el);
+      if (value === undefined) {
+        value = measureVisible(el);
+        visibility.set(el, value);
+      }
+      return value;
     };
     const add = (el: Element, sc: string, detail: string) =>
       findings.push({ sc, id: id(el), detail });
@@ -502,7 +525,7 @@ async function physicalBounds(
           ancestor;
           ancestor = ancestor.parentElement
         ) {
-          const box = ancestor.getBoundingClientRect(),
+          const box = bounds(ancestor),
             css = style(ancestor);
           const clipX = ["hidden", "clip"].includes(css.overflowX),
             clipY = ["hidden", "clip"].includes(css.overflowY);
@@ -550,7 +573,7 @@ async function physicalBounds(
       )
         continue;
       counts.targets++;
-      let rect = el.getBoundingClientRect();
+      let rect = bounds(el);
       // A native checkbox's associated clickable label is part of the same target.
       if (
         el instanceof HTMLInputElement &&
@@ -559,7 +582,7 @@ async function physicalBounds(
         const label = Array.from(el.labels ?? []).find((label) =>
           label.contains(el),
         );
-        if (label) rect = label.getBoundingClientRect();
+        if (label) rect = bounds(label);
       }
       if (rect.width < policy.targetCssPx || rect.height < policy.targetCssPx)
         add(
@@ -678,12 +701,12 @@ async function physicalBounds(
       "body, main, section, p, label, button, input, select, textarea, h1, h2, h3, li, td, th",
     )) {
       if (!visible(el)) continue;
-      const rect = el.getBoundingClientRect();
+      const rect = bounds(el);
       const tableScroller = el.closest("table")?.parentElement;
       const tableException =
         !!tableScroller &&
         ["auto", "scroll"].includes(style(tableScroller).overflowX) &&
-        tableScroller.getBoundingClientRect().right <= innerWidth + 1;
+        bounds(tableScroller).right <= innerWidth + 1;
       if (
         !tableException &&
         (rect.left < -1 ||
@@ -1377,8 +1400,8 @@ async function urgencySamples(
 for (const file of fixtures)
   test(`physical policy: ${file}`, async ({ page }, testInfo) => {
     test.skip(
-      !process.env.EHR_PHYSICAL_POLICY,
-      "WCAG 2.2 AA physical matrix is opt-in (EHR_PHYSICAL_POLICY=1) until the canonical UI passes; see docs/design/alert-urgency-findings.md",
+      process.env.EHR_PHYSICAL_POLICY === "0",
+      "Physical matrix explicitly disabled (EHR_PHYSICAL_POLICY=0)",
     );
     test.skip(
       testInfo.project.name !== "desktop",
@@ -1541,8 +1564,11 @@ for (const file of fixtures)
     // The CLI aggregates these attachments and fails on any finding. Direct
     // Playwright runs retain the per-state assertion; CLI collection avoids a
     // worker restart and duplicated error payload for every known-bad screen.
-    // Report-only until enforcement is switched on (EHR_ENFORCE_PHYSICAL=1).
-    if (!process.env.EHR_COLLECT_PHYSICAL && process.env.EHR_ENFORCE_PHYSICAL)
+    // Enforcement defaults on; explicit 0 retains measurements for diagnostics.
+    if (
+      !process.env.EHR_COLLECT_PHYSICAL &&
+      process.env.EHR_ENFORCE_PHYSICAL !== "0"
+    )
       expect(
         failures,
         `Physical policy violations in ${file} (full measurements attached)`,
@@ -1662,4 +1688,46 @@ test("physical gate detects undersized targets, text and essential boundary cont
       (f) => f.sc === "1.4.11" && f.id.startsWith("probe-input/"),
     ),
   ).toBe(true);
+});
+
+test("card navigation retains the physical target floor", async ({ page }) => {
+  const screen: UiScreen = {
+    banner: [],
+    nav: [],
+    title: "Navigation cards",
+    side: [],
+    modal: null,
+    workspace: [
+      {
+        columns: {
+          children: Array.from({ length: 3 }, (_, index) => ({
+            section: {
+              id: `card-${index}`,
+              title: `Workflow ${index}`,
+              children: [
+                {
+                  button: {
+                    comp: `next-${index}`,
+                    label: "Next",
+                    role: "nav",
+                    enabled: true,
+                    blockedReason: null,
+                    hotkey: null,
+                  },
+                },
+              ],
+            },
+          })),
+        },
+      },
+    ],
+  };
+  await page.goto("/screen-check.html");
+  await page.waitForFunction(() => typeof window.renderUi === "function");
+  for (const width of [320, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await render(page, screen);
+    await expect(page.locator(".clinical-card-grid")).toHaveCount(1);
+    expect((await physicalBounds(page)).findings).toEqual([]);
+  }
 });
