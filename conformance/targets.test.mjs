@@ -1,3 +1,4 @@
+import { dataReason } from '../scripts/test-data.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { canonicals, runTargets } from './index.mjs';
@@ -14,7 +15,7 @@ test('all 15 role canonicals are included independently of run personas', () => 
   assert.equal(targets.length, 15);
   for (const release of ['v1', 'v2', 'v3']) assert.equal(targets.filter(t => t.release === release).length, 5);
 });
-test('archived deployment certificates bind all eight exact programs and preserved specs', () => {
+test('archived deployment certificates bind all eight exact programs and preserved specs', { skip: dataReason('runs/run1-P3') }, () => {
   const targets = runTargets('run1-P3');
   assert.deepEqual(targets.map(t => t.revision), [0, 1, 2, 3, 4, 5, 6, 7]);
   for (const t of targets) {

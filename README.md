@@ -677,8 +677,9 @@ git archive hackathon-final runs fixtures programs verdicts.json | tar -x
 ```
 
 Without this data, `make install` loads no patients, and recorded dashboards and
-run-specific conformance evaluation have nothing to read. Archive-dependent tests
-skip with the missing paths and the extraction command in their reported reason;
+run-specific conformance evaluation have nothing to read. Archive-dependent tests in the workspace packages and root suites (reporting,
+seeding and conformance) skip with the missing paths and extraction command in
+their reported reason;
 with data present they run the same assertions. This includes agent tests whose
 prompts use historical decisions, and the world generator's chart augmentation.
 The small tracked unit fixtures still run without the archive. A partial or corrupt
