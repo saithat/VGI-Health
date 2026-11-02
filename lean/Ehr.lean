@@ -1,3 +1,4 @@
+import Ehr.Sem.Exotic
 import Ehr.Sem.TimelineProgram
 import Ehr.Canonical.PresetTests
 import Ehr.Basic

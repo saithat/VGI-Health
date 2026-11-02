@@ -147,7 +147,7 @@ code.
 | Each rule is enforced in realistic workflows on every deployed revision | 🔵 **Checked** (200 held-out scenarios, hidden from the agent; 0 failures) | `conformance/` |
 | The React drawing, FHIR mapping/Medplum writes, Lean compiler and Emscripten | ⚪ **Trusted**, not proved | — |
 | The hospital rules are complete and clinically right | 🔴 **Not proved**: the rules are a reviewed spec (core profile; catalog rules switched off) | `Specs/` |
-| The simulated clinicians and workload numbers reflect real people | 🔴 **Not proved**: deterministic Lean policies; clicks, scrolls and straight-line mouse travel at 1440×900 | `Sim/` |
+| The simulated clinicians and workload numbers reflect real people | 🔴 **Not proved**: historical deterministic Lean policies and round-two seeded decision-model policies; no human validation; measured geometry at 1440×900 | `Sim/` |
 | The AI agent is correct or honest | 🔴 **Not assumed**: it is untrusted; only checker-accepted programs deploy | `agent/` |
 
 ## Assurance by layer, and gaps to deployment
@@ -743,8 +743,9 @@ candidates have separate assurance tiers. No exploration result is deployed.
 `explore/generator.ts` compiles design points plus workflow sets into ordinary
 programs. Unsupported primitives yield explicit sandbox manifests. Generation
 preserves clinical component kinds; a separate identity-based movement check
-retains the stability budget even if an operator renames tags. No Lean or
-certified application source changes are needed.
+retains the stability budget even if an operator renames tags. The original
+generator does not require Lean or certified application changes; round two adds
+separate research primitives and API modules.
 
 The [implementation notes](docs/design/exploration-tools.md) record the
 OpenEvolve/ShinkaEvolve evaluation, MAP-Elites objective, model licenses,
@@ -762,6 +763,76 @@ explicit budget repair produced the portfolio; both rejected proposals remain
 in the untracked run report. Native effort estimates and tiny-model calibration
 are early diagnostics, not human usability or deployment evidence.
 
+The [second ED exploration](docs/design/exploration-round2.md) adds an isolated
+laboratory at `/exotic-check.html?mode=command|spatial|board|dated` (Vite development
+server). It exercises typed commands, pinned zones, independent patient sessions
+and a source-dated UTC index with complete clinical content retained. Patient selection
+remains enabled: native lookup/open/hydration precedes bound clinical work, and
+the laboratory can return to that native picker without discarding other panes. New
+`Ehr.Sem.Exotic` proofs cover offered click-command IDs/reasons, unique patient
+routing/banner selection, complete zones and chronological axis admission.
+These four richer views remain **sandbox**: typed ordinary-program constructors,
+view-transition/exposure refinement and whole-version custom-renderer coverage
+are still missing; board source/receipt/concurrency obligations remain explicit.
+The existing `layout.timeline` stays the admitted ordered-child primitive.
+The canonical dated demo has a proportional time axis. Sampled W3 display rows
+omit timezone offsets, so the cohort index conservatively remains empty; retaining
+machine-readable source dates is unfinished integration work.
+The laboratory uses the real interpreter and has no clinical persistence path.
+Launch it with `TAILSCALE_SERVE=0 pnpm --filter app dev`.
+
+Round two uses 24 seeded simulated ED physicians (final seed 20261103), split before search into 12
+search and 12 held-out members. Their legal goal-action choices use the supplied
+local CUDA Decider model through `DecisionModel`; physical-device preferences,
+visual search, choice lapses, detours and task learning are explicit simulator
+parameters. Browser target rectangles and scroll distances supplement native
+P2 estimates. Calibration labels are simulator-generated, not human. Eight
+Codex proposals use service tier `default`; archive selection precedes held-out
+choices. Outputs and screenshots stay in ignored `runs/explore-round2/`; the
+tracked report retains the niche table, screenshot inventory, exclusions and
+proof gaps. Descriptors name realized behavior: spatial/dated views retain list
+navigation, and no compact-control density niche is claimed. The new WASM API root is `Ehr.Sem.ExoticApi`; rebuilding changes the
+Lean/WASM bindings, invalidating historical certificates. The production app
+fingerprint is unchanged in a same-worktree baseline build because the laboratory
+is a separate development entry; its source hashes are recorded independently.
+No historical certificate is rebound and no exploration design is deployed.
+The report writer also consumes the run's captured `app-binding-comparison.json`;
+that baseline comparison is evidence from a pre-change build, not reconstructed
+from the final experiment's fingerprint.
+The original board measurements were corrected by replaying saved events with
+the scrollable patient-pane root included. The original frozen archive and
+before/after geometry remain in the run; no choices or archive members changed.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+(cd lean && lake build && lake build exotic-api)
+JOBS=4 EM_CACHE="$TMPDIR/explore2-emcache" make wasm
+pnpm --filter app build
+# Proposal output must be a fresh run directory; the budget claim forbids reset.
+EXPLORATION_RUN=runs/new-round2
+mkdir -p "$EXPLORATION_RUN"
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-propose.ts "$EXPLORATION_RUN"
+printf '%s\n' '{"op":"canonical"}' | lean/.lake/build/bin/exotic-api > "$EXPLORATION_RUN/canonical.json"
+node app/scripts/exotic-gate.mjs "$EXPLORATION_RUN"
+EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4272 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs "$EXPLORATION_RUN"
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-agreement.mjs "$EXPLORATION_RUN"
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/full-binding-check.mjs "$EXPLORATION_RUN"
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/calibration.mjs --out "$EXPLORATION_RUN/calibration" --endpoint http://127.0.0.1:8788/v1 --model Mapika/decider-0.8b --limit 24
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-descriptors.mjs "$EXPLORATION_RUN"
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-samples.mjs "$EXPLORATION_RUN"
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs "$EXPLORATION_RUN"
+```
+
+The final cohort runs the unchanged patient-selection programs. The earlier
+pre-bound-core diagnostic run is excluded under `prebound-v1/`; only its frozen
+search-side model probabilities are reused, with no held-out scores or labels.
+The cohort runner resumes complete members from saved event/geometry records and
+exact-input frozen-model cache entries; unfinished members restart from their
+seeds. Three actors use at most six browser pages: a native patient picker and bound
+workspace per actor. The held-out stage does not select or replace archive entries. The additive gate
+`app/scripts/exotic-gate.mjs` checks canonical views at 1440 and 390 px, source
+cells, action honesty, hidden content, proportional dated order and real WASM
+patient isolation. This is sample coverage, not admission of all view transitions.
 
 
 ```sh

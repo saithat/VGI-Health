@@ -40,3 +40,8 @@ roots = ["Audit.SpecSurface"]
 # Exact unproved general T1 proposition, for opt-in proof development only.
 [[lean_lib]]
 name = "CompletionObligations"
+
+# Isolated round-two research API; not the clinical CLI.
+[[lean_exe]]
+name = "exotic-api"
+root = "Ehr.Sem.ExoticMain"
