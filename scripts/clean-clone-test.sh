@@ -36,6 +36,17 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
+# This test reuses an already running stack and never provisions a shared one.
+if ! curl -fsS --max-time 3 http://localhost:8103/healthcheck >/dev/null 2>&1; then
+  echo 'Clean-clone test needs the shared Medplum stack on port 8103.' >&2
+  exit 1
+fi
+env_file=${CLEAN_CLONE_ENV_FILE:-$repo/.env}
+if [[ ! -f "$env_file" ]]; then
+  echo 'Clean-clone test needs the shared stack credentials: restore .env or set CLEAN_CLONE_ENV_FILE. Persona passwords must be preserved.' >&2
+  exit 1
+fi
+
 # Reject an occupied port before starting anything, so a stale server cannot pass.
 node --input-type=module - "$port" <<'JS'
 import net from 'node:net';
@@ -48,19 +59,14 @@ echo "Cloning local HEAD $commit into $clone"
 git clone --quiet --no-hardlinks --no-checkout "$repo" "$clone"
 git -C "$clone" checkout --quiet --detach "$commit"
 
-# setup resets persona passwords if .env is absent. Preserve the installed stack's
-# credentials when sharing it; this is local configuration, never committed.
-if [[ -f "$repo/.env" ]]; then
-  install -m 600 "$repo/.env" "$clone/.env"
-  echo 'Reusing vgi-medplum and existing .env credentials; no data reset.'
-elif curl -fsS --max-time 3 http://localhost:8103/healthcheck >/dev/null 2>&1; then
-  echo 'A Medplum stack is running but this worktree has no .env. Restore its .env before testing, to preserve persona passwords.' >&2
-  exit 1
-else
-  echo 'No running Medplum stack; make install will create the shared vgi-medplum stack.'
-fi
+# setup resets persona passwords without .env; preserve the shared credentials.
+install -m 600 "$env_file" "$clone/.env"
+echo 'Reusing vgi-medplum and existing .env credentials; no data reset.'
 cd "$clone"
-# No build outputs, dependencies, Emscripten installation or gitignored runs copied.
+# HEAD after the hackathon has no tracked data. Restore it before install seeds
+# Medplum and before the app catalogs/replays it; no dependencies are needed yet.
+node scripts/clean-clone-smoke.mjs --extract-data
+# No build outputs, dependencies or Emscripten installation are copied.
 install_start=$(now_ms)
 timeout --kill-after=10s "${INSTALL_TIMEOUT:-900}" make install >"$test_root/install.log" 2>&1
 install_ms=$(( $(now_ms) - install_start ))

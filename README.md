@@ -596,7 +596,13 @@ Runs are written to `runs/`, which is not tracked (see Data).
 
 The [hackathon archive](docs/hackathon/) preserves the brief, [judge demo](docs/hackathon/DEMO.md), recordings,
 implementation journals and one-off measurements. A clean-clone test (`scripts/clean-clone-test.sh`) clones
-local HEAD, installs and serves it offline. `make wasm-check` checks the committed
+local HEAD, restores ignored data from `hackathon-final` before installation,
+then installs and serves it offline. It requires the shared Medplum stack on
+port 8103 and its existing `.env` (or `CLEAN_CLONE_ENV_FILE=/path/to/.env`); it
+never provisions a replacement stack. `node scripts/clean-clone-smoke.mjs
+--extract-data` restores an empty checkout without installing dependencies and
+leaves existing complete data alone; a partial dataset requires explicit repair.
+`make wasm-check` checks the committed
 WASM source binding; `make wasm` rebuilds it using the local toolchain.
 
 The trusted system includes the reviewed hospital spec, Lean and Emscripten,
