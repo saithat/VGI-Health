@@ -9,7 +9,7 @@ const boundary = {
     schema: [],
     messages: {
       network:
-        "Medplum access belongs in src/data/medplum.ts; dashboard/data.ts and browser/data.ts may fetch constrained local JSON.",
+        "Medplum access belongs in src/data/medplum.ts; commitService.ts handles W4 authority; dashboard/data.ts and browser/data.ts may fetch constrained local JSON.",
     },
   },
   create(context) {
@@ -38,7 +38,7 @@ const boundary = {
       Identifier(node) {
         if (
           node.name === "fetch" &&
-          !["/src/dashboard/data.ts", "/src/browser/data.ts"].some(path => context.filename.replaceAll("\\", "/").endsWith(path))
+          !["/src/dashboard/data.ts", "/src/browser/data.ts", "/src/data/commitService.ts"].some(path => context.filename.replaceAll("\\", "/").endsWith(path))
         )
           context.report({ node, messageId: "network" });
       },

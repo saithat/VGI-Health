@@ -53,8 +53,10 @@ flowchart TB
 ```
 
 Interface approval leaves the runtime guard in force: a receipt can expire or
-a required value can still be missing. In live mode, the app stages a permitted
-commit and accepts the committed state only after its FHIR transaction succeeds.
+a required value can still be missing. In the W4 medication-administration path, the commit service reconstructs the
+interaction, checks the current guard under patient/dose locks, and accepts only
+a durable Postgres write. Other live workflows stage a permitted commit and
+accept the committed state only after their Medplum FHIR transaction succeeds.
 The save, rollback and refresh paths are integration-tested; replay never writes
 to Medplum. Preventing an invalid commit is separate from proving that a task
 can always be completed. General completion remains open.
@@ -131,7 +133,7 @@ code.
 |---|---|---|
 | Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
 | Native commit-check acceptance implies the guard holds on the supplied current FHIR projection | 🟢 **Proved** for the prototype; freshness, authenticated state and persistence remain trusted integration obligations | `Commit/Check.lean` (`accepted_current_guard`); [concurrency design](docs/design/concurrency.md) |
-| Commit-service commands pass the guard on the imported chart version written against | 🔵 **Checked** against real Postgres with native guard replay; general clinical reduction and live cutover remain open (G3) | `services/commit/`; [storage contract](docs/design/concurrency.md) |
+| W4 MAR reduction preserves dose-once safety and accepted administrations pass the guard at the written version | 🟢 **Proved** for the Lean reducer; 🔵 Postgres/JWKS/SSE correspondence checked in integration tests. Other live workflows retain G3 | `Commit/Mar.lean`, `services/commit/`; [storage contract](docs/design/concurrency.md) |
 | Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Postgres correspondence is integration-tested, not proved | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
 | Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
 | Alerts: popups only for true conditions, never for passive alerts, acknowledgments persist | 🟢 **Proved** (A2, A4 for every run; A1, A3 via checker acceptance) | `Proofs/Alerts.lean`; `Check/AlertSound.lean`, `Check/SeveritySound.lean` |
@@ -167,7 +169,7 @@ flowchart TB
   W["Lean compiler, runtime and Emscripten<br/>Toolchain trusted; native/WASM agreement tested"]:::trusted
   I["Lean interpreter and screen model<br/>Selected execution and rendering properties proved"]:::proved
   B["React display<br/>Browser fidelity and accessibility tested"]:::checked
-  F["FHIR mapper and Medplum<br/>Integration tested; external effects not proved"]:::trusted
+  F["W4: Postgres commit service; other workflows: Medplum<br/>Integration tested; storage correspondence not proved"]:::trusted
 
   R --> C
   R --> I
@@ -252,7 +254,7 @@ flowchart LR
   subgraph APP["app/ (React + Mantine)"]
     direction TB
     PAINT["painter: draws UiScreen only"]:::trusted
-    LIVE["live mode: Medplum via /medplum proxy<br/>commit → FHIR transaction mapper"]:::trusted
+    LIVE["W4 MAR: Keycloak → native Lean → Postgres<br/>Other workflows: Medplum transactions"]:::trusted
     REPLAY["replay, UI browser timeline,<br/>trajectories (0-mismatch replay), dashboard"]:::checked
   end
   WASM --> PAINT
@@ -281,8 +283,9 @@ interpreter first evaluates `commitGuard`; T0 proves no commit is added
 without it. The new state goes through `renderUi`, whose D-theorems guarantee
 the banner, required reviews, honest buttons and alert modality in the
 `UiScreen` tree; the painter draws that tree, and a browser test checks the
-accessibility tree equals it. In live mode, a committed state is mapped to one
-FHIR transaction and sent to Medplum.
+accessibility tree equals it. For W4 MAR, the server checks and reduces the command against locked Postgres
+streams and publishes SSE updates. Other live workflows map the committed state
+to a FHIR transaction and send it to Medplum.
 
 **One night, end to end.** The agent sees only training days and the rules
 (generated capabilities manual), proposes patches, and merges compatible ones
@@ -327,12 +330,19 @@ with a long-running native Lean process, expected-version event streams,
 atomic dose/bed controls, durable idempotency and SSE subscriptions. FHIR becomes
 import/export; Medplum can be retired or retained as an optional projection.
 
-The **current browser live path remains unchanged**: screen logic runs in Lean
-WebAssembly, and the React app draws Lean's tree and writes FHIR transactions
-to Medplum. The diagram below describes that existing path. The independent
-commit service currently journals accepted commands against an imported chart;
-general clinical reducers, production identity/provenance checks and app cutover
-are subsequent work. Its presence does not close G3 for live writes.
+**W4 medication administration now uses the service**, at `/?workflow=mar`.
+P3/RN2 login buttons start Keycloak Authorization Code + S256 PKCE. The service
+validates JWKS signatures, issuer, audience, expiry and client; Lean user/role
+come from signed claims. It resolves a provisioned scheduled order, replays human
+interaction, checks the guard, and atomically writes MAR events, a
+MedicationAdministration and patient/shared versions. SSE refreshes other nurses'
+charts and discards stale evidence. The legacy Medplum MAR save fails closed.
+See the [fresh-clone setup and runnable W4 checks](services/commit/README.md#w4-mar-and-keycloak).
+
+**Other live workflows retain the existing client-side guard and Medplum writer.**
+The diagram below describes that path. General clinical reducers, production
+provenance/access review and writer cutover remain open; W4 does not close G3
+for the rest of the EHR.
 
 ```mermaid
 flowchart LR
@@ -386,7 +396,7 @@ flowchart LR
 Colors as above: green is Lean that the proofs are about, blue is checked by the
 browser screen gate, grey is trusted.
 
-A save in live mode (the app at `/`, signed in against Medplum; replay mode never writes):
+A save in the remaining Medplum live workflows (replay mode never writes):
 
 ```mermaid
 sequenceDiagram
@@ -433,13 +443,15 @@ Every accepted command is independently rechecked by Lean against its preceding
 persisted chart version; shared histories are replayed through `Multi.step`.
 
 `ehr serve` reads JSON lines `{id,op,input}` and returns `{id,result}` or
-`{id,error}`, supporting `init`, `step`, `facts`, `commit-check` and `multi-step`.
+`{id,error}`, supporting `init`, `step`, `facts`, `commit-check`, `multi-step`,
+`mar-context`, `mar-import-context` and `mar-commit`.
 It flushes each response and survives malformed requests. The supervisor bounds
 its queue, terminates failed/timed-out children and restarts on the next call.
 The one-shot `ehr commit-check` interface remains available. Its existing
 acceptance theorem proves the unmodified guard on the supplied current FHIR
 projection; freshness, authenticated evidence, clinical reduction and storage
-remain integration obligations. No theorem or hospital rule was changed.
+remain integration obligations. Existing theorem statements and hospital rules are unchanged. New MAR theorems
+prove invariant preservation and guard acceptance at the written stream version.
 
 The service binds sessions to operator-owned releases, users and patient scopes,
 logs human events and reconstructs the before-state on the server. HTTP clients
@@ -447,14 +459,15 @@ submit intent and expected versions. It supports privileged **initial** FHIR
 collection import and lossless export of the chart plus VGI Basic command
 records. It does not yet map every accepted command to updated standard clinical
 resources. The [migration plan](docs/design/concurrency.md#migration-to-the-live-app)
-requires those reducers and production identity/review provenance before switching
-`liveSession` and revoking direct writers. No app sources or root dependency lock
-are changed here; Medplum's existing database is untouched.
+extends the W4 cutover to the remaining workflows after their reducers and
+provenance are validated and direct writers are revoked. W4 changes certified
+app sources and therefore the app hash; recorded certificates need revalidation
+before reuse. The root dependency lock and existing Medplum database are untouched.
 
 Build and verify the native boundary from the repository root:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
 (cd lean && lake build)
 python3 scripts/test-commit-check.py
 (cd lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$TMPDIR/commit-service-fixture.json"
@@ -463,9 +476,10 @@ python3 scripts/test-ehr-serve.py "$TMPDIR/commit-service-fixture.json"
 
 For the isolated database, service and unit/integration tests, use the
 [service commands](services/commit/README.md#verification). That package has its
-own npm lockfile to preserve the app build hash. Native-only Lean additions
-change the broad Lean source fingerprint used by WASM freshness checks; browser
-artifacts and recorded certificates are not rebuilt or rebound in this lane.
+own npm lockfile. Native Lean additions change the broad Lean source fingerprint
+used by WASM freshness checks. Existing WASM semantics are reused for browser
+rendering; the native reducer is the W4 authority. Recorded certificates have not
+been rebound.
 
 ### Lean in the browser
 
@@ -513,11 +527,11 @@ The screen gate (below) checks that the painted accessibility tree equals
 the `UiScreen`. That check is what connects step 3 to the D-theorems about
 step 2.
 
-### Live mode (`/`, against Medplum)
+### Remaining live workflows (`/`, against Medplum)
 
 - **Transport.** All FHIR calls go to the same-origin path `/medplum`, which
   Vite proxies to the Medplum API on `:8103`.
-- **Sign-in.** Each persona button signs in as a seeded Practitioner,
+- **Sign-in.** Non-nursing persona buttons sign in as a seeded Practitioner,
   using Medplum's password login from the browser (`data/medplum.ts`). The
   password comes from the same-origin `/__dev/persona-password` endpoint,
   which reads `.env`, so no credential is in the built assets. The
@@ -536,7 +550,7 @@ step 2.
     locally.
   - If it adds exactly one, `data/commitMapper.ts` maps the captured values
     to one FHIR `transaction` Bundle (MedicationRequest, Observation,
-    DocumentReference, Condition, Immunization, MedicationAdministration,
+    DocumentReference, Condition, Immunization,
     ChargeItem, Encounter updates, …). Medplum applies the bundle atomically,
     and the app accepts the staged state only after it succeeds. It then
     fetches the chart again and projects new facts, so the next screen
@@ -549,9 +563,9 @@ step 2.
 - **Not proved.** The commit mapper is tested, not proved, so it is part of
   the trusted surface.
 - **Client-side guard.** The live commit guard runs in the client. Medplum
-  accepts any write that the signed-in user's access policy allows. Running
-  the same Lean guard in the live server write path is not done. The independent
-  Postgres service above does not mediate these writes; see G3.
+  accepts any write that the signed-in user's access policy allows. These workflows have not moved their guards into the server write
+  path.
+  The Postgres service mediates W4 MAR only; see G3 for the remaining writes.
 
 ### Replay mode (`/ehr`, `/browse`, `/dashboard`)
 
@@ -652,7 +666,10 @@ make install && make run
 Open **http://localhost:5173/**. Installation starts Medplum, loads synthetic
 patients, seeds worklists and creates a private `.env`. If another checkout
 already uses the named Medplum stack, copy its `.env` locally first to preserve
-the shared credentials. No AI API key is needed for local work or replay.
+the shared credentials. W4 additionally requires the
+[Keycloak and commit-service setup](services/commit/README.md#w4-mar-and-keycloak);
+`make install` does not start that separate authority. No AI API key is needed
+for local work or replay.
 
 The **Demo / replay** link opens the offline catalog. In the dashboard,
 **Trajectories** replays any recorded task on the real EHR in a fixed-size
@@ -776,7 +793,7 @@ Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check
 process in a checkout at a time:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
 (cd lean && lake build)
 pnpm --filter app lint && pnpm --filter app exec tsc --noEmit
 pnpm --filter agent lint && pnpm --filter agent typecheck

@@ -1,11 +1,11 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { authenticator } from './auth.ts';
 import { EventEmitter } from 'node:events';
 import pg from 'pg';
 import { z } from 'zod';
 import { Store } from './store.ts';
 import { exportFhir } from './fhir.ts';
-import { Fault, commandInput, eventInput, sessionInput, version, type Actor } from './types.ts';
+import { Fault, cosignInput, commandInput, eventInput, sessionInput, version } from './types.ts';
 
 /** LISTEN is a latency hint. Durable version reads plus periodic catch-up cover
  * disconnects, coalesced notifications and the LISTEN/snapshot startup race. */
@@ -50,13 +50,6 @@ async function body(req: IncomingMessage) {
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); }
   catch { throw new Fault(400, 'invalid_json'); }
 }
-function authenticate(store: Store, req: IncomingMessage): Actor {
-  const supplied = req.headers.authorization?.replace(/^Bearer /, '') ?? '';
-  const hash = createHash('sha256').update(supplied).digest();
-  const actor = store.config.actors.find(a => timingSafeEqual(hash, createHash('sha256').update(a.token).digest()));
-  if (!actor) throw new Fault(401, 'unauthorized');
-  return actor;
-}
 function cursor(value: string | null | undefined) {
   const text = value ?? '0';
   if (!/^\d+$/.test(text)) throw new Fault(400, 'invalid_cursor');
@@ -64,11 +57,15 @@ function cursor(value: string | null | undefined) {
 }
 export function server(store: Store, notifications: Notifications) {
   const streams = new Set<ServerResponse>();
+  const authenticate = authenticator(store.config);
   const http = createServer(async (req, res) => {
     try {
-      const actor = authenticate(store, req);
+      const actor = await authenticate(req.headers.authorization);
       const url = new URL(req.url!, 'http://localhost');
       const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+      if (req.method === 'GET' && url.pathname === '/me') return json(res, 200, { user: actor.user, persona: actor.persona, name: actor.name });
+      if (req.method === 'POST' && url.pathname === '/mar/cosigns') return json(res, 201, await store.cosign(actor, cosignInput.parse(await body(req))));
+      if (req.method === 'GET' && url.pathname === '/mar') return json(res, 200, await store.marDirectory(actor));
       if (req.method === 'GET' && parts[0] === 'requests' && parts.length === 2) {
         return json(res, 200, await store.outcome(actor, parts[1]));
       }
@@ -122,6 +119,7 @@ export function server(store: Store, notifications: Notifications) {
           try {
             do {
               dirty = false;
+              if (actor.expires && Date.now() >= actor.expires * 1000) { stop(); break; }
               const read = await store.read(actor, patient, after);
               if (read.events.length === 128) dirty = true;
               for (const e of read.events) {
