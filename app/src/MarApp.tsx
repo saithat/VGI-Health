@@ -130,6 +130,10 @@ export function MarApp() {
   );
   async function open(item: MarItem) {
     if (!user) return;
+    if (user.user.role !== "rn") {
+      setError("MAR requires the RN role.");
+      return;
+    }
     setPending(true);
     setError("");
     try {

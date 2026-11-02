@@ -55,7 +55,8 @@ flowchart TB
 Interface approval leaves the runtime guard in force: a receipt can expire or
 a required value can still be missing. In the W4 medication-administration path, the commit service reconstructs the
 interaction, checks the current guard under patient/dose locks, and accepts only
-a durable Postgres write. Other live workflows stage a permitted commit and
+a durable Postgres write. Administrative ADT checks its placement guard under
+patient/bed locks and atomically publishes the changed streams. Other live workflows stage a permitted commit and
 accept the committed state only after their Medplum FHIR transaction succeeds.
 The save, rollback and refresh paths are integration-tested; replay never writes
 to Medplum. Preventing an invalid commit is separate from proving that a task
@@ -134,6 +135,7 @@ code.
 | Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
 | Native commit-check acceptance implies the guard holds on the supplied current FHIR projection | 🟢 **Proved** for the prototype; freshness, authenticated state and persistence remain trusted integration obligations | `Commit/Check.lean` (`accepted_current_guard`); [concurrency design](docs/design/concurrency.md) |
 | W4 MAR reduction preserves dose-once safety and accepted administrations pass the guard at the written version | 🟢 **Proved** for the Lean reducer; 🔵 Postgres/JWKS/SSE correspondence checked in integration tests. Other live workflows retain G3 | `Commit/Mar.lean`, `services/commit/`; [storage contract](docs/design/concurrency.md) |
+| ADT preserves bed exclusivity and one bed per patient; a transfer publishes one complete successor, and accepted commands pass their administrative guard on the checked version vector | 🟢 **Proved** for the native reducer using executable pre/post validation; 🔵 Postgres atomic publication/read correspondence tested | `Commit/Adt.lean`, `Commit/AdtTests.lean`, `services/commit/test/adt.integration.test.ts` |
 | Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Postgres correspondence is integration-tested, not proved | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
 | Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
 | Alerts: popups only for true conditions, never for passive alerts, acknowledgments persist | 🟢 **Proved** (A2, A4 for every run; A1, A3 via checker acceptance) | `Proofs/Alerts.lean`; `Check/AlertSound.lean`, `Check/SeveritySound.lean` |
@@ -171,7 +173,7 @@ flowchart TB
   W["Lean compiler, runtime and Emscripten<br/>Toolchain trusted; native/WASM agreement tested"]:::trusted
   I["Lean interpreter and screen model<br/>Selected execution and rendering properties proved"]:::proved
   B["React display<br/>Browser fidelity and accessibility tested"]:::checked
-  F["W4: Postgres commit service; other workflows: Medplum<br/>Integration tested; storage correspondence not proved"]:::trusted
+  F["W4/ADT: Postgres commit service; other workflows: Medplum<br/>Integration tested; storage correspondence not proved"]:::trusted
 
   R --> C
   R --> I
@@ -256,7 +258,7 @@ flowchart LR
   subgraph APP["app/ (React + Mantine)"]
     direction TB
     PAINT["painter: draws UiScreen only"]:::trusted
-    LIVE["W4 MAR: Keycloak → native Lean → Postgres<br/>Other workflows: Medplum transactions"]:::trusted
+    LIVE["W4 MAR/ADT: Keycloak → native Lean → Postgres<br/>Other workflows: Medplum transactions"]:::trusted
     REPLAY["replay, UI browser timeline,<br/>trajectories (0-mismatch replay), dashboard"]:::checked
   end
   WASM --> PAINT
@@ -373,6 +375,40 @@ MedicationAdministration and patient/shared versions. SSE refreshes other nurses
 charts and discards stale evidence. The legacy Medplum MAR save fails closed.
 See the [fresh-clone setup and runnable W4 checks](services/commit/README.md#w4-mar-and-keycloak).
 
+**Administrative bed management uses the service** at `/?workflow=adt`.
+The native `Commit.Adt` reducer handles admit, assign, transfer, release,
+discharge, start cleaning and mark ready. Patient placements and bed occupants
+must agree in both directions; occupied/dirty/cleaning beds cannot accept a new
+patient. Transfers produce one successor containing the patient and both beds.
+The host locks the entire configured board in sorted key order, checks its exact
+version vector, and atomically persists changed streams, audit events and the
+request outcome. Board GET/SSE reads use one primary MVCC snapshot. This initial
+closed-board implementation supports at most 64 patients and 64 beds per tenant;
+unrelated board changes can cause a conflict. Bed-manager/charge-nurse roles
+can perform all ADT commands; admitting clerks can admit and assign. All board
+patients and units must be in the authenticated actor's operator-owned scope.
+Routine patient histories redact other patients' ADT audit context.
+
+**4 West is the first unit provisioned for service MAR.** The dev realm has a
+`4-west-rn` group, `4west-rn1`/`4west-rn2`, `charge-4west`, `bed-manager` and
+`admitting-clerk`. Administrator-managed signed unit claims intersect operator
+scope. `units["4-west"].marOnService` gates the directory, session/evidence,
+cosign and final write paths, including already-open sessions. Deployments with
+unit configuration require an explicit unit on every MAR binding; earlier
+isolated configurations without units retain their original behavior. Turning
+the flag off blocks new writes without enabling a Medplum fallback.
+[Rollout and rollback](docs/design/adt-rollout.md) include additive migration of
+an existing Keycloak realm, actual subject-ID capture, initial stream provisioning,
+operator controls and real browser verification. Synthetic clinical/configuration
+files and credentials stay outside git. The administrative ADT snapshot is separate
+from the imported clinical Encounter; these commands do not author physician
+orders, discharge documents or mutate Medplum.
+
+These new app screens change `appSha256`, invalidating recorded certificates.
+Native Lean additions also stale the broad WASM source manifest. Existing WASM
+execution semantics are reused; rebuilding assets and rebinding historical
+certificates are not part of this lane.
+
 **Other live workflows retain the existing client-side guard and Medplum writer.**
 The diagram below describes that path. General clinical reducers, production
 provenance/access review and writer cutover remain open; W4 does not close G3
@@ -478,7 +514,7 @@ persisted chart version; shared histories are replayed through `Multi.step`.
 
 `ehr serve` reads JSON lines `{id,op,input}` and returns `{id,result}` or
 `{id,error}`, supporting `init`, `step`, `facts`, `commit-check`, `multi-step`,
-`mar-context`, `mar-import-context` and `mar-commit`.
+`mar-context`, `mar-import-context`, `mar-commit` and `adt-commit`.
 It flushes each response and survives malformed requests. The supervisor bounds
 its queue, terminates failed/timed-out children and restarts on the next call.
 The one-shot `ehr commit-check` interface remains available. Its existing
@@ -512,7 +548,7 @@ For the isolated database, service and unit/integration tests, use the
 [service commands](services/commit/README.md#verification). That package has its
 own npm lockfile. Native Lean additions change the broad Lean source fingerprint
 used by WASM freshness checks. Existing WASM semantics are reused for browser
-rendering; the native reducer is the W4 authority. Recorded certificates have not
+rendering; the native reducers are the W4/ADT authority. Recorded certificates have not
 been rebound.
 
 ### Lean in the browser
@@ -599,7 +635,7 @@ step 2.
 - **Client-side guard.** The live commit guard runs in the client. Medplum
   accepts any write that the signed-in user's access policy allows. These workflows have not moved their guards into the server write
   path.
-  The Postgres service mediates W4 MAR only; see G3 for the remaining writes.
+  The Postgres service mediates W4 MAR and administrative ADT; see G3 for the remaining writes.
 
 ### Replay mode (`/ehr`, `/browse`, `/dashboard`)
 

@@ -24,9 +24,15 @@ export function authenticator(config: Config) {
       if (!provision) throw new Fault(403, 'actor_not_provisioned');
       const claims = payload.realm_access as { roles?: unknown } | undefined;
       const roles = Array.isArray(claims?.roles) ? claims.roles.filter(r => ['rn', 'physician', 'np', 'surgeon'].includes(r)) : [];
-      if (roles.length !== 1) throw new Fault(403, 'role_forbidden');
+      const bedRoles = Array.isArray(claims?.roles) ? claims.roles.flatMap(r => {
+        const map: Record<string, 'chargeNurse' | 'bedManager' | 'admittingClerk'> = {
+          'charge-nurse': 'chargeNurse', 'bed-manager': 'bedManager', 'admitting-clerk': 'admittingClerk' };
+        return typeof r === 'string' && Object.hasOwn(map, r) ? [map[r]] : [];
+      }) : [];
+      if (roles.length > 1 || (!roles.length && !bedRoles.length)) throw new Fault(403, 'role_forbidden');
+      const units = Array.isArray(payload.units) ? provision.units?.filter(u => (payload.units as unknown[]).includes(u)) ?? [] : [];
       // Both Lean identity and role come from the verified claims, not provisioning's UI metadata.
-      return { ...provision, user: { id: payload.sub!, role: roles[0] }, expires: payload.exp,
+      return { ...provision, user: { id: payload.sub!, role: roles[0] ?? bedRoles[0] }, adtRoles: bedRoles, units, expires: payload.exp,
         persona: typeof payload.persona === 'string' ? payload.persona : undefined,
         name: typeof payload.name === 'string' ? payload.name : payload.sub };
     } catch (e) { if (e instanceof Fault) throw e; throw new Fault(401, 'invalid_token'); }

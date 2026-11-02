@@ -2,6 +2,7 @@ import Ehr.Cli.Commit
 import Ehr.Api
 import Ehr.Render.Api
 import Ehr.Commit.Mar
+import Ehr.Commit.Adt
 
 /-! Native-only JSON-lines transport. One response per line; malformed requests
 are isolated. This module changes neither the guard nor the shared transition. -/
@@ -24,6 +25,11 @@ def dispatch (request : Json) : Except String Json := do
   let op ← (← request.getObjVal? "op").getStr?
   let input ← request.getObjVal? "input"
   match op with
+  | "adt-commit" =>
+    let i : Commit.Adt.Input ← fromJson? input
+    pure <| match Commit.Adt.commit i with
+      | some accepted => toJson accepted
+      | none => Json.mkObj [("rejected", .str "adt_guard")]
   | "mar-import-context" =>
     let i ← fromJson? input
     pure (toJson (← Commit.Mar.importContextFor i))
