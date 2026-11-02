@@ -892,6 +892,22 @@ TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dis
 ```
 
 
+## Small human study preparation
+
+The [pilot protocol](docs/study/protocol.md) and [adaptable consent form](docs/study/consent-template.txt)
+cover a 5–10 clinician, counterbalanced synthetic ED/W3 study of stack, board,
+source-dated timeline and command palette views. The separate loopback study
+server provides consent, sequencing, measured interaction traces and local JSON
+exports under ignored `runs/study-<date>/`, verified with the existing trajectory
+replayer; calibration and effort scripts produce
+participant-level bootstrap intervals, CSV and reliability curves. Run the
+[documented browser dry-run](docs/study/protocol.md#operator-commands-and-artifacts)
+before recruitment. Dry-run labels and uniform model stand-ins are pipeline
+checks only. Institutional ethics determination and an adapted consent form
+remain the owner's responsibility. [Validation results](docs/study/validation.md)
+record the dry-run and known worktree check failures. No human validation is claimed; Lean and
+certified app hash inputs are unchanged.
+
 ## Development checks
 
 Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check
