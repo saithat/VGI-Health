@@ -1,0 +1,195 @@
+{
+  "name": "VGI pediatric vaccine references",
+  "system": "http://hl7.org/fhir/sid/cvx",
+  "version": "CDC snapshot 2026-10-31",
+  "license": "CDC-authored US government vaccine code data; public domain. No CDC endorsement implied.",
+  "source": {
+    "url": "https://www2.cdc.gov/vaccines/iis/iisstandards/vaccines.asp?rpt=cvx",
+    "retrieved": "2026-10-31"
+  },
+  "note": "Includes every CVX used by world/src/flows/peds.ts, plus combination and historical formulations. Preserve CDC status: historical inactive codes remain valid history but are not current vaccine recommendations.",
+  "codes": [
+    {
+      "code": "03",
+      "label": "MMR",
+      "fullName": "measles, mumps and rubella virus vaccine",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "08",
+      "label": "Hep B, adolescent or pediatric",
+      "fullName": "hepatitis B vaccine, pediatric or pediatric/adolescent dosage",
+      "status": "Active",
+      "lastUpdated": "12/16/2024"
+    },
+    {
+      "code": "10",
+      "label": "IPV",
+      "fullName": "poliovirus vaccine, inactivated",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "20",
+      "label": "DTaP",
+      "fullName": "diphtheria, tetanus toxoids and acellular pertussis vaccine",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "21",
+      "label": "varicella",
+      "fullName": "varicella virus vaccine",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "49",
+      "label": "Hib (PRP-OMP)",
+      "fullName": "Haemophilus influenzae type b vaccine, PRP-OMP conjugate",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "83",
+      "label": "Hep A, ped/adol, 2 dose",
+      "fullName": "hepatitis A vaccine, pediatric/adolescent dosage, 2 dose schedule",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "94",
+      "label": "MMRV",
+      "fullName": "measles, mumps, rubella, and varicella virus vaccine",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "114",
+      "label": "meningococcal MCV4P",
+      "fullName": "meningococcal polysaccharide (groups A, C, Y and W-135) diphtheria toxoid conjugate vaccine (MCV4P)",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "115",
+      "label": "Tdap",
+      "fullName": "tetanus toxoid, reduced diphtheria toxoid, and acellular pertussis vaccine, adsorbed",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "116",
+      "label": "rotavirus, pentavalent",
+      "fullName": "rotavirus, live, pentavalent vaccine",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "120",
+      "label": "DTaP-Hib-IPV",
+      "fullName": "diphtheria, tetanus toxoids and acellular pertussis vaccine, Haemophilus influenzae type b conjugate, and poliovirus vaccine, inactivated (DTaP-Hib-IPV)",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "133",
+      "label": "Pneumococcal conjugate PCV 13",
+      "fullName": "pneumococcal conjugate vaccine, 13 valent",
+      "status": "Active",
+      "lastUpdated": "5/28/2010"
+    },
+    {
+      "code": "140",
+      "label": "Influenza, split virus, trivalent, PF",
+      "fullName": "Influenza, split virus, trivalent, injectable, preservative free",
+      "status": "Active",
+      "lastUpdated": "5/2/2024"
+    },
+    {
+      "code": "141",
+      "label": "Influenza, split virus, trivalent, preservative",
+      "fullName": "Influenza, split virus, trivalent, injectable, contains preservative",
+      "status": "Active",
+      "lastUpdated": "5/2/2024"
+    },
+    {
+      "code": "146",
+      "label": "DTaP,IPV,Hib,HepB",
+      "fullName": "Diphtheria and Tetanus Toxoids and Acellular Pertussis Adsorbed, Inactivated Poliovirus, Haemophilus b Conjugate (Meningococcal Protein Conjugate), and Hepatitis B (Recombinant) Vaccine.",
+      "status": "Active",
+      "lastUpdated": "8/10/2022"
+    },
+    {
+      "code": "150",
+      "label": "Influenza, split virus, quadrivalent, PF",
+      "fullName": "Influenza, split virus, quadrivalent, injectable, preservative free",
+      "status": "Active",
+      "lastUpdated": "5/15/2024"
+    },
+    {
+      "code": "152",
+      "label": "Pneumococcal Conjugate, unspecified formulation",
+      "fullName": "Pneumococcal Conjugate, unspecified formulation",
+      "status": "Inactive",
+      "lastUpdated": "1/28/2013"
+    },
+    {
+      "code": "161",
+      "label": "Influenza, injectable,quadrivalent, preservative free, pediatric",
+      "fullName": "Influenza, injectable,quadrivalent, preservative free, pediatric",
+      "status": "Active",
+      "lastUpdated": "7/29/2024"
+    },
+    {
+      "code": "165",
+      "label": "HPV9",
+      "fullName": "Human Papillomavirus 9-valent vaccine",
+      "status": "Active",
+      "lastUpdated": "12/11/2014"
+    },
+    {
+      "code": "197",
+      "label": "Influenza, high-dose, quadrivalent, PF",
+      "fullName": "Influenza, high-dose, split virus, quadrivalent, injectable, preservative free",
+      "status": "Active",
+      "lastUpdated": "5/15/2024"
+    },
+    {
+      "code": "198",
+      "label": "DTP-hepB-Hib Pentavalent Non-US",
+      "fullName": "Diphtheria, pertussis, tetanus, hepatitis B, Haemophilus Influenza Type b, (Pentavalent)",
+      "status": "Non-US",
+      "lastUpdated": "1/17/2023"
+    },
+    {
+      "code": "213",
+      "label": "SARS-COV-2 (COVID-19) vaccine, UNSPECIFIED",
+      "fullName": "SARS-COV-2 (COVID-19) vaccine, UNSPECIFIED",
+      "status": "Inactive",
+      "lastUpdated": "9/9/2025"
+    },
+    {
+      "code": "215",
+      "label": "Pneumococcal conjugate PCV15, polysaccharide CRM197 conjugate, adjuvant, PF",
+      "fullName": "Pneumococcal conjugate vaccine 15-valent (PCV15), polysaccharide CRM197 conjugate, adjuvant, preservative free",
+      "status": "Active",
+      "lastUpdated": "8/18/2021"
+    },
+    {
+      "code": "300",
+      "label": "COVID-19, mRNA, LNP-S, bivalent, PF, 30 mcg/0.3 mL dose",
+      "fullName": "SARS-COV-2 (COVID-19) vaccine, mRNA, spike protein, LNP, bivalent, preservative free, 30 mcg/0.3 mL dose, tris-sucrose formulation",
+      "status": "Inactive",
+      "lastUpdated": "10/26/2023"
+    },
+    {
+      "code": "309",
+      "label": "COVID-19, mRNA, LNP-S, PF, tris-sucrose, 30 mcg/0.3 mL",
+      "fullName": "SARS-COV-2 (COVID-19) vaccine, mRNA, spike protein, LNP, preservative free, tris-sucrose, 30 mcg/0.3 mL dose",
+      "status": "Active",
+      "lastUpdated": "8/30/2024"
+    }
+  ]
+}

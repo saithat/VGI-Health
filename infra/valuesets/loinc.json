@@ -1,0 +1,392 @@
+{
+  "name": "VGI lab, imaging, note and vital-sign LOINC subset",
+  "system": "http://loinc.org",
+  "version": "NLM Clinical Table Search Service snapshot 2026-10-31",
+  "license": "This material contains content from LOINC (http://loinc.org). LOINC is copyright © Regenstrief Institute, Inc. and the Logical Observation Identifiers Names and Codes (LOINC) Committee and is available at no cost under the license at http://loinc.org/license. LOINC® is a registered United States trademark of Regenstrief Institute, Inc.",
+  "source": {
+    "url": "https://clinicaltables.nlm.nih.gov/apidoc/loinc/v3/doc.html",
+    "lookupUrl": "https://clinicaltables.nlm.nih.gov/api/loinc_items/v3/search",
+    "licenseUrl": "https://loinc.org/license",
+    "retrieved": "2026-10-31"
+  },
+  "codes": [
+    {
+      "code": "10164-2",
+      "label": "History of Present illness Narrative",
+      "category": "note",
+      "workflowKey": "hpi"
+    },
+    {
+      "code": "10839-9",
+      "label": "Troponin I.cardiac [Mass/volume] in Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "troponin-i"
+    },
+    {
+      "code": "11289-6",
+      "label": "Body temperature at First encounter",
+      "category": "laboratory",
+      "workflowKey": "rapid-strep"
+    },
+    {
+      "code": "11488-4",
+      "label": "Consult Note",
+      "category": "note",
+      "workflowKey": "consultNote"
+    },
+    {
+      "code": "11502-2",
+      "label": "Laboratory report",
+      "category": "note",
+      "workflowKey": "labReport"
+    },
+    {
+      "code": "11504-8",
+      "label": "Surgical Operation Note",
+      "category": "note",
+      "workflowKey": "operativeNote"
+    },
+    {
+      "code": "11506-3",
+      "label": "Progress Note",
+      "category": "note",
+      "workflowKey": "progressNote"
+    },
+    {
+      "code": "18262-6",
+      "label": "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay",
+      "category": "laboratory",
+      "workflowKey": "ldl"
+    },
+    {
+      "code": "18748-4",
+      "label": "Diagnostic imaging study",
+      "category": "note",
+      "workflowKey": "imagingReport"
+    },
+    {
+      "code": "18842-5",
+      "label": "Discharge Summary",
+      "category": "note",
+      "workflowKey": "dischargeSummary"
+    },
+    {
+      "code": "2160-0",
+      "label": "Creatinine [Mass/volume] in Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "creatinine"
+    },
+    {
+      "code": "22637-3",
+      "label": "Pathology report final diagnosis Narrative",
+      "category": "laboratory",
+      "workflowKey": "pathology"
+    },
+    {
+      "code": "2345-7",
+      "label": "Glucose [Mass/volume] in Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "glucose"
+    },
+    {
+      "code": "24321-2",
+      "label": "Basic metabolic 2000 panel - Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "bmp"
+    },
+    {
+      "code": "24323-8",
+      "label": "Comprehensive metabolic 2000 panel - Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "cmp"
+    },
+    {
+      "code": "24331-1",
+      "label": "Lipid 1996 panel - Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "lipid-panel"
+    },
+    {
+      "code": "24336-0",
+      "label": "Gas panel - Arterial blood",
+      "category": "laboratory",
+      "workflowKey": "arterial-blood-gas"
+    },
+    {
+      "code": "24339-4",
+      "label": "Gas panel - Venous blood",
+      "category": "laboratory",
+      "workflowKey": "venous-blood-gas"
+    },
+    {
+      "code": "24356-8",
+      "label": "Urinalysis complete panel - Urine",
+      "category": "laboratory",
+      "workflowKey": "urinalysis-complete-panel"
+    },
+    {
+      "code": "24357-6",
+      "label": "Urinalysis macro (dipstick) panel - Urine",
+      "category": "laboratory",
+      "workflowKey": "urine-dipstick-panel"
+    },
+    {
+      "code": "24360-0",
+      "label": "Hemoglobin and Hematocrit panel - Blood",
+      "category": "laboratory",
+      "workflowKey": "hemoglobin-hematocrit-panel"
+    },
+    {
+      "code": "24558-9",
+      "label": "US Abdomen",
+      "category": "imaging",
+      "workflowKey": "ultrasound-abdomen"
+    },
+    {
+      "code": "2524-7",
+      "label": "Lactate [Moles/volume] in Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "lactate"
+    },
+    {
+      "code": "2823-3",
+      "label": "Potassium [Moles/volume] in Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "potassium"
+    },
+    {
+      "code": "28570-0",
+      "label": "Procedure Note",
+      "category": "note",
+      "workflowKey": "procedureNote"
+    },
+    {
+      "code": "29463-7",
+      "label": "Body weight",
+      "category": "vital-signs",
+      "workflowKey": "weight"
+    },
+    {
+      "code": "2951-2",
+      "label": "Sodium [Moles/volume] in Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "sodium"
+    },
+    {
+      "code": "3016-3",
+      "label": "Thyrotropin [Units/volume] in Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "tsh"
+    },
+    {
+      "code": "30679-5",
+      "label": "MR Lumbar spine WO contrast",
+      "category": "imaging",
+      "workflowKey": "mri-lumbar-spine-without-contrast"
+    },
+    {
+      "code": "30704-1",
+      "label": "US Abdomen limited",
+      "category": "imaging",
+      "workflowKey": "ultrasound-right-upper-quadrant"
+    },
+    {
+      "code": "30746-2",
+      "label": "Portable XR Chest Views",
+      "category": "imaging",
+      "workflowKey": "portable-chest-xray"
+    },
+    {
+      "code": "30799-1",
+      "label": "CT Head WO contrast",
+      "category": "imaging",
+      "workflowKey": "ct-head-without-contrast"
+    },
+    {
+      "code": "34109-9",
+      "label": "Note",
+      "category": "note",
+      "workflowKey": "outpatientNote"
+    },
+    {
+      "code": "34111-5",
+      "label": "Emergency Department Note",
+      "category": "note",
+      "workflowKey": "edNote"
+    },
+    {
+      "code": "34117-2",
+      "label": "History and Physical Note",
+      "category": "note",
+      "workflowKey": "historyPhysical"
+    },
+    {
+      "code": "34528-0",
+      "label": "PT panel - Platelet poor plasma by Coagulation assay",
+      "category": "laboratory",
+      "workflowKey": "pt-panel"
+    },
+    {
+      "code": "34746-8",
+      "label": "Nurse Note",
+      "category": "note",
+      "workflowKey": "nursingNote"
+    },
+    {
+      "code": "36643-5",
+      "label": "XR Chest 2 Views",
+      "category": "imaging",
+      "workflowKey": "chest-xray-two-view"
+    },
+    {
+      "code": "36813-4",
+      "label": "CT Abdomen and Pelvis W contrast IV",
+      "category": "imaging",
+      "workflowKey": "ct-abdomen-pelvis-iv-contrast"
+    },
+    {
+      "code": "39494-0",
+      "label": "US Abdominal wall",
+      "category": "imaging",
+      "workflowKey": "ultrasound-abdominal-wall"
+    },
+    {
+      "code": "4548-4",
+      "label": "Hemoglobin A1c/Hemoglobin.total in Blood",
+      "category": "laboratory",
+      "workflowKey": "a1c"
+    },
+    {
+      "code": "48065-7",
+      "label": "Fibrin D-dimer FEU [Mass/volume] in Platelet poor plasma",
+      "category": "laboratory",
+      "workflowKey": "d-dimer"
+    },
+    {
+      "code": "51847-2",
+      "label": "Evaluation + Plan Note",
+      "category": "note",
+      "workflowKey": "assessmentPlan"
+    },
+    {
+      "code": "51990-0",
+      "label": "Basic metabolic panel - Blood",
+      "category": "laboratory",
+      "workflowKey": "basic-metabolic-panel-blood"
+    },
+    {
+      "code": "55405-5",
+      "label": "Heart failure tracking panel",
+      "category": "laboratory",
+      "workflowKey": "heart-failure-panel"
+    },
+    {
+      "code": "57021-8",
+      "label": "CBC W Auto Differential panel - Blood",
+      "category": "laboratory",
+      "workflowKey": "cbc-with-differential"
+    },
+    {
+      "code": "57698-3",
+      "label": "Lipid panel with direct LDL - Serum or Plasma",
+      "category": "laboratory",
+      "workflowKey": "lipid-panel-direct-ldl"
+    },
+    {
+      "code": "5803-2",
+      "label": "pH of Urine by Test strip",
+      "category": "laboratory",
+      "workflowKey": "urinalysis"
+    },
+    {
+      "code": "58410-2",
+      "label": "CBC panel - Blood by Automated count",
+      "category": "laboratory",
+      "workflowKey": "cbc"
+    },
+    {
+      "code": "5902-2",
+      "label": "Prothrombin time (PT)",
+      "category": "laboratory",
+      "workflowKey": "pt"
+    },
+    {
+      "code": "5905-5",
+      "label": "Monocytes/Leukocytes in Blood by Automated count",
+      "category": "laboratory",
+      "workflowKey": "ptt"
+    },
+    {
+      "code": "59284-0",
+      "label": "Consent Document",
+      "category": "note",
+      "workflowKey": "consent"
+    },
+    {
+      "code": "600-7",
+      "label": "Bacteria identified in Blood by Culture",
+      "category": "laboratory",
+      "workflowKey": "bloodCulture"
+    },
+    {
+      "code": "630-4",
+      "label": "Bacteria identified in Urine by Culture",
+      "category": "laboratory",
+      "workflowKey": "urine-culture"
+    },
+    {
+      "code": "6301-6",
+      "label": "INR in Platelet poor plasma by Coagulation assay",
+      "category": "laboratory",
+      "workflowKey": "inr"
+    },
+    {
+      "code": "6690-2",
+      "label": "Leukocytes [#/volume] in Blood by Automated count",
+      "category": "laboratory",
+      "workflowKey": "wbc"
+    },
+    {
+      "code": "69742-5",
+      "label": "CBC W Differential panel, method unspecified - Blood",
+      "category": "laboratory",
+      "workflowKey": "cbc-differential-unspecified"
+    },
+    {
+      "code": "718-7",
+      "label": "Hemoglobin [Mass/volume] in Blood",
+      "category": "laboratory",
+      "workflowKey": "hemoglobin"
+    },
+    {
+      "code": "72514-3",
+      "label": "Pain severity - 0-10 verbal numeric rating [Score] - Reported",
+      "category": "assessment",
+      "workflowKey": "pain-score"
+    },
+    {
+      "code": "8302-2",
+      "label": "Body height",
+      "category": "vital-signs",
+      "workflowKey": "height"
+    },
+    {
+      "code": "85354-9",
+      "label": "Blood pressure panel with all children optional",
+      "category": "vital-signs",
+      "workflowKey": "blood-pressure-panel"
+    },
+    {
+      "code": "87674-8",
+      "label": "Optical coherence tomography study",
+      "category": "imaging",
+      "workflowKey": "optical-coherence-tomography"
+    },
+    {
+      "code": "89577-1",
+      "label": "Troponin I.cardiac panel - Serum or Plasma by High sensitivity method",
+      "category": "laboratory",
+      "workflowKey": "high-sensitivity-troponin-i-panel"
+    }
+  ]
+}

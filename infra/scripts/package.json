@@ -1,0 +1,20 @@
+{
+  "name": "@vgi/infra-scripts",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Medplum setup and Synthea fixture loading for VGI Health",
+  "type": "module",
+  "scripts": {
+    "wait": "node wait-healthy.mjs",
+    "setup": "node setup.mjs",
+    "load": "node load.mjs",
+    "seed": "node seed-world.mjs",
+    "test": "node --test seed-world.test.mjs"
+  },
+  "dependencies": {
+    "@medplum/core": "5.2.13"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

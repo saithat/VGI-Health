@@ -1,0 +1,52 @@
+{
+  "name": "keep_hyperlipidemia",
+  "remarks": [
+    "Keep patients with hyperlipidemia or hypertriglyceridemia (Synthea only assigns hyperlipidemia via veteran_hyperlipidemia and hypertriglyceridemia via metabolic_syndrome_care, so the general population has few).",
+    "Used with `-k` by infra/synthea/generate.sh: only patients reaching the Keep state are exported."
+  ],
+  "states": {
+    "Initial": {
+      "type": "Initial",
+      "conditional_transition": [
+        {
+          "transition": "Keep",
+          "condition": {
+            "condition_type": "Or",
+            "conditions": [
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "55822004",
+                    "display": "Hyperlipidemia (disorder)"
+                  }
+                ]
+              },
+              {
+                "condition_type": "Active Condition",
+                "codes": [
+                  {
+                    "system": "SNOMED-CT",
+                    "code": "302870006",
+                    "display": "Hypertriglyceridemia (disorder)"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "transition": "Terminal"
+        }
+      ]
+    },
+    "Terminal": {
+      "type": "Terminal"
+    },
+    "Keep": {
+      "type": "Terminal"
+    }
+  },
+  "gmf_version": 2
+}
