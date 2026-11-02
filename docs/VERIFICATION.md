@@ -222,7 +222,7 @@ The role must pass both ordinary permission and the encounter-specific role rest
 
 Two other scope decisions matter: the temporary core profile removes most catalog content (above), and D2 now requires full review rows in the workspace even when a compact sidebar is present (`Render/UiProofs.lean:298`). D5's current overview check must not be described as a proof about interactive navigation. Signing roles, dose units and navigation are active lanes: regenerate the appendix after merging them, then re-review these plain-language claims.
 
-## 8. Gaps against CLAUDE.md §§4 and 7
+## 8. Gaps against the hackathon's verification guidelines (CLAUDE.md §§4 and 7, in `hackathon-final`)
 
 - [x] **T1 fragment and nonempty witness:** `Scalar.completable`, `satisfies_of_checked_scalar`, `scalar_identity_satisfies`, `scalar_identity_required`. The fragment covers scalar kinds except medication doses, both review modes, every alert condition and tier. `human_finish_ready` proves finite alert discharge for the real interpreter.
 - [x] **Fixed per-order-line T1 fragment:** `FixedLine.completable`, `satisfies_of_checked_fixed_lines`, `fixed_lines_satisfies`, and `fixed_lines_pending_nonempty`. Both fixed slots can be repaired after new-line advancement.

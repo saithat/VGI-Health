@@ -2,7 +2,7 @@
 
 > This is the project spec for coding agents. Build in the schedule order (section 11). If time runs short, propose cuts to the owner; never cut on your own. This brief says *what* must be modeled and proven, not the exact Lean definitions.
 >
-> Read with it: `rules.md` (hackathon rules) and `CLAUDE.md` (how to do Lean verification here).
+> Read with it: `rules.md` (hackathon rules) and `CLAUDE.md` (Lean verification practices), both in the `hackathon-final` tag.
 
 ## 0. Context
 
@@ -104,7 +104,7 @@ Counterexamples replay in the **real app**, in a dashboard frame, so judges see 
 
 The owner writes no code. Agents build, and the owner reviews and steers.
 
-**Lean rules** (see `CLAUDE.md` for details)
+**Lean rules** (see `CLAUDE.md` in the `hackathon-final` tag)
 - Pin the Lean toolchain (v4.35.0) and every dependency rev. Commit `lake-manifest.json`. Use core plus Batteries (and `plausible` for testing). No Mathlib unless the owner approves.
 - Everything that runs must be computable: no `Classical` in definitions that execute. `#eval` / `#guard` each executable function (checker, semantics, simulate, deploy).
 - Final proofs: no `sorry`, `admit`, new `axiom`, `native_decide`, `implemented_by`, `unsafe`, `debug.skipKernelTC`, or `maxHeartbeats 0`. CI runs `lake check` plus Comparator against a trusted statements file, and `#audit_axioms` on each main theorem. During development, `sorry` is allowed only when listed in `TODO_PROOFS.md`.
