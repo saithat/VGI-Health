@@ -292,3 +292,44 @@ on a rerun. It never resets the server or changes active worklists. All imported
 patients are searchable by every live persona. See the
 [import guide](../scripts/synthetic-hospital/README.md) and
 [root README](../README.md).
+
+
+## Keycloak for W4
+
+`keycloak/compose.yml` is a separate `vgi-keycloak` project with a persistent dev
+volume, loopback port 8180 and pinned Keycloak 26.4.7 (768 MB limit, 384 MB heap).
+It imports `keycloak/vgi-realm.json` on first startup. The realm contains the six
+personas with stable subject IDs and Lean realm roles: P1/P2 physician, P3/RN2 rn,
+P4 np, P5 surgeon. The public `vgi-mar` client enables Authorization Code + S256
+PKCE, disables implicit/password grants and adds the commit-service audience.
+
+```sh
+# Repository root
+node infra/keycloak/setup.mjs
+docker compose --env-file .env -f infra/keycloak/compose.yml up -d
+curl --fail http://localhost:8180/realms/vgi/.well-known/openid-configuration
+```
+
+Setup creates random `KEYCLOAK_ADMIN_PASSWORD` and `KEYCLOAK_PERSONA_PASSWORD` in
+the untracked root `.env`, preserves existing keys and limits file access to its
+owner. The realm references the persona password through an environment
+placeholder; there are no committed credentials or browser client secrets.
+Username logins are `p1`, `p2`, `p3`, `rn2`, `p4`, `p5`; the dev admin is
+`vgi-admin`. Do not use the dev listener/users as a production identity policy.
+Realm substitution and startup import follow the
+[Keycloak import guide](https://www.keycloak.org/server/importExport); the browser
+uses the standard [code flow and PKCE](https://www.keycloak.org/securing-apps/javascript-adapter).
+
+A persisted realm is skipped on startup import: editing the export or changing
+`.env` does not silently reset existing accounts/passwords. Retain the volume
+on ordinary shutdown (`docker compose --env-file .env -f infra/keycloak/compose.yml stop`).
+Explicit realm migration/reset is an operator action. For hostnames/ports beyond
+the listed localhost and 127.0.0.1 dev origins, update the realm client redirect
+allowlist and `VITE_KEYCLOAK_ISSUER`, and pin the same issuer in service config.
+The browser's `/commit` proxy uses `COMMIT_INTERNAL_URL` (default 8090).
+
+For new-stream import, synthetic MAR provisioning, service startup and the real
+two-nurse browser test, use the
+[W4 setup](../services/commit/README.md#w4-mar-and-keycloak). No Medplum identity,
+FHIR transaction or database reset is required for this W4 path. Other workflows
+continue using the existing Medplum setup above.

@@ -1,0 +1,218 @@
+{
+  "realm": "vgi",
+  "enabled": true,
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "accessTokenLifespan": 300,
+  "roles": {
+    "realm": [
+      {
+        "name": "rn"
+      },
+      {
+        "name": "physician"
+      },
+      {
+        "name": "np"
+      },
+      {
+        "name": "surgeon"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "vgi-mar",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "implicitFlowEnabled": false,
+      "redirectUris": [
+        "http://127.0.0.1:4179/?workflow=mar",
+        "http://127.0.0.1:5173/?workflow=mar",
+        "http://localhost:5173/?workflow=mar",
+        "http://localhost:4173/?workflow=mar"
+      ],
+      "webOrigins": [
+        "http://127.0.0.1:4179",
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "http://localhost:4173"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "protocolMappers": [
+        {
+          "name": "commit-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "vgi-commit",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "persona",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "persona",
+            "claim.name": "persona",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "id": "00000000-0000-4000-8000-000000000001",
+      "username": "p1",
+      "firstName": "Maya",
+      "lastName": "Chen",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": {
+        "persona": [
+          "P1"
+        ]
+      },
+      "realmRoles": [
+        "physician"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_PERSONA_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "email": "p1@vgi-health.example"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000002",
+      "username": "p2",
+      "firstName": "Marcus",
+      "lastName": "Okafor",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": {
+        "persona": [
+          "P2"
+        ]
+      },
+      "realmRoles": [
+        "physician"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_PERSONA_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "email": "p2@vgi-health.example"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000003",
+      "username": "p3",
+      "firstName": "Rosa",
+      "lastName": "Delgado",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": {
+        "persona": [
+          "P3"
+        ]
+      },
+      "realmRoles": [
+        "rn"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_PERSONA_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "email": "p3@vgi-health.example"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000004",
+      "username": "rn2",
+      "firstName": "Ethan",
+      "lastName": "Park",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": {
+        "persona": [
+          "RN2"
+        ]
+      },
+      "realmRoles": [
+        "rn"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_PERSONA_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "email": "rn2@vgi-health.example"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "username": "p4",
+      "firstName": "Priya",
+      "lastName": "Raman",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": {
+        "persona": [
+          "P4"
+        ]
+      },
+      "realmRoles": [
+        "np"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_PERSONA_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "email": "p4@vgi-health.example"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000006",
+      "username": "p5",
+      "firstName": "James",
+      "lastName": "Whitaker",
+      "enabled": true,
+      "emailVerified": true,
+      "attributes": {
+        "persona": [
+          "P5"
+        ]
+      },
+      "realmRoles": [
+        "surgeon"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_PERSONA_PASSWORD}",
+          "temporary": false
+        }
+      ],
+      "email": "p5@vgi-health.example"
+    }
+  ]
+}

@@ -1,3 +1,4 @@
+import { createMarSession, type MarConnection } from "./marSession";
 import { clinicalDate } from "../data/clinicalDate";
 import { z } from "zod";
 import type {
@@ -182,7 +183,9 @@ export async function createLiveSession(
   user: LiveUser,
   initialContext?: LiveContext,
   workspaceDate = clinicalDate(),
+  mar?: MarConnection,
 ) {
+  if (mar) return createMarSession(interp, mar);
   const elements = z
     .object({ elements: z.array(elementSchema) })
     .parse(spec).elements;
@@ -418,6 +421,10 @@ export async function createLiveSession(
       const commits = staged.state.commits.filter(
         (id) => !before.state.commits.includes(id),
       );
+      if (commits.includes("administerMed"))
+        throw new Error(
+          "Medication administration now uses the inpatient MAR. Open Inpatient MAR and sign in with Keycloak.",
+        );
       const newReceipts = staged.state.receipts.filter(
         (r) =>
           !before.state.receipts.some(

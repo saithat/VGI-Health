@@ -1,9 +1,9 @@
 import type { Obj } from './types.ts';
 
 /** Lossless journal exchange, not a claim to implement every clinical mapper.
- * Standard resources imported at genesis remain intact. Accepted commands use
+ * Imported resources remain intact; W4 appends native reducer-produced administrations. Accepted commands use
  * an explicit VGI Basic profile; projecting them to clinical R4 resources is a
- * separate, versioned consumer of the authoritative Postgres history. */
+ * separate, versioned consumer for other workflows of the authoritative Postgres history. */
 export function exportFhir(patient: string, snapshot: Obj, events: Obj[]) {
   return {
     resourceType: 'Bundle', type: 'collection',

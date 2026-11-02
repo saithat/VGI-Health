@@ -1,51 +1,81 @@
 # Concurrency: Postgres commit authority and shared workflows
 
-Status: native Lean authority and independent Postgres service implemented and
-integration-tested (2026-11-02). Postgres is the chosen system of record. FHIR
-is an exchange format; Medplum may be an asynchronous projection. The existing
-browser live mode still writes to Medplum and is unchanged in this lane. G3
-remains open for that deployed path until cutover.
+Status: W4 medication administration is the first live workflow on the Postgres
+commit authority (2026-11-02). Identity for this path is Keycloak OIDC. FHIR is
+import/export; Medplum may be an asynchronous projection. Other workflows still
+use the client-side guard and Medplum transaction path. G3 remains open there.
 
 ## Boundary and implementation scope
 
-`services/commit/` is a Node 22 HTTP host using `pg` and a supervised, long-running
-`ehr serve` child. The child is stateless: JSON requests and responses, one per
-line, with correlation IDs. It dispatches `init`, `step`, `facts`, `commit-check`
-and `multi-step` to the existing executable Lean functions. A malformed line
-gets an error response without poisoning the next request. There is no separate
-TypeScript clinical guard or shared-workflow guard.
+`services/commit/` is a Node 22 HTTP host using `pg`, `jose` JWKS verification and
+a supervised, long-running `ehr serve` child. JSONL dispatch includes `init`,
+`step`, `facts`, `commit-check`, `multi-step`, `mar-context`, `mar-import-context` and `mar-commit`.
+No TypeScript copy of the clinical guard or MAR reducer exists.
 
-The host authenticates a bearer credential against an operator-supplied tenant
-configuration. That configuration supplies user/role, permitted patients,
-immutable spec/program releases, and workflow-to-commit/shared-resource bindings.
-HTTP callers cannot supply those fields, a before-state, facts, context, or FHIR
-effects. A session records authenticated interaction events in Postgres; the
-host replays them through native Lean from `init`. A commit replays the session
-and runs `Commit.check` on the chart read while holding the patient's row lock.
-The actor's model ID and patient's model ID come from operator provisioning.
+`/?workflow=mar` and the P3/RN2 login buttons use Keycloak Authorization Code +
+S256 PKCE. The public client has no secret and password grants are disabled.
+Access/refresh tokens stay in browser memory; only redirect state/verifier use
+session storage. The host pins issuer/JWKS URL, audience, RS256 algorithm and
+client, requires subject/expiry/issued-at, and refuses ID tokens. Lean `user.id`
+is the verified `sub`; exactly one recognized realm role supplies Lean's role.
+Operator provisioning binds that subject to model ID and patient scope. Those
+fields, spec/program releases and scheduled occurrences cannot come from HTTP
+bodies. Static credentials remain only for the earlier isolated service demo;
+a configuration containing MAR bindings requires OIDC and forbids static tokens.
+The dev realm includes P1/P2 physicians, P3/RN2 nurses, P4 NP and P5 surgeon.
+Setup, secret creation and exact commands are in the
+[service README](../../services/commit/README.md#w4-mar-and-keycloak) and
+[infra README](../../infra/README.md#keycloak-for-w4).
 
-This is an executable command-journal foundation, with dose and bed controls.
-The patient snapshot contains an imported, versioned FHIR collection and the
-latest accepted command state; every accepted command and its guard input are
-retained in the event log. **General clinical FHIR reduction is not implemented:**
-commands do not automatically become MedicationRequest, MedicationAdministration,
-Encounter, billing or other clinical-resource updates. Guard facts currently
-project the imported chart; the shared dose/bed state is checked separately.
-It is therefore unsuitable as a replacement live chart backend until those
-reducers, source completeness and workflow bindings are validated. There is no
-production identity provider, patient-directory API, release-certificate verifier,
-co-sign consent protocol or physical scan attestation in this service. Static
-credentials and the sample operator releases are for local synthetic-data work.
-Trusting an authenticated event is not proof that a human performed the action.
+A session pins an operator-owned spec/program and patient version. The host
+reconstructs its authenticated interactions from `init`; every accepted command
+runs `Commit.check` against the locked current collection. W4 additionally runs
+`Commit.Mar.commit`: patient-stream MAR state reduces barcode-scanned,
+double-check-cosign, administered, held and refused events. A single command
+contains its evidence events plus its clinical outcome; they publish in one
+patient-stream version, not as partially visible clinical changes. Given consumes
+the dose through the same `Multi.step` used in the multi-actor proof. Held/refused
+retain reason and create `not-done` records without consuming the dose. A later
+given is permitted after fresh review. Held/refused advance the locked dose
+stream with an explicit `shared-noop` event and unchanged shared state; given
+advances it through `Multi.step`. The reducer checks the complete guard
+again and records the exact read/written versions.
 
-The service fails closed on missing streams, changed releases, stale sessions,
+`mar-context` resolves the exact active MedicationRequest, patient, encounter,
+formulary drug and explicit scheduled time in Lean. The clinical reducer emits
+an R4 MedicationAdministration with a transaction UUID as stable identity,
+patient/order/encounter links, authenticated performer, recording time and source
+evidence. It retains actual dose/route/site only when captured; the active core
+profile does not require all catalog fields, and scheduled quantities are never
+invented as actual quantities. The patient snapshot appends that resource before
+subsequent facts projection. The event retains the complete input, decision,
+read versions and reducer output for independent replay. SQL persists patient,
+shared-dose, resource and durable outcome atomically.
+
+A high-alert cosign also requires consent from a separately authenticated RN,
+for the same patient, workflow, release hash and exact patient version, expiring
+in five minutes. A typed name alone is insufficient. This authenticates an
+attestation; it does not prove a physical scan, double-check or administration.
+SSE uses a bearer header, terminates at token expiry, and reconnects with refreshed
+identity and a durable cursor. A remote update discards stale interaction evidence,
+opens a fresh service session and displays the current MAR. Version conflicts
+also refresh; uncertain clinical saves reconcile the same request identity.
+The legacy `liveSession` Medplum `administerMed` save fails closed.
+
+This is a **development W4 cutover on pre-provisioned scheduled doses**, not a
+general clinical backend. General reducers, existing-patient reconciliation,
+release-certificate verification, production patient-access policy, exact-version
+review provenance, physical evidence, TLS/operations and complete catalog review
+remain deployment work. Other workflows retain their existing Medplum behavior.
+The host fails closed on missing streams, changed releases, stale sessions,
 version mismatch, native errors and shared rejection. There is no raw clinical
-SQL/FHIR write endpoint and no online import into an existing patient stream.
+SQL/FHIR write endpoint or online import into an existing patient stream.
 
 ## Schema and ownership
 
 The initial schema is `services/commit/migrations/001.sql`; `002.sql` binds
-stored outcomes to their patient for current access checks. Migrations run
+stored outcomes to their patient for current access checks; `003`/`004` add
+version-scoped, release-bound independent-nurse consent. Migrations run
 transactionally under a database advisory lock; their names and SHA-256 content
 hashes are retained in `commit_migrations`. Editing an applied migration is an
 error. The local Compose project `vgi-commit`, database `vgi_commit`, port 55432
@@ -60,10 +90,12 @@ All stream keys and request identities are tenant-scoped:
 | `commit_requests (tenant,actor,request_id)` | Patient binding, canonical payload hash and durable HTTP status/body, reserved and completed in the same transaction as the command. Reusing a key with different intent is a conflict. |
 | `commit_sessions (tenant,id)` | Actor, patient, release name/hash, workflow, base patient version, context, interaction log, revision and creation time. Session edits have revision checks; committed clinical events remain in `commit_events`. |
 | `dose:<patient>:<order>:<occurrence>` | Provisioned shared stream; the immutable scheduled occurrence includes all three identifiers. Snapshot uses the existing Lean `Multi.State` administration log. |
+| `commit_mar_cosigns` | Authenticated RN consent scoped to patient, workflow, release hash, patient version and five-minute expiry; the clinical event retains the resulting cosign evidence. |
 | `bed:<bed-id>` | Provisioned shared stream; snapshot uses `Multi.State` placements. Assign/release and the corresponding patient event commit atomically. |
 
 FHIR IDs and model IDs are distinct. Tenant-local patient model IDs and actor
-model IDs are unique; natural-number order/occurrence/bed IDs are operator-owned.
+model IDs are unique; natural-number order/occurrence/bed IDs are operator-owned. MAR import pins the dose-to-order/explicit-time binding in the
+patient genesis snapshot; configuration aliases/reassignment are rejected.
 A missing shared stream never means available. Provision streams before opening
 sessions. Dose history remains after consumption; releasing a bed permits reuse.
 The schema reserves a stream abstraction for other resources, such as appointment
@@ -120,8 +152,9 @@ The following are explicit integration obligations, checked in part by tests:
 `Commit.accepted_current_guard` gives the existing guard on the projection
 returned by `Commit.prepare`, together with the exact resource preconditions
 and recomputed human-step state. It does not establish condition 5. The current
-service records the exact check and protects its imported chart version, but
-has not implemented the full clinical reducer needed for general EHR operation.
+service records the exact check and protects its imported chart version, and
+W4 additionally reduces its MAR resources before the next guard. General EHR
+clinical reduction remains incomplete.
 The `Multi` proofs give uniqueness when the persisted shared transition equals
 `Multi.step` and starts safe. SQL/JSON correspondence is tested, not proved.
 
@@ -144,7 +177,7 @@ statement in a transaction issued through the same checked-out `pg` client:
    patient plus one shared stream; the lock algorithm supports a closed key set.
 4. Reconstruct state from the logged events on that chart. Project the locked
    bundle and run native `commit-check`. Use service UTC time for the current
-   check; the interaction replay uses its captured session context. Run the
+   check; the interaction replay uses its captured session context. For W4 run `mar-commit` and check version-bound cosign consent. Run the
    actual `Multi.step` on the locked shared snapshot and require a change.
 5. Update snapshots with an additional `WHERE version = expected` predicate;
    append every stream event, save the response, and issue `pg_notify` in the
@@ -224,7 +257,9 @@ Initial import is a privileged CLI transaction into a **new** patient stream.
 It validates one Patient, complete `collection` Bundle structure, usable unique
 resource versions and native projection, then writes a labeled import event and
 provisions shared streams. It does not pretend an imported historical record
-was accepted by the clinical guard. Duplicate patient/model IDs fail; import
+was accepted by the clinical guard. `mar-import-context` conservatively rejects
+any completed administration already linked to a selected MAR order; operators
+must reconcile that baseline rather than import an empty consumption log. Duplicate patient/model IDs fail; import
 never overwrites an occupied bed or consumed dose. Corrections/delta imports
 into existing streams need an explicit expected-version import command and
 clinical/evidence reconciliation; that endpoint is intentionally absent.
@@ -232,12 +267,13 @@ clinical/evidence reconciliation; that endpoint is intentionally absent.
 `GET /patients/:id/fhir` exports the imported R4 resources plus lossless VGI
 `Basic` command records (`urn:vgi:profile:accepted-command`). Each Basic includes
 the transaction ID, stream version, commit code, Patient reference and exact
-journal event. The exporter fixes an upper patient version so concurrent writes
-do not mix export boundaries. These are journal records, **not** a completed
-clinical MedicationAdministration/Encounter mapper or a standardized VGI profile.
+journal event. W4 snapshots additionally contain the reducer-produced
+MedicationAdministration resources. The exporter fixes an upper patient version so concurrent writes
+do not mix export boundaries. Basic resources remain journal records, not an Encounter/general clinical mapper
+or a standardized VGI profile.
 Their contained audit data needs the same access controls as the chart.
 
-The next reducer must map accepted command captures to clinical facts and
+Each subsequent workflow reducer must map accepted command captures to clinical facts and
 standard FHIR resources under the same patient/shared transaction; version its
 mapping and retain the source event IDs. Subsequent guards must read that
 current reduction. Do not round-trip through Medplum to establish guard currency.
@@ -256,6 +292,8 @@ Existing theorem statements and hospital rules are unchanged:
 | Theorem | Meaning and remaining correspondence |
 |---|---|
 | `Commit.accepted_current_guard` | Accepted input passed `commitGuard` on `prepare`'s exact supplied FHIR projection; authentic session state, freshness, clinical reduction and SQL are trusted integration obligations. |
+| `Commit.Mar.applyEvent_invariant`, `reduce_invariant`, `commit_invariant` | MAR reduction preserves the existing `Multi.Invariant`, including dose-once, for arbitrary actors/interleavings from a safe state. |
+| `Commit.Mar.accepted_guard_at_written_version` | Every accepted MAR write passed `commitGuard` on its prepared bundle; its recorded read version equals the expected version and its write is that version plus one. SQL supplies the locked snapshot and persists exactly that result; this correspondence is tested, not proved. |
 | `Multi.step_invariant`, `Multi.run_invariant`, `Multi.reachable_invariant` | Dose-key uniqueness and bed-key uniqueness over the executable shared model's finite interleavings. Each persisted shared stream uses that same function. The host partitions independent dose/bed keys and tests their histories against Lean; no SQL refinement theorem is claimed. |
 
 The model does not prove physical administration, one bed per patient, appropriate
@@ -294,20 +332,26 @@ No solver or trusted axiom was added here.
 
 ## Migration to the live app
 
-1. Use the independent service and synthetic data; retain the browser's current
-   WASM/Medplum mode. Freeze and validate certified server release artifacts.
-2. Implement and validate clinical command reducers, existing-patient imports,
-   production identity/access checks, exact-version review provenance, consent
-   and source reconciliation. Test all deployed workflows against current charts.
-3. Import/reconcile a baseline and shadow the app's commits against Postgres;
-   measure guard/reducer agreement. Shadow agreement alone is not mediation.
-4. Change `liveSession` to submit authenticated session events/expected versions
-   and accept only durable service results. Switch authoritative writer privileges
-   in the same cutover: browser, generic proxies, imports and integrations lose
-   their direct clinical writes. All authoritative changes go through Postgres.
-5. Retire Medplum, or run the optional read-only FHIR projection. Exercise backup,
-   failover, ambiguous outcomes and projection recovery before deployment.
+1. W4 now uses Keycloak, a pinned operator release and the native MAR reducer.
+   Provision a new patient stream and immutable dose bindings, validate chart
+   completeness and compare source/version projections before clinical use.
+2. Build reducers and invariant/guard proofs for assessments, orders, results,
+   disposition/bed movements, referrals, refills and remaining workflows. Preserve
+   exact resource versions, source events and patient/encounter identity. Existing
+   shared-bed tests are a foundation, not a live bed cutover.
+3. Shadow each workflow against Postgres and reconcile existing patient baselines.
+   Validate production identity/access, review provenance and release certificates.
+   Agreement is necessary but does not mediate writes.
+4. Switch each `liveSession` path and its authoritative writer privileges together.
+   Remove browser/integration direct writes for migrated resources; generic
+   Medplum credentials can still change that separate database today, but cannot
+   change W4's authoritative Postgres patient/dose streams. Do not feed those
+   unmediated Medplum changes back into current W4 guards.
+5. Retire Medplum or implement the optional read-only projection with deterministic
+   IDs and source-version checkpoints. Exercise backup, failover, ambiguous-save
+   recovery and projection lag before deployment.
 
-No app sources, dependency lock or browser artifacts are changed in this lane;
-recorded certificates are not rebound. Native-only Lean additions still change
-the repository's broad Lean source fingerprint used by the WASM freshness check.
+This cutover changes certified app sources and the app hash. Existing recorded
+certificates are not rebound. Native Lean additions also change the broad source
+fingerprint used by WASM freshness checks. Protected Specs/Props/Statements and
+comparator definitions remain untouched.
