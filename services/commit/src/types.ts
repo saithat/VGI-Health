@@ -12,18 +12,41 @@ const shared = z.discriminatedUnion('kind', [
 ]);
 export const configSchema = z.object({
   tenant: id,
+  oidc: z.object({ issuer: z.url(), audience: z.string().min(1), clientId: z.string().min(1) }).strict().optional(),
   actors: z.array(z.object({
-    token: z.string().min(24), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon']) }).strict(),
+    token: z.string().min(24).optional(), subject: id.optional(), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon']) }).strict(),
     modelId: nat, patients: z.array(id),
   }).strict()).min(1),
   releases: z.record(id, z.object({
     spec: z.record(z.string(), z.any()), program: z.record(z.string(), z.any()),
-    workflows: z.record(id, z.object({ commit: id, shared: shared.optional() }).strict()),
+    workflows: z.record(id, z.object({ commit: id, shared: shared.optional(),
+      mar: z.object({ patient: id, medicationRequest: id, encounter: id, scheduledTime: z.iso.datetime({ offset: true }) }).strict().optional(),
+    }).strict()),
   }).strict()),
 }).strict().superRefine((c, ctx) => {
   for (const key of ['token', 'modelId'] as const) {
-    if (new Set(c.actors.map(a => a[key])).size !== c.actors.length)
+    if (new Set(c.actors.map(a => a[key]).filter(v => v !== undefined)).size !== c.actors.filter(a => a[key] !== undefined).length)
       ctx.addIssue({ code: 'custom', message: `duplicate actor ${key}` });
+  }
+  if (c.oidc && c.actors.some(a => !a.subject || a.token))
+    ctx.addIssue({ code: 'custom', message: 'OIDC actors require subjects and forbid static tokens' });
+  if (!c.oidc && c.actors.some(a => !a.token))
+    ctx.addIssue({ code: 'custom', message: 'prototype actors require static tokens' });
+  if (new Set(c.actors.map(a => a.subject).filter(Boolean)).size !== c.actors.filter(a => a.subject).length)
+    ctx.addIssue({ code: 'custom', message: 'duplicate OIDC subject' });
+  const doses = new Map<string, string>();
+  const occurrences = new Map<string, string>();
+  for (const r of Object.values(c.releases)) for (const w of Object.values(r.workflows)) {
+    if (w.mar && (!c.oidc || w.commit !== 'administerMed' || w.shared?.kind !== 'dose'))
+      ctx.addIssue({ code: 'custom', message: 'MAR requires OIDC and a scheduled dose workflow' });
+    if (w.mar && w.shared?.kind === 'dose') {
+      const dose = `${w.mar.patient}/${w.shared.order}/${w.shared.occurrence}`;
+      const occurrence = `${w.mar.patient}/${w.mar.medicationRequest}/${w.mar.scheduledTime}`;
+      if ((doses.has(dose) && doses.get(dose) !== occurrence) ||
+          (occurrences.has(occurrence) && occurrences.get(occurrence) !== dose))
+        ctx.addIssue({ code: 'custom', message: 'MAR dose keys and scheduled occurrences must be one-to-one' });
+      doses.set(dose, occurrence); occurrences.set(occurrence, dose);
+    }
   }
   if (new Set(c.actors.map(a => a.user.id)).size !== c.actors.length)
     ctx.addIssue({ code: 'custom', message: 'duplicate user id' });
@@ -33,6 +56,7 @@ export type Actor = Config['actors'][number];
 export type Release = Config['releases'][string];
 export type Workflow = Release['workflows'][string];
 export const sessionInput = z.object({ patient: id, release: id, workflow: id }).strict();
+export const cosignInput = sessionInput.extend({ expectedVersion: version }).strict();
 export const eventInput = z.object({ revision: version, event: z.record(z.string(), z.any()) }).strict();
 export const commandInput = z.object({
   requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/), sessionId: z.uuid(),

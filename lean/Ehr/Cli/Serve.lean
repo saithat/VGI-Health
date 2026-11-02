@@ -1,15 +1,13 @@
 import Ehr.Cli.Commit
 import Ehr.Api
 import Ehr.Render.Api
-import Ehr.Multi.Model
+import Ehr.Commit.Mar
 
 /-! Native-only JSON-lines transport. One response per line; malformed requests
 are isolated. This module changes neither the guard nor the shared transition. -/
 namespace Ehr.Cli.Serve
 open Lean
 
-deriving instance ToJson, FromJson for Multi.DoseKey
-deriving instance ToJson, FromJson for Multi.State
 deriving instance ToJson, FromJson for Multi.Action
 
 structure SharedInput where
@@ -26,6 +24,19 @@ def dispatch (request : Json) : Except String Json := do
   let op ← (← request.getObjVal? "op").getStr?
   let input ← request.getObjVal? "input"
   match op with
+  | "mar-import-context" =>
+    let i ← fromJson? input
+    pure (toJson (← Commit.Mar.importContextFor i))
+  | "mar-context" =>
+    let i ← fromJson? input
+    pure (toJson (← Commit.Mar.contextFor i))
+  | "mar-commit" =>
+    let i : Commit.Mar.Input ← fromJson? input
+    pure <| match Commit.Mar.commit i with
+      | some accepted => toJson accepted
+      | none => Json.mkObj [("rejected", toJson (
+          if i.dose ∈ i.state.shared.administrations.map Prod.fst
+          then "dose_already_administered" else "invalid_mar_status_or_guard"))]
   | "commit-check" => applyJson Commit.Request Commit.Decision Commit.check input
   | "init" => applyJson InitInput State runInit input
   | "step" => applyJson StepInput StepOutput runStep input

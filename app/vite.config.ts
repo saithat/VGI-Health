@@ -15,6 +15,11 @@ import { devPersonaPlugin } from "./scripts/dev-persona-plugin";
  * can reach the app (for example over Tailscale), where "localhost:8103" in
  * the browser would point at the wrong machine. */
 const medplumProxy = {
+  "/commit": {
+    target: process.env.COMMIT_INTERNAL_URL ?? "http://127.0.0.1:8090",
+    changeOrigin: true,
+    rewrite: (path: string) => path.replace(/^\/commit/, ""),
+  },
   "/medplum": {
     target: process.env.MEDPLUM_INTERNAL_URL ?? "http://localhost:8103",
     changeOrigin: true,

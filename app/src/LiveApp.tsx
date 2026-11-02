@@ -1,3 +1,5 @@
+import { loginMar } from "./data/commitService";
+import { MarApp } from "./MarApp";
 import { clinicalDate, formatClinicalDate } from "./data/clinicalDate";
 import { CURRENT_RELEASE } from "./core/currentRelease";
 import { clinicianRoleNames } from "./ehr/ui/personas";
@@ -155,6 +157,10 @@ function Login({
     setPending(true);
     setError("");
     try {
+      if (persona === "P3" || persona === "RN2") {
+        await loginMar(persona.toLowerCase());
+        return;
+      }
       onLogin(await quickSignIn(persona), baseline);
     } catch (error) {
       setError(errorText(error));
@@ -180,6 +186,7 @@ function Login({
             {error}
           </Alert>
         )}
+        <a href="/?workflow=mar">Inpatient MAR · Keycloak sign in</a>
         <Stack gap="xs">
           {Object.keys(personaLabels).map((persona) => (
             <Button
@@ -1183,7 +1190,7 @@ function Home({
     </main>
   );
 }
-export function LiveApp() {
+function MedplumLiveApp() {
   const [user, setUser] = useState<LiveUser>();
   const [baseline, setBaseline] = useState(
     () => sessionStorage.getItem("vgi.baseline") === "1",
@@ -1229,5 +1236,13 @@ export function LiveApp() {
         />
       )}
     </>
+  );
+}
+
+export function LiveApp() {
+  return new URLSearchParams(location.search).get("workflow") === "mar" ? (
+    <MarApp />
+  ) : (
+    <MedplumLiveApp />
   );
 }

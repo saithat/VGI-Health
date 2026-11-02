@@ -73,6 +73,37 @@ export class Store {
   authorize(actor: Actor, patient: string) {
     if (!actor.patients.includes(patient)) throw new Fault(403, 'patient_forbidden');
   }
+  async marDirectory(actor: Actor) {
+    if (actor.user.role !== 'rn') throw new Fault(403, 'role_forbidden');
+    const items = [];
+    for (const [release, r] of Object.entries(this.config.releases)) for (const [workflow, w] of Object.entries(r.workflows)) {
+      if (!w.mar || !actor.patients.includes(w.mar.patient)) continue;
+      const p = await this.read(actor, w.mar.patient);
+      items.push({ release, workflow, ...w.mar, version: p.version,
+        patientResource: p.snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === 'Patient')?.resource,
+        order: p.snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === 'MedicationRequest' && e.resource.id === w.mar!.medicationRequest)?.resource,
+        administrations: p.snapshot.bundle.entry.filter((e: Obj) => e.resource.resourceType === 'MedicationAdministration' &&
+          e.resource.request?.reference === `MedicationRequest/${w.mar!.medicationRequest}` &&
+          e.resource.extension?.some((extension: Obj) => {
+            if (extension.url !== 'urn:vgi:scheduled-dose' || w.shared?.kind !== 'dose') return false;
+            // Exact source identity routing only; status/consumption is reduced in Lean.
+            const dose = JSON.parse(extension.valueString);
+            return dose.patient === p.snapshot.modelId && dose.order === w.shared.order && dose.occurrence === w.shared.occurrence;
+          })).map((e: Obj) => e.resource) });
+    }
+    return { items };
+  }
+  private requireMarBinding(snapshot: Obj, workflow: Obj) {
+    if (workflow.mar && !(snapshot.marBindings ?? []).some((b: Obj) => digest(b) === digest({ shared: workflow.shared, mar: workflow.mar })))
+      throw new Fault(409, 'scheduled_binding_changed');
+  }
+  private async workflowContext(context: Obj, w: Obj, bundle: Obj, initial = false) {
+    if (!w.mar) return currentContext(context);
+    const resolved = currentContext({ ...context, encounterKind: 'inpatient', encounterId: w.mar.encounter,
+      record: [...(context.record ?? []).filter(([k]: string[]) => !['selectedMedicationRequestId', 'selectedEncounterId'].includes(k)),
+        ['selectedMedicationRequestId', w.mar.medicationRequest], ['selectedEncounterId', w.mar.encounter]] });
+    return this.lean.call(initial ? 'mar-import-context' : 'mar-context', { bundle, context: resolved, ...w.mar });
+  }
   private release(name: string) {
     const release = this.config.releases[name];
     if (!Object.hasOwn(this.config.releases, name) || !release) throw new Fault(404, 'release_not_found');
@@ -89,17 +120,36 @@ export class Store {
     const patients = patient.bundle.entry.filter((e: Obj) => e.resource.resourceType === 'Patient');
     if (patients.length !== 1 || patients[0].resource.id !== patient.patient) throw new Fault(422, 'patient_mismatch');
     await this.lean.call('facts', { bundle: patient.bundle, context: patient.context });
+    const marBindings = Object.values(this.config.releases).flatMap(r => Object.values(r.workflows))
+      .filter(w => w.mar?.patient === patient.patient).map(w => ({ shared: w.shared, mar: w.mar }));
+    for (const binding of marBindings) await this.workflowContext(patient.context, binding, patient.bundle, true);
+    const imported = { ...patient, marBindings };
     return transaction(this.db, async c => {
       await c.query('INSERT INTO commit_streams(tenant,key,kind,version,snapshot) VALUES($1,$2,\'patient\',1,$3)',
-        [this.config.tenant, `patient:${patient.patient}`, patient]);
+        [this.config.tenant, `patient:${patient.patient}`, imported]);
       await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,1,$3,$4)',
-        [this.config.tenant, `patient:${patient.patient}`, randomUUID(), { kind: 'import', patient }]);
+        [this.config.tenant, `patient:${patient.patient}`, randomUUID(), { kind: 'import', patient: imported }]);
       for (const r of Object.values(this.config.releases)) for (const w of Object.values(r.workflows)) {
+        if (w.mar && w.mar.patient !== patient.patient) continue;
         const key = sharedKey(patient.patient, w);
         if (key) await c.query('INSERT INTO commit_streams(tenant,key,kind,snapshot) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',
           [this.config.tenant, key, w.shared!.kind === 'dose' ? 'dose' : 'bed', emptyShared()]);
       }
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
+    });
+  }
+  async cosign(actor: Actor, input: { patient: string; release: string; workflow: string; expectedVersion: number }) {
+    this.authorize(actor, input.patient);
+    const w = this.release(input.release).workflows[input.workflow];
+    if (actor.user.role !== 'rn' || !w?.mar || w.mar.patient !== input.patient) throw new Fault(403, 'role_forbidden');
+    return transaction(this.db, async c => {
+      const p = await this.stream(c, `patient:${input.patient}`, true);
+      this.requireMarBinding(p.snapshot, w);
+      if (p.version !== input.expectedVersion) throw new Fault(409, 'version_conflict');
+      await c.query(`INSERT INTO commit_mar_cosigns(tenant,patient,release_name,workflow,patient_version,signer,expires_at,release_hash)
+        VALUES($1,$2,$3,$4,$5,$6,now()+interval '5 minutes',$7) ON CONFLICT (tenant,patient,release_name,workflow,patient_version,signer) DO UPDATE SET expires_at=EXCLUDED.expires_at,release_hash=EXCLUDED.release_hash`,
+        [this.config.tenant, input.patient, input.release, input.workflow, p.version, actor.user.id, digest(this.release(input.release))]);
+      return { cosigner: actor.user.id, version: p.version };
     });
   }
   async read(actor: Actor, patient: string, after = 0) {
@@ -126,10 +176,12 @@ export class Store {
     const release = this.release(input.release);
     const w = release.workflows[input.workflow];
     if (!Object.hasOwn(release.workflows, input.workflow) || !w) throw new Fault(404, 'workflow_not_found');
+    if (w.mar && (actor.user.role !== 'rn' || w.mar.patient !== input.patient)) throw new Fault(403, 'mar_scope_forbidden');
     return transaction(this.db, async c => {
       // Hold the same row lock used by commits so session snapshot/version agree.
       const p = await this.stream(c, `patient:${input.patient}`, true);
-      const context = currentContext(p.snapshot.context);
+      this.requireMarBinding(p.snapshot, w);
+      const context = await this.workflowContext(p.snapshot.context, w, p.snapshot.bundle);
       const facts = await this.lean.call('facts', { bundle: p.snapshot.bundle, context });
       const state = await this.lean.call('init', { ...release, facts: facts.facts, user: actor.user });
       const id = randomUUID();
@@ -139,6 +191,7 @@ export class Store {
       const key = sharedKey(input.patient, w);
       const resource = key ? await this.stream(c, key) : undefined;
       return { sessionId: id, revision: 0, version: p.version, state, facts: facts.facts,
+        ...(w.mar ? { projection: facts, spec: release.spec, program: release.program, user: actor.user } : {}),
         ...(resource ? { shared: { key, version: resource.version, state: resource.snapshot } } : {}) };
     });
   }
@@ -151,7 +204,9 @@ export class Store {
     if (Date.now() - new Date(s.created_at).getTime() > 5 * 60_000) throw new Fault(409, 'session_expired');
     const release = this.release(s.release_name);
     if (digest(release) !== s.release_hash) throw new Fault(409, 'release_changed');
-    return { s, release, workflow: release.workflows[s.workflow] };
+    const workflow = release.workflows[s.workflow];
+    if (!workflow) throw new Fault(409, 'release_changed');
+    return { s, release, workflow };
   }
   private async reconstruct(actor: Actor, release: Obj, patient: Obj, s: Obj) {
     const facts = await this.lean.call('facts', { bundle: patient.bundle, context: s.context });
@@ -216,33 +271,62 @@ export class Store {
       };
       const decision = await this.lean.call('commit-check', requestInput);
       if (!decision.accept) return finish(422, { outcome: 'rejected', reason: decision.reject?.reason ?? 'invalid_decision' });
+      let mar: Obj | undefined;
+      let marInput: Obj | undefined;
+      const transactionId = randomUUID();
+      if (workflow.mar) {
+        this.requireMarBinding(p.snapshot, workflow);
+        if (actor.user.role !== 'rn' || workflow.shared?.kind !== 'dose') throw new Fault(403, 'role_forbidden');
+        const capture = decision.accept.state.captured.find((c: Obj) => c.element === 'highAlertCosign' && c.confirmed);
+        if (capture) {
+          const cosigner = capture.value?.user?.u;
+          const consent = await c.query(`SELECT signer FROM commit_mar_cosigns WHERE tenant=$1 AND patient=$2 AND workflow=$3
+            AND release_name=$4 AND patient_version=$5 AND signer=$6 AND expires_at>now() AND release_hash=$7`,
+            [t, s.patient, s.workflow, s.release_name, p.version, cosigner, s.release_hash]);
+          if (!cosigner || cosigner === actor.user.id || !consent.rowCount)
+            return finish(422, { outcome: 'rejected', reason: 'An independent nurse must authenticate and cosign this dose version.' });
+        }
+        marInput = { state: p.snapshot.mar ?? { shared: emptyShared(), events: [] }, version: p.version,
+          expectedVersion: command.expectedVersion, actor: actor.modelId,
+          dose: { patient: p.snapshot.modelId, order: workflow.shared.order, occurrence: workflow.shared.occurrence },
+          request: requestInput, medicationRequest: workflow.mar.medicationRequest, encounter: workflow.mar.encounter,
+          time: new Date().toISOString(), resourceId: transactionId };
+        mar = await this.lean.call('mar-commit', marInput);
+        if (mar.rejected) {
+          const consumed = mar.rejected === 'dose_already_administered';
+          return finish(consumed ? 409 : 422, { outcome: consumed ? 'conflict' : 'rejected', reason: mar.rejected, version: p.version });
+        }
+      }
       let multi: Obj | undefined;
       let action: Obj | undefined;
-      if (resource) {
+      if (resource && (!mar || mar.events.some((e: Obj) => e.administered))) {
         action = sharedAction(actor, p.snapshot, workflow);
         multi = await this.lean.call('multi-step', { state: resource.snapshot, action });
         if (!multi.changed) return finish(409, { outcome: 'conflict', reason: 'shared_guard' });
       }
-      const transactionId = randomUUID();
+      if (resource && !multi) multi = { state: resource.snapshot };
       const readVersions = Object.fromEntries(keys.map(k => [k, streams.get(k)!.version]));
       // Retain the exact internal input and decision for independent replay.
       const event = { kind: 'command', actor: actor.user.id, requestId: command.requestId,
         releaseHash: s.release_hash, session: { id: s.id, revision: s.revision, context: s.context, events: s.events },
         readVersions, guard: { input: requestInput, decision },
+        ...(mar ? { mar: { input: marInput, accepted: mar } } : {}),
         ...(resource ? { shared: { key, before: resource.snapshot, action, after: multi!.state } } : {}) };
       for (const k of keys) {
         const stream = streams.get(k)!;
         const snapshot = k === key ? multi!.state : { ...p.snapshot,
-          lastCommand: { transactionId, commit: workflow.commit, state: decision.accept.state } };
+          lastCommand: { transactionId, commit: workflow.commit, state: decision.accept.state },
+          ...(mar ? { mar: mar.state, bundle: { ...p.snapshot.bundle,
+            entry: [...p.snapshot.bundle.entry, { resource: mar.resource }] } } : {}) };
         const updated = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',
           [t, k, stream.version, snapshot]);
         if (!updated.rowCount) throw new Error('locked stream CAS failed');
         await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
-          [t, k, stream.version + 1, transactionId, k === key ? { kind: 'shared', readVersions, action, state: multi!.state } : event]);
+          [t, k, stream.version + 1, transactionId, k === key ? { kind: action ? 'shared' : 'shared-noop', readVersions, ...(action ? { action } : {}), state: multi!.state } : event]);
       }
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
       return finish(201, { outcome: 'persisted', transactionId, version: p.version + 1,
-        ...(resource ? { sharedVersion: resource.version + 1 } : {}), state: decision.accept.state });
+        ...(resource ? { sharedVersion: resource.version + 1 } : {}), state: decision.accept.state, ...(mar ? { mar: mar.events } : {}) });
     });
   }
 }

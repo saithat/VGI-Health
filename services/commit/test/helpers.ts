@@ -11,14 +11,14 @@ export async function fixture() {
   if (!process.env.COMMIT_FIXTURE) throw new Error('Set COMMIT_FIXTURE to the output of test/Fixture.lean (see README)');
   return JSON.parse(await readFile(process.env.COMMIT_FIXTURE, 'utf8'));
 }
-export async function host(url: string, config: Config) {
+export async function host(url: string, config: Config, port = 0) {
   const db = pool(url);
   const lean = new Lean(resolve(process.env.EHR_BIN ?? '../../lean/.lake/build/bin/ehr'), 20_000);
   const store = new Store(db, lean, config);
   const notifications = new Notifications(url);
   await notifications.start();
   const app = server(store, notifications);
-  app.http.listen(0, '127.0.0.1');
+  app.http.listen(port, '127.0.0.1');
   await once(app.http, 'listening');
   const addr = app.http.address();
   assert.ok(addr && typeof addr !== 'string');
