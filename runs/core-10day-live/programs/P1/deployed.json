@@ -1,7 +1,7 @@
 {
-  "version": 3,
-  "program": "programs/P1/v3.json",
-  "certificate": "certs/P1/v3.json",
-  "build": "certs/P1/v3.build.json",
-  "source": "programs/P1/v3.source.json"
+  "version": 4,
+  "program": "programs/P1/v4.json",
+  "certificate": "certs/P1/v4.json",
+  "build": "certs/P1/v4.build.json",
+  "source": "programs/P1/v4.source.json"
 }

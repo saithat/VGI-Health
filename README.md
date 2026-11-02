@@ -463,7 +463,7 @@ and Vite plugins in `app/scripts/` serve the artifacts:
 <!-- results:start -->
 ## Results so far (`core-10day-live`)
 
-The five-persona run (`runs/core-10day-live/`) has completed **4 of 10 days** and 3 nights. It is still running, and the snapshot is re-published after each night. Day 1 runs every persona on v0. From day 2 on, each simulated clinician works on the latest certified revision of their fork, and a **no-agent control** (v0, which receives the same vendor releases) runs the same tasks. The v2 vendor release arrives on day 4.
+The five-persona run (`runs/core-10day-live/`) has completed **4 of 10 days** and 4 nights. It is still running, and the snapshot is re-published after each night. Day 1 runs every persona on v0. From day 2 on, each simulated clinician works on the latest certified revision of their fork, and a **no-agent control** (v0, which receives the same vendor releases) runs the same tasks. The v2 vendor release arrives on day 4.
 
 | Persona | Revision now | Clicks, days 2–4: agent vs control | Scrolls | Mouse travel |
 |---|---|---|---|---|
@@ -473,7 +473,7 @@ The five-persona run (`runs/core-10day-live/`) has completed **4 of 10 days** an
 | P4 Pediatric NP | v3 | 1836 vs 1834 (±0%) | 1913 vs 2182 (−12%) | ±0% |
 | P5 General surgeon | v2 | 1733 vs 1795 (−3%) | 2991 vs 3071 (−3%) | −1% |
 
-- 13 of 15 persona-nights deployed a new revision; 2 kept the current one. The checker rejected 0 of 13 merged candidates this run. The planted-bad-UI suite separately shows that it rejects bad UIs.
+- 15 of 20 persona-nights deployed a new revision; 5 kept the current one. The checker rejected 0 of 16 merged candidates this run. The planted-bad-UI suite separately shows that it rejects bad UIs.
 - 542 of 542 simulated tasks completed, on every revision.
 - Native vs. browser WASM: 30695 recorded events over 542 trajectories replayed through both, with 0 mismatches.
 - These are simulated clinicians with deterministic policies, not user studies (see gap G2).

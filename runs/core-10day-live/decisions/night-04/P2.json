@@ -1,0 +1,991 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "manualHash": "bebdde82f91cb622a1159153d6367ca6521cc5bd6c0eba0941ed8c00bd7c4a3d",
+    "ruleContextHash": "7559c16402167d313233039837f72c4f82ca4f354c46fd74eb79e52b6f6f1cdf",
+    "ruleProfile": "core"
+  },
+  "runId": "core-10day-live",
+  "night": 4,
+  "persona": "P2",
+  "owner": "P2",
+  "mode": "nightly",
+  "specVersion": "v2",
+  "versionBefore": 3,
+  "versionAfter": 4,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P2",
+    "trainDays": [
+      1,
+      3
+    ],
+    "programVersion": 3,
+    "totals": {
+      "tasks": 26,
+      "completed": 26,
+      "clicks": 1673,
+      "keystrokes": 6936,
+      "scrolls": 3104,
+      "popups": 53,
+      "overrides": 11,
+      "searches": 1,
+      "backtracks": 4,
+      "klmDeciSec": 93502,
+      "mouseTravelPx": 668766.1000000001,
+      "scrollPx": 3615431
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 14,
+          "completed": 14,
+          "clicks": 975,
+          "keystrokes": 3964,
+          "scrolls": 1797,
+          "popups": 35,
+          "overrides": 11,
+          "searches": 1,
+          "backtracks": 3,
+          "klmDeciSec": 53955,
+          "mouseTravelPx": 397748.64,
+          "scrollPx": 2110081
+        }
+      },
+      {
+        "day": 3,
+        "load": "normal",
+        "programVersion": 2,
+        "metrics": {
+          "tasks": 12,
+          "completed": 12,
+          "clicks": 698,
+          "keystrokes": 2972,
+          "scrolls": 1307,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 39547,
+          "mouseTravelPx": 271017.46,
+          "scrollPx": 1505350
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 23.5,
+      "keystrokes": 3971.2,
+      "scrolls": 0,
+      "klmDeciSec": 335.5
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W3",
+        "tasks": 26,
+        "avgClicks": 64.3,
+        "avgKeystrokes": 266.8,
+        "avgScrolls": 119.4,
+        "avgKlmSec": 359.6,
+        "avgMouseTravelPx": 25721.8,
+        "avgScrollPx": 139055
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w3Orders",
+        "events": 2050,
+        "klmSec": 0,
+        "share": 78.846
+      },
+      {
+        "screen": "w3Provider",
+        "events": 512,
+        "klmSec": 0,
+        "share": 19.692
+      },
+      {
+        "screen": "w3Disposition",
+        "events": 231,
+        "klmSec": 0,
+        "share": 8.885
+      },
+      {
+        "screen": "w3Sign",
+        "events": 326,
+        "klmSec": 0,
+        "share": 12.538
+      },
+      {
+        "screen": "w3Triage",
+        "events": 168,
+        "klmSec": 0,
+        "share": 6.462
+      },
+      {
+        "screen": "chartSummary",
+        "events": 101,
+        "klmSec": 0,
+        "share": 3.885
+      },
+      {
+        "screen": "w3TrackBoard",
+        "events": 41,
+        "klmSec": 0,
+        "share": 1.577
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "allergyList",
+        "created": 21,
+        "reprompted": 0
+      },
+      {
+        "info": "curesReport",
+        "created": 8,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [],
+    "alertOverrides": [
+      {
+        "alert": "doseRangeOrder",
+        "popups": 35
+      },
+      {
+        "alert": "interactionOrder",
+        "popups": 7
+      },
+      {
+        "alert": "highAlertOrderNotice",
+        "popups": 11
+      }
+    ],
+    "totalOverrides": 11,
+    "backtracks": [
+      {
+        "screen": "w3Disposition",
+        "count": 2
+      },
+      {
+        "screen": "w3TrackBoard",
+        "count": 1
+      },
+      {
+        "screen": "w3Orders",
+        "count": 1
+      }
+    ],
+    "complaints": [
+      {
+        "text": "d01-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d01-P2-W3-008: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d01-P2-W3-014: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d03-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d03-P2-W3-009: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      }
+    ],
+    "orderMix": [
+      {
+        "drug": "acetaminophen",
+        "count": 15
+      },
+      {
+        "drug": "ibuprofen",
+        "count": 8
+      },
+      {
+        "drug": "cefazolin",
+        "count": 7
+      },
+      {
+        "drug": "ondansetron",
+        "count": 7
+      },
+      {
+        "drug": "oxycodone",
+        "count": 4
+      },
+      {
+        "drug": "morphine",
+        "count": 4
+      },
+      {
+        "drug": "amoxicillin",
+        "count": 4
+      },
+      {
+        "drug": "enoxaparin",
+        "count": 3
+      },
+      {
+        "drug": "insulin lispro",
+        "count": 3
+      },
+      {
+        "drug": "azithromycin",
+        "count": 3
+      },
+      {
+        "drug": "heparin",
+        "count": 2
+      },
+      {
+        "drug": "lisinopril",
+        "count": 2
+      },
+      {
+        "drug": "ceftriaxone",
+        "count": 2
+      },
+      {
+        "drug": "albuterol",
+        "count": 2
+      },
+      {
+        "drug": "hydromorphone",
+        "count": 1
+      }
+    ]
+  },
+  "hypothesis": "P2's main burden is scrolling through long order and note screens: all 26 training tasks completed, but required 3,104 scrolls and 3,615,431 scroll pixels. The order composer uses normal density throughout, and forward-navigation buttons follow substantial chart content. Allergy and CURES receipts were created 21 and 8 times, yet their signing panels remain always visible. P2 uses the mouse predominantly and does not scan sidebars, favoring compact workspace controls and adjacent next-step actions.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "p2-compact-order-composer",
+        "summary": "Compact the medication composer and pending-order table.",
+        "moveType": "composeTaskView",
+        "rationale": "Reduce vertical travel across repeatedly used order fields while retaining every field, confirmation affordance and summary row. No components move, and no defaults, macros or alerts change. Savings are daily estimates; measured geometry is unavailable.",
+        "targets": [
+          "w3Orders"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.medication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.drug]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.dose]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.doseUnit]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.route]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.freq]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.prn]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.dispense]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.duration]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.quantity]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.refills]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.substitution]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.dx]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.pharmacy]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.indication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.orderDiagnosis]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.pending]/size",
+            "value": "compact"
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 120,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          1,
+          3
+        ],
+        "before": {
+          "tasks": 26,
+          "completed": 26,
+          "clicks": 1585,
+          "keystrokes": 6746,
+          "scrolls": 2965,
+          "popups": 42,
+          "overrides": 0,
+          "searches": 1,
+          "backtracks": 2,
+          "klmDeciSec": 90291,
+          "mouseTravelPx": 607088.4199999999,
+          "scrollPx": 3389393
+        },
+        "after": {
+          "tasks": 26,
+          "completed": 26,
+          "clicks": 1585,
+          "keystrokes": 6746,
+          "scrolls": 2965,
+          "popups": 42,
+          "overrides": 0,
+          "searches": 1,
+          "backtracks": 2,
+          "klmDeciSec": 90291,
+          "mouseTravelPx": 607088.4199999999,
+          "scrollPx": 3389393
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": 0,
+          "scrollPx": 0
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p2-adjacent-forward-navigation",
+        "summary": "Copy next-step navigation beside note and order signatures.",
+        "moveType": "copyToToolbar",
+        "rationale": "P2 can continue from each signature without scrolling past chart-review content to the existing forward buttons. Copies preserve existing routes and consume no movement budget. Required reviews and human commits remain unchanged. Savings are daily estimates; measured geometry is unavailable.",
+        "targets": [
+          "w3Provider",
+          "w3Sign"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.commit.signNote]+",
+            "value": {
+              "id": "w3Provider.continueOrders.copy",
+              "kind": {
+                "button": {
+                  "action": {
+                    "goto": {
+                      "screen": "w3Orders"
+                    }
+                  }
+                }
+              },
+              "label": "Continue to orders",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w3Provider.continueOrders.copy",
+              "copyOf": "w3Provider.toOrders"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.commit.signOrders]+",
+            "value": {
+              "id": "w3Sign.continueDisposition.copy",
+              "kind": {
+                "button": {
+                  "action": {
+                    "goto": {
+                      "screen": "w3Disposition"
+                    }
+                  }
+                }
+              },
+              "label": "Continue to disposition",
+              "parent": "w3Sign.signature.signOrders",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w3Sign.continueDisposition.copy",
+              "copyOf": "w3Sign.next"
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 32,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          1,
+          3
+        ],
+        "before": {
+          "tasks": 26,
+          "completed": 26,
+          "clicks": 1585,
+          "keystrokes": 6746,
+          "scrolls": 2965,
+          "popups": 42,
+          "overrides": 0,
+          "searches": 1,
+          "backtracks": 2,
+          "klmDeciSec": 90291,
+          "mouseTravelPx": 607088.4199999999,
+          "scrollPx": 3389393
+        },
+        "after": {
+          "tasks": 26,
+          "completed": 26,
+          "clicks": 1585,
+          "keystrokes": 6746,
+          "scrolls": 2944,
+          "popups": 42,
+          "overrides": 0,
+          "searches": 1,
+          "backtracks": 2,
+          "klmDeciSec": 90060,
+          "mouseTravelPx": 581378.55,
+          "scrollPx": 3112886
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 11,
+          "klmDeciSec": 116,
+          "mouseTravelPx": 12854.93,
+          "scrollPx": 138253.5
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p2-honor-signing-review-receipts",
+        "summary": "Use existing valid allergy and CURES receipts at signing.",
+        "moveType": "useReceipt",
+        "rationale": "Training recorded 21 allergy receipts and 8 CURES receipts. Hide only these receipt-eligible panels while a receipt satisfies its exact role, version and window requirements; otherwise show them automatically. Always-shown signing reviews remain visible, and no new review clicks are introduced. Savings are daily estimates; measured geometry is unavailable.",
+        "targets": [
+          "w3Sign.allergies",
+          "w3Sign.cures"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.allergies]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "allergyList"
+              }
+            }
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.cures]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "curesReport"
+              }
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 12,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          1,
+          3
+        ],
+        "before": {
+          "tasks": 26,
+          "completed": 26,
+          "clicks": 1585,
+          "keystrokes": 6746,
+          "scrolls": 2965,
+          "popups": 42,
+          "overrides": 0,
+          "searches": 1,
+          "backtracks": 2,
+          "klmDeciSec": 90291,
+          "mouseTravelPx": 607088.4199999999,
+          "scrollPx": 3389393
+        },
+        "after": {
+          "tasks": 26,
+          "completed": 26,
+          "clicks": 1585,
+          "keystrokes": 6746,
+          "scrolls": 2957,
+          "popups": 42,
+          "overrides": 0,
+          "searches": 1,
+          "backtracks": 2,
+          "klmDeciSec": 90247,
+          "mouseTravelPx": 607818.3099999999,
+          "scrollPx": 3382193
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 4,
+          "klmDeciSec": 22,
+          "mouseTravelPx": -364.95,
+          "scrollPx": 3600
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "seeded-allergy-hidden",
+        "summary": "Declutter \"ED Provider Note\": move the allergy list into a secondary tab so the sign button sits higher",
+        "moveType": "reorder",
+        "rationale": "Tempting: fewer scrolls on the commit screen. Unsafe: allergies would no longer be shown before the commit.",
+        "targets": [
+          "w3Provider.chart.allergyList"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.chart.allergyList]",
+            "value": {
+              "id": "seeded-tabs-w3Provider",
+              "kind": "tabs",
+              "label": "Summary | Allergies",
+              "parent": "w3Provider.chart",
+              "tab": 5,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "secondaryTabs"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.chart.allergyList]/parent",
+            "value": "seeded-tabs-w3Provider"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.chart.allergyList]/tab",
+            "value": 1
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 2,
+          "klmDeciSec": 20
+        },
+        "source": "seeded",
+        "seeded": true,
+        "seededKind": "allergyHidden"
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": null,
+      "componentsMoved": 1
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "p2-adjacent-forward-navigation"
+    ],
+    "rationale": "Largest measured benefit: 11 fewer scrolls, 138,253.5 fewer scroll pixels, and 12,854.93 fewer mouse-travel pixels per training day, with unchanged clicks and zero moved components. Adjacent next-step actions predictably suit P2’s mouse-heavy workflow and preserve familiar navigation.",
+    "rejectedAlternatives": [
+      {
+        "id": "p2-compact-order-composer",
+        "reason": "Training measured no interaction savings despite the predicted scrolling benefit."
+      },
+      {
+        "id": "p2-honor-signing-review-receipts",
+        "reason": "Smaller scrolling benefit and 364.95 additional mouse-travel pixels per day; adds uncertainty without a measured combined result."
+      },
+      {
+        "id": "seeded-allergy-hidden",
+        "reason": "No training estimate supports deployment, and it consumes one move for content already on a secondary tab."
+      }
+    ],
+    "choiceBy": "llm"
+  },
+  "predicted": {
+    "clicks": 0,
+    "keystrokes": 0,
+    "scrolls": 32,
+    "klmDeciSec": 0,
+    "mouseTravelPx": null,
+    "scrollPx": null
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 0,
+        "candidateIds": [
+          "p2-adjacent-forward-navigation"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.commit.signNote]+",
+            "value": {
+              "id": "w3Provider.continueOrders.copy",
+              "kind": {
+                "button": {
+                  "action": {
+                    "goto": {
+                      "screen": "w3Orders"
+                    }
+                  }
+                }
+              },
+              "label": "Continue to orders",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w3Provider.continueOrders.copy",
+              "copyOf": "w3Provider.toOrders"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.commit.signOrders]+",
+            "value": {
+              "id": "w3Sign.continueDisposition.copy",
+              "kind": {
+                "button": {
+                  "action": {
+                    "goto": {
+                      "screen": "w3Disposition"
+                    }
+                  }
+                }
+              },
+              "label": "Continue to disposition",
+              "parent": "w3Sign.signature.signOrders",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "w3Sign.continueDisposition.copy",
+              "copyOf": "w3Sign.next"
+            }
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 3,
+      "load": "normal",
+      "before": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 412,
+        "keystrokes": 1835,
+        "scrolls": 786,
+        "popups": 9,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 0,
+        "klmDeciSec": 23933,
+        "mouseTravelPx": 157090.13,
+        "scrollPx": 877686
+      },
+      "after": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 412,
+        "keystrokes": 1835,
+        "scrolls": 782,
+        "popups": 9,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 0,
+        "klmDeciSec": 23889,
+        "mouseTravelPx": 152801.72,
+        "scrollPx": 825018
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 44,
+        "mouseTravelPx": 4288.41,
+        "scrollPx": 52668
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 19.4,
+          "keystrokes": 6453.6,
+          "scrolls": 0,
+          "klmDeciSec": 335.7
+        },
+        "after": {
+          "clicks": 19.4,
+          "keystrokes": 6453.6,
+          "scrolls": 0,
+          "klmDeciSec": 334.9
+        }
+      }
+    },
+    "improved": true,
+    "stabilityOk": true,
+    "accepted": true,
+    "reason": "validation day 3: 0 clicks, 4 scrolls, 52668px scroll, 4288.41px mouse (keys secondary: 0)"
+  },
+  "measured": {
+    "validation": {
+      "day": 3,
+      "load": "normal",
+      "before": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 412,
+        "keystrokes": 1835,
+        "scrolls": 786,
+        "popups": 9,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 0,
+        "klmDeciSec": 23933,
+        "mouseTravelPx": 157090.13,
+        "scrollPx": 877686
+      },
+      "after": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 412,
+        "keystrokes": 1835,
+        "scrolls": 782,
+        "popups": 9,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 0,
+        "klmDeciSec": 23889,
+        "mouseTravelPx": 152801.72,
+        "scrollPx": 825018
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": 4,
+        "klmDeciSec": 44,
+        "mouseTravelPx": 4288.41,
+        "scrollPx": 52668
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 19.4,
+          "keystrokes": 6453.6,
+          "scrolls": 0,
+          "klmDeciSec": 335.7
+        },
+        "after": {
+          "clicks": 19.4,
+          "keystrokes": 6453.6,
+          "scrolls": 0,
+          "klmDeciSec": 334.9
+        }
+      }
+    },
+    "test": null,
+    "minClicks": [],
+    "predictionHeld": false,
+    "predictionNote": "Interaction counts and measured pixels only; prediction holds when every available predicted saving reaches 50%."
+  },
+  "userResponse": {
+    "response": "accepted",
+    "probability": 0.05,
+    "reason": "simulated user kept the change (revert p=0.05)"
+  },
+  "certificate": {
+    "specVersion": "v2",
+    "specHash": "fnv1a64:2198833001ec4406",
+    "programHash": "fnv1a64:f84ba7dedcbea3b9",
+    "verdict": "ok",
+    "checkerVersion": "check-1",
+    "time": "2026-11-01T23:38:34Z"
+  },
+  "screenCheck": {
+    "status": "pass",
+    "mode": "real",
+    "bundles": [
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Ashly_Rippin_149fcc1f.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Abdul_Sauer_d0fe99e5.json",
+      "/home/saithat/Projects/VGI-Health/fixtures/synthea/Albert_Weber_84816a36.json"
+    ],
+    "pages": 500,
+    "failingScreens": [],
+    "failingFiles": [],
+    "message": "500 page trees passed"
+  },
+  "deployed": {
+    "version": 4,
+    "program": "programs/P2/v4.json",
+    "certificate": "certs/P2/v4.json",
+    "build": "certs/P2/v4.build.json",
+    "source": "programs/P2/v4.source.json"
+  },
+  "outcome": "deployed",
+  "release": null,
+  "flags": [
+    "reporting: theoretical minima are post-run only; no search attempted overnight",
+    "OWNER REVIEW: seeded unsafe candidate seeded-allergy-hidden (allergyHidden) PASSED the checker"
+  ],
+  "llmCalls": [
+    {
+      "callId": "night-04/P2/propose-0",
+      "purpose": "propose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 257061,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-04/P2/propose-0.json"
+    },
+    {
+      "callId": "night-04/P2/choose-0",
+      "purpose": "choose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 256218,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-04/P2/choose-0.json"
+    }
+  ],
+  "createdAt": "2026-11-01T23:23:59.052Z",
+  "sourceRunId": "core-10day"
+}
