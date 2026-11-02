@@ -1,3 +1,4 @@
+import Ehr.Core.CriticalRuntime
 import Ehr.Core.Workspace
 import Ehr.JsonCompat
 
@@ -18,8 +19,10 @@ def runInit (i : InitInput) : State :=
 
 /-- One human event. -/
 def runStep (i : StepInput) : StepOutput :=
-  let r := if Workspace.enabled i.program then Workspace.step i.spec i.program i.facts i.user i.state i.event
-    else step i.spec i.program i.facts i.user .human i.state i.event
+  let workflow := if Workspace.enabled i.program && !Workspace.bound i.facts i.state then none
+    else CriticalRuntime.handle i.facts i.user i.state i.event
+  let r := workflow.getD (if Workspace.enabled i.program then Workspace.step i.spec i.program i.facts i.user i.state i.event
+    else step i.spec i.program i.facts i.user .human i.state i.event)
   { state := r.1, result := r.2 }
 
 /-- The screen view. -/

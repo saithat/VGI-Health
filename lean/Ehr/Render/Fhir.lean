@@ -2307,6 +2307,28 @@ def encounterKindOf (ctx : FactsContext) (rs : List Json) (p : Json) : Option St
       | _ => none
 
 
+/-- Explicit critical source flag and route; ordinary abnormal values do not
+invent recipients. The route clock uses the episode's simulation-minute scale.
+Production laboratories must supply their authenticated delivery record. -/
+def criticalTickets (rs : List Json) (p : Json) : List Multi.Critical.Ticket :=
+  rs.filterMap fun r => do
+    if resourceType r != "Observation" || !["final", "amended", "corrected"].contains (str r "status") then none else do
+    if !(arr r "interpretation").any (fun i => (arr i "coding").any
+        (fun c => ["HH", "LL", "AA"].contains (str c "code"))) then none else do
+    let route := ((arr r "extension").find? (fun e => str e "url" == "https://vgi.health/fhir/StructureDefinition/critical-result-route")).getD Json.null
+    let entries := arr route "extension"
+    let value := fun key => (entries.find? (fun e => str e "url" == key)).getD Json.null
+    let responsible := str (value "responsible") "valueString"
+    let covering := str (value "covering") "valueString"
+    if str r "id" == "" then none else
+    some { result := {
+      id := str r "id", patient := patientIdOf p,
+      label := "Critical result: " ++ ccText (field r "code") ++ " · " ++
+        (if str r "valueString" != "" then str r "valueString" else qtyText (field r "valueQuantity")),
+      responsible, covering, source? := some r.compress,
+      availableAt := ((field (value "availableAt") "valueInteger").getNat?).toOption.getD 0,
+      limit := ((field (value "limit") "valueInteger").getNat?).toOption.getD 30 } }
+
 /-- The facts the spec needs. -/
 def baseFactsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
   let age := ageYears (str p "birthDate") ctx.today
@@ -2339,6 +2361,7 @@ def baseFactsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
     currentMedClasses := ((meds.filter medActive).flatMap fun r => drugClasses (medDrug r)).eraseDups
     weightToday? := weightTodayOf ctx.today rs
     careGaps := careGapsOf ctx.today age rs
+    criticalResults? := some (criticalTickets rs p)
     abnormalResult := labs.any (·.abnormal)
     now := ctx.now
     medToGive? := ctx.medToGive?

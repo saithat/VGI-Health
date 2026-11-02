@@ -1,3 +1,4 @@
+import Ehr.Specs.CriticalResults
 import Ehr
 import Ehr.Api
 import Ehr.Cli.Check
@@ -27,7 +28,7 @@ def readStdin : IO String := do
 /-- Specs available to `spec-export`, by name. -/
 def specRegistry : List (String × Spec) :=
   [("tiny", Examples.Tiny.spec), ("tiny-2", Examples.Tiny.specV2),
-   ("v1", Specs.V1.specV1), ("v2", Specs.V2.specV2), ("v3", Specs.V3.specV3)]
+   ("v1", Specs.CriticalResults.specV1), ("v2", Specs.CriticalResults.specV2), ("v3", Specs.CriticalResults.specV3)]
 
 
 /-- Usage text. -/
@@ -43,7 +44,8 @@ def usage : String :=
   "  deploy --spec S --program P [--prev P0] --canonical C --out DIR [--time ISO]\n" ++
   "  spec-export <name>       spec JSON (names: " ++
     ", ".intercalate (specRegistry.map (·.1)) ++ ")\n" ++
-  "  cures-exemptions-export  shared CURES exemption codes (JSON)"
+  "  cures-exemptions-export  shared CURES exemption codes (JSON)\n" ++
+  "  urgency-probes           critical workflow and concurrent urgent screen trees (JSON)"
 
 /-- Decode stdin as `α`, apply `f`, and print the JSON result. -/
 def stdinCommand (α β : Type) [Lean.FromJson α] [Lean.ToJson β] (f : α → β) : IO UInt32 := do
@@ -92,6 +94,8 @@ def main (args : List String) : IO UInt32 := do
   | "deploy" :: rest => Ehr.Cli.deployMain rest
   | ["cures-exemptions-export"] =>
     IO.println (Lean.toJson Specs.V1.curesExemptionCodes).pretty; return 0
+  | ["urgency-probes"] =>
+    IO.println (Lean.toJson Render.UrgencyTests.probes).pretty; return 0
   | ["spec-export", name] =>
     match specRegistry.lookup name with
     | some sp => IO.println (Lean.toJson sp).pretty; return 0

@@ -99,7 +99,16 @@ def alertKeys (facts : Facts) (s : State) : AlertCond → List String
     (((drugsInPlay facts s).filter (allergyMatch facts)).map (keyAt · facts.allergyVersion)).eraseDups
   | .interaction =>
     let ds := drugsInPlay facts s
-    ((ds.filter (fun d => interacts facts (ds.erase d) d)).map (keyAt · facts.medsVersion)).eraseDups
+    ((ds.filter (fun d => interacts facts (ds.erase d) d)).map (keyAt · facts.medsVersion)).eraseDups ++
+      ((facts.interactions?.getD []).filter (·.severity == .severe)).map (·.key)
+  | .minorInteraction =>
+    let ds := drugsInPlay facts s
+    let evidence := facts.interactions?.getD []
+    if evidence.any (·.severity == .severe) || ds.any (fun d => interacts facts (ds.erase d) d)
+    then [] else (evidence.filter (·.severity == .minor)).map (·.key)
+  | .criticalResult =>
+    ((facts.criticalResults?.getD []).filter fun t =>
+      t.result.availableAt ≤ facts.now && t.resolution.isNone).map (·.result.id)
   | .duplicateTherapy =>
     let ds := drugsInPlay facts s
     ((ds.filter (fun d => duplicate facts (ds.erase d) d)).map (keyAt · facts.medsVersion)).eraseDups

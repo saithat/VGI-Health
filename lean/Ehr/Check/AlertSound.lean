@@ -82,7 +82,7 @@ theorem clinicalEval_captured (facts : Facts) (s t : State) (p : ClinicalPredica
 private theorem alertKeys_captured (facts : Facts) (s t : State) (c : AlertCond)
     (h : t.captured = s.captured) : alertKeys facts t c = alertKeys facts s c := by
   cases c <;> simp only [alertKeys, drugsInPlay, orderLines, doseOutOfRange,
-    lineDoseMgTenths?, weightKgTenths?, capturedWeightKg?, h, clinicalEval_captured facts s t _ h]
+    lineDoseMgTenths?, weightKgTenths?, capturedWeightKg?, h, clinicalEval_captured facts s t _ h] <;> rfl
 
 /-- The popup truth invariant holds after every event and every clock advance. -/
 theorem alertsOnlyWhenTrue (ep : Episode) : AlertsOnlyWhenTrue ep := by

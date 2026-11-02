@@ -16,7 +16,10 @@ const nat = z.number().int().nonnegative();
 export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
   z.union([
     z.strictObject({
-      timeline: z.strictObject({ title: label, children: z.array(uiNodeSchema) }),
+      timeline: z.strictObject({
+        title: label,
+        children: z.array(uiNodeSchema),
+      }),
     }),
     z.strictObject({
       valueSet: z.strictObject({
@@ -141,6 +144,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     screen: label.optional(),
     fieldSources: z.array(pair).optional(),
     title: label,
+    urgent: z.array(uiNodeSchema).optional(),
     workspace: z.array(uiNodeSchema),
     side: z.array(uiNodeSchema),
     modal: uiNodeSchema.nullable(),
@@ -154,6 +158,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
       sourceLabels,
       entryHints,
       fieldChoices,
+      urgent,
       ...screen
     }) => ({
       ...screen,
@@ -164,5 +169,6 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
       ...(sourceLabels === undefined ? {} : { sourceLabels }),
       ...(entryHints === undefined ? {} : { entryHints }),
       ...(fieldChoices === undefined ? {} : { fieldChoices }),
+      ...(urgent === undefined ? {} : { urgent }),
     }),
   );
