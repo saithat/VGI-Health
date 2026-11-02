@@ -1,3 +1,4 @@
+import { withData } from "./data";
 // @vitest-environment node
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
@@ -110,7 +111,7 @@ describe("read-only clinician revision comparison", () => {
       "must be made by a person",
     );
   });
-  it("shows the final certified patch and never labels an undeployed proposal as applied", () => {
+  withData("runs/run1-P3").it("shows the final certified patch and never labels an undeployed proposal as applied", () => {
     const record = decisionRecordSchema.parse(
       JSON.parse(
         readFileSync(
@@ -126,7 +127,7 @@ describe("read-only clinician revision comparison", () => {
     record.versionAfter = record.versionBefore;
     expect(recordedPatch(record)).toEqual([]);
   });
-  it("reports the real recorded night-eight alert change rather than claiming no change", () => {
+  withData("runs/run1-P3").it("reports the real recorded night-eight alert change rather than claiming no change", () => {
     const load = (version: number) =>
       programSchema.parse(
         JSON.parse(

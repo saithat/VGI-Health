@@ -1,3 +1,4 @@
+import { withData } from "./data.js";
 import {readFile,writeFile,mkdir,copyFile,rm,chmod} from 'node:fs/promises';
 import {spawnSync} from 'node:child_process';
 import path from 'node:path';
@@ -6,7 +7,7 @@ import {createEhr,DEFAULT_EHR_BIN} from '../src/ehr.js';
 import {verifyResume} from '../src/verify-resume.js';
 import {REPO_ROOT,writeJson} from '../src/util.js';
 import {tmp} from './helpers.js';
-it('resumes with real fingerprints, never rebuilds/calls a model, and survives post-run floor failure',async()=>{
+withData("runs/world/2").it('resumes with real fingerprints, never rebuilds/calls a model, and survives post-run floor failure',async()=>{
  const workspace=await tmp('wrapper-real-fingerprints'), run=path.join(workspace,'runs/core-10day');
  await mkdir(path.join(workspace,'scripts'),{recursive:true});await copyFile(path.join(REPO_ROOT,'scripts/run-overnight.sh'),path.join(workspace,'scripts/run-overnight.sh'));
  await writeJson(path.join(workspace,'runs/world/2/world.json'),{});

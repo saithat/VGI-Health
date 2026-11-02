@@ -1,3 +1,4 @@
+import { withData } from "./data.js";
 import { RELEASE_IDS } from '../src/release-config.js';
 import { readFile } from 'node:fs/promises';
 import { runDays } from '../src/run.js';
@@ -5,7 +6,7 @@ import { RunStore } from '../src/store.js';
 import { fakeWorld, tmp } from './helpers.js';
 import { ScriptedLlm } from './scripted.js';
 
-it('resumes an unfinished night without repeating completed days, decisions or LLM calls', async () => {
+withData("runs/run1-P3/decisions").it('resumes an unfinished night without repeating completed days, decisions or LLM calls', async () => {
   const worldDir = await fakeWorld(3);
   const runsRoot = await tmp('resume-runs');
   const common = { worldDir, runsRoot, runId: 'resume', personas: ['P3'], releaseDays: { v2: 2, v3: 3 } };

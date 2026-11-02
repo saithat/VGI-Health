@@ -619,10 +619,14 @@ tracking it:
 git archive hackathon-final runs fixtures programs verdicts.json | tar -x
 ```
 
-Without this data, `make install` loads no patients, and the dashboard and
-conformance suite have nothing to read. 23 tests read recorded data and fail
-without it (6 app, 14 agent, 3 world); every other test passes. The world generator
-(`world/`), release programs (`releases/`) and all code remain tracked.
+Without this data, `make install` loads no patients, and recorded dashboards and
+run-specific conformance evaluation have nothing to read. Archive-dependent tests
+skip with the missing paths and the extraction command in their reported reason;
+with data present they run the same assertions. This includes agent tests whose
+prompts use historical decisions, and the world generator's chart augmentation.
+The small tracked unit fixtures still run without the archive. A partial or corrupt
+present dataset remains a test failure. The world generator (`world/`), release
+programs (`releases/`) and all code remain tracked.
 
 ## Data sources and credits
 

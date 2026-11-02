@@ -1,3 +1,4 @@
+import { withData } from "./data.js";
 import {pointerTravel,type GeometryAtlas} from '../../app/src/metrics/geometry.js';
 import {attachGeometry} from '../src/geometry.js';
 import {sumMetrics,pairedMetrics} from '../src/observe.js';
@@ -54,7 +55,7 @@ it('does not reuse geometry across presentation-only alternatives sharing an exe
  const a=await ehr.simulate({...args,program:one});await ehr.simulate({...args,program:one});const b=await ehr.simulate({...args,program:two});
  expect(captures).toBe(2);expect(a.geometry?.componentsSha256).not.toBe(b.geometry?.componentsSha256);
 });
-it('records a geometry screen infrastructure error before aborting and never calls it a rejection',async()=>{
+withData("runs/run1-P3/decisions").it('records a geometry screen infrastructure error before aborting and never calls it a rejection',async()=>{
  const {runDays}=await import('../src/run.js');const {createFakeEhr}=await import('../src/fake/ehr-fake.js');
  const {ScreenInfrastructureError}=await import('../src/errors.js');const {fakeWorld,tmp}=await import('./helpers.js');
  const {ScriptedLlm}=await import('./scripted.js');const {readFile}=await import('node:fs/promises');

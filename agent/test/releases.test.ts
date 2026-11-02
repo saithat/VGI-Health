@@ -1,3 +1,4 @@
+import { withData } from "./data.js";
 import { createEhr } from '../src/ehr.js';
 import { loadRelease } from '../src/releases.js';
 import { personalize, applyToProgram } from '../src/program.js';
@@ -26,7 +27,7 @@ describe('certified role baselines', () => {
       value: key === 'role' ? 'np' : 'someone-else' }], { version: 2 })).toThrow(`metadata: ${key}`);
   });
 });
-it('all fifteen certified role presets bind the exact program hash and active release',async()=>{
+withData("runs/world/2").it('all fifteen certified role presets bind the exact program hash and active release',async()=>{
  const {loadWorld}=await import('../src/world.js');const {assertCertified}=await import('../src/certification.js');
  const {tmp}=await import('./helpers.js');const {REPO_ROOT}=await import('../src/util.js');const path=await import('node:path');
  const world=await loadWorld(path.join(REPO_ROOT,'runs/world/2')), ehr=createEhr({fake:false}), out=await tmp('role-hashes');
