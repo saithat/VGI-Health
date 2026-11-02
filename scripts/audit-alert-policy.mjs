@@ -116,6 +116,8 @@ const result = spawnSync(
       ...process.env,
       EHR_SCREEN_WORKERS: process.env.EHR_SCREEN_WORKERS ?? "4",
       EHR_SCREEN_CACHE: "0",
+      EHR_PHYSICAL_POLICY: "1",
+      EHR_ENFORCE_PHYSICAL: "1",
       EHR_PHYSICAL_REPORT: resolve(output, "physical.json"),
       EHR_SCREEN_RESULT: resolve(output, "result.json"),
     },

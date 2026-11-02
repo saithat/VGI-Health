@@ -257,13 +257,16 @@ for (const [index, batch] of batches.entries()) {
     // A missing physical attachment cannot certify a supplied clinical state.
     if (
       ui &&
+      process.env.EHR_PHYSICAL_POLICY &&
       batch.length &&
       physicalStates !==
         batch.filter((file) => !/-geometry\.json$/.test(file)).length
     )
       status = "error";
   } else status = "error";
-  if (physicalFindings && status !== "error") status = "fail";
+  // WCAG physical findings are reported; they fail the gate only when enforced.
+  if (physicalFindings && process.env.EHR_ENFORCE_PHYSICAL && status !== "error")
+    status = "fail";
   if (status === "error" || (gateStatus !== "error" && status === "fail"))
     gateStatus = status;
   batchResults.push({
