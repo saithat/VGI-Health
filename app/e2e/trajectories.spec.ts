@@ -244,7 +244,9 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
   await page.route("**/runs/core-10day/**", async (route) => {
     const url = route.request().url();
     const geometry =
-      /\/geometry\/([a-f0-9]{64})(?:\.([a-f0-9]{64}))?\.json$/.exec(url);
+      /\/geometry\/([a-f0-9]{64})(?:\.([a-f0-9]{64}))?(?:\.json|\/slices\/tasks\/[\w.-]+\.json)$/.exec(
+        url,
+      );
     if (geometry) {
       await route.fulfill({
         json: {

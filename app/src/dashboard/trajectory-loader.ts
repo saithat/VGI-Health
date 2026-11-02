@@ -37,7 +37,9 @@ export async function loadTrajectory(
     for (const suffix of [`.${componentsHash}`, ""]) {
       try {
         const atlas = replayGeometrySchema.parse(
-          await readRunJson(`/runs/${runId}/geometry/${hash}${suffix}.json`),
+          await readRunJson(
+            `/runs/${runId}/geometry/${hash}${suffix}/slices/${file}`,
+          ),
         );
         if (
           atlas.programHash === hash &&

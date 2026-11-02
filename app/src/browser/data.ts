@@ -1,3 +1,4 @@
+import { readCachedJson } from "./json-cache";
 import { archivedReleaseId } from "../../../scripts/historical-releases.mjs";
 import {
   presentationBundleSchema,
@@ -82,9 +83,21 @@ export async function readArtifact(path: string): Promise<unknown> {
     path.split("/").includes("..")
   )
     throw new Error("Invalid offline artifact path");
-  const response = await fetch(path);
-  if (!response.ok) throw new Error(`Cannot load ${path} (${response.status})`);
-  return response.json();
+  const read = async () => {
+    const response = await fetch(path);
+    if (!response.ok)
+      throw new Error(`Cannot load ${path} (${response.status})`);
+    return response.json();
+  };
+  // Rebind/rejection pointers and installed build evidence must be fresh on every
+  // verification. HTTP ETags still avoid retransmitting unchanged evidence.
+  const evidence =
+    path === "/build.json" ||
+    path === "/ehr/manifest.json" ||
+    /^\/runs\/[\w-]+\/manifest\.json$/.test(path) ||
+    path.includes("/certs/") ||
+    /\.(?:source|components)\.json$/.test(path);
+  return evidence ? read() : readCachedJson(path, read);
 }
 let catalog: Promise<Catalog> | undefined;
 export const loadCatalog = () =>
