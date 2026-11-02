@@ -1,0 +1,310 @@
+{
+ "resourceType": "Bundle",
+ "type": "collection",
+ "entry": [
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn",
+   "resource": {
+    "resourceType": "Patient",
+    "id": "p02-dm-htn",
+    "name": [
+     {
+      "use": "official",
+      "given": [
+       "Linda"
+      ],
+      "family": "Chen"
+     }
+    ],
+    "gender": "female",
+    "birthDate": "1966-07-02",
+    "identifier": [
+     {
+      "system": "https://github.com/synthetichealth/synthea",
+      "value": "p02-dm-htn"
+     }
+    ]
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-cond-1",
+   "resource": {
+    "resourceType": "Condition",
+    "id": "p02-dm-htn-cond-1",
+    "clinicalStatus": {
+     "coding": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+       "code": "active"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct",
+       "code": "44054006",
+       "display": "Diabetes mellitus type 2 (disorder)"
+      }
+     ],
+     "text": "Diabetes mellitus type 2 (disorder)"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "onsetDateTime": "2015-08-20"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-cond-2",
+   "resource": {
+    "resourceType": "Condition",
+    "id": "p02-dm-htn-cond-2",
+    "clinicalStatus": {
+     "coding": [
+      {
+       "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+       "code": "active"
+      }
+     ]
+    },
+    "code": {
+     "coding": [
+      {
+       "system": "http://snomed.info/sct",
+       "code": "59621000",
+       "display": "Essential hypertension (disorder)"
+      }
+     ],
+     "text": "Essential hypertension (disorder)"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "onsetDateTime": "2016-01-10"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-med-1",
+   "resource": {
+    "resourceType": "MedicationRequest",
+    "id": "p02-dm-htn-med-1",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+     "coding": [
+      {
+       "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+       "code": "860975",
+       "display": "24 HR metformin hydrochloride 500 MG Extended Release Oral Tablet"
+      }
+     ],
+     "text": "24 HR metformin hydrochloride 500 MG Extended Release Oral Tablet"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "authoredOn": "2026-03-01"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-med-2",
+   "resource": {
+    "resourceType": "MedicationRequest",
+    "id": "p02-dm-htn-med-2",
+    "status": "active",
+    "intent": "order",
+    "medicationCodeableConcept": {
+     "coding": [
+      {
+       "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+       "code": "314077",
+       "display": "lisinopril 20 MG Oral Tablet"
+      }
+     ],
+     "text": "lisinopril 20 MG Oral Tablet"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "authoredOn": "2026-03-01"
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-obs-1",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p02-dm-htn-obs-1",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "vital-signs"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "29463-7",
+       "display": "Body weight"
+      }
+     ],
+     "text": "Body weight"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "effectiveDateTime": "2026-07-22T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 81.0,
+     "unit": "kg",
+     "system": "http://unitsofmeasure.org",
+     "code": "kg"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-obs-2",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p02-dm-htn-obs-2",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "4548-4",
+       "display": "Hemoglobin A1c/Hemoglobin.total in Blood"
+      }
+     ],
+     "text": "Hemoglobin A1c/Hemoglobin.total in Blood"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "effectiveDateTime": "2026-07-22T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 7.8,
+     "unit": "%",
+     "system": "http://unitsofmeasure.org",
+     "code": "%"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-obs-3",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p02-dm-htn-obs-3",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "2823-3",
+       "display": "Potassium [Moles/volume] in Serum or Plasma"
+      }
+     ],
+     "text": "Potassium [Moles/volume] in Serum or Plasma"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "effectiveDateTime": "2026-07-22T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 4.7,
+     "unit": "mmol/L",
+     "system": "http://unitsofmeasure.org",
+     "code": "mmol/L"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-obs-4",
+   "resource": {
+    "resourceType": "Observation",
+    "id": "p02-dm-htn-obs-4",
+    "status": "final",
+    "category": [
+     {
+      "coding": [
+       {
+        "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+        "code": "laboratory"
+       }
+      ]
+     }
+    ],
+    "code": {
+     "coding": [
+      {
+       "system": "http://loinc.org",
+       "code": "2160-0",
+       "display": "Creatinine [Mass/volume] in Serum or Plasma"
+      }
+     ],
+     "text": "Creatinine [Mass/volume] in Serum or Plasma"
+    },
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "effectiveDateTime": "2026-07-22T09:00:00-08:00",
+    "valueQuantity": {
+     "value": 0.91,
+     "unit": "mg/dL",
+     "system": "http://unitsofmeasure.org",
+     "code": "mg/dL"
+    }
+   }
+  },
+  {
+   "fullUrl": "urn:uuid:p02-dm-htn-enc-1",
+   "resource": {
+    "resourceType": "Encounter",
+    "id": "p02-dm-htn-enc-1",
+    "status": "finished",
+    "class": {
+     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+     "code": "AMB"
+    },
+    "type": [
+     {
+      "text": "Diabetes follow-up"
+     }
+    ],
+    "subject": {
+     "reference": "Patient/p02-dm-htn"
+    },
+    "period": {
+     "start": "2026-07-22T09:00:00-08:00",
+     "end": "2026-07-22T09:30:00-08:00"
+    }
+   }
+  }
+ ]
+}

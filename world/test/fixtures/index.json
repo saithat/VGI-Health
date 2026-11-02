@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "source": "hand-written test fixture (world lane)",
+  "note": "Tiny Synthea-shaped population for tests; the real population comes from fixtures/synthea/ (infra lane).",
+  "patients": [
+    {
+      "id": "p01-htn",
+      "file": "bundles/p01-htn.json",
+      "name": "Robert Alvarez",
+      "birthDate": "1958-03-14",
+      "gender": "male",
+      "summary": "68M hypertension + hyperlipidemia on lisinopril/atorvastatin"
+    },
+    {
+      "id": "p02-dm-htn",
+      "file": "bundles/p02-dm-htn.json",
+      "name": "Linda Chen",
+      "birthDate": "1966-07-02",
+      "gender": "female",
+      "summary": "60F type 2 diabetes + hypertension on metformin/lisinopril"
+    },
+    {
+      "id": "p03-dm-insulin",
+      "file": "bundles/p03-dm-insulin.json",
+      "name": "James Okafor",
+      "birthDate": "1971-01-30",
+      "gender": "male",
+      "summary": "55M type 2 diabetes on insulin glargine + metformin, obesity"
+    },
+    {
+      "id": "p04-pcn-allergy",
+      "file": "bundles/p04-pcn-allergy.json",
+      "name": "Maria Santos",
+      "birthDate": "1985-09-18",
+      "gender": "female",
+      "summary": "41F asthma, penicillin allergy (anaphylaxis), albuterol inhaler"
+    },
+    {
+      "id": "p05-warfarin",
+      "file": "bundles/p05-warfarin.json",
+      "name": "Harold Becker",
+      "birthDate": "1949-02-11",
+      "gender": "male",
+      "summary": "77M atrial fibrillation on warfarin, hypertension"
+    },
+    {
+      "id": "p06-apixaban",
+      "file": "bundles/p06-apixaban.json",
+      "name": "Dorothy Nguyen",
+      "birthDate": "1952-12-05",
+      "gender": "female",
+      "summary": "74F atrial fibrillation on apixaban, hyperlipidemia, sulfa allergy"
+    },
+    {
+      "id": "p07-appendicitis-candidate",
+      "file": "bundles/p07-appendicitis-candidate.json",
+      "name": "Tyler Brooks",
+      "birthDate": "2001-04-27",
+      "gender": "male",
+      "summary": "25M healthy, no meds (appendicitis candidate)"
+    },
+    {
+      "id": "p08-peds-preschool",
+      "file": "bundles/p08-peds-preschool.json",
+      "name": "Emma Patel",
+      "birthDate": "2022-05-10",
+      "gender": "female",
+      "summary": "4F, history of otitis media"
+    },
+    {
+      "id": "p09-peds-asthma",
+      "file": "bundles/p09-peds-asthma.json",
+      "name": "Noah Kim",
+      "birthDate": "2015-01-20",
+      "gender": "male",
+      "summary": "11M asthma on albuterol"
+    },
+    {
+      "id": "p10-htn-chronic-pain",
+      "file": "bundles/p10-htn-chronic-pain.json",
+      "name": "Patricia Wilson",
+      "birthDate": "1979-08-08",
+      "gender": "female",
+      "summary": "47F hypertension, prediabetes, chronic low back pain on oxycodone + alprazolam, peanut allergy"
+    }
+  ]
+}
