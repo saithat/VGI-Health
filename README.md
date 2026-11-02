@@ -293,6 +293,16 @@ still requires a separate proof. Current releases use the **core** rule profile.
 Browser drawing, record adapters and clinical rule completeness are outside
 these proofs. Allowed proof axioms are propext, Quot.sound and Classical.choice.
 
+## Semantic properties and extensions (in progress)
+
+[Semantic UI design](docs/design/semantic-ui.md) defines layout-independent
+perception, bounded reachability and urgency alongside the unchanged hospital
+properties. Tree presence alone does not prove viewport exposure or legibility.
+New primitives require Lean meaning/preservation proofs, a DOM painter and an
+independent screen-gate rule. This lane is adding the current-language bridge
+and an opt-in clinical timeline; physical perception remains conditional on
+measured exposure, and general completion remains open.
+
 ## Frontend and backend
 
 The stack has no application server with business logic of its own. The
