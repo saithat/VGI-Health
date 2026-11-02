@@ -79,6 +79,17 @@ node --import ./agent/node_modules/tsx/dist/loader.mjs explore/review.ts \
 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/screenshots.mjs runs/explore-ed-new
 ```
 
+`review.ts --repair <candidate-id> --patch /path/to/patch.json` applies an explicit
+data-only JSON repair to a saved proposal, records its parent hash, and repeats
+all gates without another LLM request. It retains the rejected parent. Proposals
+receive the unchanged task contract and explicit movement/depth bounds. The
+initial seed phase targets requested niches; subsequent LLM mutations can alter
+design dimensions as well as whole programs.
+
+Programmatic `Workload.cohort` pools multiple same-role policies/schedules;
+cross-role cohorts fail closed. The initial CLI remains a single archived policy
+with cases pooled across days, which is disclosed in the run report.
+
 Final rechecks record harness/agent source hashes and the git commit. Screen
 coverage is scoped to states enumerated by the native exporter plus popup probes,
 not every possible continuous data value or viewport. Initial and all-moments

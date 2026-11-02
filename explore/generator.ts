@@ -14,6 +14,7 @@ export interface Candidate {
 export function generate(point: DesignPoint, workflows: Workflow[], baseline: Program, spec: Spec): Candidate {
   point = parsePoint(point);
   if (!workflows.length || workflows.some(w => !/^W[1-7]$/.test(w))) throw Error('Invalid workflow set');
+  if (workflows.some(w => !baseline.screens.some(s => s.workflow === w))) throw Error('Workflow absent from source program');
   const missing = unsupported(point);
   if (missing.length && point.tier !== 'sandbox') throw Error(`Needs extension: ${missing.join(', ')}`);
   const program = structuredClone(baseline);

@@ -730,6 +730,13 @@ backend, native Lean check, whole-version screen gate and world simulator.
 checks the harness. Decision models rank candidates and score recorded visible
 actions; Lean remains the only certification gate. TabPFN is an optional local
 screening adapter; Jev is an unconfigured stub that makes no calls.
+The [first ED portfolio](docs/design/exploration-first-ed.md) contains four
+checker-accepted layout families (stack, columns, timeline, document), all
+completing 40/40 synthetic W3 tasks after screen checks. Five Codex calls and an
+explicit budget repair produced the portfolio; both rejected proposals remain
+in the untracked run report. Native effort estimates and tiny-model calibration
+are early diagnostics, not human usability or deployment evidence.
+
 
 
 ```sh

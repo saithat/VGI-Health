@@ -4,6 +4,7 @@ import { applyPatch } from '../agent/src/jsonpatch.js';
 import { bindTasks } from './bindings.js';
 import { parsePoint, dimensions } from './design.js';
 import { generate, type Candidate } from './generator.js';
+import { taskContract } from './tasks.js';
 import type { Program, Spec } from '../agent/src/schema.js';
 const properties=Object.fromEntries(Object.entries(dimensions).map(([k,v])=>[k,{type:'string',enum:v}]));
 export class LlmOperator {
@@ -11,13 +12,14 @@ export class LlmOperator {
   constructor(readonly llm:JsonLlm, readonly limit:number) {
     if(!Number.isInteger(limit)||limit<0||limit>60)throw Error('LLM budget must be 0–60');
   }
-  async propose(seed:Candidate, baseline:Program, spec:Spec, feedback:unknown):Promise<{candidate:Candidate;record:unknown}> {
+  async propose(seed:Candidate, baseline:Program, spec:Spec, feedback:unknown, targetNiche=false):Promise<{candidate:Candidate;record:unknown}> {
     if(this.calls>=this.limit)throw Error('LLM budget exhausted');
     this.calls++;
     const request={callId:`explore/${this.calls}`,purpose:'design-point-and-program-mutation',
       system:'You design EHR interaction paradigms. Preserve all clinical rules, human actions, source identities and program metadata. Do not use tools. Explore distinct designs within the requested layout niche. A design alone is compiled; optional JSON patches mutate the compiled program, without a small patch-count budget. The immutable identity movement budget still applies. Return JSON only.',
       prompt:JSON.stringify({point:seed.point,workflows:seed.workflows,program:seed.program,feedback,
-        instruction:'Propose the point plus an optional patchJson (JSON-encoded RFC6902 patch array) or programJson (JSON-encoded complete replacement Program). Use empty strings for no change. Keep the requested layout, navigation, tier and supported dimensions. Explain a concrete design hypothesis; leave spec/clinical values unchanged.'}),
+        constraints:{identityMovementBudget:spec.design.stabilityBudget,maxDepth:spec.design.maxDepth,taskContract:taskContract(spec,baseline,seed.workflows)},
+        instruction:(targetNiche?'Fill the requested layout/navigation/tier niche. ':'Mutate the design dimensions as well as the program; target unoccupied niches. Unsupported primitives require sandbox tier. ')+ 'Propose the point plus an optional patchJson (JSON-encoded RFC6902 patch array) or programJson (JSON-encoded complete replacement Program). Use empty strings for no change. Keep dimensions within their typed vocabulary. Explain a concrete design hypothesis; leave spec/clinical values unchanged.'}),
       schemaName:'exploration_candidate',schema:{type:'object',additionalProperties:false,required:['point','patchJson','programJson','hypothesis'],properties:{
         point:{type:'object',additionalProperties:false,required:[...Object.keys(properties),'tier','taskLayouts'],properties:{...properties,tier:{type:'string',enum:['proved','checked','sandbox']},taskLayouts:{type:'object',additionalProperties:false,properties:{},required:[]}}},
         patchJson:{type:'string'},programJson:{type:'string'},hypothesis:{type:'string'}}}};

@@ -42,6 +42,7 @@ const decision=arg('decision','deterministic')==='tabpfn'?new TabPFNScreen(endpo
   new LocalDecision(endpoint,arg('decision-model','HuggingFaceTB/SmolLM2-135M-Instruct'),arg('decision-protocol','distribution') as 'distribution'|'token-logprobs'):new DeterministicDecision();
 const context={department:'ED',role:'physician',workflows:['W3'],release:'v1',days,
   policy:'P2 deterministic synthetic policy; not human or a sampled department population',worldDir,
+  workloadSummary:{tasks:schedules.reduce((n,s)=>n+s.tasks.length,0),patients:new Set(schedules.flatMap(s=>s.tasks.map(t=>t.patientId))).size,orderLines:schedules.flatMap(s=>s.tasks).reduce((n,t)=>n+t.choices.orders.length,0)},
   baselineSha256:programHash(baseline),specSha256:sha256(await readFile('releases/v1/spec.json','utf8')),
   ehrSha256:(await import('node:crypto')).createHash('sha256').update(await readFile(binary)).digest('hex'),build:await read('app/dist/build.json'),
   source:await provenance(),publication:'none; reviewed slow-cadence release only',screenViewports:[[1440,900],[390,844]],budget};

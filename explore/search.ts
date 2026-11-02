@@ -25,7 +25,7 @@ export async function search(opts:{baseline:Program;spec:Spec;workflows:Workflow
         events.push({id,kind:'llm-attempt',call:opts.operator.calls+1});await flush();
         try{
           const result=await opts.operator.propose(candidate,opts.baseline,opts.spec,
-            {archive:[...archive.cells.keys()],recent:evaluations.slice(-4).map(e=>({point:e.candidate.point,status:e.status,metrics:e.metrics,evidence:e.evidence}))});
+            {workload:opts.context,archive:[...archive.cells.keys()],recent:evaluations.slice(-4).map(e=>({point:e.candidate.point,status:e.status,metrics:e.metrics,evidence:e.evidence}))},i<seeds.length);
           await write(path.join(opts.out,'llm',`${id}.json`),result.record);candidate=result.candidate;
         }catch(error){
           events.push({id,kind:'operator-error',error:String(error)});

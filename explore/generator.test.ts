@@ -17,6 +17,7 @@ test('four realized layout families preserve clinical kinds and all commit contr
 });
 test('unsupported certified dimensions fail; sandbox is explicitly nondeployable',()=>{
   assert.throws(()=>generate({...defaultPoint,input:'voice'},['W3'],baseline,spec),/extension/);
+  assert.throws(()=>generate(defaultPoint,['W5'],baseline,spec),/Workflow absent/);
   assert.equal(generate({...defaultPoint,input:'voice',tier:'sandbox'},['W3'],baseline,spec).sandbox?.deployable,false);
   assert.throws(()=>parsePoint({...defaultPoint,input:'telepathy'}),/input/);
 });

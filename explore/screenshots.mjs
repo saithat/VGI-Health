@@ -9,6 +9,7 @@ const run=path.resolve(process.argv[2]??'runs/explore-ed-first');
 if(!run.startsWith(path.resolve('runs')+path.sep))throw Error('Expected ignored run directory');
 const report=JSON.parse(await readFile(path.join(run,'report.json'),'utf8'));
 const ehr=createEhr({binary:process.env.EHR_BIN??'/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr'});
+process.env.TAILSCALE_SERVE='0';
 const server=await preview({root:path.resolve('app'),configFile:path.resolve('app/vite.config.ts'),preview:{host:'127.0.0.1',port:0,open:false}});
 const address=server.httpServer.address();
 if(!address||typeof address==='string')throw Error('Preview did not bind TCP');
