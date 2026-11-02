@@ -131,8 +131,8 @@ code.
 |---|---|---|
 | Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
 | Native commit-check acceptance implies the guard holds on the supplied current FHIR projection | 🟢 **Proved** for the prototype; freshness, authenticated state and persistence remain trusted integration obligations | `Commit/Check.lean` (`accepted_current_guard`); [concurrency design](docs/design/concurrency.md) |
-| Persisted commits pass the guard on the record version written against | ⚪ **Designed, in progress**; live writes still use the client guard (G3) | [Concurrency design](docs/design/concurrency.md) |
-| Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Medplum correspondence is in progress | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
+| Commit-service commands pass the guard on the imported chart version written against | 🔵 **Checked** against real Postgres with native guard replay; general clinical reduction and live cutover remain open (G3) | `services/commit/`; [storage contract](docs/design/concurrency.md) |
+| Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Postgres correspondence is integration-tested, not proved | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
 | Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
 | Alerts: popups only for true conditions, never for passive alerts, acknowledgments persist | 🟢 **Proved** (A2, A4 for every run; A1, A3 via checker acceptance) | `Proofs/Alerts.lean`; `Check/AlertSound.lean`, `Check/SeveritySound.lean` |
 | A program is deployed only if the checker accepts it, with a certificate naming that spec and program | 🟢 **Proved** (the plan; not crash-atomic file writes) | `Proofs/CheckDeploy.lean` (T4) |
@@ -321,11 +321,18 @@ changes invalidate recorded build bindings: rebuild and rebind before replay.
 
 ## Frontend and backend
 
-The current live stack has no application server with business logic of its own. The
-screen logic runs in the browser as the Lean interpreter compiled to
-WebAssembly. Medplum is the only backend, and it stores FHIR resources. The
-React app does two jobs: it moves JSON between the two, and it draws the tree
-that Lean returns.
+Postgres is the selected system of record for the new commit authority.
+[`services/commit/`](services/commit/README.md) is a thin Node 22 HTTP service
+with a long-running native Lean process, expected-version event streams,
+atomic dose/bed controls, durable idempotency and SSE subscriptions. FHIR becomes
+import/export; Medplum can be retired or retained as an optional projection.
+
+The **current browser live path remains unchanged**: screen logic runs in Lean
+WebAssembly, and the React app draws Lean's tree and writes FHIR transactions
+to Medplum. The diagram below describes that existing path. The independent
+commit service currently journals accepted commands against an imported chart;
+general clinical reducers, production identity/provenance checks and app cutover
+are subsequent work. Its presence does not close G3 for live writes.
 
 ```mermaid
 flowchart LR
@@ -412,40 +419,53 @@ sequenceDiagram
 The `alt`/`else` box lists the three possible outcomes of one click: a screen-only change, exactly one
 saved write, or a refused or failed write (nothing is saved and the screen keeps its prior state).
 
-### Commit authority and shared workflows (in progress)
+### Postgres commit authority and shared workflows
 
-[Concurrency design](docs/design/concurrency.md) specifies a native Lean commit
-checker behind a future authenticated service as the only Medplum writer. The
-native `ehr commit-check` prototype reads a JSON request on stdin and returns
-accept (recomputed staged state and resource URL/If-Match pairs) or reject
-(guard, event, version or chart-binding reason). It projects the supplied current
-FHIR bundle and proves acceptance implies the existing guard holds on that
-projection. The wrapper must supply authenticated session state, release, user,
-context and complete current reads. The command performs no writes. The design
-retains the per-session WASM interpreter and adds current-record guard checking,
-patient serialization, shared workflow controls and FHIR version preconditions.
-The deployment target is that no commit is persisted unless its guard holds on
-the record version written against. The executable [multi-actor model](lean/Ehr/Multi/Model.lean)
-proves scheduled-dose uniqueness and bed exclusivity over all finite
-interleavings of its atomic actions, including competing actors and bed reuse.
-`Multi/Tests.lean` includes a provably unsafe stale-read schedule. This model is
-not yet connected to FHIR persistence; G3 remains open until the service mediates
-all writes.
+[Concurrency design](docs/design/concurrency.md) specifies the storage contract:
+linearizable per-stream order, exact expected-version checking, atomic
+multi-stream commits and primary read-your-writes. The independent
+[commit service](services/commit/README.md) implements READ COMMITTED transactions
+with ordered patient/shared row locks. The same transaction appends events,
+advances snapshots/versions and records the idempotency outcome. Two service
+replicas are exercised against real Postgres; the seeded 32-actor test races
+nurses on the same scheduled dose, admissions to one bed and stale writes.
+Every accepted command is independently rechecked by Lean against its preceding
+persisted chart version; shared histories are replayed through `Multi.step`.
 
-After `cd lean && lake build`, run
-`TMPDIR=/home/saithat/Projects/run-tmp python3 scripts/test-commit-check.py` from
-the repository root for native JSON boundary tests. To inspect a valid request
-and response from `lean/`:
+`ehr serve` reads JSON lines `{id,op,input}` and returns `{id,result}` or
+`{id,error}`, supporting `init`, `step`, `facts`, `commit-check` and `multi-step`.
+It flushes each response and survives malformed requests. The supervisor bounds
+its queue, terminates failed/timed-out children and restarts on the next call.
+The one-shot `ehr commit-check` interface remains available. Its existing
+acceptance theorem proves the unmodified guard on the supplied current FHIR
+projection; freshness, authenticated evidence, clinical reduction and storage
+remain integration obligations. No theorem or hospital rule was changed.
+
+The service binds sessions to operator-owned releases, users and patient scopes,
+logs human events and reconstructs the before-state on the server. HTTP clients
+submit intent and expected versions. It supports privileged **initial** FHIR
+collection import and lossless export of the chart plus VGI Basic command
+records. It does not yet map every accepted command to updated standard clinical
+resources. The [migration plan](docs/design/concurrency.md#migration-to-the-live-app)
+requires those reducers and production identity/review provenance before switching
+`liveSession` and revoking direct writers. No app sources or root dependency lock
+are changed here; Medplum's existing database is untouched.
+
+Build and verify the native boundary from the repository root:
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
-lake env lean --run Ehr/Commit/Example.lean > "$TMPDIR/commit-request.json"
-.lake/build/bin/ehr commit-check < "$TMPDIR/commit-request.json"
+(cd lean && lake build)
+python3 scripts/test-commit-check.py
+(cd lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$TMPDIR/commit-service-fixture.json"
+python3 scripts/test-ehr-serve.py "$TMPDIR/commit-service-fixture.json"
 ```
 
-This work adds native-only modules without rebuilding the recorded browser
-artifacts. The all-source Lean/WASM staleness check requires a WASM rebuild for
-a fresh browser build; no recorded certificates or app assets are rebound here.
+For the isolated database, service and unit/integration tests, use the
+[service commands](services/commit/README.md#verification). That package has its
+own npm lockfile to preserve the app build hash. Native-only Lean additions
+change the broad Lean source fingerprint used by WASM freshness checks; browser
+artifacts and recorded certificates are not rebuilt or rebound in this lane.
 
 ### Lean in the browser
 
@@ -530,8 +550,8 @@ step 2.
   the trusted surface.
 - **Client-side guard.** The live commit guard runs in the client. Medplum
   accepts any write that the signed-in user's access policy allows. Running
-  the same Lean guard in the live server write path is not done. The isolated
-  native `commit-check` prototype above does not mediate these writes; see G3.
+  the same Lean guard in the live server write path is not done. The independent
+  Postgres service above does not mediate these writes; see G3.
 
 ### Replay mode (`/ehr`, `/browse`, `/dashboard`)
 
@@ -569,7 +589,11 @@ and Vite plugins in `app/scripts/` serve the artifacts:
 
 ### Backend and data
 
-- **Services.** `infra/docker-compose.yml` runs Postgres 16, Redis 7,
+- **Commit authority.** `services/commit/compose.yml` runs a separate Postgres
+  16 database on loopback `:55432`, with an independent volume and a 256 MB limit.
+  The Node service defaults to `127.0.0.1:8090`. Start/migrate it explicitly using
+  its [README](services/commit/README.md); `make install` does not start it.
+- **Existing live stack.** `infra/docker-compose.yml` runs Postgres 16, Redis 7,
   `medplum-server` 5.2.13 (API on `:8103`) and `medplum-app` 5.2.13 (admin
   UI). Medplum runs no custom code: there are no Bots or subscriptions.
 - **`make install`** does the following, in order:
@@ -582,7 +606,7 @@ and Vite plugins in `app/scripts/` serve the artifacts:
   7. seeds the world/2 clinical days (`seed`): appointments, tasks,
      messages and orders.
 - **The `ehr` binary** (`lean/.lake/build/bin/ehr`) is the same Lean
-  compiled natively. These offline tools use it:
+  compiled natively. The commit service uses `serve`; these offline tools use it:
   - the agent: `check`, `deploy`, `simulate`, `min-clicks`;
   - the screen gate: `render-screens` exports every reachable state, then
     Playwright loads each one in the built app and compares the
@@ -699,17 +723,18 @@ leaves existing complete data alone; a partial dataset requires explicit repair.
 WASM source binding; `make wasm` rebuilds it using the local toolchain.
 
 The trusted system includes the reviewed hospital spec, Lean and Emscripten,
-FHIR adapters, Node/React/browser, Docker/Medplum and the synthetic source data.
+FHIR adapters, Node/React/browser, Docker/Postgres, the current Medplum live path
+and the synthetic source data.
 These software proofs do not establish clinical correctness.
 
 
 ## Development checks
 
-Set `TMPDIR` to disk-backed scratch space and run only one Lean process in a
-checkout at a time:
+Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check
+process in a checkout at a time:
 
 ```sh
-export LEAN_NUM_THREADS=4
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
 (cd lean && lake build)
 pnpm --filter app lint && pnpm --filter app exec tsc --noEmit
 pnpm --filter agent lint && pnpm --filter agent typecheck
