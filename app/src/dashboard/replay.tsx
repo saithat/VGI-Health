@@ -106,7 +106,7 @@ export function ReplayScreen({
           "WASM Interp is required for this real run. Inject an InterpFactory into Dashboard.",
         );
       let ui = null;
-      if (binding.presentations) {
+      if (binding.presentations || interp.renderUi) {
         if (!interp.renderUi) throw new Error('Semantic renderer required for presentation components');
         const args = [JSON.stringify(context.spec), JSON.stringify(program), JSON.stringify(context.bundle), JSON.stringify(context.user)] as const;
         let state = interp.init(...args);
