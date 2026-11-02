@@ -2,7 +2,7 @@
 
 > This is the project spec for coding agents. Build in the schedule order (section 11). If time runs short, propose cuts to the owner; never cut on your own. This brief says *what* must be modeled and proven, not the exact Lean definitions.
 >
-> Read with it: `rules.md` (hackathon rules) and `CLAUDE.md` (how to do Lean verification here).
+> Read with it: `docs/hackathon/rules.md` (hackathon rules) and `CLAUDE.md` (how to do Lean verification here).
 
 ## 0. Context
 
@@ -107,7 +107,7 @@ The owner writes no code. Agents build, and the owner reviews and steers.
 **Lean rules** (see `CLAUDE.md` for details)
 - Pin the Lean toolchain (v4.35.0) and every dependency rev. Commit `lake-manifest.json`. Use core plus Batteries (and `plausible` for testing). No Mathlib unless the owner approves.
 - Everything that runs must be computable: no `Classical` in definitions that execute. `#eval` / `#guard` each executable function (checker, semantics, simulate, deploy).
-- Final proofs: no `sorry`, `admit`, new `axiom`, `native_decide`, `implemented_by`, `unsafe`, `debug.skipKernelTC`, or `maxHeartbeats 0`. CI runs `lake check` plus Comparator against a trusted statements file, and `#audit_axioms` on each main theorem. During development, `sorry` is allowed only when listed in `TODO_PROOFS.md`.
+- Final proofs: no `sorry`, `admit`, new `axiom`, `native_decide`, `implemented_by`, `unsafe`, `debug.skipKernelTC`, or `maxHeartbeats 0`. CI runs `lake check` plus Comparator against a trusted statements file, and `#audit_axioms` on each main theorem. During development, `sorry` is allowed only when listed in [verification gaps](../VERIFICATION.md#8-gaps-against-claudemd-4-and-7).
 - Each main theorem gets: a plain-language docstring; a satisfiable `example` (all hypotheses met on a concrete input); and `¬ Satisfies` lemmas for the seeded bad programs. Keep the `#spec_surface` list short and reviewed.
 - Prefer **structural checks proven to imply semantic properties** over exploring every state (see section 7.3).
 
@@ -613,7 +613,7 @@ About 26 hours from kickoff (Sat 2:30 PM), including the owner's sleep. Agents w
 - **Owner review 2 (about 10 PM, 30 min):** click through the workflows in the browser on live Medplum data. The canonical program passes, and the seeded bad programs fail with readable counterexamples.
 
 **Phase 2 · Sat 10 PM – Sun 8 AM · overnight, unattended**
-- **Proof agents** (Claude and Codex in parallel on separate theorems): T0–T9 in priority order. Status is tracked in `TODO_PROOFS.md`. They may not touch `lean/Ehr/Props/`, `lean/Ehr/Specs/`, or the statements file. `lake check` decides what counts.
+- **Proof agents** (Claude and Codex in parallel on separate theorems): T0–T9 in priority order. Status is tracked in [verification gaps](../VERIFICATION.md#8-gaps-against-claudemd-4-and-7). They may not touch `lean/Ehr/Props/`, `lean/Ehr/Specs/`, or the statements file. `lake check` decides what counts.
 - **Agent loop:** built, then a first 10-day × 5-persona run recorded to `/runs/`.
 
 **Phase 3 · Sun 8 AM – 12:30 PM**

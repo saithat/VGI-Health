@@ -49,7 +49,7 @@ patient scan. Every change has a receipt: what the agent tried, why it chose it,
 and what happened.” These are exact minima **within the recorded search
 space**, for a fixed representative task—not measured doctor time, a global
 optimum, or a claim of equal savings on every shift. Source:
-[`runs/run1-P3/complexity.json`](../runs/run1-P3/complexity.json).
+[`runs/run1-P3/complexity.json`](../../runs/run1-P3/complexity.json).
 
 ## 2:15–2:55 · Try a dangerous shortcut
 
@@ -70,7 +70,7 @@ human check. The checker said no.” This particular tempting proposal was
 **seeded**, not an independent discovery by Codex. It was checked by the real
 checker. **Show recorded verdict** replays that result; it does not submit a
 fresh audience request. The source is
-[`night-02/P3.json`](../runs/run1-P3/decisions/night-02/P3.json).
+[`night-02/P3.json`](../../runs/run1-P3/decisions/night-02/P3.json).
 
 For a genuinely new check, the presenter can run the native checker on a supplied
 bad program, without an LLM or internet:
@@ -100,7 +100,7 @@ completion proof—can you always finish?—is still open. We test the browser a
 the database adapter. We do not prove that treatment is medically correct, or
 that the hospital remembered every rule.”
 
-Open [**docs/VERIFICATION.md**](VERIFICATION.md) in the repository, starting with
+Open [**docs/VERIFICATION.md**](../VERIFICATION.md) in the repository, starting with
 its first two paragraphs, then its proof table and trusted-code section. The
 current release is the **core** rule profile; do not imply the entire regulation
 catalog is active. Every proof claim and remaining gap is linked there.
@@ -130,12 +130,12 @@ Captured from the served build at `http://127.0.0.1:5180` in replay mode. These 
 
 | Persona | Landing | Chart |
 |---|---|---|
-| P1 | [Landing](../app/shots/final/P1-landing.png) | [Chart](../app/shots/final/P1-chart.png) |
-| P2 | [Landing](../app/shots/final/P2-landing.png) | [Chart](../app/shots/final/P2-chart.png) |
-| P3 | [Landing](../app/shots/final/P3-landing.png) | [Chart](../app/shots/final/P3-chart.png) |
-| P4 | [Landing](../app/shots/final/P4-landing.png) | [Chart](../app/shots/final/P4-chart.png) |
-| P5 | [Landing](../app/shots/final/P5-landing.png) | [Chart](../app/shots/final/P5-chart.png) |
+| P1 | [Landing](../../app/shots/final/P1-landing.png) | [Chart](../../app/shots/final/P1-chart.png) |
+| P2 | [Landing](../../app/shots/final/P2-landing.png) | [Chart](../../app/shots/final/P2-chart.png) |
+| P3 | [Landing](../../app/shots/final/P3-landing.png) | [Chart](../../app/shots/final/P3-chart.png) |
+| P4 | [Landing](../../app/shots/final/P4-landing.png) | [Chart](../../app/shots/final/P4-chart.png) |
+| P5 | [Landing](../../app/shots/final/P5-landing.png) | [Chart](../../app/shots/final/P5-chart.png) |
 
-[UI browser timeline](../app/shots/final/ui-browser-timeline.png) · [Dashboard](../app/shots/final/dashboard.png) · [Capture hashes](../app/shots/final/manifest.json).
+[UI browser timeline](../../app/shots/final/ui-browser-timeline.png) · [Dashboard](../../app/shots/final/dashboard.png) · [Capture hashes](../../app/shots/final/manifest.json).
 
 Old-UI MP4s were removed. [Integrated-build replay walkthrough](recordings/integrated-replay-walkthrough.mp4) replaces them; the later full-run recording remains pending until that run finishes.
