@@ -481,7 +481,7 @@ and Vite plugins in `app/scripts/` serve the artifacts:
 |---|---|
 | `runs-plugin` | `/runs/index.json`, `/runs/default.json`, and run files, with ETags and compression |
 | `catalog-plugin` | `/catalog.json`: releases, persona revisions, certificates |
-| `build-binding-plugin` | `/build.json`: SHA-256 of everything that can change a certified screen (see below) |
+| `build-binding-plugin` | `/build.json`: SHA-256 of the emitted app code, styles and WASM |
 | `try-break-plugin` | `/__dev/try-to-break-it`: runs the native `ehr check` on a pasted program |
 
 - **Build binding.** Each published run records the `appSha256` and
@@ -490,15 +490,6 @@ and Vite plugins in `app/scripts/` serve the artifacts:
   something other than what was checked. After a rebuild, `make rebind
   RUN=<id>` re-validates the run and binds it again. It fails if any
   certification input has changed.
-  `appSha256` covers the emitted code of every module except the review tools
-  (`src/dashboard`, `src/browser`), including React, Mantine and the other
-  rendering libraries, plus the CSS sources outside those folders. Editing the
-  dashboard therefore leaves certificates valid. Editing the painter, session,
-  data adapters, styles or libraries invalidates them. The interpreter is bound
-  separately by `wasmSha256`.
-  The committed `core-10day-live` bindings predate this narrower hash (they bind
-  the previous whole-bundle hash). On a fresh build, run `make rebind
-  RUN=core-10day-live` to re-check and re-bind them before replaying.
 - **Trajectories.** These are event sequences recorded by the native
   simulator. Playback runs them through the browser WASM.
   `scripts/trajectories/index.mjs` also replays every trajectory through the
