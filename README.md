@@ -131,7 +131,7 @@ code.
 |---|---|---|
 | Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
 | Persisted commits pass the guard on the record version written against | ⚪ **Designed, in progress**; live writes still use the client guard (G3) | [Concurrency design](docs/design/concurrency.md) |
-| Shared scheduled doses are administered at most once; each bed holds at most one patient | ⚪ **Model planned, in progress**; no claim about Medplum interleavings yet | [Concurrency design](docs/design/concurrency.md) |
+| Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Medplum correspondence is in progress | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
 | Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
 | Alerts: popups only for true conditions, never for passive alerts, acknowledgments persist | 🟢 **Proved** (A2, A4 for every run; A1, A3 via checker acceptance) | `Proofs/Alerts.lean`; `Check/AlertSound.lean`, `Check/SeveritySound.lean` |
 | A program is deployed only if the checker accepts it, with a certificate naming that spec and program | 🟢 **Proved** (the plan; not crash-atomic file writes) | `Proofs/CheckDeploy.lean` (T4) |
@@ -395,9 +395,12 @@ checker behind a future authenticated service as the only Medplum writer. It
 retains the per-session WASM interpreter and adds current-record guard checking,
 patient serialization, shared workflow controls and FHIR version preconditions.
 The deployment target is that no commit is persisted unless its guard holds on
-the record version written against. A separate multi-actor Lean model will cover
-scheduled-dose uniqueness and bed exclusivity over arbitrary interleavings.
-These are in progress; G3 remains open until the service mediates all writes.
+the record version written against. The executable [multi-actor model](lean/Ehr/Multi/Model.lean)
+proves scheduled-dose uniqueness and bed exclusivity over all finite
+interleavings of its atomic actions, including competing actors and bed reuse.
+`Multi/Tests.lean` includes a provably unsafe stale-read schedule. This model is
+not yet connected to FHIR persistence; G3 remains open until the service mediates
+all writes.
 
 ### Lean in the browser
 
