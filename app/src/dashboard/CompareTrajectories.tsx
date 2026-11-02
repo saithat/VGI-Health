@@ -1,16 +1,15 @@
+import { TaskControlSummary } from "./TaskControlSummary";
+import { noAgentMetrics, controlKey } from "./trajectory-filter";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { z } from "zod";
 import { programSchema, type Program } from "../../../agent/src/schema";
-import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
+import { loadTrajectoryIndex } from "./trajectory-index";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { stableJson } from "../core/buildBinding";
 import { revisionChanges, type RevisionChange } from "../browser/revision-diff";
 import { readRunJson, type RunData } from "./data";
 import type { InterpFactory } from "./replay";
-import {
-  trajectoryIndexSchema,
-  type TrajectoryIndex,
-} from "./trajectories-data";
+import { type TrajectoryIndex } from "./trajectories-data";
 import { TrajectoryPlayer, type LoadedTrajectory } from "./TrajectoryPlayer";
 import { loadTrajectory } from "./trajectory-loader";
 import { personas } from "./WorkflowComplexity";
@@ -87,10 +86,12 @@ const metricLabels = [
 export function CompareTrajectories({
   run,
   persona,
+  active = true,
   onPersonaChange,
   factory: suppliedFactory,
 }: {
   run: RunData;
+  active?: boolean;
   persona: string;
   onPersonaChange: (persona: string) => void;
   factory?: InterpFactory | undefined;
@@ -127,32 +128,34 @@ export function CompareTrajectories({
   const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
-    let active = true;
+    if (!active) return;
+    let alive = true;
     setError("");
-    void readRunJson(`/runs/${runId}/trajectories/index.json`)
-      .then((raw) => {
-        const loaded = trajectoryReleaseLabels(
-          trajectoryIndexSchema.parse(raw),
-        );
-        if (loaded.runId !== runId)
-          throw new Error("Trajectory index belongs to another run");
-        if (active) setIndex(loaded);
+    void loadTrajectoryIndex(runId)
+      .then((loaded) => {
+        if (alive) setIndex(loaded);
       })
       .catch((error: unknown) => {
-        if (active) setError(String(error));
+        if (alive) setError(String(error));
       });
+    return () => {
+      alive = false;
+    };
+  }, [runId, active]);
+  useEffect(() => {
+    let alive = true;
     if (!suppliedFactory)
       void loadWasmInterp()
         .then((interp) => {
-          if (active) setOwnFactory(() => () => interp);
+          if (alive) setOwnFactory(() => () => interp);
         })
         .catch((error: unknown) => {
-          if (active) setError(String(error));
+          if (alive) setError(String(error));
         });
     return () => {
-      active = false;
+      alive = false;
     };
-  }, [runId, suppliedFactory]);
+  }, [suppliedFactory]);
 
   const personaTasks =
     index?.tasks.filter((task) => task.persona === persona) ?? [];
@@ -170,10 +173,16 @@ export function CompareTrajectories({
   );
   const options = useMemo(() => comparisonOptions(tasks), [tasks]);
   const savedPairs = tasks.filter(pairedTask);
-  const requestedRevision = query.has("revision")
+  const controls = useMemo(
+    () => noAgentMetrics(run.noAgentDays),
+    [run.noAgentDays],
+  );
+  const requestedRevision = /^\d+$/.test(query.get("revision") ?? "")
     ? Number(query.get("revision"))
     : undefined;
-  const requestedDay = query.has("day") ? Number(query.get("day")) : undefined;
+  const requestedDay = /^\d+$/.test(query.get("day") ?? "")
+    ? Number(query.get("day"))
+    : undefined;
   const hintedTasks =
     requestedRevision !== undefined
       ? tasks.filter((task) => task.programVersion === requestedRevision)
@@ -232,7 +241,7 @@ export function CompareTrajectories({
   ]);
 
   useEffect(() => {
-    if (!left || !right) return;
+    if (!active || !left || !right) return;
     const params = new URLSearchParams(location.search);
     params.set("view", "compare");
     params.set("run", runId);
@@ -242,7 +251,15 @@ export function CompareTrajectories({
     params.set("right", right.key);
     params.set("comparison", comparisonKind);
     history.replaceState(null, "", `/dashboard?${params}`);
-  }, [runId, persona, activeWorkflow, comparisonKind, left?.key, right?.key]);
+  }, [
+    active,
+    runId,
+    persona,
+    activeWorkflow,
+    comparisonKind,
+    left?.key,
+    right?.key,
+  ]);
 
   useEffect(() => {
     let active = true;
@@ -363,7 +380,10 @@ export function CompareTrajectories({
       right: Math.max(0, Math.min(rightMax, value.right + direction)),
     }));
   useEffect(() => {
-    if (!playing || !pair || finished) {
+    if (!active) setPlaying(false);
+  }, [active]);
+  useEffect(() => {
+    if (!active || !playing || !pair || finished) {
       if (finished) setPlaying(false);
       return;
     }
@@ -376,7 +396,7 @@ export function CompareTrajectories({
       1000 / speed,
     );
     return () => window.clearInterval(timer);
-  }, [playing, pair, finished, leftMax, rightMax, speed]);
+  }, [active, playing, pair, finished, leftMax, rightMax, speed]);
   useEffect(() => {
     const changed = () =>
       setFullscreen(document.fullscreenElement === player.current);
@@ -389,6 +409,7 @@ export function CompareTrajectories({
         return;
       }
       if (
+        !active ||
         !pair ||
         event.altKey ||
         event.metaKey ||
@@ -415,7 +436,7 @@ export function CompareTrajectories({
       document.removeEventListener("fullscreenchange", changed);
       window.removeEventListener("keydown", keydown);
     };
-  }, [pair, finished, leftMax, rightMax]);
+  }, [active, pair, finished, leftMax, rightMax]);
 
   const leftMetrics =
     pair && left ? comparisonMetrics(pair.left.task, left.entry) : null;
@@ -457,7 +478,7 @@ export function CompareTrajectories({
       <div className="comparison-heading">
         <div>
           <h3>Compare trajectories</h3>
-          <p>See the work behind each revision.</p>
+          <p>Compare completed tasks within the same workflow.</p>
         </div>
         <a
           href={`/dashboard?${new URLSearchParams({ run: runId, persona, view: "Trajectories" })}`}
@@ -574,11 +595,17 @@ export function CompareTrajectories({
             `Release ${left.entry.release} → ${right.entry.release}; includes vendor changes.`}
         </p>
       )}
+      {right?.source === "recorded" && (
+        <TaskControlSummary
+          entry={right.task}
+          control={controls.get(controlKey(right.task))}
+        />
+      )}
       {error && <p role="alert">{error}</p>}
       {!index && !error && <p role="status">Loading recorded trajectories…</p>}
-      {index && !tasks.length && (
+      {index && !options.length && (
         <p role="status">
-          No recorded tasks for this persona and workflow yet. Choose another
+          No completed tasks for this persona and workflow yet. Choose another
           workflow or run.
         </p>
       )}

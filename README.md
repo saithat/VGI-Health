@@ -579,6 +579,38 @@ bookmarkable, e.g.
 `/dashboard?view=compare&run=core-10day-live&persona=P1&workflow=W1&left=d01-P1-W1-001&right=d03-P1-W1-001&comparison=cross-day`
 (primary care clinic visit, baseline day 1 vs. revision 2 on day 3).
 
+Trajectories uses the dashboard persona picker plus workflow, day, revision and
+completion filters, task-id/workflow/patient search, and sorting by clicks,
+scrolls or click savings against the same-task no-agent arm. Lists render at most
+40 tasks per page. Filters and the selected task are bookmarkable; for example,
+`/dashboard?view=Trajectories&run=core-10day-live&persona=P1&trajectoryDay=&trajectoryWorkflow=W1&completed=false&task=d07-P1-W1-004`.
+Incomplete recordings remain inspectable and visibly marked (11 in
+`core-10day-live`); Compare suggests only completed tasks within one workflow.
+Both replay views show recorded-vs-no-agent outcomes matched by persona, day
+and task id. Savings require both arms to complete. A metrics-only no-agent arm
+does not acquire an invented replay context; side-by-side playback uses exported
+trajectories where available.
+
+Replay geometry is served as per-task slices, preserving state selection,
+component aliases, scrollers and source hashes. Derived slices live under
+`runs/<id>/.cache/geometry/`, invalidate when the atlas or task file changes, and
+can be deleted to regenerate them. The run inventory excludes `.cache` and is
+cached for five seconds. A shared 96-entry JSON cache coalesces requests for
+30 seconds, and trajectory-index validation is reused across views. Installed
+build evidence, certification/rejection pointers and presentation/source evidence
+are fetched fresh for every verification; build-binding and geometry identity
+checks remain in force. On-demand JSON uses Brotli quality 4 with ETag
+revalidation. Trajectories and Compare remain lazy-loaded; visited players stay
+mounted only for the current run/persona, pause when hidden, ignore hidden
+keyboard input, and refresh their index on reactivation after cache expiry.
+
+The rerunnable Playwright/CDP benchmark is
+`node app/scripts/dashboard-benchmark.mjs http://127.0.0.1:5194 output.json`
+after `make run APP_PORT=5194`. It records wall time, transferred/decoded bytes
+and renderer main-thread time for each action. See the
+[measurement report](app/scripts/dashboard-performance.md) for cold-load and
+section-switch results, methodology, tradeoffs and validation commands.
+
 For the offline catalog alone,
 use `pnpm install && make run`. The dashboard opens the newest complete run (`core-10day-live`); the earlier
 single-persona `run1-P3` (inpatient RN, 10 days) is also included.

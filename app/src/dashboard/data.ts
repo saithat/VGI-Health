@@ -1,5 +1,9 @@
+import { readArtifact } from "../browser/data";
 import { checkResultSchema, jsonPatchSchema } from "../../../agent/src/schema";
-import { ruleConformanceSchema, type RuleConformance } from "./conformance-data";
+import {
+  ruleConformanceSchema,
+  type RuleConformance,
+} from "./conformance-data";
 import {
   complexityReleaseLabels,
   historicalRunIds,
@@ -86,33 +90,14 @@ export interface RunData {
 }
 export type ReadJson = (path: string) => Promise<unknown>;
 
-const runRequests = new Map<string, Promise<unknown>>();
-
-/** The only dashboard network boundary: same-origin recorded JSON under /runs/. */
+/** Same-origin recorded JSON only; shared with the offline browser. */
 export const readRunJson: ReadJson = async (path) => {
   if (
     !/^\/runs\/(?:[\w.-]+\/)*[\w.-]+\.json$/.test(path) ||
     path.split("/").includes("..")
   )
     throw new Error("Invalid recorded-run path");
-  let pending = runRequests.get(path);
-  if (!pending) {
-    const revalidate = /\/(?:index|default|summary|conformance)\.json$/.test(path);
-    pending = (async () => {
-      const response = await fetch(path);
-      if (!response.ok)
-        throw new Error(`Cannot load ${path} (${response.status})`);
-      return response.json();
-    })();
-    runRequests.set(path, pending);
-    void pending.then(
-      () => {
-        if (revalidate) runRequests.delete(path);
-      },
-      () => runRequests.delete(path),
-    );
-  }
-  return pending;
+  return readArtifact(path);
 };
 export async function loadRun(
   id: string,
@@ -183,7 +168,8 @@ export async function loadRun(
         run.replay = replaySchema.parse(await get(file));
       else if (file === "conformance.json") {
         const evidence = ruleConformanceSchema.parse(await get(file));
-        if (evidence.runId !== id) throw new Error("Rule conformance belongs to another run");
+        if (evidence.runId !== id)
+          throw new Error("Rule conformance belongs to another run");
         run.ruleConformance = evidence;
       }
     }),
@@ -223,8 +209,10 @@ export async function loadRunSummary(
   );
   data.days.sort((a, b) => a.day - b.day);
   const ruleConformance = data.files.includes("conformance.json")
-    ? ruleConformanceSchema.parse(await read(`/runs/${id}/conformance.json`)) : null;
-  if (ruleConformance && ruleConformance.runId !== id) throw new Error("Rule conformance belongs to another run");
+    ? ruleConformanceSchema.parse(await read(`/runs/${id}/conformance.json`))
+    : null;
+  if (ruleConformance && ruleConformance.runId !== id)
+    throw new Error("Rule conformance belongs to another run");
   return {
     ...data,
     ruleConformance,

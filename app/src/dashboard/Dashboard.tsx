@@ -1099,6 +1099,13 @@ export function Dashboard({
   const [run, setRun] = useState<RunData | null>(null);
   const [error, setError] = useState("");
   const [persona, setPersona] = useState(query.get("persona") ?? "P3");
+  const [visited, setVisited] = useState<{ scope: string; views: string[] }>({
+    scope: "",
+    views: [],
+  });
+  const scope = `${runId}/${persona}`;
+  const retained = (name: string) =>
+    view === name || (visited.scope === scope && visited.views.includes(name));
   const [selection, setSelection] = useState<Selection | null>(null);
   const [screenMode, setScreenMode] = useState<
     "pair" | "counterexample" | null
@@ -1285,6 +1292,16 @@ export function Dashboard({
                   : undefined
             }
             onClick={() => {
+              setVisited((current) => ({
+                scope,
+                views: [
+                  ...new Set([
+                    ...(current.scope === scope ? current.views : []),
+                    view,
+                    name,
+                  ]),
+                ],
+              }));
               setView(name);
               setSelection(null);
             }}
@@ -1358,34 +1375,43 @@ export function Dashboard({
                 <VersionList run={run} persona={persona} open={open} />
               </>
             )}
-            {view === "Trajectories" &&
+            {retained("Trajectories") &&
               (run.files?.includes("trajectories/index.json") ? (
-                <Suspense fallback={<p role="status">Loading trajectories…</p>}>
-                  <Trajectories
-                    initialDay={requestedDay}
-                    key={runId}
-                    runId={runId}
-                    persona={persona}
-                    factory={interpFactory}
-                  />
-                </Suspense>
+                <div hidden={view !== "Trajectories"}>
+                  <Suspense
+                    fallback={<p role="status">Loading trajectories…</p>}
+                  >
+                    <Trajectories
+                      active={view === "Trajectories"}
+                      noAgentDays={run.noAgentDays}
+                      initialDay={requestedDay}
+                      key={runId}
+                      runId={runId}
+                      persona={persona}
+                      factory={interpFactory}
+                    />
+                  </Suspense>
+                </div>
               ) : (
                 <p role="status">
                   No trajectories recorded for this run. Select Evolution or
                   another run.
                 </p>
               ))}
-            {view === "Compare" &&
+            {retained("Compare") &&
               (run.files?.includes("trajectories/index.json") ? (
-                <Suspense fallback={<p role="status">Loading comparison…</p>}>
-                  <CompareTrajectories
-                    key={`${runId}-${persona}`}
-                    run={run}
-                    persona={persona}
-                    onPersonaChange={setPersona}
-                    factory={interpFactory}
-                  />
-                </Suspense>
+                <div hidden={view !== "Compare"}>
+                  <Suspense fallback={<p role="status">Loading comparison…</p>}>
+                    <CompareTrajectories
+                      key={`${runId}-${persona}`}
+                      active={view === "Compare"}
+                      run={run}
+                      persona={persona}
+                      onPersonaChange={setPersona}
+                      factory={interpFactory}
+                    />
+                  </Suspense>
+                </div>
               ) : (
                 <p role="status">
                   No trajectories recorded for this run yet. Partial runs become

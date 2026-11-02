@@ -1,6 +1,7 @@
 import { readdir, readFile } from "node:fs/promises";
 import { resolve, relative, sep } from "node:path";
 import type { Plugin } from "vite";
+import { geometrySliceFile } from "./geometry-slice";
 import { sendArtifact } from "./artifact-response";
 
 export interface RecordedRun {
@@ -43,15 +44,17 @@ export function runsPlugin(): Plugin {
     const entries = await readdir(dir, { withFileTypes: true });
     return (
       await Promise.all(
-        entries.map(async (entry) =>
-          entry.isDirectory()
-            ? files(resolve(dir, entry.name))
-            : [relative(root, resolve(dir, entry.name)).split(sep).join("/")],
-        ),
+        entries
+          .filter((entry) => entry.name !== ".cache")
+          .map(async (entry) =>
+            entry.isDirectory()
+              ? files(resolve(dir, entry.name))
+              : [relative(root, resolve(dir, entry.name)).split(sep).join("/")],
+          ),
       )
     ).flat();
   }
-  async function index() {
+  async function scanIndex() {
     const all = (await files(root)).filter((file) => file.endsWith(".json"));
     const runs: RecordedRun[] = [];
     for (const file of all
@@ -95,6 +98,17 @@ export function runsPlugin(): Plugin {
       });
     }
     return runs;
+  }
+  let cachedIndex: { until: number; value: Promise<RecordedRun[]> } | undefined;
+  function index() {
+    if (!cachedIndex || cachedIndex.until <= Date.now()) {
+      const value = scanIndex();
+      cachedIndex = { until: Date.now() + 5_000, value };
+      void value.catch(() => {
+        if (cachedIndex?.value === value) cachedIndex = undefined;
+      });
+    }
+    return cachedIndex.value;
   }
   return {
     name: "recorded-runs",
@@ -179,6 +193,17 @@ export function runsPlugin(): Plugin {
               }),
             ),
           );
+          return;
+        }
+        const slice =
+          /^\/runs\/([\w-]+)\/geometry\/([a-f0-9]{64}(?:\.[a-f0-9]{64})?)\/slices\/((?:[\w.-]+\/)*[\w.-]+\.json)$/.exec(
+            url.pathname,
+          );
+        if (slice) {
+          const [, run = "", atlas = "", task = ""] = slice;
+          const file = await geometrySliceFile(resolve(root, run), atlas, task);
+          res.setHeader("Content-Type", "application/json");
+          await sendArtifact(req, res, url.pathname, file);
           return;
         }
         const file = resolve(root, decodeURIComponent(url.pathname.slice(6)));
