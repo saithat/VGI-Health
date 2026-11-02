@@ -62,7 +62,7 @@ try {
   await page.getByRole("dialog").getByRole("button", {
     name: "Before / after on screen", exact: true,
   }).click();
-  await expect(page.locator(".paired-screens .ehr-shell")).toHaveCount(2);
+  await expect(page.locator(".paired-screens :is(.ehr-shell, .clinical-banner)")).toHaveCount(2);
   await expect(page.getByRole("alert")).toHaveCount(0);
   const wasm = await page.request.get(`${base}/ehr/ehr-interp.wasm`);
   expect(wasm.ok()).toBe(true);

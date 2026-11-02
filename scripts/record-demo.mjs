@@ -111,7 +111,7 @@ try {
     const card = page.locator('.release-card').filter({ has: page.getByRole('heading', { name: new RegExp(`^${persona} `) }) });
     await card.scrollIntoViewIfNeeded(); await pause(page);
     await expect(card.getByText('Old UI: fail', { exact: true })).toBeVisible();
-    await expect(card.locator('.paired-screens .ehr-shell')).toHaveCount(2);
+    await expect(card.locator('.paired-screens :is(.ehr-shell, .clinical-banner)')).toHaveCount(2);
     await click(page, card.locator('.migration-patch summary'));
     await page.mouse.wheel(0, 350); await pause(page);
     const migration = await read(`runs/${run}/decisions/night-${String(manifest.releaseDays.v2 - 1).padStart(2, '0')}/${persona}.json`);
