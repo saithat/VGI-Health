@@ -713,6 +713,20 @@ Historical nightly per-persona runs above remain the original experiment.
 Proved Lean layout, empirically checked renderers and simulation-only sandbox
 candidates have separate assurance tiers. No exploration result is deployed.
 
+`explore/design.ts` defines typed dimensions and one-hot descriptors;
+`explore/tasks.ts` extracts unchanged release commit contracts; and
+`explore/generator.ts` compiles design points plus workflow sets into ordinary
+programs. Unsupported primitives yield explicit sandbox manifests. Generation
+preserves clinical component kinds; a separate identity-based movement check
+retains the stability budget even if an operator renames tags. No Lean or
+certified application source changes are needed.
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
+TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
+```
+
+
 ## Development checks
 
 Set `TMPDIR` to disk-backed scratch space and run only one Lean process in a
