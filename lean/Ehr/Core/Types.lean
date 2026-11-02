@@ -1,6 +1,8 @@
+import Ehr.Multi.Critical
+
 /-!
 Core data formats: hospital rules, UI programs, patient facts, state and events.
-Imports only Init; JSON readers and writers live in Ehr.Core.Json.
+Imports the critical-result workflow data; JSON readers and writers live in Ehr.Core.Json.
 Optional fields ending in `?` omit that suffix in JSON and are absent when none.
 See docs/design/core-model.md for field meanings.
 -/
@@ -524,6 +526,8 @@ structure ReviewReq where
 inductive AlertCond
   | drugAllergy
   | interaction
+  | minorInteraction
+  | criticalResult
   | duplicateTherapy
   | doseOutOfRange
   | weightInLb
@@ -810,6 +814,17 @@ structure Receipt where
   user : UserId
   deriving DecidableEq, Repr, Inhabited
 
+/-- Explicit interaction severity from the clinical source. -/
+inductive InteractionSeverity where
+  | minor | severe
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Source-labelled severity; missing evidence never implies minor. -/
+structure InteractionEvidence where
+  key : String
+  severity : InteractionSeverity
+  deriving DecidableEq, Repr, Inhabited
+
 /-- The few facts from the patient record the spec needs. -/
 structure Facts where
   patientId : String
@@ -851,6 +866,8 @@ structure Facts where
   sourcePatientId? : Option String := none
   /-- Read-only day lists and the searchable patient directory. -/
   patientDirectory? : Option PatientDirectory := none
+  interactions? : Option (List InteractionEvidence) := none
+  criticalResults? : Option (List Multi.Critical.Ticket) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Interpreter state and events -/
@@ -913,6 +930,7 @@ structure State where
   clock : Nat
   /-- Present only for programs using in-UI patient selection. -/
   patientContext? : Option PatientContext := none
+  criticalResults? : Option (List Multi.Critical.Ticket) := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- A user (or macro) action. -/

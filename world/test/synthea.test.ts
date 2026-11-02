@@ -11,6 +11,15 @@ import { loadPopulation, profilesFromBundle } from "../src/patients";
 import { DayScheduleSchema, PERSONAS } from "../src/schema";
 import { generateWorld } from "../src/world";
 
+// Compare frozen predecessors after projecting out the additive panic-result
+// source. Task choices, state hashes, ordinary results and random draws stay exact.
+function predecessor(schedule: ReturnType<typeof DayScheduleSchema.parse>) {
+  return { ...schedule, tasks: schedule.tasks.map((task) => ({ ...task,
+    todayResources: task.todayResources.filter((resource) =>
+      !JSON.stringify(resource).includes("critical-result-route")),
+  })) };
+}
+
 const root = resolve(__dirname, "../..");
 const reason = dataReason("fixtures/synthea", "runs/world/1", "runs/world/2");
 describe.skipIf(Boolean(reason))(`archived Synthea worlds${reason ? ` (${reason})` : ""}`, () => {
@@ -21,7 +30,7 @@ beforeAll(() => {
   run = generateWorld(1, 10, population.patients);
 });
 
-it("keeps the committed seed-1 replay identical to the generator and below 15 MB", () => {
+it("keeps the archived seed-1 replay as the predecessor projection and below 15 MB", () => {
   const dir = join(root, "runs/world/2");
   const read = (file: string): unknown => JSON.parse(readFileSync(join(dir, file), "utf8"));
   const manifest = z.object({ seed: z.number(), days: z.number(), files: z.array(z.string()) }).parse(read("manifest.json"));
@@ -32,8 +41,8 @@ it("keeps the committed seed-1 replay identical to the generator and below 15 MB
   for (const d of run.days) {
     expect(read(`state-day-${d.state.day}.json`)).toEqual(d.state);
     for (const p of PERSONAS) {
-      expect(read(`day-${d.state.day}-${p}.json`)).toEqual(d.schedules[p]);
-      expect(read(`schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`)).toEqual(d.schedules[p]);
+      expect(read(`day-${d.state.day}-${p}.json`)).toEqual(predecessor(d.schedules[p]));
+      expect(read(`schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`)).toEqual(predecessor(d.schedules[p]));
     }
   }
 });
@@ -48,7 +57,7 @@ it("preserves world 1 state, tasks and random draws except pre-release service c
       for (const task of original.tasks) {
         if (task.day < PRIOR_AUTH_RELEASE_DAY) task.choices.orders = task.choices.orders.filter((o) => (o.kind ?? "medication") === "medication");
       }
-      expect(d.schedules[p]).toEqual(original);
+      expect(predecessor(d.schedules[p])).toEqual(original);
     }
   }
 });

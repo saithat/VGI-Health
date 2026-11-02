@@ -1,4 +1,5 @@
-{"status": "pending owner review",
+{"status": "APPROVED by the owner on 2026-11-02",
+ "policyStatus": "APPROVED by the owner on 2026-11-02",
  "physical":
  {"viewportWidths": [768, 1280, 1440, 1600, 1920],
   "textResizePercent": 200,
@@ -8,12 +9,12 @@
   "nontextContrast": 3},
  "assignments":
  [{"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -27,12 +28,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyAdmin",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -46,12 +47,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -65,12 +66,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionRefill",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -84,12 +85,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -103,12 +104,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -117,12 +118,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertAdmin",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -136,12 +137,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "careGapsInline",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -150,12 +151,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -164,12 +165,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "immunizationsDueInline",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -178,12 +179,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "healthMaintenancePopup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -192,12 +193,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -211,12 +212,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "activeRxPopup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -225,12 +226,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "refillCareGapPopup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -239,12 +240,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "minorInteractionPopup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -253,12 +254,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "pediatricGrowthCurveOutlier",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -267,12 +268,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "significantWeightChange",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -281,12 +282,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.signScheduleIISeries",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -300,12 +301,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.signScheduleIISeries",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -319,12 +320,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.signScheduleIISeries",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -338,12 +339,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.signScheduleIISeries",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -352,12 +353,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.signScheduleIISeries",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -366,12 +367,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.signScheduleIISeries",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -385,12 +386,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.signEmergencyRxFollowup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -404,12 +405,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.signEmergencyRxFollowup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -423,12 +424,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.signEmergencyRxFollowup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -442,12 +443,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.signEmergencyRxFollowup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -456,12 +457,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.signEmergencyRxFollowup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -470,12 +471,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.signEmergencyRxFollowup",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -489,12 +490,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.authorizeDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -508,12 +509,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.authorizeDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -527,12 +528,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.authorizeDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -546,12 +547,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.authorizeDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -560,12 +561,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.authorizeDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -574,12 +575,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.authorizeDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -593,12 +594,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.authorizeSelfAdministration",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -612,12 +613,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.authorizeSelfAdministration",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -631,12 +632,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.authorizeSelfAdministration",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -650,12 +651,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.authorizeSelfAdministration",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -664,12 +665,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.authorizeSelfAdministration",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -678,12 +679,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.authorizeSelfAdministration",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -697,12 +698,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.authorizeBedsideMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -716,12 +717,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.authorizeBedsideMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -735,12 +736,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.authorizeBedsideMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -754,12 +755,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.authorizeBedsideMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -768,12 +769,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.authorizeBedsideMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -782,12 +783,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.authorizeBedsideMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -801,12 +802,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.authorizePatientOwnedMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -820,12 +821,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.authorizePatientOwnedMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -839,12 +840,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.authorizePatientOwnedMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -858,12 +859,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.authorizePatientOwnedMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -872,12 +873,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.authorizePatientOwnedMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -886,12 +887,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.authorizePatientOwnedMedication",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -905,12 +906,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.authorizeOudDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -924,12 +925,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.authorizeOudDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -943,12 +944,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.authorizeOudDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -962,12 +963,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.authorizeOudDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -976,12 +977,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.authorizeOudDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -990,12 +991,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.authorizeOudDirectDispensing",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1009,12 +1010,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.signOralLiquidPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1028,12 +1029,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.signOralLiquidPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1047,12 +1048,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.signOralLiquidPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1066,12 +1067,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.signOralLiquidPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1080,12 +1081,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.signOralLiquidPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1094,12 +1095,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.signOralLiquidPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1113,12 +1114,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.signFormattedPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1132,12 +1133,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.signFormattedPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1151,12 +1152,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.signFormattedPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1170,12 +1171,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.signFormattedPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1184,12 +1185,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.signFormattedPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1198,12 +1199,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.signFormattedPrescription",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1217,12 +1218,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "drugAllergyOrder.signOralMethotrexate",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1236,12 +1237,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "interactionOrder.signOralMethotrexate",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1255,12 +1256,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "doseRangeOrder.signOralMethotrexate",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1274,12 +1275,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "urgent",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "weightInLb.signOralMethotrexate",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1288,12 +1289,12 @@
      "ISMP 2026-2027 Targeted Medication Safety Best Practices, BP 3 and 19",
      "authority": "guidance"}]},
   {"urgency": "workflow",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "duplicateTherapyInline.signOralMethotrexate",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1302,12 +1303,12 @@
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
      "authority": "guidance"}]},
   {"urgency": "advisory",
-   "pendingOwnerReview": true,
+   "pendingOwnerReview": false,
    "id": "highAlertOrderNotice.signOralMethotrexate",
    "decision":
    {"url": "docs/design/alert-urgency.md",
     "citation":
-    "Hospital policy (not law): proposed attention tiers, 2026-11-02; pending owner review",
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
     "authority": "hospital policy (not law)"},
    "context":
    [{"url":
@@ -1319,4 +1320,23 @@
      "https://www.healthit.gov/wp-content/uploads/2025/06/SAFER-Guide-3.-CPOE-Final.pdf",
      "citation":
      "ASTP/ONC SAFER CPOE, recommended practice 2.1: contextual, tiered alerts",
-     "authority": "guidance"}]}]}
+     "authority": "guidance"}]},
+  {"urgency": "urgent",
+   "pendingOwnerReview": false,
+   "id": "criticalResult",
+   "decision":
+   {"url": "docs/design/alert-urgency.md",
+    "citation":
+    "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
+    "authority": "hospital policy (not law)"},
+   "context":
+   [{"url":
+     "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9",
+     "citation":
+     "Joint Commission NPG.01.02.01 EPs 1-2 (January 2026; succeeds NPSG.02.03.01): critical-result reporting and timeliness",
+     "authority": "accreditation"},
+    {"url":
+     "https://www.ecfr.gov/current/title-42/section-493.1291#p-493.1291(g)",
+     "citation":
+     "42 CFR 493.1291(g): immediate notification of life-threatening or panic results",
+     "authority": "regulation"}]}]}

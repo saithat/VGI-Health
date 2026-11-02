@@ -75,3 +75,12 @@ constructor through ordinary native/WASM `renderUi`; `renderTimelineUi` also
 provides a whole-workspace wrapper. The canonical browser fixture is exported
 by `lake env lean --run Ehr/Sem/ExportTimeline.lean`; `program-screen` selects
 the accepted program's actual signing screen.
+
+`UiScreen.urgent` is supplied by Lean independently of workspace/modal contents.
+`UrgentStrip` draws it in a fixed layer outside the inert chart shell and above
+dialogs, with no local dismissal or clinical classification. An urgent popup's
+acknowledgment remains the original Lean event in the strip. An unrelated dialog
+keeps the chart inert while allowing the strip to remain perceivable; its focus
+trap and `aria-modal` declaration account for this separate active layer. The
+screen gate rejects any strip warning outside the viewport or under another
+surface. Finite capacity/zoom are measured, not inferred from CSS or tree presence.

@@ -83,8 +83,15 @@ export function expectedNodeAria(
     case "timeline" in node:
       return nest(
         entry("region", node.timeline.title),
-        nest(entry("list", `${node.timeline.title} events`),
-          expectedChildrenAria(node.timeline.children, presentation, placement, inheritedConfirms)),
+        nest(
+          entry("list", `${node.timeline.title} events`),
+          expectedChildrenAria(
+            node.timeline.children,
+            presentation,
+            placement,
+            inheritedConfirms,
+          ),
+        ),
       );
     case "valueSet" in node:
       return expectedChildrenAria(
@@ -305,11 +312,20 @@ function exhaust(node: never): never {
   throw new Error(`Unknown node: ${String(node)}`);
 }
 export function expectedAria(screen: UiScreen): AriaEntry[] {
+  const strip = screen.urgent?.length
+    ? nest(
+        entry("region", "Urgent clinical alerts"),
+        expectedChildrenAria(screen.urgent),
+      )
+    : [];
   if (screen.modal)
-    return nest(
-      entry("dialog", modalName(screen.modal) ?? "Clinical alert"),
-      expectedNodeAria(screen.modal),
-    );
+    return [
+      ...strip,
+      ...nest(
+        entry("dialog", modalName(screen.modal) ?? "Clinical alert"),
+        expectedNodeAria(screen.modal),
+      ),
+    ];
   return [
     entry(
       "banner",
@@ -344,6 +360,7 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
         : []),
       ...expectedChildrenAria(screen.workspace),
     ]),
+    ...strip,
   ];
 }
 
