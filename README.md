@@ -740,9 +740,10 @@ the repo-root `.env`: browser login needs its `VITE_MEDPLUM_*` values and
 `VGI_USER_PASSWORD`; `test:live` also needs `MEDPLUM_CLIENT_ID` and
 `MEDPLUM_CLIENT_SECRET`. Missing credentials fail with a setup error when the
 backend is available. An unavailable Medplum healthcheck skips live cases with
-the backend URL and reason. Canonical baseline login exercises chart workflows
-independently of archived personalized build bindings; recorded trajectory
-checks still enforce those bindings.
+the backend URL and reason. Both canonical baseline and personalized login
+paths are exercised. Personalized live journeys and recorded trajectory checks
+require current build bindings; use `make rebind RUN=<id>` to revalidate stale
+recordings after building the app. A rejected rebind remains a test failure.
 
 Structured presentation fidelity, contrast and wrapping checks, plus the five
 canonical chart-review tab journeys, run in the default browser suite at both

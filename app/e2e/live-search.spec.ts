@@ -1,11 +1,7 @@
 import { enterPatientChart } from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
 import { Audit } from "./audit/driver";
-import {
-  backendAvailable,
-  backendDownReason,
-  signInBaseline,
-} from "./live-backend";
+import { backendAvailable, backendDownReason } from "./live-backend";
 import type {} from "../src/core/buttonAudit";
 
 for (const name of ["Aaron", "Terrance"]) {
@@ -14,7 +10,7 @@ for (const name of ["Aaron", "Terrance"]) {
   }) => {
     test.skip(!(await backendAvailable()), backendDownReason);
     await page.goto("/?audit=buttons");
-    await signInBaseline(page, "P1");
+    await page.getByRole("button", { name: /^P1 · / }).click();
     await enterPatientChart(page, name);
     await expect(page.locator(".clinical-app")).toBeVisible();
     const search = page.getByRole("textbox", {

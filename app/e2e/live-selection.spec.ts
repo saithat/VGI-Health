@@ -1,8 +1,4 @@
-import {
-  backendAvailable,
-  backendDownReason,
-  signInBaseline,
-} from "./live-backend";
+import { backendAvailable, backendDownReason } from "./live-backend";
 import { expect, test } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import type {} from "../src/core/buttonAudit";
@@ -37,7 +33,9 @@ for (const [persona, activity, caption] of [
         writes.push(`${request.method()} ${new URL(request.url()).pathname}`);
     });
     await page.goto("/?audit=buttons");
-    await signInBaseline(page, persona);
+    await page
+      .getByRole("button", { name: new RegExp(`^${persona} ·`) })
+      .click();
     await expect(
       page.getByLabel("Patient search by name or MRN", { exact: true }),
     ).toBeVisible({ timeout: 30000 });

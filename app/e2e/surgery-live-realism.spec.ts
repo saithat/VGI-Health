@@ -4,11 +4,7 @@ import {
 } from "./clinical-navigation";
 import { mkdir } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
-import {
-  backendAvailable,
-  backendDownReason,
-  signInBaseline,
-} from "./live-backend";
+import { backendAvailable, backendDownReason } from "./live-backend";
 
 async function openClinic(
   page: Page,
@@ -16,7 +12,7 @@ async function openClinic(
   inspect: boolean,
 ) {
   await page.goto(`/?audit=buttons${inspect ? "&inspect=1" : ""}`);
-  await signInBaseline(page, "P5");
+  await page.getByRole("button", { name: /^P5 · / }).click();
   await enterPatientChart(page, name);
   await navigateClinicalScreen(page, "w1Rooming");
 }

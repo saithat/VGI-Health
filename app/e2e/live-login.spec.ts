@@ -30,30 +30,33 @@ test("default route shows persona sign-in, baseline entry and offline links", as
     page.getByRole("link", { name: /Demo \/ replay/ }),
   ).toHaveAttribute("href", "/browse");
 });
-test("local P1 baseline login, patient search, real chart and session restoration", async ({
-  page,
-}) => {
-  test.skip(!(await backendAvailable()), backendDownReason);
-  const errors: string[] = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/?audit=buttons");
-  await signInBaseline(page, "P1");
-  await expect(
-    page.getByRole("heading", { name: "Schedule", level: 1 }),
-  ).toBeVisible();
-  await page.reload();
-  await expect(
-    page.getByRole("heading", { name: "Schedule", level: 1 }),
-  ).toBeVisible();
-  await enterPatientChart(page, "Aaron");
-  await expect(
-    page.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible({ timeout: 30000 });
-  await expect(
-    page.getByRole("banner", { name: "Patient banner" }),
-  ).toContainText("Aaron");
-  expect(errors).toEqual([]);
-});
+for (const baseline of [false, true]) {
+  test(`local P1 ${baseline ? "baseline" : "personalized"} login, patient search, real chart and session restoration`, async ({
+    page,
+  }) => {
+    test.skip(!(await backendAvailable()), backendDownReason);
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    await page.goto("/?audit=buttons");
+    if (baseline) await signInBaseline(page, "P1");
+    else await page.getByRole("button", { name: /^P1 · / }).click();
+    await expect(
+      page.getByRole("heading", { name: "Schedule", level: 1 }),
+    ).toBeVisible();
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name: "Schedule", level: 1 }),
+    ).toBeVisible();
+    await enterPatientChart(page, "Aaron");
+    await expect(
+      page.getByRole("banner", { name: "Patient banner" }),
+    ).toBeVisible({ timeout: 30000 });
+    await expect(
+      page.getByRole("banner", { name: "Patient banner" }),
+    ).toContainText("Aaron");
+    expect(errors).toEqual([]);
+  });
+}
 
 test("baseline entry opens the selected clinician's certified role view", async ({
   page,
