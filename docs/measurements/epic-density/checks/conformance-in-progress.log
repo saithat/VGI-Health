@@ -1,0 +1,4 @@
+$ node conformance/index.mjs --canonical --jobs 15 --out docs/measurements/epic-density/conformance.json
+canonical/v2/P3: 46 pass / 0 fail / 154 not applicable
+canonical/v1/P3: 46 pass / 0 fail / 154 not applicable
+canonical/v3/P3: 47 pass / 0 fail / 153 not applicable

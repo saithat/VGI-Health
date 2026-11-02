@@ -1,0 +1,58 @@
+$ vitest run
+
+ RUN  v3.2.7 /home/saithat/Projects/VGI-content2/agent
+
+ ✓ test/jsonpatch.test.ts (4 tests) 7ms
+ ✓ test/patient-selection.test.ts (1 test) 31ms
+ ✓ test/recording-ehr.test.ts (1 test) 59ms
+ ✓ test/ehr-adapter.test.ts (4 tests) 246ms
+ ✓ test/codex-options.test.ts (5 tests) 278ms
+ ✓ test/manual.test.ts (1 test) 306ms
+   ✓ generates the core manual and persona rules from active formal sources with reproducible hashes  304ms
+ ✓ test/fake-ehr.test.ts (2 tests) 52ms
+ ✓ test/publication.test.ts (1 test) 74ms
+ ✓ test/components.test.ts (3 tests) 163ms
+ ✓ test/presentation-publication.test.ts (1 test) 235ms
+ ✓ test/lean-types.test.ts (9 tests) 766ms
+   ✓ validators vs Lean-written samples > real vendor specs and programs round-trip without dropping constrained values or release actions  652ms
+ ✓ test/geometry.test.ts (9 tests) 682ms
+   ✓ records a geometry screen infrastructure error before aborting and never calls it a rejection  406ms
+ ✓ test/resume.test.ts (2 tests) 622ms
+   ✓ resumes an unfinished night without repeating completed days, decisions or LLM calls  615ms
+ ✓ test/modes.test.ts (7 tests) 1853ms
+ ✓ test/composite-native.test.ts (1 test) 3359ms
+   ✓ real checker certifies the full expansion and rejects a hidden required composite review  3358ms
+ ✓ test/wrapper-resume.test.ts (1 test) 3126ms
+   ✓ resumes through the shell wrapper with real fingerprints after runs are copied into dist; never builds or calls a model  3125ms
+ ✓ test/review-followup.test.ts (6 tests) 3257ms
+   ✓ records screen-check infrastructure separately and never marks the run completed  428ms
+   ✓ a no-change designer has zero agent saving through both releases despite canonical drift, and staging is cleaned  2392ms
+ ✓ test/night.test.ts (15 tests) 3584ms
+REBIND REFUSED P1/v0: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P1/v1: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P1/v2: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P2/v0: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P2/v1: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P2/v2: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P3/v0: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P3/v1: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P3/v2: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P4/v0: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P4/v1: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P4/v2: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P5/v0: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P5/v1: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+REBIND REFUSED P5/v2: CURRENT SCREEN GATE REFUSED: {"status":"error","mode":"fake","bundles":[],"pages":0,"failingScreens":[],"failingFiles":[],"message":"FAKE browser unavailable"}
+ ✓ test/review-safety.test.ts (15 tests) 8232ms
+   ✓ falls back on screen infrastructure error, and aborts if the canonical also fails  849ms
+   ✓ rebind preserves history, resumes, and refuses a failed version without program edits  605ms
+ ✓ test/releases.test.ts (7 tests) 17984ms
+   ✓ certified role baselines > loads the v1 persona view for an authenticated user  1570ms
+   ✓ certified role baselines > loads the v2 persona view for an authenticated user  1140ms
+   ✓ certified role baselines > loads the v3 persona view for an authenticated user  1084ms
+   ✓ all fifteen certified role presets bind the exact program hash and active release  14181ms
+
+ Test Files  20 passed (20)
+      Tests  95 passed (95)
+   Start at  11:12:18
+   Duration  19.08s (transform 2.00s, setup 0ms, collect 14.77s, tests 44.92s, environment 4ms, prepare 2.96s)

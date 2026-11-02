@@ -1,0 +1,4755 @@
+[
+  {
+    "id": "federal-rx-1306-04-medical-purpose",
+    "title": "Controlled prescription has a legitimate medical purpose",
+    "citation": "21 CFR §1306.04(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "legitimate medical purpose",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Issue a controlled-substance prescription only for a legitimate medical purpose.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "clinical-purpose attestation and accountable prescriber; clinical legitimacy cannot be proved by field presence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. A diagnosis or indication alone cannot establish legitimate purpose. V1 has no dedicated controlled-prescription attestation. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-04-usual-practice",
+    "title": "Prescriber acts in usual professional practice",
+    "citation": "21 CFR §1306.04(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "usual course of his professional practice",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "not-encodable",
+    "proposedRule": "Permit controlled prescribing only in the usual course of the individual practitioner’s professional practice.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "professional-scope and clinical review beyond UI conformance",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Separate legal condition from legitimate medical purpose; no automatic claim of clinical correctness. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-issue-date",
+    "title": "Prescription bears its actual issue date",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "dated as of, and signed on, the day when issued",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Date each controlled-substance prescription as of the day it is issued; prevent future dating to implement delayed fills.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "prescription issue-date field and same-day signing validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-patient-name",
+    "title": "Prescription includes full patient name",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "full name",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the patient’s full name in each controlled-substance prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "full patient name in outgoing prescription",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. V1 patientBanner is chart information, not a guarantee of complete outgoing prescription content. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-patient-address",
+    "title": "Prescription includes patient address",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "address of the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the patient’s address in each controlled-substance prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "patient address in outgoing prescription",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. V1 patientBanner is chart information, not a guarantee of complete outgoing prescription content. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-drug-name",
+    "title": "Prescription includes drug name",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "drug name",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Capture the drug name on each controlled-substance prescription line.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. V1 medication-order requirements map to signOrders and signPreOpOrders; approveRefill uses separate refill elements. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-strength",
+    "title": "Prescription includes product strength",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "strength",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the controlled drug’s product strength in the prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "product strength distinct from prescribed dose",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-dosage-form",
+    "title": "Prescription includes dosage form",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "dosage form",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the controlled drug’s dosage form in the prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "explicit dosage-form field",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-quantity",
+    "title": "Prescription includes quantity",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "quantity prescribed",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Capture the quantity prescribed for each controlled-substance prescription.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. V1 medication-order requirements map to signOrders and signPreOpOrders; approveRefill uses separate refill elements. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-directions",
+    "title": "Prescription includes directions for use",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "directions for use",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include directions for use on every controlled-substance prescription.",
+    "specMapping": {
+      "element": "dose",
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "complete outgoing prescription directions assembled from dose, doseUnit, route, freq and prn",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  V1 has dose, doseUnit, route, freq and prn entry requirements; it does not specify construction of complete outgoing prescription directions. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-prescriber-name",
+    "title": "Prescription includes prescriber name",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "name, address and registration number of the practitioner",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the prescribing practitioner’s name in the prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "prescriber legal name in outgoing prescription",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-prescriber-address",
+    "title": "Prescription includes prescriber address",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "address",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the prescribing practitioner’s address in the prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "prescriber address in outgoing prescription",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-prescriber-dea",
+    "title": "Prescription includes DEA registration",
+    "citation": "21 CFR §1306.05(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "registration number",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the practitioner’s DEA registration number, subject to the institutional and government exceptions in §1306.05(g)–(h).",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "DEA number or applicable statutory substitute in outgoing prescription",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-ghb-need",
+    "title": "GHB prescription states medical need",
+    "citation": "21 CFR §1306.05(c)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "medical need of the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "When prescribing gamma-hydroxybutyric acid, note the patient’s medical need on the face of the prescription.",
+    "specMapping": {
+      "element": "indication",
+      "info": null,
+      "when": "gamma-hydroxybutyric acid prescription",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "GHB-specific required-entry condition and outgoing face-of-prescription placement",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. V1 requires indication on medication-order lines, but does not specify GHB medical-need semantics or ensure outgoing prescription-face placement; the full federal condition is therefore not implemented. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-05-institution-code",
+    "title": "Exempt hospital prescriber uses institutional internal code",
+    "citation": "21 CFR §1306.05(g)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "special internal code number",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "For a practitioner exempt under §1301.22(c), include the hospital’s DEA number and the practitioner’s assigned internal code in place of an individual DEA number.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital-exempt individual practitioner under §1301.22(c)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "institutional DEA number plus practitioner internal-code binding",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-11-emergency-quantity",
+    "title": "Emergency oral Schedule II supply covers emergency only",
+    "citation": "21 CFR §1306.11(d)(1)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "during the emergency period",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "For a legally qualifying emergency oral Schedule II prescription, limit the quantity to the amount adequate for the emergency period.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "qualifying emergency oral Schedule II prescription",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "emergency oral prescription channel and emergency-duration quantity validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The general paper/electronic rules and special fax exceptions remain applicable; emergency status is defined in §290.10. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-11-emergency-followup",
+    "title": "Emergency oral Schedule II prescription has seven-day follow-up",
+    "citation": "21 CFR §1306.11(d)(4)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "Within 7 days",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "After an emergency oral Schedule II authorization, cause the required follow-up prescription to be delivered to the dispensing pharmacist within seven days.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "qualifying emergency oral Schedule II prescription",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "follow-up task with seven-day deadline and delivery/postmark evidence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Mail must be postmarked within seven days. For electronic follow-up the pharmacist annotates the original authorization and oral-order date. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-11-emergency-label",
+    "title": "Emergency follow-up carries emergency authorization notation",
+    "citation": "21 CFR §1306.11(d)(4)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "Authorization for Emergency Dispensing",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "Include the required emergency-dispensing authorization notation on the follow-up prescription for an emergency oral Schedule II order.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "follow-up to qualifying emergency oral Schedule II prescription",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "emergency follow-up prescription notation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The date of the oral order is a separate required item in the same paragraph. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-12-zero-refills",
+    "title": "Schedule II prescription cannot have refills",
+    "citation": "21 CFR §1306.12(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "is prohibited",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Reject any Schedule II prescription or refill approval that authorizes a refill; use a new prescription when appropriate.",
+    "specMapping": {
+      "element": "refills",
+      "info": null,
+      "when": "Schedule II prescription or refill request",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "Schedule II numeric value constraint refills = 0, including refillRefills",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Already discussed in regulations.md C4 and BRIEF; V1 requires refills but does not constrain its value. existingInSpec is therefore false. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-12-90-day-total",
+    "title": "Multiple Schedule II prescriptions total at most 90 days",
+    "citation": "21 CFR §1306.12(b)(1)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "up to a 90-day supply",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "When issuing multiple Schedule II prescriptions under this permission, limit their combined supply to 90 days.",
+    "specMapping": {
+      "element": "duration",
+      "info": null,
+      "when": "multiple Schedule II prescriptions issued under §1306.12(b)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "linked prescription series and aggregate days-supply constraint",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This is permission subject to all listed conditions, not a required visit interval or a general federal single-prescription day-supply limit. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-12-earliest-fill",
+    "title": "Later Schedule II prescriptions carry earliest fill dates",
+    "citation": "21 CFR §1306.12(b)(1)(ii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "earliest date",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "For each prescription in a multiple-Schedule-II series, write the earliest pharmacy fill date except for a first prescription intended for immediate filling.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "multiple Schedule II prescription series; except first intended for immediate fill",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "earliest-fill-date field separate from actual issue date",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-12-diversion-risk",
+    "title": "Prescriber assesses diversion risk for multiple prescriptions",
+    "citation": "21 CFR §1306.12(b)(1)(iii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "undue risk of diversion or abuse",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Before issuing a multiple-Schedule-II series, the prescriber concludes that the arrangement does not create an undue risk of diversion or abuse.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "multiple Schedule II prescriptions under §1306.12(b)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "series-specific prescriber judgment attestation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. A UI can capture the judgment, but cannot prove its clinical or legal correctness. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-12-state-permission",
+    "title": "Multiple Schedule II issuance must be allowed by state law",
+    "citation": "21 CFR §1306.12(b)(1)(iv)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "applicable state laws",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Allow a multiple-Schedule-II prescription series only where applicable state law permits it.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "multiple Schedule II prescriptions under §1306.12(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "jurisdiction-aware prescription-series eligibility",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-22-six-months",
+    "title": "Schedule III–IV refills expire after six months",
+    "citation": "21 CFR §1306.22(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "more than six months",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "approveRefill",
+    "encoding": "design",
+    "proposedRule": "Do not approve filling or refilling an original Schedule III or IV prescription more than six months after its issue date.",
+    "specMapping": {
+      "element": "refillDecision",
+      "info": null,
+      "when": "refill of original Schedule III or IV prescription",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "calendar-month expiry against original prescription issue date",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Schedule V is not included in this paragraph. The pharmacy dispensing duty can be enforced prospectively in hospital refill approval. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-22-five-refills",
+    "title": "Schedule III–IV prescriptions permit no more than five refills",
+    "citation": "21 CFR §1306.22(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "more than five times",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "approveRefill",
+    "encoding": "design",
+    "proposedRule": "Reject authorization of more than five total refills on the original Schedule III or IV prescription.",
+    "specMapping": {
+      "element": "refillRefills",
+      "info": null,
+      "when": "Schedule III or IV prescription/refill authorization",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "cumulative refill-count constraint across original and additional authorizations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The initial dispensing is not one of the five refills; this paragraph does not establish a Schedule V five-refill limit. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-22-extra-refill-quantity",
+    "title": "Additional oral refill quantity cannot exceed initial fill",
+    "citation": "21 CFR §1306.22(e)(3)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "equal to or less than",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": "approveRefill",
+    "encoding": "design",
+    "proposedRule": "When authorizing additional Schedule III–IV refills orally on the original prescription, limit each refill quantity to the original initial-fill quantity.",
+    "specMapping": {
+      "element": "refillQuantity",
+      "info": null,
+      "when": "additional oral Schedule III–IV refill authorization on original prescription",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "compare additional refill quantity to initial-fill authorization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-23-partial-record",
+    "title": "Record each Schedule III–V partial fill as a refill",
+    "citation": "21 CFR §1306.23(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "same manner as a refilling",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record each Schedule III–V partial fill in the same manner as a refill.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy partially dispensing Schedule III–V",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "hospital pharmacy partial-fill records linked to prescription",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-23-partial-cap",
+    "title": "Schedule III–V partial fills cannot exceed prescribed total",
+    "citation": "21 CFR §1306.23(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "does not exceed the total quantity prescribed",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Limit the cumulative quantity dispensed across Schedule III–V partial fills to the original prescribed quantity.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy partially dispensing Schedule III–V",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "cumulative partial-fill quantity constraint",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-23-partial-expiry",
+    "title": "Schedule III–V partial fills stop after six months",
+    "citation": "21 CFR §1306.23(c)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "No dispensing occurs after 6 months",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not partially dispense a Schedule III–V prescription after six months from issue.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy partially dispensing Schedule III–V",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "calendar-month dispensing deadline",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-13-shortage-72h",
+    "title": "Supply-shortage Schedule II remainder has 72-hour limit",
+    "citation": "21 CFR §1306.13(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "within 72 hours of the first partial filling",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a Schedule II partial fill because the pharmacy cannot supply the full quantity, require a new prescription before supplying a remainder beyond 72 hours after the first partial fill.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy shortage-based Schedule II partial fill",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "partial-fill reason plus first-partial-fill clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-13-request-30d",
+    "title": "Requested Schedule II partial-fill remainder has 30-day limit",
+    "citation": "21 CFR §1306.13(b)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "not later than 30 days",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For a patient- or prescriber-requested Schedule II partial fill under paragraph (b), stop remainder dispensing 30 days after the written prescription’s issue date.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy patient/prescriber-requested non-emergency Schedule II partial fill",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "partial-fill legal basis plus prescription-issue clock",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-13-request-emergency-72h",
+    "title": "Emergency oral partial-fill remainder has 72-hour limit",
+    "citation": "21 CFR §1306.13(b)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "72 hours after the prescription is issued",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For an emergency oral Schedule II prescription partially filled under paragraph (b), stop remainder dispensing 72 hours after the prescription is issued.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital pharmacy requested partial fill of emergency oral Schedule II prescription",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "emergency oral issue-time clock distinct from first-partial-fill time",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This binds the dispensing pharmacist/pharmacy. The hospital is the addressee only when operating that pharmacy; it is not a bedside MAR requirement. W6/W7 show downstream discharge/refill consequences. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1306-13-request-quantity",
+    "title": "Prescriber specifies quantity of each requested partial fill",
+    "citation": "21 CFR §1306.13(b)(3)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1306",
+    "quote": "quantity to be dispensed in each partial filling",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "entry",
+    "proposedRule": "When requesting partial filling of a Schedule II prescription, specify each partial-fill quantity on the prescription record before signing, except a later authorization after pharmacist consultation.",
+    "specMapping": {
+      "element": "quantity",
+      "info": null,
+      "when": "prescriber-requested Schedule II partial filling",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "partial-fill quantity schedule and pharmacy-consultation amendment path",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The ordinary quantity field covers total quantity, not the quantity of each partial fill. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-110-photo-id",
+    "title": "Hospital identity proofing matches government photo ID",
+    "citation": "21 CFR §1311.110(a)(1)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "photographic identification",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital elects to conduct EPCS identity proofing, match the practitioner to federal- or state-issued photographic identification.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "identity-proofing evidence tied to practitioner",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-110-state-authority",
+    "title": "Hospital identity proofing checks current state authorization",
+    "citation": "21 CFR §1311.110(a)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "current and in good standing",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital conducts EPCS identity proofing, verify current, good-standing state practice authorization and controlled-substance prescribing authorization where applicable.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "credentialing validity checks",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-110-dea-authority",
+    "title": "Hospital identity proofing checks DEA authority",
+    "citation": "21 CFR §1311.110(a)(3)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "DEA registration is current and in good standing",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital conducts EPCS identity proofing, verify current, good-standing individual DEA registration or privileges to prescribe under the hospital registration for an exempt practitioner.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "individual DEA or hospital-exemption privilege validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-110-proof-record",
+    "title": "Hospital retains identity-proofing record",
+    "citation": "21 CFR §1311.110(e)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "retain a record of the identity-proofing",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "When the hospital conducts EPCS identity proofing, retain a record of that proofing.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital elects institutional EPCS identity proofing",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "retained identity-proofing record",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-130-list-two-approvals",
+    "title": "Two people approve hospital EPCS prescriber list",
+    "citation": "21 CFR §1311.130(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "approved by two individuals",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require two individuals to approve the hospital’s list of practitioners permitted to mark controlled prescriptions ready and sign them.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "institutional EPCS access provisioning",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "two distinct identity-proofing-list approvers",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-130-separate-permissions",
+    "title": "Separate hospital entity enters EPCS permissions",
+    "citation": "21 CFR §1311.130(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "a separate entity",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "After approval, send the permitted-prescriber list to a separate hospital entity for logical-access entry and execution.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "institutional EPCS access provisioning",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "separation of credentialing approval and access administration",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The paragraph additionally requires separate authenticated entry and execution; listed next. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-130-second-executor",
+    "title": "Second authenticated person executes access controls",
+    "citation": "21 CFR §1311.130(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "A second individual must authenticate",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "Require a second authenticated individual to execute the hospital EPCS logical-access controls after the first authenticated individual enters the permissions.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "institutional EPCS access provisioning",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "two distinct authenticated access administrators",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-130-compromised-factor",
+    "title": "Revoke EPCS access immediately for compromised factor",
+    "citation": "21 CFR §1311.130(d)(1)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "terminated immediately",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Terminate the practitioner’s EPCS signing access immediately on notification that a required authentication factor is lost, stolen, or compromised.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "notification of lost/stolen/compromised EPCS factor",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "event-triggered EPCS privilege revocation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-130-expired-dea",
+    "title": "Revoke EPCS access when DEA registration expires",
+    "citation": "21 CFR §1311.130(d)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "DEA registration expires",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Revoke EPCS readiness/signing permission on discovery of expired institutional or applicable individual DEA registration, unless renewed.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "discovery of unrenewed DEA registration expiry",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "event-triggered EPCS privilege revocation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-130-departure",
+    "title": "Revoke EPCS access when practitioner loses authorization",
+    "citation": "21 CFR §1311.130(d)(4)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "no longer authorized",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Revoke EPCS readiness/signing permission on the discovery date when the practitioner is no longer authorized to use the hospital application.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "practitioner departure or other loss of hospital EPCS authorization",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "event-triggered EPCS privilege revocation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-115-two-factors",
+    "title": "Controlled e-prescribing requires two authentication factors",
+    "citation": "21 CFR §1311.115(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "two of the following three factors",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Require the prescriber to use two distinct factor categories from knowledge, biometric, and possession to sign each controlled e-prescription.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "two-factor EPCS authentication bound to signing event",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. A generic human click or patient-ID re-entry is not two-factor prescriber authentication. Batching for a single patient is permitted only under §1311.120(b)(13). specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-135-prescriber-signs",
+    "title": "Agent may prepare controlled Rx but only prescriber signs",
+    "citation": "21 CFR §1311.135(a)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "only the registrant may sign",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Allow an authorized agent to prepare the prescription, while reserving controlled-substance signing to the prescriber.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "verified prescriber identity and EPCS signature authorization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. V1 commits exclude RN prescribing and macros are restricted by the interpreter; V1 lacks authenticated EPCS signer-to-DEA binding. An agent’s preparation is not prohibited. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-140-ready-selection",
+    "title": "Prescriber identifies prescriptions ready for signing",
+    "citation": "21 CFR §1311.140(a)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "indicate the prescriptions that are ready",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "humanOnly",
+    "proposedRule": "Require the prescriber to indicate which displayed controlled-substance prescriptions are ready for signature.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "per-prescription ready-for-signature state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-edit-review",
+    "title": "Editing a ready controlled Rx requires renewed review",
+    "citation": "21 CFR §1311.120(b)(10)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "another review and indication of readiness",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "After any DEA-element change to a ready controlled prescription, require renewed prescriber review and a new ready-for-signature indication.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "prescription-version-bound readiness invalidation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-issue-date",
+    "title": "Show controlled Rx issue date for signing",
+    "citation": "21 CFR §1311.120(b)(9)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "date of issuance",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescription’s issue date for prescriber review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). An entry field does not itself establish a review requirement; V1 declares orderSummary but does not require its display at signing. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-patient-name",
+    "title": "Show patient full name for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(ii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "full name of the patient",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the patient’s full name for prescriber review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). An entry field does not itself establish a review requirement; V1 declares orderSummary but does not require its display at signing. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-drug-name",
+    "title": "Show drug name for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "drug name",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the drug name for prescriber review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": "drug",
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). An entry field does not itself establish a review requirement; V1 declares orderSummary but does not require its display at signing. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-strength",
+    "title": "Show product strength for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "dosage strength",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the dosage strength for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-form",
+    "title": "Show dosage form for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "form",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the dosage form for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-quantity",
+    "title": "Show quantity for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "quantity prescribed",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribed quantity for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": "quantity",
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-directions",
+    "title": "Show use directions for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(iv)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "directions for use",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display directions for use for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-refills",
+    "title": "Show authorized refills for Schedule III–V signing",
+    "citation": "21 CFR §1311.120(b)(9)(v)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "number of refills authorized",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the authorized number of refills, where applicable, for review and approval while signing a Schedule III–V electronic prescription.",
+    "specMapping": {
+      "element": "refills",
+      "info": "orderSummary",
+      "when": "Schedule III–V electronic prescription with applicable refills",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-earliest-fill",
+    "title": "Show earliest fill date for multiple Schedule II signing",
+    "citation": "21 CFR §1311.120(b)(9)(vi)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "earliest date",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display each prescription’s earliest fill date for review and approval while signing a multiple-Schedule-II series under §1306.12(b).",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "multiple Schedule II electronic prescriptions under §1306.12(b)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-prescriber-name",
+    "title": "Show prescriber name for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(vii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "name",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribing practitioner’s name for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-prescriber-address",
+    "title": "Show prescriber address for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(vii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "address",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribing practitioner’s address for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-display-prescriber-dea",
+    "title": "Show prescriber DEA number for controlled Rx signing",
+    "citation": "21 CFR §1311.120(b)(9)(vii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "DEA registration number",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the prescribing practitioner’s DEA registration number for review and approval while two-factor signing occurs.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §1311.120(b)(11) and §1311.140(a)(4). V1 declares orderSummary but does not require its display at signing, even where entry elements exist. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-140-signing-notice",
+    "title": "Display legal signing notice with controlled Rx",
+    "citation": "21 CFR §1311.140(a)(3)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "legally signing the prescription(s)",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "review",
+    "proposedRule": "Display the required legal signing-and-transmission notice, or its substantial equivalent, with the controlled-prescription details while the prescriber completes two-factor authentication.",
+    "specMapping": {
+      "element": null,
+      "info": "orderSummary",
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "required orderSummary subfields and continuous display during authenticated EPCS signing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The notice must also explain that only the practitioner whose name and DEA number appear may complete the protocol. See paragraph (a)(4) for continuous display. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-140-label-sign",
+    "title": "Clearly label the controlled Rx signing function",
+    "citation": "21 CFR §1311.140(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "clearly label as the signing function",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "prescriber",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "design",
+    "proposedRule": "Clearly identify the action that invokes the prescriber’s two-factor authentication as the prescription signing function.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "controlled-substance outpatient or discharge prescription (Schedules II–V)",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "semantic label requirement for authenticated EPCS signing control",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29.  specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-time",
+    "title": "EPCS audit record includes date and time",
+    "citation": "21 CFR §1311.120(b)(24)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "date and time of the event",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record the event date and time in each EPCS audit record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-type",
+    "title": "EPCS audit record includes event type",
+    "citation": "21 CFR §1311.120(b)(24)(ii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "type of event",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record the event type in each EPCS audit record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-actor",
+    "title": "EPCS audit record identifies actor where applicable",
+    "citation": "21 CFR §1311.120(b)(24)(iii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "identity of the person",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record the identity of the acting person in each EPCS audit record where applicable.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-outcome",
+    "title": "EPCS audit record includes success or failure",
+    "citation": "21 CFR §1311.120(b)(24)(iv)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "success or failure",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Record whether the event succeeded or failed in each EPCS audit record.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "each controlled-prescription application audit event",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "persistent EPCS event audit schema",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. DEA application requirements apply to EPCS application providers, not just ONC-certified products. V1 review receipts are not a complete EPCS audit trail. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-120-audit-immutable",
+    "title": "EPCS audit records cannot be modified",
+    "citation": "21 CFR §1311.120(b)(26)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "prevent modifications",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Prevent modifications to stored EPCS audit records.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "stored EPCS audit records",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "immutable persistent audit records",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Unauthorized deletion protection is another requirement of this paragraph; this row captures modification prevention only. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-150-daily-audit",
+    "title": "Analyze EPCS audit trail every calendar day",
+    "citation": "21 CFR §1311.150(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "at least once every calendar day",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Analyze the EPCS audit trail at least once per calendar day.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "operating EPCS application",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "scheduled daily security-audit analysis",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The same paragraph also requires an incident report identifying each auditable event; daily analysis is the atomic requirement captured here. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-1311-305-retention",
+    "title": "Retain EPCS records electronically for two years",
+    "citation": "21 CFR §1311.305(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-21.xml?part=1311",
+    "quote": "two years",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Retain required EPCS records electronically for at least two years from creation or receipt, while honoring any longer applicable retention rule.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital retains records required by EPCS subpart",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "durable electronic EPCS retention policy",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This is not a blanket two-year hospital medical-record retention limit. Longer federal/state requirements are not preempted. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-300aa-25-date",
+    "title": "Vaccine record includes administration date",
+    "citation": "42 U.S.C. §300aa-25(a)(1)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "date of administration",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the date of each administration of a Vaccine Injury Table vaccine in the permanent record or permitted permanent log.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "vaccine administration-date entry distinct from record creation time",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-300aa-25-manufacturer",
+    "title": "Vaccine record includes manufacturer",
+    "citation": "42 U.S.C. §300aa-25(a)(2)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "vaccine manufacturer",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the manufacturer of each Vaccine Injury Table vaccine administered.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "vaccine manufacturer element",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-300aa-25-lot",
+    "title": "Vaccine record includes lot number",
+    "citation": "42 U.S.C. §300aa-25(a)(2)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "lot number",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the lot number of each Vaccine Injury Table vaccine administered.",
+    "specMapping": {
+      "element": "vaccineLot",
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": "recordConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 expressly requires vaccineLot at recordImmunization. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-300aa-25-provider-name",
+    "title": "Vaccine record identifies administering provider",
+    "citation": "42 U.S.C. §300aa-25(a)(3)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "the name",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the name of the health care provider administering each Vaccine Injury Table vaccine.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "administering-provider identity capture",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-300aa-25-provider-address",
+    "title": "Vaccine record includes provider address",
+    "citation": "42 U.S.C. §300aa-25(a)(3)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "address",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the address of the health care provider administering each Vaccine Injury Table vaccine.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "administering-provider address capture",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-300aa-25-provider-title",
+    "title": "Vaccine record includes provider title when appropriate",
+    "citation": "42 U.S.C. §300aa-25(a)(3)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-25.pdf",
+    "quote": "the title",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Record the administering health care provider’s title when appropriate.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "conditional administering-provider title capture",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code PDF opened; wording corroborated against current Cornell LII on 2026-10-31 (section amendment history ends 1987). Permanent office log/file is allowed; this row does not mandate duplicate manual entry in the EHR. V1 has no required element for this item. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-300aa-26-vis-before-dose",
+    "title": "Provide VIS before each covered vaccination",
+    "citation": "42 U.S.C. §300aa-26(d)",
+    "url": "https://www.govinfo.gov/content/pkg/USCODE-2024-title42/pdf/USCODE-2024-title42-chap6A-subchapXIX-part2-subpartc-sec300aa-26.pdf",
+    "quote": "prior to the administration",
+    "type": "federal-statute",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Provide the appropriate vaccine information materials to the child’s legal representative or adult recipient before administering the covered vaccine.",
+    "specMapping": {
+      "element": "visGiven",
+      "info": null,
+      "when": "administration of a vaccine listed in the Vaccine Injury Table",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "VIS-delivery timestamp ordered before actual vaccine-administration event",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official 2024 U.S. Code opened and corroborated against current LII (last listed amendment 1993). V1 requires visGiven before recordImmunization, but does not model actual administration or enforce prior delivery. Applies to covered vaccines at any recipient age, not every vaccine product. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-cdc-vis-edition",
+    "title": "Document the VIS edition date",
+    "citation": "CDC, About VISs, Other provider responsibilities (2024-08-02)",
+    "url": "https://www.cdc.gov/vaccines/hcp/vis/about/facts-vis.html",
+    "quote": "The edition date of the VIS",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Document the edition date of the VIS used for the vaccine dose.",
+    "specMapping": {
+      "element": "visEditionDate",
+      "info": null,
+      "when": "VIS provided for vaccination",
+      "prefill": "recordConfirm",
+      "friction": "accidental",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "require visEditionDate for covered vaccinations",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. CDC official instructions describe provider documentation responsibilities. This row cites guidance rather than attributing these words to §300aa-25. V1 does not require the edition date or a distinct delivery date. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-cdc-vis-delivery-date",
+    "title": "Document the date the VIS was given",
+    "citation": "CDC, About VISs, Other provider responsibilities (2024-08-02)",
+    "url": "https://www.cdc.gov/vaccines/hcp/vis/about/facts-vis.html",
+    "quote": "The date the VIS is provided",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W5"
+    ],
+    "personas": [
+      "P4"
+    ],
+    "commit": "recordImmunization",
+    "encoding": "entry",
+    "proposedRule": "Document the date the VIS was provided to the recipient or legal representative.",
+    "specMapping": {
+      "element": "visGiven",
+      "info": null,
+      "when": "VIS provided for vaccination",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "VIS delivery-date capture separate from boolean attestation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. CDC official instructions describe provider documentation responsibilities. This row cites guidance rather than attributing these words to §300aa-25. V1 does not require the edition date or a distinct delivery date. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-cpoe-med",
+    "title": "Certified medication CPOE supports order management",
+    "citation": "45 CFR §170.315(a)(1)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "record, change, and access medication orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable users to record, change, and access medication orders.",
+    "specMapping": {
+      "element": "drug",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "order create/edit/read capabilities with durable backend effects",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 fields and signOrders/signPreOpOrders describe capture, not the complete order-management capability. The reason-for-order field in (a)(1)–(3)(ii) is expressly optional. HTI-5 retains these criteria. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-cpoe-lab",
+    "title": "Certified laboratory CPOE supports order management",
+    "citation": "45 CFR §170.315(a)(2)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "record, change, and access laboratory orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable users to record, change, and access laboratory orders.",
+    "specMapping": {
+      "element": "labTest",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "order create/edit/read capabilities with durable backend effects",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 fields and signOrders/signPreOpOrders describe capture, not the complete order-management capability. The reason-for-order field in (a)(1)–(3)(ii) is expressly optional. HTI-5 retains these criteria. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-cpoe-imaging",
+    "title": "Certified imaging CPOE supports order management",
+    "citation": "45 CFR §170.315(a)(3)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "record, change, and access diagnostic imaging orders",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable users to record, change, and access diagnostic imaging orders.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "order create/edit/read capabilities with durable backend effects",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 fields and signOrders/signPreOpOrders describe capture, not the complete order-management capability. The reason-for-order field in (a)(1)–(3)(ii) is expressly optional. HTI-5 retains these criteria. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-allergy-alert",
+    "title": "Automatically indicate drug–allergy contraindications before order completion",
+    "citation": "45 CFR §170.315(a)(4)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "drug-allergy contraindications",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Automatically indicate drug–allergy contraindications from the patient’s medication-allergy list before the medication order is completed and acted on.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": true,
+    "needsCoreFeature": null,
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 drugAllergyOrder and drugAllergyPreOp alerts cover the corresponding ordering commits. V1 uses interruptive alerts; ONC does not mandate that tier or an independent allergy re-confirmation checkbox. Retained unchanged by HTI-5. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-interaction-alert",
+    "title": "Automatically indicate drug–drug contraindications before order completion",
+    "citation": "45 CFR §170.315(a)(4)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "drug-drug",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": "signOrders",
+    "encoding": "alert",
+    "proposedRule": "Automatically indicate drug–drug contraindications based on the patient’s medication list before the medication order is completed and acted on.",
+    "specMapping": {
+      "element": null,
+      "info": "currentMeds",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "validated medication-list interaction engine and complete contraindication coverage",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 interactionOrder/interactionPreOp/interactionRefill represent severe interactions only; full criterion conformance is not established. Retained unchanged by HTI-5. No blanket federal hard-stop or tier requirement is inferred. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-interaction-severity",
+    "title": "Allow drug interaction severity settings",
+    "citation": "45 CFR §170.315(a)(4)(ii)(A)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "severity level",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable adjustment of the severity level of drug–drug interaction interventions.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "configurable drug–drug intervention severity",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 alert tiers are fixed spec content, not configurable user severity thresholds. Retained unchanged by HTI-5. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-interaction-access",
+    "title": "Restrict who may adjust drug interaction severity",
+    "citation": "45 CFR §170.315(a)(4)(ii)(B)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Limit the ability",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Restrict drug–drug severity adjustment to identified users or to a system administrative function.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "role/user authorization for interaction-severity configuration",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. The two listed mechanisms are alternatives; both are not mandatory. HTI-5 retains this criterion unchanged. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-preferred-language",
+    "title": "Support coded preferred language and declination",
+    "citation": "45 CFR §170.315(a)(5)(i)(B)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Preferred language",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable recording of preferred language using §170.207(g)(2), including a patient’s decision not to specify a language.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "coded preferred-language capture and explicit declination state",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A preferred-language banner does not demonstrate coded capture or declination. This data item is not within the cited 2025 enforcement-discretion carve-outs. HTI-5 retains (a)(5). specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-birth-date",
+    "title": "Support patient date-of-birth record management",
+    "citation": "45 CFR §170.315(a)(5)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "date of birth",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable a user to record, change, and access the patient’s date of birth.",
+    "specMapping": {
+      "element": null,
+      "info": "patientBanner",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "date-of-birth editing and persistence",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 declares a patient banner but no date-of-birth entry/edit capability. HTI-5 retains (a)(5). specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-implant-udi",
+    "title": "Record each implantable device UDI",
+    "citation": "45 CFR §170.315(a)(14)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Record Unique Device Identifiers",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable recording of Unique Device Identifiers associated with the patient’s implantable devices.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured implant UDI list rather than optional free text",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 opImplants is optional text. HTI-5 final rule expressly retains the implantable device list criterion despite proposing its removal. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-implant-lot",
+    "title": "Parse implant UDI lot or batch",
+    "citation": "45 CFR §170.315(a)(14)(ii)(B)(1)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "lot or batch",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Parse the lot or batch identifier from an implantable device UDI’s production identifier when present.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured UDI production-identifier parsing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. UDI production identifiers vary by device; do not invent an absent identifier. HTI-5 retains (a)(14). specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-implant-serial",
+    "title": "Parse implant UDI serial number",
+    "citation": "45 CFR §170.315(a)(14)(ii)(B)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "serial number",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Parse the device serial number from an implantable device UDI’s production identifier when present.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured UDI production-identifier parsing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. UDI production identifiers vary by device; do not invent an absent identifier. HTI-5 retains (a)(14). specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-implant-expiry",
+    "title": "Parse implant UDI expiration date",
+    "citation": "45 CFR §170.315(a)(14)(ii)(B)(3)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "expiration date",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W6"
+    ],
+    "personas": [
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Parse the device expiration date from an implantable device UDI’s production identifier when present.",
+    "specMapping": {
+      "element": "opImplants",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured UDI production-identifier parsing",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. UDI production identifiers vary by device; do not invent an absent identifier. HTI-5 retains (a)(14). specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-reconcile-meds",
+    "title": "Create a single reconciled medication list",
+    "citation": "45 CFR §170.315(b)(2)(iii)(B)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Medications;",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable the user to create a single reconciled medication list from transition-of-care data.",
+    "specMapping": {
+      "element": "medRecDecision",
+      "info": "currentMeds",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "source-aware clinical reconciliation with confirmed list incorporation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 lists and individual continue/stop/modify decisions do not prove the complete reconciliation capability. Current (a)(6)–(8) are reserved; do not cite those obsolete list criteria. HTI-5 rewrites (b)(2) effective 2026-12-28, retaining this obligation at (b)(2)(ii) and removing the rigid transition-summary-only workflow restriction. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-reconcile-allergies",
+    "title": "Create a single reconciled allergy and intolerance list",
+    "citation": "45 CFR §170.315(b)(2)(iii)(B)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Allergies and Intolerances;",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable the user to create a single reconciled allergy and intolerance list from transition-of-care data.",
+    "specMapping": {
+      "element": null,
+      "info": "allergyList",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "source-aware clinical reconciliation with confirmed list incorporation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 lists and individual continue/stop/modify decisions do not prove the complete reconciliation capability. Current (a)(6)–(8) are reserved; do not cite those obsolete list criteria. HTI-5 rewrites (b)(2) effective 2026-12-28, retaining this obligation at (b)(2)(ii) and removing the rigid transition-summary-only workflow restriction. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-reconcile-problems",
+    "title": "Create a single reconciled problem list",
+    "citation": "45 CFR §170.315(b)(2)(iii)(B)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "problems.",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable the user to create a single reconciled problem list from transition-of-care data.",
+    "specMapping": {
+      "element": null,
+      "info": "problemList",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "source-aware clinical reconciliation with confirmed list incorporation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. V1 lists and individual continue/stop/modify decisions do not prove the complete reconciliation capability. Current (a)(6)–(8) are reserved; do not cite those obsolete list criteria. HTI-5 rewrites (b)(2) effective 2026-12-28, retaining this obligation at (b)(2)(ii) and removing the rigid transition-summary-only workflow restriction. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-toc-assessment-plan",
+    "title": "Transition summary includes assessment and plan",
+    "citation": "45 CFR §170.315(b)(1)(iii)(A)(3)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Assessment and plan of treatment",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable creation of transition-of-care summaries containing the assessment and plan of treatment.",
+    "specMapping": {
+      "element": "assessmentPlan",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured care-plan section in standards-conformant transition summary",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A signed note or discharge checklist is not a certified transition-document generator. HTI-5 retains C-CDA creation through 2029 and sets expiration of (b)(1)(iii) on 2030-01-01; these are not removed in 2026. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-toc-goals",
+    "title": "Transition summary includes goals",
+    "citation": "45 CFR §170.315(b)(1)(iii)(A)(3)(ii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Goals",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable creation of transition-of-care summaries containing goals.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured care-plan section in standards-conformant transition summary",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A signed note or discharge checklist is not a certified transition-document generator. HTI-5 retains C-CDA creation through 2029 and sets expiration of (b)(1)(iii) on 2030-01-01; these are not removed in 2026. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-toc-concerns",
+    "title": "Transition summary includes health concerns",
+    "citation": "45 CFR §170.315(b)(1)(iii)(A)(3)(iii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Health concerns",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W6"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable creation of transition-of-care summaries containing health concerns.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured care-plan section in standards-conformant transition summary",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A signed note or discharge checklist is not a certified transition-document generator. HTI-5 retains C-CDA creation through 2029 and sets expiration of (b)(1)(iii) on 2030-01-01; these are not removed in 2026. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-erx-newrx",
+    "title": "Support electronic new prescriptions",
+    "citation": "45 CFR §170.315(b)(3)(ii)(A)(3)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "New prescriptions (NewRx)",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable NewRx transactions using an allowed version of the adopted NCPDP SCRIPT standard.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "NCPDP SCRIPT transaction adapter and response handling",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-4 permits the versions referenced at §170.205(b)(1) or (2) through 2027-12-31; from 2028-01-01, §170.205(b)(2) applies. The new standard’s electronic drug prior-authorization transactions are conditional on that standard before 2028. HTI-5 retains the HTI-4 eRx revisions. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-erx-cancelrx",
+    "title": "Support electronic prescription cancellation",
+    "citation": "45 CFR §170.315(b)(3)(ii)(A)(3)(iii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "CancelRx, CancelRxResponse",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable CancelRx and CancelRxResponse transactions using an allowed version of the adopted NCPDP SCRIPT standard.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "NCPDP SCRIPT transaction adapter and response handling",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-4 permits the versions referenced at §170.205(b)(1) or (2) through 2027-12-31; from 2028-01-01, §170.205(b)(2) applies. The new standard’s electronic drug prior-authorization transactions are conditional on that standard before 2028. HTI-5 retains the HTI-4 eRx revisions. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-erx-renewal",
+    "title": "Support electronic prescription renewal transactions",
+    "citation": "45 CFR §170.315(b)(3)(ii)(A)(3)(iv)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "RxRenewalRequest, RxRenewalResponse",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W7"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable RxRenewalRequest and RxRenewalResponse transactions using an allowed version of the adopted NCPDP SCRIPT standard.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "NCPDP SCRIPT transaction adapter and response handling",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-4 permits the versions referenced at §170.205(b)(1) or (2) through 2027-12-31; from 2028-01-01, §170.205(b)(2) applies. The new standard’s electronic drug prior-authorization transactions are conditional on that standard before 2028. HTI-5 retains the HTI-4 eRx revisions. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-oral-liquids-ml",
+    "title": "Prescribe oral liquid medications only in mL",
+    "citation": "45 CFR §170.315(b)(3)(ii)(E)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "only metric standard units of mL",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Limit oral-liquid prescribing units to mL; do not allow cc or household volume units.",
+    "specMapping": {
+      "element": "doseUnit",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "oral-liquid medication predicate and mL-only value constraint",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. The oral-liquid volume rule does not require all patient weights in kg or all doses in mg. V1 allows a general doseUnit value set without this conditional constraint. Retained by HTI-5. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-erx-leading-zero",
+    "title": "Use leading zero for medication amount below one",
+    "citation": "45 CFR §170.315(b)(3)(ii)(F)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Always insert leading zeroes",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Insert a leading zero before the decimal point for medication amounts less than one.",
+    "specMapping": {
+      "element": "dose",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "medication numeric formatting and validation constraint",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. For example, represent one-half as 0.5 and a whole amount as 5. V1 typed dose does not constrain rendered or transmitted decimal formatting. Retained by HTI-5. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-erx-no-trailing-zero",
+    "title": "Reject trailing decimal zeroes in medication amounts",
+    "citation": "45 CFR §170.315(b)(3)(ii)(F)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "must not allow trailing zeroes",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not allow trailing zeroes after a decimal point in prescribed medication amounts.",
+    "specMapping": {
+      "element": "dose",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "medication numeric formatting and validation constraint",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. For example, represent one-half as 0.5 and a whole amount as 5. V1 typed dose does not constrain rendered or transmitted decimal formatting. Retained by HTI-5. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-dsi-source-citation",
+    "title": "Support DSI bibliographic source citation",
+    "citation": "45 CFR §170.315(b)(11)(iv)(A)(1)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Bibliographic citation",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Support the bibliographic citation of the research or guideline for an evidence-based decision support intervention.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "structured evidence-based DSI source attributes",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-1 DSI requirement in force on 2026-10-31. HTI-5 removes (b)(11)(iv)–(vi), including this source-attribute requirement, effective 2026-12-28. Do not apply it as a continuing post-effective-date certification mandate. Old (a)(9) expired 2025-01-01. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-dsi-feedback",
+    "title": "Capture and export user feedback on evidence-based DSI",
+    "citation": "45 CFR §170.315(b)(11)(ii)(C)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "electronic feedback data",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W3",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable electronic user feedback on selected evidence-based decision support interventions and make that feedback available to identified users for computable export.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "DSI feedback capture and authorized export",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. HTI-1 replaced expired CDS (a)(9) with DSI (b)(11). HTI-5 retains feedback but redesignates this paragraph as (b)(11)(ii)(B) effective 2026-12-28. Export content includes the intervention, action, feedback if any, user, date and location; this row captures the capability rather than duplicating each audit field. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-patient-view",
+    "title": "Enable patients to view their health information online",
+    "citation": "45 CFR §170.315(e)(1)(i)(A)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "use health IT to view",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable patients and authorized representatives to view the required health information online.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "authenticated patient-facing view of required clinical data",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. This is a certified patient-access capability; ackResult is a clinician workflow and is not a legal prerequisite for release. HTI-5 retains (e)(1), revising cross-references and scope. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-patient-download",
+    "title": "Enable human-readable patient summary download",
+    "citation": "45 CFR §170.315(e)(1)(i)(B)(1)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "Human readable format",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable patients and authorized representatives to download the applicable ambulatory or inpatient summary in human-readable form.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "patient-authorized human-readable summary export",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. A standards-based CCD download is separately required by (e)(1)(i)(B)(1)(ii); this atomic row captures the human-readable output. HTI-5 retains both formats. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-patient-transmit",
+    "title": "Enable encrypted patient-directed summary transmission",
+    "citation": "45 CFR §170.315(e)(1)(i)(C)(1)(ii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "encrypted method of electronic transmission",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Enable patients and authorized representatives to transmit the applicable summary to a third party using an encrypted method.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "patient-directed encrypted summary transmission",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. Email-to-any-address is a separate required method in (e)(1)(i)(C)(1)(i); this row captures the encrypted alternative as one required capability, not a permission to refuse the email capability. HTI-5 retains both methods. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-uscdi-v3-baseline",
+    "title": "Use adopted USCDI v3 in criteria that reference USCDI",
+    "citation": "45 CFR §170.213(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "United States Core Data for Interoperability Version 3",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For certified capabilities that reference §170.213, use the adopted USCDI v3 baseline or a properly elected approved SVAP version.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "certified capability references §170.213",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "versioned USCDI and implementation-guide conformance",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with each capability’s incorporation clause, e.g. §170.315(b)(1)(iii)(A)(2), (e)(1)(i)(A)(2), or (g)(10)(i). Section 170.213(a) expires the v1 standard on 2026-01-01. This is interoperability capability, not a duty to ask every patient every USCDI question. HTI-5 does not substitute v4 as the regulatory baseline. ONC enforcement discretion for specified demographic elements remains relevant: https://healthit.gov/certification-health-it/enforcement-discretion-notices/. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-170-315-uscdi-dose-view",
+    "title": "Include available medication dose in USCDI patient view",
+    "citation": "45 CFR §170.315(e)(1)(i)(A)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=170",
+    "quote": "The data classes expressed in the standards in § 170.213",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Within the certified USCDI patient-view capability, support available medication dose data as part of the Medications data class.",
+    "specMapping": {
+      "element": "dose",
+      "info": null,
+      "when": "Health IT Module certified to the cited criterion",
+      "prefill": "defaultConfirm",
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "USCDI v3 medication-dose representation in patient-facing view",
+    "confidence": "medium",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Certification capability requirement for the module seeking/maintaining this certification; not a universal hospital per-encounter documentation mandate. Read with §170.213(b). Membership of Dose in USCDI v3 was verified in ONC Standards Bulletin 2022-2: https://healthit.gov/standards-onc-technology/onc-standards-bulletin/onc-standards-bulletin-2022-2/. That bulletin names Dose, Dose Unit of Measure, Indication and Fill Status. V1 dose capture does not certify interoperability or patient access. This does not require inventing unavailable data. The quoted regulation incorporates the class; element-level application is an inference from that incorporation and the official element list. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-uscdi-v4-elected-validation",
+    "title": "Use USCDI v4 validation when voluntarily certifying with v4",
+    "citation": "ONC VDT Test Method, §170.315(e)(1), All Steps (Approved SVAP Version); 45 CFR §170.405(b)(8)",
+    "url": "https://healthit.gov/test-method/view-download-and-transmit-to-3rd-party/",
+    "quote": "Complete steps above using SITE: C-CDA Validator – USCDI v4",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "ehr-vendor",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "If voluntarily using the approved USCDI v4 standard for patient view/download/transmit certification, validate the summary against USCDI v4 rather than assuming v3 validation suffices.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "module voluntarily uses approved USCDI v4 in VDT certification",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "USCDI v4-specific C-CDA validation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official ONC test instructions, not a universal statutory v4 mandate. Section 170.213 still adopts v3. The opened official 2024 SVAP blog verifies v4 approval: https://healthit.gov/blog/health-it/advancements-in-health-it-oncs-approved-svap-standards-for-2024/. The current SVAP page says previously approved versions remain available unless superseded by regulatory action/policy. Archived raw v3/v4 standard PDFs returned 403; no unverified v4-only data-element obligation is asserted. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-164-514-workforce-roles",
+    "title": "Identify workforce roles needing PHI access",
+    "citation": "45 CFR §164.514(d)(2)(i)(A)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=164",
+    "quote": "persons or classes of persons",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Identify the hospital workforce persons or role classes that need PHI access to perform their duties.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital workforce use subject to minimum-necessary requirements",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "workforce role-to-duty authorization policy",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Apply §164.502(b)(2) exceptions accurately: provider treatment disclosures/requests and access/disclosures to the individual are exempt. That exception does not categorically eliminate safeguards for internal workforce uses. V1 enteredBy governs writes, not comprehensive PHI read authorization; clinical role is not permission to hide required safety information arbitrarily. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-164-514-role-data",
+    "title": "Define data categories and conditions for each workforce role",
+    "citation": "45 CFR §164.514(d)(2)(i)(B)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=164",
+    "quote": "category or categories",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For each workforce person or role class needing PHI, define the data categories and conditions under which access is needed.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital workforce use subject to minimum-necessary requirements",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "role-to-data-category and access-condition policy",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Apply §164.502(b)(2) exceptions accurately: provider treatment disclosures/requests and access/disclosures to the individual are exempt. That exception does not categorically eliminate safeguards for internal workforce uses. V1 enteredBy governs writes, not comprehensive PHI read authorization; clinical role is not permission to hide required safety information arbitrarily. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-164-514-enforce-access",
+    "title": "Limit internal PHI access to defined role needs",
+    "citation": "45 CFR §164.514(d)(2)(ii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=164",
+    "quote": "reasonable efforts to limit the access",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Make reasonable efforts to limit workforce PHI access to the categories and conditions defined for the person or role.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "hospital workforce use subject to minimum-necessary requirements",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "role-scoped read/display authorization enforced outside layout customization",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Apply §164.502(b)(2) exceptions accurately: provider treatment disclosures/requests and access/disclosures to the individual are exempt. That exception does not categorically eliminate safeguards for internal workforce uses. V1 enteredBy governs writes, not comprehensive PHI read authorization; clinical role is not permission to hide required safety information arbitrarily. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-164-524-access-deadline",
+    "title": "Act on patient access requests within 30 days",
+    "citation": "45 CFR §164.524(b)(2)(i)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=164",
+    "quote": "no later than 30 days",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Act on a patient’s designated-record-set access request within 30 days by providing requested access if granted or a compliant written denial if denied, subject to the authorized extension.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient designated-record-set access request",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "access-request task clock and fulfillment/denial tracking",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Paragraph (b)(2)(ii) permits one extension of at most 30 days with timely written reasons and a completion date. This is not permission for a 30-day automatic portal-result hold; information-blocking duties are separately assessed. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-164-524-electronic-format",
+    "title": "Provide requested electronic access format when producible",
+    "citation": "45 CFR §164.524(c)(2)(ii)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=164",
+    "quote": "electronic form and format requested",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7"
+    ],
+    "personas": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "For electronic designated-record-set PHI and an electronic-copy request, provide the requested electronic format if readily producible; otherwise agree on a readable electronic format with the individual.",
+    "specMapping": {
+      "element": null,
+      "info": null,
+      "when": "patient requests electronic copy of electronically maintained designated-record-set PHI",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "patient access export format negotiation and delivery",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. An EHR screenshot or clinician ackResult does not alone fulfill an electronic-copy request. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-171-103-access-interference",
+    "title": "Avoid knowingly unreasonable interference with EHI access",
+    "citation": "45 CFR §171.103(b)(2)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=171",
+    "quote": "knows that such practice is unreasonable",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Do not implement a hospital practice known to be unreasonable and likely to interfere with legally permissible access, exchange, or use of EHI, unless required by law or covered by a Part 171 exception.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "hospital EHI access/exchange/use including patient result access",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "results-release policy engine with legal requirements and exception evaluation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. Read with §171.103(a). The rule is fact-specific, not an absolute fixed zero-minute deadline and not a requirement that clinicians acknowledge results before patients see them. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-171-201-individual-harm",
+    "title": "Use individualized professional judgment for clinical harm hold",
+    "citation": "45 CFR §171.201(c)(1)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=171",
+    "quote": "individualized basis",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "humanOnly",
+    "proposedRule": "When relying on the clinician-judgment risk pathway for a preventing-harm exception, obtain an individualized determination from a licensed professional with a current or prior clinician–patient relationship.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "clinical preventing-harm pathway under §171.201(c)(1)",
+      "prefill": null,
+      "friction": "safety",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "documented patient-specific licensed-professional risk determination",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. All other §171.201 conditions still apply. Paragraph (c)(2) separately permits a data-integrity risk pathway. Under (d)(3) and §164.524(a)(3)(i), restricting a patient’s own access generally requires danger to life or physical safety; ordinary upset alone is insufficient. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-171-201-narrow-hold",
+    "title": "Keep preventing-harm restriction no broader than necessary",
+    "citation": "45 CFR §171.201(b)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=171",
+    "quote": "no broader than necessary",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Limit a preventing-harm access restriction to the scope necessary to substantially reduce the qualifying risk.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "hospital invokes preventing-harm exception",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "data- and recipient-scoped release hold with reevaluation",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. This is one condition of a conditional exception, not a freestanding permission to withhold every abnormal result. All applicable conditions of §171.201 are required. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-171-201-review-right",
+    "title": "Preserve applicable review rights for individualized harm holds",
+    "citation": "45 CFR §171.201(e)",
+    "url": "https://www.ecfr.gov/api/versioner/v1/full/2026-10-29/title-45.xml?part=171",
+    "quote": "reviewed and potentially reversed",
+    "type": "federal-regulation",
+    "binding": true,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Implement individualized clinical harm holds consistently with the patient’s applicable rights to review and potential reversal of the determination.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "individualized determination under §171.201(c)(1) with applicable review rights",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "patient review request and independent hold-review workflow",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31 against official eCFR XML as of 2026-10-29. The condition incorporates rights under §164.524(a)(4) and other applicable law; it does not create a clinical hold simply to wait for a routine appointment. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  },
+  {
+    "id": "federal-rx-onc-results-no-routine-delay",
+    "title": "Routine clinician-review result embargo likely interferes with access",
+    "citation": "ONC FAQ IB.FAQ22.1.2021MAR (2025-09-12); 45 CFR §171.103",
+    "url": "https://healthit.gov/faq/when-would-delay-fulfilling-request-access-exchange-or-use-ehi-be-considered-interference-under/",
+    "quote": "imposed delays on the release of lab results",
+    "type": "guidance",
+    "binding": false,
+    "jurisdiction": "US",
+    "appliesTo": "hospital",
+    "workflows": [
+      "W2"
+    ],
+    "personas": [
+      "P1"
+    ],
+    "commit": null,
+    "encoding": "design",
+    "proposedRule": "Avoid a routine result-release embargo solely to give clinicians time to review results or tell patients before electronic patient access.",
+    "specMapping": {
+      "element": null,
+      "info": "resultDetail",
+      "when": "routine lab-result release policy",
+      "prefill": null,
+      "friction": "compliance",
+      "tier": null,
+      "windowMin": null
+    },
+    "existingInSpec": false,
+    "needsCoreFeature": "release independent of ackResult with lawful, documented exception paths",
+    "confidence": "high",
+    "verified": true,
+    "notes": "Verified 2026-10-31. Official ONC FAQ IB.FAQ22.1.2021MAR, updated 2025-09-12, interprets §171.103. ONC says this is likely interference and requires case-specific analysis; the FAQ is guidance, not a separate absolute release-timing regulation. Delays necessary to comply with law and qualified Part 171 exceptions must be evaluated separately. specMapping.when describes applicability; it is not a newly implemented Lean predicate."
+  }
+]

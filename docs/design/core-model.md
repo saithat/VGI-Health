@@ -1,0 +1,646 @@
+# Core model: data formats and interpreter semantics
+
+This is the contract every lane builds against. It sits under `BRIEF.md`. The Lean types below give the **authoritative shape**: fix syntax and deriving details as needed, but get orchestrator/owner approval for any change in meaning. Once implemented, the Lean files (`lean/Ehr/Core/*.lean`) are the source of truth, and TS types are generated from them.
+
+One canonical EHR serves everyone. Each persona starts at v0 with that canonical's
+role permissions and pre-set view (`forPersona`). The overnight agent edits only
+that persona's fork. Vendor releases merge into every fork, followed by
+re-certification. “The canonical is certified” means every role's view passes;
+the shared vendor reference is a reference template, not a deployable single-role program.
+
+## 1. Design principle: safety by construction, plus a checker for the rest
+
+The interpreter (Lean, compiled to WASM for the app and native for the pipeline) enforces safety for **every** program:
+- **The commit guard (T0):** a commit happens only if its entry requirements are captured and confirmed, its review requirements are shown or covered by a valid receipt, its human-only elements were entered by a human in this episode, and every interruptive alert concerning it has been acknowledged.
+- **Macros run as `actor := macro`.** The interpreter refuses human-only events from a macro (entering human-only elements, scans, cosign, acks, commits), so a macro stops there (T3, T6).
+- **Alerts** are evaluated by the interpreter from the spec and the facts:
+  - an alert appears only when its condition holds (A2);
+  - an interruptive alert is not re-raised for the same key in an episode (A3);
+  - a passive alert never pops up (A4).
+- **Prefill on a `never` element is ignored.** A prefilled value for a confirm-policy element doesn't count until a human confirms it.
+- **Captured weight in `lb`** never satisfies a `kg` requirement.
+
+The **checker** (offline) then certifies that a program is usable and well designed. These are mostly structural checks, each proven to imply its semantic property (T1):
+- well-formed (catalog, landmarks, depth);
+- completable (the guard never leaves the user stuck: required info is pinned on the commit screen or receipt-conditional, fields are reachable, and human steps are reachable);
+- enter once;
+- writes only;
+- prefill policy;
+- units;
+- A1 (each interruptive alert has a popup path before its commit, and each passive alert is shown inline on its relevant screen);
+- the alert budget;
+- the stability budget.
+
+It also rejects malformed constructs even where the interpreter would neutralize them (for example, a macro containing a human-only step, or a prefill on a `never` element), returning a counterexample. Defense in depth: the checker rejects, and the interpreter would block anyway.
+
+## 2. Types (Lean sketch)
+
+```lean
+namespace Ehr
+abbrev ElementId := String   -- spec data element, e.g. "weight", "patientIdReentry", "abxIndication"
+abbrev InfoId    := String   -- displayable info, e.g. "allergyList", "currentMeds", "doseCheck", "resultTrend"
+abbrev CommitId  := String   -- "signOrders" | "signNote" | "approveRefill" | "ackResult" | "administerMed"
+                             -- | "recordImmunization" | "signOpNote" | "discharge" | ...
+abbrev AlertId   := String
+abbrev ScreenId  := String
+abbrev CompId    := String
+abbrev MacroId   := String
+abbrev UserId    := String
+
+inductive Role | physician | np | rn | surgeon   -- a surgeon is a physician with a surgical task mix; keep separate for permissions clarity
+inductive UnitKind | kg | lb | g | mg | mcg | mL | mgPerKg | units | none
+inductive PrefillPolicy | never | recordConfirm | defaultConfirm | autoLinked
+inductive Friction | safety | compliance | accidental
+
+inductive ValueKind
+  | quantity (unit : UnitKind)    -- required unit
+  | medicationDose                -- unit allowed for this slot's formulary drug
+  | coded (valueSet : String)
+  | text
+  | flag                          -- a checkbox / confirmation
+  | identity                      -- patient-ID re-entry; must match the patient's initials/sex/age
+  | scan (target : String)        -- "wristband" | "medication"
+  | cosign                        -- a second user's ID; must differ from the current user
+
+structure ElementSpec where
+  id : ElementId
+  label : String
+  kind : ValueKind
+  enteredBy : List Role
+  prefill : PrefillPolicy
+  friction : Friction
+  humanOnly : Bool := false        -- re-performed by a human every time; never automated
+  linkedFrom : Option ElementId := none   -- for autoLinked
+  recordFact? : Option String := none -- sole allowed fromRecord source; none forbids it
+  fhirTarget : String              -- where the app writes it, e.g. "MedicationRequest.reasonCode"
+
+structure InfoSpec where
+  id : InfoId
+  label : String
+  version : String                 -- name of the fact that versions it (e.g. "allergyVersion"), "" if unversioned
+
+structure EncounterRoleRule where
+  encounter : String
+  roles : List Role
+  reason : String
+
+structure CommitSpec where
+  id : CommitId
+  label : String
+  roles : List Role
+  encounterRoles? : Option (List EncounterRoleRule) := none
+
+inductive When
+  | always
+  | orderClass (cls : String)      -- some order line's drug is in this class
+  | drugClass (cls : String)       -- same as orderClass; per-line uses that drug
+  | medClass (cls : String)        -- the med being given is in this class
+  | highAlertMed
+  | abnormalResult
+  | encounter (kind : String)      -- Facts.encounterKind? equals kind
+  | weightBased                    -- some order drug has a mg/kg range
+
+structure EntryReq where
+  commit : CommitId
+  element : ElementId
+  when : When := .always
+  perOrderLine : Bool := false     -- required for each order line that matches `when`
+  allowed? : Option (List String) := none -- strings parsed using the element kind
+
+inductive ReviewMode
+  | shownOnCommit                  -- shown on the commit screen; no receipt allowed
+  | shownOrReceipt (windowMin : Nat) (roles : List Role)
+
+structure ReviewReq where
+  commit : CommitId
+  info : InfoId
+  mode : ReviewMode
+  when : When := .always
+
+inductive AlertCond | drugAllergy | interaction | duplicateTherapy | doseOutOfRange | weightInLb | careGap | highAlertMed
+inductive Tier | interruptive | passive | removable
+
+structure AlertSpec where
+  id : AlertId
+  label : String
+  cond : AlertCond
+  tier : Tier
+  commit : CommitId                -- the commit it concerns
+  screens : List String := []      -- workflow tags (Screen.workflow), never screen IDs
+
+structure DesignRules where
+  maxDepth : Nat
+  minTextSize : Nat                -- legibility: Size.tiny is below this
+  stabilityBudget : Nat            -- max components moved per accepted version
+  landmarks : List InfoId          -- e.g. ["patientBanner"]: must be on every screen
+  catalog : List String            -- allowed component kind tags
+
+structure Spec where
+  version : String
+  elements : List ElementSpec
+  infos : List InfoSpec
+  commits : List CommitSpec
+  entries : List EntryReq
+  reviews : List ReviewReq
+  alerts : List AlertSpec
+  design : DesignRules
+```
+
+### UI programs (flat component list, so they are easy to patch, diff, and prove things about)
+```lean
+inductive Slot | fixed (n : Nat) | current              -- order line index; `current` = state.currentSlot
+inductive Prefill | none | fromRecord (fact : String) | default (value : String) | linked (element : ElementId)
+inductive Action
+  | goto (screen : ScreenId) | back
+  | commit (commit : CommitId)
+  | markReviewed (info : InfoId)                         -- creates a receipt
+  | newOrderLine
+inductive Visibility | always | unlessReceipt (info : InfoId)
+inductive Size | normal | compact | tiny
+
+inductive Kind
+  | banner
+  | field (element : ElementId) (slot : Slot) (prefill : Prefill)   -- text/number/coded/scan/cosign/identity input
+  | panel (info : InfoId)      -- read-only info block
+  | table (info : InfoId)
+  | trend (info : InfoId)
+  | alert (alert : AlertId) (popup : Bool)
+  | button (action : Action)
+  | group (collapsible : Bool) (startCollapsed : Bool)
+  | tabs                       -- children pick their tab with `tab`
+  | macro (id : MacroId)       -- a button that runs a macro
+  | search (scope : String)
+
+structure Component where
+  id : CompId
+  kind : Kind
+  label : String := ""
+  parent : Option CompId := none   -- a group or tabs component on the same screen
+  tab : Nat := 0
+  visibility : Visibility := .always
+  size : Size := .normal
+  hotkey : Option String := none
+  tag : String := ""               -- stable semantic tag used by agent patches and stability tracking
+  copyOf : Option CompId := none   -- marks a copy (copies don't count against the stability budget)
+
+structure Screen where
+  id : ScreenId
+  title : String
+  workflow : String                -- "W1" … "W7"
+  components : List Component      -- list order = render order
+
+inductive MacroStep | setValue (comp : CompId) (value : String) | click (comp : CompId) | goto (screen : ScreenId)
+structure Macro where
+  id : MacroId
+  label : String
+  steps : List MacroStep
+
+structure Program where
+  id : String
+  version : Nat
+  owner : UserId
+  role : Role
+  specVersion : String
+  start : ScreenId
+  screens : List Screen
+  macros : List Macro
+```
+
+### Facts (the FHIR abstraction; computed by Lean from a FHIR bundle)
+```lean
+structure DoseUnitRule where
+  unit : UnitKind
+  minTenths : Nat := 0
+  maxTenths : Nat := 0
+
+structure DrugInfo where
+  doseUnits : List DoseUnitRule := [{ unit := .mg }]
+  code : String                    -- RxNorm
+  name : String
+  classes : List String            -- "antibiotic", "penicillin", "anticoagulant", "insulin", ...
+  minMgPerKgTenths : Nat
+  maxMgPerKgTenths : Nat
+  maxDoseMgTenths : Nat := 0        -- absolute per-dose cap; 0 = unspecified
+  highAlert : Bool
+  interactsWith : List String      -- classes
+
+structure PatientIdentity where
+  initials : String
+  sex : String
+  ageYears : Nat
+
+structure Facts where
+  patientId : String
+  identity : PatientIdentity
+  allergyVersion : Nat             -- from AllergyIntolerance meta.versionId (sum/max over the list)
+  allergyClasses : List String
+  medsVersion : Nat
+  currentMedClasses : List String
+  weightToday : Option (Nat × UnitKind)   -- tenths, unit as recorded
+  careGaps : List String
+  abnormalResult : Bool
+  encounterKind? : Option String := none -- episode context, e.g. "preop"
+  now : Nat                        -- minutes since the day's start
+```
+The formulary (`List DrugInfo`) is reference data in Lean (`Ehr/Formulary.lean`), keyed by the RxNorm codes Synthea uses.
+
+### Interpreter state and events
+```lean
+inductive Value | qty (tenths : Nat) (unit : UnitKind) | code (c : String) | text (s : String) | flag (b : Bool) | user (u : UserId)
+inductive Actor | human | macro
+
+structure Captured where
+  element : ElementId
+  slot : Nat
+  value : Value
+  byHuman : Bool
+  confirmed : Bool                 -- false for prefills awaiting a human confirm
+  provenance : Option String
+
+structure Receipt where
+  info : InfoId
+  dataVersion : Nat
+  time : Nat
+  role : Role
+  user : UserId
+
+structure User where
+  id : UserId
+  role : Role
+
+structure State where
+  screen : ScreenId
+  history : List ScreenId
+  captured : List Captured
+  receipts : List Receipt          -- initialized from context (prior Provenance), plus new ones
+  acked : List (AlertId × String)  -- alert + key (drug code / slot) handled this episode
+  commits : List CommitId
+  expanded : List CompId           -- groups the user has opened (initially: non-startCollapsed groups)
+  tabSel : List (CompId × Nat)     -- tab index per tabs component (default 0)
+  popup : Option (AlertId × String)
+  currentSlot : Nat
+  clock : Nat                      -- deciseconds since the episode started (simulation advances it)
+
+inductive Event
+  | click (comp : CompId)          -- button, macro button, group header (toggles), tab header via selectTab
+  | selectTab (comp : CompId) (idx : Nat)
+  | enter (comp : CompId) (value : Value)
+  | confirm (comp : CompId)        -- confirm a prefilled value
+  | ack (alert : AlertId)          -- handle the current popup
+  | scroll (screen : ScreenId)
+  | search (query : String)
+```
+
+## 3. Interpreter semantics (key rules)
+
+`step : Spec → Program → Facts → User → Actor → State → Event → State × StepResult`. `StepResult` reports `ok | blocked (reason) | ignored`, so traces and counterexamples can explain themselves.
+
+- **Visibility.** A component is *shown* iff:
+  - it is on the current screen;
+  - every ancestor group is expanded and every ancestor `tabs` has its tab selected;
+  - its visibility condition holds (`unlessReceipt i`: no valid receipt for `i`);
+  - its size is not `tiny`.
+- **Valid receipt** for info `i` at commit `c` under `shownOrReceipt w roles`:
+  - its `dataVersion` equals the current fact version for `i`;
+  - `clock - time ≤ w` (in minutes);
+  - its role is in `roles`.
+- **`enter`** on a field:
+  - allowed only if the user's role is in `enteredBy`;
+  - if the actor is a macro and the element is `humanOnly` or kind `identity`/`scan`/`cosign`, it is blocked;
+  - an `identity` value must match `Facts.identity`;
+  - a `cosign` value must differ from `User.id`;
+  - stores `Captured` with `byHuman := actor = human` and `confirmed := true`.
+- **Prefill** happens when a screen is entered. A field with `fromRecord`/`default`/`linked` gets a value with `confirmed := false` and provenance, unless:
+  - the element policy is `never`: the prefill is ignored;
+  - the policy is `autoLinked`: `confirmed := true`.
+
+  `confirm` (human only) sets `confirmed := true`.
+- **`click`** on a `commit c` button: if the guard fails, the result is `blocked reason`. If it passes but an interruptive alert concerning `c` holds and isn't acked for its key, the alert is set as `popup` and the result is `blocked "alert"`. Otherwise `c` is appended to `commits`.
+- **Guard(c):**
+  - all applicable `EntryReq` are captured and confirmed, with unit = the required unit;
+  - `humanOnly` elements were captured `byHuman` in this episode;
+  - all applicable `ReviewReq` are shown on the current screen, or covered by a valid receipt (`shownOrReceipt` only);
+  - all applicable interruptive alerts are acked;
+  - the user's role is in `CommitSpec.roles`.
+- **`newOrderLine`:** blocked with `finish this order line first` while the
+  current drug line misses an applicable per-order-line entry requirement.
+  Humans and macros obey the same stop; empty/complete lines may advance.
+- **Inline alert clicks:** a human click opens the alert's first pending popup
+  candidate, without acknowledging it. Passive, unknown, nonfiring and already
+  acknowledged alerts do not open; removable alerts require popup opt-in. A
+  macro click is `blocked "human only: acknowledge"`. While a popup is open, clicks remain blocked by the modal rule.
+- **`ack a`:** human only, and only when `popup = some (a, k)`; adds `(a, k)` to `acked` and clears `popup`.
+- **Alerts:** an alert component is visible only if its condition holds (A2). Passive alerts never become `popup` (A4). An acked `(a, k)` never pops up again in the episode (A3).
+- **`markReviewed i`:** adds a receipt with the current version, clock, and the user's role.
+- **Macros:** clicking a macro button runs its steps as `actor := macro` through `step`, stopping at the first step that is not `ok`.
+
+## 4. Screen view (input to the page renderer)
+
+`view : Spec → Program → Facts → User → State → ScreenView`, where:
+- `ScreenView` has `screen`, `title`, `items : List ItemView` (every component on the screen, in order, with `shown : Bool`, `depth`, `expanded`, `selectedTab`), `enabled : List CompId`, `blocked : List (CompId × String)`, and `popup`.
+- Each `ItemView` carries:
+  - the component;
+  - the bound value with its provenance and pending-confirm flag (for fields);
+  - whether the alert condition holds (for alerts).
+- **Superseded by section 9.** Lean renders the whole page, including panel contents. React does not render info contents.
+
+## 5. Interfaces
+- **WASM library (option A):** JSON in and JSON out, exporting:
+  - `init(specJson, programJson, factsOrBundleJson, userJson) → stateJson`;
+  - `step(…, stateJson, eventJson) → {state, result}`;
+  - `view(…, stateJson) → screenViewJson`;
+  - `facts(bundleJson) → factsJson`.
+
+  Keep the exported surface tiny and string-based.
+- **Native `ehr` CLI:** `check`, `simulate`, `min-clicks`, `run-batch`, `spec-export`, `deploy`, plus `serve` (option B fallback only). JSON over files/stdin/stdout.
+
+## 6. JSON conventions
+- Use derived `ToJson`/`FromJson`. Enum constructors serialize as strings.
+- Programs live in `programs/<owner>/v<N>.json` and the canonical one in `programs/canonical/v<N>.json`. Specs are exported to `releases/<ver>/spec.json`.
+- TS types are generated from Lean (lane A emits a JSON Schema or a `.d.ts` via a small Lean generator). Hand-written TS mirrors are temporary and must be replaced.
+
+## 7. Simulation formats (Lean-owned; the world generator emits them)
+
+```lean
+inductive Workflow | W1 | W2 | W3 | W4 | W5 | W6 | W7   -- see BRIEF section 5
+
+inductive OrderKind | medication | imaging | procedure
+inductive W6Step | consult | preop | postop | rounding | discharge
+
+structure OrderChoice where        -- a clinical decision, fixed per scenario (independent of the UI)
+  drug : String                    -- lowercase generic name; empty for service orders
+  kind? : Option OrderKind := none -- omitted = medication (legacy schedules)
+  code? : Option String := none     -- imaging/procedure service code, e.g. CPT
+  doseTenths : Nat
+  unit : UnitKind
+  route : String
+  freq : String
+  supplyDays? : Option Nat := none
+  curesExemptReason? : Option String := none
+  holdReason? : Option String := none
+  indication : Option String := none
+  prn : Bool := false
+
+structure TaskChoices where
+  orders : List OrderChoice := []          -- W1, W3, W5, W6 (pre-op/post-op), W7 (modify)
+  administer : List OrderChoice := []      -- W4: meds due this pass
+  ackResult : Bool := false                -- W2
+  refill : Option String := none           -- W7: "approve" | "deny" | "modify"
+  disposition : Option String := none      -- W3: "admit" | "discharge" | "consult"
+  immunizations : List String := []        -- W5: CVX codes
+  noteSections : List String := []         -- documentation sections to complete
+  painScore? : Option Nat := none           -- 0-10
+  w6Step? : Option W6Step := none
+  refillReason? : Option String := none
+
+structure Task where
+  id : String
+  day : Nat
+  persona : String                 -- "P1" … "P5"
+  workflow : Workflow
+  patientId : String               -- Synthea/Medplum Patient id
+  startMin : Nat                   -- minutes since shift start
+  choices : TaskChoices
+  todayResources : List Lean.Json := []   -- synthetic FHIR for today (e.g. triage weight in lb)
+  interruptions : Nat := 0
+
+structure DaySchedule where
+  day : Nat
+  persona : String
+  load : String                    -- "quiet" | "normal" | "busy"
+  tasks : List Task
+
+structure PersonaParams where      -- behavior, not clinical choices
+  id : String
+  role : Role
+  keyboardShare : Nat              -- percent of entries done by keyboard shortcut when available
+  reviewsAllergiesEarly : Bool     -- creates receipts during rooming
+  scansSidebar : Bool
+  backtrackRate : Nat              -- per-mille chance of a detour per screen
+  searchWhenBuried : Bool
+  overrideRate : Nat               -- per-mille chance of overriding a removable alert vs reading it
+```
+
+`ehr simulate` input: spec, program, persona params, a day schedule, and the patients' FHIR bundles (or precomputed facts). It plays each task through the interpreter with a seeded policy and outputs:
+
+```lean
+inductive Op | click | key | scroll | scan | point | think | wait   -- KLM-style operators
+structure TraceEvent where
+  task : String
+  t : Nat                          -- deciseconds since shift start
+  screen : ScreenId
+  event : Event
+  ops : List Op                    -- operators charged for this event
+  result : StepResult
+structure TaskMetrics where
+  task : String
+  clicks : Nat
+  keystrokes : Nat
+  scrolls : Nat
+  popups : Nat
+  overrides : Nat
+  searches : Nat
+  backtracks : Nat
+  klmDeciSec : Nat
+  completed : Bool
+structure DayResult where
+  day : Nat
+  persona : String
+  programVersion : Nat
+  trace : List TraceEvent
+  tasks : List TaskMetrics
+  floor : List TaskMetrics         -- same tasks at the floor (human-only steps + clinical choices only)
+  complaints : List String         -- prompts a receipt could not satisfy, with reasons
+```
+
+## 8. Checker and agent-loop formats
+
+- **Verdict (Lean-owned):** `ok` or `violation { property : String, message : String, counterexample : List Event, screens : List ScreenId }`. `ehr check` prints the verdict JSON.
+- **Certificate (Lean-owned):** `{ specVersion, specHash, programHash, verdict, checkerVersion, time }`, stored next to each deployed program.
+- **Candidate change:** an RFC 6902 JSON Patch over the Program JSON, with `{ id, summary, moveType, predicted : { clicks, keystrokes, scrolls, klmDeciSec } }`. Move types follow BRIEF section 9 (composeTaskView, copyToToolbar, reorder, merge, bringInfoForward, prefillWithProvenance, useReceipt, macro, defaultConfirm, shortcut, collapseOptional, surfaceFeature, migrate).
+- **Decision record:** owned by the agent loop (TypeScript + zod, `agent/src/schema.ts`). It is not safety-relevant, so it doesn't need to live in Lean. Fields follow BRIEF section 10.
+
+## 9. Page tree (Lean renders the page; owner decision, Oct 31)
+
+The principle: nothing is checked at runtime, and everything that could break for the clinician is proven for all inputs or tested offline before deploy.
+
+```lean
+inductive Tag | div | span | table | thead | tbody | tr | th | td | button | input | select | option
+              | label | h1 | h2 | h3 | ul | li | svg | polyline | dialog | form
+structure Attr where
+  name : String          -- whitelist: class, data-comp-id, data-event, aria-*, disabled, value,
+                         --            type, placeholder, title, role, points, viewBox
+  value : String
+inductive Html | text (s : String) | node (tag : Tag) (attrs : List Attr) (children : List Html)
+
+structure Display where  -- display projection of the patient's FHIR records (Lean, from the bundle)
+  banner : List (String × String)
+  allergies : List AllergyRow          -- substance, reaction, severity, status, recorded
+  meds : List MedRow
+  vitals : List VitalRow
+  labs : List LabRow                   -- with trend points per code
+  problems : List ProblemRow
+  immunizations : List ImmRow
+  encounters : List EncRow
+  growth : List GrowthPoint
+```
+
+- `render : Spec → Program → Facts → Display → User → State → Html`, Init-only (for WASM).
+- The app passes FHIR bundles to Lean. `Lean.Ehr.Fhir` parses them (Lean.Data.Json) into `Facts` and `Display`.
+- Class names come from one fixed stylesheet (`app/src/ehr.css`), reviewed, with no hiding rules.
+- **T10:** every shown component is in the tree, with text and no hidden ancestor; hidden ones are absent; the commit button is enabled iff the guard holds.
+- **T11:** every panel lists every relevant record (for example, all active AllergyIntolerance entries).
+- The WASM API gains `render(…) → htmlJson`. The generic painter maps it to the DOM.
+
+### 9.1 Stylesheet classes and event attributes (shared by the Lean renderer and `app/src/ehr.css`)
+
+The Lean renderer may emit only these classes. The stylesheet defines exactly these and nothing that hides, collapses, or moves content off-screen.
+
+| Area | Classes |
+|---|---|
+| Shell | `ehr-shell`, `ehr-banner`, `ehr-banner-field`, `ehr-banner-label`, `ehr-badge`, `ehr-badge-allergy`, `ehr-badge-flag`, `ehr-sidebar`, `ehr-sidebar-section`, `ehr-main`, `ehr-screen-title`, `ehr-nav`, `ehr-nav-item`, `ehr-nav-active`, `ehr-toolbar` |
+| Structure | `ehr-section`, `ehr-section-header`, `ehr-section-collapsed` (the header only; Lean omits the children), `ehr-tabs`, `ehr-tab`, `ehr-tab-active`, `ehr-grid`, `ehr-row`, `ehr-landmark` |
+| Fields | `ehr-field`, `ehr-field-label`, `ehr-input`, `ehr-input-pending` (prefilled, awaiting confirm), `ehr-unit`, `ehr-provenance`, `ehr-confirm`, `ehr-human-only`, `ehr-required`, `ehr-value` |
+| Info | `ehr-panel`, `ehr-panel-title`, `ehr-table`, `ehr-table-compact`, `ehr-empty`, `ehr-trend`, `ehr-trend-line`, `ehr-abnormal` |
+| Alerts | `ehr-alert-inline`, `ehr-alert-interruptive`, `ehr-alert-passive`, `ehr-modal-backdrop`, `ehr-modal`, `ehr-modal-title`, `ehr-modal-body` |
+| Actions | `ehr-button`, `ehr-button-primary` (commit), `ehr-button-secondary`, `ehr-blocked-reason`, `ehr-macro`, `ehr-hotkey`, `ehr-search` |
+| Size | `ehr-compact`, `ehr-tiny` |
+
+Event attributes on interactive nodes:
+- `data-comp-id` (component id);
+- `data-event`: `click` | `enter` | `confirm` | `selectTab` | `ack` | `toggle` | `scroll` | `search`;
+- `data-tab` (tab index, for selectTab);
+- `data-alert` (alert id, for ack);
+- `data-value-kind`: `qty` | `code` | `text` | `flag` | `user`;
+- `data-unit` (for `qty`).
+
+The painter builds the Lean `Event` from these attributes and the input's value. It never invents events.
+
+### Core request clarifications (Oct 31)
+
+`ElementSpec.recordFact?` declares the only allowed `fromRecord` source; `none`
+forbids record prefills. The interpreter ignores mismatched sources, preserving
+the record unit for `weightToday`. The checker must reject the declaration
+mismatch as a prefill-policy violation. Enter-once is checked per workflow path;
+shared elements across distinct workflows do not constitute repeated entry.
+`AlertSpec.screens` contains workflow tags; each matching screen must show the
+passive alert. `AlertSpec.targetsScreen` is the shared predicate. The checker and
+content lanes must use it when checking/placing passive alerts.
+
+Medication and service orders remain distinct: medication orders bind `drug`
+to a lowercase generic formulary name; imaging/procedure choices bind `kind`
+and `code`, with an empty `drug`. On the UI a service order captures `orderKind`
+(`imaging` or `procedure`) and a nonempty `orderCode` on one slot, without a drug
+on that slot. Its spec must declare those fields. `requestPriorAuth` recognizes
+both medication and service orders; the CMS-0057-F release's applicable order
+kinds are the services (`OrderChoice.isPriorAuthService`), excluding drugs.
+Drug alerts and drug-class requirements only inspect medication `orderLines`.
+
+Prior-auth convenience clicks preserve every already-confirmed request capture
+on the current slot. They cannot create never/human-only captures: the program
+must expose a human field for an ordinary Event.enter. This preserves both the
+literal human-entry property and confirmed values/provenance.
+
+### Allowed entry values (owner-approved Schedule II rule)
+
+`EntryReq.allowed?` is optional JSON `allowed`. Each listed string is parsed
+with `parseValue el.kind` and must equal the same capture that meets the
+confirmation, human-entry, and unit checks. `none` adds no constraint; `some []`
+allows no value. Numeric refills (`quantity none`) use `some ["0"]` for zero.
+An unmet value constraint blocks signing with a readable allowed-value reason.
+Per-line requirements and the new-line hard stop both enforce it.
+
+`When.drugClass "scheduleII"` matches Schedule II medication order lines;
+`orderClass` remains an equivalent existing constructor. The new class tags
+morphine, hydromorphone, oxycodone and hydrocodone-acetaminophen. Content adopts
+zero refills as an additional per-line requirement in each signing workflow.
+The core tests and generated samples provide the exact requirement encoding.
+
+## 10. Semantic UI tree + minimal design rules (owner decision, Oct 31; supersedes the raw Html page tree for EHR screens)
+
+Lean emits a **semantic UI tree**. React (Mantine/@medplum/react) draws it with one component per node kind. The vocabulary is small and expressive. Lean decides WHAT is on screen and its structure; React decides how it looks.
+
+```lean
+inductive UiNode
+  | presentation (kind : UiPresentationKind) (children : List UiNode)      -- structured reading layout
+  | rowAction (target : CompId) (row : Nat) (children : List UiNode)       -- placement of an existing action
+  | valueSet (options : List UiCodeChoice) (allowCustom : Bool) (children : List UiNode)
+  | chartReferences (references : List UiChartReference) (children : List UiNode)
+  | section  (id : String) (title : String) (children : List UiNode)        -- a titled group / card
+  | columns  (children : List UiNode)                                       -- side-by-side layout hint
+  | tabs     (id : String) (labels : List String) (selected : Nat) (body : List UiNode)  -- only the selected body is present
+  | stepper  (steps : List (String × String)) (current : Nat)               -- (screenId, label)
+  | field    (comp : CompId) (label : String) (kind : String) (value : Option String) (unit : Option String)
+             (provenance : Option String) (pendingConfirm : Bool) (humanOnly : Bool) (required : Bool)
+  | info     (comp : CompId) (label : String) (infoId : InfoId) (display : String)   -- list/table/trend/summary/document/status
+             (rows : List (List (String × String)))                          -- every relevant record (T11)
+  | alert    (comp : CompId) (alertId : AlertId) (label : String) (severity : String) -- inline only
+  | button   (comp : CompId) (label : String) (role : String) (enabled : Bool) (blockedReason : Option String) (hotkey : Option String)
+             -- role: "primary" (commit) | "secondary" | "nav" | "macro"
+  | text     (s : String)
+
+structure UiScreen where
+  screen? : Option ScreenId := none -- scroll lifecycle only, never visible
+  fieldSources? : Option (List (CompId × String)) := none -- public source captions; raw field provenance stays intact
+  banner : List (String × String)      -- patient banner fields (always first; D1)
+  nav : List (String × List (String × String))   -- groups: (groupLabel, [(compId, label)])
+  title : String
+  workspace : List UiNode
+  side : List UiNode                   -- optional clinical summary column
+  modal : Option UiNode                -- an interruptive alert (with its ack button) when present
+```
+
+`renderUi : Spec → Program → Facts → Display → User → State → UiScreen` (Init-only, exported to WASM as `ehr_render_ui`).
+
+`fieldSources` supplies Lean's public caption for an existing sourced field. The
+painter renders it verbatim and uses it as the field's accessible description.
+The original field still carries its exact machine provenance, value/unit,
+human-only flag and pending-confirmation flag. This optional metadata adds no
+control or state transition; older JSON remains accepted. D6 is unchanged.
+
+`UiCodeChoice` carries the exact code and its display label. `valueSet` wraps the
+unchanged field; selecting a choice sends its original entry event. Searching a
+picker does not capture a clinical value. `UiChartReference` carries published
+samples with their measure, unit, percentile, source and population. These
+metadata wrappers retain their complete ordinary children and add no actions.
+Clinical choices and reference selection happen in Lean; the painter draws the
+supplied labels and geometry. The design rules below are unchanged.
+
+**Minimal design rules (theorems over every program, record, and state). Just enough to rule out bad UI:**
+- **D1 Landmark:** exactly one banner, first, with at least two patient identifiers (name + DOB or MRN), on every screen.
+- **D2 Required info visible:** on a screen with a commit button, every applicable required review item appears in `workspace` (not only in `side` or a non-selected tab), as an `info` node with all relevant rows (generalizes T10/T11).
+- **D3 Honest actions:** every button has a non-empty label; a `primary` button exists only for commits and is `enabled` iff the interpreter's view enables it; a disabled button has a blocked reason.
+- **D4 Alert presentation:** an interruptive alert that fires appears as `modal`; a passive alert appears only inline (`alert` node), never as `modal`.
+- **D5 Sane navigation:** within a nav group, and among group labels, no duplicate labels; at most 12 entries per group and at most 12 groups; every screen of the program appears in nav (no orphans).
+- **D6 Clear fields:** every field has a non-empty label; `humanOnly` and `provenance` flags are set exactly as the interpreter's view says; `pendingConfirm` fields have a confirm affordance.
+
+Nothing else is constrained: columns, grouping, order, density, colors, and component choice are free.
+
+**React side:**
+- one component per `UiNode` kind (exhaustive switch);
+- AppShell layout (header banner, nav, workspace, optional side, modal).
+
+**Fidelity (offline, before deploy):** generate the expected accessibility tree (roles + names) from `UiScreen` and compare it to the rendered DOM's accessibility tree (Playwright ARIA snapshot). Also check visibility, the legibility minimum, and no element covered. A mismatch blocks the deploy.
+
+
+### Encounter roles (owner decision 2026-11-01)
+
+Hospital policy (not law): only physicians and surgeons sign pre-op orders.
+`CommitSpec.encounterRoles?` stands in for security-class order privileges,
+using the same encounter matcher as `When.encounter`. Missing restrictions
+preserve legacy JSON behavior. A clinic NP sees “Pre-op orders are signed by a
+physician or surgeon”. No co-signature replaces consentVerified, hpUpdate or
+medsToHold; their entry permissions remain unchanged. Completableness excludes
+only encounters where that role cannot commit. Both worlds route surgical-day
+steps exclusively to P5. Production cosign is a non-blocking In Basket
+follow-up; not modeled.
+
+### Medication dose units
+
+`medicationDose` stores tenths in its chosen native unit. The formulary supplies
+allowed units and ranges; the guard checks drug, dose and unit selector on each
+slot and rechecks dependencies at commit. It never converts the input to mg.
+The composer displays the chosen drug's unit; a changed unit requires re-entry
+of an incompatible capture. Unit-specific bounds apply in the native unit.
+Existing mg/kg ranges, kg-only weight and MME checks stay in mg where declared;
+the pediatric calculator remains explicitly mg-based.

@@ -1,0 +1,510 @@
+{
+  "world": "runs/world/2",
+  "release": "v1 days 1-3; v2 days 4-6; v3 days 7-10",
+  "completed": 1284,
+  "tasks": 1284,
+  "selectedTasks": 1284,
+  "days": [
+    {
+      "persona": "P1",
+      "day": 1,
+      "release": "v1",
+      "completed": 42,
+      "tasks": 42,
+      "selectedTasks": 42,
+      "clicks": 1160,
+      "klmDeciSec": 58079
+    },
+    {
+      "persona": "P1",
+      "day": 2,
+      "release": "v1",
+      "completed": 40,
+      "tasks": 40,
+      "selectedTasks": 40,
+      "clicks": 853,
+      "klmDeciSec": 46708
+    },
+    {
+      "persona": "P1",
+      "day": 3,
+      "release": "v1",
+      "completed": 35,
+      "tasks": 35,
+      "selectedTasks": 35,
+      "clicks": 682,
+      "klmDeciSec": 39852
+    },
+    {
+      "persona": "P1",
+      "day": 4,
+      "release": "v2",
+      "completed": 40,
+      "tasks": 40,
+      "selectedTasks": 40,
+      "clicks": 918,
+      "klmDeciSec": 47672
+    },
+    {
+      "persona": "P1",
+      "day": 5,
+      "release": "v2",
+      "completed": 23,
+      "tasks": 23,
+      "selectedTasks": 23,
+      "clicks": 809,
+      "klmDeciSec": 45779
+    },
+    {
+      "persona": "P1",
+      "day": 6,
+      "release": "v2",
+      "completed": 41,
+      "tasks": 41,
+      "selectedTasks": 41,
+      "clicks": 894,
+      "klmDeciSec": 47442
+    },
+    {
+      "persona": "P1",
+      "day": 7,
+      "release": "v3",
+      "completed": 40,
+      "tasks": 40,
+      "selectedTasks": 40,
+      "clicks": 970,
+      "klmDeciSec": 49019
+    },
+    {
+      "persona": "P1",
+      "day": 8,
+      "release": "v3",
+      "completed": 39,
+      "tasks": 39,
+      "selectedTasks": 39,
+      "clicks": 848,
+      "klmDeciSec": 46402
+    },
+    {
+      "persona": "P1",
+      "day": 9,
+      "release": "v3",
+      "completed": 39,
+      "tasks": 39,
+      "selectedTasks": 39,
+      "clicks": 724,
+      "klmDeciSec": 36655
+    },
+    {
+      "persona": "P1",
+      "day": 10,
+      "release": "v3",
+      "completed": 39,
+      "tasks": 39,
+      "selectedTasks": 39,
+      "clicks": 829,
+      "klmDeciSec": 41774
+    },
+    {
+      "persona": "P2",
+      "day": 1,
+      "release": "v1",
+      "completed": 22,
+      "tasks": 22,
+      "selectedTasks": 22,
+      "clicks": 1706,
+      "klmDeciSec": 96125
+    },
+    {
+      "persona": "P2",
+      "day": 2,
+      "release": "v1",
+      "completed": 18,
+      "tasks": 18,
+      "selectedTasks": 18,
+      "clicks": 1111,
+      "klmDeciSec": 64099
+    },
+    {
+      "persona": "P2",
+      "day": 3,
+      "release": "v1",
+      "completed": 18,
+      "tasks": 18,
+      "selectedTasks": 18,
+      "clicks": 1225,
+      "klmDeciSec": 67683
+    },
+    {
+      "persona": "P2",
+      "day": 4,
+      "release": "v2",
+      "completed": 13,
+      "tasks": 13,
+      "selectedTasks": 13,
+      "clicks": 934,
+      "klmDeciSec": 52221
+    },
+    {
+      "persona": "P2",
+      "day": 5,
+      "release": "v2",
+      "completed": 20,
+      "tasks": 20,
+      "selectedTasks": 20,
+      "clicks": 1456,
+      "klmDeciSec": 83608
+    },
+    {
+      "persona": "P2",
+      "day": 6,
+      "release": "v2",
+      "completed": 21,
+      "tasks": 21,
+      "selectedTasks": 21,
+      "clicks": 1794,
+      "klmDeciSec": 99014
+    },
+    {
+      "persona": "P2",
+      "day": 7,
+      "release": "v3",
+      "completed": 18,
+      "tasks": 18,
+      "selectedTasks": 18,
+      "clicks": 1229,
+      "klmDeciSec": 66124
+    },
+    {
+      "persona": "P2",
+      "day": 8,
+      "release": "v3",
+      "completed": 15,
+      "tasks": 15,
+      "selectedTasks": 15,
+      "clicks": 1485,
+      "klmDeciSec": 79806
+    },
+    {
+      "persona": "P2",
+      "day": 9,
+      "release": "v3",
+      "completed": 12,
+      "tasks": 12,
+      "selectedTasks": 12,
+      "clicks": 1080,
+      "klmDeciSec": 59192
+    },
+    {
+      "persona": "P2",
+      "day": 10,
+      "release": "v3",
+      "completed": 14,
+      "tasks": 14,
+      "selectedTasks": 14,
+      "clicks": 902,
+      "klmDeciSec": 48559
+    },
+    {
+      "persona": "P3",
+      "day": 1,
+      "release": "v1",
+      "completed": 38,
+      "tasks": 38,
+      "selectedTasks": 38,
+      "clicks": 474,
+      "klmDeciSec": 57616
+    },
+    {
+      "persona": "P3",
+      "day": 2,
+      "release": "v1",
+      "completed": 51,
+      "tasks": 51,
+      "selectedTasks": 51,
+      "clicks": 688,
+      "klmDeciSec": 71384
+    },
+    {
+      "persona": "P3",
+      "day": 3,
+      "release": "v1",
+      "completed": 44,
+      "tasks": 44,
+      "selectedTasks": 44,
+      "clicks": 576,
+      "klmDeciSec": 53192
+    },
+    {
+      "persona": "P3",
+      "day": 4,
+      "release": "v2",
+      "completed": 41,
+      "tasks": 41,
+      "selectedTasks": 41,
+      "clicks": 569,
+      "klmDeciSec": 57745
+    },
+    {
+      "persona": "P3",
+      "day": 5,
+      "release": "v2",
+      "completed": 37,
+      "tasks": 37,
+      "selectedTasks": 37,
+      "clicks": 538,
+      "klmDeciSec": 57653
+    },
+    {
+      "persona": "P3",
+      "day": 6,
+      "release": "v2",
+      "completed": 32,
+      "tasks": 32,
+      "selectedTasks": 32,
+      "clicks": 484,
+      "klmDeciSec": 55460
+    },
+    {
+      "persona": "P3",
+      "day": 7,
+      "release": "v3",
+      "completed": 54,
+      "tasks": 54,
+      "selectedTasks": 54,
+      "clicks": 691,
+      "klmDeciSec": 67552
+    },
+    {
+      "persona": "P3",
+      "day": 8,
+      "release": "v3",
+      "completed": 38,
+      "tasks": 38,
+      "selectedTasks": 38,
+      "clicks": 541,
+      "klmDeciSec": 44941
+    },
+    {
+      "persona": "P3",
+      "day": 9,
+      "release": "v3",
+      "completed": 44,
+      "tasks": 44,
+      "selectedTasks": 44,
+      "clicks": 638,
+      "klmDeciSec": 54660
+    },
+    {
+      "persona": "P3",
+      "day": 10,
+      "release": "v3",
+      "completed": 45,
+      "tasks": 45,
+      "selectedTasks": 45,
+      "clicks": 651,
+      "klmDeciSec": 54697
+    },
+    {
+      "persona": "P4",
+      "day": 1,
+      "release": "v1",
+      "completed": 22,
+      "tasks": 22,
+      "selectedTasks": 22,
+      "clicks": 696,
+      "klmDeciSec": 41074
+    },
+    {
+      "persona": "P4",
+      "day": 2,
+      "release": "v1",
+      "completed": 20,
+      "tasks": 20,
+      "selectedTasks": 20,
+      "clicks": 763,
+      "klmDeciSec": 42997
+    },
+    {
+      "persona": "P4",
+      "day": 3,
+      "release": "v1",
+      "completed": 19,
+      "tasks": 19,
+      "selectedTasks": 19,
+      "clicks": 637,
+      "klmDeciSec": 33567
+    },
+    {
+      "persona": "P4",
+      "day": 4,
+      "release": "v2",
+      "completed": 17,
+      "tasks": 17,
+      "selectedTasks": 17,
+      "clicks": 429,
+      "klmDeciSec": 23069
+    },
+    {
+      "persona": "P4",
+      "day": 5,
+      "release": "v2",
+      "completed": 19,
+      "tasks": 19,
+      "selectedTasks": 19,
+      "clicks": 635,
+      "klmDeciSec": 32191
+    },
+    {
+      "persona": "P4",
+      "day": 6,
+      "release": "v2",
+      "completed": 18,
+      "tasks": 18,
+      "selectedTasks": 18,
+      "clicks": 581,
+      "klmDeciSec": 31235
+    },
+    {
+      "persona": "P4",
+      "day": 7,
+      "release": "v3",
+      "completed": 17,
+      "tasks": 17,
+      "selectedTasks": 17,
+      "clicks": 614,
+      "klmDeciSec": 32473
+    },
+    {
+      "persona": "P4",
+      "day": 8,
+      "release": "v3",
+      "completed": 15,
+      "tasks": 15,
+      "selectedTasks": 15,
+      "clicks": 498,
+      "klmDeciSec": 31018
+    },
+    {
+      "persona": "P4",
+      "day": 9,
+      "release": "v3",
+      "completed": 12,
+      "tasks": 12,
+      "selectedTasks": 12,
+      "clicks": 413,
+      "klmDeciSec": 20946
+    },
+    {
+      "persona": "P4",
+      "day": 10,
+      "release": "v3",
+      "completed": 16,
+      "tasks": 16,
+      "selectedTasks": 16,
+      "clicks": 555,
+      "klmDeciSec": 29731
+    },
+    {
+      "persona": "P5",
+      "day": 1,
+      "release": "v1",
+      "completed": 18,
+      "tasks": 18,
+      "selectedTasks": 18,
+      "clicks": 567,
+      "klmDeciSec": 40139
+    },
+    {
+      "persona": "P5",
+      "day": 2,
+      "release": "v1",
+      "completed": 14,
+      "tasks": 14,
+      "selectedTasks": 14,
+      "clicks": 750,
+      "klmDeciSec": 45917
+    },
+    {
+      "persona": "P5",
+      "day": 3,
+      "release": "v1",
+      "completed": 19,
+      "tasks": 19,
+      "selectedTasks": 19,
+      "clicks": 543,
+      "klmDeciSec": 34649
+    },
+    {
+      "persona": "P5",
+      "day": 4,
+      "release": "v2",
+      "completed": 11,
+      "tasks": 11,
+      "selectedTasks": 11,
+      "clicks": 504,
+      "klmDeciSec": 28811
+    },
+    {
+      "persona": "P5",
+      "day": 5,
+      "release": "v2",
+      "completed": 17,
+      "tasks": 17,
+      "selectedTasks": 17,
+      "clicks": 458,
+      "klmDeciSec": 27811
+    },
+    {
+      "persona": "P5",
+      "day": 6,
+      "release": "v2",
+      "completed": 11,
+      "tasks": 11,
+      "selectedTasks": 11,
+      "clicks": 539,
+      "klmDeciSec": 34471
+    },
+    {
+      "persona": "P5",
+      "day": 7,
+      "release": "v3",
+      "completed": 14,
+      "tasks": 14,
+      "selectedTasks": 14,
+      "clicks": 386,
+      "klmDeciSec": 19634
+    },
+    {
+      "persona": "P5",
+      "day": 8,
+      "release": "v3",
+      "completed": 12,
+      "tasks": 12,
+      "selectedTasks": 12,
+      "clicks": 584,
+      "klmDeciSec": 34671
+    },
+    {
+      "persona": "P5",
+      "day": 9,
+      "release": "v3",
+      "completed": 11,
+      "tasks": 11,
+      "selectedTasks": 11,
+      "clicks": 330,
+      "klmDeciSec": 17714
+    },
+    {
+      "persona": "P5",
+      "day": 10,
+      "release": "v3",
+      "completed": 9,
+      "tasks": 9,
+      "selectedTasks": 9,
+      "clicks": 344,
+      "klmDeciSec": 20236
+    }
+  ],
+  "failures": []
+}

@@ -1,0 +1,63 @@
+{
+  "source": "0b29447b",
+  "contentIntegration": "15896ac3",
+  "appBuild": "passed",
+  "appLint": "passed",
+  "appTests": 301,
+  "agentTests": 95,
+  "browserSuite": {
+    "passed": 44,
+    "skipped": 1,
+    "sharedRealismRerun": "passed (24.1 seconds)",
+    "notes": "Initial stale test expected medications on Notes; corrected to open the new source-defined Medications tab. All source/ARIA and note-body equality assertions retained."
+  },
+  "livePatientOpening": {
+    "passed": 9,
+    "clinicalWrites": 0
+  },
+  "buttonAudit": {
+    "configurations": 10,
+    "personas": 5,
+    "maxStatesPerPersona": 2,
+    "outcomes": {
+      "works": 102
+    },
+    "dead": 0,
+    "error": 0
+  },
+  "nativeBuild": {
+    "jobs": 370,
+    "status": "passed"
+  },
+  "wasmFreshness": {
+    "status": "passed",
+    "leanSha256": "480dbb23ac0ec4634bfd4705e9a0159ca242129e5fc9cff4c7a0564fc57f002e"
+  },
+  "committedCertification": {
+    "profile": "core",
+    "personaAccepted": 15,
+    "personaCount": 15,
+    "badRejected": 23,
+    "badCount": 23
+  },
+  "archivedTrajectory": {
+    "run": "run1-P3",
+    "tasks": 424,
+    "events": 14658,
+    "baselineEvents": 137,
+    "mismatches": 0
+  },
+  "screenshots": {
+    "manifest": "app/shots/final/manifest.json",
+    "before": "app/shots/final/before/",
+    "viewport": [
+      1440,
+      900
+    ],
+    "captures": 11
+  },
+  "limits": [
+    "Control audit samples two observed states per persona; it is not exhaustive.",
+    "The selected P3 patient has no source MAR tasks; empty source rows are preserved."
+  ]
+}
