@@ -1,3 +1,4 @@
+import Ehr.Sem.Examples
 import Ehr.Canonical.PresetTests
 import Ehr.Basic
 import Ehr.Core.Types

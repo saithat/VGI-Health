@@ -136,6 +136,7 @@ code.
 | Checker acceptance implies properties 1–5 and 7–13 for every patient record and every reachable state | 🟢 **Proved** | `Check/*Sound.lean` (`accepted_*`) |
 | Checker acceptance implies property 6, "every required task can be completed" | 🟡 **Proved for defined fragments only** (scalar fields, fixed order lines, receipts, many alerts, macros/prefills); general case **open** | `Check/Sound.lean`, `Check/ScalarCompletion.lean`, `Check/FixedLineCompletion.lean` |
 | The screen tree keeps the patient banner, required reviews, honest buttons, modal vs inline alerts, labeled fields (D1–D4, D6) | 🟢 **Proved**, for the semantic screen tree | `Render/UiProofs.lean` |
+| Layout-independent information/action semantics, with explicit perception and view-step bounds | 🟡 **Proved** D1–D4/D6 bridges at abstract exposed moments; actual exposure is an explicit hypothesis; positive and negative examples | `Sem/Screen.lean`, `Sem/Bridge.lean`, `Sem/Examples.lean` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
 | The browser's accessibility tree equals Lean's screen tree; every control works | 🔵 **Checked** (browser tests, button audit) | `app/e2e/` |
@@ -299,9 +300,11 @@ these proofs. Allowed proof axioms are propext, Quot.sound and Classical.choice.
 perception, bounded reachability and urgency alongside the unchanged hospital
 properties. Tree presence alone does not prove viewport exposure or legibility.
 New primitives require Lean meaning/preservation proofs, a DOM painter and an
-independent screen-gate rule. This lane is adding the current-language bridge
-and an opt-in clinical timeline; physical perception remains conditional on
-measured exposure, and general completion remains open.
+independent screen-gate rule. [Ehr/Sem](lean/Ehr/Sem/) now contains the current-language bridge, including
+D1–D4/D6 implications, structural converses for information and action honesty,
+and concrete positive/rejected examples. An opt-in clinical timeline is next;
+physical perception remains conditional on measured exposure, and general
+completion remains open.
 
 ## Frontend and backend
 
