@@ -1,0 +1,72 @@
+import { createHash } from 'node:crypto';
+import { z } from 'zod';
+
+export type Obj = Record<string, any>; // Opaque Lean/FHIR JSON; Lean validates codecs.
+const id = z.string().regex(/^[A-Za-z0-9.-]{1,64}$/);
+export const version = z.number().int().min(0).max(2147483646);
+const nat = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+const shared = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('dose'), order: nat, occurrence: nat }).strict(),
+  z.object({ kind: z.literal('assignBed'), bed: nat }).strict(),
+  z.object({ kind: z.literal('releaseBed'), bed: nat }).strict(),
+]);
+export const configSchema = z.object({
+  tenant: id,
+  actors: z.array(z.object({
+    token: z.string().min(24), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon']) }).strict(),
+    modelId: nat, patients: z.array(id),
+  }).strict()).min(1),
+  releases: z.record(id, z.object({
+    spec: z.record(z.string(), z.any()), program: z.record(z.string(), z.any()),
+    workflows: z.record(id, z.object({ commit: id, shared: shared.optional() }).strict()),
+  }).strict()),
+}).strict().superRefine((c, ctx) => {
+  for (const key of ['token', 'modelId'] as const) {
+    if (new Set(c.actors.map(a => a[key])).size !== c.actors.length)
+      ctx.addIssue({ code: 'custom', message: `duplicate actor ${key}` });
+  }
+  if (new Set(c.actors.map(a => a.user.id)).size !== c.actors.length)
+    ctx.addIssue({ code: 'custom', message: 'duplicate user id' });
+});
+export type Config = z.infer<typeof configSchema>;
+export type Actor = Config['actors'][number];
+export type Release = Config['releases'][string];
+export type Workflow = Release['workflows'][string];
+export const sessionInput = z.object({ patient: id, release: id, workflow: id }).strict();
+export const eventInput = z.object({ revision: version, event: z.record(z.string(), z.any()) }).strict();
+export const commandInput = z.object({
+  requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/), sessionId: z.uuid(),
+  revision: version, expectedVersion: version, expectedSharedVersion: version.optional(),
+  event: z.record(z.string(), z.any()),
+}).strict();
+export type Command = z.infer<typeof commandInput>;
+export const importSchema = z.object({
+  patient: id, modelId: nat, bundle: z.record(z.string(), z.any()),
+  context: z.record(z.string(), z.any()),
+}).strict();
+export type Patient = z.infer<typeof importSchema>;
+export const emptyShared = () => ({ administrations: [], placements: [] });
+
+export function canonical(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
+  if (value !== null && typeof value === 'object')
+    return `{${Object.keys(value).sort().map(k => `${JSON.stringify(k)}:${canonical((value as Obj)[k])}`).join(',')}}`;
+  return JSON.stringify(value);
+}
+export const digest = (v: unknown) => createHash('sha256').update(canonical(v)).digest('hex');
+export function sharedKey(patient: string, w: Workflow): string | undefined {
+  if (!w.shared) return;
+  return w.shared.kind === 'dose'
+    ? `dose:${patient}:${w.shared.order}:${w.shared.occurrence}` : `bed:${w.shared.bed}`;
+}
+export function sharedAction(actor: Actor, patient: Patient, w: Workflow): Obj {
+  const s = w.shared!;
+  return s.kind === 'dose'
+    ? { administer: { actor: actor.modelId, dose: { patient: patient.modelId, order: s.order, occurrence: s.occurrence } } }
+    : { [s.kind]: { actor: actor.modelId, patient: patient.modelId, bed: s.bed } };
+}
+export class Fault extends Error {
+  status: number;
+  code: string;
+  constructor(status: number, code: string, message = code) { super(message); this.status = status; this.code = code; }
+}

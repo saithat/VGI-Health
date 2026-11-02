@@ -1,0 +1,22 @@
+# Independent project/volume: never mounts or modifies Medplum's database.
+name: vgi-commit
+services:
+  postgres:
+    image: postgres:16.15
+    environment:
+      POSTGRES_USER: vgi
+      POSTGRES_PASSWORD: vgi-dev-only
+      POSTGRES_DB: vgi_commit
+    ports:
+      - '127.0.0.1:${COMMIT_PG_PORT:-55432}:5432'
+    volumes:
+      - commit-postgres-data:/var/lib/postgresql/data
+    command: ['postgres', '-c', 'shared_buffers=64MB', '-c', 'max_connections=24', '-c', 'synchronous_commit=on']
+    mem_limit: 256m
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U vgi -d vgi_commit']
+      interval: 2s
+      timeout: 2s
+      retries: 20
+volumes:
+  commit-postgres-data:
