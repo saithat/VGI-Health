@@ -703,6 +703,16 @@ FHIR adapters, Node/React/browser, Docker/Medplum and the synthetic source data.
 These software proofs do not establish clinical correctness.
 
 
+## Exploration (early)
+
+The [formal design space](docs/design/design-space.md) fixes W1–W7 task contracts
+and separates task, abstract, concrete and final interfaces. New exploration
+uses department × role workloads and a portfolio across navigation/layout
+families; reviewed publication is on a slow cadence, independent of search.
+Historical nightly per-persona runs above remain the original experiment.
+Proved Lean layout, empirically checked renderers and simulation-only sandbox
+candidates have separate assurance tiers. No exploration result is deployed.
+
 ## Development checks
 
 Set `TMPDIR` to disk-backed scratch space and run only one Lean process in a
