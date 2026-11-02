@@ -26,7 +26,7 @@ scripts/run-overnight.sh core-10day
 # Equivalent prepared loop, with NO reporting searches:
 EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
 pnpm --filter agent run-days --parallel --days 10 --backend codex \
-  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --service-tier default --reasoning-effort high --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id core-10day \
   --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
 # Optional post-run floors, with explicit per-task limits:
@@ -96,7 +96,7 @@ Equivalent prepared agent command:
 ```sh
 EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
 pnpm --filter agent run-days --parallel --days 10 --backend codex \
-  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --service-tier default --reasoning-effort high --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id core-10day \
   --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
 ```
@@ -388,7 +388,7 @@ pnpm --filter agent test && pnpm --filter app test && pnpm --filter app lint
 ```sh
 EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
 pnpm --filter agent run-days --days 2 --backend codex \
-  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --service-tier default --reasoning-effort high --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id smoke-core \
   --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
 ```
@@ -398,13 +398,13 @@ pnpm --filter agent run-days --days 2 --backend codex \
 ```sh
 EHR_FAKE=0 LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536 EHR_SCREEN_WORKERS=1 \
 pnpm --filter agent run-days --parallel --days 10 --backend codex \
-  --service-tier fast --reasoning-effort high --world runs/world/2 \
+  --service-tier default --reasoning-effort high --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id core-10day \
   --fhir fixtures/synthea/Ashly_Rippin_149fcc1f.json
 ```
 
-These options emit `-c service_tier="fast" -c model_reasoning_effort="high"` to
-the confined Codex CLI. Resume only unchanged inputs with the same command plus
+These options emit `-c service_tier="default" -c model_reasoning_effort="high"` to
+the confined Codex CLI. (The recorded `core-10day` run used `--service-tier fast`; runs now default to `default`.) Resume only unchanged inputs with the same command plus
 `--resume`. The wrapper performs `verify-resume` and never rebuilds on this path,
 including its final static-copy stage; copy run data into static hosting separately. Prepared full-run wrapper: `scripts/run-overnight.sh core-10day`
 (or `scripts/run-overnight.sh core-10day --resume`).

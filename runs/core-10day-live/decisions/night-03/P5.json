@@ -388,7 +388,114 @@
         }
       }
     },
-    "test": null,
+    "test": {
+      "day": 4,
+      "load": "blind-measurement",
+      "before": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 505,
+        "keystrokes": 1687,
+        "scrolls": 899,
+        "popups": 23,
+        "overrides": 6,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 28569,
+        "mouseTravelPx": 209475.16,
+        "scrollPx": 851108
+      },
+      "after": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 489,
+        "keystrokes": 1687,
+        "scrolls": 866,
+        "popups": 15,
+        "overrides": 0,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 27969,
+        "mouseTravelPx": 209011.37,
+        "scrollPx": 800990
+      },
+      "saving": {
+        "clicks": 16,
+        "keystrokes": 0,
+        "scrolls": 33,
+        "klmDeciSec": 600,
+        "mouseTravelPx": 463.79,
+        "scrollPx": 50118
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 46.4,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 410
+        },
+        "after": {
+          "clicks": 41.7,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 399.3
+        }
+      }
+    },
+    "testNoAgent": {
+      "day": 4,
+      "load": "blind-measurement-no-agent",
+      "before": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 505,
+        "keystrokes": 1687,
+        "scrolls": 886,
+        "popups": 23,
+        "overrides": 6,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 28448,
+        "mouseTravelPx": 210933.74000000002,
+        "scrollPx": 822700
+      },
+      "after": {
+        "tasks": 11,
+        "completed": 11,
+        "clicks": 489,
+        "keystrokes": 1687,
+        "scrolls": 866,
+        "popups": 15,
+        "overrides": 0,
+        "searches": 2,
+        "backtracks": 7,
+        "klmDeciSec": 27969,
+        "mouseTravelPx": 209011.37,
+        "scrollPx": 800990
+      },
+      "saving": {
+        "clicks": 16,
+        "keystrokes": 0,
+        "scrolls": 20,
+        "klmDeciSec": 479,
+        "mouseTravelPx": 1922.37,
+        "scrollPx": 21710
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 46.4,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 407.8
+        },
+        "after": {
+          "clicks": 41.7,
+          "keystrokes": 3024.1,
+          "scrolls": 0,
+          "klmDeciSec": 399.3
+        }
+      }
+    },
     "minClicks": [],
     "predictionHeld": null,
     "predictionNote": ""

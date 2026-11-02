@@ -26,7 +26,7 @@ pnpm --filter app test
 pnpm --filter app lint
 fi
 mkdir -p "runs/$run_id/logs"
-pnpm --filter agent run-days --parallel --days 10 --backend codex --service-tier "${CODEX_SERVICE_TIER:-fast}" --reasoning-effort "${CODEX_REASONING_EFFORT:-high}" --world runs/world/2 \
+pnpm --filter agent run-days --parallel --days 10 --backend codex --service-tier "${CODEX_SERVICE_TIER:-default}" --reasoning-effort "${CODEX_REASONING_EFFORT:-high}" --world runs/world/2 \
   --personas P1,P2,P3,P4,P5 --run-id "$run_id" \
   --fhir "${EHR_SAMPLE_FHIR:-fixtures/synthea/Ashly_Rippin_149fcc1f.json}" "$@" \
   2>&1 | tee -a "runs/$run_id/logs/console.txt"

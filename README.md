@@ -530,21 +530,25 @@ and Vite plugins in `app/scripts/` serve the artifacts:
   - trajectory recording.
 
 <!-- results:start -->
-## Results so far (`core-10day-live`)
+## Results (`core-10day-live`)
 
-The five-persona run (`runs/core-10day-live/`) has completed **5 of 10 days** and 4 nights. It is still running, and the snapshot is re-published after each night. Day 1 runs every persona on v0. From day 2 on, each simulated clinician works on the latest certified revision of their fork, and a **no-agent control** (v0, which receives the same vendor releases) runs the same tasks. The v2 vendor release arrives on day 4.
+The five-persona run (`runs/core-10day-live/`) completed all **10 of 10 days** and 9 nights. Day 1 runs every persona on v0. From day 2 on, each simulated clinician works on the latest certified revision of their fork, and a **no-agent control** (v0, which receives the same vendor releases) runs the same tasks. The v2 vendor release arrives on day 4 and v3 on day 7. Totals below count only tasks that both arms completed (11 task-days excluded).
 
-| Persona | Revision now | Clicks, days 2–5: agent vs control | Scrolls | Mouse travel |
+| Persona | Revision now | Clicks, days 2–10: agent vs control | Scrolls | Mouse travel |
 |---|---|---|---|---|
-| P1 Primary care physician | v4 | 2957 vs 3263 (−9%) | 3645 vs 3956 (−8%) | −3% |
-| P2 ED physician | v4 | 4341 vs 4706 (−8%) | 8129 vs 8728 (−7%) | −15% |
-| P3 Inpatient RN | v2 | 2362 vs 2408 (−2%) | 2548 vs 2766 (−8%) | −2% |
-| P4 Pediatric NP | v3 | 2476 vs 2477 (±0%) | 2708 vs 3048 (−11%) | −1% |
-| P5 General surgeon | v2 | 2135 vs 2211 (−3%) | 3615 vs 3715 (−3%) | −2% |
+| P1 Primary care physician | v5 | 6264 vs 7099 (−12%) | 7412 vs 8466 (−12%) | −6% |
+| P2 ED physician | v7 | 10234 vs 11160 (−8%) | 19359 vs 20996 (−8%) | −20% |
+| P3 Inpatient RN | v4 | 5285 vs 5398 (−2%) | 5636 vs 6166 (−9%) | −2% |
+| P4 Pediatric NP | v8 | 5122 vs 5134 (±0%) | 5694 vs 6626 (−14%) | −4% |
+| P5 General surgeon | v4 | 4192 vs 4312 (−3%) | 7139 vs 7314 (−2%) | −1% |
 
-- 15 of 20 persona-nights deployed a new revision; 5 kept the current one. The checker rejected 0 of 16 merged candidates this run. The planted-bad-UI suite separately shows that it rejects bad UIs.
-- 655 of 658 simulated tasks completed, on every revision.
-- Native vs. browser WASM: 37944 recorded events over 658 trajectories replayed through both, with 0 mismatches.
+- 28 of 45 persona-nights deployed a new revision; 17 kept the current one (9 because validation found the candidate made the replayed work worse).
+- The Lean checker rejected 1 of 125 agent-written candidates. P2 night 8: "Show the signing-screen anticoagulant panel only for pre-op encounters." violated `reviewsBeforeCommit` (anticoagulantList is not shown on screen w3Sign when signOrders is clicked). The counterexample was a three-click path to signing without the list on screen.
+- The nightly planted candidate (allergy list moved into a tab) landed on screens where no commit requires the allergy review, so the checker correctly accepted it (35 times, 0 rejected) and the other planted kinds never ran. Evidence that the checker rejects unsafe UIs comes from the known-bad suite and the proofs listed above, plus the rejection above.
+- 1273 of 1284 simulated tasks completed. 4 failed in both arms (P1 v4, P5 v2), so the cause is in the task or the simulated user, not the revision. 7 failed only on the agent's revision (P1 v5). P1's v5 is the night-6 migration to the v3 release, which requires a coded antibiotic indication. On W1 visits from day 7, the simulated physician fills the free-text indication, reaches order signing and stops, because the coded per-line picker added by the migration is never filled. The control completes these tasks on the vendor's v3 screens. The migration's validation replayed day 5, before v3, so it did not exercise the new requirement. Completion is gated by validation, not proved (see the table above).
+- Held-out rule conformance (200 scenarios the agent never sees; report-only): 3497 passed, 15 failed, 3088 not applicable, across 33 revisions. Failures: `v2.prior-auth.imaging` on P1 v3, P1 v4, P1 v5, P5 v2: the agent chose not to surface the optional v2 prior-auth controls, which left no reachable way to complete a prior-auth imaging order; `v2.prior-auth.procedure` on P1 v3, P1 v4, P1 v5, P5 v2: the same hidden prior-auth controls left no way to complete a prior-auth procedure order; `entry.signNote.claimDiagnosis` on P2 v1, P2 v2, P2 v3, P2 v4, P2 v5, P2 v6, P2 v7: night 1 moved diagnosis entry beside the provider note, and the claim diagnosis is no longer confirmed from the visit diagnosis (a billing rule the checker's properties do not express).
+- Native vs. browser WASM: 72636 recorded events over 1284 trajectories replayed through both, with 0 mismatches.
+- The run stopped once after day 7, when the agent process hit Node's default heap limit. Days 8–10 were resumed from the run-start commit, with every resume fingerprint matching (app, agent, gate, world, `ehr`).
 - These are simulated clinicians with deterministic policies, not user studies (see gap G2).
 <!-- results:end -->
 

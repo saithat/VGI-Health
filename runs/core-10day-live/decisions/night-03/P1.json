@@ -458,7 +458,114 @@
         }
       }
     },
-    "test": null,
+    "test": {
+      "day": 4,
+      "load": "blind-measurement",
+      "before": {
+        "tasks": 40,
+        "completed": 40,
+        "clicks": 909,
+        "keystrokes": 3768,
+        "scrolls": 1112,
+        "popups": 36,
+        "overrides": 16,
+        "searches": 23,
+        "backtracks": 23,
+        "klmDeciSec": 47562,
+        "mouseTravelPx": 355516.77,
+        "scrollPx": 1848455
+      },
+      "after": {
+        "tasks": 40,
+        "completed": 40,
+        "clicks": 810,
+        "keystrokes": 3724,
+        "scrolls": 1020,
+        "popups": 16,
+        "overrides": 0,
+        "searches": 12,
+        "backtracks": 23,
+        "klmDeciSec": 44834,
+        "mouseTravelPx": 345344.46,
+        "scrollPx": 1697697
+      },
+      "saving": {
+        "clicks": 99,
+        "keystrokes": 44,
+        "scrolls": 92,
+        "klmDeciSec": 2728,
+        "mouseTravelPx": 10172.31,
+        "scrollPx": 150758
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 98.9,
+          "keystrokes": 4793.5,
+          "scrolls": 0,
+          "klmDeciSec": 544
+        },
+        "after": {
+          "clicks": 77.2,
+          "keystrokes": 4736.4,
+          "scrolls": 0,
+          "klmDeciSec": 507.1
+        }
+      }
+    },
+    "testNoAgent": {
+      "day": 4,
+      "load": "blind-measurement-no-agent",
+      "before": {
+        "tasks": 40,
+        "completed": 40,
+        "clicks": 909,
+        "keystrokes": 3768,
+        "scrolls": 1101,
+        "popups": 36,
+        "overrides": 16,
+        "searches": 23,
+        "backtracks": 23,
+        "klmDeciSec": 47397,
+        "mouseTravelPx": 355516.77,
+        "scrollPx": 1843850
+      },
+      "after": {
+        "tasks": 40,
+        "completed": 40,
+        "clicks": 810,
+        "keystrokes": 3724,
+        "scrolls": 1020,
+        "popups": 16,
+        "overrides": 0,
+        "searches": 12,
+        "backtracks": 23,
+        "klmDeciSec": 44834,
+        "mouseTravelPx": 345344.46,
+        "scrollPx": 1697697
+      },
+      "saving": {
+        "clicks": 99,
+        "keystrokes": 44,
+        "scrolls": 81,
+        "klmDeciSec": 2563,
+        "mouseTravelPx": 10172.31,
+        "scrollPx": 146153
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 98.9,
+          "keystrokes": 4793.5,
+          "scrolls": 0,
+          "klmDeciSec": 541.8
+        },
+        "after": {
+          "clicks": 77.2,
+          "keystrokes": 4736.4,
+          "scrolls": 0,
+          "klmDeciSec": 507.1
+        }
+      }
+    },
     "minClicks": [],
     "predictionHeld": null,
     "predictionNote": ""

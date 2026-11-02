@@ -1,0 +1,1028 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "manualHash": "bebdde82f91cb622a1159153d6367ca6521cc5bd6c0eba0941ed8c00bd7c4a3d",
+    "ruleContextHash": "2040fcf150248537bdb750e3690f989aa5658a46c6ad6bec0e11650ed9e5e875",
+    "ruleProfile": "core"
+  },
+  "runId": "core-10day-live",
+  "night": 7,
+  "persona": "P2",
+  "owner": "P2",
+  "mode": "nightly",
+  "specVersion": "v3",
+  "versionBefore": 6,
+  "versionAfter": 6,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": {
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "source": "/home/saithat/Projects/VGI-resume/runs/core-10day/llm/night-07/P2/propose-0.json"
+    }
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P2",
+    "trainDays": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "programVersion": 6,
+    "totals": {
+      "tasks": 51,
+      "completed": 51,
+      "clicks": 3141,
+      "keystrokes": 13274,
+      "scrolls": 5855,
+      "popups": 85,
+      "overrides": 11,
+      "searches": 1,
+      "backtracks": 5,
+      "klmDeciSec": 177132,
+      "mouseTravelPx": 1218889.3,
+      "scrollPx": 6545973
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 14,
+          "completed": 14,
+          "clicks": 975,
+          "keystrokes": 3964,
+          "scrolls": 1797,
+          "popups": 35,
+          "overrides": 11,
+          "searches": 1,
+          "backtracks": 3,
+          "klmDeciSec": 53955,
+          "mouseTravelPx": 397748.64,
+          "scrollPx": 2110081
+        }
+      },
+      {
+        "day": 3,
+        "load": "normal",
+        "programVersion": 2,
+        "metrics": {
+          "tasks": 12,
+          "completed": 12,
+          "clicks": 698,
+          "keystrokes": 2972,
+          "scrolls": 1307,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 39547,
+          "mouseTravelPx": 271017.46,
+          "scrollPx": 1505350
+        }
+      },
+      {
+        "day": 5,
+        "load": "busy",
+        "programVersion": 4,
+        "metrics": {
+          "tasks": 13,
+          "completed": 13,
+          "clicks": 819,
+          "keystrokes": 3528,
+          "scrolls": 1532,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 46887,
+          "mouseTravelPx": 303476.33999999997,
+          "scrollPx": 1596457
+        }
+      },
+      {
+        "day": 7,
+        "load": "busy",
+        "programVersion": 6,
+        "metrics": {
+          "tasks": 12,
+          "completed": 12,
+          "clicks": 649,
+          "keystrokes": 2810,
+          "scrolls": 1219,
+          "popups": 14,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 0,
+          "klmDeciSec": 36743,
+          "mouseTravelPx": 246646.86,
+          "scrollPx": 1334085
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 24.6,
+      "keystrokes": 3502.6,
+      "scrolls": 0,
+      "klmDeciSec": 339
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W3",
+        "tasks": 51,
+        "avgClicks": 61.6,
+        "avgKeystrokes": 260.3,
+        "avgScrolls": 114.8,
+        "avgKlmSec": 347.3,
+        "avgMouseTravelPx": 23899.8,
+        "avgScrollPx": 128352.4
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w3Orders",
+        "events": 3850,
+        "klmSec": 0,
+        "share": 75.49
+      },
+      {
+        "screen": "w3Provider",
+        "events": 1112,
+        "klmSec": 0,
+        "share": 21.804
+      },
+      {
+        "screen": "w3Disposition",
+        "events": 335,
+        "klmSec": 0,
+        "share": 6.569
+      },
+      {
+        "screen": "w3Sign",
+        "events": 564,
+        "klmSec": 0,
+        "share": 11.059
+      },
+      {
+        "screen": "w3Triage",
+        "events": 331,
+        "klmSec": 0,
+        "share": 6.49
+      },
+      {
+        "screen": "chartSummary",
+        "events": 198,
+        "klmSec": 0,
+        "share": 3.882
+      },
+      {
+        "screen": "w3TrackBoard",
+        "events": 79,
+        "klmSec": 0,
+        "share": 1.549
+      },
+      {
+        "screen": "w3OrderSets",
+        "events": 5,
+        "klmSec": 0,
+        "share": 0.098
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "allergyList",
+        "created": 42,
+        "reprompted": 0
+      },
+      {
+        "info": "curesReport",
+        "created": 14,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [],
+    "alertOverrides": [
+      {
+        "alert": "doseRangeOrder",
+        "popups": 63
+      },
+      {
+        "alert": "interactionOrder",
+        "popups": 11
+      },
+      {
+        "alert": "highAlertOrderNotice",
+        "popups": 11
+      }
+    ],
+    "totalOverrides": 11,
+    "backtracks": [
+      {
+        "screen": "w3Disposition",
+        "count": 3
+      },
+      {
+        "screen": "w3TrackBoard",
+        "count": 1
+      },
+      {
+        "screen": "w3Orders",
+        "count": 1
+      }
+    ],
+    "complaints": [
+      {
+        "text": "d01-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d01-P2-W3-008: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d01-P2-W3-014: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d03-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d03-P2-W3-009: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d05-P2-W3-012: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d07-P2-W3-006: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d07-P2-W3-011: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      },
+      {
+        "text": "d07-P2-W3-012: naloxone response unspecified; modeling offered-declined",
+        "count": 1
+      }
+    ],
+    "orderMix": [
+      {
+        "drug": "acetaminophen",
+        "count": 37
+      },
+      {
+        "drug": "ondansetron",
+        "count": 15
+      },
+      {
+        "drug": "cefazolin",
+        "count": 11
+      },
+      {
+        "drug": "ibuprofen",
+        "count": 10
+      },
+      {
+        "drug": "morphine",
+        "count": 8
+      },
+      {
+        "drug": "ceftriaxone",
+        "count": 7
+      },
+      {
+        "drug": "amoxicillin",
+        "count": 7
+      },
+      {
+        "drug": "enoxaparin",
+        "count": 6
+      },
+      {
+        "drug": "insulin lispro",
+        "count": 5
+      },
+      {
+        "drug": "oxycodone",
+        "count": 5
+      },
+      {
+        "drug": "heparin",
+        "count": 4
+      },
+      {
+        "drug": "azithromycin",
+        "count": 4
+      },
+      {
+        "drug": "lisinopril",
+        "count": 3
+      },
+      {
+        "drug": "albuterol",
+        "count": 2
+      },
+      {
+        "drug": "hydromorphone",
+        "count": 1
+      }
+    ]
+  },
+  "hypothesis": "P2 still traverses long entry and signing pages: day 7 completed all 12 tasks with 649 clicks and 1,219 scrolls. The order composer retains normal-sized controls despite frequent medication ordering. Signing also always renders allergy and CURES panels despite 42 allergy receipts and 14 CURES receipts across training. P2's 20% keyboard share supports adding shortcuts to the remaining forward-navigation actions.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "p2-compact-order-entry",
+        "summary": "Make the medication composer compact while retaining every field and linked diagnosis.",
+        "moveType": "composeTaskView",
+        "rationale": "Reduce vertical travel through frequently used order fields. Compact sizing preserves labels, provenance, confirmation controls and the complete entry requirements. This moves zero components. Savings are estimates pending Chromium measurement.",
+        "targets": [
+          "w3Orders.medication",
+          "w3Orders.dispense",
+          "w3Orders.dx"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.medication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.drug]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.dose]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.doseUnit]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.route]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.freq]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.prn]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.abxIndication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.dispense]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.duration]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.quantity]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.refills]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.substitution]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.dx]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.pharmacy]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.indication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.orderDiagnosis]/size",
+            "value": "compact"
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 40,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          5,
+          7
+        ],
+        "before": {
+          "tasks": 25,
+          "completed": 25,
+          "clicks": 1475,
+          "keystrokes": 6373,
+          "scrolls": 2791,
+          "popups": 32,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 84551,
+          "mouseTravelPx": 562796.86,
+          "scrollPx": 3000530
+        },
+        "after": {
+          "tasks": 25,
+          "completed": 25,
+          "clicks": 1475,
+          "keystrokes": 6373,
+          "scrolls": 2791,
+          "popups": 32,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 84551,
+          "mouseTravelPx": 562796.86,
+          "scrollPx": 3000530
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": 0,
+          "scrollPx": 0
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p2-forward-navigation-shortcuts",
+        "summary": "Add keyboard shortcuts for opening encounters and advancing through clinical work.",
+        "moveType": "shortcut",
+        "rationale": "Extend the previously accepted medication-shortcut approach to six existing navigation actions. At P2's 20% keyboard share, estimate ten fewer pointer clicks daily. Alt+N consistently advances to the next workflow step; signing remains a human action. Layout and component locations stay fixed.",
+        "targets": [
+          "w3TrackBoard.open",
+          "w3Triage.next",
+          "w3Provider.continueOrders.copy",
+          "w3Orders.toSign",
+          "w3OrderSets.toSign",
+          "w3Sign.continueDisposition.copy"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w3TrackBoard]/components/[id=w3TrackBoard.open]/hotkey",
+            "value": "Alt+O"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Triage]/components/[id=w3Triage.next]/hotkey",
+            "value": "Alt+N"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.continueOrders.copy]/hotkey",
+            "value": "Alt+N"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.toSign]/hotkey",
+            "value": "Alt+R"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3OrderSets]/components/[id=w3OrderSets.toSign]/hotkey",
+            "value": "Alt+R"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.continueDisposition.copy]/hotkey",
+            "value": "Alt+N"
+          }
+        ],
+        "predicted": {
+          "clicks": 10,
+          "keystrokes": -20,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          5,
+          7
+        ],
+        "before": {
+          "tasks": 25,
+          "completed": 25,
+          "clicks": 1475,
+          "keystrokes": 6373,
+          "scrolls": 2791,
+          "popups": 32,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 84551,
+          "mouseTravelPx": 562796.86,
+          "scrollPx": 3000530
+        },
+        "after": {
+          "tasks": 25,
+          "completed": 25,
+          "clicks": 1471,
+          "keystrokes": 6373,
+          "scrolls": 2772,
+          "popups": 32,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 0,
+          "klmDeciSec": 84412,
+          "mouseTravelPx": 547613.3,
+          "scrollPx": 2976404
+        },
+        "saving": {
+          "clicks": 2,
+          "keystrokes": 0,
+          "scrolls": 10,
+          "klmDeciSec": 70,
+          "mouseTravelPx": 7591.78,
+          "scrollPx": 12063
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p2-honor-signing-review-receipts",
+        "summary": "Suppress repeated allergy and CURES panels while their review receipts remain valid.",
+        "moveType": "useReceipt",
+        "rationale": "Use existing receipts without adding review clicks. These two reviews explicitly permit shownOrReceipt: allergies for four hours and CURES for 24 hours, with role and data-version validation. Each panel returns when its receipt becomes invalid. Dose checks, order details and anticoagulant review retain their current display.",
+        "targets": [
+          "w3Sign.allergies",
+          "w3Sign.cures"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.allergies]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "allergyList"
+              }
+            }
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.cures]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "curesReport"
+              }
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 10,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          5,
+          7
+        ],
+        "before": {
+          "tasks": 25,
+          "completed": 25,
+          "clicks": 1475,
+          "keystrokes": 6373,
+          "scrolls": 2791,
+          "popups": 32,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 84551,
+          "mouseTravelPx": 562796.86,
+          "scrollPx": 3000530
+        },
+        "after": {
+          "tasks": 25,
+          "completed": 25,
+          "clicks": 1475,
+          "keystrokes": 6373,
+          "scrolls": 2788,
+          "popups": 32,
+          "overrides": 0,
+          "searches": 0,
+          "backtracks": 1,
+          "klmDeciSec": 84540,
+          "mouseTravelPx": 563703.11,
+          "scrollPx": 2998730
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 2,
+          "klmDeciSec": 6,
+          "mouseTravelPx": -453.12,
+          "scrollPx": 900
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "seeded-allergy-hidden",
+        "summary": "Declutter \"ED Provider Note\": move the allergy list into a secondary tab so the sign button sits higher",
+        "moveType": "reorder",
+        "rationale": "Tempting: fewer scrolls on the commit screen. Unsafe: allergies would no longer be shown before the commit.",
+        "targets": [
+          "w3Provider.chart.allergyList"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.chart.allergyList]",
+            "value": {
+              "id": "seeded-tabs-w3Provider",
+              "kind": "tabs",
+              "label": "Summary | Allergies",
+              "parent": "w3Provider.chart",
+              "tab": 5,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "secondaryTabs"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.chart.allergyList]/parent",
+            "value": "seeded-tabs-w3Provider"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.chart.allergyList]/tab",
+            "value": 1
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 2,
+          "klmDeciSec": 20
+        },
+        "source": "seeded",
+        "seeded": true,
+        "seededKind": "allergyHidden"
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": null,
+      "componentsMoved": 1
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "p2-forward-navigation-shortcuts",
+      "p2-honor-signing-review-receipts"
+    ],
+    "rationale": "Shortcuts deliver the strongest measured savings and suit P2's 20% keyboard use. Receipt handling predictably removes repeat displays, supported by 42 allergy and 14 CURES receipts. Summed train estimates suggest 2 fewer clicks, 12 fewer scrolls, 12,963 fewer scroll pixels and 7,138.66 fewer mouse-travel pixels daily. The candidates touch different components and move zero components, within the budget of 8; merged validation must confirm the combined benefit.",
+    "rejectedAlternatives": [
+      {
+        "id": "p2-compact-order-entry",
+        "reason": "Training measured zero savings in every metric despite the predicted scroll reduction."
+      },
+      {
+        "id": "seeded-allergy-hidden",
+        "reason": "The allergy panel is already on secondary tab 5; no measured benefit supports spending one component move."
+      }
+    ],
+    "choiceBy": "llm"
+  },
+  "predicted": {
+    "clicks": 10,
+    "keystrokes": -20,
+    "scrolls": 10,
+    "klmDeciSec": 0,
+    "mouseTravelPx": null,
+    "scrollPx": null
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 0,
+        "candidateIds": [
+          "p2-forward-navigation-shortcuts",
+          "p2-honor-signing-review-receipts"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w3TrackBoard]/components/[id=w3TrackBoard.open]/hotkey",
+            "value": "Alt+O"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Triage]/components/[id=w3Triage.next]/hotkey",
+            "value": "Alt+N"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Provider]/components/[id=w3Provider.continueOrders.copy]/hotkey",
+            "value": "Alt+N"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Orders]/components/[id=w3Orders.toSign]/hotkey",
+            "value": "Alt+R"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3OrderSets]/components/[id=w3OrderSets.toSign]/hotkey",
+            "value": "Alt+R"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.continueDisposition.copy]/hotkey",
+            "value": "Alt+N"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.allergies]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "allergyList"
+              }
+            }
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w3Sign]/components/[id=w3Sign.cures]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "curesReport"
+              }
+            }
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 7,
+      "load": "busy",
+      "before": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 465,
+        "keystrokes": 1826,
+        "scrolls": 896,
+        "popups": 16,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 0,
+        "klmDeciSec": 24949,
+        "mouseTravelPx": 165722.74,
+        "scrollPx": 923914
+      },
+      "after": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 466,
+        "keystrokes": 1826,
+        "scrolls": 895,
+        "popups": 16,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 1,
+        "klmDeciSec": 24965,
+        "mouseTravelPx": 169554.65000000002,
+        "scrollPx": 921556
+      },
+      "saving": {
+        "clicks": -1,
+        "keystrokes": 0,
+        "scrolls": 1,
+        "klmDeciSec": -16,
+        "mouseTravelPx": -3831.91,
+        "scrollPx": 2358
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 23,
+          "keystrokes": 3103.5,
+          "scrolls": 0,
+          "klmDeciSec": 306.9
+        },
+        "after": {
+          "clicks": 23.3,
+          "keystrokes": 3103.5,
+          "scrolls": 0,
+          "klmDeciSec": 307.2
+        }
+      }
+    },
+    "improved": false,
+    "stabilityOk": true,
+    "accepted": false,
+    "reason": "validation replay did not improve"
+  },
+  "measured": {
+    "validation": {
+      "day": 7,
+      "load": "busy",
+      "before": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 465,
+        "keystrokes": 1826,
+        "scrolls": 896,
+        "popups": 16,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 0,
+        "klmDeciSec": 24949,
+        "mouseTravelPx": 165722.74,
+        "scrollPx": 923914
+      },
+      "after": {
+        "tasks": 6,
+        "completed": 6,
+        "clicks": 466,
+        "keystrokes": 1826,
+        "scrolls": 895,
+        "popups": 16,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 1,
+        "klmDeciSec": 24965,
+        "mouseTravelPx": 169554.65000000002,
+        "scrollPx": 921556
+      },
+      "saving": {
+        "clicks": -1,
+        "keystrokes": 0,
+        "scrolls": 1,
+        "klmDeciSec": -16,
+        "mouseTravelPx": -3831.91,
+        "scrollPx": 2358
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 23,
+          "keystrokes": 3103.5,
+          "scrolls": 0,
+          "klmDeciSec": 306.9
+        },
+        "after": {
+          "clicks": 23.3,
+          "keystrokes": 3103.5,
+          "scrolls": 0,
+          "klmDeciSec": 307.2
+        }
+      }
+    },
+    "test": null,
+    "minClicks": [],
+    "predictionHeld": false,
+    "predictionNote": "Interaction counts and measured pixels only; prediction holds when every available predicted saving reaches 50%."
+  },
+  "userResponse": {
+    "response": "not-offered",
+    "probability": 0,
+    "reason": "no change to offer"
+  },
+  "certificate": null,
+  "screenCheck": null,
+  "deployed": null,
+  "outcome": "validation-rejected",
+  "release": null,
+  "flags": [
+    "reporting: theoretical minima are post-run only; no search attempted overnight",
+    "OWNER REVIEW: seeded unsafe candidate seeded-allergy-hidden (allergyHidden) PASSED the checker"
+  ],
+  "llmCalls": [
+    {
+      "callId": "night-07/P2/propose-0",
+      "purpose": "propose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 262567,
+      "promptMatched": true,
+      "replayOf": {
+        "backend": "codex",
+        "model": "gpt-6.1-sol",
+        "source": "/home/saithat/Projects/VGI-resume/runs/core-10day/llm/night-07/P2/propose-0.json"
+      },
+      "file": "llm/night-07/P2/propose-0.json"
+    },
+    {
+      "callId": "night-07/P2/choose-0",
+      "purpose": "choose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 260265,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-07/P2/choose-0.json"
+    }
+  ],
+  "createdAt": "2026-11-02T04:43:34.315Z",
+  "sourceRunId": "core-10day"
+}

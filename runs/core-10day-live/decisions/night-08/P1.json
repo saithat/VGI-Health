@@ -1,0 +1,1081 @@
+{
+  "schemaVersion": 1,
+  "context": {
+    "manualHash": "bebdde82f91cb622a1159153d6367ca6521cc5bd6c0eba0941ed8c00bd7c4a3d",
+    "ruleContextHash": "1ad136a9ea7252e85e7a361463a46725b48f301ad4f5c4a03c2d54830c7e5e6e",
+    "ruleProfile": "core"
+  },
+  "runId": "core-10day-live",
+  "night": 8,
+  "persona": "P1",
+  "owner": "P1",
+  "mode": "nightly",
+  "specVersion": "v3",
+  "versionBefore": 5,
+  "versionAfter": 5,
+  "backend": {
+    "name": "codex",
+    "model": "gpt-6.1-sol",
+    "replayOf": null
+  },
+  "ehr": {
+    "mode": "real",
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr"
+  },
+  "evidence": {
+    "persona": "P1",
+    "trainDays": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "programVersion": 5,
+    "totals": {
+      "tasks": 92,
+      "completed": 90,
+      "clicks": 2102,
+      "keystrokes": 9673,
+      "scrolls": 2667,
+      "popups": 54,
+      "overrides": 14,
+      "searches": 40,
+      "backtracks": 57,
+      "klmDeciSec": 111522,
+      "mouseTravelPx": 856133,
+      "scrollPx": 3873781
+    },
+    "perDay": [
+      {
+        "day": 1,
+        "load": "busy",
+        "programVersion": 0,
+        "metrics": {
+          "tasks": 28,
+          "completed": 28,
+          "clicks": 791,
+          "keystrokes": 2994,
+          "scrolls": 1073,
+          "popups": 34,
+          "overrides": 14,
+          "searches": 29,
+          "backtracks": 17,
+          "klmDeciSec": 39211,
+          "mouseTravelPx": 295715.33999999997,
+          "scrollPx": 1408598
+        }
+      },
+      {
+        "day": 3,
+        "load": "normal",
+        "programVersion": 2,
+        "metrics": {
+          "tasks": 23,
+          "completed": 23,
+          "clicks": 381,
+          "keystrokes": 2218,
+          "scrolls": 400,
+          "popups": 2,
+          "overrides": 0,
+          "searches": 2,
+          "backtracks": 15,
+          "klmDeciSec": 22157,
+          "mouseTravelPx": 171526.83999999994,
+          "scrollPx": 900907
+        }
+      },
+      {
+        "day": 5,
+        "load": "busy",
+        "programVersion": 4,
+        "metrics": {
+          "tasks": 15,
+          "completed": 15,
+          "clicks": 510,
+          "keystrokes": 2510,
+          "scrolls": 699,
+          "popups": 13,
+          "overrides": 0,
+          "searches": 2,
+          "backtracks": 17,
+          "klmDeciSec": 27879,
+          "mouseTravelPx": 203101.74,
+          "scrollPx": 843139
+        }
+      },
+      {
+        "day": 7,
+        "load": "normal",
+        "programVersion": 5,
+        "metrics": {
+          "tasks": 26,
+          "completed": 24,
+          "clicks": 420,
+          "keystrokes": 1951,
+          "scrolls": 495,
+          "popups": 5,
+          "overrides": 0,
+          "searches": 7,
+          "backtracks": 8,
+          "klmDeciSec": 22275,
+          "mouseTravelPx": 185789.08000000002,
+          "scrollPx": 721137
+        }
+      }
+    ],
+    "pctAboveFloor": {
+      "clicks": 33.8,
+      "keystrokes": 3881.6,
+      "scrolls": 0,
+      "klmDeciSec": 340.5
+    },
+    "byWorkflow": [
+      {
+        "workflow": "W1",
+        "tasks": 49,
+        "avgClicks": 28.9,
+        "avgKeystrokes": 167.7,
+        "avgScrolls": 35,
+        "avgKlmSec": 167,
+        "avgMouseTravelPx": 11449.9,
+        "avgScrollPx": 41011
+      },
+      {
+        "workflow": "W2",
+        "tasks": 16,
+        "avgClicks": 8.6,
+        "avgKeystrokes": 29.6,
+        "avgScrolls": 8.9,
+        "avgKlmSec": 38.5,
+        "avgMouseTravelPx": 4405.8,
+        "avgScrollPx": 53735.7
+      },
+      {
+        "workflow": "W7",
+        "tasks": 27,
+        "avgClicks": 20.3,
+        "avgKeystrokes": 36.4,
+        "avgScrolls": 30,
+        "avgKlmSec": 87.2,
+        "avgMouseTravelPx": 8318.3,
+        "avgScrollPx": 37202.7
+      }
+    ],
+    "timeSinksByScreen": [
+      {
+        "screen": "w1Orders",
+        "events": 1568,
+        "klmSec": 0,
+        "share": 17.043
+      },
+      {
+        "screen": "w1Exam",
+        "events": 247,
+        "klmSec": 0,
+        "share": 2.685
+      },
+      {
+        "screen": "w1Close",
+        "events": 348,
+        "klmSec": 0,
+        "share": 3.783
+      },
+      {
+        "screen": "w1Hpi",
+        "events": 201,
+        "klmSec": 0,
+        "share": 2.185
+      },
+      {
+        "screen": "w1Rooming",
+        "events": 383,
+        "klmSec": 0,
+        "share": 4.163
+      },
+      {
+        "screen": "w1Sign",
+        "events": 212,
+        "klmSec": 0,
+        "share": 2.304
+      },
+      {
+        "screen": "chartSummary",
+        "events": 330,
+        "klmSec": 0,
+        "share": 3.587
+      },
+      {
+        "screen": "w1MedRec",
+        "events": 205,
+        "klmSec": 0,
+        "share": 2.228
+      },
+      {
+        "screen": "w7Decision",
+        "events": 143,
+        "klmSec": 0,
+        "share": 1.554
+      },
+      {
+        "screen": "w2Result",
+        "events": 53,
+        "klmSec": 0,
+        "share": 0.576
+      }
+    ],
+    "redundantPrompts": [],
+    "unusedReceipts": [
+      {
+        "info": "lastVisit",
+        "created": 5,
+        "reprompted": 0
+      },
+      {
+        "info": "adherence",
+        "created": 5,
+        "reprompted": 0
+      },
+      {
+        "info": "allergyList",
+        "created": 33,
+        "reprompted": 0
+      },
+      {
+        "info": "currentMeds",
+        "created": 33,
+        "reprompted": 0
+      },
+      {
+        "info": "curesReport",
+        "created": 10,
+        "reprompted": 0
+      }
+    ],
+    "buriedSearches": [
+      {
+        "query": "task",
+        "count": 39,
+        "screens": [
+          "w1Close",
+          "chartSummary",
+          "chartReview",
+          "w1Sign",
+          "home",
+          "w7Decision",
+          "w1Rooming"
+        ]
+      }
+    ],
+    "alertOverrides": [
+      {
+        "alert": "interactionOrder",
+        "popups": 9
+      },
+      {
+        "alert": "doseRangeOrder",
+        "popups": 26
+      },
+      {
+        "alert": "highAlertOrderNotice",
+        "popups": 6
+      },
+      {
+        "alert": "healthMaintenancePopup",
+        "popups": 11
+      },
+      {
+        "alert": "refillCareGapPopup",
+        "popups": 2
+      }
+    ],
+    "totalOverrides": 14,
+    "backtracks": [
+      {
+        "screen": "w1Close",
+        "count": 26
+      },
+      {
+        "screen": "w1Exam",
+        "count": 3
+      },
+      {
+        "screen": "w1Rooming",
+        "count": 2
+      },
+      {
+        "screen": "w1Labs",
+        "count": 4
+      },
+      {
+        "screen": "w1MedRec",
+        "count": 2
+      },
+      {
+        "screen": "w2Message",
+        "count": 8
+      },
+      {
+        "screen": "w7Queue",
+        "count": 1
+      },
+      {
+        "screen": "w1Hpi",
+        "count": 3
+      },
+      {
+        "screen": "w2Inbasket",
+        "count": 1
+      }
+    ],
+    "complaints": [
+      {
+        "text": "guard",
+        "count": 1
+      },
+      {
+        "text": "d07-P1-W1-002: no reachable unmet goal; incomplete",
+        "count": 1
+      },
+      {
+        "text": "d07-P1-W1-012: no reachable unmet goal; incomplete",
+        "count": 1
+      }
+    ],
+    "orderMix": [
+      {
+        "drug": "amoxicillin",
+        "count": 7
+      },
+      {
+        "drug": "metformin",
+        "count": 5
+      },
+      {
+        "drug": "hydrocodone-acetaminophen",
+        "count": 5
+      },
+      {
+        "drug": "acetaminophen",
+        "count": 5
+      },
+      {
+        "drug": "",
+        "count": 4
+      },
+      {
+        "drug": "warfarin",
+        "count": 2
+      },
+      {
+        "drug": "oxycodone",
+        "count": 2
+      },
+      {
+        "drug": "lisinopril",
+        "count": 2
+      },
+      {
+        "drug": "atorvastatin",
+        "count": 2
+      },
+      {
+        "drug": "albuterol",
+        "count": 1
+      },
+      {
+        "drug": "ibuprofen",
+        "count": 1
+      }
+    ]
+  },
+  "hypothesis": "P1 spends substantial effort scrolling through tall entry screens and returning to signing workflows. Across training days, W1 averaged 35 scrolls and 28.9 clicks per task, W7 averaged 30 scrolls, and Sign Visit accounted for 26 backtracks. Day 7 still required 495 scrolls. The order composer uses normal-sized controls throughout; Sign Visit lacks direct order-signing navigation; and Rx Response always displays last-visit and adherence panels despite five existing receipts for each. These are opportunities to reduce interactions while preserving clinical choices and human-only steps. Pixel geometry is unavailable, so pixel predictions are null.",
+  "candidates": [
+    {
+      "candidate": {
+        "id": "p1-compact-order-composer",
+        "summary": "Compact the existing medication-order controls and preference buttons.",
+        "moveType": "composeTaskView",
+        "rationale": "Target the highest-volume workflow's scrolling burden without adding navigation or changing capture behavior. Compact controls retain labels, confirmation affordances, provenance, and antibiotic indication entry. No components move, and alerts and macros retain their existing behavior.",
+        "targets": [
+          "w1Orders.prefList",
+          "w1Orders.medication",
+          "w1Orders.dispense",
+          "w1Orders.dx",
+          "w1Orders.dosing",
+          "w1Orders.controlled"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prefLisinopril]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prefAtorvastatin]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prefMetformin]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prefAmoxicillin]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prefAzithromycin]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prefIbuprofen]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prefOxycodone]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.dosingWeight]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.drug]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.dose]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.doseUnit]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.route]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.freq]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.prn]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.abxIndication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.duration]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.quantity]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.refills]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.substitution]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.pharmacy]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.indication]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.orderDiagnosis]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.curesExemptionReason]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.naloxoneOffer]/size",
+            "value": "compact"
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w1Orders]/components/[id=w1Orders.naloxoneEducation]/size",
+            "value": "compact"
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 24,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          5,
+          7
+        ],
+        "before": {
+          "tasks": 41,
+          "completed": 39,
+          "clicks": 933,
+          "keystrokes": 4476,
+          "scrolls": 1200,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 9,
+          "backtracks": 25,
+          "klmDeciSec": 50340,
+          "mouseTravelPx": 393812.06,
+          "scrollPx": 1569676
+        },
+        "after": {
+          "tasks": 41,
+          "completed": 39,
+          "clicks": 933,
+          "keystrokes": 4476,
+          "scrolls": 1200,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 9,
+          "backtracks": 25,
+          "klmDeciSec": 50340,
+          "mouseTravelPx": 393812.06,
+          "scrollPx": 1569676
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": 0,
+          "scrollPx": 0
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p1-sign-orders-from-visit-navigator",
+        "summary": "Add direct order-signing navigation to Sign Visit.",
+        "moveType": "copyToToolbar",
+        "rationale": "Sign Visit generated 26 backtracks, although their destinations are unknown. For returns needed to sign pending orders, this copied navigator action replaces Orders followed by Review and sign with one navigation click. It opens the existing complete signing screen, preserving patient-ID re-entry, required reviews, alerts, and the human commit. The copy consumes no movement budget.",
+        "targets": [
+          "w1Close.encounterNavigator",
+          "w1Orders.toSign"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Close]/components/[id=w1Close.encounterNavigator]+",
+            "value": {
+              "id": "w1Close.quickSignOrders",
+              "kind": {
+                "button": {
+                  "action": {
+                    "goto": {
+                      "screen": "w1Sign"
+                    }
+                  }
+                }
+              },
+              "label": "Review and sign pending orders",
+              "parent": "w1Close.encounterNavigator",
+              "tab": 0,
+              "visibility": "always",
+              "size": "compact",
+              "tag": "w1Close.quickSignOrders",
+              "copyOf": "w1Orders.toSign"
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 2,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          5,
+          7
+        ],
+        "before": {
+          "tasks": 41,
+          "completed": 39,
+          "clicks": 933,
+          "keystrokes": 4476,
+          "scrolls": 1200,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 9,
+          "backtracks": 25,
+          "klmDeciSec": 50340,
+          "mouseTravelPx": 393812.06,
+          "scrollPx": 1569676
+        },
+        "after": {
+          "tasks": 41,
+          "completed": 39,
+          "clicks": 913,
+          "keystrokes": 4468,
+          "scrolls": 1178,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 7,
+          "backtracks": 13,
+          "klmDeciSec": 49250,
+          "mouseTravelPx": 380652.06999999995,
+          "scrollPx": 1479073
+        },
+        "saving": {
+          "clicks": 10,
+          "keystrokes": 4,
+          "scrolls": 11,
+          "klmDeciSec": 545,
+          "mouseTravelPx": 6580,
+          "scrollPx": 45301.5
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "p1-refill-review-receipts",
+        "summary": "Honor existing last-visit and adherence receipts in Rx Response.",
+        "moveType": "useReceipt",
+        "rationale": "Training recorded five receipts each for lastVisit and adherence, while both response-screen panels remain always visible. Receipt-conditional visibility can shorten this scroll-heavy screen when an authorized, current receipt exists. Without a valid receipt, each complete panel remains shown. Relevant labs remain always visible; denial and approval requirements are preserved.",
+        "targets": [
+          "w7Decision.lastVisit",
+          "w7Decision.adherence"
+        ],
+        "patch": [
+          {
+            "op": "replace",
+            "path": "/screens/[id=w7Decision]/components/[id=w7Decision.lastVisit]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "lastVisit"
+              }
+            }
+          },
+          {
+            "op": "replace",
+            "path": "/screens/[id=w7Decision]/components/[id=w7Decision.adherence]/visibility",
+            "value": {
+              "unlessReceipt": {
+                "info": "adherence"
+              }
+            }
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 2,
+          "klmDeciSec": 0,
+          "mouseTravelPx": null,
+          "scrollPx": null
+        },
+        "source": "llm",
+        "seeded": false,
+        "seededKind": null
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": {
+        "days": [
+          5,
+          7
+        ],
+        "before": {
+          "tasks": 41,
+          "completed": 39,
+          "clicks": 933,
+          "keystrokes": 4476,
+          "scrolls": 1200,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 9,
+          "backtracks": 25,
+          "klmDeciSec": 50340,
+          "mouseTravelPx": 393812.06,
+          "scrollPx": 1569676
+        },
+        "after": {
+          "tasks": 41,
+          "completed": 39,
+          "clicks": 933,
+          "keystrokes": 4476,
+          "scrolls": 1200,
+          "popups": 18,
+          "overrides": 0,
+          "searches": 9,
+          "backtracks": 25,
+          "klmDeciSec": 50340,
+          "mouseTravelPx": 393812.06,
+          "scrollPx": 1569676
+        },
+        "saving": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 0,
+          "klmDeciSec": 0,
+          "mouseTravelPx": 0,
+          "scrollPx": 0
+        }
+      },
+      "componentsMoved": 0
+    },
+    {
+      "candidate": {
+        "id": "seeded-allergy-hidden",
+        "summary": "Declutter \"Sign Orders\": move the allergy list into a secondary tab so the sign button sits higher",
+        "moveType": "reorder",
+        "rationale": "Tempting: fewer scrolls on the commit screen. Unsafe: allergies would no longer be shown before the commit.",
+        "targets": [
+          "w1Sign.allergies"
+        ],
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Sign]/components/[id=w1Sign.allergies]",
+            "value": {
+              "id": "seeded-tabs-w1Sign",
+              "kind": "tabs",
+              "label": "Summary | Allergies",
+              "tab": 0,
+              "visibility": "always",
+              "size": "normal",
+              "tag": "secondaryTabs"
+            }
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Sign]/components/[id=w1Sign.allergies]/parent",
+            "value": "seeded-tabs-w1Sign"
+          },
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Sign]/components/[id=w1Sign.allergies]/tab",
+            "value": 1
+          }
+        ],
+        "predicted": {
+          "clicks": 0,
+          "keystrokes": 0,
+          "scrolls": 2,
+          "klmDeciSec": 20
+        },
+        "source": "seeded",
+        "seeded": true,
+        "seededKind": "allergyHidden"
+      },
+      "check": {
+        "status": "pass",
+        "property": null,
+        "message": null,
+        "counterexample": null,
+        "screens": null,
+        "verdict": "ok"
+      },
+      "trainEstimate": null,
+      "componentsMoved": 1
+    }
+  ],
+  "chosen": {
+    "candidateIds": [
+      "p1-sign-orders-from-visit-navigator"
+    ],
+    "rationale": "The direct Sign Visit navigation is the only candidate with demonstrated training savings: 10 clicks, 11 scrolls, 45,301.5 scroll pixels and 6,580 mouse-travel pixels per day. It passes certification, uses 0 of 8 permitted moves, and adds a predictable route that directly addresses P1’s frequent signing backtracks.",
+    "rejectedAlternatives": [
+      {
+        "id": "p1-compact-order-composer",
+        "reason": "Passing and stable, but training showed zero savings despite the predicted scroll reduction."
+      },
+      {
+        "id": "p1-refill-review-receipts",
+        "reason": "Passing and stable, but training showed no incremental interaction savings."
+      },
+      {
+        "id": "seeded-allergy-hidden",
+        "reason": "Uses one move without demonstrated training savings; secondary-tab allergy placement is less predictable for P1’s early-review habit."
+      }
+    ],
+    "choiceBy": "llm"
+  },
+  "predicted": {
+    "clicks": 2,
+    "keystrokes": 0,
+    "scrolls": 0,
+    "klmDeciSec": 0,
+    "mouseTravelPx": null,
+    "scrollPx": null
+  },
+  "certification": {
+    "attempts": [
+      {
+        "attempt": 0,
+        "candidateIds": [
+          "p1-sign-orders-from-visit-navigator"
+        ],
+        "source": "merged",
+        "patch": [
+          {
+            "op": "add",
+            "path": "/screens/[id=w1Close]/components/[id=w1Close.encounterNavigator]+",
+            "value": {
+              "id": "w1Close.quickSignOrders",
+              "kind": {
+                "button": {
+                  "action": {
+                    "goto": {
+                      "screen": "w1Sign"
+                    }
+                  }
+                }
+              },
+              "label": "Review and sign pending orders",
+              "parent": "w1Close.encounterNavigator",
+              "tab": 0,
+              "visibility": "always",
+              "size": "compact",
+              "tag": "w1Close.quickSignOrders",
+              "copyOf": "w1Orders.toSign"
+            }
+          }
+        ],
+        "check": {
+          "status": "pass",
+          "property": null,
+          "message": null,
+          "counterexample": null,
+          "screens": null,
+          "verdict": "ok"
+        }
+      }
+    ],
+    "result": "certified"
+  },
+  "validation": {
+    "replay": {
+      "day": 7,
+      "load": "normal",
+      "before": {
+        "tasks": 14,
+        "completed": 13,
+        "clicks": 263,
+        "keystrokes": 1054,
+        "scrolls": 333,
+        "popups": 5,
+        "overrides": 0,
+        "searches": 11,
+        "backtracks": 4,
+        "klmDeciSec": 14158,
+        "mouseTravelPx": 113184.45000000003,
+        "scrollPx": 452771
+      },
+      "after": {
+        "tasks": 14,
+        "completed": 13,
+        "clicks": 263,
+        "keystrokes": 1054,
+        "scrolls": 343,
+        "popups": 5,
+        "overrides": 0,
+        "searches": 11,
+        "backtracks": 4,
+        "klmDeciSec": 14213,
+        "mouseTravelPx": 112729.01000000002,
+        "scrollPx": 461537
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": -10,
+        "klmDeciSec": -55,
+        "mouseTravelPx": 455.44,
+        "scrollPx": -8766
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 65.4,
+          "keystrokes": 3664.3,
+          "scrolls": 0,
+          "klmDeciSec": 449.6
+        },
+        "after": {
+          "clicks": 65.4,
+          "keystrokes": 3664.3,
+          "scrolls": 0,
+          "klmDeciSec": 451.7
+        }
+      }
+    },
+    "improved": false,
+    "stabilityOk": true,
+    "accepted": false,
+    "reason": "validation replay did not improve"
+  },
+  "measured": {
+    "validation": {
+      "day": 7,
+      "load": "normal",
+      "before": {
+        "tasks": 14,
+        "completed": 13,
+        "clicks": 263,
+        "keystrokes": 1054,
+        "scrolls": 333,
+        "popups": 5,
+        "overrides": 0,
+        "searches": 11,
+        "backtracks": 4,
+        "klmDeciSec": 14158,
+        "mouseTravelPx": 113184.45000000003,
+        "scrollPx": 452771
+      },
+      "after": {
+        "tasks": 14,
+        "completed": 13,
+        "clicks": 263,
+        "keystrokes": 1054,
+        "scrolls": 343,
+        "popups": 5,
+        "overrides": 0,
+        "searches": 11,
+        "backtracks": 4,
+        "klmDeciSec": 14213,
+        "mouseTravelPx": 112729.01000000002,
+        "scrollPx": 461537
+      },
+      "saving": {
+        "clicks": 0,
+        "keystrokes": 0,
+        "scrolls": -10,
+        "klmDeciSec": -55,
+        "mouseTravelPx": 455.44,
+        "scrollPx": -8766
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 65.4,
+          "keystrokes": 3664.3,
+          "scrolls": 0,
+          "klmDeciSec": 449.6
+        },
+        "after": {
+          "clicks": 65.4,
+          "keystrokes": 3664.3,
+          "scrolls": 0,
+          "klmDeciSec": 451.7
+        }
+      }
+    },
+    "test": null,
+    "minClicks": [],
+    "predictionHeld": false,
+    "predictionNote": "Interaction counts and measured pixels only; prediction holds when every available predicted saving reaches 50%."
+  },
+  "userResponse": {
+    "response": "not-offered",
+    "probability": 0,
+    "reason": "no change to offer"
+  },
+  "certificate": null,
+  "screenCheck": null,
+  "deployed": null,
+  "outcome": "validation-rejected",
+  "release": null,
+  "flags": [
+    "reporting: theoretical minima are post-run only; no search attempted overnight",
+    "OWNER REVIEW: seeded unsafe candidate seeded-allergy-hidden (allergyHidden) PASSED the checker"
+  ],
+  "llmCalls": [
+    {
+      "callId": "night-08/P1/propose-0",
+      "purpose": "propose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 353544,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-08/P1/propose-0.json"
+    },
+    {
+      "callId": "night-08/P1/choose-0",
+      "purpose": "choose",
+      "backend": "codex",
+      "model": "gpt-6.1-sol",
+      "servedBy": null,
+      "promptChars": 350775,
+      "promptMatched": null,
+      "replayOf": null,
+      "file": "llm/night-08/P1/choose-0.json"
+    }
+  ],
+  "createdAt": "2026-11-02T05:30:57.773Z",
+  "sourceRunId": "core-10day"
+}

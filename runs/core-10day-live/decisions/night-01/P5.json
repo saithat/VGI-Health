@@ -944,7 +944,114 @@
         }
       }
     },
-    "test": null,
+    "test": {
+      "day": 2,
+      "load": "blind-measurement",
+      "before": {
+        "tasks": 14,
+        "completed": 14,
+        "clicks": 748,
+        "keystrokes": 2467,
+        "scrolls": 1326,
+        "popups": 30,
+        "overrides": 9,
+        "searches": 0,
+        "backtracks": 2,
+        "klmDeciSec": 46426,
+        "mouseTravelPx": 315104.62000000005,
+        "scrollPx": 1165088
+      },
+      "after": {
+        "tasks": 14,
+        "completed": 14,
+        "clicks": 726,
+        "keystrokes": 2467,
+        "scrolls": 1301,
+        "popups": 19,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 2,
+        "klmDeciSec": 45774,
+        "mouseTravelPx": 313128.18,
+        "scrollPx": 1138933
+      },
+      "saving": {
+        "clicks": 22,
+        "keystrokes": 0,
+        "scrolls": 25,
+        "klmDeciSec": 652,
+        "mouseTravelPx": 1976.44,
+        "scrollPx": 26155
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 39.8,
+          "keystrokes": 2671.9,
+          "scrolls": 0,
+          "klmDeciSec": 436.3
+        },
+        "after": {
+          "clicks": 35.7,
+          "keystrokes": 2671.9,
+          "scrolls": 0,
+          "klmDeciSec": 428.8
+        }
+      }
+    },
+    "testNoAgent": {
+      "day": 2,
+      "load": "blind-measurement-no-agent",
+      "before": {
+        "tasks": 14,
+        "completed": 14,
+        "clicks": 748,
+        "keystrokes": 2467,
+        "scrolls": 1326,
+        "popups": 30,
+        "overrides": 9,
+        "searches": 0,
+        "backtracks": 2,
+        "klmDeciSec": 46426,
+        "mouseTravelPx": 315104.62000000005,
+        "scrollPx": 1165088
+      },
+      "after": {
+        "tasks": 14,
+        "completed": 14,
+        "clicks": 726,
+        "keystrokes": 2467,
+        "scrolls": 1301,
+        "popups": 19,
+        "overrides": 0,
+        "searches": 0,
+        "backtracks": 2,
+        "klmDeciSec": 45774,
+        "mouseTravelPx": 313128.18,
+        "scrollPx": 1138933
+      },
+      "saving": {
+        "clicks": 22,
+        "keystrokes": 0,
+        "scrolls": 25,
+        "klmDeciSec": 652,
+        "mouseTravelPx": 1976.44,
+        "scrollPx": 26155
+      },
+      "pctAboveFloor": {
+        "before": {
+          "clicks": 39.8,
+          "keystrokes": 2671.9,
+          "scrolls": 0,
+          "klmDeciSec": 436.3
+        },
+        "after": {
+          "clicks": 35.7,
+          "keystrokes": 2671.9,
+          "scrolls": 0,
+          "klmDeciSec": 428.8
+        }
+      }
+    },
     "minClicks": [],
     "predictionHeld": true,
     "predictionNote": "Interaction counts and measured pixels only; prediction holds when every available predicted saving reaches 50%."

@@ -1002,7 +1002,8 @@
   "release": null,
   "flags": [
     "reporting: theoretical minima are post-run only; no search attempted overnight",
-    "OWNER REVIEW: seeded unsafe candidate seeded-allergy-hidden (allergyHidden) PASSED the checker"
+    "OWNER REVIEW: seeded unsafe candidate seeded-allergy-hidden (allergyHidden) PASSED the checker",
+    "test-unmeasured: v2 superseded before blind day 4"
   ],
   "llmCalls": [
     {
