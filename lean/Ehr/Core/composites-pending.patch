@@ -1,0 +1,416 @@
+--- a/lean/Ehr/Core/Types.lean
++++ b/lean/Ehr/Core/Types.lean
+@@ -619,6 +619,8 @@
+ inductive Kind
+   /-- The patient banner (shows the `"patientBanner"` landmark). -/
+   | banner
++  /-- A source-only composite; expand before interpreting or checking. -/
++  | use («def» : String) (args : List (String × String))
+   /-- An input for one data element on one order line. -/
+   | field (element : ElementId) (slot : Slot) (prefill : Prefill)
+   /-- A read-only info block. -/
+--- a/lean/Ehr/Core/Basics.lean
++++ b/lean/Ehr/Core/Basics.lean
+@@ -46,6 +46,7 @@
+ `"priorAuth"`, so it needs the release v2 catalog too. -/
+ def Kind.catalogTag : Kind → String
+   | .banner => "banner"
++  | .use .. => "use"
+   | .field .. => "field"
+   | .panel _ => "panel"
+   | .table _ => "table"
+--- a/lean/Ehr/Core/Tests.lean
++++ b/lean/Ehr/Core/Tests.lean
+@@ -1,3 +1,4 @@
++import Ehr.Core.CompositeTests
+ import Ehr.Examples.TinyTests
+ import Ehr.Api
+ 
+--- /dev/null
++++ b/lean/Ehr/Core/Expand.lean
+@@ -0,0 +1,202 @@
++import Ehr.Core.Types
++
++/-! Composite components are source syntax only. Expansion imports only Init,
++uses structural list recursion, and never changes clinical/backend semantics. -/
++namespace Ehr
++namespace Composite
++
++/-- Simultaneous substitution: argument values are never reinterpreted as templates.
++Unknown, unclosed and unmatched placeholders fail closed. -/
++def substitute (args : List (String × String)) (s : String) : Except String String := do
++  let parts := s.splitOn "{{"
++  let first := parts.headD ""
++  if (first.splitOn "}}").length != 1 then throw "unmatched composite placeholder"
++  let rest ← parts.drop 1 |>.mapM fun part => do
++    match part.splitOn "}}" with
++    | key :: suffix :: [] =>
++      match args.lookup key with
++      | some value => pure (value ++ suffix)
++      | none => throw s!"unknown composite parameter: {key}"
++    | _ => throw "unclosed or unmatched composite placeholder"
++  return first ++ "".intercalate rest
++
++def prefill (sub : String → Except String String) : Prefill → Except String Prefill
++  | .none => pure .none
++  | .fromRecord f => return .fromRecord (← sub f)
++  | .default v => return .default (← sub v)
++  | .linked e => return .linked (← sub e)
++
++def action (sub : String → Except String String) : Action → Except String Action
++  | .goto s => return .goto (← sub s)
++  | .commit c => return .commit (← sub c)
++  | .markReviewed i => return .markReviewed (← sub i)
++  | .back => pure .back
++  | .newOrderLine => pure .newOrderLine
++  | .requestPriorAuth => pure .requestPriorAuth
++
++def kind (sub : String → Except String String) : Kind → Except String Kind
++  | .use .. => .error "nested composite use is forbidden"
++  | .field e slot pf => return .field (← sub e) slot (← prefill sub pf)
++  | .panel i => return .panel (← sub i)
++  | .table i => return .table (← sub i)
++  | .trend i => return .trend (← sub i)
++  | .alert a popup => return .alert (← sub a) popup
++  | .button a => return .button (← action sub a)
++  | .«macro» m => return .«macro» (← sub m)
++  | .search s => return .search (← sub s)
++  | .priorAuth i => return .priorAuth (← sub i)
++  | k => pure k
++
++/-- Substitute every string field before linking template-local references. -/
++def component (args : List (String × String)) (c : Component) : Except String Component := do
++  let sub := substitute args
++  let visibility : Visibility ← match c.visibility with
++    | .always => pure .always
++    | .unlessReceipt i => pure (.unlessReceipt (← sub i))
++  let id ← sub c.id
++  let k ← kind sub c.kind
++  let label ← sub c.label
++  let parent ← c.parent?.mapM sub
++  let hotkey ← c.hotkey?.mapM sub
++  let tag ← sub c.tag
++  let copy ← c.copyOf?.mapM sub
++  return { c with
++    id := id
++    kind := k
++    label := label
++    parent? := parent
++    visibility := visibility
++    hotkey? := hotkey
++    tag := tag
++    copyOf? := copy }
++
++def isUse (c : Component) : Bool := match c.kind with | .use .. => true | _ => false
++
++def unique (xs : List String) : Bool := xs.eraseDups.length == xs.length
++
++/-- Reject malformed definitions even when they are unused. -/
++def validateDefs (defs : List ComponentDef) : Except String Unit := do
++  if !unique (defs.map (·.name)) then throw "duplicate composite definition"
++  for d in defs do
++    if d.name.isEmpty then throw "empty composite definition name"
++    if !unique d.params || d.params.any (fun p => p.isEmpty || (p.splitOn "{{").length != 1 ||
++        (p.splitOn "}}").length != 1) then throw s!"invalid composite parameters: {d.name}"
++    if d.body.any isUse then throw s!"nested composite use is forbidden: {d.name}"
++    -- Identity arguments validate placeholders in unused definitions too.
++    let _ ← d.body.mapM (component (d.params.map fun p => (p, p)))
++
++/-- Parent links must resolve inside the template and end at its root. The fuel
++is the body's length: a longer path contains a cycle. -/
++def parentChain (body : List Component) : Nat → Option String → Bool
++  | _, none => true
++  | 0, some _ => false
++  | n + 1, some id =>
++    match body.find? (·.id == id) with
++    | none => false
++    | some c =>
++      (match c.kind with | .group .. | .tabs => true | _ => false) &&
++        parentChain body n c.parent?
++
++def instantiate (defs : List ComponentDef) (c : Component) : Except String (List Component) := do
++  match c.kind with
++  | .use name args =>
++    let some d := defs.find? (·.name == name) | throw s!"unknown composite definition: {name}"
++    if !unique (args.map (·.1)) || args.length != d.params.length ||
++        !(d.params.all fun p => args.any (·.1 == p)) then
++      throw s!"composite arguments must match parameters exactly: {name}"
++    let body ← d.body.mapM (component args)
++    if !unique (body.map (·.id)) || body.any (·.id.isEmpty) then
++      throw s!"duplicate or empty composite body id: {name}"
++    if !(body.all fun b => parentChain body body.length b.parent?) then
++      throw s!"invalid composite parent or cycle: {name}"
++    if body.any (fun b => b.copyOf?.any (fun id => !(body.any (·.id == id)))) then
++      throw s!"composite copyOf must reference its body: {name}"
++    let qualify := fun id => c.id ++ "/" ++ id
++    let linked := body.map fun b => { b with
++      id := qualify b.id, parent? := some (b.parent?.map qualify |>.getD c.id),
++      copyOf? := b.copyOf?.map qualify }
++    return { c with kind := .group false false, tag := "composite:" ++ name } :: linked
++  | _ => return [c]
++
++/-- Flatten each source component's finite expansion in render order. -/
++def components (defs : List ComponentDef) : List Component → Except String (List Component)
++  | [] => pure []
++  | c :: cs => do
++    let chunk ← instantiate defs c
++    let rest ← components defs cs
++    return chunk ++ rest
++
++/-- A non-use source component is retained byte-for-byte as a Lean value. -/
++theorem instantiate_nonUse (defs : List ComponentDef) (c : Component)
++    (h : isUse c = false) : instantiate defs c = .ok [c] := by
++  cases hk : c.kind <;> simp_all [isUse, instantiate, pure, Except.pure]
++
++/-- Successful expansion preserves each non-use component exactly, including
++its id, parent, visibility, size, tag, and every clinical binding. -/
++theorem components_preserve_nonUse (defs : List ComponentDef) (cs out : List Component)
++    (c : Component) (member : c ∈ cs) (ordinary : isUse c = false)
++    (expanded : components defs cs = .ok out) : c ∈ out := by
++  induction cs generalizing out with
++  | nil => simp at member
++  | cons head tail ih =>
++    simp only [List.mem_cons] at member
++    cases member with
++    | inl same =>
++      subst head
++      cases ht : components defs tail with
++      | error e => simp [components, instantiate_nonUse defs c ordinary, ht, bind, Except.bind] at expanded
++      | ok rest =>
++        simp [components, instantiate_nonUse defs c ordinary, ht, bind, pure, Except.bind, Except.pure] at expanded
++        subst out
++        simp
++    | inr member =>
++      simp only [components] at expanded
++      cases hi : instantiate defs head with
++      | error e => simp [hi, bind, Except.bind] at expanded
++      | ok chunk =>
++        cases ht : components defs tail with
++        | error e => simp [hi, ht, bind, Except.bind] at expanded
++        | ok rest =>
++          simp [hi, ht, bind, pure, Except.bind, Except.pure] at expanded
++          subst out
++          exact List.mem_append_right _ (ih rest member ht)
++
++#print axioms instantiate_nonUse
++#print axioms components_preserve_nonUse
++end Composite
++
++/-- Expand source syntax to ordinary components. No recursion through definitions;
++all traversals recurse structurally over finite lists. Definitions are removed
++from the result. A collision with any existing id is rejected, never renamed. -/
++def Program.expand (p : Program) : Except String Program := do
++  -- Preserve legacy programs exactly; duplicate-id validation remains the
++  -- checker's duty when there is no composite syntax to introduce collisions.
++  if p.componentDefs.isEmpty && p.screens.all (fun sc => sc.components.all (fun c => !Composite.isUse c)) then
++    return p
++  Composite.validateDefs p.componentDefs
++  let screens ← p.screens.mapM fun sc => do
++    let components ← Composite.components p.componentDefs sc.components
++    return { sc with components }
++  if screens.any (fun sc => !Composite.unique (sc.components.map (·.id))) then
++    throw "composite expansion: duplicate component id on screen"
++  return { p with screens, componentDefs := [] }
++
++/-- Lift any property of executable programs to source programs. Failure to
++expand is unsatisfiable; no safety or design requirement is bypassed. The check
++lane should instantiate this with its conjunction of properties. -/
++def Program.Satisfies (p : Program) (property : Program → Prop) : Prop :=
++  ∃ expanded, p.expand = .ok expanded ∧ property expanded
++
++/-- All source-program properties mean exactly the properties of its expansion.
++Universal interpreter theorems therefore apply directly to the witness. -/
++theorem Program.satisfies_iff_expand (p : Program) (property : Program → Prop) :
++    p.Satisfies property ↔ ∃ expanded, p.expand = .ok expanded ∧ property expanded := Iff.rfl
++
++/-- Once expansion succeeds, no additional or weaker source property is used. -/
++theorem Program.satisfies_of_expanded (p expanded : Program) (h : p.expand = .ok expanded)
++    (property : Program → Prop) : p.Satisfies property ↔ property expanded := by
++  simp [Program.Satisfies, h]
++
++#print axioms Program.satisfies_iff_expand
++#print axioms Program.satisfies_of_expanded
++end Ehr
+--- /dev/null
++++ b/lean/Ehr/Core/Load.lean
+@@ -0,0 +1,41 @@
++import Ehr.Core.Expand
++import Ehr.Core.View
++
++/-! Checked source-program boundaries. Callers retain the source for hashes and
++certificates; every interpreter input below uses the expansion or returns error. -/
++namespace Ehr.Composite
++
++def loadInit (i : InitInput) : Except String State := do
++  let p ← i.program.expand
++  return Ehr.init i.spec p i.facts i.user
++
++def loadStep (i : StepInput) : Except String StepOutput := do
++  let p ← i.program.expand
++  let r := Ehr.step i.spec p i.facts i.user .human i.state i.event
++  return { state := r.1, result := r.2 }
++
++def loadView (i : ViewInput) : Except String ScreenView := do
++  let p ← i.program.expand
++  return Ehr.view i.spec p i.facts i.user i.state
++
++/-- An expansion failure belongs to wellFormed. It must be checked before any
++other property and before publishing; the source remains the hash input. -/
++def expansionVerdict (p : Program) : Verdict :=
++  match p.expand with
++  | .ok _ => .ok
++  | .error e => .violation "wellFormed" ("composite expansion: " ++ e) [] []
++
++/-- Source interpretation runs the exact existing interpreter on expansion. -/
++theorem loadStep_of_expanded (i : StepInput) (p : Program) (h : i.program.expand = .ok p) :
++    loadStep i = .ok (let r := Ehr.step i.spec p i.facts i.user .human i.state i.event
++      { state := r.1, result := r.2 }) := by
++  simp [loadStep, h, bind, pure, Except.bind, Except.pure]
++
++/-- Invalid source programs cannot execute a step. -/
++theorem loadStep_of_error (i : StepInput) (e : String) (h : i.program.expand = .error e) :
++    loadStep i = .error e := by
++  simp [loadStep, h, bind, Except.bind]
++
++#print axioms loadStep_of_expanded
++#print axioms loadStep_of_error
++end Ehr.Composite
+--- /dev/null
++++ b/lean/Ehr/Core/CompositeTests.lean
+@@ -0,0 +1,136 @@
++import Ehr.Core.Load
++import Ehr.Examples.TinyTests
++
++local instance {ε α : Type} [DecidableEq ε] [DecidableEq α] : DecidableEq (Except ε α) := by
++  intro a b
++  cases a <;> cases b <;> simp <;> infer_instance
++
++namespace Ehr.Examples.Tiny.Composite
++open Ehr.Composite
++
++/-- A rooming vitals strip: ordinary field/panel semantics under a presentation
++wrapper. This template grants no new clinical or backend behavior. -/
++def vitalsStrip : ComponentDef := {
++  name := "vitals-strip"
++  params := ["element", "label", "info"]
++  body := [
++    { id := "row", kind := .group false false, label := "{{label}}" },
++    { id := "weight", parent? := some "row",
++      kind := .field "{{element}}" (.fixed 0) (.fromRecord "weightToday"),
++      label := "{{label}} (kg)", tag := "vitals:{{element}}" },
++    { id := "history", kind := .panel "{{info}}", label := "Recent vitals" }]
++}
++
++def useVitals : Component := {
++  id := "vitals"
++  kind := .use "vitals-strip" [("element", "weight"), ("label", "Weight"), ("info", "vitals")]
++  label := "Vitals"
++}
++
++def source : Program := { program with
++  componentDefs := [vitalsStrip]
++  screens := program.screens.map fun sc =>
++    if sc.id == "rooming" then { sc with components := sc.components.map fun c =>
++      if c.id == "weightField" then useVitals else c } else sc }
++
++def expanded : Program := { program with
++  screens := program.screens.map fun sc =>
++    if sc.id == "rooming" then { sc with components := sc.components.flatMap fun c =>
++      if c.id == "weightField" then [
++        { useVitals with kind := .group false false, tag := "composite:vitals-strip" },
++        { id := "vitals/row", kind := .group false false, parent? := some "vitals", label := "Weight" },
++        { id := "vitals/weight", parent? := some "vitals/row",
++          kind := .field "weight" (.fixed 0) (.fromRecord "weightToday"),
++          label := "Weight (kg)", tag := "vitals:weight" },
++        { id := "vitals/history", parent? := some "vitals", kind := .panel "vitals", label := "Recent vitals" }]
++      else [c] } else sc }
++
++def vitalsSpec : Spec := { spec with infos := spec.infos ++
++  [{ id := "vitals", label := "Vitals", version := "" }] }
++
++def initial : State := init vitalsSpec expanded facts user
++
++#guard source.expand.toOption == some expanded
++#guard expanded.expand.toOption == some expanded
++#guard expanded.inCatalog vitalsSpec
++#guard roundTrips source && roundTrips useVitals && roundTrips vitalsStrip
++-- Existing JSON without componentDefs still decodes to the empty default.
++#guard (decodeJson Program (Lean.Json.mkObj [
++  ("id", Lean.toJson program.id), ("version", Lean.toJson program.version),
++  ("owner", Lean.toJson program.owner), ("role", Lean.toJson program.role),
++  ("specVersion", Lean.toJson program.specVersion), ("start", Lean.toJson program.start),
++  ("screens", Lean.toJson program.screens), ("macros", Lean.toJson program.macros)]).compress).toOption == some program
++#guard (view vitalsSpec expanded facts user initial).items.any fun i =>
++  i.comp.id == "vitals/weight" && i.shown && i.pendingConfirm
++#guard (step vitalsSpec expanded facts user .human initial (.confirm "vitals/weight")).1.captured.any fun c =>
++  c.element == "weight" && c.confirmed
++
++/-- This source property has an actual expanded witness with an interactive,
++visible record-confirm weight field. It is not a claim of checker certification. -/
++example : source.Satisfies (fun p => p = expanded ∧ p.inCatalog vitalsSpec = true) := by
++  exact ⟨expanded, by cbv, rfl, by decide⟩
++
++#guard (substitute [("x", "{{y}}"), ("y", "wrong")] "{{x}}").toOption == some "{{y}}"
++#guard (substitute [("x", "Ω🩺")] "A{{x}}{{x}}Z").toOption == some "AΩ🩺Ω🩺Z"
++#guard (substitute [] "{{unknown}}").toOption.isNone
++#guard (substitute [] "{{unclosed").toOption.isNone
++#guard (substitute [] "stray}}").toOption.isNone
++#guard (substitute [("x", "x")] "{{x}}stray}}").toOption.isNone
++
++def singleton (c : Component) (defs : List ComponentDef := [vitalsStrip]) : Program :=
++  { program with componentDefs := defs, screens :=
++    [{ id := "rooming", title := "Rooming", workflow := "W1", components := [c] }] }
++
++#guard ((singleton { useVitals with kind := .use "missing" [] }).expand).toOption.isNone
++#guard ((singleton { useVitals with kind := .use "vitals-strip" [] }).expand).toOption.isNone
++#guard ((singleton { useVitals with kind := .use "vitals-strip" [("element", "weight"), ("element", "dose"), ("info", "vitals")] }).expand).toOption.isNone
++#guard ((singleton useVitals [vitalsStrip, vitalsStrip]).expand).toOption.isNone
++#guard ((singleton useVitals [{ vitalsStrip with params := ["element", "element"] }]).expand).toOption.isNone
++#guard ((singleton useVitals [{ vitalsStrip with body := [useVitals] }]).expand).toOption.isNone
++-- Unused bad definitions cannot smuggle nested uses through certification.
++#guard ((singleton { id := "banner", kind := .banner } [{ vitalsStrip with body := [useVitals] }]).expand).toOption.isNone
++#guard ((singleton useVitals [{ vitalsStrip with body := [{ id := "x", kind := .panel "{{missing}}" }] }]).expand).toOption.isNone
++#guard ((singleton useVitals [{ vitalsStrip with body :=
++  [{ id := "x", kind := .group false false, parent? := some "x" }] }]).expand).toOption.isNone
++#guard ((singleton useVitals [{ vitalsStrip with body :=
++  [{ id := "x", kind := .panel "vitals", parent? := some "missing" }] }]).expand).toOption.isNone
++#guard ((singleton useVitals [{ vitalsStrip with body :=
++  [{ id := "x", kind := .panel "vitals" }, { id := "x", kind := .panel "vitals" }] }]).expand).toOption.isNone
++#guard ((singleton useVitals [{ vitalsStrip with body :=
++  [{ id := "x", kind := .panel "vitals", copyOf? := some "missing" }] }]).expand).toOption.isNone
++#guard ({ (singleton useVitals) with screens :=
++  [{ id := "rooming", title := "Rooming", workflow := "W1", components :=
++    [useVitals, { id := "vitals/weight", kind := .panel "vitals" }] }] }.expand).toOption.isNone
++-- Every template string location is substituted; only local ids are prefixed.
++#guard (component [("p", "bound")] {
++  id := "{{p}}"
++  kind := .button (.goto "{{p}}")
++  label := "{{p}}"
++  parent? := some "{{p}}"
++  visibility := .unlessReceipt "{{p}}"
++  hotkey? := some "{{p}}"
++  tag := "{{p}}"
++  copyOf? := some "{{p}}" }).toOption == some {
++    id := "bound"
++    kind := .button (.goto "bound")
++    label := "bound"
++    parent? := some "bound"
++    visibility := .unlessReceipt "bound"
++    hotkey? := some "bound"
++    tag := "bound"
++    copyOf? := some "bound" }
++#guard (loadInit { spec := vitalsSpec, program := source, facts, user }).toOption == some initial
++#guard (loadView { spec := vitalsSpec, program := source, facts, user, state := initial }).toOption ==
++  some (view vitalsSpec expanded facts user initial)
++#guard (loadStep {
++  spec := vitalsSpec
++  program := source
++  facts := facts
++  user := user
++  state := initial
++  event := .confirm "vitals/weight" }).toOption.any fun r =>
++    r.state.captured.any fun c => c.element == "weight" && c.confirmed
++#guard (loadInit { spec, program := singleton { useVitals with kind := .use "missing" [] }, facts, user }).toOption.isNone
++#guard (instantiate [vitalsStrip] { useVitals with id := "second" }).toOption |>.any fun cs =>
++  cs.any (·.id == "second/weight")
++end Ehr.Examples.Tiny.Composite

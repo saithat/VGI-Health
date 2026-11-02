@@ -1,0 +1,448 @@
+{
+  "sourceCommit": "09008cbdea20c282c636f8453693833fb5eb98ef",
+  "mainCommit": "b26f7722e9021a308a419f2aae8c96d9d00a36b2",
+  "seed": 123,
+  "world": "runs/world/1",
+  "schedules": 50,
+  "tasks": 1284,
+  "completed": 1271,
+  "determinism": true,
+  "determinismScope": "byte-identical day-one replay for all five personas",
+  "nativeWorkers": 10,
+  "nativeTimeoutSeconds": 240,
+  "serialPrefixSchedulesMatched": 5,
+  "featureChecks": 52,
+  "previousSweepSchedulesMatched": 50,
+  "floorViolations": [],
+  "interruptionViolations": [],
+  "results": [
+    {
+      "day": 1,
+      "persona": "P1",
+      "tasks": 42,
+      "completed": 39
+    },
+    {
+      "day": 1,
+      "persona": "P2",
+      "tasks": 22,
+      "completed": 22
+    },
+    {
+      "day": 1,
+      "persona": "P3",
+      "tasks": 38,
+      "completed": 38
+    },
+    {
+      "day": 1,
+      "persona": "P4",
+      "tasks": 22,
+      "completed": 22
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "tasks": 18,
+      "completed": 14
+    },
+    {
+      "day": 2,
+      "persona": "P1",
+      "tasks": 40,
+      "completed": 38
+    },
+    {
+      "day": 2,
+      "persona": "P2",
+      "tasks": 18,
+      "completed": 18
+    },
+    {
+      "day": 2,
+      "persona": "P3",
+      "tasks": 51,
+      "completed": 51
+    },
+    {
+      "day": 2,
+      "persona": "P4",
+      "tasks": 20,
+      "completed": 20
+    },
+    {
+      "day": 2,
+      "persona": "P5",
+      "tasks": 14,
+      "completed": 14
+    },
+    {
+      "day": 3,
+      "persona": "P1",
+      "tasks": 35,
+      "completed": 34
+    },
+    {
+      "day": 3,
+      "persona": "P2",
+      "tasks": 18,
+      "completed": 18
+    },
+    {
+      "day": 3,
+      "persona": "P3",
+      "tasks": 44,
+      "completed": 44
+    },
+    {
+      "day": 3,
+      "persona": "P4",
+      "tasks": 19,
+      "completed": 19
+    },
+    {
+      "day": 3,
+      "persona": "P5",
+      "tasks": 19,
+      "completed": 16
+    },
+    {
+      "day": 4,
+      "persona": "P1",
+      "tasks": 40,
+      "completed": 40
+    },
+    {
+      "day": 4,
+      "persona": "P2",
+      "tasks": 13,
+      "completed": 13
+    },
+    {
+      "day": 4,
+      "persona": "P3",
+      "tasks": 41,
+      "completed": 41
+    },
+    {
+      "day": 4,
+      "persona": "P4",
+      "tasks": 17,
+      "completed": 17
+    },
+    {
+      "day": 4,
+      "persona": "P5",
+      "tasks": 11,
+      "completed": 11
+    },
+    {
+      "day": 5,
+      "persona": "P1",
+      "tasks": 23,
+      "completed": 23
+    },
+    {
+      "day": 5,
+      "persona": "P2",
+      "tasks": 20,
+      "completed": 20
+    },
+    {
+      "day": 5,
+      "persona": "P3",
+      "tasks": 37,
+      "completed": 37
+    },
+    {
+      "day": 5,
+      "persona": "P4",
+      "tasks": 19,
+      "completed": 19
+    },
+    {
+      "day": 5,
+      "persona": "P5",
+      "tasks": 17,
+      "completed": 17
+    },
+    {
+      "day": 6,
+      "persona": "P1",
+      "tasks": 41,
+      "completed": 41
+    },
+    {
+      "day": 6,
+      "persona": "P2",
+      "tasks": 21,
+      "completed": 21
+    },
+    {
+      "day": 6,
+      "persona": "P3",
+      "tasks": 32,
+      "completed": 32
+    },
+    {
+      "day": 6,
+      "persona": "P4",
+      "tasks": 18,
+      "completed": 18
+    },
+    {
+      "day": 6,
+      "persona": "P5",
+      "tasks": 11,
+      "completed": 11
+    },
+    {
+      "day": 7,
+      "persona": "P1",
+      "tasks": 40,
+      "completed": 40
+    },
+    {
+      "day": 7,
+      "persona": "P2",
+      "tasks": 18,
+      "completed": 18
+    },
+    {
+      "day": 7,
+      "persona": "P3",
+      "tasks": 54,
+      "completed": 54
+    },
+    {
+      "day": 7,
+      "persona": "P4",
+      "tasks": 17,
+      "completed": 17
+    },
+    {
+      "day": 7,
+      "persona": "P5",
+      "tasks": 14,
+      "completed": 14
+    },
+    {
+      "day": 8,
+      "persona": "P1",
+      "tasks": 39,
+      "completed": 39
+    },
+    {
+      "day": 8,
+      "persona": "P2",
+      "tasks": 15,
+      "completed": 15
+    },
+    {
+      "day": 8,
+      "persona": "P3",
+      "tasks": 38,
+      "completed": 38
+    },
+    {
+      "day": 8,
+      "persona": "P4",
+      "tasks": 15,
+      "completed": 15
+    },
+    {
+      "day": 8,
+      "persona": "P5",
+      "tasks": 12,
+      "completed": 12
+    },
+    {
+      "day": 9,
+      "persona": "P1",
+      "tasks": 39,
+      "completed": 39
+    },
+    {
+      "day": 9,
+      "persona": "P2",
+      "tasks": 12,
+      "completed": 12
+    },
+    {
+      "day": 9,
+      "persona": "P3",
+      "tasks": 44,
+      "completed": 44
+    },
+    {
+      "day": 9,
+      "persona": "P4",
+      "tasks": 12,
+      "completed": 12
+    },
+    {
+      "day": 9,
+      "persona": "P5",
+      "tasks": 11,
+      "completed": 11
+    },
+    {
+      "day": 10,
+      "persona": "P1",
+      "tasks": 39,
+      "completed": 39
+    },
+    {
+      "day": 10,
+      "persona": "P2",
+      "tasks": 14,
+      "completed": 14
+    },
+    {
+      "day": 10,
+      "persona": "P3",
+      "tasks": 45,
+      "completed": 45
+    },
+    {
+      "day": 10,
+      "persona": "P4",
+      "tasks": 16,
+      "completed": 16
+    },
+    {
+      "day": 10,
+      "persona": "P5",
+      "tasks": 9,
+      "completed": 9
+    }
+  ],
+  "incomplete": [
+    {
+      "day": 1,
+      "persona": "P1",
+      "task": "d01-P1-W1-006",
+      "complaints": [
+        "d01-P1-W1-006: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P1",
+      "task": "d01-P1-W1-010",
+      "complaints": [
+        "d01-P1-W1-010: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P1",
+      "task": "d01-P1-W1-015",
+      "complaints": [
+        "d01-P1-W1-015: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "task": "d01-P5-W1-008",
+      "complaints": [
+        "d01-P5-W1-008: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "task": "d01-P5-W1-010",
+      "complaints": [
+        "d01-P5-W1-010: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "task": "d01-P5-W1-016",
+      "complaints": [
+        "d01-P5-W1-016: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 1,
+      "persona": "P5",
+      "task": "d01-P5-W1-018",
+      "complaints": [
+        "d01-P5-W1-018: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 2,
+      "persona": "P1",
+      "task": "d02-P1-W1-001",
+      "complaints": [
+        "d02-P1-W1-001: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 2,
+      "persona": "P1",
+      "task": "d02-P1-W1-016",
+      "complaints": [
+        "d02-P1-W1-016: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 3,
+      "persona": "P1",
+      "task": "d03-P1-W1-009",
+      "complaints": [
+        "d03-P1-W1-009: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 3,
+      "persona": "P5",
+      "task": "d03-P5-W1-009",
+      "complaints": [
+        "d03-P5-W1-009: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 3,
+      "persona": "P5",
+      "task": "d03-P5-W1-010",
+      "complaints": [
+        "d03-P5-W1-010: no reachable unmet goal; incomplete"
+      ]
+    },
+    {
+      "day": 3,
+      "persona": "P5",
+      "task": "d03-P5-W1-019",
+      "complaints": [
+        "d03-P5-W1-019: no reachable unmet goal; incomplete"
+      ]
+    }
+  ],
+  "minimumExamples": [
+    {
+      "task": "d01-P1-W1-001",
+      "workflow": "W1",
+      "clicks": 44,
+      "keystrokes": 223,
+      "space": "navigationDirected",
+      "keystrokeSpace": "navigationDirected",
+      "exact": true,
+      "episodes": 1
+    },
+    {
+      "task": "d01-P3-W4-001",
+      "workflow": "W4",
+      "clicks": 38,
+      "keystrokes": 104,
+      "space": "navigationDirected",
+      "keystrokeSpace": "navigationDirected",
+      "exact": true,
+      "episodes": 2
+    }
+  ]
+}

@@ -1,0 +1,165 @@
+import Ehr.Core.Types
+
+/-!
+Demo drug classes, interactions, high-alert flags and pediatric dose ranges.
+Dose ranges use tenths of mg/kg per dose; caps use tenths of mg (0: no cap).
+The first class is used for duplicate therapy; remaining classes for matching.
+Morphine-equivalent factors use tenths. Schedule tags drive controlled-drug rules.
+These simplified reference values are not clinical advice.
+-/
+
+namespace Ehr
+
+/-- The formulary. Reference data only, not clinical advice. -/
+def formulary : List DrugInfo := [
+  { name := "amoxicillin", rxnorm := ["723"]
+    classes := ["penicillin", "betaLactam", "antibiotic"]
+    minMgPerKgTenths := 100, maxMgPerKgTenths := 500, maxDoseMgTenths := 20000, highAlert := false
+    interactsWith := ["vitaminKAntagonist"] },
+  { name := "cefazolin", rxnorm := ["2180"]
+    classes := ["cephalosporin", "betaLactam", "antibiotic"]
+    minMgPerKgTenths := 200, maxMgPerKgTenths := 500, highAlert := false
+    interactsWith := [] },
+  { name := "ceftriaxone", rxnorm := ["2193"]
+    classes := ["cephalosporin", "betaLactam", "antibiotic"]
+    minMgPerKgTenths := 250, maxMgPerKgTenths := 1000, maxDoseMgTenths := 10000, highAlert := false
+    interactsWith := ["calciumIv"] },
+  { name := "azithromycin", rxnorm := ["18631"]
+    classes := ["macrolide", "antibiotic", "qtProlonging"]
+    minMgPerKgTenths := 50, maxMgPerKgTenths := 100, maxDoseMgTenths := 5000, highAlert := false
+    interactsWith := ["qtProlonging", "vitaminKAntagonist"] },
+  { name := "vancomycin", rxnorm := ["11124"]
+    classes := ["glycopeptide", "antibiotic"]
+    minMgPerKgTenths := 100, maxMgPerKgTenths := 200, highAlert := false
+    interactsWith := ["aminoglycoside", "nsaid"] },
+  { name := "lisinopril", rxnorm := ["29046"]
+    classes := ["aceInhibitor", "antihypertensive"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 6, highAlert := false
+    interactsWith := ["potassiumSparing", "nsaid"] },
+  { name := "metformin", rxnorm := ["6809"]
+    classes := ["biguanide", "antidiabetic"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := false
+    interactsWith := ["iodinatedContrast"] },
+  { name := "atorvastatin", rxnorm := ["83367"]
+    classes := ["statin", "lipidLowering"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := false
+    interactsWith := ["strongCyp3a4Inhibitor"] },
+  { name := "warfarin", rxnorm := ["11289"]
+    classes := ["anticoagulant", "vitaminKAntagonist"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 3, highAlert := true
+    interactsWith := ["anticoagulant", "nsaid", "antiplatelet", "macrolide"] },
+  { name := "apixaban", rxnorm := ["1364430"]
+    classes := ["anticoagulant", "factorXaInhibitor"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
+    interactsWith := ["anticoagulant", "nsaid", "antiplatelet"] },
+  { name := "enoxaparin", rxnorm := ["67108"]
+    classes := ["anticoagulant", "lowMolecularWeightHeparin"]
+    minMgPerKgTenths := 5, maxMgPerKgTenths := 15, highAlert := true
+    interactsWith := ["anticoagulant", "nsaid", "antiplatelet"] },
+  { name := "heparin", doseUnits := [{ unit := .units }], rxnorm := ["5224"]
+    classes := ["anticoagulant", "unfractionatedHeparin"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
+    interactsWith := ["anticoagulant", "nsaid", "antiplatelet"] },
+  { name := "insulin glargine", doseUnits := [{ unit := .units }], rxnorm := ["274783"]
+    classes := ["basalInsulin", "insulin"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
+    interactsWith := [] },
+  { name := "insulin lispro", doseUnits := [{ unit := .units }], rxnorm := ["86009"]
+    classes := ["bolusInsulin", "insulin"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
+    interactsWith := [] },
+  { name := "morphine", rxnorm := ["7052"]
+    classes := ["opioid", "analgesic", "controlled-II-IV", "scheduleII"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 10 },
+  { name := "hydromorphone", rxnorm := ["3423"]
+    classes := ["opioid", "analgesic", "controlled-II-IV", "scheduleII"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 40 },
+  { name := "oxycodone", rxnorm := ["7804"]
+    classes := ["opioid", "analgesic", "controlled-II-IV", "scheduleII"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 15 },
+  { name := "hydrocodone-acetaminophen", rxnorm := ["214182"]
+    classes := ["opioid", "analgesic", "acetaminophen", "controlled-II-IV", "scheduleII"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative"], mmeFactorTenths := 10 },
+  { name := "tramadol", rxnorm := ["10689"]
+    classes := ["opioid", "analgesic", "serotonergic", "controlled-II-IV"]
+    minMgPerKgTenths := 10, maxMgPerKgTenths := 20, highAlert := true
+    interactsWith := ["opioid", "benzodiazepine", "sedative", "serotonergic"], mmeFactorTenths := 2 },
+  { name := "lorazepam", rxnorm := ["6470"]
+    classes := ["benzodiazepine", "sedative", "controlled-II-IV"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := false
+    interactsWith := ["opioid", "sedative"] },
+  { name := "alprazolam", rxnorm := ["596"]
+    classes := ["benzodiazepine", "sedative", "controlled-II-IV"]
+    minMgPerKgTenths := 0, maxMgPerKgTenths := 0, highAlert := false
+    interactsWith := ["opioid", "sedative"] },
+  { name := "ondansetron", rxnorm := ["26225"]
+    classes := ["serotoninAntagonist", "antiemetic", "qtProlonging"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, maxDoseMgTenths := 40, highAlert := false
+    interactsWith := ["qtProlonging"] },
+  { name := "acetaminophen", rxnorm := ["161"]
+    classes := ["acetaminophen", "analgesic", "antipyretic"]
+    minMgPerKgTenths := 100, maxMgPerKgTenths := 150, maxDoseMgTenths := 10000, highAlert := false
+    interactsWith := [] },
+  { name := "ibuprofen", rxnorm := ["5640"]
+    classes := ["nsaid", "analgesic", "antipyretic"]
+    minMgPerKgTenths := 50, maxMgPerKgTenths := 100, maxDoseMgTenths := 4000, highAlert := false
+    interactsWith := ["anticoagulant", "aceInhibitor", "glycopeptide"] },
+  -- Nebulized mg and inhaled mcg keep their own units. The existing 5 mg
+  -- absolute cap is also stated as 5000 mcg; no mg/kg rule applies to the inhaler.
+  { name := "albuterol", doseUnits := [{ unit := .mg }, { unit := .mcg, maxTenths := 50000 }], rxnorm := ["435"]
+    classes := ["betaAgonist", "bronchodilator"]
+    minMgPerKgTenths := 1, maxMgPerKgTenths := 2, maxDoseMgTenths := 50, highAlert := false
+    interactsWith := ["betaBlocker"] }
+]
+
+/-- Look up a drug by its formulary name. -/
+def lookupDrug (name : String) : Option DrugInfo :=
+  formulary.find? (·.name == name)
+
+/-- Allowed dose units come only from this formulary. Unknown drugs have none. -/
+def drugDoseUnits (name : String) : List DoseUnitRule :=
+  (lookupDrug name).map (·.doseUnits) |>.getD []
+
+/-- The classes of a drug (empty for drugs not in the formulary). -/
+def drugClasses (name : String) : List String :=
+  match lookupDrug name with
+  | some d => d.classes
+  | none => []
+
+/-- The therapeutic class (first class) of a drug, if known. -/
+def primaryClass (name : String) : Option String :=
+  (drugClasses name).head?
+
+/-- Is the drug on the high-alert list? Unknown drugs are not. -/
+def isHighAlert (name : String) : Bool :=
+  match lookupDrug name with
+  | some d => d.highAlert
+  | none => false
+
+/-- The drug's oral MME factor in tenths (0 if unknown or not an opioid). -/
+def mmeFactor (name : String) : Nat :=
+  match lookupDrug name with
+  | some d => d.mmeFactorTenths
+  | none => 0
+
+/-- Is the drug in the given class? -/
+def inClass (name cls : String) : Bool :=
+  (drugClasses name).contains cls
+
+#guard formulary.length == 25
+#guard (formulary.map (·.name)).eraseDups.length == formulary.length
+#guard inClass "amoxicillin" "penicillin"
+#guard isHighAlert "warfarin" && !isHighAlert "acetaminophen"
+#guard primaryClass "apixaban" == some "anticoagulant"
+#guard (formulary.filter (·.classes.contains "controlled-II-IV")).length == 7
+#guard mmeFactor "oxycodone" == 15
+#guard (formulary.filter (·.classes.contains "scheduleII")).map (·.name) ==
+  ["morphine", "hydromorphone", "oxycodone", "hydrocodone-acetaminophen"]
+#guard ["tramadol", "lorazepam", "alprazolam"].all fun d =>
+  inClass d "controlled-II-IV" && !inClass d "scheduleII"
+
+end Ehr

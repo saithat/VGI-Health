@@ -1,0 +1,50 @@
+import Ehr.Canonical.BadPrograms
+import Ehr.Check.Check
+
+/-!
+Seeded rejection and replay tests, paired with checks of each mutation.
+A failure shared by the original and mutated program does not establish
+that the checker detected the mutation.
+-/
+namespace Ehr.Check.Tests
+open Ehr Ehr.Check Ehr.Canonical Ehr.Specs.V1
+
+/-- The actual first rejection has a complete replay-validated navigation path. -/
+def rejectedWithReplay (p : Program) : Bool :=
+  match firstFinding (Ehr.Check.rules specV1 none canonicalV1 p) with
+  | none => false
+  | some finding => (counterexample specV1 p finding).2.2
+
+-- The RN projection certifies under core, including D5.
+#guard Specs.ruleProfile == .full || check specV1 none canonicalV1 (forPersona specV1 canonicalV1 "P3" .rn) == .ok
+
+#guard Bad.corePrograms.all (fun (_, p) => rejectedWithReplay p)
+
+/-- A specific failing rule also has a replayable explanation, independently
+of any earlier template failure. This does not relabel the actual verdict. -/
+def mutationRejected (property : String) (p : Program) : Bool :=
+  match (Ehr.Check.rules specV1 none canonicalV1 p).find? (fun r =>
+      r.property == property && !r.passes) with
+  | none => false
+  | some r =>
+    let f := (r.explain ()).getD { property, message := "rule failed" }
+    (counterexample specV1 p f).2.2
+
+#guard mutationRejected "reviewsBeforeCommit" Bad.hiddenAllergies
+#guard mutationRejected "humanOnlyKept" Bad.prefilledIdentity
+#guard mutationRejected "writesOnly" Bad.poundsAsWeight
+#guard mutationRejected "humanOnlyKept" Bad.macroOverride
+#guard mutationRejected "humanOnlyKept" Bad.selfCosign
+#guard mutationRejected "units" Bad.staleWeight
+#guard mutationRejected "completable" Bad.unreachableRefill
+#guard mutationRejected "humanOnlyKept" Bad.forgedConsent
+#guard mutationRejected "humanOnlyKept" Bad.hiddenAllergyAlert
+#guard mutationRejected "wellFormed" Bad.inventedAlert
+#guard mutationRejected "noRepeatInterruptions" Bad.repeatedInteraction
+#guard mutationRejected "severityTiers" Bad.passivePopup
+#guard mutationRejected "completable" Bad.noCures
+#guard mutationRejected "humanOnlyKept" Bad.macroNaloxone
+#guard mutationRejected "reviewsBeforeCommit" Bad.hiddenControlledDetails
+#guard mutationRejected "completable" Bad.scheduleIIRefills
+#guard mutationRejected "humanOnlyKept" Bad.npPreopMacro
+end Ehr.Check.Tests

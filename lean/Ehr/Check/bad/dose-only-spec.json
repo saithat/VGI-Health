@@ -1,0 +1,37 @@
+{"version": "scalar-completion",
+ "reviews":
+ [{"when": "always",
+   "mode": "shownOnCommit",
+   "info": "allergyList",
+   "commit": "recordReview"}],
+ "infos":
+ [{"version": "allergyVersion", "label": "Allergies", "id": "allergyList"}],
+ "entries":
+ [{"when": "always",
+   "perOrderLine": false,
+   "element": "assessment",
+   "commit": "recordReview"}],
+ "elements":
+ [{"prefill": "never",
+   "label": "Assessment",
+   "kind": "medicationDose",
+   "id": "assessment",
+   "humanOnly": true,
+   "friction": "safety",
+   "fhirTarget": "Observation.value",
+   "enteredBy": ["physician"]}],
+ "design":
+ {"stabilityBudget": 0,
+  "minTextSize": 12,
+  "maxDepth": 0,
+  "landmarks": ["patientBanner"],
+  "catalog": ["banner", "field", "panel", "button", "alert"]},
+ "commits":
+ [{"roles": ["physician"], "label": "Record review", "id": "recordReview"}],
+ "alerts":
+ [{"tier": "passive",
+   "screens": ["clinical"],
+   "label": "Clinical alert",
+   "id": "clinicalAlert",
+   "cond": "careGap",
+   "commit": "recordReview"}]}

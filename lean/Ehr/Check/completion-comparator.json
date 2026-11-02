@@ -1,0 +1,17 @@
+{
+  "challenge_module": "Ehr.Check.CompletionStatements",
+  "solution_module": "Ehr.Check.Sound",
+  "theorem_names": [
+    "Ehr.Check.satisfies_of_checked_fixed_lines",
+    "Ehr.Check.completion_dependency_rejected",
+    "Ehr.Check.satisfies_of_checked_receipt_lines",
+    "Ehr.Check.satisfies_of_checked_many_alerts",
+    "Ehr.Check.satisfies_of_checked_automated_lines"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

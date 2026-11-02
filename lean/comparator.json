@@ -1,0 +1,30 @@
+{
+  "challenge_module": "Statements",
+  "solution_module": "Solution",
+  "theorem_names": [
+    "Ehr.Proofs.T0_commit_needs_guard",
+    "Ehr.Proofs.commitGuard_iff",
+    "Ehr.Proofs.T0_entry_values",
+    "Ehr.Proofs.T3_cosign_distinct",
+    "Ehr.Proofs.T2_receipts_sound",
+    "Ehr.Proofs.T2_shownOnCommit_shown",
+    "Ehr.Proofs.T3_macro_step",
+    "Ehr.Proofs.T3_macro_run",
+    "Ehr.Proofs.T3_prefill_never_human_only",
+    "Ehr.Proofs.T6_macro_is_fold",
+    "Ehr.Proofs.runMacro_ok_iff",
+    "Ehr.Proofs.T6_macro_run_safe",
+    "Ehr.Proofs.A2_view_firing",
+    "Ehr.Proofs.A2_view_shown",
+    "Ehr.Proofs.A2_popup_holds",
+    "Ehr.Proofs.A4_step",
+    "Ehr.Proofs.A4_run",
+    "Ehr.Proofs.A4_passive_never_popup"
+  ],
+  "definition_names": [],
+  "permitted_axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ]
+}

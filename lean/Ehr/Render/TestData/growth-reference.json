@@ -1,0 +1,296 @@
+{
+  "sources": [
+    "https://www.cdc.gov/growthcharts/data/zscore/wtage.csv",
+    "https://www.cdc.gov/growthcharts/data/zscore/statage.csv"
+  ],
+  "rows": [
+    {
+      "Series": "Weight",
+      "Percentile": "5th",
+      "Age (months)": "84.5",
+      "Value": "18.2280462",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "50th",
+      "Age (months)": "84.5",
+      "Value": "22.86804258",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "95th",
+      "Age (months)": "84.5",
+      "Value": "31.47048848",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "5th",
+      "Age (months)": "90.5",
+      "Value": "19.16378421",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "50th",
+      "Age (months)": "90.5",
+      "Value": "24.25789074",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "95th",
+      "Age (months)": "90.5",
+      "Value": "33.75001097",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "5th",
+      "Age (months)": "96.5",
+      "Value": "20.14535023",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "50th",
+      "Age (months)": "96.5",
+      "Value": "25.7570168",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "95th",
+      "Age (months)": "96.5",
+      "Value": "36.2269949",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "5th",
+      "Age (months)": "102.5",
+      "Value": "21.19054959",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "50th",
+      "Age (months)": "102.5",
+      "Value": "27.38203422",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "95th",
+      "Age (months)": "102.5",
+      "Value": "38.91658465",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "5th",
+      "Age (months)": "108.5",
+      "Value": "22.31677169",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "50th",
+      "Age (months)": "108.5",
+      "Value": "29.14291171",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "95th",
+      "Age (months)": "108.5",
+      "Value": "41.8188452",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "5th",
+      "Age (months)": "114.5",
+      "Value": "23.53850764",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "50th",
+      "Age (months)": "114.5",
+      "Value": "31.0403221",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Weight",
+      "Percentile": "95th",
+      "Age (months)": "114.5",
+      "Value": "44.91658265",
+      "Unit": "kg",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "5th",
+      "Age (months)": "84.5",
+      "Value": "113.054628",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "50th",
+      "Age (months)": "84.5",
+      "Value": "121.7616844",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "95th",
+      "Age (months)": "84.5",
+      "Value": "131.2935761",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "5th",
+      "Age (months)": "90.5",
+      "Value": "115.9026074",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "50th",
+      "Age (months)": "90.5",
+      "Value": "124.8956114",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "95th",
+      "Age (months)": "90.5",
+      "Value": "134.7038082",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "5th",
+      "Age (months)": "96.5",
+      "Value": "118.5443251",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "50th",
+      "Age (months)": "96.5",
+      "Value": "127.8262759",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "95th",
+      "Age (months)": "96.5",
+      "Value": "137.8974887",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "5th",
+      "Age (months)": "102.5",
+      "Value": "120.9748035",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "50th",
+      "Age (months)": "102.5",
+      "Value": "130.5573839",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "95th",
+      "Age (months)": "102.5",
+      "Value": "140.8967672",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "5th",
+      "Age (months)": "108.5",
+      "Value": "123.2186111",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "50th",
+      "Age (months)": "108.5",
+      "Value": "133.1303527",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "95th",
+      "Age (months)": "108.5",
+      "Value": "143.7674316",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "5th",
+      "Age (months)": "114.5",
+      "Value": "125.3393004",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "50th",
+      "Age (months)": "114.5",
+      "Value": "135.634186",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    },
+    {
+      "Series": "Height",
+      "Percentile": "95th",
+      "Age (months)": "114.5",
+      "Value": "146.6214882",
+      "Unit": "cm",
+      "Reference": "CDC 2000, girls 2\u201320 years"
+    }
+  ]
+}

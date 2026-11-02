@@ -1,0 +1,443 @@
+{
+  "resourceType": "Bundle",
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:0",
+      "resource": {
+        "resourceType": "Patient",
+        "identifier": [
+          {
+            "system": "https://github.com/synthetichealth/synthea",
+            "value": "patient-1"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "Jane"
+            ]
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1992-10-01"
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:1",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "meta": {
+          "versionId": "v-pcn"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "display": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "display": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "code": "91936005",
+              "display": "Penicillin"
+            }
+          ]
+        },
+        "recordedDate": "2026-10-30",
+        "reaction": [
+          {
+            "manifestation": [
+              {
+                "coding": [
+                  {
+                    "code": "rash",
+                    "display": "rash"
+                  }
+                ]
+              }
+            ],
+            "severity": "severe"
+          }
+        ],
+        "patient": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:2",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "meta": {
+          "versionId": "v-inactive"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "inactive",
+              "display": "inactive"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "confirmed",
+              "display": "confirmed"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "code": "91936005",
+              "display": "Penicillin"
+            }
+          ]
+        },
+        "recordedDate": "2026-10-30",
+        "reaction": [
+          {
+            "manifestation": [
+              {
+                "coding": [
+                  {
+                    "code": "rash",
+                    "display": "rash"
+                  }
+                ]
+              }
+            ],
+            "severity": "severe"
+          }
+        ],
+        "patient": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:3",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "meta": {
+          "versionId": "v-error"
+        },
+        "clinicalStatus": {
+          "coding": [
+            {
+              "code": "active",
+              "display": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "code": "entered-in-error",
+              "display": "entered-in-error"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "code": "91936005",
+              "display": "Penicillin"
+            }
+          ]
+        },
+        "recordedDate": "2026-10-30",
+        "reaction": [
+          {
+            "manifestation": [
+              {
+                "coding": [
+                  {
+                    "code": "rash",
+                    "display": "rash"
+                  }
+                ]
+              }
+            ],
+            "severity": "severe"
+          }
+        ],
+        "patient": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:4",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "status": "active",
+        "meta": {
+          "versionId": "m-active"
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "code": "308191",
+              "display": "Amoxicillin"
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "250 mg twice daily"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:5",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "status": "stopped",
+        "meta": {
+          "versionId": "m-stopped"
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "code": "308191",
+              "display": "Amoxicillin"
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "250 mg twice daily"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:6",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "status": "on-hold",
+        "meta": {
+          "versionId": "m-on-hold"
+        },
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "code": "308191",
+              "display": "Amoxicillin"
+            }
+          ]
+        },
+        "dosageInstruction": [
+          {
+            "text": "250 mg twice daily"
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:7",
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "effectiveDateTime": "2026-10-30T22:00:00Z",
+        "valueQuantity": {
+          "value": 99,
+          "code": "kg",
+          "unit": "kg"
+        },
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:8",
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "effectiveDateTime": "2026-10-31T08:00:00Z",
+        "valueQuantity": {
+          "value": 72.5,
+          "code": "kg",
+          "unit": "kg"
+        },
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:9",
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "vital-signs",
+                "display": "vital-signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "85354-9",
+              "display": "Blood pressure",
+              "system": "http://loinc.org"
+            }
+          ]
+        },
+        "component": [
+          {
+            "valueQuantity": {
+              "value": 128,
+              "unit": "mmHg"
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8480-6",
+                  "display": "Systolic blood pressure"
+                }
+              ]
+            }
+          },
+          {
+            "valueQuantity": {
+              "value": 82,
+              "unit": "mmHg"
+            },
+            "code": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "8462-4",
+                  "display": "Diastolic blood pressure"
+                }
+              ]
+            }
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:10",
+      "resource": {
+        "resourceType": "Observation",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "code": "laboratory",
+                "display": "laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "code": "4548-4",
+              "display": "HbA1c"
+            }
+          ]
+        },
+        "effectiveDateTime": "2026-10-31",
+        "valueQuantity": {
+          "value": 8.2,
+          "unit": "%"
+        },
+        "referenceRange": [
+          {
+            "low": {
+              "value": 4
+            },
+            "high": {
+              "value": 5.6
+            }
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "code": "H",
+                "display": "H"
+              }
+            ]
+          }
+        ],
+        "subject": {
+          "reference": "urn:uuid:0"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "results": [
+    {
+      "release": "v1",
+      "persona": "P4",
+      "nativeMatchesWasm": true,
+      "preopCommitRefused": true,
+      "painterReason": "Pre-op orders are signed by a physician or surgeon"
+    },
+    {
+      "release": "v2",
+      "persona": "P4",
+      "nativeMatchesWasm": true,
+      "preopCommitRefused": true,
+      "painterReason": "Pre-op orders are signed by a physician or surgeon"
+    },
+    {
+      "release": "v3",
+      "persona": "P4",
+      "nativeMatchesWasm": true,
+      "preopCommitRefused": true,
+      "painterReason": "Pre-op orders are signed by a physician or surgeon"
+    }
+  ]
+}

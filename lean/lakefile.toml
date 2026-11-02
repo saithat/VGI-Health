@@ -1,0 +1,42 @@
+name = "ehr"
+version = "0.1.0"
+defaultTargets = ["Ehr", "ehr"]
+
+[[lean_lib]]
+name = "Ehr"
+
+[[lean_exe]]
+name = "ehr"
+root = "Main"
+
+[[lean_exe]]
+name = "gents"
+root = "Ehr.Tools.GenTS"
+
+# Comparator challenge (statements with `sorry`) and solution. Not default targets.
+[[lean_lib]]
+name = "Statements"
+
+[[lean_lib]]
+name = "Solution"
+
+[[lean_exe]]
+name = "export-content"
+root = "Ehr.Tools.ExportContent"
+
+# Opt-in whole-program kernel proofs and regulation-catalog regressions.
+[[lean_lib]]
+name = "EhrHeavy"
+
+[[lean_exe]]
+name = "profile-goals"
+root = "Ehr.Tools.ProfileGoals"
+
+# Reviewer audit only; deliberately absent from defaultTargets.
+[[lean_lib]]
+name = "VerificationAudit"
+roots = ["Audit.SpecSurface"]
+
+# Exact unproved general T1 proposition, for opt-in proof development only.
+[[lean_lib]]
+name = "CompletionObligations"

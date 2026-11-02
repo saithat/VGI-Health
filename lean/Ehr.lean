@@ -1,0 +1,50 @@
+import Ehr.Canonical.PresetTests
+import Ehr.Basic
+import Ehr.Core.Types
+import Ehr.Core.Json
+import Ehr.Formulary
+import Ehr.Core.Basics
+import Ehr.Core.Alerts
+import Ehr.Core.Guard
+import Ehr.Core.Interp
+import Ehr.Core.View
+import Ehr.Api
+import Ehr.Examples.Tiny
+import Ehr.Examples.TinyTests
+import Ehr.Examples.ApiTests
+import Ehr.Sim.Goals
+import Ehr.Sim.GoalsTests
+import Ehr.Proofs.Frame
+import Ehr.Proofs.T3
+import Ehr.Proofs.T0
+import Ehr.Proofs.Alerts
+import Ehr.Proofs.T2
+import Ehr.Proofs.T6
+import Ehr.Proofs.Audit
+import Ehr.Props
+import Ehr.Check.Catalog
+import Ehr.Check.Tests
+import Ehr.Check.Deploy
+import Ehr.Cli.Check
+import Ehr.Proofs.CheckDeploy
+import Ehr.Proofs.HypothesisExamples
+import Ehr.Proofs.RenderExamples
+import Ehr.Specs.V1
+import Ehr.Canonical.Program
+import Ehr.Render
+import Ehr.Render.FhirAcuteTests
+import Ehr.Sim.PolicyTests
+import Ehr.Core.Tests
+import Ehr.Sim.MinClicksTests
+import Ehr.Sim.TaskMinimumTests
+import Ehr.Sim.FactsTests
+import Ehr.Canonical.CoreReleaseTests
+import Ehr.Check.SimAudit
+import Ehr.Check.ProfileGoalsTests
+import Ehr.Check.DoseTests
+import Ehr.Check.EncounterRoleTests
+
+/-!
+Default library: interpreter, rule data, proofs and executable regressions.
+Importing it builds the modules used by the native app and checker.
+-/
