@@ -733,8 +733,12 @@ pnpm --filter app test:buttons
 pnpm --filter app audit:performance
 ```
 
-Browser tests accept `APP_TEST_PORT` for an isolated Vite server and `--workers=4`
-for bounded parallel execution. Native browser actions and revision checks use
+Browser tests build and serve production preview by default: development's
+`development-unbound` fingerprint deliberately refuses recorded certificates.
+`APP_TEST_PREVIEW=1` reuses a prebuilt preview (including in the screen gate);
+`APP_TEST_PREVIEW=0` explicitly selects unbound development. Tests accept
+`APP_TEST_PORT` for an isolated server and `--workers=4` for bounded parallel
+execution. Native browser actions and revision checks use
 `EHR_BIN` when supplied, otherwise `lean/.lake/build/bin/ehr`. Live checks load
 the repo-root `.env`: browser login needs its `VITE_MEDPLUM_*` values and
 `VGI_USER_PASSWORD`; `test:live` also needs `MEDPLUM_CLIENT_ID` and
@@ -752,6 +756,10 @@ canonical chart-review tab journeys, run in the default browser suite at both
 project widths. `EHR_PRESENT_SHOTS=1` and `EPIC_DENSITY_SHOTS=after` additionally
 capture review images. Other historical before/after capture suites remain
 opt-in; their skips do not certify those review inputs.
+
+The [browser suite repair report](docs/audits/e2e-repair-2026-11-02.md) records
+failure triage, the remaining skip inventory, live prerequisites and repeat-run
+verification.
 
 `app/scripts/screen-check.mjs` checks exactly the supplied native screen trees,
 at desktop and narrow widths, for visibility, legibility, occlusion and component
