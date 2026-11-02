@@ -751,7 +751,7 @@ OpenEvolve/ShinkaEvolve evaluation, MAP-Elites objective, model licenses,
 external ML environment, CPU/GPU server commands and calibration protocol.
 `explore/cli.ts` reuses the isolated Codex (`default` service tier) or Claude
 backend, native Lean check, whole-version screen gate and world simulator.
-`make decision-server` starts a local open-model scorer; `make explore-test`
+`make decision-server` starts a local open-model scorer (`--device auto|cpu|cuda`; on a CUDA GPU it serves Decider 0.8B at about 0.5 s per decision); `make explore-test`
 checks the harness. Decision models rank candidates and score recorded visible
 actions; Lean remains the only certification gate. TabPFN is an optional local
 screening adapter; Jev is an unconfigured stub that makes no calls.
