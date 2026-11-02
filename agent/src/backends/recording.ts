@@ -1,0 +1,96 @@
+/**
+ * Wraps any backend and records every call (full system prompt, user prompt,
+ * schema name, response, backend, model) to `<runDir>/llm/<callId>.json`.
+ * These files are what the replay backend reads, and what the integrity test
+ * inspects to prove no validation/test data reached a prompt.
+ */
+import path from 'node:path';
+import { existsSync } from 'node:fs';
+import { z } from 'zod';
+import type { LlmCallRef } from '../schema.js';
+import { readJson, writeJson } from '../util.js';
+import type { JsonLlm, JsonRequest, JsonResponse } from './types.js';
+
+export const llmRecordSchema = z.object({
+  callId: z.string(),
+  purpose: z.string(),
+  backend: z.string(),
+  model: z.string(),
+  servedBy: z.string().nullable(),
+  replayOf: z.object({ backend: z.string(), model: z.string(), source: z.string() }).nullable(),
+  promptMatched: z.boolean().nullable(),
+  schemaName: z.string(),
+  system: z.string(),
+  prompt: z.string(),
+  response: z.unknown(),
+  usage: z.unknown(),
+  transcript: z.unknown().optional(),
+  createdAt: z.string(),
+});
+export type LlmRecord = z.infer<typeof llmRecordSchema>;
+
+export function llmRecordPath(runDir: string, callId: string): string {
+  return path.join(runDir, 'llm', `${callId}.json`);
+}
+
+export class RecordingLlm implements JsonLlm {
+  readonly name: JsonLlm['name'];
+  readonly model: string;
+  constructor(private readonly inner: JsonLlm, private readonly runDir: string, private readonly reuseExisting = false) {
+    this.name = inner.name;
+    this.model = inner.model;
+  }
+
+  async complete(req: JsonRequest): Promise<JsonResponse> {
+    const file = llmRecordPath(this.runDir, req.callId);
+    if (this.reuseExisting && existsSync(file)) {
+      const old = await readJson(file, llmRecordSchema);
+      if (old.system !== req.system || old.prompt !== req.prompt || old.schemaName !== req.schemaName ||
+          old.backend !== this.inner.name || old.model !== this.inner.model) {
+        throw new Error(`resume: completed LLM call ${req.callId} differs from the checkpoint; refusing to overwrite it`);
+      }
+      return { json: old.response, backend: this.inner.name, model: old.model, servedBy: old.servedBy,
+        replayOf: { backend: old.backend, model: old.model, source: file }, promptMatched: true, usage: old.usage };
+    }
+    await writeJson(file.replace(/\.json$/, '.request.json'), { ...req, backend: this.inner.name, model: this.inner.model, startedAt: new Date().toISOString() });
+    let res: JsonResponse;
+    try {
+      res = await this.inner.complete(req);
+    } catch (error) {
+      await writeJson(file.replace(/\.json$/, '.error.json'), { callId: req.callId, error: error instanceof Error ? error.message : String(error), time: new Date().toISOString(), ...((error && typeof error === 'object' && 'transcript' in error) ? { transcript: error.transcript } : {}) });
+      throw error;
+    }
+    const record: LlmRecord = {
+      callId: req.callId,
+      purpose: req.purpose,
+      backend: res.backend,
+      model: res.model,
+      servedBy: res.servedBy,
+      replayOf: res.replayOf,
+      promptMatched: res.promptMatched,
+      schemaName: req.schemaName,
+      system: req.system,
+      prompt: req.prompt,
+      response: res.json,
+      usage: res.usage ?? null,
+      ...(res.transcript ? { transcript: res.transcript } : {}),
+      createdAt: new Date().toISOString(),
+    };
+    await writeJson(llmRecordPath(this.runDir, req.callId), record);
+    return res;
+  }
+
+  ref(req: JsonRequest, res: JsonResponse): LlmCallRef {
+    return {
+      callId: req.callId,
+      purpose: req.purpose,
+      backend: res.backend,
+      model: res.model,
+      servedBy: res.servedBy,
+      promptChars: req.system.length + req.prompt.length,
+      promptMatched: res.promptMatched,
+      replayOf: res.replayOf,
+      file: path.relative(this.runDir, llmRecordPath(this.runDir, req.callId)),
+    };
+  }
+}
