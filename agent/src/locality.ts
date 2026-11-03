@@ -1,5 +1,5 @@
 /** Target attribution mirrors pointerTravel's state machine; conservation is checked against it.
- * No timing model. Scroll-past means component centers crossed by a container offset.
+ * No timing model. Scroll-past means component reveal offsets traversed in a container.
  */
 import { pointerTravel, type GeometryAtlas, type Point, type PointerEvent } from '../../app/src/metrics/geometry.js';
 import type { DayResult } from './schema.js';
@@ -85,11 +85,13 @@ function attributePixels(
         const from = offsets[key] ?? { x: 0, y: 0 };
         const distance = Math.hypot(to.x - from.x, to.y - from.y);
         if (distance > 0) {
-          // Centers crossed in this scroll container, excluding the destination.
+          // Both quantities use container-local offsets. Viewport centers are in
+          // a different coordinate frame, especially for nested scrollers.
           for (const [component, box] of Object.entries(state.components)) {
             if (component === cost.component || !box.chain.includes(key)) continue;
-            const low = Math.min(from.y, to.y), high = Math.max(from.y, to.y);
-            if (box.center.y >= low && box.center.y < high && !cost.scrollPast.includes(component)) cost.scrollPast.push(component);
+            const reveal=box.offsets[key];
+            const crossed=reveal&&(['x','y'] as const).some(axis=>reveal[axis]>=Math.min(from[axis],to[axis])&&reveal[axis]<Math.max(from[axis],to[axis]));
+            if (crossed && !cost.scrollPast.includes(component)) cost.scrollPast.push(component);
           }
           cost.scrollPx =
             cost.scrollPx === null ? null : cost.scrollPx + distance;
@@ -229,10 +231,12 @@ export function localityDigest(days: readonly { result: DayResult; atlas: Geomet
       }
     }
   }
-  const ranked = [...components.values()].sort((a,b) => b.clicks+b.keystrokes+b.scrolls-a.clicks-a.keystrokes-a.scrolls || `${a.screen}/${a.component}`.localeCompare(`${b.screen}/${b.component}`));
+  const ranked = [...components.values()].sort((a,b) => b.clicks+b.scrolls-a.clicks-a.scrolls
+    || (b.mouseTravelPx??0)-(a.mouseTravelPx??0) || b.keystrokes-a.keystrokes
+    || `${a.screen}/${a.component}`.localeCompare(`${b.screen}/${b.component}`));
   const aggregate = (rows: PhysicalTotals[]) => {const out=empty(); rows.forEach(r=>accumulate(out,r)); return out;};
   return {
-    trainDays: days.map(d=>d.result.day), units: 'counts and CSS pixels at 1440×900; completed tasks; share = fraction of activations; scroll-past = centers crossed by scroll offsets',
+    trainDays: days.map(d=>d.result.day), units: 'counts and CSS pixels at 1440×900; completed tasks; share = fraction of activations; scroll-past = component reveal offsets traversed within a container',
     totals,
     screens:[...screens].sort(([a],[b])=>a.localeCompare(b)).map(([screen,cost])=>({screen,...cost,share:totals.clicks?cost.clicks/totals.clicks:0})),
     components:ranked.slice(0,topN).map(({scrollPast,...cost})=>({...cost,scrollPast:[...scrollPast].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([component,scrolls])=>({component,scrolls}))})),

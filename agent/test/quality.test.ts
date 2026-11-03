@@ -70,11 +70,41 @@ describe('physical locality conservation',()=>{
     expect(attributeDay(missing,atlas).at(-1)?.mouseTravelPx).toBeNull();
     const corrupt=day(trace,99,4);expect(()=>attributeDay(corrupt,atlas)).toThrow('does not conserve');
   });
+  it('uses container-local reveal offsets for scroll-past, rather than viewport centers',()=>{
+    const nested={...atlas,states:atlas.states.map(state=>({...state,scrollers:{root:{maxX:0,maxY:3000,width:1440,height:400}},components:{...state.components,
+      b:{center:{x:50,y:2650},reveal:{x:50,y:650},chain:['root'],offsets:{root:{x:0,y:2000}}},
+      past:{center:{x:50,y:2450},reveal:{x:50,y:650},chain:['root'],offsets:{root:{x:0,y:1800}}},
+    }}))};
+    const events:TraceEvent[]=[{task:'t',t:0,screen:'s',event:{click:{comp:'b'}},ops:['point','click'],result:'ok'}];
+    const horizontal={...nested,states:nested.states.map(state=>({...state,
+      scrollers:{root:{maxX:3000,maxY:0,width:400,height:900}},
+      components:Object.fromEntries(Object.entries(state.components).map(([id,box])=>[id,{...box,
+        center:{x:box.center.y,y:box.center.x},reveal:{x:box.reveal.y,y:box.reveal.x},
+        offsets:Object.fromEntries(Object.entries(box.offsets).map(([key,p])=>[key,{x:p.y,y:p.x}])),
+      }])),
+    }))};
+    for(const geometry of [nested,horizontal]) {
+      const result=attachGeometry(day(events,1,0),geometry);
+      expect(attributeDay(result,geometry)[0]?.scrollPast).toContain('past');
+    }
+  });
   it('finds repeated sequences across tasks; excludes incomplete task costs',()=>{
     const input=day(trace,3,4),copy={...input,tasks:[...input.tasks,{...input.tasks[0],task:'other',clicks:3,keystrokes:4,scrolls:input.tasks[0]?.scrolls??0,mouseTravelPx:input.tasks[0]?.mouseTravelPx??null,scrollPx:input.tasks[0]?.scrollPx??null,popups:0,overrides:0,searches:0,backtracks:0,klmDeciSec:0,completed:true}],trace:[...trace,...trace.map(e=>({...e,task:'other'}))]};
     // Attach again: one continuous pointer, rather than incorrectly resetting per task.
     const result=attachGeometry(copy,atlas),digest=localityDigest([{result,atlas}]);
     expect(digest.sequences.some(s=>s.tasks===2)).toBe(true);expect(digest.totals.clicks).toBe(6);
+  });
+  it('keeps keystrokes secondary when ranking top targets',()=>{
+    const flat={...atlas,states:atlas.states.map(state=>({...state,components:{...state.components,
+      b:{center:{x:50,y:400},reveal:{x:50,y:400},chain:['root'],offsets:{root:{x:0,y:0}}},
+    }}))};
+    const events:TraceEvent[]=[
+      {task:'t',t:0,screen:'s',event:{click:{comp:'a'}},ops:['point','click'],result:'ok'},
+      {task:'t',t:1,screen:'s',event:{click:{comp:'a'}},ops:['point','click'],result:'ok'},
+      {task:'t',t:2,screen:'s',event:{enter:{comp:'b',value:{text:{s:'x'.repeat(1000)}}}},ops:['point'],result:'ok'},
+    ];
+    const result=attachGeometry(day(events,3,1000),flat);
+    expect(localityDigest([{result,atlas:flat}],1).components[0]?.component).toBe('a');
   });
 });
 

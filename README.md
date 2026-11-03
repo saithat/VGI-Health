@@ -384,9 +384,11 @@ It stops after validation, with no user offer, screen gate or deployment.
 Geometry uses the existing pinned Chromium collector and an exact-content cache
 under `$TMPDIR/vgi-proposal-quality-geometry-cache`; it does not mint screen-gate
 receipts. Target attribution is checked against existing per-task physical costs.
-Screen share means fraction of activations; scroll-past lists component centers
-crossed by container offsets. An explicit remainder bucket preserves totals
-when only the top 15 targets are shown. KLM time stays hidden.
+Screen share means fraction of activations; scroll-past lists components whose
+reveal offsets were traversed within a scroll container. An explicit remainder bucket preserves totals
+when only the top 15 targets are shown. Ranking prioritizes activations and
+reveal-scroll counts, then pointer travel; keystrokes remain secondary. KLM time
+stays hidden.
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2

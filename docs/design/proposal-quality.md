@@ -319,9 +319,12 @@ Persisted atlases are namespaced per frozen decision, and the digest is built
 before any sample validation; prior decisions or samples cannot contribute
 validation-only states through accumulated atlas coverage.
 Pixel rounding conserves task totals in hundredths. Screen share is the fraction
-of activations, visits count task/screen arrivals, and scroll-past means centers
-crossed by container offsets (a geometric proxy, not measured visual attention).
-Top 15 targets retain an aggregate remainder. Repeated 2–4-step sequences count
+of activations, visits count task/screen arrivals, and scroll-past means component
+reveal offsets traversed within the same container (a geometric proxy, not
+measured visual attention). Reveal offsets share the scroll container
+coordinate frame; viewport centers do not, particularly with nested scrollers.
+Top 15 targets retain an aggregate remainder. Ranking uses activations plus
+reveal-scroll counts, then pointer travel, with keystrokes secondary. Repeated 2–4-step sequences count
 distinct tasks. Only completed training tasks contribute to aggregate costs.
 KLM stays hidden through the existing prompt replacer; no app geometry source
 is edited. The ledger lists every earlier candidate for this persona, including
