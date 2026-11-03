@@ -1,1 +1,0 @@
-Hackathon archive (October 31–November 1, 2026): [brief](BRIEF.md), rules (`rules.md` in the `hackathon-final` tag), [judge demo](DEMO.md), [agent handoff](agent-status.md), [UI journal](ui-research-log.md), [WASM spike](wasm-integration.md), [audits](audits/), [measurements](measurements/), [recordings](recordings/); current operation is documented in [README](../../README.md).

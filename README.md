@@ -1,1394 +1,191 @@
 # VGI Health
 
-An EHR whose screens adapt to each clinician's work. An overnight (whenever the user is logged in since people have night shifts :) ) AI agent
-proposes UI changes; the Lean checker blocks changes that violate the hospital
-rules. The same Lean interpreter runs natively and in the browser as WebAssembly.
+An electronic health record (EHR) whose screens adapt to each clinician. An AI
+agent proposes changes to one clinician's screens from how they actually work;
+a checker written in Lean rejects any change that would break the hospital's
+rules, and Lean proofs say what an accepted change guarantees. The same Lean
+interpreter runs every click, natively and in the browser as WebAssembly.
 
-**New to the project?** Start with the [guided tour](docs/GUIDE.md): the core
-types, a map of the repository, the proofs layer by layer, how they are proved,
-a glossary of labels (T0–T11, A1–A4, D1–D6) and commands to check everything
-yourself. This README tracks status and measurements;
-[VERIFICATION.md](docs/VERIFICATION.md) is the reviewer's audit.
-
-## How it works
-
-The hospital defines the clinical obligations. The AI proposes how to arrange
-the interface around them: navigation, grouping, density and permitted
-shortcuts. Every proposed interface goes through the same checker and runs
-through the same interpreter.
-
-### A proposed change must pass before deployment
-
-```mermaid
-flowchart TB
-  AI["AI proposes interface changes<br/>from interaction traces"]
-  RULES["Hospital rulebook"] --> CHECK{"Lean checker<br/>accepts?"}
-  AI --> CHECK
-  CHECK -->|"No"| REPAIR["Return a finding<br/>Revise or discard"]
-  REPAIR -.-> AI
-  CHECK -->|"Yes"| TEST["Simulation + browser checks"]
-  TEST -->|"Fail"| KEEP["Keep the current interface"]
-  TEST -->|"Pass"| VERSION(["Publish a new version<br/>for this clinician"])
-
-  classDef proposed fill:#fde2e1,stroke:#b42318,color:#5c100b
-  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
-  classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
-  class AI proposed
-  class CHECK proved
-  class TEST checked
-```
-
-The agent supplies proposals; the existing proofs justify specific guarantees
-from checker acceptance. A new interface reuses those proofs. For example, a
-shortcut may reduce navigation while retaining a required allergy review;
-hiding that review at signing fails the check when the rule requires it shown.
-Repair attempts are bounded; a failed proposal is not published.
-
-### Every clinical commit is checked again during use
-
-```mermaid
-flowchart TB
-  EVENT(["User clicks Sign"]) --> GUARD{"Lean checks<br/>the current guard"}
-  GUARD -->|"Missing prerequisite"| BLOCK["Block the commit"]
-  GUARD -->|"Needs acknowledgment"| ALERT["Show the alert<br/>Require human acknowledgment"]
-  ALERT -->|"Acknowledge + retry"| GUARD
-  GUARD -->|"All requirements met"| COMMIT(["Interpreter permits the commit"])
-
-  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
-  class GUARD,COMMIT proved
-```
-
-Interface approval leaves the runtime guard in force: a receipt can expire or
-a required value can still be missing. In the W4 medication-administration path, the commit service reconstructs the
-interaction, checks the current guard under patient/dose locks, and accepts only
-a durable Postgres write. Administrative ADT checks its placement guard under
-patient/bed locks and atomically publishes the changed streams. Other live workflows stage a permitted commit and
-accept the committed state only after their Medplum FHIR transaction succeeds.
-The save, rollback and refresh paths are integration-tested; replay never writes
-to Medplum. Preventing an invalid commit is separate from proving that a task
-can always be completed. General completion remains open.
-
-## Read the Lean
-
-Start with these files, in order:
-
-1. [Statements.lean](lean/Statements.lean): the main theorem statements and trusted definitions.
-   Its `sorry` bodies are deliberate: it is the Comparator challenge file. `lake comparator` checks that
-   [Solution.lean](lean/Solution.lean), which imports the proofs in `Ehr/Proofs/`, proves exactly these
-   statements ([comparator.json](lean/comparator.json)) using only `propext`, `Quot.sound` and `Classical.choice`.
-   These 18 theorems hold for every program. The checker-soundness theorems (`accepted_*`, T7, T8) are a
-   second challenge, [Check/ComparatorStatements.lean](lean/Ehr/Check/ComparatorStatements.lean)
-   ([Check/comparator.json](lean/Ehr/Check/comparator.json)), and the completion fragments a third
-   ([Check/completion-comparator.json](lean/Ehr/Check/completion-comparator.json)). Run each with
-   `lake comparator --config <file>`; see the [guide](docs/GUIDE.md#8-check-it-yourself).
-2. [Props/Properties.lean](lean/Ehr/Props/Properties.lean): the thirteen UI requirements.
-3. [Specs/V1.lean](lean/Ehr/Specs/V1.lean): hospital rules, with law and policy labels.
-4. [Core/Interp.lean](lean/Ehr/Core/Interp.lean): the interpreter the app runs.
-5. [Check/Sound.lean](lean/Ehr/Check/Sound.lean): what checker acceptance proves.
-6. [Render/UiProofs.lean](lean/Ehr/Render/UiProofs.lean): how the EHR tree preserves controls and information.
-
-## What the Lean code does
-
-Lean is both the programming language and the proof language here. The code
-implements the EHR, describes its rules, and proves selected guarantees about
-its behavior.
-
-As counted on 2026-11-03, `lean/` has **285 Lean source files and 47,265
-lines**, including comments and blank lines. The default build (`Ehr` and
-`Main`) imports 225 of those files, containing **912 `theorem` declarations**
-(824 of them public) and 75 unnamed `example`s. These counts exclude
-dependencies and build outputs. The source is distributed approximately as
-follows:
-
-| Part | Lines | What it does |
-|---|---:|---|
-| [Data projection and screen rendering](lean/Ehr/Render/) | 10,400 | Reads FHIR records, constructs chart rows and screen trees, and proves selected content-preservation guarantees. |
-| [Hospital rule definitions](lean/Ehr/Specs/) | 7,900 | Defines required fields, reviews, permissions, alerts, units and regulatory/policy requirements. |
-| [Interface checker and its proofs](lean/Ehr/Check/) | 7,100 | Examines proposed screen programs and connects acceptance to the specified properties. |
-| [Reference interfaces](lean/Ehr/Canonical/) | 5,500 | Defines the starting visit, medication, results, pediatric and surgical workflows that the AI can adapt. |
-| [Execution engine](lean/Ehr/Core/) | 4,200 | Handles entering values, navigating, reviewing, acknowledging alerts and signing; maintains the interaction state. |
-| [Simulation and search](lean/Ehr/Sim/) | 3,200 | Runs simulated clinicians, measures interactions and computes certified minima within defined search spaces. |
-| [Property definitions](lean/Ehr/Props/) and [central proofs](lean/Ehr/Proofs/) | 3,000 | Defines precisely what the guarantees mean and proves guard, receipt, automation and alert behavior. Other proofs also live in the sections above. |
-| [Semantic extensions](lean/Ehr/Sem/) | 2,200 | Layout-independent perception, urgency, timelines and multi-patient boards, with explicit exposure hypotheses. |
-| [Commit reducers](lean/Ehr/Commit/) and [multi-actor models](lean/Ehr/Multi/) | 1,200 | Server-side MAR/ADT reducers and shared-workflow invariants (dose once, bed exclusivity, critical results). |
-| Supporting code | 2,600 | APIs, command-line tools, examples, exports and proof audits. |
-
-For example, when **signing a medication order**, the rule definitions specify
-the required entries, reviews and acknowledgments. The execution engine checks
-those requirements when the user clicks Sign. Before deployment, the interface
-checker examines whether an AI redesign retains the required structure and
-protections. The proofs establish claims such as "a successful sign passed its
-guard" and "a macro cannot supply a human-only action." The rendering code
-constructs the fields, review panels and enabled or disabled button. Simulation
-exercises the workflow and measures interaction costs.
-
-The **912 theorems include many supporting lemmas and concrete examples**.
-A small theorem may establish that a value survives navigation, a lookup finds
-the right requirement, a macro preserves acknowledgments, or a required row
-appears in the output. Larger theorems assemble these results into guarantees
-about complete actions or accepted programs. This is not a count of 912
-independent clinical safety rules.
-
-There are **13 main checker properties**. Checker acceptance generally implies
-12; the remaining property, workflow completion, is proved for restricted
-families, with the general case open. There are also separate rendering and
-execution guarantees. These proofs concern the executable EHR engine; the
-following sections explain their scope and the surrounding tested or trusted
-code.
-
-## What is proved, and what is not
-
-**Proved** means a Lean theorem, kernel-checked, using only `propext`,
-`Classical.choice` and `Quot.sound` (no `sorry`, no `native_decide`).
-**Checked** means a test or a per-program check, not a theorem.
-
-**Legend:** 🟢 proved in Lean · 🟡 proved for part of the cases · 🔵 checked by tests or a per-program check · ⚪ trusted (outside the proofs) · 🔴 not proved or not assumed.
-
-| Claim | Status | Where |
+| Primary care order entry | ED track board | Inpatient MAR |
 |---|---|---|
-| Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
-| Native commit-check acceptance implies the guard holds on the supplied current FHIR projection | 🟢 **Proved** for the prototype; freshness, authenticated state and persistence remain trusted integration obligations | `Commit/Check.lean` (`accepted_current_guard`); [concurrency design](docs/design/concurrency.md) |
-| W4 MAR reduction preserves dose-once safety and accepted administrations pass the guard at the written version | 🟢 **Proved** for the Lean reducer; 🔵 Postgres/JWKS/SSE correspondence checked in integration tests. Other live workflows still rely on the client-side guard | `Commit/Mar.lean`, `services/commit/`; [storage contract](docs/design/concurrency.md) |
-| ADT preserves bed exclusivity and one bed per patient; a transfer publishes one complete successor, and accepted commands pass their administrative guard on the checked version vector | 🟢 **Proved** for the native reducer using executable pre/post validation; 🔵 Postgres atomic publication/read correspondence tested | `Commit/Adt.lean`, `Commit/AdtTests.lean`, `services/commit/test/adt.integration.test.ts` |
-| Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Postgres correspondence is integration-tested, not proved | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
-| Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
-| Alerts: popups only for true conditions, never for passive alerts, acknowledgments persist | 🟢 **Proved** (A2, A4 for every run; A1, A3 via checker acceptance) | `Proofs/Alerts.lean`; `Check/AlertSound.lean`, `Check/SeveritySound.lean` |
-| A program is deployed only if the checker accepts it, with a certificate naming that spec and program | 🟢 **Proved** (the plan; not crash-atomic file writes) | `Proofs/CheckDeploy.lean` (T4) |
-| Checker acceptance implies properties 1–5 and 7–13 for every patient record and every reachable state | 🟢 **Proved** | `Check/*Sound.lean` (`accepted_*`) |
-| Checker acceptance implies property 6, "every required task can be completed" | 🟡 **Proved for defined fragments only** (scalar fields, fixed order lines, receipts, many alerts, macros/prefills); general case **open** | `Check/Sound.lean`, `Check/ScalarCompletion.lean`, `Check/FixedLineCompletion.lean` |
-| The screen tree keeps the patient banner, required reviews, honest buttons, modal vs inline alerts, labeled fields (D1–D4, D6) | 🟢 **Proved**, for the semantic screen tree | `Render/UiProofs.lean` |
-| Layout-independent information/action semantics, with explicit perception and view-step bounds | 🟡 **Proved** D1–D4/D6 bridges at abstract exposed moments; actual exposure is an explicit hypothesis; positive and negative examples | `Sem/Screen.lean`, `Sem/Bridge.lean`, `Sem/Trace.lean`, `Sem/Examples.lean` |
-| Active urgent alerts remain perceivable at every reachable view moment | 🟢 **Proved for the additive pinned-strip renderer under explicit finite-fit/legibility/unoccluded layout evidence**, including simultaneous alerts, navigation and acknowledgment; browser geometry is sampled; all 78 ID assignments **approved by the owner on 2026-11-02** | `Specs/AlertUrgency.lean`, `Sem/UrgentStrip.lean`; [policy and sources](docs/design/alert-urgency.md) |
-| Critical results are delivered and resolved or escalated by the configured bound; UI acknowledgment never resolves them | 🟢 **Proved for the multi-actor workflow under fair minute service**; recipient authentication, durable dispatch and clinical action truth remain integration obligations | `Multi/Critical.lean`, `Specs/CriticalResults.lean`; [workflow scope](docs/design/alert-urgency.md) |
-| Minor-interaction advisory requires explicit minor severity; severe evidence/formulary hazards exclude it | 🟢 **Proved** for the successor trigger | `Proofs/InteractionSeverity.lean` |
-| WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; enforced by default** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
-| Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
-| Multi-patient board preserves patient-scoped screen meaning, guarded effects and other sessions; foreign receipts are inert | 🟢 **Proved** for source-bound inputs; urgency perception and action discovery retain explicit exposure hypotheses; 🔵 all emitted promotion views checked | `Sem/Board.lean`, `Sem/BoardView.lean`, `app/scripts/promote-gate.mjs` |
-| Dated FHIR index retains eligible shown-row source occurrences and orders positioned entries by normalized UTC instant | 🟢 **Proved** with bound patient IDs and shown vital/lab backing rows; full index observation and bounded nanoseconds; exact field scope below | `Render/Dated.lean`, `Sem/DatedTimeline.lean` |
-| Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
-| Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
-| The browser's accessibility tree equals Lean's screen tree; every control works | 🔵 **Checked** (browser tests, button audit) | `app/e2e/` |
-| Each rule is enforced in realistic workflows on every deployed revision | 🔵 **Checked** (200 held-out scenarios, hidden from the agent; 0 failures) | `conformance/` |
-| The React drawing, FHIR mapping/Medplum writes, Lean compiler and Emscripten | ⚪ **Trusted**, not proved | — |
-| The hospital rules are complete and clinically right | 🔴 **Not proved**: the rules are a reviewed spec (core profile; catalog rules switched off) | `Specs/` |
-| The simulated clinicians and workload numbers reflect real people | 🔴 **Not proved**: historical deterministic Lean policies and round-two seeded decision-model policies; no human validation; measured geometry at 1440×900 | `Sim/` |
-| The AI agent is correct or honest | 🔴 **Not assumed**: it is untrusted; only checker-accepted programs deploy | `agent/` |
+| ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-track-board.png) | ![MAR](app/shots/final/P3-MAR.png) |
 
-The urgency follow-through successor specs are exported by `ehr spec-export v1|v2|v3`
-and retained in `releases/`. Original protected spec definitions and Comparator
-obligations remain unchanged. `Canonical/Urgency.lean` adds the critical inline
-component to successor W2 screens; all fifteen role baselines pass the checker.
-`lake env lean --run Ehr/Tools/ExportUrgency.lean` regenerates only tracked
-release artifacts. The approved policy has 78 IDs, including urgent
-critical results. The canonical painter receives an all-active `urgent` strip
-from Lean; its layout must fit every displayed alert, and the screen gate checks
-finite scroll/focus samples. Critical results have separate receipt, timeout
-escalation and documented-clinician-action resolution in episode state. Ordinary
-UI acknowledgment and `ackResult` leave them unresolved. The first daily P1
-result task includes a synthetic panic potassium result and named P1/P2 route;
-its 30-minute escalation limit is local simulation policy. Production dispatch,
-authentication, persistence and a fair real-time scheduler remain integration
-work; historical W2 goal completion does not establish critical resolution.
+## The idea
 
-These changes alter the certified application and Lean/WASM hashes. Recorded
-certificates require fresh validation; historical certificates are not rebound.
-See [urgency verification](docs/design/urgency-follow-through.md) for exact checks,
-findings and integration limits. Run with disk-backed scratch and bounded Lean
-(the shell examples in this README use `$HOME/run-tmp`; create it with
-`mkdir -p "$HOME/run-tmp"` or substitute another disk-backed directory):
+Two things are kept apart:
 
-```sh
-export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=4
-(cd lean && lake build && lake comparator)
-node scripts/audit-alert-policy.mjs "$TMPDIR/urgency-policy-audit" --urgency-only
-JOBS=4 make wasm
-make wasm-check
-```
+- **The rulebook** (`Spec`, in Lean): what must be entered, reviewed and
+  acknowledged before an action, and by whom. For example: "signing a
+  medication order needs a dosing weight in kg entered by a human, the allergy
+  list on screen, and every interruptive drug-allergy alert acknowledged".
+- **The screens** (`Program`, JSON): one clinician's layout of screens,
+  fields, tabs, buttons and macros.
 
-## Assurance by layer, and gaps to deployment
-
-Theorems cover the inputs and definitions in their statements. The diagram
-separates proved properties of the Lean code from the surrounding tests and
-trusted components; it does not mark any whole layer as completely verified.
-
-```mermaid
-flowchart TB
-  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
-  classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
-  classDef trusted fill:#eeeeee,stroke:#777,color:#222
-
-  R["Reviewed hospital rulebook<br/>Clinical content trusted"]:::trusted
-  C["Lean checker<br/>12 of 13 acceptance implications proved"]:::proved
-  W["Lean compiler, runtime and Emscripten<br/>Toolchain trusted; native/WASM agreement tested"]:::trusted
-  I["Lean interpreter and screen model<br/>Selected execution and rendering properties proved"]:::proved
-  B["React display<br/>Browser fidelity and accessibility tested"]:::checked
-  F["W4/ADT: Postgres commit service; other workflows: Medplum<br/>Integration tested; storage correspondence not proved"]:::trusted
-
-  R --> C
-  R --> I
-  C -. "Accepted interface program" .-> I
-  W -. "Runs the compiled code" .-> I
-  I -->|"Semantic screen tree"| B
-  B -->|"User events"| I
-  I -->|"Staged commit"| F
-```
-
-Green identifies specified properties proved in Lean. Blue identifies tests
-and per-program checks, covering what was executed. Grey identifies trusted
-content or components, which may also have tests. The dashboard and UI browser
-are React/TypeScript; their surrounding interface is tested, not proved in Lean.
-
-The remaining deployment gaps include:
-
-- Clinical review of the active core rule set; much of the full catalog is off.
-- Evaluation with real clinical staff; reported savings use simulated clinicians.
-- Production integration, authentication, audit, availability and security review.
-- General task completion, crash-safe publication and end-to-end browser proofs.
-- Review of applicable clinical decision support and medical software requirements.
-
-## Architecture
-
-One Lean code base is the single source of truth. It is compiled twice: to a
-native `ehr` binary (checker, simulator, deploy) and, through Lean → C →
-Emscripten, to WebAssembly that the browser runs. React only draws the
-semantic screen tree Lean returns; it holds no clinical logic.
-
-<details>
-<summary>Detailed module architecture</summary>
+The agent may only change the screens. Every proposed program goes through
+`check`; only accepted programs are deployed. At run time every click goes
+through `step`, which refuses a sign unless its guard holds, whatever the
+layout.
 
 ```mermaid
 flowchart LR
+  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
+  classDef untrusted fill:#fde2e1,stroke:#b42318,color:#5c100b
+  classDef trusted fill:#eeeeee,stroke:#777,color:#222
+
+  RULES["Hospital rulebook<br/>(Spec)"]:::trusted
+  TRACES["Clinician's<br/>interaction traces"]:::trusted
+  AI["AI agent<br/>proposes a new Program"]:::untrusted
+  CHECK{"Lean checker<br/>check spec program"}:::proved
+  GATE{"Browser screen gate<br/>+ replay validation"}
+  DEPLOY(["Deploy for this<br/>clinician"])
+  KEEP["Keep current screens"]
+
+  TRACES --> AI --> CHECK
+  RULES --> CHECK
+  CHECK -->|"violation + counterexample<br/>(≤ 3 repairs)"| AI
+  CHECK -->|ok| GATE
+  GATE -->|pass| DEPLOY
+  GATE -->|fail| KEEP
+```
+
+## Architecture
+
+One Lean code base is the single source of truth. It is compiled natively (the
+`ehr` binary: checker, simulator, deploy, commit server) and, through
+Lean → C → Emscripten, to WebAssembly that the browser runs. React only paints
+the screen tree Lean returns; it holds no clinical logic.
+
+```mermaid
+flowchart TB
   classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
   classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
   classDef trusted fill:#eeeeee,stroke:#777,color:#222
   classDef untrusted fill:#fde2e1,stroke:#b42318,color:#5c100b
 
-  subgraph LEAN["lean/Ehr: Lean 4.35, core + Batteries, no Mathlib"]
-    direction TB
-    SPEC["Specs: V1, V2, V3 rule sets<br/>Spec = elements, commits, entries, reviews, alerts<br/>Profile.lean: core / full"]:::trusted
-    CORE["Core: Types, Interp (init, step, view),<br/>Guard (commitGuard, entryMet, reviewMet, commitRoleOk)"]:::proved
-    PROPS["Props: Satisfies spec prev canonical prog<br/>= properties 1–13 (incl. A1–A4, D5)"]:::trusted
-    PROOFS["Proofs: T0 guard, T2 receipts, T3/T6 macros,<br/>A2/A4 alerts, T4 deploy plan"]:::proved
-    CHECK["Check: rules → check : Spec → … → Result<br/>Sound: accepted_* ⇒ properties 1–5, 7–13<br/>completion: fragments (satisfies_of_checked_*)"]:::proved
-    RENDER["Render: Fhir (facts, display projections),<br/>renderUi → UiScreen (semantic tree)<br/>UiProofs: D1–D4, D6"]:::proved
-    SIM["Sim: deterministic clinician policies,<br/>goals from spec, metrics: clicks, scrolls, keys"]:::trusted
-    CANON["Canonical: vendor reference program,<br/>forPersona → role pre-set views (P1–P5)"]:::checked
-    SPEC --> CORE
-    SPEC --> PROPS
-    CORE --> PROOFS
-    PROPS --> CHECK
+  subgraph LEAN["lean/ (Lean 4)"]
+    direction LR
+    SPECS["Specs<br/>rulebook v1–v3"]:::trusted
+    CORE["Core<br/>interpreter: init · step · view<br/>commit guard"]:::proved
+    CHECK["Check<br/>checker + soundness proofs"]:::proved
+    RENDER["Render<br/>FHIR → facts<br/>state → screen tree"]:::proved
+    SIM["Sim<br/>simulated clinicians,<br/>min-click search"]:::trusted
+    SPECS --> CORE --> CHECK
     CORE --> RENDER
     CORE --> SIM
-    CANON --> CHECK
   end
 
-  NATIVE["native ehr (lake build)<br/>check · deploy · simulate · render-screens · facts · step"]:::trusted
-  WASM["WASM (Lean→C→Emscripten)<br/>roots Ehr.Api, Ehr.Render.Api"]:::trusted
-  CORE --> NATIVE
-  CHECK --> NATIVE
-  SIM --> NATIVE
-  RENDER --> NATIVE
-  CORE --> WASM
-  RENDER --> WASM
+  NATIVE["native ehr binary"]:::trusted
+  WASM["ehr-interp.wasm"]:::trusted
+  LEAN --> NATIVE
+  LEAN --> WASM
 
-  subgraph AGENT["agent/ (TypeScript): nightly loop, untrusted"]
-    direction TB
-    LOGS["training-day traces<br/>(odd days only)"]:::trusted
-    LLM["Codex in bwrap sandbox<br/>proposes JSON patches to the UI program"]:::untrusted
-    GATE1["ehr check: Lean checker<br/>(certificate: spec + program hashes)"]:::proved
-    GATE2["screen gate: Chromium renders each<br/>exported tree; ARIA tree = UiScreen"]:::checked
-    DEPLOY["ehr deploy: atomic pointer,<br/>build binding (WASM + app hashes)"]:::proved
-    MEASURE["ehr simulate on blind even days<br/>vs certified baseline + no-agent control"]:::trusted
-    LOGS --> LLM --> GATE1 --> GATE2 --> DEPLOY --> MEASURE
+  subgraph BROWSER["app/ (React)"]
+    PAINTER["Painter: draws the<br/>Lean screen tree"]:::checked
+    DASH["Replay, dashboard,<br/>UI version browser"]:::checked
   end
-  NATIVE --> GATE1
-  NATIVE --> MEASURE
+  WASM --> PAINTER
 
-  subgraph APP["app/ (React + Mantine)"]
-    direction TB
-    PAINT["painter: draws UiScreen only"]:::trusted
-    LIVE["W4 MAR/ADT: Keycloak → native Lean → Postgres<br/>Other workflows: Medplum transactions"]:::trusted
-    REPLAY["replay, UI browser timeline,<br/>trajectories (0-mismatch replay), dashboard"]:::checked
+  AGENT["agent/<br/>nightly AI loop"]:::untrusted
+  AGENT -->|"ehr check / deploy"| NATIVE
+
+  subgraph BACKEND["Backends"]
+    MEDPLUM[("Medplum FHIR R4<br/>Postgres + Redis")]:::trusted
+    COMMIT["services/commit<br/>Node + Postgres + Keycloak"]:::checked
   end
-  WASM --> PAINT
-  DEPLOY --> REPLAY
-
-  subgraph DATA["data"]
-    FHIR["Synthea + Synthetic Hospital → FHIR<br/>Medplum (Docker); world/2: 1,284 tasks"]:::trusted
-  end
-  FHIR --> RENDER
-  FHIR --> LIVE
-  FHIR --> SIM
-
-  CONF["conformance/: 200 held-out scenarios<br/>(hidden from the agent) on every revision"]:::checked
-  NATIVE --> CONF
-  COMP["Statements.lean ⟷ Solution.lean<br/>lake comparator, lake check"]:::proved
-  PROOFS --> COMP
+  PAINTER -->|"FHIR transactions<br/>(most workflows)"| MEDPLUM
+  PAINTER -->|"MAR and bed management"| COMMIT
+  COMMIT -->|"ehr serve:<br/>re-checks the guard"| NATIVE
 ```
 
-Colors match the table: green proved in Lean, blue checked, grey trusted, red untrusted.
+Green: proved in Lean. Blue: tested. Grey: trusted. Red: untrusted by design.
 
-</details>
-
-**One event, end to end.** A click in the browser calls the WASM `step` (the
-same `Interp.step` the proofs are about). If the event is a commit, the
-interpreter first evaluates `commitGuard`; T0 proves no commit is added
-without it. The new state goes through `renderUi`, whose D-theorems guarantee
-the banner, required reviews, honest buttons and alert modality in the
-`UiScreen` tree; the painter draws that tree, and a browser test checks the
-accessibility tree equals it. For W4 MAR, the server checks and reduces the command against locked Postgres
-streams and publishes SSE updates. Other live workflows map the committed state
-to a FHIR transaction and send it to Medplum.
-
-**One night, end to end.** The agent sees only training days and the rules
-(generated capabilities manual), proposes patches, and merges compatible ones
-into one candidate program. The native checker must accept it (properties
-1–13; T4 ties deploy to acceptance), every exported clinical state must pass the
-browser gate, and validation must not lose task completion. Only then is the
-candidate deployed for that clinician's next login; it is measured on blind
-days against the certified baseline and a no-agent control.
-
-[VERIFICATION.md](docs/VERIFICATION.md) records the proof scope, trusted code and
-open gaps. Checker implications cover 12 of 13 properties; general completion
-still requires a separate proof. Current releases use the **core** rule profile.
-Browser drawing, record adapters and clinical rule completeness are outside
-these proofs. Allowed proof axioms are propext, Quot.sound and Classical.choice.
-
-## Semantic properties and extensions (in progress)
-
-[Semantic UI design](docs/design/semantic-ui.md) defines layout-independent
-perception, bounded reachability and urgency alongside the unchanged hospital
-properties. Tree presence alone does not prove viewport exposure or legibility.
-New primitives require Lean meaning/preservation proofs, a DOM painter and an
-independent screen-gate rule. [Ehr/Sem](lean/Ehr/Sem/) now contains the current-language bridge, including
-D1–D4/D6 implications, structural converses for information and action honesty,
-and concrete positive/rejected examples. `Sem/Trace.lean` preserves the clinical
-review obligation and relates completion to finite interpreter event counts.
-The admitted `layout.timeline` group tag emits an ordered full-detail timeline
-through the existing native/WASM renderer. `Sem/Timeline.lean` proves semantic
-preservation, and `Sem/TimelineProgram.lean` proves checker acceptance for a
-canonical program. DOM fidelity remains checked; physical perception needs
-exposure evidence, and general completion remains open.
-
-An [agent-authored extensions proposal](docs/design/agent-admissions.md)
-(pending owner review; not built) would let the overnight agent author new
-primitives as values of fixed, owner-reviewed admission types. The kernel
-checks their proofs; presentations go through the existing declarative sandbox,
-with interaction only from owner-reviewed widgets; a predeclared held-out
-benefit gate and owner approval precede any release. The agent could extend the
-vocabulary, not the specs, properties, checker, gates or metrics.
-
-A [proposal-quality diagnosis](docs/design/proposal-quality.md) (experiment not
-built) explains why 17 of 35 nightly decisions in `core-10day-live` changed
-nothing. Compact density is a no-op in the measured UI, so all 36
-density-only candidates measured zero. The agent also sees neither its earlier
-measured ideas nor per-screen costs, and small picks don't survive validation.
-It proposes an offline three-arm comparison on the run's frozen night inputs:
-today's prompt, a train-only ledger plus locality digest, and the same plus
-read-only query tools.
-
-[Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
-(78 exact IDs including inherited variants), with explicit law, accreditation,
-guidance and hospital-policy labels. It is **APPROVED by the owner on 2026-11-02**.
-The historical `Sem/Urgency.lean` single-modal obstruction proof remains intact.
-The additive `Sem/UrgentStrip.lean` model proves coverage of all active urgent
-rules alongside unrelated modals and continuous perception under explicit finite
-viewport-fit, legibility and non-occlusion evidence. Production exports include
-that strip before and after acknowledgment and independently of navigation.
-Critical-result resolution requires a separate documented clinician action; a
-changed source observation starts a new unresolved workflow. Browser scroll,
-focus, width and text-resize samples check geometry; they do not prove all
-possible moments. `EHR_URGENT_ALERT_IDS` can add operator IDs without removing
-the approved baseline. Policy content enters the screen-cache key.
-
-The owner-selected physical policy uses WCAG 2.2 AA SC 2.5.8 (24×24 CSS px),
-1.4.3 (4.5:1 text), 1.4.11 (3:1 essential non-text), 1.4.4/1.4.10
-(resize/reflow). Every supplied clinical state is measured at tablet 768px and
-desktop 1280/1440/1600/1920px, with 320/640px reflow equivalents and text-only
-200% resize probes. Reports name element IDs and measured violations; complex
-paint effects require review. This is a bounded browser gate, not full WCAG
-certification. [Canonical audit findings](docs/design/alert-urgency-findings.md)
-record the baseline: 8,418 exports (2,673 distinct trees), 32,094 matrix cases.
-The [original WCAG repair report](docs/audits/wcag-2026-11-02.md) records the
-pre-urgency-merge physical findings falling from 451,695/368,914
-(templates/personas) to zero. The [merged UI follow-up](docs/audits/wcag-merge-followup-2026-11-02.md)
-records the critical-result text-field repair and final full audits: all
-1,826 template and 1,296 persona trees pass with zero findings (16,434 and
-11,664 matrix cases). Both previously timed-out batches pass at three workers.
-The [audit-speed follow-up](docs/audits/audit-speed-2026-11-02.md) records the
-measured six-worker default, shared lock/cache and exact-equivalence checks.
-The full merged e2e run has 240 passes, 67 skips and 39 known failures
-(32 live-auth/setup, four recorded-dashboard, three legacy urgency); all new
-merge failures are repaired. Plain `text` entries use a one-row, soft-wrapping
-textbox that grows with its value and text metrics; full values and Lean enter
-and confirmation events are preserved. Other entry kinds retain their widgets.
-
-Dense controls retain a 24px target floor, including card-navigation overrides; labels
-and line boxes grow with resized text.
-Chrome uses opaque solid fills; chart grids, points and reference interval outlines
-use contrasting strokes. Run
-`node scripts/audit-alert-policy.mjs "$TMPDIR/policy-canonical"` after building
-to reproduce the native release exports and gate; add `--personas` for the 15 role-specific candidates.
-Set `EHR_PHYSICAL_REPORT` for durable per-state measurements when using
-`app/scripts/screen-check.mjs --ui` directly. Exact duplicate trees share browser
-measurements; the audit manifest maps every export to its checked tree.
-These painter repairs change `appSha256` and invalidate recorded app bindings.
-Lean/WASM sources and executable assets are unchanged. Gate/policy cache contexts
-also change; existing run certificates are not rebound by this audit.
-
-Painter/interpreter
-changes invalidate recorded build bindings: rebuild and rebind before replay.
-
-## Frontend and backend
-
-Postgres is the selected system of record for the new commit authority.
-[`services/commit/`](services/commit/README.md) is a thin Node 22 HTTP service
-with a long-running native Lean process, expected-version event streams,
-atomic dose/bed controls, durable idempotency and SSE subscriptions. FHIR becomes
-import/export; Medplum can be retired or retained as an optional projection.
-
-**W4 medication administration now uses the service**, at `/?workflow=mar`.
-P3/RN2 login buttons start Keycloak Authorization Code + S256 PKCE. The service
-validates JWKS signatures, issuer, audience, expiry and client; Lean user/role
-come from signed claims. It resolves a provisioned scheduled order, replays human
-interaction, checks the guard, and atomically writes MAR events, a
-MedicationAdministration and patient/shared versions. SSE refreshes other nurses'
-charts and discards stale evidence. The legacy Medplum MAR save fails closed.
-See the [fresh-clone setup and runnable W4 checks](services/commit/README.md#w4-mar-and-keycloak).
-
-**Administrative bed management uses the service** at `/?workflow=adt`.
-The native `Commit.Adt` reducer handles admit, assign, transfer, release,
-discharge, start cleaning and mark ready. Patient placements and bed occupants
-must agree in both directions; occupied/dirty/cleaning beds cannot accept a new
-patient. Transfers produce one successor containing the patient and both beds.
-The host locks the entire configured board in sorted key order, checks its exact
-version vector, and atomically persists changed streams, audit events and the
-request outcome. Board GET/SSE reads use one primary MVCC snapshot. This initial
-closed-board implementation supports at most 64 patients and 64 beds per tenant;
-unrelated board changes can cause a conflict. Bed-manager/charge-nurse roles
-can perform all ADT commands; admitting clerks can admit and assign. All board
-patients and units must be in the authenticated actor's operator-owned scope.
-Routine patient histories redact other patients' ADT audit context.
-
-**4 West is the first unit provisioned for service MAR.** The dev realm has a
-`4-west-rn` group, `4west-rn1`/`4west-rn2`, `charge-4west`, `bed-manager` and
-`admitting-clerk`. Administrator-managed signed unit claims intersect operator
-scope. `units["4-west"].marOnService` gates the directory, session/evidence,
-cosign and final write paths, including already-open sessions. Deployments with
-unit configuration require an explicit unit on every MAR binding; earlier
-isolated configurations without units retain their original behavior. Turning
-the flag off blocks new writes without enabling a Medplum fallback.
-[Rollout and rollback](docs/design/adt-rollout.md) include additive migration of
-an existing Keycloak realm, actual subject-ID capture, initial stream provisioning,
-operator controls and real browser verification. Synthetic clinical/configuration
-files and credentials stay outside git. The administrative ADT snapshot is separate
-from the imported clinical Encounter; these commands do not author physician
-orders, discharge documents or mutate Medplum.
-
-These new app screens change `appSha256`, invalidating recorded certificates.
-Native Lean additions also stale the broad WASM source manifest. Existing WASM
-execution semantics are reused; rebuilding assets and rebinding historical
-certificates are not part of this lane.
-
-**Other live workflows retain the existing client-side guard and Medplum writer.**
-The diagram below describes that path. General clinical reducers, production
-provenance/access review and writer cutover remain open; W4 does not move the
-guard to the server for the rest of the EHR.
-
-```mermaid
-flowchart LR
-  subgraph BROWSER["Browser"]
-    direction TB
-    SHELL["React shell<br/>routes: / live, /ehr replay, /browse, /dashboard"]:::trusted
-    SESSION["session.ts / liveSession.ts<br/>holds the state string, stages commits"]:::trusted
-    WASM["ehr-interp.wasm (Lean 4.35 → C → Emscripten)<br/>facts · init · step · renderUi"]:::proved
-    PAINTER["Painter (Mantine)<br/>draws UiScreen, sends Lean Events"]:::checked
-    MAPPER["commitMapper.ts<br/>commit → one FHIR transaction"]:::trusted
-    SHELL --> SESSION
-    SESSION <-->|"JSON strings"| WASM
-    WASM -->|"UiScreen tree"| PAINTER
-    PAINTER -->|"Event"| SESSION
-    SESSION -->|"accepted commit"| MAPPER
-  end
-
-  subgraph VITE["App server (vite preview, :5173)"]
-    direction TB
-    PROXY["/medplum proxy"]:::trusted
-    LOGIN["/__dev/persona-password<br/>reads .env"]:::trusted
-    PLUGINS["runs · catalog · build.json<br/>try-to-break-it"]:::trusted
-  end
-
-  subgraph DOCKER["Docker Compose"]
-    direction TB
-    MEDPLUM["medplum-server 5.2.13<br/>FHIR R4 API :8103"]:::trusted
-    PG[("Postgres 16")]:::trusted
-    REDIS[("Redis 7")]:::trusted
-    MEDPLUM --- PG
-    MEDPLUM --- REDIS
-  end
-
-  subgraph DISK["Repository"]
-    direction TB
-    RUNS[("runs/ · releases/<br/>programs, certificates, trajectories")]:::trusted
-    CLI["native ehr binary (same Lean)<br/>check · deploy · simulate · render-screens"]:::proved
-    CLI -->|"writes"| RUNS
-  end
-
-  SESSION -->|"live: search, read, transaction"| PROXY --> MEDPLUM
-  SHELL -->|"live sign-in"| LOGIN
-  SHELL -->|"replay: recorded facts and runs"| PLUGINS --> RUNS
-  PLUGINS -->|"try to break it"| CLI
-
-  classDef proved fill:#d9f2e3,stroke:#1b7a43,color:#0b3d22
-  classDef checked fill:#dcebfb,stroke:#1f5fa8,color:#0d2b52
-  classDef trusted fill:#eeeeee,stroke:#777,color:#222
-```
-
-Colors as above: green is Lean that the proofs are about, blue is checked by the
-browser screen gate, grey is trusted.
-
-A save in the remaining Medplum live workflows (replay mode never writes):
+**One click.** The painter sends an event to the WASM `step`. If the event is a
+sign, the interpreter evaluates the commit guard first. The new state goes
+through `renderUi`, which produces the screen tree (banner, required reviews,
+enabled or disabled buttons with Lean's reason, modal or inline alerts). If a
+commit happened, the app writes it: as one FHIR transaction to Medplum, or for
+medication administration and bed management through the commit service, which
+re-runs the guard on the server under row locks before a Postgres write.
 
 ```mermaid
 sequenceDiagram
-  autonumber
   actor C as Clinician
   participant P as Painter
-  participant S as liveSession
-  participant L as Lean WASM
-  participant M as Medplum
-  C->>P: click Sign
-  P->>S: Event
-  S->>L: step(spec, program, facts, user, state, event)
-  L-->>S: staged state (commitGuard decided)
-  alt no new commit
-    S->>L: renderUi(staged)
-    L-->>P: UiScreen
-  else exactly one new commit or review receipt
-    S->>M: POST transaction Bundle (commitMapper)
-    M-->>S: 200, resource locations
-    S->>M: reload patient bundle
-    M-->>S: Bundle
-    S->>L: facts(new bundle)
-    S->>L: renderUi(staged state, new facts)
-    L-->>P: UiScreen with stored data
-  else more than one write, or the transaction fails
-    S-->>P: error, staged state discarded
+  participant L as Lean (WASM)
+  participant S as Medplum / commit service
+  C->>P: clicks Sign
+  P->>L: step(spec, program, facts, user, state, event)
+  Note over L: guard: role, entries, reviews,<br/>alerts acknowledged
+  L-->>P: new state
+  P->>L: renderUi(new state)
+  L-->>P: screen tree
+  opt a commit was added
+    P->>S: write (FHIR transaction or guarded command)
   end
 ```
 
-The `alt`/`else` box lists the three possible outcomes of one click: a screen-only change, exactly one
-saved write, or a refused or failed write (nothing is saved and the screen keeps its prior state).
-
-### Postgres commit authority and shared workflows
-
-[Concurrency design](docs/design/concurrency.md) specifies the storage contract:
-linearizable per-stream order, exact expected-version checking, atomic
-multi-stream commits and primary read-your-writes. The independent
-[commit service](services/commit/README.md) implements READ COMMITTED transactions
-with ordered patient/shared row locks. The same transaction appends events,
-advances snapshots/versions and records the idempotency outcome. Two service
-replicas are exercised against real Postgres; the seeded 32-actor test races
-nurses on the same scheduled dose, admissions to one bed and stale writes.
-Every accepted command is independently rechecked by Lean against its preceding
-persisted chart version; shared histories are replayed through `Multi.step`.
-
-`ehr serve` reads JSON lines `{id,op,input}` and returns `{id,result}` or
-`{id,error}`, supporting `init`, `step`, `facts`, `commit-check`, `multi-step`,
-`mar-context`, `mar-import-context`, `mar-commit` and `adt-commit`.
-It flushes each response and survives malformed requests. The supervisor bounds
-its queue, terminates failed/timed-out children and restarts on the next call.
-The one-shot `ehr commit-check` interface remains available. Its existing
-acceptance theorem proves the unmodified guard on the supplied current FHIR
-projection; freshness, authenticated evidence, clinical reduction and storage
-remain integration obligations. Existing theorem statements and hospital rules are unchanged. New MAR theorems
-prove invariant preservation and guard acceptance at the written stream version.
-
-The service binds sessions to operator-owned releases, users and patient scopes,
-logs human events and reconstructs the before-state on the server. HTTP clients
-submit intent and expected versions. It supports privileged **initial** FHIR
-collection import and lossless export of the chart plus VGI Basic command
-records. It does not yet map every accepted command to updated standard clinical
-resources. The [migration plan](docs/design/concurrency.md#migration-to-the-live-app)
-extends the W4 cutover to the remaining workflows after their reducers and
-provenance are validated and direct writers are revoked. W4 changes certified
-app sources and therefore the app hash; recorded certificates need revalidation
-before reuse. The root dependency lock and existing Medplum database are untouched.
-
-Build and verify the native boundary from the repository root:
-
-```sh
-export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
-(cd lean && lake build)
-python3 scripts/test-commit-check.py
-(cd lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$TMPDIR/commit-service-fixture.json"
-python3 scripts/test-ehr-serve.py "$TMPDIR/commit-service-fixture.json"
-```
-
-For the isolated database, service and unit/integration tests, use the
-[service commands](services/commit/README.md#verification). That package has its
-own npm lockfile. Native Lean additions change the broad Lean source fingerprint
-used by WASM freshness checks. Existing WASM semantics are reused for browser
-rendering; the native reducers are the W4/ADT authority. Recorded certificates have not
-been rebound.
-
-### Lean in the browser
-
-- **Build.** `make wasm` runs `lake build <root>:c` for the API roots
-  (`Ehr.Api`, `Ehr.Render.Api`). It compiles the emitted C, together with the
-  pinned Lean 4.35 runtime, using Emscripten 6.0.13. It then patches the
-  module initializers so that only the runtime half of `Init`/`Std` starts.
-  The result is `app/public/ehr/ehr-interp.wasm` (~3 MB) plus a loader.
-- **Exports.** `wasm/interp-bridge.cpp` exposes one entry point,
-  `ehr_call_string(name, json) → json`. The names are the Lean `@[export]`
-  functions `ehr_facts`, `ehr_init_envelope`, `ehr_step_envelope`,
-  `ehr_view_envelope`, `ehr_render` and `ehr_render_ui`.
-- **Stateless calls.** Every call takes the spec, program, facts and user as
-  JSON, plus the state and event where needed. `app/src/core/session.ts`
-  stores the state string between calls but never reads it.
-- **Shared types.** The TypeScript types for these payloads are generated
-  from the Lean types by `lake exe gents` (`lean/generated/ehr-types.ts`).
-  Changing a Lean constructor therefore breaks the TypeScript build until the
-  painter handles it.
-- **Staleness check.** `manifest.json` stores a hash of every Lean source.
-  `make wasm-check` fails when the WASM is older than the Lean;
-  `make install` and `make run` both run it. The same hash goes into the
-  loader URL (`interp-loader.mjs?v=<hash>`), so a browser cannot keep a
-  stale interpreter from its cache.
-
-### Build and browser geometry determinism
-
-The clinical painter bundles OFL-1.1 Noto Sans (normal variable 400–800),
-Noto Sans Mono (400), and two Noto Sans Symbols 2 glyphs as local WOFF2 assets.
-No font CDN or installed-font lookup participates in those faces. The reviewed
-Latin repertoire, upstream revisions/licenses and reproducible generation are
-in [scripts/fonts](scripts/fonts/README.md). Measurements explicitly load and
-check every declared face and wait for `document.fonts.ready`; missing assets
-fail capture. New scripts or characters outside that repertoire need font
-coverage review and renewed measurements.
-
-Geometry capture uses 1440×900 CSS px, device scale factor 1, light scheme,
-reduced motion, `en-US` and `America/Los_Angeles`. Its injected stylesheet
-disables animation, transitions, smooth scrolling and the visible caret. Each
-active or modal-free collector state has its own BrowserContext/page. The
-screen/WCAG gate uses the same environment and font checks. Geometry cache
-contexts bind the certified app hash, exact font bytes, capture sources/settings,
-stylesheet, Chromium version and executable bytes. State keys bind tree bytes
-and presentation bundles; filenames/day tags are assigned after cache lookup.
-Host platform, fontconfig paths and temporary directories are not layout inputs.
-
-These changes invalidate recorded app certificates and geometry caches; rebuild
-and revalidate before reuse. Historical runs are not automatically rebound.
-The native geometry verifier also recognizes the current Lean alert-condition
-constructors (`minorInteraction`, `criticalResult`) in its wire validator.
-
-```sh
-export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
-pnpm --filter app build
-pnpm --filter app test:geometry-determinism
-node scripts/audit-alert-policy.mjs "$TMPDIR/geometry-canonicals" --personas --export-only
-node app/scripts/geometry-determinism.mjs "$TMPDIR/geometry-independence" "$TMPDIR/geometry-canonicals/exports.json"
-node --import ./agent/node_modules/tsx/dist/loader.mjs agent/src/geometry-verify.ts canonicals "$TMPDIR/geometry-verified"
-```
-
-Retain a pre-change verification directory to compute task-aligned mean/max
-and signed pixel deltas with `node app/scripts/geometry-compare.mjs <before-dir>
-<after-dir> <output.json>`; the comparison requires identical native/world hashes
-and task completion.
-
-The CI-friendly test requires a built app, Playwright Chromium, Linux fontconfig
-and Liberation Sans/Mono with different baseline generic families. The full command checks every distinct exported
-persona tree, including modal-free probes where present. It captures twice normally and once
-in a separate Chromium process with generic sans/system/mono aliases mapped to
-Liberation, verifies `fc-match` resolutions, bypasses cache reads in all passes,
-and requires identical geometry JSON and context. It writes pass JSON and a
-verification digest under the supplied scratch directory. This checks the
-selected Chromium/repertoire/states; it is not a cross-engine rendering proof.
-See the [geometry lane report](docs/audits/geometry-determinism-2026-11-02.md)
-for isolation cost, before/after task metrics, WCAG changes and exact checks.
-
-### One screen, step by step
-
-1. **Facts.** `ehr_facts` takes a FHIR Bundle and a context (user, role,
-   clinical date). It returns the Lean `Facts` that the guards read and the
-   display rows that the screens show (`Render/Fhir.lean`). The TypeScript
-   code fetches and forwards FHIR; it does no clinical interpretation.
-2. **Render.** `init` gives a state. `renderUi(spec, program, facts, user,
-   state)` turns it into a `UiScreen`: a tree of semantic nodes such as the
-   banner, alerts, result grids, order composers, worklists and navigators
-   (13 presentation kinds plus the admitted timeline container). A disabled control carries the reason Lean gives
-   for it.
-3. **Paint.** `app/src/ehr/ui` draws the tree with Mantine, through an
-   exhaustive switch over the generated node union. The painter holds no
-   clinical state. Each input sends a Lean `Event` with a typed `Value`:
-   text, code, flag, user, or a number with tenths and a unit.
-4. **Step.** The event goes to `step`, then the new state goes back to
-   `renderUi`.
-
-The screen gate (below) checks that the painted accessibility tree equals
-the `UiScreen`. That check is what connects step 3 to the D-theorems about
-step 2.
-
-### Remaining live workflows (`/`, against Medplum)
-
-- **Transport.** All FHIR calls go to the same-origin path `/medplum`, which
-  Vite proxies to the Medplum API on `:8103`.
-- **Sign-in.** Non-nursing persona buttons sign in as a seeded Practitioner,
-  using Medplum's password login from the browser (`data/medplum.ts`). The
-  password comes from the same-origin `/__dev/persona-password` endpoint,
-  which reads `.env`, so no credential is in the built assets. The
-  practitioner id and role become Lean's `user`.
-- **Landing lists.** The Schedule, In Basket, worklists and patient lookup
-  are Medplum searches (Appointment, Encounter, Task, Communication,
-  ServiceRequest) for the seeded clinical date (2026‑11‑02; `?date=`
-  overrides it). They go through `ehr_facts` in directory mode.
-- **Opening a chart.** Patients are selected inside the Lean screen. Opening
-  a row sends a `workspace.open` event. The app then loads that patient's
-  bundle (`loadPatientBundle`) and projects the facts again. It also checks
-  that the projected patient is the selected one before it updates the state.
-- **Writes: Lean decides, TypeScript stores.** Each event is first stepped
-  into a *staged* state:
-  - If the staged state adds no commit or review receipt, the app accepts it
-    locally.
-  - If it adds exactly one, `data/commitMapper.ts` maps the captured values
-    to one FHIR `transaction` Bundle (MedicationRequest, Observation,
-    DocumentReference, Condition, Immunization,
-    ChargeItem, Encounter updates, …). Medplum applies the bundle atomically,
-    and the app accepts the staged state only after it succeeds. It then
-    fetches the chart again and projects new facts, so the next screen
-    reflects stored data.
-  - If a step adds more than one write, the app rejects it, so nothing is
-    partly saved.
-  - If the transaction succeeds but the refetch fails, the app reports
-    "Saved" and asks the user to reopen the chart. It never reports a
-    retryable failure for data that was already stored.
-- **Not proved.** The commit mapper is tested, not proved, so it is part of
-  the trusted surface.
-- **Client-side guard.** The live commit guard runs in the client. Medplum
-  accepts any write that the signed-in user's access policy allows. These workflows have not moved their guards into the server write
-  path.
-  The Postgres service mediates W4 MAR and administrative ADT; the remaining writes still rely on the client-side guard.
-
-### Replay mode (`/ehr`, `/browse`, `/dashboard`)
-
-Replay mode does not use Medplum. It loads the facts recorded for each task,
-and Vite plugins in `app/scripts/` serve the artifacts:
-
-| Plugin | Serves |
+| Directory | Contents |
 |---|---|
-| `runs-plugin` | `/runs/index.json`, `/runs/default.json`, and run files, with ETags and compression |
-| `catalog-plugin` | `/catalog.json`: releases, persona revisions, certificates |
-| `build-binding-plugin` | `/build.json`: SHA-256 of everything that can change a certified screen (see below) |
-| `try-break-plugin` | `/__dev/try-to-break-it`: runs the native `ehr check` on a pasted program |
-
-- **Build binding.** Each published run records the `appSha256` and
-  `wasmSha256` it was checked against. The app refuses to replay it on a
-  different build, because a different painter or interpreter could draw
-  something other than what was checked. After a rebuild, `make rebind
-  RUN=<id>` re-validates the run and binds it again. It fails if any
-  certification input has changed.
-  `appSha256` covers everything that can change a certified screen, and nothing
-  machine-specific: the source text of first-party modules outside the review
-  tools (`src/dashboard`, `src/browser`), the emitted code of third-party
-  rendering libraries (React, Mantine, …), and `pnpm-lock.yaml`,
-  `vite.config.ts` and `index.html`. `.env` values and the clone path do not
-  enter it. As a result, a fresh clone builds the exact app the recorded runs are
-  bound to, and every recorded replay plays without re-certification. Editing the
-  dashboard leaves certificates valid. Editing the painter, session, data
-  adapters, styles or dependencies invalidates them. The interpreter is bound
-  separately by `wasmSha256`.
-- **Trajectories.** These are event sequences recorded by the native
-  simulator. Playback runs them through the browser WASM.
-  `scripts/trajectories/index.mjs` also replays every trajectory through the
-  WASM build in Node and records the first divergent event, if any. This is
-  the native-versus-WASM differential test.
-
-### Backend and data
-
-- **Commit authority.** `services/commit/compose.yml` runs a separate Postgres
-  16 database on loopback `:55432`, with an independent volume and a 256 MB limit.
-  The Node service defaults to `127.0.0.1:8090`. Start/migrate it explicitly using
-  its [README](services/commit/README.md); `make install` does not start it.
-- **Existing live stack.** `infra/docker-compose.yml` runs Postgres 16, Redis 7,
-  `medplum-server` 5.2.13 (API on `:8103`) and `medplum-app` 5.2.13 (admin
-  UI). Medplum runs no custom code: there are no Bots or subscriptions.
-- **`make install`** does the following, in order:
-  1. builds the Lean;
-  2. installs the pnpm workspace;
-  3. checks the WASM;
-  4. starts the stack;
-  5. creates the project and practitioners (`setup`);
-  6. loads the Synthea and Synthetic Hospital patients (`load`);
-  7. seeds the world/2 clinical days (`seed`): appointments, tasks,
-     messages and orders.
-- **The `ehr` binary** (`lean/.lake/build/bin/ehr`) is the same Lean
-  compiled natively. The commit service uses `serve`; these offline tools use it:
-  - the agent: `check`, `deploy`, `simulate`, `min-clicks`;
-  - the screen gate: `render-screens` exports representative view variants for each screen/context, then
-    Playwright loads each one in the built app and compares the
-    accessibility tree with the `UiScreen`;
-  - the held-out conformance suite;
-  - trajectory recording.
-
-<!-- results:start -->
-## Results (`core-10day-live`)
-
-The five-persona run (`runs/core-10day-live/`) completed all **10 of 10 days** and 9 nights. Day 1 runs every persona on v0. From day 2 on, each simulated clinician works on the latest certified revision of their fork, and a **no-agent control** (v0, which receives the same vendor releases) runs the same tasks. The v2 vendor release arrives on day 4 and v3 on day 7. Totals below count only tasks that both arms completed (11 task-days excluded).
-
-| Persona | Revision now | Clicks, days 2–10: agent vs control | Scrolls | Mouse travel |
-|---|---|---|---|---|
-| P1 Primary care physician | v5 | 6264 vs 7099 (−12%) | 7412 vs 8466 (−12%) | −6% |
-| P2 ED physician | v7 | 10234 vs 11160 (−8%) | 19359 vs 20996 (−8%) | −20% |
-| P3 Inpatient RN | v4 | 5285 vs 5398 (−2%) | 5636 vs 6166 (−9%) | −2% |
-| P4 Pediatric NP | v8 | 5122 vs 5134 (±0%) | 5694 vs 6626 (−14%) | −4% |
-| P5 General surgeon | v4 | 4192 vs 4312 (−3%) | 7139 vs 7314 (−2%) | −1% |
-
-- 28 of 45 persona-nights deployed a new revision; 17 kept the current one (9 because validation found the candidate made the replayed work worse).
-- The Lean checker rejected 1 of 125 agent-written candidates. P2 night 8: "Show the signing-screen anticoagulant panel only for pre-op encounters." violated `reviewsBeforeCommit` (anticoagulantList is not shown on screen w3Sign when signOrders is clicked). The counterexample was a three-click path to signing without the list on screen.
-- The nightly planted candidate (allergy list moved into a tab) landed on screens where no commit requires the allergy review, so the checker correctly accepted it (35 times, 0 rejected) and the other planted kinds never ran. Evidence that the checker rejects unsafe UIs comes from the known-bad suite and the proofs listed above, plus the rejection above.
-- 1273 of 1284 simulated tasks completed. 4 failed in both arms (P1 v4, P5 v2), so the cause is in the task or the simulated user, not the revision. 7 failed only on the agent's revision (P1 v5). P1's v5 is the night-6 migration to the v3 release, which requires a coded antibiotic indication. On W1 visits from day 7, the simulated physician fills the free-text indication, reaches order signing and stops, because the coded per-line picker added by the migration is never filled. The control completes these tasks on the vendor's v3 screens. The migration's validation replayed day 5, before v3, so it did not exercise the new requirement. Completion is gated by validation, not proved (see the table above).
-- Held-out rule conformance (200 scenarios the agent never sees; report-only): 3497 passed, 15 failed, 3088 not applicable, across 33 revisions. Failures: `v2.prior-auth.imaging` on P1 v3, P1 v4, P1 v5, P5 v2: the agent chose not to surface the optional v2 prior-auth controls, which left no reachable way to complete a prior-auth imaging order; `v2.prior-auth.procedure` on P1 v3, P1 v4, P1 v5, P5 v2: the same hidden prior-auth controls left no way to complete a prior-auth procedure order; `entry.signNote.claimDiagnosis` on P2 v1, P2 v2, P2 v3, P2 v4, P2 v5, P2 v6, P2 v7: night 1 moved diagnosis entry beside the provider note, and the claim diagnosis is no longer confirmed from the visit diagnosis (a billing rule the checker's properties do not express).
-- Native vs. browser WASM: 72636 recorded events over 1284 trajectories replayed through both, with 0 mismatches.
-- The run stopped once after day 7, when the agent process hit Node's default heap limit. Days 8–10 were resumed from the run-start commit, with every resume fingerprint matching (app, agent, gate, world, `ehr`).
-- These are simulated clinicians with deterministic policies, not user studies (see "Assurance by layer, and gaps to deployment").
-<!-- results:end -->
-
-In these runs each persona's day is simulated alone, against a fixed task list
-and frozen data, so no persona's work affects another's. The proposed
-[shared-world simulator](docs/design/shared-world-sim.md) would run every
-simulated clinician in one shared EHR state through the commit reducers. The
-design is accepted; implementation has not started.
-
-## Run it
-
-Install Node 22.18+, pnpm 11.8.0, [elan](https://github.com/leanprover/elan),
-a C toolchain, and Docker with Compose and a running daemon.
-
-```sh
-git clone https://github.com/saithat/VGI-Health.git
-cd VGI-Health
-git archive hackathon-final runs fixtures programs verdicts.json | tar -x   # data, see Data
-make install && make run
-```
-
-Open **http://localhost:5173/**. Installation starts Medplum, loads synthetic
-patients, seeds worklists and creates a private `.env`. If another checkout
-already uses the named Medplum stack, copy its `.env` locally first to preserve
-the shared credentials. W4 additionally requires the
-[Keycloak and commit-service setup](services/commit/README.md#w4-mar-and-keycloak);
-`make install` does not start that separate authority. No AI API key is needed
-for local work or replay.
-
-The **Demo / replay** link opens the offline catalog. In the dashboard,
-**Trajectories** replays any recorded task on the real EHR in a fixed-size
-player (fullscreen, moving cursor, click and scroll animation), and
-**Compare** plays two runs of the same workflow side by side (for example the
-baseline vs. the latest revision), with click, scroll and mouse-travel deltas
-and the agent's changes linked to the moments they matter. Compare links are
-bookmarkable, e.g.
-`/dashboard?view=compare&run=core-10day-live&persona=P1&workflow=W1&left=d01-P1-W1-001&right=d03-P1-W1-001&comparison=cross-day`
-(primary care clinic visit, baseline day 1 vs. revision 2 on day 3).
-
-Trajectories uses the dashboard persona picker plus workflow, day, revision and
-completion filters, task-id/workflow/patient search, and sorting by clicks,
-scrolls or click savings against the same-task no-agent arm. Lists render at most
-40 tasks per page. Filters and the selected task are bookmarkable; for example,
-`/dashboard?view=Trajectories&run=core-10day-live&persona=P1&trajectoryDay=&trajectoryWorkflow=W1&completed=false&task=d07-P1-W1-004`.
-Incomplete recordings remain inspectable and visibly marked (11 in
-`core-10day-live`); Compare suggests only completed tasks within one workflow.
-Both replay views show recorded-vs-no-agent outcomes matched by persona, day
-and task id. Savings require both arms to complete. A metrics-only no-agent arm
-does not acquire an invented replay context; side-by-side playback uses exported
-trajectories where available.
-
-Replay geometry is served as per-task slices, preserving state selection,
-component aliases, scrollers and source hashes. Derived slices live under
-`runs/<id>/.cache/geometry/`, invalidate when the atlas or task file changes, and
-can be deleted to regenerate them. The run inventory excludes `.cache` and is
-cached for five seconds. A shared 96-entry JSON cache coalesces requests for
-30 seconds, and trajectory-index validation is reused across views. Installed
-build evidence, certification/rejection pointers and presentation/source evidence
-are fetched fresh for every verification; build-binding and geometry identity
-checks remain in force. On-demand JSON uses Brotli quality 4 with ETag
-revalidation. Trajectories and Compare remain lazy-loaded; visited players stay
-mounted only for the current run/persona, pause when hidden, ignore hidden
-keyboard input, and refresh their index on reactivation after cache expiry.
-
-The rerunnable Playwright/CDP benchmark is
-`node app/scripts/dashboard-benchmark.mjs http://127.0.0.1:5194 output.json`
-after `make run APP_PORT=5194`. It records wall time, transferred/decoded bytes
-and renderer main-thread time for each action. See the
-[measurement report](app/scripts/dashboard-performance.md) for cold-load and
-section-switch results, methodology, tradeoffs and validation commands.
-
-For the offline catalog alone,
-use `pnpm install && make run`. The dashboard opens the newest complete run (`core-10day-live`); the earlier
-single-persona `run1-P3` (inpatient RN, 10 days) is also included.
-Use `make run APP_PORT=5187` if the default port is occupied.
-
-A run writes into `runs/<id>/` as it goes. `pnpm publish-partial --run <id>
---into <id>-live [--watch]` publishes the completed days and nights to a
-separate snapshot. That snapshot holds the replay, the trajectory index with its
-native-vs-WASM check, and the complexity data. The publisher only reads the
-running source. Once the writer has stopped, `--in-place` finalizes the run
-itself. Both modes need `TMPDIR` on the same filesystem as `runs/`, because
-publication is an atomic rename.
-
-Runs are written to `runs/`, which is not tracked (see Data).
-
-The [hackathon archive](docs/hackathon/) preserves the brief, [judge demo](docs/hackathon/DEMO.md), recordings,
-implementation journals and one-off measurements. A clean-clone test (`scripts/clean-clone-test.sh`) clones
-local HEAD, restores ignored data from `hackathon-final` before installation,
-then installs and serves it offline. It requires the shared Medplum stack on
-port 8103 and its existing `.env` (or `CLEAN_CLONE_ENV_FILE=/path/to/.env`); it
-never provisions a replacement stack. `node scripts/clean-clone-smoke.mjs
---extract-data` restores an empty checkout without installing dependencies and
-leaves existing complete data alone; a partial dataset requires explicit repair.
-`make wasm-check` checks the committed
-WASM source binding; `make wasm` rebuilds it using the local toolchain.
-
-The trusted system includes the reviewed hospital spec, Lean and Emscripten,
-FHIR adapters, Node/React/browser, Docker/Postgres, the current Medplum live path
-and the synthetic source data.
-These software proofs do not establish clinical correctness.
-
-
-## Exploration (early)
-
-The [formal design space](docs/design/design-space.md) fixes W1–W7 task contracts
-and separates task, abstract, concrete and final interfaces. New exploration
-uses department × role workloads and a portfolio across navigation/layout
-families; reviewed publication is on a slow cadence, independent of search.
-Historical nightly per-persona runs above remain the original experiment.
-Proved Lean layout, empirically checked renderers and simulation-only sandbox
-candidates have separate assurance tiers. No exploration result is deployed.
-
-`explore/design.ts` defines typed dimensions and one-hot descriptors;
-`explore/tasks.ts` extracts unchanged release commit contracts; and
-`explore/generator.ts` compiles design points plus workflow sets into ordinary
-programs. Unsupported primitives yield explicit sandbox manifests. Generation
-preserves clinical component kinds; a separate identity-based movement check
-retains the stability budget even if an operator renames tags. The original
-generator does not require Lean or certified application changes; round two adds
-separate research primitives and API modules.
-
-The [implementation notes](docs/design/exploration-tools.md) record the
-OpenEvolve/ShinkaEvolve evaluation, MAP-Elites objective, model licenses,
-external ML environment, CPU/GPU server commands and calibration protocol.
-`explore/cli.ts` reuses the isolated Codex (`default` service tier) or Claude
-backend, native Lean check, whole-version screen gate and world simulator.
-`make decision-server` starts a local open-model scorer (`--device auto|cpu|cuda`; on a CUDA GPU it serves Decider 0.8B at about 0.5 s per decision); `make explore-test`
-checks the harness. Decision models rank candidates and score recorded visible
-actions; Lean remains the only certification gate. TabPFN is an optional local
-screening adapter; Jev is an unconfigured stub that makes no calls.
-The [first ED portfolio](docs/design/exploration-first-ed.md) contains four
-checker-accepted layout families (stack, columns, timeline, document), all
-completing 40/40 synthetic W3 tasks after screen checks. Five Codex calls and an
-explicit budget repair produced the portfolio; both rejected proposals remain
-in the untracked run report. Native effort estimates and tiny-model calibration
-are early diagnostics, not human usability or deployment evidence.
-
-The [second ED exploration](docs/design/exploration-round2.md) adds an isolated
-laboratory at `/exotic-check.html?mode=command|spatial|board|dated` (Vite development
-server). It exercises typed commands, pinned zones, independent patient sessions
-and a source-dated UTC index with complete clinical content retained. Patient selection
-remains enabled: native lookup/open/hydration precedes bound clinical work, and
-the laboratory can return to that native picker without discarding other panes. New
-`Ehr.Sem.Exotic` proofs cover offered click-command IDs/reasons, unique patient
-routing/banner selection, complete zones and chronological axis admission.
-The board and dated timeline now have ordinary `UiNode` constructors and typed
-schemas. `Ehr.Sem.Board` proves exact patient-scoped screen meaning, ordinary
-interpreter refinement, preservation of other panes, patient/episode-scoped
-receipt import, guard preservation and coverage of every active urgent condition.
-`Ehr.Sem.BoardView` gives the scoped event/physical view graph, modal-aware
-action reachability and binding preservation over complete traces. A board-wide
-urgent rail stays inside the active interaction boundary while a modal blocks
-other clinical actions; its continuous perception requires explicit
-viewport, legibility and occlusion evidence at every reached moment. A compact
-patient/MRN identity stays pinned; full banner detail remains in flow. The pane grid fits below the global rail, and modal placement follows its
-measured lower edge. The gate checks every enabled control and patient identity
-after scrolling, including a covered-control adversary. Shared
-clinical persistence and cross-session concurrency remain outside this composition.
-`Ehr.Render.Dated` normalizes offset-bearing source times to UTC seconds and
-bounded nanoseconds (`Fin 1000000000`), sorts stably and retains every eligible
-occurrence across dated and explicitly unpositioned entries. Candidate extraction
-covers exactly `effectiveDateTime`, otherwise `effectivePeriod.start`, plus
-`issued` separately. It does not cover onset, authoredOn, performed, recordedDate,
-occurrence or Encounter.period. Backings currently support latest vital rows and
-full laboratory histories. Only candidates whose exact backing row appears under
-its information ID in the emitted workspace/side are indexed; payload overrides
-supply no inferred permission. Occurrence numbers prevent an identical hidden
-candidate from borrowing another occurrence's permission. Both ordinary and native
-paths require the workspace binding gate and matching present source patient IDs.
-Date-only/local, invalid, unknown-offset (`-00:00`), leap-second and unsupported
-precision values remain unpositioned. Pre-epoch times are supported; formatted W3
-captions are not parsed as dates. `DateIndex.observe` retains complete index
-payloads and patient namespaces; `IndexedExtension.full` and production source
-witness theorems cover the index, beyond the unchanged clinical-only projection.
-`layout.datedTimeline` and the native `dated` API use this restricted source index.
-The provenance theorems describe adapter-built displays. Derived `Display.FromJson`
-accepts arbitrary `timelineBackings`: JSON-supplied backings are trusted input,
-and the host must supply authentic adapter output; decoding does not validate provenance.
-The dated laboratory uses the same rail in a single-patient board. Lookup and
-return retain the ordinary panes and rail; the source-date index appears only
-for a bound chart. Command and spatial views remain **sandbox**; `layout.timeline` remains the
-admitted ordered-child primitive. The promotion rerun uses the original 24 seeded
-profiles and exact-input recorded probabilities, with no decision server or new
-proposal calls. It is validation of the preselected designs, not a new blind study.
-The corpus gate supports three workers (six pages), propagates every worker/viewport failure,
-and checks that every input view appears exactly once in its coverage report.
-The owner cleared the disclosure blockers on `1272fe10`. Integration with current
-main carries its pinned urgent alerts and acknowledgment controls in typed pane
-metadata, preserving the board's modal ownership and patient-scoped events.
-Critical-result workflow steps retain clinical commits, preserving the original
-commit-guard theorem. The promotion gate shares the canonical physical-policy
-collector and pinned Noto/capture environment. The integration includes main
-through `19a569b6`; subsequent dashboard/browser changes preserve the clinical
-bindings verified by the full physical audits and promotion cohort. Dashboard
-trajectory browsing stacks above replay on narrow screens, preserving a nonzero
-replay stage and the recording’s fixed 1440×900 logical viewport. See the
-[integration audit](docs/audits/promote-main-integration-2026-11-02.md).
-See the [round-two report](docs/design/exploration-round2.md) for current tiers,
-measurements, exposure limits and the native/WASM/browser verification record.
-The laboratory uses the real interpreter and has no clinical persistence path.
-Launch it with `TAILSCALE_SERVE=0 pnpm --filter app dev`.
-
-Round two uses 24 seeded simulated ED physicians (final seed 20261103), split before search into 12
-search and 12 held-out members. Their legal goal-action choices use the supplied
-local CUDA Decider model through `DecisionModel`; physical-device preferences,
-visual search, choice lapses, detours and task learning are explicit simulator
-parameters. Browser target rectangles and scroll distances supplement native
-P2 estimates. Calibration labels are simulator-generated, not human. Eight
-Codex proposals use service tier `default`; archive selection precedes held-out
-choices. Outputs and screenshots stay in ignored `runs/explore-round2/`; the
-tracked report retains the niche table, screenshot inventory, exclusions and
-proof gaps. Descriptors name realized behavior: spatial/dated views retain list
-navigation, and no compact-control density niche is claimed. The new WASM API root is `Ehr.Sem.ExoticApi`; rebuilding changes the
-Lean/WASM bindings, invalidating historical certificates. The original isolated laboratory left the production app fingerprint unchanged.
-Promotion changes the ordinary painter and therefore the certified production app
-hash as well as the Lean/WASM binding. Historical certificates are invalid for this
-build; none is rebound or deployed. Laboratory source hashes remain separate.
-No historical certificate is rebound and no exploration design is deployed.
-The report writer also consumes the run's captured `app-binding-comparison.json`;
-that baseline comparison is evidence from a pre-change build, not reconstructed
-from the final experiment's fingerprint.
-The original board measurements were corrected by replaying saved events with
-the scrollable patient-pane root included. The original frozen archive and
-before/after geometry remain in the run; no choices or archive members changed.
-
-```sh
-export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=4
-(cd lean && lake build && lake build exotic-api)
-JOBS=4 EM_CACHE="$TMPDIR/explore2-emcache" make wasm
-pnpm --filter app build
-# Proposal output must be a fresh run directory; the budget claim forbids reset.
-EXPLORATION_RUN=runs/new-round2
-mkdir -p "$EXPLORATION_RUN"
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-propose.ts "$EXPLORATION_RUN"
-printf '%s\n' '{"op":"canonical"}' | lean/.lake/build/bin/exotic-api > "$EXPLORATION_RUN/canonical.json"
-node app/scripts/exotic-gate.mjs "$EXPLORATION_RUN"
-EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4272 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs "$EXPLORATION_RUN"
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-agreement.mjs "$EXPLORATION_RUN"
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/full-binding-check.mjs "$EXPLORATION_RUN"
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/calibration.mjs --out "$EXPLORATION_RUN/calibration" --endpoint http://127.0.0.1:8788/v1 --model Mapika/decider-0.8b --limit 24
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-descriptors.mjs "$EXPLORATION_RUN"
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-samples.mjs "$EXPLORATION_RUN"
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs "$EXPLORATION_RUN"
-```
-
-The final cohort runs the unchanged patient-selection programs. The earlier
-pre-bound-core diagnostic run is excluded under `prebound-v1/`; only its frozen
-search-side model probabilities are reused, with no held-out scores or labels.
-The cohort runner resumes complete members from saved event/geometry records and
-exact-input frozen-model cache entries; unfinished members restart from their
-seeds. Three actors use at most six browser pages: a native patient picker and bound
-workspace per actor. The held-out stage does not select or replace archive entries. The additive gate
-`app/scripts/exotic-gate.mjs` checks canonical views at 1440 and 390 px, source
-cells, action honesty, hidden content, proportional dated order and real WASM
-patient isolation. This is sample coverage, not admission of all view transitions.
-
-
-Promotion verification and rerun (outputs stay ignored):
-
-```sh
-export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=4
-(cd lean && lake build && lake build exotic-api)
-(cd lean && COMPARATOR_BWRAP="$PWD/../scripts/lean-bwrap.py" lake comparator)
-JOBS=4 EM_CACHE="$TMPDIR/promote-emcache" make wasm
-make wasm-check
-pnpm --filter app build
-node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/promote-gate.mjs runs/promote
-pnpm --filter app test --maxWorkers=2 --testTimeout=20000
-node explore/prepare-promotion.mjs runs/explore-round2 runs/promote-ordinary-v2
-EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4282 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs runs/promote-ordinary-v2 --promote --cache-only
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-exports.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-source-check.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs runs/promote-ordinary-v2
-```
-
-The preparation command requires a fresh directory. The stack reference is
-remeasured with the same profiles and build, after the two preselected designs.
-Cache misses fail rather than
-substituting probabilities. The board API clears unscoped legacy receipts;
-imported receipts must name their source patient and supplied episode, and the
-original core still checks data version, age and reviewer role. The board API
-binds both facts and display to the pane's source Patient.id. FHIR authenticity,
-loaded-state provenance and persistence remain integration trust boundaries.
-All exported backing-program states are submitted to the stock gate; its
-unrelated-modal urgency failures remain recorded findings. The ordinary gate
-also checks composed native exports and every emitted cohort view at both widths,
-including patient-scoped ARIA references, complete content and dated order.
-Those finite checks supply sampled geometry evidence; they do not prove pixels.
-
-
-```sh
-TMPDIR="$HOME/run-tmp" pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
-TMPDIR="$HOME/run-tmp" node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
-```
-
-
-### Determinism and replay
-
-The agent fails closed when replayed system/user prompts diverge. Explicit
-`--replay-allow-drift` records the policy and affected calls in the manifest.
-Native, screen/geometry and LLM transport failures retry identical inputs
-(`EHR_INFRA_RETRIES=2` by default), then stop with `infrastructure-error` for
-resume; failed transport cannot become a nightly decision. Existing historical
-error outcomes remain readable. Daily and completed-run content digests exclude
-declared provenance metadata while retaining clinical trace times and order.
-Resume reloads persisted geometry coverage before accumulating new states.
-
-```sh
-export TMPDIR="$HOME/run-tmp"
-pnpm --filter agent verify-determinism
-pnpm --filter agent verify-crash-resume --points 8 --seed 20261102
-```
-
-These commands exercise two days × two personas with the real prebuilt native
-binary, scripted zero-model responses and fixed synthetic geometry. They compare
-serial/serial/parallel execution and seeded SIGKILL/resume results, reporting the
-first differing file and JSON path. Artifacts stay in disk-backed scratch.
-The crash hook refuses live model backends. This checks the fixture's
-orchestration and publication boundaries; browser geometry and fonts are handled
-by a separate lane. The [boundary inventory and scope](agent/DETERMINISM.md)
-describe metadata exclusions, recording IDs, retry audits and remaining coverage.
-
-## Development checks
-
-Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check
-process in a checkout at a time:
-
-```sh
-export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
-(cd lean && lake build)
-pnpm --filter app lint && pnpm --filter app exec tsc --noEmit
-pnpm --filter agent lint && pnpm --filter agent typecheck
-pnpm --filter world lint && pnpm --filter world typecheck
-pnpm --filter app test --maxWorkers=4
-pnpm --filter agent test --maxWorkers=4
-pnpm --filter world test
-EHR_BIN="$PWD/lean/.lake/build/bin/ehr" pnpm test:conformance
-make wasm-check
-```
-
-Browser and live integration checks require Chromium (`pnpm --filter app exec
-playwright install chromium`); live checks reuse Medplum and the existing `.env`:
-
-```sh
-pnpm --filter app build
-pnpm --filter app exec playwright test --workers=4
-pnpm --filter app test:live
-pnpm --filter app audit:buttons
-pnpm --filter app test:buttons
-pnpm --filter app audit:performance
-```
-
-Browser tests build and serve production preview by default: development's
-`development-unbound` fingerprint deliberately refuses recorded certificates.
-`APP_TEST_PREVIEW=1` reuses a prebuilt preview (including in the screen gate);
-`APP_TEST_PREVIEW=0` explicitly selects unbound development. Tests accept
-`APP_TEST_PORT` for an isolated server and `--workers=4` for bounded parallel
-execution. Native browser actions and revision checks use
-`EHR_BIN` when supplied, otherwise `lean/.lake/build/bin/ehr`. Live checks load
-the repo-root `.env`: browser login needs its `VITE_MEDPLUM_*` values and
-`VGI_USER_PASSWORD`; `test:live` also needs `MEDPLUM_CLIENT_ID` and
-`MEDPLUM_CLIENT_SECRET`. Missing credentials fail with a setup error when the
-backend is available. An unavailable Medplum healthcheck skips live cases with
-the backend URL and reason. Both canonical baseline and personalized login
-paths are exercised. Personalized live journeys and recorded trajectory checks
-require current build bindings; use `make rebind RUN=<id>` to revalidate stale
-recordings after building the app. A rejected rebind remains a test failure.
-Replay signing and surgical journeys select their original fixture MRNs and
-assert the bound patient IDs; live search/review retains the named patients.
-
-Structured presentation fidelity, contrast and wrapping checks, plus the five
-canonical chart-review tab journeys, run in the default browser suite at both
-project widths. `EHR_PRESENT_SHOTS=1` and `EPIC_DENSITY_SHOTS=after` additionally
-capture review images. Other historical before/after capture suites remain
-opt-in; their skips do not certify those review inputs.
-
-The [browser suite repair report](docs/audits/e2e-repair-2026-11-02.md) records
-failure triage, the remaining skip inventory, live prerequisites and repeat-run
-verification.
-
-`app/scripts/screen-check.mjs` checks exactly the supplied native screen trees,
-at desktop and narrow widths, for visibility, legibility, occlusion and component
-fidelity, and (when urgent alert IDs are configured) continuous perceivability of
-urgent alerts. The WCAG 2.2 AA physical-policy matrix (target size, contrast,
-reflow at the viewports above) **runs and fails on findings by default**.
-`EHR_ENFORCE_PHYSICAL=0` explicitly selects diagnostic report-only measurements;
-`EHR_PHYSICAL_POLICY=0` explicitly disables the matrix. Both settings enter the
-whole-tree cache context, so a bypass receipt cannot satisfy the default gate.
-Full `scripts/audit-alert-policy.mjs` audits and standalone `screen-check.mjs
---ui` runs serialize on the machine-wide `$TMPDIR/vgi-browser-heavy.lock`.
-Linux `flock` releases dead owners automatically; the inode is retained to avoid
-stale-lock deletion races. Wait messages identify the owner's PID, command and
-start time. Nested checks inherit `EHR_BROWSER_LOCK_TOKEN` and
-`EHR_BROWSER_LOCK_PATH`; `EHR_BROWSER_LOCK=off` explicitly opts out. All lanes
-must use the same disk-backed `TMPDIR`. Export-only audits do not lock. Nightly
-`agent/src/screencheck.ts` calls keep their scheduling: the existing private
-`screens-*/gate-result.json` protocol is recognized and exempted; the agent
-source and its worker selection are unchanged.
-
-Worker selection accepts `EHR_SCREEN_WORKERS` and `EHR_SCREEN_MAX_WORKERS`
-(default and owner ceiling 6), bounded by Linux `MemAvailable` and an 8 GiB
-lane budget:
-2 GiB reserved for controllers/Vite plus 500 MiB per worker for Chromium, Node
-and headroom. The measured default is six workers: the same 256-state subset
-without dedupe or cache reached 37.36 / 48.32 / 68.21 states per minute at
-3 / 4 / 6 workers, with zero timeouts or retries in each run. Peak
-Chromium-inclusive RSS/PSS at six was 6,852/3,825 MiB. One exempt one-worker
-nightly check remained active;
-no other heavy audit overlapped. Workers above six remain disabled. See the
-[audit-speed report](docs/audits/audit-speed-2026-11-02.md) for bindings, artifacts,
-exact-equivalence comparisons and full-audit wall times.
-
-The merged-main cold template audit covers 1,826 states / 16,434 measurements
-in 26m 23s (43.9% less wall time than the historical 47-minute three-worker
-reference). The sequential persona audit covers 1,296 states / 11,664
-measurements in 15m 29s, reusing the shared samples where content matches.
-Both have zero physical findings and zero retries. The historical reference
-used an earlier build/load; the report records the measurement conditions.
-Cold versus optimized v1/P5 comparisons preserve every per-state physical value
-and coverage total (1,609/412 files; 14,481/3,708 measurements); dedupe checks
-1,248/316 representatives. Numeric geometry measurements also match exactly.
-
-Large export lists use file manifests and sequential 64-tree batches
-(`EHR_SCREEN_BATCH_SIZE`, at most 128). Independent regression controls run once
-per invocation; every distinct tree gets both fidelity projects and the full
-physical matrix.
-
-A batch with only test/navigation/wait timeouts or worker crashes retries only
-the failed project/title pairs, at half the initial workers and then one quarter
-(minimum one), at most twice. Assertions and physical/urgency findings are never
-retried. Missing reports, incomplete physical coverage and exhausted retries
-remain `error`; partial attempts cannot supply measurements. Both JSON reports
-record each retry's batch, selected tests/projects, attempt and worker count,
-alongside total and per-batch elapsed milliseconds.
-
-Within a run, identical tree bytes under the same presentation bundle and
-measurement context are checked once; synthetic geometry probes remain distinct
-from clinical states. Measurements and findings are mapped back to every
-supplied filename, preserving `expectedStates`, state and measurement totals.
-`EHR_SCREEN_DEDUPE=0` disables this optimization for equivalence checks. The
-canonical audit retains its existing export-hash representatives and
-`exports.json` mapping (1,826 template / 1,296 persona trees).
-
-Physical sample caches bind the app, assertions, policy, browser, fonts and
-configuration. Their shared content-addressed default is
-`$TMPDIR/vgi-screen-check-cache/physical` (override with
-`EHR_PHYSICAL_SAMPLE_CACHE`; `0` disables sample reads and writes).
-Writers publish complete samples by atomic rename; cached JSON must pass the
-measurement schema. Invalid or partial data cannot certify a state. Failed
-measurements never mint passing whole-tree receipts. Whole-tree passing receipts
-remain separately controlled by `EHR_SCREEN_CACHE`; full policy audits disable
-those receipts so every selected tree retains physical coverage in its report.
-The agent enumerates candidate states before calling this gate.
-
-Iterate with targeted `--grep`/subsets; run the full audit pair once before
-reporting; the merge session runs it once on main. `--grep` is a Playwright
-option; pass a subset of JSON paths to `screen-check.mjs --ui`.
-
-`docs/audits/` retains the control-regression and performance-report inputs consumed
-by these commands; dated one-off audits are under `docs/hackathon/`.
-
-Detailed contracts remain under `docs/design/`: core wire formats (also consumed
-by the agent manual and CSS tests), rendering, patient selection, clinical
-presentations, layout and source references. `docs/rules/` retains the regulatory
-research catalog and encoding inputs; [regulations](docs/regulations.md) records
-the dated source review, and [verification](docs/VERIFICATION.md) records detailed
-proof obligations and gaps. `docs/agent/CAPABILITIES*` are generated by
-`pnpm --filter agent manual`, which requires the archived decision examples.
-
-The `historical-releases` adapter, replay exporter and `ReplayContext.lean`,
-presentation fixture/matrix tools, documented realism fixture generators and
-growth-reference generator remain in use. The frozen `app/public/verdicts.json`
-is served by both the app and browser; `pnpm --filter app verdicts` regenerates it.
-
-
-## Data
-
-Data is not tracked in git after the `hackathon-final` tag. That covers:
-- `runs/`: recorded runs and generated worlds;
-- `fixtures/`: FHIR patient bundles;
-- `programs/`: canonical, sample, benchmark and known-bad program exports;
-- `verdicts.json`.
-
-The tag contains all of it as submitted. To replay the completed run, either check
-out `hackathon-final`, or extract the data into a `main` checkout without
-tracking it:
-
-```sh
-git archive hackathon-final runs fixtures programs verdicts.json | tar -x
-```
-
-Without this data, `make install` loads no patients, and recorded dashboards and
-run-specific conformance evaluation have nothing to read. Archive-dependent tests in the workspace packages and root suites (reporting,
-seeding and conformance) skip with the missing paths and extraction command in
-their reported reason;
-with data present they run the same assertions. This includes agent tests whose
-prompts use historical decisions, and the world generator's chart augmentation.
-The small tracked unit fixtures still run without the archive. A partial or corrupt
-present dataset remains a test failure. The world generator (`world/`), release
-programs (`releases/`) and runtime code remain tracked.
-
-## Data sources and credits
-
-CPT: the mapper includes a small set of code identifiers and original short
-labels, without a full catalog or AMA descriptors. CPT is an AMA trademark;
-see the [AMA licensing requirements](https://www.ama-assn.org/practice-management/cpt/cpt-licensing-faqs).
-
-- **Synthea**: synthetic patients, conditions, medications, labs and encounters
-  (fixtures/synthea), loaded into Medplum. Synthea is Apache-2.0 licensed: Walonoski J,
-  et al. *Synthea: An approach, method, and software mechanism for generating
-  synthetic patients and the synthetic electronic health care record.* JAMIA 2018;
-  25(3):230–238. https://github.com/synthetichealth/synthea
-- **Synthetic Hospital** (Park, Chen, Dettmers): we import its released synthetic
-  longitudinal records for chart realism. These are patient profiles with allergies,
-  home medications, history and social history, plus encounters with full clinical
-  notes. Code is MIT licensed; the released data is "fully synthetic and
-  redistributable". Cite: Park, Chen, Dettmers. *Synthetic Hospital: An Open,
-  Verifiable, Physician-Validated Longitudinal EHR Benchmark.* Preprint, 2026.
-  https://arxiv.org/abs/2609.30027 · https://github.com/sparkcpark/synthetic_hospital
-  Pinned source: `911f34c4ac65a508543c4b3b90c373a0cd16534d`.
-  We converted and loaded **150 patients, 637 encounters/notes, 4,383 resources**
-  into local Medplum; primary persona selections are 30 each for P1–P5,
-  including 34 pediatric patients. The converted FHIR cohort is 6.68 MB,
-  uncompressed, with source tags and per-patient Provenance. Opt in with
-  `make seed SYNTHETIC_HOSPITAL=1` (also supported by `make install`), or run
-  `make load-synthetic-hospital`. Mapping, checksums and limitations:
-  [import guide](scripts/synthetic-hospital/README.md). The upstream CITATION.cff
-  supplies citation details. Its Epic-style simulator informed chart organization;
-  no code or screens were copied.
-- **Medplum** (Apache-2.0): FHIR R4 backend. https://github.com/medplum/medplum
-- EHR screen patterns follow public documentation and screenshots of real EHRs
-  (sources in docs/design/ehr-ui-research.md). No proprietary vendor screens
-  were copied.
-
-## Malleable software
-
-[Ink & Switch's Malleable Software](https://www.inkandswitch.com/essay/malleable-software/)
-describes software people can shape to their needs. Each clinician has a role
-view that the agent can revise within the hospital rules. Readable diffs and
-version history expose the changes; certification gates deployment.
+| `lean/` | Rulebook, interpreter, checker, renderer, simulator and all proofs. |
+| `app/` | React app: clinical painter, live and replay modes, dashboard. |
+| `agent/` | Nightly loop: observe traces, prompt an LLM for JSON patches, check, gate, deploy. |
+| `services/commit/` | Postgres commit authority for MAR and ADT, driven by the native Lean binary. |
+| `wasm/` | Lean → C → Emscripten build. |
+| `world/` | Generator of simulated clinical days (patients, tasks, schedules). |
+| `conformance/` | 200 held-out rule scenarios run against every deployed revision. |
+| `releases/` | Vendor releases v1–v3 (rulebook + reference screens). |
+| `infra/` | Docker Compose for Medplum; setup and data loading. |
+| `explore/` | Offline design-space research; never deploys. |
+
+## What is proved
+
+"Proved" means a Lean theorem checked by the kernel using only the standard
+axioms (`propext`, `Classical.choice`, `Quot.sound`), with the statements
+cross-checked by Lean's Comparator (`make verify`).
+
+| Guarantee | Scope |
+|---|---|
+| No sign without its guard: required entries confirmed and human-entered where required, in the declared unit (lb never satisfies kg); reviews shown or covered by a valid receipt; interruptive alerts acknowledged; role allowed (`T0`, `T2`). | Every program, record and event sequence. |
+| Macros and prefills never sign, acknowledge, create receipts or enter human-only values; a cosign names a second human (`T3`, `T6`). | Every program. |
+| Alerts appear only when their condition holds; passive alerts never pop up (`A2`, `A4`). | Every program. |
+| Checker acceptance implies 12 of 13 screen properties for every patient and reachable state (`accepted_*`). | Every accepted program. |
+| Every required task stays completable (property 6). | Proved for restricted families only; open in general. |
+| The screen tree keeps the patient banner, required review content, honest buttons and modal interruptive alerts (`D1`–`D6`). | Every program and record. |
+| Bed assignments are exclusive; scheduled doses are given at most once; critical results are resolved or escalated by a deadline. | Lean reducers and multi-actor models. |
+
+Not proved: that the rules are clinically complete; the React painter,
+browser and FHIR mapping (tested); Medplum, Postgres and authentication
+(integration-tested); the Lean compiler and Emscripten (trusted); the AI agent
+(untrusted; only accepted programs deploy).
+
+## What parts of a real EHR are replicated
+
+The app models the clinician-facing workflows of a hospital and clinic EHR on
+FHIR data. It is a research system on synthetic patients, not a deployable
+product.
+
+| Area | Replicated | Not replicated or simplified |
+|---|---|---|
+| **Workflows** | Seven end-to-end workflows: W1 adult clinic visit (rooming → history → exam → orders → sign → close), W2 results in-basket and patient messages, W3 emergency department (track board, triage, orders, disposition), W4 inpatient nursing (worklist, MAR, flowsheets, SBAR handoff), W5 pediatric visit (growth charts, vaccines), W6 surgery (consult, pre-op, operative note, post-op orders, OR schedule), W7 refill requests. | Pharmacy verification and dispensing, lab and radiology departments, scheduling engine, registration, billing and claims, patient portal. |
+| **Roles** | Physician, nurse practitioner, RN, surgeon; charge nurse, bed manager and admitting clerk for bed management. Five personas: primary care, ED, inpatient RN, pediatric NP, surgeon. | Pharmacists, technicians, residents with supervision chains, schedulers. |
+| **Chart** | Patient banner (name, DOB, MRN, allergies, code status, isolation, weight), storyboard sidebar, chart review tabs (encounters, notes, results, meds, problems, allergies, imaging), lab trends and flowsheets, WHO/CDC growth curves, chart search. | Imaging viewer (PACS), scanned media, outside-records exchange. |
+| **Orders** | Medication order composer with preference lists, formulary dose units, kg dosing weight, route, frequency, PRN, dispense and refills, pharmacy, indication and diagnosis; lab, imaging and procedure orders; prior authorization (release v2); coded antibiotic indication (release v3). | Real e-prescribing transmission, pharmacy interventions. |
+| **Safety checks** | Hard-stop sign guards; drug-allergy, interaction, duplicate-therapy, dose-range and high-alert alerts, interruptive (modal) or passive (inline); barcode patient and medication scan at administration; second-nurse cosign for high-alert drugs; patient-ID re-entry; review receipts that expire; critical-result escalation; California controlled-substance rules (CURES check, naloxone offer, Schedule II refills). | Real CURES/PDMP queries, barcode hardware, a full drug-knowledge base (a small formulary is built in). |
+| **Documentation** | Visit and operative notes, nursing assessments, vaccine administration, consent, SBAR handoff, administration records. | Note templates, dictation. |
+| **Bed management (ADT)** | Admit, assign, transfer, release, discharge and bed cleaning on a unit bed board, with exclusive beds and atomic transfers. | Enterprise patient flow, transport, multiple facilities. |
+| **Regulatory updates** | Vendor releases v1 → v2 → v3 that add rules, migrated per clinician and re-certified. | Real vendor upgrade tooling. |
+| **Data and storage** | FHIR R4 on Medplum: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Postgres event streams with version checks and live updates for MAR and ADT. | HL7v2 interfaces, master patient index, production audit logging, high availability. |
+| **Identity** | Keycloak single sign-on (PKCE) for MAR and bed management; development password login elsewhere. | Production identity, break-the-glass access. |
+| **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. | Real clinicians; no user study. |
+
+## Data sources
+
+- **Synthea** (Apache-2.0) synthetic patients. Walonoski J, et al. *Synthea.*
+  JAMIA 2018;25(3):230–238.
+- **Synthetic Hospital** (code MIT; data fully synthetic and redistributable)
+  longitudinal records. Park, Chen, Dettmers, preprint 2026,
+  https://arxiv.org/abs/2609.30027.
+- **Medplum** (Apache-2.0) FHIR backend.
+- CPT is a trademark of the AMA; only a few code identifiers with original
+  short labels are included.
+- Fonts: Noto Sans, Noto Sans Mono and Noto Sans Symbols 2 (SIL OFL 1.1).

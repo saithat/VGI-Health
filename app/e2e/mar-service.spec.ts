@@ -7,7 +7,7 @@ import { once } from "node:events";
 // Explicit live suite: no mocked Keycloak, Postgres, Lean or HTTP responses.
 test.skip(
   process.env.MAR_E2E !== "1",
-  "Set MAR_E2E=1 with Keycloak, Postgres and COMMIT_FIXTURE (services/commit/README.md).",
+  "Set MAR_E2E=1 with Keycloak, Postgres and COMMIT_FIXTURE.",
 );
 let service: ChildProcess | undefined;
 let directory: string;

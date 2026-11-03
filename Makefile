@@ -43,8 +43,8 @@ run-live:
 check:
 	cd lean && lake build
 
-# Build the proofs and run all three Comparator challenges (needs bubblewrap).
-# See docs/GUIDE.md section 8 for what each challenge covers.
+# Build the proofs and run all three Comparator challenges (needs bubblewrap):
+# interpreter theorems, checker soundness, and completion fragments.
 .PHONY: verify
 verify:
 	cd lean && lake build
