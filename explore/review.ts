@@ -28,7 +28,7 @@ try{
  const baseline=programSchema.parse(await read('releases/v1/personas/P2.json')),spec=specSchema.parse(await read('releases/v1/spec.json'));
  const persona=personaParamsSchema.parse(await read(path.join(report.context.worldDir,'personas/P2.json')));
  const schedules=await Promise.all(report.context.days.map(async day=>{const s=dayScheduleSchema.parse(await read(path.join(report.context.worldDir,`schedules/day-${String(day).padStart(2,'0')}/P2.json`)));return {...s,tasks:s.tasks.filter(t=>t.workflow==='W3')};}));
- const ehr=createEhr({binary:process.env['EHR_BIN']??'/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr'});
+ const ehr=createEhr({binary:process.env['EHR_BIN']??path.resolve('lean/.lake/build/bin/ehr')});
  const screen=createScreenChecker(ehr,{artifactsDir:path.join(out,'screens'),cacheDir:path.resolve('runs/explore-screen-cache')});
  const evaluate=makeEvaluator({ehr,screen,baseline,spec,workload:{department:'ED',role:'physician',worldDir:report.context.worldDir,persona,schedules},out});
  const add=arg('add-layout','');
