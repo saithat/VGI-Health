@@ -161,3 +161,11 @@
     padding: 6px;
   }
 }
+
+.research-urgency:empty { display:none; }
+.research-urgency { position:sticky;top:0;z-index:1200;background:white; }
+.research-urgency .urgent-alert-strip { position:static; }
+
+/* The research composition uses production control tokens and target rules.
+Its urgent strip is already in flow, so the fixed-shell spacer is unnecessary. */
+.clinical-app.research:has(.urgent-alert-strip) { padding-top:16px; }

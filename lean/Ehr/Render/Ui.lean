@@ -1,4 +1,6 @@
 import Ehr.Core.Navigation
+import Ehr.Render.DateIndex
+import Ehr.Core.Workspace
 import Ehr.Render.Presentations
 import Ehr.Render.SurgeryChoices
 import Ehr.Render.CodeChoices
@@ -696,6 +698,32 @@ def uiFieldSources (cx : Ctx) : List (CompId × String) :=
     | _ => none
 
 
+/-- Both entry points use this gate, including direct ordinary renderUi calls. -/
+def uiDateBound (cx : Ctx) : Bool :=
+  (!Workspace.enabled cx.prog || Workspace.bound cx.facts cx.s) &&
+    cx.facts.sourcePatientId?.isSome && cx.facts.sourcePatientId? == cx.disp.sourcePatientId?
+
+/-- Only full rows actually emitted in workspace/side may back an index entry.
+Payload overrides are not interpreted as a license to reveal underlying records. -/
+def uiDateSourcesAt (cx : Ctx) (nodes : List UiNode) : List UiSourceDate :=
+  if uiDateBound cx then
+    DateIndex.select (cx.disp.timelineSources?.getD [])
+      ((cx.disp.timelineBackings?.getD []).filter fun b =>
+        (cx.disp.timelineSources?.getD []).contains b.source && (infoPayload cx.facts b.info).isNone)
+      nodes
+  else []
+
+def uiDateSources (cx : Ctx) : List UiSourceDate :=
+  uiDateSourcesAt cx (uiWorkspace cx ++ uiSide cx)
+
+/-- Dated opt-in retains the clinical workspace and indexes only its shown sources. -/
+def uiDatedWorkspace (cx : Ctx) : List UiNode :=
+  if uiDateBound cx && cx.v.items.any (fun it => it.shown &&
+      (it.comp.tag == "layout.datedTimeline" || it.comp.tag.endsWith ".layout.datedTimeline")) then
+    [.datedTimeline "Dated clinical timeline (UTC)" (Dated.dated (uiDateSources cx))
+      (Dated.undated (uiDateSources cx)) (uiWorkspace cx)]
+  else uiWorkspace cx
+
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
@@ -710,6 +738,6 @@ def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     sourceLabels? := if sources.isEmpty then none else some sources,
     entryHints? := if hints.isEmpty then none else some hints,
     fieldChoices? := if choices.isEmpty then none else some choices,
-    workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
+    workspace := uiDatedWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

@@ -175,6 +175,110 @@ The owner-selected WCAG 2.2 AA physical constants and desktop/tablet/reflow/resi
 matrix are documented in [the policy](alert-urgency.md); canonical violations
 remain [findings](alert-urgency-findings.md), not exceptions to the gate.
 
+## Board and source-dated timeline admission
+
+`UiNode.board`, `patientPane` and `datedTimeline` are ordinary wire constructors;
+the JSON instances, generated TypeScript, strict schemas, atom observers, painter,
+row-placement/ARIA projections and browser traversals include them. The board
+is a composition of independent ordinary programs through the native `board`
+operation, rather than a program tag that invents another patient's state.
+`Board.decodePane` observes the actual emitted node; `encoded_meaning` and
+`encoded_board` recover each patient's complete ordinary screen, with exact
+multiplicity, event identities, banner and foreground. Generic unscoped screen
+meaning must not be used to erase patient namespaces in this composition.
+`advance_refines` is literal ordinary-interpreter execution on the selected
+session. `dispatch_valid` retains unique source bindings; `other_sessions_exact`
+retains every byte of the other sessions. Clinical commits keep T0, including
+selection-enabled workspace steps at their hydrated pre-event state. No new
+clinical event constructor or persistence authority is introduced.
+
+`demands_prepared` proves that sanitizing receipts does not change demands: clinical predicates and alert keys do not read receipt lists. Pane and rail evaluation therefore agree on the prepared session.
+
+Board receipt import is an explicit patient/episode namespace. Every render and
+step overwrites both incoming unscoped receipt lists with the filtered envelopes.
+`receipt_scope`, `foreign_no_effect` and `foreign_review_inert` establish that a
+foreign patient's receipt cannot affect any review or guard; concrete positive
+and rejected examples exercise signing with the same receipt value. Existing
+core checks retain version, age and role restrictions. An absent episode remains
+explicit legacy metadata, not evidence of cross-encounter provenance. The host
+still authenticates FHIR and loaded state; the API verifies matching source IDs
+on facts and display and never routes by a displayed name or MRN.
+
+The chosen cross-patient urgency policy is board-wide: all active urgent rules
+for every pane contribute a patient-labelled rail, including hidden and already
+acknowledged conditions. Urgency does not change an alert's tier. The rail is
+inside the global modal interaction boundary and outside pane scrolling. The
+first pending modal owns clinical interaction; the others wait in pane order.
+`BoardView` models physical steps with an explicit measured-transition witness
+and actual scoped dispatcher events. Its
+`Ready` predicate requires both exposure and global interaction authority;
+`view_trace_valid`, `ready_source`, `untouched_trace` and `blocked_no_effect`
+connect reachable controls and events to the bound source, exact banner and
+unchanged other sessions. Lookup, hydration and return keep all ordinary panes
+and the global rail present, with an explicit patient-selection heading while
+that pane has no clinical banner. `active_urgent_in_rail` proves clinical coverage independently of tree presence;
+`render_rail_perceived`, `render_rail_urgent_visible` and
+`view_semantic_urgency` connect the actual emitted rail to existing `Perceives`
+and `UrgentVisible`, in separate patient namespaces with unchanged severity.
+`continuous_cross_patient_urgency` proves perception through arbitrary finite
+interpreter/view paths under separate viewport, legibility and occlusion evidence
+at every reached moment. The full source banner stays in flow while a compact patient/MRN identity
+remains pinned. Independent panes share the bounded area below the urgent rail;
+modal placement uses the rail’s measured lower edge. The gate scrolls to every
+enabled control and checks its hit-test together with its patient identity. A
+long-banner occlusion counterexample and a covering-overlay adversary guard this
+refinement. Background actions are inert while a modal owns the
+board. Real geometry remains a measured refinement, including rail overflow;
+no unconditional pixel or screen-reader implementation theorem is claimed.
+
+The dated candidate projection covers exactly `effectiveDateTime`, otherwise
+`effectivePeriod.start`, plus `issued` separately. It does not cover onset,
+authoredOn, performed*, recordedDate, occurrence* or Encounter.period. Supported
+backings are latest vital rows (same code/raw-time selection as `uiRows`) and
+complete laboratory histories, with exact cell projection and information ID.
+`DateIndex.select` checks the original candidate occurrence number, matching source
+DTO and a complete row in the actual emitted workspace/side atoms. Thus an equal
+hidden occurrence cannot borrow permission; arbitrary raw bundle membership does
+not authorize an index entry. Payload overrides carry no inferred permission.
+`timeline_backing_provenance`, `timeline_backing_occurrence` and
+`timeline_entries_sources` connect FHIR backings to their records and enumeration.
+`uiDateSourcesAt_shown`/`uiDateSources_present` and `DatedTimeline.sources_shown`
+provide emitted-row witnesses. Both ordinary and native paths enforce workspace
+binding and matching present source patient IDs (`sources_bound`); unbound lookup
+adds no index. The render-only `date-index` API applies the same selector to native
+exported snapshots; it has no execution or persistence authority.
+
+Normalization requires full time with seconds and an explicit `Z` or numeric
+offset (at most ±14:00), signed UTC seconds and up to nine fractional digits.
+Nanoseconds have type `Fin 1000000000`; JSON decoding checks the bound. Stable
+sorting, `chronological`, `source_exact`, `no_dated_drop` and `no_source_drop`
+cover every selected occurrence. The candidate extraction lemmas are relative to
+the exact three-field scope above. Date-only/local, invalid, unknown-offset
+`-00:00`, leap-second and higher-precision values remain explicitly unpositioned.
+Pre-1970 instants are supported. `slice_exact` retains the wasm32-safe substring
+semantics. No local timezone or midnight is inferred.
+
+The original `uiAtoms`/`meaning` projection and preservation/perception/urgency
+lemmas cover clinical children only. They do not establish index soundness.
+`DateIndex.observe` instead retains the complete dated and undated payloads,
+including raw provenance, order, duplicates and patient/modal namespaces;
+`payload_injective` prevents erasure from justifying admission. `IndexedExtension`
+requires this full observation equation as well as clinical preservation.
+`fullAdmission`, `full_preserves`, `render_full`, `node_observation` and
+`uiDatedWorkspace_observed` discharge it for the actual presentations. Native
+responses export that observation and the independent gate compares source bytes,
+coordinates, multiplicity, order and patient scope against DOM rows, including
+reorder/drop adversaries. The existing clinical view graph and exposure hypotheses
+are unchanged. The single-patient dated board shares the cross-patient urgent rail.
+The index never replaces clinical rows, reviews, actions or modals.
+A canonical program passes
+the unchanged checker. Browser adversaries reject reordered/dropped entries and
+hidden urgent demands at desktop and narrow widths. The ordinary gate covers
+all emitted cohort views and composed native program exports; the stock gate
+attempts all exported backing-program states, including unbound patient pickers.
+Its legacy unrelated-modal urgency findings are retained and do not certify the
+promoted painter. Actual ordinary composition has a separate mandatory gate.
+
 ## Target design space
 
 | Paradigm | Semantic shape | Hard obligations |
@@ -203,3 +307,22 @@ held-out workflows and release migrations; do not collapse the portfolio to one
 locally optimized fork. Human review owns policy, urgency classification, bounds
 and admission of new semantics. Existing checker acceptance is necessary and
 remains insufficient for unproved completion or measured perception guarantees.
+
+The stock urgency gate uses the same `UrgentDemand` alternative as the proofs:
+a matching modal title and enabled acknowledgment can convey that alert while
+its inline background copy is inert. A different alert's modal cannot satisfy
+it. Regression checks cover the positive same-alert case, unrelated modals,
+hidden acknowledgments and disabled acknowledgments at both widths. The initial
+promotion gate failures and the correction remain in the ignored run artifacts;
+no urgency ID, tier or hospital obligation was changed.
+
+The source provenance theorems apply to adapter-built `Display` values. Its derived
+JSON decoder accepts arbitrary `timelineBackings`; externally supplied backings
+are trusted input, whose authenticity the host must establish. The decoder does
+not recompute or validate source provenance. Board pane metadata also carries
+all production urgent-strip alerts/acknowledgments; `pane_strip_exact` and
+`metadata_strip_exact` prove exact transport, alongside the unchanged clinical
+meaning. The global board rail pins these patient-labelled controls above pane
+scrolling and unrelated dialogs. The existing modal owner still controls which
+patient may act. Critical-result receive/document/resolve steps preserve clinical
+commits (`critical_handle_commits`), retaining the original guard theorem.

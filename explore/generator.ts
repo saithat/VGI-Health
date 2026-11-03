@@ -33,6 +33,7 @@ export function generate(point: DesignPoint, workflows: Workflow[], baseline: Pr
       const layout = point.taskLayouts[c.id] ?? point.layout;
       if (clinical && kindTag(c.kind) === 'group' && screen.components.some(x => x.parent === c.id)) {
         if (layout === 'columns' || layout === 'timeline') c.tag += `.layout.${layout}`;
+        if (layout === 'timeline' && point.temporalView === 'aligned') c.tag += '.layout.datedTimeline';
       }
       if (layout === 'document' && infoOf(c) === 'noteSummary') c.tag = 'layout.document';
       if (point.input === 'keyboard' && gotoOf(c)) {
@@ -72,6 +73,6 @@ export function validateCandidate(c: Candidate, baseline: Program, spec: Spec): 
   // Layout realization must survive LLM program edits; names alone cannot claim a niche.
   const cs = c.program.screens.filter(s => c.workflows.includes(s.workflow as Workflow)).flatMap(s => s.components);
   const signature = c.point.layout;
-  if (['columns','timeline'].includes(signature) && !cs.some(x => x.tag.endsWith(`.layout.${signature}`))) throw Error('Missing realized layout');
+  if (['columns','timeline'].includes(signature) && !cs.some(x => x.tag.endsWith(`.layout.${signature}`) || signature==='timeline' && c.point.temporalView==='aligned' && x.tag.endsWith('.layout.datedTimeline'))) throw Error('Missing realized layout');
   if (signature === 'document' && !cs.some(x => x.tag === 'layout.document' && infoOf(x))) throw Error('Missing document realization');
 }

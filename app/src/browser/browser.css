@@ -794,3 +794,29 @@
 .revision-check-result { padding: 5px 6px; border-left: 3px solid var(--clinical-yellow-ink); background: white; }
 .revision-check-result[data-check-status="pass"] { color: var(--clinical-green-ink); border-left-color: var(--clinical-green-ink); }
 .revision-check-result[data-check-status="fail"] { color: var(--clinical-red-ink); border-left-color: var(--clinical-red-ink); }
+
+/* Side-panel workload: two headline deltas, the rest as one muted line. */
+.timeline-measure-main {
+  display: flex;
+  gap: 24px;
+  margin: 6px 0 2px;
+}
+.timeline-measure-main dt {
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.timeline-measure-main dd {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+.timeline-measure-main .better {
+  color: var(--clinical-green-ink);
+}
+.timeline-measure-main .worse {
+  color: var(--clinical-red-ink);
+}
+.timeline-measure-minor {
+  font-size: 12px;
+  margin: 0 0 8px;
+}
