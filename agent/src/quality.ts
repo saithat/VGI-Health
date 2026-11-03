@@ -1,4 +1,4 @@
-/** Frozen one-night experiment. No deployment, screen gate, query tools, or model calls on import. */
+/** Frozen one-night experiment. No deployment, screen gate, or model calls on import. */
 import { existsSync } from 'node:fs';
 import { cp, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -17,6 +17,9 @@ import { localityDigest } from './locality.js';
 import { retryInfrastructure } from './infrastructure.js';
 import { daySeed, makeHoldout, runNight, type LoopDeps, type NightInput } from './night.js';
 import { auditedOperation } from './operation-manifest.js';
+import { queryUsage } from './backends/query-audit.js';
+import { trainingQueryBundle, writeQueryDirectory } from './quality-queries.js';
+import { loadMeasuredSavings, recomputedSavings } from './quality-ledger.js';
 import { measuredLedger, physicalKeys } from './quality-context.js';
 import { OFFLINE_LABEL, offlineRecordSchema, repetitionCount, writeQualityReport, type OfflineRecord, type QualityArm, type TokenCounts } from './quality-report.js';
 import { calibrationDay, calibrationPartition, isMeasurementDay } from './protocol.js';
@@ -105,14 +108,17 @@ export async function frozenNight(runDir:string,record:DecisionRecord,records:re
 }
 
 export async function frozenLocality(input:Pick<NightInput,'train'|'programs'>,geometryDir:string) {
-  return localityDigest(await Promise.all(input.train.map(async day=>{
+  return localityDigest(await frozenTrainAtlases(input,geometryDir));
+}
+export async function frozenTrainAtlases(input:Pick<NightInput,'train'|'programs'>,geometryDir:string) {
+  return Promise.all(input.train.map(async day=>{
     const program=input.programs.get(day.result.programVersion);if(!program)throw new Error('Missing train program');
     const hash=geometryProgramHash(program),components=geometryComponentsHash(program);
     const atlas=await loadGeometry(path.join(geometryDir,'geometry',`${hash}.${components}.json`));
     if(atlas.programHash!==hash||atlas.componentsSha256!==components)throw new Error('Frozen train atlas belongs to different program inputs');
     if(day.result.geometry?.programHash!==hash||day.result.geometry.componentsSha256!==components||day.result.geometry.appSha256!==atlas.appSha256)throw new Error('Frozen train trace and atlas bindings differ');
     return {result:day.result,atlas:{...atlas,aliases:atlas.aliases??{}}};
-  })));
+  }));
 }
 
 const usageSchema=z.object({input_tokens:z.number(),output_tokens:z.number(),cached_input_tokens:z.number().optional()});
@@ -130,10 +136,13 @@ function usageOf(response:Pick<JsonResponse,'usage'|'transcript'>):Omit<TokenCou
 export function meteredLlm(inner:JsonLlm,source:string) {
   const calls:{callId:string;promptMatched:boolean|null;tokens:TokenCounts}[]=[];
   let attempts=0,unknownAttemptUsage=false;
+  const queries={count:0,tally:new Map<string,number>()};
+  const collect=(usage:unknown)=>{if(inner.name==='replay')return;const q=queryUsage(usage);queries.count+=q.count;for(const [name,n]of Object.entries(q.tally))queries.tally.set(name,(queries.tally.get(name)??0)+n);};
   const llm:JsonLlm={name:inner.name,model:inner.model,async complete(req){
     attempts++;
     let response:JsonResponse;
-    try {response=await inner.complete(req);}catch(error){unknownAttemptUsage=true;throw error;}
+    try {response=await inner.complete(req);}catch(error){unknownAttemptUsage=true;if(error&&typeof error==='object'&&'audit' in error)collect({isolationAudit:error.audit});throw error;}
+    collect(response.usage);
     const reference=inner.name==='replay'?await readJson(llmRecordPath(source,req.callId),llmRecordSchema):response;
     const usage=usageOf(reference);
     calls.push({callId:req.callId,promptMatched:response.promptMatched,tokens:usage?{...usage,source:inner.name==='replay'?'recorded-reference':'backend'}:{input:null,output:null,cachedInput:null,source:'unavailable'}});
@@ -144,7 +153,7 @@ export function meteredLlm(inner:JsonLlm,source:string) {
     output:calls.every(c=>c.tokens.output!==null)?calls.reduce((n,c)=>n+(c.tokens.output??0),0):null,
     cachedInput:calls.every(c=>c.tokens.cachedInput!==null)?calls.reduce((n,c)=>n+(c.tokens.cachedInput??0),0):null,
     source:calls.some(c=>c.tokens.source==='unavailable')?'unavailable':inner.name==='replay'?'recorded-reference':'backend'});
-  return {llm,calls,tokens,callCount:()=>attempts};
+  return {llm,calls,tokens,callCount:()=>attempts,queries:()=>({count:queries.count,tally:Object.fromEntries(queries.tally)})};
 }
 
 export function candidateDiffs(before:DecisionRecord,after:DecisionRecord) {
@@ -168,7 +177,7 @@ export function candidateDiffs(before:DecisionRecord,after:DecisionRecord) {
 }
 export interface QualityOptions {
   runDir:string;outDir:string;arms:readonly QualityArm[];samples:number;backend:'replay'|'codex';workers:number;
-  decisions?:readonly string[];worldDir?:string;model?:string;reasoningEffort?:string;serviceTier?:string;
+  decisions?:readonly string[];worldDir?:string;model?:string;reasoningEffort?:string;serviceTier?:string;ledgerFrom?:string;
 }
 export async function freshOutput(runDir:string,outDir:string) {
   const runs=await realpath(path.join(REPO_ROOT,'runs')),source=await realpath(runDir);
@@ -181,8 +190,9 @@ export async function evaluateQuality(opts:QualityOptions) {
   if(opts.backend==='codex'&&(opts.serviceTier==='fast'||process.env['CODEX_SERVICE_TIER']==='fast'))throw new Error('Codex fast mode is prohibited; use --service-tier default');
   if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>2)throw new Error('--workers must be 1 or 2 (14 GB budget)');
   if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
-  if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','sanity'].includes(a)))throw new Error('Implemented arms: A, B, sanity; C awaits owner decision');
+  if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, sanity');
   if(opts.arms.includes('sanity')&&opts.backend!=='replay')throw new Error('Sanity requires replay; no new proposals');
+  if(opts.arms.some(a=>a!=='sanity')&&!opts.ledgerFrom)throw new Error('Comparative arms require --ledger-from <completed current sanity run>');
   const source=await realpath(opts.runDir),historical=await historicalDecisions(source),selected=selectDecisions(historical,opts.decisions);
   if(!selected.length)throw new Error('No nightly decisions selected');
   const manifest=await readJson(path.join(source,'manifest.json'),z.object({world:z.string(),model:z.string().optional(),
@@ -212,8 +222,10 @@ export async function evaluateQuality(opts:QualityOptions) {
     sourceProgramsSha256:await treeHash(path.join(inputs,'programs')),sourceDaysSha256:await treeHash(path.join(inputs,'days')),sourceLlmSha256:await treeHash(path.join(inputs,'llm')),sourceCertificationsSha256:await treeHash(path.join(inputs,'certifications')),
     ehrSha256:native.binary?await fileHash(native.binary):null,agentSha256:await treeHash(path.join(REPO_ROOT,'agent/src')),
     app:JSON.parse(await readFile(path.join(REPO_ROOT,'app/dist/build.json'),'utf8')),selected:selected.map(decisionId),options:opts,label:OFFLINE_LABEL,
+    ...(opts.ledgerFrom?{ledgerSource:{directory:path.resolve(opts.ledgerFrom),recordsSha256:await fileHash(path.join(opts.ledgerFrom,'records.json'))}}:{}),
     geometryCache:path.join(tmpdir(),'vgi-proposal-quality-geometry-cache')};
   await writeJson(path.join(inputs,'binding.json'),binding);
+  const measured=opts.ledgerFrom?await loadMeasuredSavings(opts.ledgerFrom,historical,binding):null;
   const world=await loadWorld(path.join(inputs,'world')),records:OfflineRecord[]=[];
   const sanity:{decisionId:string;candidates:ReturnType<typeof candidateDiffs>}[]=[];
   const state:{status:string;label:string;error:string|null;completed:number;planned:number}={status:'running',label:OFFLINE_LABEL,error:null,completed:0,planned:selected.length*opts.arms.reduce((n,a)=>n+(a==='sanity'?1:opts.samples),0)};
@@ -245,22 +257,25 @@ export async function evaluateQuality(opts:QualityOptions) {
         await writeJson(path.join(inputDir,'input.json'),{...input,programs:Object.fromEntries(input.programs),holdout:{day:input.holdout.day}});
         const prepareMs=performance.now()-started;
         const contextStarted=performance.now();
-        const locality=opts.arms.includes('B')?await frozenLocality(input,geometryDir):null;
+        const locality=opts.arms.some(a=>a==='B'||a==='C')?await frozenLocality(input,geometryDir):null;
+        const quality=locality&&measured?{ledger:measuredLedger(historical,original.persona,original.night,measured),locality}:null;
+        const queryBundle=opts.arms.includes('C')&&quality?trainingQueryBundle(input,(await frozenTrainAtlases(input,geometryDir)).map(d=>d.atlas),quality):null;
+        if(queryBundle){const files=path.join(inputDir,'query-files');await mkdir(files);await writeQueryDirectory(files,queryBundle);}
         const contextMs=performance.now()-contextStarted;
         for(const arm of opts.arms)for(let sample=1;sample<=(arm==='sanity'?1:opts.samples);sample++) {
           if(stopped)break;
           const sampleDir=path.join(out,'samples',decisionId(original),arm,String(sample));
           const first=await readJson(llmRecordPath(inputs,`night-${pad2(original.night)}/${original.persona}/propose-0`),llmRecordSchema);
           const usage=z.object({reasoningEffort:z.string().optional(),serviceTier:z.string().nullable().optional()}).safeParse(first.usage);
-          const meter=meteredLlm(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:inputs,replayAllowDrift:true,model:opts.model??manifest.model??first.model,
+          const meter=meteredLlm(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:inputs,replayAllowDrift:true,queryMode:arm==='C',model:opts.model??manifest.model??first.model,
             reasoningEffort:opts.reasoningEffort??(usage.success?usage.data.reasoningEffort:undefined)??'high',serviceTier:opts.backend==='codex'?(opts.serviceTier??'default'):opts.serviceTier??(usage.success?usage.data.serviceTier:undefined)??'default'}),inputs);
           const sampleDeps:LoopDeps={...deps,store:new RunStore(sampleDir),agent:new LlmAgent(new RecordingLlm(meter.llm,sampleDir)),seedState:{injected:0,rejected:new Set()}};
           const tick=performance.now();
           const result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,
-            ...(arm==='B'&&locality?{quality:{ledger:measuredLedger(historical,original.persona,original.night),locality}}:{})}));
+            ...((arm==='B'||arm==='C')&&quality?{quality}:{}),...(arm==='C'&&queryBundle?{queryBundle}:{})}));
           const record:OfflineRecord={...result.record,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:decisionId(original),arm,sample,
-            tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'?contextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
-            repeatedMeasuredBad:repetitionCount(result.record,historical),proposedCandidates:result.record.candidates.filter(e=>!e.candidate.seeded).length};
+            queries:meter.queries(),tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'||arm==='C'?contextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
+            repeatedMeasuredBad:measured?repetitionCount(result.record,historical,measured):0,proposedCandidates:result.record.candidates.filter(e=>!e.candidate.seeded).length};
           await writeJson(path.join(sampleDir,'record.json'),offlineRecordSchema.parse(record));await writeJson(path.join(sampleDir,'calls.json'),meter.calls);
           if(arm==='sanity') {
             const diff=candidateDiffs(original,result.record);
@@ -286,6 +301,7 @@ export async function evaluateQuality(opts:QualityOptions) {
   for(const [directory,expected] of [['programs',binding.sourceProgramsSha256],['days',binding.sourceDaysSha256],['decisions',binding.sourceDecisionsSha256],['llm',binding.sourceLlmSha256],['certifications',binding.sourceCertificationsSha256]]) {
     if(!directory||!expected||await treeHash(path.join(inputs,directory))!==expected)throw new Error(`Frozen ${directory} changed`);
   }
+  if(sanity.length===historical.filter(r=>r.mode==='nightly').length){const current=recomputedSavings(historical,records.filter(r=>r.arm==='sanity').map(r=>({...r,screenCheck:null})));for(const r of records)if(r.arm==='sanity'){r.repeatedMeasuredBad=repetitionCount({...r,screenCheck:null},historical,current);await writeJson(path.join(out,'samples',r.decisionId,r.arm,String(r.sample),'record.json'),offlineRecordSchema.parse(r));}}
   records.sort((a,b)=>a.decisionId.localeCompare(b.decisionId)||a.arm.localeCompare(b.arm)||a.sample-b.sample);
   await writeJson(path.join(out,'records.json'),records);const report=await writeQualityReport(out,records);
   if(sanity.length) {

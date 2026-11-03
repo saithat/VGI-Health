@@ -197,12 +197,12 @@ const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
     if(manifest.status==='completed')await writeQualityReport(dir,await readJson(path.join(dir,'records.json'),z.array(offlineRecordSchema)));
   },
   'proposal-quality': async argv => {
-    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'}}});
+    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'}}});
     if(!values.run||!values.out)throw new Error('--run and --out are required');
     const backend=values.backend??'replay';if(backend!=='replay'&&backend!=='codex')throw new Error('--backend must be replay or codex');
-    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='sanity')return a;throw new Error('--arms must contain A, B or sanity (C is deferred)');});
+    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='sanity')return a;throw new Error('--arms must contain A, B, C or sanity');});
     await evaluateQuality({runDir:resolveUserPath(values.run),outDir:resolveUserPath(values.out),arms,samples:intArg(values.samples,'samples',1),backend,workers:intArg(values.workers,'workers',1),
-      ...(values.decisions?{decisions:values.decisions.split(',')}:{}),...(values.world?{worldDir:resolveUserPath(values.world)}:{}),
+      ...(values['ledger-from']?{ledgerFrom:resolveUserPath(values['ledger-from'])}:{}),...(values.decisions?{decisions:values.decisions.split(',')}:{}),...(values.world?{worldDir:resolveUserPath(values.world)}:{}),
       ...(values.model?{model:values.model}:{}),...(values['reasoning-effort']?{reasoningEffort:values['reasoning-effort']}:{}),...(values['service-tier']?{serviceTier:values['service-tier']}:{}),
     });
   },

@@ -5,7 +5,9 @@ import { tmpdir } from 'node:os';
 import { pointerTravel, type GeometryAtlas } from '../../app/src/metrics/geometry.js';
 import { attributeDay, localityDigest } from '../src/locality.js';
 import { attachGeometry, geometryProgramHash, geometryComponentsHash } from '../src/geometry.js';
+import { loadMeasuredSavings, recomputedSavings } from '../src/quality-ledger.js';
 import { measuredLedger, withQuality, type QualityContext } from '../src/quality-context.js';
+import { withQueries } from '../src/quality-queries.js';
 import { nightlyPrompt, choosePrompt, repairPrompt } from '../src/prompts.js';
 import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, meteredLlm, selectDecisions } from '../src/quality.js';
 import { OFFLINE_LABEL, pairedComparison, qualityReport, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
@@ -125,7 +127,7 @@ describe('train-only prompts and offline loop',()=>{
   it('projects every historical candidate, never the validation/test aggregates',()=>{
     const prior=record(deps);prior.candidates=[{candidate:{id:'idea',summary:'summary',moveType:'reorder',targets:['a'],patch:[],predicted:{clicks:0,keystrokes:0,scrolls:0,klmDeciSec:0},rationale:'',source:'llm',seeded:false,seededKind:null},trainEstimate:{days:[1],before:sumMetrics([]),after:sumMetrics([]),saving:{clicks:0,keystrokes:0,scrolls:0,scrollPx:0,mouseTravelPx:0,klmDeciSec:0}},check:{status:'pass',property:null,message:null,counterexample:null,screens:null,verdict:'ok'},componentsMoved:0}];
     prior.validation.reason='VALIDATION_SECRET';prior.measured.predictionNote='TEST_SECRET';prior.persona='P1';
-    const ledger=measuredLedger([prior,{...prior,persona:'P2'},{...prior,night:2}],'P1',2);
+    const ledger=measuredLedger([prior,{...prior,persona:'P2'},{...prior,night:2}],'P1',2,recomputedSavings([prior],[prior]));
     expect(ledger).toHaveLength(1);expect(ledger[0]?.chosen).toBe(false);
     const context={night:2,persona,spec,program,evidence:prior.evidence,history:[],validation:{note:'VALIDATION_SECRET'},test:{note:'TEST_SECRET'}};
     const quality:QualityContext={ledger,locality:localityDigest([{result:day(trace,3,4),atlas}])};
@@ -133,11 +135,30 @@ describe('train-only prompts and offline loop',()=>{
       ledger:quality.ledger.map(row=>({...row,validationScore:'VALIDATION_SECRET',testMetrics:'TEST_SECRET'})),
       locality:{...quality.locality,validation:'VALIDATION_SECRET',components:quality.locality.components.map(row=>({...row,test:'TEST_SECRET'}))}};
     const parts=[nightlyPrompt(context),choosePrompt({...context,stabilityBudget:3,hypothesis:'train',candidates:prior.candidates}),repairPrompt({...context,attempt:1,maxAttempts:3,failedSummaries:[],failedPatch:[],check:prior.candidates[0]?.check??{status:'pass',property:null,message:null,counterexample:null,screens:null,verdict:'ok'}})];
-    for(const p of parts)for(const arm of ['A','B']) {
-      const result=withQuality(p,arm==='B'?poisoned:undefined);expect(result.prompt).not.toMatch(/VALIDATION_SECRET|TEST_SECRET|klm|wallTime|timeSinksByScreen/i);
+    for(const p of parts)for(const arm of ['A','B','C']) {
+      const result=withQueries(withQuality(p,arm!=='A'?poisoned:undefined),arm==='C'?{files:{}}:undefined);expect(result.prompt).not.toMatch(/VALIDATION_SECRET|TEST_SECRET|klm|wallTime|timeSinksByScreen/i);
       if(arm==='A')expect(result).toBe(p);
     }
-    const current={...prior,night:2};expect(repetitionCount(current,[prior])).toBe(1);
+    const current={...prior,night:2};expect(repetitionCount(current,[prior],recomputedSavings([prior],[prior]))).toBe(1);
+  });
+  it('uses only recomputed train savings and rejects missing or stale ledger sources',async()=>{
+    const historical=record(deps);
+    historical.candidates=[{candidate:{id:'idea',summary:'earlier',moveType:'reorder',targets:['a'],patch:[],predicted:{clicks:0,keystrokes:0,scrolls:0,klmDeciSec:0},rationale:'',source:'llm',seeded:false,seededKind:null},trainEstimate:{days:[1],before:sumMetrics([]),after:sumMetrics([]),saving:{clicks:0,keystrokes:0,scrolls:9,scrollPx:17332,mouseTravelPx:0,klmDeciSec:0}},check:{status:'pass',property:null,message:null,counterexample:null,screens:null,verdict:'ok'},componentsMoved:0}];
+    const current={...historical,candidates:historical.candidates.map(c=>({...c,trainEstimate:c.trainEstimate?{...c.trainEstimate,saving:{...c.trainEstimate.saving,scrolls:-3,scrollPx:-9144}}:null})),validation:{...historical.validation,reason:'VALIDATION_SECRET'},measured:{...historical.measured,predictionNote:'TEST_SECRET'}};
+    const measured=recomputedSavings([historical],[current]);
+    const ledger=measuredLedger([historical],'P1',2,measured);
+    expect(ledger[0]?.trainDaySaving?.scrollPx).toBe(-9144);expect(ledger[0]?.trainDaySaving?.scrolls).toBe(-3);
+    expect(JSON.stringify(ledger)).not.toMatch(/17332|VALIDATION_SECRET|TEST_SECRET/);
+    expect(()=>recomputedSavings([historical],[{...current,candidates:[]}])).toThrow('Missing historical candidate');
+    expect(()=>measuredLedger([historical],'P1',2,new Map())).toThrow('Missing recomputed');
+    const root=await mkdtemp(path.join(tmpdir(),'quality-ledger-'));
+    const binding={originalWorldSha256:'world',fixturesSha256:'fixture',sourceDecisionsSha256:'decisions',sourceProgramsSha256:'programs',sourceDaysSha256:'days',sourceCertificationsSha256:'certs',ehrSha256:'native',app:{appSha256:'app'}};
+    await writeJson(path.join(root,'manifest.json'),{status:'completed',completed:1,planned:1});
+    await writeJson(path.join(root,'inputs/binding.json'),binding);
+    await writeJson(path.join(root,'records.json'),[{...current,arm:'sanity'}]);
+    const loaded=await loadMeasuredSavings(root,[historical],binding);
+    expect(measuredLedger([historical],'P1',2,loaded)).toEqual(ledger);
+    await expect(loadMeasuredSavings(root,[historical],{...binding,app:{appSha256:'density-changed'}})).rejects.toThrow('different app/native/frozen');
   });
   it('cannot borrow validation atlas states from another frozen decision',async()=>{
     const root=await mkdtemp(path.join(tmpdir(),'quality-atlas-boundary-'));
@@ -175,7 +196,7 @@ describe('train-only prompts and offline loop',()=>{
     expect(simulate.mock.calls[0]?.[0].schedule.tasks.map(t=>t.id)).toEqual(calibrationPartition(schedule,'train').tasks.map(t=>t.id));
     const evidence=summarizeTrain('P1',input.current,input.train,input.programs);
     const a=nightlyPrompt({night:input.night,persona:input.persona,spec:input.release.spec,program:input.current,evidence,history:input.history});
-    const quality={ledger:measuredLedger([prior,source],'P1',3),locality:localityDigest([])};
+    const quality={ledger:measuredLedger([prior,source],'P1',3,recomputedSavings([prior,source],[prior,source])),locality:localityDigest([])};
     for(const prompt of [a,withQuality(a,quality)]) {
       expect(prompt.prompt).not.toMatch(/VALIDATION_SECRET|TEST_SECRET/);
       for(const t of calibrationPartition(schedule,'validation').tasks)expect(prompt.prompt).not.toContain(t.id);
@@ -184,7 +205,7 @@ describe('train-only prompts and offline loop',()=>{
 
 });
 
-function offline(id:string,arm:'A'|'B',accepted:boolean,sample=1):OfflineRecord {
+function offline(id:string,arm:'A'|'B'|'C',accepted:boolean,sample=1):OfflineRecord {
   const base=record(deps);base.validation.accepted=accepted;
   base.validation.replay={day:1,load:'busy',before:sumMetrics([]),after:sumMetrics([]),saving:{clicks:accepted?2:0,scrolls:accepted?3:0,keystrokes:0,klmDeciSec:0},pctAboveFloor:{before:null,after:null}};
   return {...base,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:id,arm,sample,tokens:{input:100,output:5,cachedInput:0,source:'backend'},callCount:2,wallTimeMs:10,frozenInputs:'input.json',repeatedMeasuredBad:0,proposedCandidates:0};
@@ -216,6 +237,9 @@ describe('paired reporting and input guardrails',()=>{
     const comparison=pairedComparison(rows,'A','B');expect(comparison.beats).toBe(true);expect(comparison.rate95).toEqual([1,1]);
     expect(qualityReport(rows).arms.find(a=>a.arm==='B')?.validationClicks).toBe(40);
     expect(pairedComparison(rows,'B','C').status).toBe('not evaluated');
+    const queryRows=Array.from({length:20},(_,i)=>[offline(String(i),'B',false),{...offline(String(i),'C',true),queries:{count:3,tally:{screens:2,ledger:1}}}]).flat();
+    expect(pairedComparison(queryRows,'B','C').beats).toBe(true);
+    expect(qualityReport(queryRows).arms.find(a=>a.arm==='C')).toMatchObject({queriesPerDecision:3,queryTally:{screens:40,ledger:20}});
     for(const r of rows.filter(r=>r.arm==='B'))if(r.validation.replay)r.validation.replay.saving.clicks=-1;
     expect(pairedComparison(rows,'A','B').beats).toBe(false);
   });

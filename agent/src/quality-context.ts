@@ -9,10 +9,12 @@ export const physicalKeys = ['clicks','keystrokes','scrolls','scrollPx','mouseTr
 export function physicalSaving(s: Savings | null) {
   return s ? {clicks:s.clicks,keystrokes:s.keystrokes,scrolls:s.scrolls,scrollPx:s.scrollPx??null,mouseTravelPx:s.mouseTravelPx??null} : null;
 }
-export function measuredLedger(records: readonly DecisionRecord[], persona: string, night: number) {
+export type MeasuredSavings = Map<string,ReturnType<typeof physicalSaving>>;
+export function measuredLedger(records: readonly DecisionRecord[], persona: string, night: number, measured:ReadonlyMap<string,ReturnType<typeof physicalSaving>>) {
+  const saving=(r:DecisionRecord,id:string)=>{const key=`${r.night}/${r.persona}/${id}`;if(!measured.has(key))throw new Error(`Missing recomputed ledger candidate: ${key}`);return measured.get(key)??null;};
   return records.filter(r=>r.persona===persona && r.night<night).sort((a,b)=>a.night-b.night).flatMap(r=>r.candidates.map(e=>({
     night:r.night,id:e.candidate.id,moveType:e.candidate.moveType,targets:[...e.candidate.targets],summary:e.candidate.summary,
-    trainDaySaving:physicalSaving(e.trainEstimate?.saving??null),chosen:r.chosen?.candidateIds.includes(e.candidate.id)??false,
+    trainDaySaving:saving(r,e.candidate.id),chosen:r.chosen?.candidateIds.includes(e.candidate.id)??false,
     nightOutcome:r.outcome,seeded:e.candidate.seeded,
   })));
 }
@@ -23,7 +25,7 @@ const physical = {
 };
 const totals = z.object({...physical,visits:z.number()});
 // Strip unknown fields even if a caller structurally types a holdout-bearing object as train context.
-const contextSchema = z.object({
+export const contextSchema = z.object({
   ledger:z.array(z.object({night:z.number(),id:z.string(),moveType:z.string(),targets:z.array(z.string()),summary:z.string(),
     trainDaySaving:z.object(physical).nullable(),chosen:z.boolean(),nightOutcome:z.string(),seeded:z.boolean()})),
   locality:z.object({trainDays:z.array(z.number()),units:z.string(),totals,

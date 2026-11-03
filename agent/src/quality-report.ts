@@ -2,7 +2,7 @@ import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 import { decisionRecordSchema, type DecisionRecord } from './schema.js';
-import { measuredLedger, physicalSaving, sameIdea, zeroEffect, zeroOrWorse } from './quality-context.js';
+import { measuredLedger, physicalSaving, sameIdea, zeroEffect, zeroOrWorse, type MeasuredSavings } from './quality-context.js';
 import { rng, writeJson } from './util.js';
 
 export const OFFLINE_LABEL = 'offline, screen check skipped, simulator only';
@@ -11,12 +11,14 @@ export interface TokenCounts { input: number | null; output: number | null; cach
 export type OfflineRecord = Omit<DecisionRecord,'screenCheck'> & {
   offline:true; screenCheck:'skipped'; label:typeof OFFLINE_LABEL; decisionId:string; arm:QualityArm; sample:number;
   tokens:TokenCounts; callCount:number; wallTimeMs:number; frozenInputs:string;
+  queries?:{count:number;tally:Record<string,number>} | undefined;
   repeatedMeasuredBad:number; proposedCandidates:number;
 };
 export const offlineRecordSchema = decisionRecordSchema.omit({screenCheck:true}).extend({
   offline:z.literal(true),screenCheck:z.literal('skipped'),label:z.literal(OFFLINE_LABEL),decisionId:z.string(),
   arm:z.enum(['A','B','C','sanity']),sample:z.number().int().positive(),
   tokens:z.object({input:z.number().nullable(),output:z.number().nullable(),cachedInput:z.number().nullable(),source:z.enum(['backend','recorded-reference','unavailable'])}),
+  queries:z.object({count:z.number().int().nonnegative(),tally:z.record(z.string(),z.number().int().nonnegative())}).optional(),
   callCount:z.number(),wallTimeMs:z.number(),frozenInputs:z.string(),repeatedMeasuredBad:z.number(),proposedCandidates:z.number(),
 });
 const mean = (xs: readonly number[]) => xs.reduce((a,b)=>a+b,0)/Math.max(1,xs.length);
@@ -33,11 +35,11 @@ export function decisionMetrics(r: OfflineRecord) {
     zeroEffectShare:candidates.length?candidates.filter(e=>zeroEffect(physicalSaving(e.trainEstimate?.saving??null))).length/candidates.length:null,
     repeatMeasuredBadShare:candidates.length?r.repeatedMeasuredBad/candidates.length:null,
     checkerPassRate:candidates.length?candidates.filter(e=>e.check.status==='pass').length/candidates.length:null,
-    tokens:r.tokens,calls:r.callCount,wallTimeMs:r.wallTimeMs,
+    queries:r.queries??{count:0,tally:{}},tokens:r.tokens,calls:r.callCount,wallTimeMs:r.wallTimeMs,
   };
 }
-export function repetitionCount(record: DecisionRecord, history: readonly DecisionRecord[]): number {
-  const ledger=measuredLedger(history,record.persona,record.night).filter(e=>!e.seeded && zeroOrWorse(e.trainDaySaving));
+export function repetitionCount(record: DecisionRecord, history: readonly DecisionRecord[], measured:Readonly<MeasuredSavings>): number {
+  const ledger=measuredLedger(history,record.persona,record.night,measured).filter(e=>!e.seeded && zeroOrWorse(e.trainDaySaving));
   return record.candidates.filter(e=>!e.candidate.seeded && ledger.some(old=>sameIdea(old,e.candidate))).length;
 }
 
@@ -79,6 +81,7 @@ export function qualityReport(records: readonly OfflineRecord[]) {
       noChangeRate:avg(r=>r.noChange),checkerPassRate:count?own.reduce((n,r)=>n+r.checkerPassed,0)/count:null,
       inputTokensPerDecision:tokens('input')===null?null:(tokens('input')??0)/decisions.length,
       outputTokensPerDecision:tokens('output')===null?null:(tokens('output')??0)/decisions.length,
+      queriesPerDecision:avg(r=>r.queries.count),queryTally:Object.fromEntries([...new Set(own.flatMap(r=>Object.keys(r.queries.tally)))].map(q=>[q,own.reduce((n,r)=>n+(r.queries.tally[q]??0),0)])),
       callsPerDecision:avg(r=>r.calls),wallTimeMsPerDecision:avg(r=>r.wallTimeMs)};
   });
   return {label:OFFLINE_LABEL,note:'Sample means within decision; validation totals sum those means. Unknown token counts remain null. Replay tokens are recorded references, not new model usage. Wall time includes charged shared evidence preparation; the shared exact-content geometry cache makes timings cache-order dependent. Idea repeats = same id OR same move type and nonempty target set. Zero effect requires all five physical metrics measured and zero; denominator is all nonseeded candidates.',
@@ -88,10 +91,10 @@ export async function writeQualityReport(dir:string,records:readonly OfflineReco
   const report=qualityReport(records);await writeJson(path.join(dir,'report.json'),report);
   const pct=(n:number|null)=>n===null?'unknown':`${(n*100).toFixed(1)}%`;
   const lines=[`# ${OFFLINE_LABEL}`,'',report.note,'',
-    '| Arm | Decisions / samples | Accepted | Validation clicks saved | Validation scrolls saved | Zero effect | Repeat bad idea | No change | Checker pass | Input tokens / decision | Calls / decision | Seconds / decision |',
-    '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
-    ...report.arms.map(a=>`| ${a.arm} | ${a.decisions} / ${a.samples} | ${pct(a.acceptedChangeRate)} | ${a.validationClicks} | ${a.validationScrolls} | ${pct(a.zeroEffectShare)} | ${pct(a.repeatMeasuredBadShare)} | ${pct(a.noChangeRate)} | ${pct(a.checkerPassRate)} | ${a.inputTokensPerDecision??'unknown'} | ${a.callsPerDecision} | ${(a.wallTimeMsPerDecision/1000).toFixed(1)} |`),'',
+    '| Arm | Decisions / samples | Accepted | Validation clicks saved | Validation scrolls saved | Zero effect | Repeat bad idea | No change | Checker pass | Input tokens / decision | Calls / decision | Queries / decision | Query tally | Seconds / decision |',
+    '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|',
+    ...report.arms.map(a=>`| ${a.arm} | ${a.decisions} / ${a.samples} | ${pct(a.acceptedChangeRate)} | ${a.validationClicks} | ${a.validationScrolls} | ${pct(a.zeroEffectShare)} | ${pct(a.repeatMeasuredBadShare)} | ${pct(a.noChangeRate)} | ${pct(a.checkerPassRate)} | ${a.inputTokensPerDecision??'unknown'} | ${a.callsPerDecision} | ${a.queriesPerDecision} | ${JSON.stringify(a.queryTally)} | ${(a.wallTimeMsPerDecision/1000).toFixed(1)} |`),'',
     ...report.comparisons.map(c=>c.status==='not evaluated'?`${c.comparison}: not evaluated.`:`${c.comparison}: Δ accepted ${pct(c.rateDifference??0)}, paired 95% interval ${c.rate95?.map(pct).join(' to ')}; Δ clicks ${c.validationClicksDifference}, Δ scrolls ${c.validationScrollsDifference}; decision rule: ${c.beats?'beats':'does not beat'}.`),'',
-    'Per-decision candidate shares, tokens, calls and wall time are in report.json. Replay plumbing does not estimate prompt quality. Arm C is not implemented.'];
+    'Per-decision candidate shares, tokens, calls and wall time are in report.json. Replay plumbing does not estimate prompt quality. Replay query counts are zero; historical tool use is not executed.'];
   await writeFile(path.join(dir,'report.md'),lines.join('\n')+'\n');return report;
 }

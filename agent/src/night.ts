@@ -35,6 +35,7 @@ import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './se
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
 import type { RunStore } from './store.js';
 import { errorMessage, hash32, pad2, rng } from './util.js';
+import { withQueries, type QueryBundle } from './quality-queries.js';
 import { withQuality, type QualityContext } from './quality-context.js';
 
 export const MAX_REPAIRS = 3;
@@ -350,7 +351,8 @@ function compatible(a: Candidate, b: Candidate): boolean {
 }
 
 // ---------------------------------------------------------------- the nightly loop
-export async function runNight(deps: LoopDeps, input: NightInput, options: { offline?: boolean; quality?: QualityContext } = {}): Promise<NightResult> {
+export async function runNight(deps: LoopDeps, input: NightInput, options: { offline?: boolean; quality?: QualityContext; queryBundle?:QueryBundle } = {}): Promise<NightResult> {
+  if(options.queryBundle&&(!options.offline||!options.quality))throw new Error('Queries require offline arm C with train-only quality context');
   const { night, persona, release, current } = input;
   const specVersion = release.specVersion;
   const gate: Gate = { specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
@@ -377,7 +379,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   try {
     proposal = await deps.agent.proposeCandidates({
       callId: callId(night, persona.id, 'propose-0'), purpose: 'propose', source: 'llm',
-      parts: withQuality(nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }), options.quality),
+      parts: withQueries(withQuality(nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }), options.quality),options.queryBundle),
     });
   } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
@@ -422,7 +424,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   try {
     const choice = await deps.agent.chooseCandidates({
       callId: callId(night, persona.id, 'choose-0'),
-      parts: withQuality(choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }), options.quality),
+      parts: withQueries(withQuality(choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }), options.quality),options.queryBundle),
     });
     calls.push(choice.call);
     const byId = new Map(eligible.map((e) => [e.candidate.id, e.candidate]));
@@ -474,7 +476,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
     try {
       repair = await deps.agent.proposeCandidates({
         callId: callId(night, persona.id, `repair-${r}`), purpose: 'repair', source: 'repair',
-        parts: withQuality(repairPrompt({ night, persona, spec: release.spec, program: current, attempt: r, maxAttempts: MAX_REPAIRS, failedSummaries: failed.ids, failedPatch: failed.patch, check: failed.check }), options.quality),
+        parts: withQueries(withQuality(repairPrompt({ night, persona, spec: release.spec, program: current, attempt: r, maxAttempts: MAX_REPAIRS, failedSummaries: failed.ids, failedPatch: failed.patch, check: failed.check }), options.quality),options.queryBundle),
       });
     } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;

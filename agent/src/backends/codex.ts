@@ -1,5 +1,7 @@
+import { boundedQueryTranscript } from './query-audit.js';
+import { writeQueryDirectory } from '../quality-queries.js';
 import { z } from 'zod';
-import { confinedArgs, auditTranscript } from './isolation.js';
+import { confinedArgs, auditTranscript, queryRequirements } from './isolation.js';
 /**
  * Codex backend: shells out to
  *   codex exec --output-schema <schema.json> --sandbox read-only --ephemeral -o <out.json> -
@@ -45,7 +47,8 @@ export class CodexLlm implements JsonLlm {
   readonly model: string;
 
 
-  constructor(opts: { model?: string; binary?: string; timeoutMs?: number; serviceTier?: string; reasoningEffort?: string } = {}) {
+  constructor(opts: { queryMode?:boolean; model?: string; binary?: string; timeoutMs?: number; serviceTier?: string; reasoningEffort?: string } = {}) {
+    this.queryMode = opts.queryMode??false;
     this.serviceTier = opts.serviceTier ?? process.env['CODEX_SERVICE_TIER'] ?? null;
     this.reasoningEffort = opts.reasoningEffort ?? process.env['CODEX_REASONING_EFFORT'] ?? 'high';
     if (this.serviceTier === 'fast') throw new Error('Codex fast mode is prohibited; use --service-tier default');
@@ -57,23 +60,31 @@ export class CodexLlm implements JsonLlm {
     this.binary = opts.binary ?? process.env['CODEX_BIN'] ?? 'codex';
     this.timeoutMs = opts.timeoutMs ?? 20 * 60_000;
   }
+  private readonly queryMode:boolean;
   private readonly serviceTier: string | null;
   private readonly reasoningEffort: string;
   private readonly binary: string;
   private readonly timeoutMs: number;
 
   async complete(req: JsonRequest): Promise<JsonResponse> {
+    if(this.queryMode!==Boolean(req.queryBundle))throw new Error('Query files require the explicit offline arm-C backend mode');
     const dir = await mkdtemp(path.join(tmpdir(), 'agent-codex-'));
     try {
+      if(req.queryBundle)await writeQueryDirectory(dir,req.queryBundle);
       const privateHome = path.join(dir, 'codex-home');
-      await mkdir(privateHome);
+      await mkdir(privateHome,{mode:0o700});
+      // A shell must not see runtime credentials, even though the client needs
+      // them. Managed deny-read rules apply to tools and cannot be weakened by
+      // --sandbox read-only or a local config (Codex permissions reference).
+      if(this.queryMode)await writeFile(path.join(privateHome,'query-requirements.toml'),
+        queryRequirements(dir),{mode:0o400});
       const auth = path.join(process.env['CODEX_HOME'] ?? path.join(homedir(), '.codex'), 'auth.json');
       if (existsSync(auth)) await copyFile(auth, path.join(privateHome,'auth.json'));
       const schemaFile = path.join(dir, 'schema.json');
       const outFile = path.join(dir, 'out.json');
       await writeFile(schemaFile, JSON.stringify(req.schema));
       const args = [
-        'exec', '--json', '-c', 'features.shell_tool=false', '-c', 'web_search="disabled"', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
+        'exec', '--json', '-c', `features.shell_tool=${this.queryMode?'true':'false'}`, ...(this.queryMode?['-c','mcp_servers={}','-c','approval_policy="never"']:[]), '-c', 'web_search="disabled"', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
         '--skip-git-repo-check', '-C', dir, '-m', this.model, '-',
       ];
       const stdin = `${req.system}\n\n---\n\n${req.prompt}\n\nReply with only the JSON object described by the output schema.`;
@@ -82,7 +93,8 @@ export class CodexLlm implements JsonLlm {
         const staged=path.join(dir,'codex-executable'); await copyFile(executable,staged); executable=staged;
       }
       const transcript = await this.run(args, stdin, dir, executable);
-      const audit = auditTranscript(transcript.stdout);
+      const audit = auditTranscript(transcript.stdout,this.queryMode?dir:undefined);
+      if(this.queryMode)transcript.stdout=boundedQueryTranscript(transcript.stdout);
       if (audit.status !== 'pass') throw Object.assign(new Error('Codex attempted forbidden tools; request rejected'), { transcript, audit });
       const servedBy=servedModel(transcript.stdout);
       if (transcriptFailure(transcript.stdout)) throw Object.assign(new Error('Codex reported a failed turn'),{transcript});
@@ -101,7 +113,7 @@ export class CodexLlm implements JsonLlm {
 
   private run(args: string[], stdin: string, cwd: string, executable: string): Promise<{ stdout: string; stderr: string }> {
     return new Promise((resolve, reject) => {
-      const child = spawn('bwrap', confinedArgs(cwd, executable, args), { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
+      const child = spawn('bwrap', confinedArgs(cwd, executable, args,this.queryMode), { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
       let stderr = '';
       let stdout = '';
       child.stderr.on('data', (d: Buffer) => { stderr = (stderr + d.toString()).slice(-2_000_000); });
@@ -111,7 +123,7 @@ export class CodexLlm implements JsonLlm {
       child.on('close', (code) => {
         clearTimeout(timer);
         if (code === 0) resolve({ stdout, stderr });
-        else reject(Object.assign(new Error(`codex backend: exit ${String(code)}: ${stderr}`), { transcript: {stdout,stderr}, audit: auditTranscript(stdout) }));
+        else reject(Object.assign(new Error(`codex backend: exit ${String(code)}: ${stderr}`), { transcript: {stdout:this.queryMode?boundedQueryTranscript(stdout):stdout,stderr}, audit: auditTranscript(stdout,this.queryMode?cwd:undefined) }));
       });
       child.stdin.end(stdin);
     });

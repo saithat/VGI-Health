@@ -1,18 +1,25 @@
+import { auditQueryTranscript, queryAuditSchema } from './query-audit.js';
 import { z } from 'zod';
 import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+/** Managed denial protects the client's auth file from read-only query tools.
+ * The client can still read it; tool subprocesses cannot. No credential bytes here.
+ */
+export const queryRequirements=(directory:string)=>'[permissions.filesystem]\ndeny_read = '+JSON.stringify([path.join(directory,'codex-home/auth.json')])+'\n';
 /** Empty filesystem, read-only runtime, private request directory. No repository or home mount. */
-export function confinedArgs(directory: string, binary: string, args: string[]): string[] {
+export function confinedArgs(directory: string, binary: string, args: string[], queryMode=false): string[] {
   const runtime = ['/usr','/bin','/lib','/lib64'].filter(existsSync).flatMap((p) => ['--ro-bind',p,p]);
   const network = ['/etc/resolv.conf','/etc/nsswitch.conf','/etc/hosts','/etc/ssl','/etc/pki','/etc/crypto-policies'].filter(existsSync).flatMap((p) => ['--ro-bind',p,p]);
   return ['--die-with-parent','--new-session','--unshare-pid','--unshare-ipc','--unshare-uts',...runtime,...network,
     '--proc','/proc','--dev','/dev','--tmpfs','/tmp','--bind',directory,directory,'--chdir',directory,
+    ...(queryMode?['--ro-bind',path.join(directory,'codex-home/query-requirements.toml'),'/etc/codex/requirements.toml']:[]),
     '--clearenv','--setenv','PATH','/usr/local/bin:/usr/bin:/bin','--setenv','HOME',directory,
     '--setenv','CODEX_HOME',path.join(directory,'codex-home'), '--',binary,...args];
 }
 /** Tool execution is forbidden even inside confinement: designer gets only supplied JSON. */
-export function auditTranscript(stdout: string) {
+export function auditTranscript(stdout: string, queryDirectory?:string) {
+  if(queryDirectory!==undefined)return auditQueryTranscript(stdout,queryDirectory);
   const forbidden: unknown[] = [];
   for (const line of stdout.split('\n').filter(Boolean)) {
     let item: unknown;
@@ -33,8 +40,11 @@ export async function auditRunTranscripts(dir: string) {
       const file = path.join(root,entry.name);
       if (entry.isDirectory()) await visit(file);
       else if (entry.name.endsWith('.json')) {
-        const record = z.object({transcript:z.object({stdout:z.string().optional()}).optional(),audit:z.unknown().optional()}).parse(JSON.parse(await readFile(file,'utf8')));
-        if (record.transcript?.stdout) audits.push({ file:path.relative(dir,file), ...auditTranscript(record.transcript.stdout) });
+        const record = z.object({transcript:z.object({stdout:z.string().optional()}).optional(),audit:z.unknown().optional(),usage:z.unknown().optional()}).parse(JSON.parse(await readFile(file,'utf8')));
+        if (record.transcript?.stdout) {
+          const query=z.object({isolationAudit:queryAuditSchema}).safeParse(record.usage??{isolationAudit:record.audit});
+          audits.push({ file:path.relative(dir,file), ...auditTranscript(record.transcript.stdout,query.success?query.data.isolationAudit.requestDirectory:undefined) });
+        }
         else if (record.audit) audits.push(record.audit);
       }
     }
