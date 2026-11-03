@@ -58,9 +58,6 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
   await chart.getByLabel("Complexity metric").selectOption("mouseTravelPx");
   await expect(final.getByRole("cell").nth(2)).toHaveText("Unavailable");
   await expect(chart.getByText(/straight-line travel/)).toBeVisible();
-  await chart
-    .getByText("Chart data and measurement definitions", { exact: true })
-    .click();
   if (testInfo.project.name === "desktop")
     await page.screenshot({
       path: "shots/dashboard-workload.png",
@@ -69,6 +66,9 @@ test("P3 evolution chart distinguishes fixed exact minimum from simulated worklo
   await expect(
     chart.getByText(/Patient mix varies by iteration/),
   ).toBeVisible();
+  await chart
+    .getByText("Chart data and measurement definitions", { exact: true })
+    .click();
   await chart.getByLabel("Complexity metric").selectOption("clicks");
   await chart.getByLabel("Compare personas").check();
   await expect(chart.locator(".complexity-multiples article")).toHaveCount(5);

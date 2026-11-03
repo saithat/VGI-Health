@@ -32,7 +32,12 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   await page.goto("/dashboard?run=run1-P3");
   await expect(page.getByLabel("Recorded run")).toHaveValue("run1-P3");
   await expect(
-    page.getByRole("heading", { name: "Evolution", exact: true }),
+    page
+      .getByRole("navigation", { name: "Dashboard areas" })
+      .getByRole("button", { name: "Evolution", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(
+    page.getByRole("heading", { name: /^Inpatient RN/ }),
   ).toBeVisible();
   const nav = page.getByRole("navigation", { name: "Dashboard areas" });
   await expect(nav.getByRole("button")).toHaveCount(5);
@@ -57,7 +62,7 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   }
 
   const version = page.getByRole("button", { name: /^rev 3 · Night 4/ });
-  await expect(version).toHaveAccessibleName(/vs previous:.*vs baseline:/);
+  await expect(version).toHaveAccessibleName(/Effect:.*clicks.*Status:/);
   await version.click();
   const drawer = page.getByRole("dialog");
   await expect(drawer).toContainText("01 · Evidence");
