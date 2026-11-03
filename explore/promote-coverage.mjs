@@ -24,16 +24,36 @@ const context=digest([protocol.rendererSourceHash,protocol.build,manifest.assets
 let completed={};try{const old=JSON.parse(await readFile(`${out}/ordinary-view-cache.json`,'utf8'));if(old.context===context)completed=old.completed;}catch(error){if(error.code!=='ENOENT')throw error;}
 const lab=await startLab(),coverage=[];
 try{
- const pages=await Promise.all([1440,390].map(async width=>{const page=await lab.browser.newPage({viewport:{width,height:900}});await page.goto(lab.url);return{width,page};}));
- for(const file of files){
-  const view=JSON.parse(await readFile(`${out}/views/${file}`,'utf8'));
-  const hash=digest(view);
-  if(!completed[hash]){for(const {width,page}of pages){await paint(page,view);await gateOrdinary(page,view);}
-   completed[hash]=true;
+ const workers=Number(process.env.EHR_ORDINARY_WORKERS??1);
+ assert.ok(Number.isInteger(workers)&&workers>=1&&workers<=3,'Use 1–3 view workers (at most six pages)');
+ const contexts=await Promise.all(Array.from({length:workers},()=>Promise.all([1440,390].map(async width=>{
+  const page=await lab.browser.newPage({viewport:{width,height:900}});await page.goto(lab.url);return{width,page};
+ }))));
+ let nextCheckpoint=100;
+ for(let start=0;start<files.length;start+=workers){
+  const settled=await Promise.allSettled(files.slice(start,start+workers).map(async(file,worker)=>{
+   const view=JSON.parse(await readFile(`${out}/views/${file}`,'utf8'));
+   const hash=digest(view);
+   if(!completed[hash]){
+    const widths=await Promise.allSettled(contexts[worker].map(async({page})=>{await paint(page,view);await gateOrdinary(page,view);}));
+    const errors=widths.filter(result=>result.status==='rejected').map(result=>result.reason);
+    if(errors.length)throw new AggregateError(errors,`Ordinary view ${file}`);
+    completed[hash]=true;
+   }
+   return{file,sha256:hash,widths:[1440,390]};
+  }));
+  const errors=settled.filter(result=>result.status==='rejected').map(result=>result.reason);
+  if(errors.length)throw new AggregateError(errors,'Ordinary view batch');
+  coverage.push(...settled.map(result=>result.value));
+  if(coverage.length>=nextCheckpoint){
+   process.stderr.write(`[promotion coverage] ${coverage.length}/${files.length} (${workers} workers)\n`);
+   await write(`${out}/ordinary-view-cache.json`,{context,completed});
+   nextCheckpoint=Math.floor(coverage.length/100)*100+100;
   }
-  coverage.push({file,sha256:digest(view),widths:[1440,390]});
-  if(coverage.length%100===0){process.stderr.write(`[promotion coverage] ${coverage.length}/${files.length}\n`);await write(`${out}/ordinary-view-cache.json`,{context,completed});}
  }
+ assert.equal(coverage.length,files.length,'Every emitted view must be accounted for');
+ assert.equal(new Set(coverage.map(row=>row.file)).size,files.length,'No duplicate coverage records');
+
  await write(`${out}/ordinary-view-cache.json`,{context,completed});
  if(exportsOnly||incremental){await write(`${out}/${exportsOnly?'export':'incremental'}-ordinary-coverage.json`,{context,views:files.length,checks:files.length*2,coverage,partial:incremental});console.log(JSON.stringify({views:files.length,checks:files.length*2,partial:incremental}));}else{
  const report=JSON.parse(await readFile(`${out}/round2-report.json`,'utf8'));

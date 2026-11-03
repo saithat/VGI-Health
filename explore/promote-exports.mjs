@@ -38,13 +38,16 @@ for(const proposal of proposals.results){
   const projection=JSON.parse(wasm.call('ehr_facts',JSON.stringify({bundle:raw,context:{today:'2026-11-02',now:600,receipts:[],record:[]}})));
   assert.ok(!projection.error,projection.error);
   const patient=projection.facts.sourcePatientId;assert.equal(typeof patient,'string');assert.equal(projection.display.sourcePatientId,patient);
-   const dated=JSON.parse(wasm.call('ehr_exotic',JSON.stringify({op:'dated',render:{...sourceInput,display:projection.display}}))).screen.workspace[0].datedTimeline;
   for(const file of files){
    const screen=await read(file);
    if(!screen.banner.length){coverage.push({file,kind:'native-picker',coveredByBackingGate:true});continue;}
    const mode=proposal.id==='r2-007'?'board':'dated';
+   const snapshotInput={...sourceInput,facts:projection.facts,display:projection.display};
+   const datedScreen=JSON.parse(wasm.call('ehr_exotic',JSON.stringify({op:'date-index',render:snapshotInput,screen}))).screen;
+   assert.ok(datedScreen,'Native snapshot source selection');
    const view=mode==='board'?{mode,panes:[{patient,screen},{patient:'reference',screen:canonical.screen}],ordinary:{board:{urgent:demands(patient,screen),children:[pane(patient,screen),other]}}}:
-    {mode,panes:[{patient,screen:{...screen,workspace:[{datedTimeline:{...dated,children:screen.workspace}}]}}],ordinary:{board:{urgent:demands(patient,screen),children:[pane(patient,{...screen,workspace:[{datedTimeline:{...dated,children:screen.workspace}}]})]}}};
+    {mode,panes:[{patient,screen:datedScreen}],ordinary:{board:{urgent:demands(patient,screen),children:[pane(patient,datedScreen)]}}};
+   view.indexObservation=JSON.parse(wasm.call('ehr_exotic',JSON.stringify({op:'observe-index',node:view.ordinary})));
    const hash=digest(view),name=`${proposal.id}-export-${hash}.json`;
    await write(`${out}/views/${name}`,view);
    coverage.push({file,kind:mode,view:name,sha256:hash});

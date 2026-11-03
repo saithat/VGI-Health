@@ -173,8 +173,8 @@ async function evaluate(candidate,id,split) {
       let view=mode&&(!selecting||promotion)?{mode,panes:[{patient:scenario.patient,screen:s},...(mode==='board'?scenarios[split].filter(x=>x.patient!==scenario.patient).map(other=>({patient:other.patient,screen:boardOthers.get(other.patient)})):[])],...(mode==='dated'?{axis:sourceAxis(s)}:{})}:null;
       const sessions=promotion&&mode==='board'?boardSessionsFor(scenario,input,scopedReceipts):null;
       if(promotion&&mode){
-        if(mode==='board')view={...view,ordinary:exotic({op:'board',sessions}).node};
-        else if(mode==='dated'){const dated=exotic({op:'dated',render:input});view={mode,panes:[{patient:scenario.patient,screen:dated.screen}],ordinary:dated.node};}
+        if(mode==='board'){const board=exotic({op:'board',sessions});view={...view,ordinary:board.node,indexObservation:board.indexObservation};}
+        else if(mode==='dated'){const dated=exotic({op:'dated',render:input});view={mode,panes:[{patient:scenario.patient,screen:dated.screen}],ordinary:dated.node,indexObservation:dated.indexObservation};}
         const viewHash=digest(view);
         if(!geometryCache.has(`view:${viewHash}`)){
           geometryCache.set(`view:${viewHash}`,true);

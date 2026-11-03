@@ -146,7 +146,7 @@ code.
 | WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; canonical gate fails** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
 | Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
 | Multi-patient board preserves patient-scoped screen meaning, guarded effects and other sessions; foreign receipts are inert | 🟢 **Proved** for source-bound inputs; urgency perception and action discovery retain explicit exposure hypotheses; 🔵 all emitted promotion views checked | `Sem/Board.lean`, `Sem/BoardView.lean`, `app/scripts/promote-gate.mjs` |
-| Dated FHIR index preserves every source occurrence and orders positioned entries by normalized UTC instant | 🟢 **Proved**; ambiguous values remain explicitly unpositioned; ordinary program opt-in and unchanged clinical meaning | `Render/Dated.lean`, `Sem/DatedTimeline.lean` |
+| Dated FHIR index retains eligible shown-row source occurrences and orders positioned entries by normalized UTC instant | 🟢 **Proved** with bound patient IDs and shown vital/lab backing rows; full index observation and bounded nanoseconds; exact field scope below | `Render/Dated.lean`, `Sem/DatedTimeline.lean` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
 | The browser's accessibility tree equals Lean's screen tree; every control works | 🔵 **Checked** (browser tests, button audit) | `app/e2e/` |
@@ -837,20 +837,32 @@ patient/MRN identity stays pinned; full banner detail remains in flow. The pane 
 measured lower edge. The gate checks every enabled control and patient identity
 after scrolling, including a covered-control adversary. Shared
 clinical persistence and cross-session concurrency remain outside this composition.
-`Ehr.Render.Dated` normalizes offset-bearing FHIR effective/issued timestamps to
-UTC seconds and nanoseconds, sorts stably and proves source multiplicity is
-preserved across dated and explicitly unpositioned entries. Date-only/local,
-invalid, unknown-offset (`-00:00`), leap-second and unsupported-precision values
-remain unpositioned. Pre-epoch times are supported. Raw source timestamps travel
-in `Display.timelineSources`; formatted W3 captions are no longer parsed as dates.
-`layout.datedTimeline` opts ordinary programs into the complete dated index, and
-the native `dated` API supplies the same presentation for existing programs.
+`Ehr.Render.Dated` normalizes offset-bearing source times to UTC seconds and
+bounded nanoseconds (`Fin 1000000000`), sorts stably and retains every eligible
+occurrence across dated and explicitly unpositioned entries. Candidate extraction
+covers exactly `effectiveDateTime`, otherwise `effectivePeriod.start`, plus
+`issued` separately. It does not cover onset, authoredOn, performed, recordedDate,
+occurrence or Encounter.period. Backings currently support latest vital rows and
+full laboratory histories. Only candidates whose exact backing row appears under
+its information ID in the emitted workspace/side are indexed; payload overrides
+supply no inferred permission. Occurrence numbers prevent an identical hidden
+candidate from borrowing another occurrence's permission. Both ordinary and native
+paths require the workspace binding gate and matching present source patient IDs.
+Date-only/local, invalid, unknown-offset (`-00:00`), leap-second and unsupported
+precision values remain unpositioned. Pre-epoch times are supported; formatted W3
+captions are not parsed as dates. `DateIndex.observe` retains complete index
+payloads and patient namespaces; `IndexedExtension.full` and production source
+witness theorems cover the index, beyond the unchanged clinical-only projection.
+`layout.datedTimeline` and the native `dated` API use this restricted source index.
 The dated laboratory uses the same rail in a single-patient board. Lookup and
 return retain the ordinary panes and rail; the source-date index appears only
 for a bound chart. Command and spatial views remain **sandbox**; `layout.timeline` remains the
 admitted ordered-child primitive. The promotion rerun uses the original 24 seeded
 profiles and exact-input recorded probabilities, with no decision server or new
 proposal calls. It is validation of the preselected designs, not a new blind study.
+The corpus gate supports three workers (six pages), propagates every worker/viewport failure,
+and checks that every input view appears exactly once in its coverage report.
+The owner’s disclosure review remains a merge gate; this repair awaits re-review.
 See the [round-two report](docs/design/exploration-round2.md) for current tiers,
 measurements, exposure limits and the native/WASM/browser verification record.
 The laboratory uses the real interpreter and has no clinical persistence path.

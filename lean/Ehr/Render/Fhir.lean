@@ -2,6 +2,7 @@ import Lean.Data.Json
 import Ehr.Render.Json
 import Ehr.Formulary
 import Ehr.Core.Basics
+import Ehr.Render.Ui
 
 /-!
 Read FHIR bundles into patient facts and clinical display rows.
@@ -2356,8 +2357,9 @@ def baseFactsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
         ("encounterName", ccText (first enc "type")), ("department", ccText (field enc "serviceType")),
         ("postoperativeDay", ((arr enc "extension").find? (fun e => str e "url" == "https://vgi-health.example/fhir/StructureDefinition/postoperative-day")).map (fun e => qtyText (Json.mkObj [("value", field e "valueInteger")])) |>.getD "")]).filter (fun pair => pair.2 != "") }
 
-/-- Preserve every effective/issued source timestamp, including duplicates and ambiguous
-values. No timezone is inferred from the host or from a display caption. -/
+/-- Candidate extraction for exactly effectiveDateTime, otherwise effectivePeriod.start,
+plus issued (separately). Other FHIR date/time fields are outside this contract.
+Duplicates and ambiguous strings are retained; this list is not permission to display them. -/
 def timelineSources (rs : List Json) : List UiSourceDate :=
   rs.flatMap fun r =>
     let resource := resourceType r ++ "/" ++ str r "id"
@@ -2368,32 +2370,89 @@ def timelineSources (rs : List Json) : List UiSourceDate :=
     (let issued := str r "issued"
      if issued == "" then [] else [{ resource, field := "issued", timestamp := issued }])
 
+/-- Supported source backings. Latest vital rows use the same code/time selection
+as uiRows; full laboratory histories use the same label and cell projection.
+Other record families and payload overrides have no inferred source permission. -/
+def timestampTargets (d : Display) (r : Json) : List (InfoId × List (String × String)) :=
+  (if isVital r && (uiLatestVitals d).any (fun latest =>
+      latest.code == (vitalRow r).code && latest.date == (vitalRow r).date)
+    then [("vitals", vitalCells (vitalRow r))] else []) ++
+  (if isLab r then
+    let labels := (d.labResults.map (fun row => (row.name, row.code))).eraseDups
+    (labResultRowsFor r).flatMap fun row =>
+      ["labs", "labResults", "resultTrend"].map fun info => (info, labResultCells labels row)
+    else [])
+
+def timelineEntries (rs : List Json) (d : Display) :
+    List (UiSourceDate × List (InfoId × List (String × String))) :=
+  rs.flatMap fun r => (timelineSources [r]).map fun source => (source, timestampTargets d r)
+
+def timelineBackings (rs : List Json) (d : Display) : List UiDateBacking :=
+  (timelineEntries rs d).zipIdx.flatMap fun ((source, targets), occurrence) =>
+    targets.map fun (info, row) => { source, occurrence, info, row }
+
+/-- Every backing is an exact supported row projection and a candidate field of
+that very resource. This does not claim coverage of other FHIR timestamp fields. -/
+theorem timeline_backing_provenance (rs : List Json) (d : Display) (b : UiDateBacking)
+    (h : b ∈ timelineBackings rs d) :
+    ∃ r ∈ rs, b.source ∈ timelineSources [r] ∧ (b.info, b.row) ∈ timestampTargets d r := by
+  obtain ⟨⟨⟨source, targets⟩, occurrence⟩, he, hm⟩ := List.mem_flatMap.mp h
+  obtain ⟨⟨info, row⟩, ht, eq⟩ := List.mem_map.mp hm
+  cases eq
+  have he := List.fst_mem_of_mem_zipIdx he
+  obtain ⟨r, hr, hm⟩ := List.mem_flatMap.mp he
+  obtain ⟨src, hs, eq⟩ := List.mem_map.mp hm
+  cases eq
+  exact ⟨r, hr, hs, ht⟩
+
+/-- Candidate enumeration and backing occurrence numbers share exactly one order. -/
+theorem timeline_entries_sources (rs : List Json) (d : Display) :
+    (timelineEntries rs d).map Prod.fst = timelineSources rs := by
+  simp [timelineEntries, timelineSources, List.map_flatMap, List.map_map, Function.comp_def]
+
+/-- No equal-looking hidden occurrence can borrow a shown occurrence's permission. -/
+theorem timeline_backing_occurrence (rs : List Json) (d : Display) (b : UiDateBacking)
+    (h : b ∈ timelineBackings rs d) :
+    (timelineSources rs)[b.occurrence]? = some b.source := by
+  obtain ⟨⟨⟨source, targets⟩, occurrence⟩, he, hm⟩ := List.mem_flatMap.mp h
+  obtain ⟨⟨info, row⟩, _, eq⟩ := List.mem_map.mp hm
+  cases eq
+  have hAt := List.mem_zipIdx_iff_getElem?.mp he
+  rw [← timeline_entries_sources rs d]
+  simp [List.getElem?_map, hAt]
+
+#print axioms timeline_backing_occurrence
+#print axioms timeline_backing_provenance
+#print axioms timeline_entries_sources
+
 /-- The display rows. -/
 def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
   let dob := str p "birthDate"
-  { asOf := ctx.today
-    sourcePatientId? := some (str p "id")
-    timelineSources? := some (timelineSources rs)
-    banner := bannerFor ctx rs p
+  let d : Display :=
+    { asOf := ctx.today
+      sourcePatientId? := some (str p "id")
+      timelineSources? := some (timelineSources rs)
+      banner := bannerFor ctx rs p
 
-    allergies := allergyRows rs
-    meds := medRows rs
-    vitals := newestFirst (·.date) ((rs.filter isVital).map vitalRow)
-    labs := labRows rs
-    problems := newestFirst (·.onset)
-      ((ofType "Condition" rs |>.filter (fun r => verificationStatus r != "entered-in-error" && !isSocialCondition r)).map problemRow)
-    immunizations := newestFirst (·.date) ((ofType "Immunization" rs).map immRow)
-    encounters := newestFirst (·.start) ((ofType "Encounter" rs).map encRow)
-    procedures := newestFirst (·.date) ((ofType "Procedure" rs).map procRow)
-    growth := growthPoints dob rs
-    growthReferenceSex? := if isoDateValid dob && isoDateValid ctx.today && dob ≤ ctx.today
-      then growthReferenceSex p else none
-    notes := noteRows rs
-    history := historyRows rs
-    schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs
-    marOrders := marOrderRows rs, administrations := administrationRows rs
-    observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs
-    clinicians? := match clinicianRows rs with | [] => none | rows => some rows }
+      allergies := allergyRows rs
+      meds := medRows rs
+      vitals := newestFirst (·.date) ((rs.filter isVital).map vitalRow)
+      labs := labRows rs
+      problems := newestFirst (·.onset)
+        ((ofType "Condition" rs |>.filter (fun r => verificationStatus r != "entered-in-error" && !isSocialCondition r)).map problemRow)
+      immunizations := newestFirst (·.date) ((ofType "Immunization" rs).map immRow)
+      encounters := newestFirst (·.start) ((ofType "Encounter" rs).map encRow)
+      procedures := newestFirst (·.date) ((ofType "Procedure" rs).map procRow)
+      growth := growthPoints dob rs
+      growthReferenceSex? := if isoDateValid dob && isoDateValid ctx.today && dob ≤ ctx.today
+        then growthReferenceSex p else none
+      notes := noteRows rs
+      history := historyRows rs
+      schedule := scheduleRows ctx.today rs, board := boardRows ctx.today rs
+      marOrders := marOrderRows rs, administrations := administrationRows rs
+      observations := observationRows rs, labFlags := labFlags rs, labResults := labResultRows rs
+      clinicians? := match clinicianRows rs with | [] => none | rows => some rows }
+  { d with timelineBackings? := some (timelineBackings rs d) }
 
 /-- Clinical chart rows must explicitly belong to the open patient. Shared
 reference resources remain available for resolving chart authors and locations. -/

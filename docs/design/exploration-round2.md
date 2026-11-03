@@ -8,7 +8,14 @@ meaning adapters, interpreter/view proofs and independent painter gates.
 Command and spatial designs remain **sandbox**. This is language admission with
 explicit exposure assumptions; it is not a deployment certificate.
 
-The promotion rerun lives in ignored `runs/promote-ordinary-v2/`. It uses the
+The owner blocked merge after reviewing `ade9f407`: its clinical projection
+erased the index and the whole-bundle candidate list could disclose hidden
+records. The review repair uses exact shown-row permissions, occurrence numbers,
+a shared binding gate and a separate full payload observer. Merge remains blocked
+until the owner re-reviews the repair. The previous `runs/promote-ordinary-v2/`
+results are historical and do not certify this revision.
+
+The review rerun lives in ignored `runs/promote-review-v3/`. It uses the
 original two clinical programs, the original 24 seeded profiles and four W3
 tasks, and the exact-input frozen probability cache. No decision server, new
 proposal call or replacement probability is used. The stack reference is
@@ -20,26 +27,28 @@ preselected designs; they are not a new blind study or a new archive search.
 |---|---|---|---|---|---|
 | reference-stack | stack reference; no new certificate | 24/24 | 55.3 ± 15.9 [34.1, 78.8] | 9152.8 ± 5035.4 [3338.6, 17660.0] | 15170.6 ± 1539.2 [12718.0, 17585.5] |
 | r2-007 | proved ordinary; ordinary gate passed | 24/24 | 97.5 ± 14.4 [80.1, 116.9] | 5598.3 ± 2771.9 [1790.1, 9861.0] | 60901.9 ± 6067.6 [49964.0, 72109.5] |
-| r2-008 | proved ordinary; ordinary gate passed | 24/24 | 98.0 ± 14.3 [75.4, 119.3] | 6081.6 ± 3304.2 [1648.6, 11235.2] | 61309.0 ± 4568.9 [55370.5, 69209.5] |
+| r2-008 | proved ordinary; ordinary gate passed | 24/24 | 95.9 ± 14.4 [72.9, 116.9] | 6118.4 ± 3342.5 [1648.5, 11335.9] | 59165.8 ± 4898.0 [52894.0, 68014.5] |
 
 Spreads are mean ± population SD [min,max] across 12 physicians’ two-task means.
 The original search/held-out split and seed 20261103 are retained. Both designs
 completed 24/24 and 24/24 search executions.
 Compared with this build’s stack reference, held-out mouse travel changes by
-r2-007: -38.8%; r2-008: -33.6%.
+r2-007: -38.8%; r2-008: -33.2%.
 These are simulator/geometry measurements, not human travel paths or elapsed time.
-Scrolling rises to r2-007: 4.0×; r2-008: 4.0×
+Scrolling rises to r2-007: 4.0×; r2-008: 3.9×
 the stack reference. The declared composite effort rises by
-r2-007: 76.2%; r2-008: 77.1%.
+r2-007: 76.2%; r2-008: 73.3%.
 No outcome-driven layout change or archive replacement follows this rerun.
 
 All **4615** distinct emitted ordinary views pass at 1440 and 390 px
 (**9230 checks**), including **1006 native exports**.
-Real W3 source checks retain 103, 119, 172, 59 dated entries
-with zero unpositioned entries and zero native/WASM mismatches. The original
+Real W3 source checks on the actual laboratory tab emit 60, 69, 121, 19 dated entries
+from shown backing rows; 43, 50, 51, 40 unshown or unsupported
+candidates are withheld. Scope is effectiveDateTime (otherwise effectivePeriod.start)
+and issued on supported vital/lab rows. There are zero native/WASM mismatches. The original
 **18767** probability entries suffice: **0 new model requests,
 0 proposal calls**. Raw task traces, source hashes and coverage remain in
-`runs/promote-ordinary-v2/`; no deployment certificate was produced.
+`runs/promote-review-v3/`; no deployment certificate was produced.
 <!-- promotion-results:end -->
 
 The first promotion rerun is excluded in `runs/promote-ordinary/` with its
@@ -54,17 +63,17 @@ checks its hit-test and patient identity, and rejects a covering overlay. The
 same long-banner state now passes at both widths. The replacement rerun retains
 all original designs, probabilities, profiles, tasks, seed and objective; this
 is an exposure repair, with no new proposal or archive membership decision.
-After the replacement cohort completed, all **144 clinical traces** (events,
+In the historical v2 exposure-repair comparison, all **144 clinical traces** (events,
 results, devices, predictions and non-geometric metrics) and **4,615 native
 view payloads** matched the excluded run exactly. Only geometry was remeasured;
 old trace data was not read by the replacement decision process. The comparison
-is recorded in `exposure-repair-trace-agreement.json`.
+is recorded in `runs/promote-ordinary-v2/exposure-repair-trace-agreement.json`. This comparison is not a claim that the disclosure-repair views are unchanged.
 
 ### Admission and policy
 
 `Render/Dated.lean`, `Sem/Board.lean`, `Sem/BoardView.lean` and
 `Sem/DatedTimeline.lean` discharge the extension obligations described in
-[semantic-ui.md](semantic-ui.md). The audit covers **67 theorem prints**, using
+[semantic-ui.md](semantic-ui.md). The review audit covers **94 distinct theorem prints**, using
 only `propext`, `Classical.choice` and `Quot.sound`, or no axioms. Comparator
 accepts the solution. Protected Specs, Props, Statements and comparator files
 are unchanged, as are the existing urgency semantic modules.
@@ -99,22 +108,41 @@ theorem; a rail that cannot fit is a gate finding. No urgency ID or clinical
 severity was changed. The existing 77 urgency classifications still await
 owner review.
 
-The dated contract is full time with seconds and an explicit `Z` or numeric
-offset, at most ±14:00, with up to nine fractional digits. Lean normalizes to
-signed UTC seconds and nanoseconds and stably sorts; permutation and source
-proofs preserve every occurrence, including duplicate times. FHIR
-`effectiveDateTime`, otherwise `effectivePeriod.start`, and `issued` are
-retained separately with resource, field and raw timestamp. Pre-1970 instants
-are supported. Invalid, date-only, local, unknown-offset `-00:00`, leap-second
-and higher-precision values remain explicitly unpositioned. No local timezone
-or midnight is invented. The four W3 inputs already contain explicit source
-offsets; the integration fix retains those raw values in `Display.timelineSources`
-instead of parsing the offset-free display captions. The copied Synthea Patient
-resource receives the archived UUID only after checking it against its declared
-ID/fullUrl alias; the archived fixtures and clinical facts remain unchanged.
-`layout.datedTimeline` admits the index in ordinary programs; the native
-`dated` operation presents existing programs identically. Full clinical rows,
-actions, modals and their typed events are retained.
+The dated contract requires seconds and an explicit `Z` or numeric offset,
+at most ±14:00, with up to nine fractional digits. Lean normalizes to signed UTC
+seconds and bounded nanoseconds (`Fin 1000000000`) and stably sorts; permutation
+proofs retain every eligible occurrence, including duplicate times. Candidate
+extraction covers exactly `effectiveDateTime`, otherwise `effectivePeriod.start`,
+plus `issued` separately. Onset, authoredOn, performed*, recordedDate, occurrence*
+and Encounter.period are outside this contract. This is not every FHIR timestamp.
+
+Only candidates with an exact backing row under its information ID in the actual
+rendered workspace/side are indexed. Supported backings cover latest vital rows
+(including all latest-time ties) and full laboratory histories. Payload overrides
+carry no inferred permission. Occurrence numbers prevent an identical hidden
+candidate from borrowing a shown occurrence's permission. `selected_occurrence`,
+`timeline_backing_provenance`, `timeline_backing_occurrence`,
+`uiDateSourcesAt_shown`/`uiDateSources_present` and `sources_shown` connect the
+index to emitted source rows. Both native and ordinary paths require workspace
+binding and matching present source patient IDs; unbound lookup adds no index.
+`demands_prepared` separately proves receipt sanitization does not change rail
+activation, so raw-input demands and prepared panes agree.
+
+The clinical `meaning` projection and its preservation/perception lemmas still
+cover clinical children only. Full index admission additionally requires
+`IndexedExtension.full`: `DateIndex.observe` retains all index bytes, order,
+multiplicity and patient/modal namespaces. `full_preserves`, `render_full`,
+`node_observation` and `uiDatedWorkspace_observed` prove this for the emitted
+presentations. The native API exports this observer and the browser gate compares
+its payloads and patient scopes to DOM rows. Erasure cannot establish index
+admission (`payload_injective`).
+
+Pre-1970 instants are supported. Invalid, date-only, local, unknown-offset
+`-00:00`, leap-second and higher-precision values remain explicitly unpositioned.
+No local timezone or midnight is invented. W3 source offsets already exist; the
+adapter retains them separately from formatted captions. The copied Synthea
+Patient receives its archived UUID only after alias validation; ignored fixtures
+and clinical facts remain unchanged. Clinical rows, actions and modals are retained.
 
 The independent ordinary gate checks patient-scoped ARIA, unique DOM IDs and
 provenance references, complete source cells, honest actions, exact date order
@@ -130,11 +158,13 @@ modals and hidden/disabled acknowledgments at both widths.
 ### Verification and bindings
 
 Environment: `TMPDIR=/home/saithat/Projects/run-tmp`, `LEAN_NUM_THREADS=4`;
-Playwright workers capped at four, cohort actors at three. Commands:
+Playwright test workers capped at four, cohort actors at three; the corpus gate uses at most three workers and six browser pages. Commands:
 
 ```sh
 (cd lean && lake build && lake build exotic-api)
 (cd lean && lake exe gents)
+(cd lean && lake env lean ../runs/promote-review-v3/axioms.lean)
+(cd lean && lake env lean Ehr/Render/Dated.lean)
 (cd lean && COMPARATOR_BWRAP=/home/saithat/Projects/VGI-promote/scripts/lean-bwrap.py lake comparator)
 JOBS=4 EM_CACHE="$TMPDIR/promote-emcache" make wasm
 make wasm-check
@@ -145,57 +175,60 @@ pnpm --filter app test --maxWorkers=2 --testTimeout=20000
 pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
 node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
 APP_TEST_PREVIEW=1 APP_TEST_PORT=4292 pnpm --filter app exec playwright test ui-check.spec.ts --grep 'urgency gate' --workers=2
-node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/promote-gate.mjs runs/promote
-node explore/prepare-promotion.mjs runs/explore-round2 runs/promote-ordinary-v2
-EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4282 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs runs/promote-ordinary-v2 --promote --cache-only
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-exports.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/full-binding-check.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-source-check.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-agreement.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/geometry-check.mjs runs/promote-ordinary-v2
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/promote-gate.mjs runs/promote-review-gate
+node explore/prepare-promotion.mjs runs/explore-round2 runs/promote-review-v3
+EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4282 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs runs/promote-review-v3 --promote --cache-only
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-exports.mjs runs/promote-review-v3
+EHR_ORDINARY_WORKERS=3 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-review-v3 --incremental
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage-negative.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/full-binding-check.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-source-check.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-agreement.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/geometry-check.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs runs/promote-review-v3
 ```
 
-Full Lean build: **421 jobs passed**; `#print axioms` output for 67 relevant
+Full Lean build: **427 jobs passed**; `#print axioms` output for 94 relevant
 theorems contains only the permitted axioms. Comparator’s default kernel accepts
-the solution. Generated bindings: 169 types, 42 samples. WASM rebuild and source
+the solution. Generated bindings: 170 types, 42 samples. WASM rebuild and source
 binding check pass. App build, full lint and both typechecks pass. App tests:
 **323 passed in 41 files**, with two workers and a 20-second default timeout.
-The initial four-worker run hit one native revision-check test’s five-second
-timeout during concurrent exports; the unchanged suite passed on the bounded
-rerun. Exploration tests: **14 passed, 1 optional endpoint
+Exploration tests: **14 passed, 1 optional endpoint
 skip**. Urgency regressions: **4 passed** at desktop/narrow widths. Ordinary
-canonical gate: 12 recorded browser checks and 30 native/WASM comparisons, with
+canonical gate: 12 recorded browser checks and 38 native/WASM comparisons, with
 hidden-urgent, reversed/dropped-date, duplicate-patient, wrong-binding, foreign
-receipt and blocked-background-event adversaries. Additional agreement: six
+receipt and blocked-background-event adversaries. New checks reject hidden-row,
+payload-override and unbacked-duplicate index disclosure, mismatched binding,
+and out-of-range nanoseconds. Additional agreement: six
 primitive cases, 24 W3 choice boundaries and four interpreter transitions with
 rendered outputs, zero mismatches. Full binding: two real W3 patients, unbound
 signing blocked, lookup/open/hydrate/return/reopen at both widths, other session
 unchanged and patient A’s urgency visible while patient B selects. Geometry
 regressions count document scrolling once and include the pane scroll root.
+The parallel corpus runner rejects a wrong banner in its second worker and writes
+no successful coverage report after that failure.
 Final whole-corpus coverage and completion counts appear in the results above;
 backing-renderer urgency failures remain in `legacy-backing-gates/` and
 `stock-gates/`, including screenshots and native export coverage.
 
-Source binding: `679a88c748da69b7dbad0df8f20cfc4ffa44013eee0828958823b4ccbdb27150`.
-WASM SHA-256: `cbbb98fc2690ec3cc2e176fd9c87629ae305b6ee27eb5dfff998296275001c65`.
+Source binding: `0d7e0c8982c838161d1526129012e062ca291b6f34626160eb24ca8b2cba276d`.
+WASM SHA-256: `f4bea289266735c1e47ec9dc42bf440a75a87b909032c4858847d9450bce4e12`.
 Production app SHA-256:
-`e7c2a6487f355f418e3eb792b46ace54f50abd48dce03f2a237bda42ad8e5251`.
+`ae7d6628345cf0cb8adeaec80f99f178892556e6cb823d46973def9bd203457e`.
 The frozen replacement cohort uses these app and WASM bindings and its recorded
-renderer source hash. The final view-model proof strengthening leaves WASM bytes
-unchanged; the source binding includes those proofs. All current geometry is
+renderer source hash. The disclosure repair changes WASM bytes and source binding. All current geometry is
 remeasured after the exposure repair. Source provenance and every emitted view hash are recorded
 in the ignored run. The ordinary painter changes the certified app hash, and the
 new interpreter changes the WASM binding; historical certificates are invalid.
 No certificate is rebound, no design deployed and no push made.
 
-Current real-W3 review images, from the repaired ordinary painter:
+Current canonical ordinary-constructor review images, from the repaired painter:
 
-- `runs/promote-ordinary-v2/screenshots/promoted-board-1440.png`
-- `runs/promote-ordinary-v2/screenshots/promoted-board-390.png`
-- `runs/promote-ordinary-v2/screenshots/promoted-dated-1440.png`
-- `runs/promote-ordinary-v2/screenshots/promoted-dated-390.png`
+- `runs/promote-review-gate/screenshots/board-1440.png`
+- `runs/promote-review-gate/screenshots/board-390.png`
+- `runs/promote-review-gate/screenshots/dated-1440.png`
+- `runs/promote-review-gate/screenshots/dated-390.png`
 
 No protected clinical files, urgency semantic modules, other branches/worktrees,
 or ignore rules were edited. Data outputs remain untracked. Full live/persistence,

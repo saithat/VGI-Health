@@ -190,22 +190,25 @@ export async function gateOrdinary(page, view) {
     }, expected);
     assert.deepEqual(findings, []);
   }
+  // Native full observer retains source bytes and patient namespaces. Require it
+  // for the promotion corpus, independently of the clinical atom projection.
+  assert.ok(Array.isArray(view.indexObservation), "Native full index observation required");
+  assert.deepEqual(native({op:"observe-index",node:view.ordinary}), view.indexObservation);
   const expectedDates = [];
-  const walk = (nodes) => {
+  const walk = (nodes,patient=null) => {
     for (const n of nodes) {
-      if (n.datedTimeline) expectedDates.push(n.datedTimeline);
+      if (n.datedTimeline) expectedDates.push({...n.datedTimeline,patient});
       const v = Object.values(n)[0];
-      if (v.children) walk(v.children);
-      if (v.body) walk(v.body);
+      if (n.patientPane) {
+        walk(v.children,v.patient);
+        if (!owner || owner===v.patient) walk(v.modal,v.patient);
+      } else if (v.children) walk(v.children,patient);
     }
   };
-  walk(
-    view.ordinary
-      ? [view.ordinary]
-      : view.panes.flatMap((p) => [...p.screen.workspace, ...p.screen.side]),
-  );
+  walk(view.indexObservation);
   const observed = await page.locator(".clinical-dated").evaluateAll((es) =>
     es.map((el) => ({
+      patient: el.closest("[data-patient]")?.getAttribute("data-patient")??null,
       dated: [
         ...el.querySelectorAll('ol[aria-label="Dated source events"] > li'),
       ].map((row) => ({
@@ -220,6 +223,7 @@ export async function gateOrdinary(page, view) {
   );
   assert.equal(observed.length, expectedDates.length, "Dated container count");
   for (const [i, d] of expectedDates.entries()) {
+    assert.equal(observed[i].patient,d.patient,"Index patient namespace");
     assert.equal(
       observed[i].dated.length,
       d.dated.length,
@@ -326,6 +330,10 @@ async function main() {
         timestamp: "1969-12-31T23:59:59Z",
       },
     ];
+    input.facts.infoPayloads=[];
+    const info=atoms(check({op:"render",render:input}).screen.workspace).find(n=>n.info?.rows.length)?.info;
+    assert.ok(info?.rows.length,"Shown full-row source witness");
+    input.display.timelineBackings=input.display.timelineSources.map((source,occurrence)=>({source,occurrence,info:info.infoId,row:info.rows[0]}));
     return { patient, input, receipts: [] };
   });
   assert.ok(check({ op: "board", sessions: [sessions[0], sessions[0]] }).error);
@@ -377,6 +385,29 @@ async function main() {
     ],
   );
   assert.equal(dated.undated.length, 1);
+  // Hidden rows and payload overrides cannot authorize an index. Equal DTOs
+  // at different source positions retain distinct permission.
+  const hidden=structuredClone(sessions[0].input);
+  const baseline=check({op:"render",render:hidden}).screen;
+  const empty=check({op:"date-index",render:hidden,screen:{...baseline,workspace:[],side:[]}});
+  assert.deepEqual(empty.dated,[]);assert.deepEqual(empty.undated,[]);
+  hidden.display.timelineSources.push(hidden.display.timelineSources[0]);
+  const withDuplicate=check({op:"dated",render:hidden});
+  assert.equal(withDuplicate.dated.length,dated.dated.length,"Unbacked identical occurrence withheld");
+  const overridden=structuredClone(sessions[0].input);
+  overridden.facts.infoPayloads=[{info:overridden.display.timelineBackings[0].info,
+    patient:overridden.facts.patientId,artifactKey:"override",artifact:"override-doc",version:1,
+    fields:[],identifiers:[],availability:[],rows:[]}];
+  overridden.facts.artifactBindings=[{key:"override",artifact:"override-doc",version:1}];
+  const overrideIndex=check({op:"date-index",render:overridden,screen:baseline});
+  assert.deepEqual(overrideIndex.dated,[]);assert.deepEqual(overrideIndex.undated,[]);
+  const badNano=structuredClone(dated.node);
+  const dateNode=badNano.board.children[0].patientPane.children.find(n=>n.datedTimeline);
+  dateNode.datedTimeline.dated[0].nanosecond=1e9;
+  assert.ok(check({op:"observe-index",node:badNano}).error,"Fin nanosecond decode bound");
+  const mismatch=structuredClone(sessions[0].input);mismatch.display.sourcePatientId="another-patient";
+  const noBinding=check({op:"dated",render:mismatch});
+  assert.deepEqual(noBinding.dated,[]);assert.deepEqual(noBinding.undated,[]);
   const lab = await startLab(),
     checks = [];
   try {
@@ -392,7 +423,7 @@ async function main() {
           patient: s.patient,
           screen: check({ op: "render", render: s.input }).screen,
         }));
-        const view = { mode: "board", panes, ordinary: board.node };
+        const view = { mode: "board", panes, ordinary: board.node, indexObservation: board.indexObservation };
         await paint(page, view);
         checks.push({ width, modal, ...(await gateOrdinary(page, view)) });
         for (const patient of ss.map((s) => s.patient)) {
@@ -439,9 +470,11 @@ async function main() {
         mode: "dated",
         panes: [{ patient: "patient-a", screen: dated.screen }],
         ordinary: dated.node,
+        indexObservation: dated.indexObservation,
       };
       await paint(page, view);
       checks.push({ width, ...(await gateOrdinary(page, view)) });
+      await page.locator('[data-patient]').evaluateAll(es=>es.forEach(el=>{el.scrollTop=0;}));
       await page.screenshot({
         path: `${out}/screenshots/dated-${width}.png`,
         fullPage: true,

@@ -34,8 +34,10 @@ No outcome-driven layout change or archive replacement follows this rerun.
 
 All **${coverage.views}** distinct emitted ordinary views pass at 1440 and 390 px
 (**${coverage.checks} checks**), including **${exports.states} native exports**.
-Real W3 source checks retain ${sources.cases.map(c=>c.dated).join(', ')} dated entries
-with zero unpositioned entries and zero native/WASM mismatches. The original
+Real W3 source checks on the actual laboratory tab emit ${sources.cases.map(c=>c.dated).join(', ')} dated entries
+from shown backing rows; ${sources.cases.map(c=>c.withheld).join(', ')} unshown or unsupported
+candidates are withheld. Scope is effectiveDateTime (otherwise effectivePeriod.start)
+and issued on supported vital/lab rows. There are zero native/WASM mismatches. The original
 **${report.importedModelScores}** probability entries suffice: **0 new model requests,
 0 proposal calls**. Raw task traces, source hashes and coverage remain in
 \`${run}/\`; no deployment certificate was produced.`;
@@ -45,7 +47,7 @@ with zero unpositioned entries and zero native/WASM mismatches. The original
  else if(text.includes('<!-- promotion-results:start -->'))text=text.replace(/<!-- promotion-results:start -->[\s\S]*?<!-- promotion-results:end -->/,block);
  else throw Error('Promotion report section missing');
  await writeFile('docs/design/exploration-round2.md',text);
- const files=['explore/round2.mjs','explore/workspace.mjs','explore/promote-coverage.mjs','explore/promote-exports.mjs','explore/promote-source-check.mjs','explore/prepare-promotion.mjs','explore/round2-report.mjs','app/scripts/promote-gate.mjs'];
+ const files=['explore/round2.mjs','explore/workspace.mjs','explore/promote-coverage.mjs','explore/promote-coverage-negative.mjs','explore/promote-exports.mjs','explore/promote-source-check.mjs','explore/prepare-promotion.mjs','explore/round2-report.mjs','app/scripts/promote-gate.mjs'];
  await writeFile(`${run}/source-provenance.json`,JSON.stringify({files:Object.fromEntries(await Promise.all(files.map(async f=>[f,createHash('sha256').update(await readFile(f)).digest('hex')]))),protocol,manifest:await read('app/public/ehr/manifest.json'),baseCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()},null,2));
  console.log(JSON.stringify({report:'docs/design/exploration-round2.md',ordinaryViews:coverage.views,newModelRequests:0}));
  process.exit(0);

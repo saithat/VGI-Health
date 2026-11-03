@@ -46,16 +46,29 @@ def apiExotic (input : String) : String :=
           let next := match json.getObjValAs? String "patient", json.getObjValAs? Event "event" with
             | .ok patient, .ok event => Board.dispatch sessions patient event
             | _, _ => sessions
-          (Json.mkObj [("node", toJson (Board.render next)), ("sessions", toJson next),
+          (Json.mkObj [("node", toJson (Board.render next)),
+            ("indexObservation", toJson (DateIndex.observe (Board.render next))), ("sessions", toJson next),
             ("result", toJson (match json.getObjValAs? String "patient", json.getObjValAs? Event "event" with
               | .ok patient, .ok event => Board.eventResult sessions patient event
               | _, _ => StepResult.ok))]).compress
+    | .ok "date-index" => match json.getObjValAs? RenderInput "render", json.getObjValAs? UiScreen "screen" with
+      | .ok i, .ok screen =>
+        let selected := DatedTimeline.sourcesFor i screen
+        let output := if uiDateBound (DatedTimeline.context i) then DatedTimeline.transform selected screen else screen
+        (Json.mkObj [("screen", toJson output), ("dated", toJson (Dated.dated selected)),
+          ("undated", toJson (Dated.undated selected)),
+          ("indexObservation", toJson (DateIndex.observeList output.workspace))]).compress
+      | .error e, _ | _, .error e => errorJson e
+    | .ok "observe-index" => match json.getObjValAs? UiNode "node" with
+      | .error e => errorJson e
+      | .ok node => (toJson (DateIndex.observe node)).compress
     | .ok "dated" => match json.getObjValAs? RenderInput "render" with
       | .error e => errorJson e
       | .ok i =>
         let sources := DatedTimeline.sources i
-        (Json.mkObj [("screen", toJson (DatedTimeline.transform sources (runRenderUi i))),
+        (Json.mkObj [("screen", toJson (DatedTimeline.render i)),
           ("node", toJson (DatedTimeline.node i)),
+          ("indexObservation", toJson (DateIndex.observe (DatedTimeline.node i))),
           ("dated", toJson (Dated.dated sources)), ("undated", toJson (Dated.undated sources))]).compress
     | .ok "choices" => match fromJson? (α := ChoiceInput) json with
       | .error e => errorJson e

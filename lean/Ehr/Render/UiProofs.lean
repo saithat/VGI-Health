@@ -127,11 +127,7 @@ theorem uiRefillComparison_preservesSource (cx : Ctx) (rows : List (List (String
   unfold uiColumnChildren
   split <;> simp [uiAtoms]
 
-@[simp] theorem uiAtomsList_append (xs ys) :
-    uiAtomsList (xs ++ ys) = uiAtomsList xs ++ uiAtomsList ys := by
-  induction xs with
-  | nil => simp
-  | cons x xs ih => simp [ih, List.append_assoc]
+
 
 @[simp] theorem uiAtomsList_flatMap (bs : List UiBranch) :
     uiAtomsList (bs.flatMap (·.nodes)) = bs.flatMap (fun b => uiAtomsList b.nodes) := by

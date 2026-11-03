@@ -192,6 +192,8 @@ retains every byte of the other sessions. Clinical commits keep T0, including
 selection-enabled workspace steps at their hydrated pre-event state. No new
 clinical event constructor or persistence authority is introduced.
 
+`demands_prepared` proves that sanitizing receipts does not change demands: clinical predicates and alert keys do not read receipt lists. Pane and rail evaluation therefore agree on the prepared session.
+
 Board receipt import is an explicit patient/episode namespace. Every render and
 step overwrites both incoming unscoped receipt lists with the filtered envelopes.
 `receipt_scope`, `foreign_no_effect` and `foreign_review_inert` establish that a
@@ -229,30 +231,47 @@ refinement. Background actions are inert while a modal owns the
 board. Real geometry remains a measured refinement, including rail overflow;
 no unconditional pixel or screen-reader implementation theorem is claimed.
 
-The dated index reads raw `Display.timelineSources`, projected in Lean from
-FHIR `effectiveDateTime`, otherwise `effectivePeriod.start`, plus `issued` as a
-separate source entry. The index retains the resource/field/raw timestamp for
-every occurrence. It requires full time with seconds and an explicit `Z` or
-numeric offset (at most ±14:00), normalizes to signed UTC seconds plus up to nine
-fractional digits, and uses a stable sort. Substring reconstruction uses the
-existing FHIR wasm32-safe character fold; `slice_exact` proves equality to the
-ordinary `String.ofList` substring semantics. `chronological`, `source_exact`,
-`no_dated_drop` and `no_source_drop` prove ordering and exact source multiplicity;
-`effective_source`, `issued_source` and `fhir_source_complete` connect those
-results to the FHIR projection. Pre-1970 instants are supported. Date-only,
-local, invalid, unknown-offset `-00:00`, leap-second and higher-precision values
-remain in the explicit unpositioned list, with their original strings. No local
-timezone or midnight is inferred. This repairs the W3 sample's lost-offset
-integration by retaining machine data separately from formatted captions.
+The dated candidate projection covers exactly `effectiveDateTime`, otherwise
+`effectivePeriod.start`, plus `issued` separately. It does not cover onset,
+authoredOn, performed*, recordedDate, occurrence* or Encounter.period. Supported
+backings are latest vital rows (same code/raw-time selection as `uiRows`) and
+complete laboratory histories, with exact cell projection and information ID.
+`DateIndex.select` checks the original candidate occurrence number, matching source
+DTO and a complete row in the actual emitted workspace/side atoms. Thus an equal
+hidden occurrence cannot borrow permission; arbitrary raw bundle membership does
+not authorize an index entry. Payload overrides carry no inferred permission.
+`timeline_backing_provenance`, `timeline_backing_occurrence` and
+`timeline_entries_sources` connect FHIR backings to their records and enumeration.
+`uiDateSourcesAt_shown`/`uiDateSources_present` and `DatedTimeline.sources_shown`
+provide emitted-row witnesses. Both ordinary and native paths enforce workspace
+binding and matching present source patient IDs (`sources_bound`); unbound lookup
+adds no index. The render-only `date-index` API applies the same selector to native
+exported snapshots; it has no execution or persistence authority.
 
-`layout.datedTimeline` opts a shown ordinary component into a complete workspace
-index; the native `dated` operation also wraps existing ordinary programs.
-`DatedTimeline.preserves` transports all screen predicates; `view_trace`,
-`perception`, `reachability` and `urgency` retain the original graph and bounds
-under the same explicit exposure evidence. The dated native presentation composes this index with a single-patient board,
-so its urgent rail also survives an unrelated modal. Directory lookup has no
-source-date index until the chart is bound. The index neither filters nor
-replaces any clinical row, review, action or modal. A canonical program passes
+Normalization requires full time with seconds and an explicit `Z` or numeric
+offset (at most ±14:00), signed UTC seconds and up to nine fractional digits.
+Nanoseconds have type `Fin 1000000000`; JSON decoding checks the bound. Stable
+sorting, `chronological`, `source_exact`, `no_dated_drop` and `no_source_drop`
+cover every selected occurrence. The candidate extraction lemmas are relative to
+the exact three-field scope above. Date-only/local, invalid, unknown-offset
+`-00:00`, leap-second and higher-precision values remain explicitly unpositioned.
+Pre-1970 instants are supported. `slice_exact` retains the wasm32-safe substring
+semantics. No local timezone or midnight is inferred.
+
+The original `uiAtoms`/`meaning` projection and preservation/perception/urgency
+lemmas cover clinical children only. They do not establish index soundness.
+`DateIndex.observe` instead retains the complete dated and undated payloads,
+including raw provenance, order, duplicates and patient/modal namespaces;
+`payload_injective` prevents erasure from justifying admission. `IndexedExtension`
+requires this full observation equation as well as clinical preservation.
+`fullAdmission`, `full_preserves`, `render_full`, `node_observation` and
+`uiDatedWorkspace_observed` discharge it for the actual presentations. Native
+responses export that observation and the independent gate compares source bytes,
+coordinates, multiplicity, order and patient scope against DOM rows, including
+reorder/drop adversaries. The existing clinical view graph and exposure hypotheses
+are unchanged. The single-patient dated board shares the cross-patient urgent rail.
+The index never replaces clinical rows, reviews, actions or modals.
+A canonical program passes
 the unchanged checker. Browser adversaries reject reordered/dropped entries and
 hidden urgent demands at desktop and narrow widths. The ordinary gate covers
 all emitted cohort views and composed native program exports; the stock gate

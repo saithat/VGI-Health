@@ -51,6 +51,7 @@ partial def tsType (known : NameSet) (e : Expr) : Except String String := do
     else if n == ``Lean.Json then return "unknown"
     else if known.contains n then return tsName n
     else throw s!"unsupported type constant {n}"
+  | .app (.const ``Fin _) _ => return "number"
   | .app (.const ``List _) a => return s!"{wrap (← tsType known a)}[]"
   | .app (.const ``Option _) a => return s!"{← tsType known a} | null"
   | .app (.app (.const ``Prod _) a) b =>

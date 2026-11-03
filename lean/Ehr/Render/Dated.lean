@@ -68,9 +68,13 @@ theorem offset_required (s instant) (h : parse s = some instant) : hasOffset s =
   · assumption
   · contradiction
 
-def project (source : UiSourceDate) : Option UiDatedItem := do
-  let (utcSecond, nanosecond) ← parse source.timestamp
-  some { source, utcSecond, nanosecond }
+def project (source : UiSourceDate) : Option UiDatedItem :=
+  match parse source.timestamp with
+  | none => none
+  | some (utcSecond, nanosecond) =>
+    if h : nanosecond < 1000000000 then
+      some { source, utcSecond, nanosecond := ⟨nanosecond, h⟩ }
+    else none
 
 def key (item : UiDatedItem) : Int := item.utcSecond * 1000000000 + Int.ofNat item.nanosecond
 
@@ -95,7 +99,7 @@ theorem chronological (sources) : (dated sources).Pairwise (fun a b => key a ≤
 
 /-- Every positioned item retains the exact raw source and normalized instant. -/
 theorem source_exact (sources item) (h : item ∈ dated sources) :
-    item.source ∈ sources ∧ parse item.source.timestamp = some (item.utcSecond, item.nanosecond) := by
+    item.source ∈ sources ∧ parse item.source.timestamp = some (item.utcSecond, (item.nanosecond : Nat)) := by
   have hm := (no_dated_drop sources).mem_iff.mp h
   obtain ⟨source, hs, hp⟩ := List.mem_filterMap.mp hm
   unfold project at hp
@@ -103,9 +107,11 @@ theorem source_exact (sources item) (h : item ∈ dated sources) :
   | none => simp [ht] at hp
   | some pair =>
     rcases pair with ⟨sec, nano⟩
-    simp [ht] at hp
-    subst item
-    exact ⟨hs, ht⟩
+    simp only [ht] at hp
+    split at hp
+    · cases hp
+      exact ⟨hs, ht⟩
+    · contradiction
 
 /-- Every source either appears positioned or remains explicitly undated. -/
 theorem complete (sources source) (h : source ∈ sources) :
@@ -118,13 +124,25 @@ theorem complete (sources source) (h : source ∈ sources) :
       (List.mem_filterMap.mpr ⟨source, h, hp⟩)
     refine ⟨item, hm, ?_⟩
     unfold project at hp
-    cases ht : parse source.timestamp <;> simp [ht] at hp
-    next pair => cases hp; rfl
+    cases ht : parse source.timestamp with
+    | none => simp [ht] at hp
+    | some pair =>
+      rcases pair with ⟨sec, nano⟩
+      simp only [ht] at hp
+      split at hp
+      · cases hp; rfl
+      · contradiction
 
 private theorem project_source (s item) (h : project s = some item) : item.source = s := by
   unfold project at h
-  cases hp : parse s.timestamp <;> simp [hp] at h
-  next pair => cases h; rfl
+  cases hp : parse s.timestamp with
+  | none => simp [hp] at h
+  | some pair =>
+    rcases pair with ⟨sec, nano⟩
+    simp only [hp] at h
+    split at h
+    · cases h; rfl
+    · contradiction
 
 /-- Partition retains source multiplicity across positioned and unpositioned lists. -/
 theorem partition (sources : List UiSourceDate) :
@@ -146,6 +164,11 @@ theorem no_source_drop (sources) :
     ((dated sources).map (·.source) ++ undated sources).Perm sources :=
   ((no_dated_drop sources).map _ |>.append_right _).trans (partition sources)
 
+/-- The invariant holds for every typed item, not just parser examples. -/
+theorem nanosecond_bound (item : UiDatedItem) : item.nanosecond.val < 1000000000 :=
+  item.nanosecond.isLt
+
+#print axioms nanosecond_bound
 #guard parse "2026-11-02T01:30:00-07:00" == parse "2026-11-02T08:30:00Z"
 #guard parse "2026-11-02T01:30:00-08:00" != parse "2026-11-02T01:30:00-07:00"
 #guard parse "1969-12-31T23:59:59Z" == some (-1, 0)
@@ -165,4 +188,5 @@ theorem no_source_drop (sources) :
 #print axioms chronological
 #print axioms source_exact
 #print axioms complete
+#print axioms project_source
 end Ehr.Render.Dated

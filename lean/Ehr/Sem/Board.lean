@@ -49,6 +49,18 @@ def encodeScreen (patient : String) (ui : UiScreen) : UiNode :=
 
 def pane (s : Session) : UiNode := encodeScreen s.patient (screen s)
 
+/-- Receipt sanitization changes no operand of a clinical alert predicate. -/
+theorem prepared_clinicalEval (s : Session) (p : ClinicalPredicate) :
+    clinicalEval (prepared s).facts (prepared s).state p = clinicalEval s.input.facts s.input.state p := by
+  induction p <;> simp only [clinicalEval, *] <;> rfl
+
+theorem prepared_alertKeys (s : Session) (cond : AlertCond) :
+    alertKeys (prepared s).facts (prepared s).state cond = alertKeys s.input.facts s.input.state cond := by
+  cases cond <;> simp only [alertKeys, prepared_clinicalEval] <;> rfl
+
+#print axioms prepared_clinicalEval
+#print axioms prepared_alertKeys
+
 /-- Urgency is computed from clinical activity, including hidden and acknowledged
 conditions. Passive demands stay passive and never introduce a modal. -/
 def demands (s : Session) : List UiBoardDemand :=
@@ -59,6 +71,22 @@ def demands (s : Session) : List UiBoardDemand :=
       label := uiLabel rule.label "Clinical alert",
       severity := match rule.tier with
         | .interruptive => "interruptive" | .passive => "passive" | .removable => "removable" }
+
+/-- The rail and panes evaluate the same sanitized clinical state. The existing
+raw-input presentation is definitionally receipt-independent, certified here. -/
+theorem demands_prepared (s : Session) :
+    demands s =
+      ((prepared s).spec.alerts.filter fun rule =>
+        Specs.AlertUrgency.tier rule.id == some .urgent &&
+          !(alertKeys (prepared s).facts (prepared s).state rule.cond).isEmpty).map (fun rule =>
+        { patient := s.patient, banner := uiClinicalBanner (prepared s).facts (prepared s).display,
+          alertId := rule.id, label := uiLabel rule.label "Clinical alert",
+          severity := match rule.tier with
+            | .interruptive => "interruptive" | .passive => "passive" | .removable => "removable" }) := by
+  simp only [prepared_alertKeys]
+  rfl
+
+#print axioms demands_prepared
 
 def render (sessions : List Session) : UiNode :=
   .board (sessions.flatMap demands) (sessions.map pane)

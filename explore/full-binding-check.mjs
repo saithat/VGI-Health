@@ -12,6 +12,8 @@ const read=async p=>JSON.parse(await readFile(p,'utf8'));
 const wasm=await loadEhrInterp({wasmBinary:await readFile('app/public/ehr/ehr-interp.wasm')});
 const call=(name,v)=>JSON.parse(wasm.call(name,JSON.stringify(v)));
 const spec=await read('releases/v1/spec.json');
+const proposals=await read(`${out}/proposals.json`);
+const datedProgram=expandProgram(proposals.results.find(r=>r.id==='r2-008').candidate.program);
 const program=expandProgram((await read(`${out}/proposals.json`)).results.find(r=>r.id==='r2-007').candidate.program);
 assert.equal(program.patientSelection,true);
 const signing=program.screens.flatMap(s=>s.components).find(c=>commitOf(c)==='signOrders');if(!signing)throw Error('Missing actual sign-order control');
@@ -25,7 +27,15 @@ for(const id of ['d01-P2-W3-001','d01-P2-W3-002']){
   rule.cond='careGap';rule.tier='passive';rule.label='Urgent patient A while another pane selects a chart';
   input.facts.careGaps=['synthetic-binding-test'];
  }
- input.state=call('ehr_init_envelope',input);inputs.push({patient:input.facts.sourcePatientId,input});
+ input.state=call('ehr_init_envelope',input);
+ const datedInput={...input,program:datedProgram};
+ datedInput.state=call('ehr_init_envelope',datedInput);
+ const unbound=call('ehr_exotic',{op:'dated',render:datedInput});
+ assert.deepEqual(unbound.dated,[]);assert.deepEqual(unbound.undated,[]);
+ const direct=call('ehr_exotic',{op:'render',render:datedInput}).screen;
+ const containsIndex=nodes=>nodes.some(n=>n.datedTimeline||Object.values(n).some(v=>typeof v==='object'&&v&&((v.children&&containsIndex(v.children))||(v.body&&containsIndex(v.body)))));
+ assert.equal(containsIndex([...direct.workspace,...direct.side]),false,'Ordinary unbound workspace adds no index');
+ inputs.push({patient:input.facts.sourcePatientId,input});
  const blocked=call('ehr_step_envelope',{...input,event:{click:{comp:signing.id}}});assert.ok(blocked.result.blocked);
 }
 const lab=await startLab();try{
@@ -53,6 +63,6 @@ const lab=await startLab();try{
  assert.deepEqual(after[first],states[first]);assert.equal(after[second].state.patientContext.bound,second);
  await page.close();
  }
- await write(`${out}/full-binding-check.json`,{status:'pass',programPatientSelection:true,patients:2,unboundCommit:'blocked',openHydrate:'native',returnAndReopen:'pass',unselectedPaneUnchanged:true,widths:[1440,390],crossPatientUrgencyDuringLookup:true,activation:'Synthetic care-gap activation of the already-designated urgent weightInLb ID; original hospital spec file unchanged'});
+ await write(`${out}/full-binding-check.json`,{status:'pass',programPatientSelection:true,patients:2,unboundCommit:'blocked',unboundNativeAndOrdinaryIndex:'absent',openHydrate:'native',returnAndReopen:'pass',unselectedPaneUnchanged:true,widths:[1440,390],crossPatientUrgencyDuringLookup:true,activation:'Synthetic care-gap activation of the already-designated urgent weightInLb ID; original hospital spec file unchanged'});
  console.log(JSON.stringify({status:'pass',patients:2,unboundCommit:'blocked'}));
 }finally{await lab.close();}

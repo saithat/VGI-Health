@@ -17,6 +17,7 @@ import "./exotic.css";
 export const researchSchema = z
   .strictObject({
     ordinary: uiNodeSchema.optional(),
+    indexObservation: z.array(uiNodeSchema).optional(),
     mode: z.enum(["command", "spatial", "board", "dated"]),
     panes: z
       .array(
