@@ -73,7 +73,7 @@ export const specSchema: z.ZodType<L.Spec> = z.looseObject({
   reviews: z.array(dropNulls(['waivedBy'], z.looseObject({ commit: str, info: str, mode: reviewModeSchema, when: whenSchema, waivedBy: str.exactOptional() }))),
   alerts: z.array(z.looseObject({
     id: str, label: str,
-    cond: z.enum(['drugAllergy', 'interaction', 'duplicateTherapy', 'doseOutOfRange', 'weightInLb', 'careGap', 'highAlertMed']),
+    cond: z.enum(['drugAllergy', 'interaction', 'minorInteraction', 'criticalResult', 'duplicateTherapy', 'doseOutOfRange', 'weightInLb', 'careGap', 'highAlertMed']),
     tier: z.enum(['interruptive', 'passive', 'removable']), commit: str, screens: z.array(str),
   })),
   design: z.looseObject({ maxDepth: nat, minTextSize: nat, stabilityBudget: nat, landmarks: z.array(str), catalog: z.array(str) }),

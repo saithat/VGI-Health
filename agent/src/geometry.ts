@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {existsSync} from 'node:fs';
 import {mkdir,readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {pointerTravel,type GeometryAtlas} from '../../app/src/metrics/geometry.js';
@@ -37,7 +38,9 @@ export function geometryEhr(inner:EhrClient,provider:GeometryProvider,dir:string
     if(parsed.success)(aliases[parsed.data.alert.alert]??=[]).push(component.id);
    }
   }
-  const prior=collected.get(geometryCacheKey(input.program));
+  const persisted=path.join(dir,'geometry',`${hash}.${geometryComponentsHash(input.program)}.json`);
+  const prior=collected.get(geometryCacheKey(input.program))??(existsSync(persisted)?await loadGeometry(persisted):undefined);
+  if(prior&&(prior.programHash!==hash||prior.componentsSha256!==geometryComponentsHash(input.program)||prior.appSha256!==captured.appSha256))throw new Error('Persisted geometry atlas belongs to different inputs');
   const atlas={...captured,states:[...(prior?.states??[]),...captured.states.filter(state=>!prior?.states.some(old=>old.state===state.state&&old.sample===state.sample))],componentsSha256:geometryComponentsHash(input.program),aliases};
   collected.set(geometryCacheKey(input.program),atlas);
   if(atlas.programHash!==hash)throw new Error('Geometry atlas belongs to another executable');

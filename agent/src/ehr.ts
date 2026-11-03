@@ -1,3 +1,5 @@
+import { retryInfrastructure } from './infrastructure.js';
+import { InfrastructureError } from './errors.js';
 import {exportPopupGeometry} from './geometry-popups.js';
 /**
  * Adapter for the native Lean `ehr` CLI (lean/.lake/build/bin/ehr; override
@@ -96,12 +98,12 @@ function parseOut<T extends z.ZodType>(cmd: string, res: ExecResult, schema: T):
   try {
     json = JSON.parse(res.stdout);
   } catch {
-    throw new Error(`ehr ${cmd}: exit ${res.code}, stdout is not JSON. stderr: ${res.stderr.slice(0, 2000)}`);
+    throw new InfrastructureError(`ehr ${cmd}: exit ${res.code}, stdout is not JSON. stderr: ${res.stderr.slice(0, 2000)}`);
   }
   const parsed = schema.safeParse(json);
   if (!parsed.success) {
     const first = parsed.error.issues[0];
-    throw new Error(`ehr ${cmd}: unexpected output shape (${first ? `${first.path.join('.')}: ${first.message}` : '?'})`);
+    throw new InfrastructureError(`ehr ${cmd}: unexpected output shape (${first ? `${first.path.join('.')}: ${first.message}` : '?'})`);
   }
   return parsed.data;
 }
@@ -109,11 +111,11 @@ function parseOut<T extends z.ZodType>(cmd: string, res: ExecResult, schema: T):
 class CliEhr implements EhrClient {
   readonly mode = 'real' as const;
   constructor(readonly binary: string,private readonly timeoutMs:number) {}
-  private run(args:string[]){return runNative(this.binary,args,{timeoutMs:this.timeoutMs});}
+  private run(args:string[]){return retryInfrastructure(`ehr:${args[0]??'command'}`,()=>runNative(this.binary,args,{timeoutMs:this.timeoutMs}));}
 
   private async withFiles<T>(files: Record<string, unknown>, fn: (paths: Record<string, string>) => Promise<T>): Promise<T> {
     if (!existsSync(this.binary)) {
-      throw new Error(`ehr binary not found at ${this.binary} (build lean/ with \`lake build\`, set EHR_BIN, or EHR_FAKE=1 for tests)`);
+      throw new InfrastructureError(`ehr binary not found at ${this.binary} (build lean/ with \`lake build\`, set EHR_BIN, or EHR_FAKE=1 for tests)`);
     }
     const dir = await mkdtemp(path.join(tmpdir(), 'ehr-'));
     try {
@@ -146,7 +148,7 @@ class CliEhr implements EhrClient {
         'simulate', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
         '--schedule', p['schedule'] ?? '', '--world', i.worldDir, '--seed', String(i.seed),
       ]);
-      if (res.code !== 0) throw new Error(`ehr simulate: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
+      if (res.code !== 0) throw new InfrastructureError(`ehr simulate: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       return parseOut('simulate', res, dayResultSchema);
     });
   }
@@ -156,7 +158,7 @@ class CliEhr implements EhrClient {
       const res = await this.run([
         'min-clicks', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--schedule', p['schedule'] ?? '', '--world', i.worldDir,
       ]);
-      if (res.code !== 0) throw new Error(`ehr min-clicks: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
+      if (res.code !== 0) throw new InfrastructureError(`ehr min-clicks: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       return parseOut('min-clicks', res, minClicksResultSchema);
     });
   }
@@ -177,21 +179,21 @@ class CliEhr implements EhrClient {
     return this.withFiles({ program: i.program, user: { id: i.program.owner, role: i.program.role }, ...(i.workspace ? { schedule: i.workspace.schedule } : {}) }, async (p) => {
       await mkdir(i.outDir, { recursive: true });
       const res = await this.run(['render-screens', ...(i.ui ? ['--ui'] : []), ...(i.workspace ? ['--schedule', p['schedule'] ?? '', '--world', i.workspace.worldDir] : []), '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--fhir', i.fhir, '--user', p['user'] ?? '', '--out', i.outDir]);
-      if (res.code !== 0) throw new Error(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
+      if (res.code !== 0) throw new InfrastructureError(`ehr render-screens: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       if(i.ui)await exportPopupGeometry(this.binary,{program:i.program,specFile:this.specPath(i.specVersion),fhir:i.fhir,outDir:i.outDir});
       return (await readdir(i.outDir)).filter((f) => f.endsWith('.json')).sort().map((f) => path.join(i.outDir, f));
     });
   }
 
   async runBatch(cases: readonly unknown[]): Promise<unknown[]> {
-    if (!existsSync(this.binary)) throw new Error(`ehr binary not found at ${this.binary}`);
+    if (!existsSync(this.binary)) throw new InfrastructureError(`ehr binary not found at ${this.binary}`);
     const dir = await mkdtemp(path.join(tmpdir(), 'ehr-'));
     try {
       const file = path.join(dir, 'batch.jsonl');
       await writeFile(file, cases.map((c) => JSON.stringify(c)).join('\n') + '\n');
       const res = await this.run(['run-batch', file]);
       const out = res.stdout.split('\n').filter((l) => l.trim() !== '').map((l): unknown => JSON.parse(l));
-      if (res.code !== 0) throw new Error(`ehr run-batch: exit ${res.code}: ${res.stderr.slice(0, 2000)} ${JSON.stringify(out.slice(0, 3))}`);
+      if (res.code !== 0) throw new InfrastructureError(`ehr run-batch: exit ${res.code}: ${res.stderr.slice(0, 2000)} ${JSON.stringify(out.slice(0, 3))}`);
       return out;
     } finally {
       await rm(dir, { recursive: true, force: true });
@@ -199,9 +201,9 @@ class CliEhr implements EhrClient {
   }
 
   async specExport(specVersion: string): Promise<Spec> {
-    if (!existsSync(this.binary)) throw new Error(`ehr binary not found at ${this.binary}`);
+    if (!existsSync(this.binary)) throw new InfrastructureError(`ehr binary not found at ${this.binary}`);
     const res = await this.run(['spec-export', specVersion]);
-    if (res.code !== 0) throw new Error(`ehr spec-export: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
+    if (res.code !== 0) throw new InfrastructureError(`ehr spec-export: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
     return parseOut('spec-export', res, specSchema);
   }
 }
