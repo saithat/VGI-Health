@@ -364,12 +364,44 @@ vocabulary, not the specs, properties, checker, gates or metrics.
 
 A [proposal-quality diagnosis](docs/design/proposal-quality.md) (experiment not
 built) explains why 17 of 35 nightly decisions in `core-10day-live` changed
-nothing. Compact density is a no-op in the measured UI, so all 36
-density-only candidates measured zero. The agent also sees neither its earlier
-measured ideas nor per-screen costs, and small picks don't survive validation.
+nothing. All 36 historical density-only candidates measured zero because density
+was absent from the measured UI. Compact density now reaches the native/WASM
+semantic export and React painter; the historical run stays unchanged. The agent
+also sees neither its earlier measured ideas nor per-screen costs, and small
+picks don't survive validation.
 It proposes an offline three-arm comparison on the run's frozen night inputs:
 today's prompt, a train-only ledger plus locality digest, and the same plus
 read-only query tools.
+
+Component `size: compact` exports an optional `compact` ID side table on screens
+and patient-pane metadata. React marks existing containers and cascades tighter
+padding, gaps and table rows through compact groups; font sizes, wrapping and
+colors stay unchanged, with 12px text and 24×24px target floors. On the isolated
+operative-note fixture, compact components reduce scroll height from 1,190 to
+1,126px at 1440×900 and from 2,525 to 2,250px at 390×844, retaining all 40 rendered
+component entries and identical font sizes. Table cells are retained as rows
+shrink. The [density proofs](lean/Ehr/Render/DensityProofs.lean) establish ordered
+shown-ID invariance for program size changes and meaning invariance for density
+metadata alone; universal whole-renderer equality remains in
+[TODO_PROOFS.md](TODO_PROOFS.md). [Fix 0 evidence](docs/design/proposal-quality.md#31-fix-0-render-component-density)
+records historical-candidate training reruns and browser audits. These changes
+invalidate certified app and Lean/WASM bindings; historical certificates are not
+rebound.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+(cd lean && lake env lean --run Ehr/Render/ExportTests.lean "$TMPDIR/density-render-api")
+node lean/Ehr/Render/density-contract.mjs "$TMPDIR/density-render-api"
+APP_TEST_PREVIEW=1 APP_TEST_PORT=4291 pnpm --filter app exec playwright test 'e2e/density.spec.ts' --workers=2
+node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/density-estimates.ts "$TMPDIR/density-estimates" runs/world/2
+node app/scripts/density-screen-check.mjs "$TMPDIR/density-estimates"
+```
+
+The estimate harness uses the frozen historical programs, patches and specs,
+calibration training partitions and original seeds, with the current native
+interpreter and Chromium geometry. It makes no model calls, evaluates no held-out
+tasks, and writes only scratch artifacts. Current successor alert rules reject
+some historical programs, so those rules are not substituted into this rerun.
 
 [Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
 (78 exact IDs including inherited variants), with explicit law, accreditation,

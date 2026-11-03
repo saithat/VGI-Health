@@ -1,0 +1,57 @@
+/* Density changes spacing only; keep the audited text metrics, colors,
+   wrapping and overflow. Include the marked root as well as its descendants. */
+:is(.clinical-app, .clinical-modal, .research)
+  :is([data-density="compact"], [data-density="compact"] *)
+  :is(.clinical-section-body, .clinical-navigation-bar) {
+  row-gap: 2px;
+  padding-block: 1px;
+}
+:is(.clinical-app, .clinical-modal, .research)
+  :is([data-density="compact"], [data-density="compact"] *)
+  :is(.clinical-info-label, .presentation-heading) {
+  margin-block: 0 1px;
+  padding-block: 0;
+}
+:is(.clinical-app, .clinical-modal, .research)
+  :is([data-density="compact"], [data-density="compact"] *)
+  :is(.presentation-table, .clinical-table-scroll table)
+  :is(th, td) {
+  height: auto;
+  padding-block: 0;
+}
+:is(.clinical-app, .clinical-modal, .research)
+  :is([data-density="compact"], [data-density="compact"] *)
+  :is(.clinical-info-list > li, .clinical-summary > div) {
+  padding-block: 0;
+}
+:is(.clinical-app, .clinical-modal, .research)
+  :is([data-density="compact"], [data-density="compact"] *)
+  :is(.mantine-Input-input, .mantine-Button-root, .mantine-Tabs-tab) {
+  padding-block: 0;
+  min-width: 24px;
+  min-height: 24px;
+  height: auto;
+}
+:is(.clinical-app, .clinical-modal, .research)
+  :is(
+    .clinical-field.pending,
+    .field-identity,
+    .field-scan,
+    .field-cosign
+  )[data-density="compact"],
+:is(.clinical-app, .clinical-modal, .research)
+  [data-density="compact"]
+  :is(.clinical-field.pending, .field-identity, .field-scan, .field-cosign) {
+  padding-block: 1px;
+}
+:is(.clinical-app, .clinical-modal, .research)
+  [data-density="compact"]
+  .mantine-InputWrapper-label {
+  margin-bottom: 0;
+}
+:is(.clinical-app, .research) .workflow-links button[data-density="compact"] {
+  padding-block: 0;
+  min-width: 24px;
+  min-height: 24px;
+  height: auto;
+}

@@ -44,16 +44,43 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
         patientPane: z.strictObject({
           patient: label,
           banner: z.array(pair),
-          metadata: z.strictObject({
-            sourceLabels: z.array(pair),
-            fieldSources: z.array(pair),
-            entryHints: z.array(pair),
-            fieldChoices: z.array(z.tuple([label, codeChoices])),
-            urgent: z.array(z.union([
-              z.strictObject({alert:z.strictObject({comp:label,alertId:label,label,severity:label})}),
-              z.strictObject({button:z.strictObject({comp:label,label,role:label,enabled:z.boolean(),blockedReason:z.string().nullable(),hotkey:z.string().nullable()})}),
-            ])).optional(),
-          }).transform(({urgent,...metadata})=>({...metadata,...(urgent===undefined?{}:{urgent})})),
+          metadata: z
+            .strictObject({
+              compact: z.array(label).optional(),
+              sourceLabels: z.array(pair),
+              fieldSources: z.array(pair),
+              entryHints: z.array(pair),
+              fieldChoices: z.array(z.tuple([label, codeChoices])),
+              urgent: z
+                .array(
+                  z.union([
+                    z.strictObject({
+                      alert: z.strictObject({
+                        comp: label,
+                        alertId: label,
+                        label,
+                        severity: label,
+                      }),
+                    }),
+                    z.strictObject({
+                      button: z.strictObject({
+                        comp: label,
+                        label,
+                        role: label,
+                        enabled: z.boolean(),
+                        blockedReason: z.string().nullable(),
+                        hotkey: z.string().nullable(),
+                      }),
+                    }),
+                  ]),
+                )
+                .optional(),
+            })
+            .transform(({ urgent, compact, ...metadata }) => ({
+              ...metadata,
+              ...(urgent === undefined ? {} : { urgent }),
+              ...(compact === undefined ? {} : { compact }),
+            })),
           children: z.array(uiNodeSchema),
           modal: z.array(uiNodeSchema),
         }),
@@ -218,6 +245,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     nav: z.array(z.tuple([label, z.array(pair)])),
     activeNav: label.optional(),
     sourceLabels: z.array(pair).optional(),
+    compact: z.array(label).optional(),
     entryHints: z.array(pair).optional(),
     fieldChoices: z
       .array(
@@ -243,6 +271,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     ({
       screen: screenId,
       fieldSources,
+      compact,
       viewer,
       activeNav,
       sourceLabels,
@@ -253,6 +282,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     }) => ({
       ...screen,
       ...(screenId === undefined ? {} : { screen: screenId }),
+      ...(compact === undefined ? {} : { compact }),
       ...(fieldSources === undefined ? {} : { fieldSources }),
       ...(viewer === undefined ? {} : { viewer }),
       ...(activeNav === undefined ? {} : { activeNav }),

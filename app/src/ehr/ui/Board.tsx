@@ -1,4 +1,11 @@
-import { createContext, useContext, useLayoutEffect, useRef, type ReactNode } from "react";
+import { CompactContext } from "./Density";
+import {
+  createContext,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  type ReactNode,
+} from "react";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import type { NodeOf, UiNode } from "./types";
 import { UiChildren } from "./nodes";
@@ -27,14 +34,21 @@ export function Board({
   useLayoutEffect(() => {
     const update = () => {
       if (board.current && rail.current)
-        board.current.style.setProperty("--board-modal-top", `${Math.max(board.current.getBoundingClientRect().top, rail.current.getBoundingClientRect().bottom) + 8}px`);
+        board.current.style.setProperty(
+          "--board-modal-top",
+          `${Math.max(board.current.getBoundingClientRect().top, rail.current.getBoundingClientRect().bottom) + 8}px`,
+        );
     };
     update();
     const observer = new ResizeObserver(update);
     if (rail.current) observer.observe(rail.current);
     window.addEventListener("resize", update);
     window.addEventListener("scroll", update, true);
-    return () => { observer.disconnect(); window.removeEventListener("resize", update); window.removeEventListener("scroll", update, true); };
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
+    };
   }, [node.urgent]);
   const owner = node.children.find(
     (n) => "patientPane" in n && n.patientPane.modal.length > 0,
@@ -71,15 +85,53 @@ export function Board({
               {d.banner.find(([key]) => key === "MRN")?.[1]} · {d.label}
             </div>
           ))}
-          {node.children.flatMap(n=>"patientPane" in n && n.patientPane.metadata.urgent?.length ? [n.patientPane] : []).map(pane=>(
-            <section key={pane.patient} className="urgent-alert-strip board-native-strip"
-              data-urgent-strip-patient={pane.patient} aria-label={`Urgent clinical alerts for ${pane.patient}`}>
-              <strong>{pane.banner.find(([key])=>key==="Patient")?.[1]??pane.patient} · {pane.banner.find(([key])=>key==="MRN")?.[1]}</strong>
-              <UiChildren nodes={(pane.metadata.urgent??[]).map(n=> "button" in n && owner && "patientPane" in owner && owner.patientPane.patient!==pane.patient
-                ? {button:{...n.button,enabled:false,blockedReason:"Another patient's clinical acknowledgment owns interaction"}} : n)}
-                onEvent={event=>{if(!owner || ("patientPane" in owner && owner.patientPane.patient===pane.patient))dispatch?.({patient:pane.patient,event});}} />
-            </section>
-          ))}
+          {node.children
+            .flatMap((n) =>
+              "patientPane" in n && n.patientPane.metadata.urgent?.length
+                ? [n.patientPane]
+                : [],
+            )
+            .map((pane) => (
+              <section
+                key={pane.patient}
+                className="urgent-alert-strip board-native-strip"
+                data-urgent-strip-patient={pane.patient}
+                aria-label={`Urgent clinical alerts for ${pane.patient}`}
+              >
+                <strong>
+                  {pane.banner.find(([key]) => key === "Patient")?.[1] ??
+                    pane.patient}{" "}
+                  · {pane.banner.find(([key]) => key === "MRN")?.[1]}
+                </strong>
+                <CompactContext.Provider value={pane.metadata.compact ?? []}>
+                  <UiChildren
+                    nodes={(pane.metadata.urgent ?? []).map((n) =>
+                      "button" in n &&
+                      owner &&
+                      "patientPane" in owner &&
+                      owner.patientPane.patient !== pane.patient
+                        ? {
+                            button: {
+                              ...n.button,
+                              enabled: false,
+                              blockedReason:
+                                "Another patient's clinical acknowledgment owns interaction",
+                            },
+                          }
+                        : n,
+                    )}
+                    onEvent={(event) => {
+                      if (
+                        !owner ||
+                        ("patientPane" in owner &&
+                          owner.patientPane.patient === pane.patient)
+                      )
+                        dispatch?.({ patient: pane.patient, event });
+                    }}
+                  />
+                </CompactContext.Provider>
+              </section>
+            ))}
         </aside>
         <div className="board-panes">{node.children.map(render)}</div>
       </section>
@@ -89,11 +141,23 @@ export function Board({
 
 /** Duplicate visual identifiers stay pinned; the complete accessible banner stays
 in flow. Long allergy/encounter detail cannot occlude clinical controls. */
-function PatientIdentity({ banner }: { banner: NodeOf<"patientPane">["banner"] }) {
-  return banner.length ? <div className="board-identity" aria-hidden="true">
-    {banner.filter(([key]) => key === "Patient" || key === "MRN").map(([key, value]) =>
-      <span key={key}><small>{key}</small><strong>{value}</strong></span>)}
-  </div> : null;
+function PatientIdentity({
+  banner,
+}: {
+  banner: NodeOf<"patientPane">["banner"];
+}) {
+  return banner.length ? (
+    <div className="board-identity" aria-hidden="true">
+      {banner
+        .filter(([key]) => key === "Patient" || key === "MRN")
+        .map(([key, value]) => (
+          <span key={key}>
+            <small>{key}</small>
+            <strong>{value}</strong>
+          </span>
+        ))}
+    </div>
+  ) : null;
 }
 
 export function PatientPane({
@@ -130,41 +194,45 @@ export function PatientPane({
           </span>
         ))}
       </div>
-      <FieldSourceContext.Provider value={new Map(node.metadata.fieldSources)}>
-        <SourceLabelsContext.Provider value={node.metadata.sourceLabels}>
-          <EntryHintsContext.Provider value={node.metadata.entryHints}>
-            <FieldChoicesContext.Provider value={node.metadata.fieldChoices}>
-              <div
-                aria-hidden={
-                  node.modal.length > 0 ||
-                  (owner !== null && owner !== node.patient) ||
-                  !dispatch ||
-                  undefined
-                }
-                ref={(el) => {
-                  if (el)
-                    el.inert =
-                      node.modal.length > 0 ||
-                      (owner !== null && owner !== node.patient) ||
-                      !dispatch;
-                }}
-              >
-                {render(node.children, emit)}
-              </div>
-              {node.modal.length > 0 && owner === node.patient && (
-                <section
-                  className="board-modal"
-                  role="region"
-                  aria-label={`Clinical acknowledgment for ${node.patient}`}
+      <CompactContext.Provider value={node.metadata.compact ?? []}>
+        <FieldSourceContext.Provider
+          value={new Map(node.metadata.fieldSources)}
+        >
+          <SourceLabelsContext.Provider value={node.metadata.sourceLabels}>
+            <EntryHintsContext.Provider value={node.metadata.entryHints}>
+              <FieldChoicesContext.Provider value={node.metadata.fieldChoices}>
+                <div
+                  aria-hidden={
+                    node.modal.length > 0 ||
+                    (owner !== null && owner !== node.patient) ||
+                    !dispatch ||
+                    undefined
+                  }
+                  ref={(el) => {
+                    if (el)
+                      el.inert =
+                        node.modal.length > 0 ||
+                        (owner !== null && owner !== node.patient) ||
+                        !dispatch;
+                  }}
                 >
-                  <PatientIdentity banner={node.banner} />
-                  {render(node.modal, emit)}
-                </section>
-              )}
-            </FieldChoicesContext.Provider>
-          </EntryHintsContext.Provider>
-        </SourceLabelsContext.Provider>
-      </FieldSourceContext.Provider>
+                  {render(node.children, emit)}
+                </div>
+                {node.modal.length > 0 && owner === node.patient && (
+                  <section
+                    className="board-modal"
+                    role="region"
+                    aria-label={`Clinical acknowledgment for ${node.patient}`}
+                  >
+                    <PatientIdentity banner={node.banner} />
+                    {render(node.modal, emit)}
+                  </section>
+                )}
+              </FieldChoicesContext.Provider>
+            </EntryHintsContext.Provider>
+          </SourceLabelsContext.Provider>
+        </FieldSourceContext.Provider>
+      </CompactContext.Provider>
     </article>
   );
 }

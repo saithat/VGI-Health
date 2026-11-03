@@ -1,6 +1,6 @@
 # Overnight proposal quality: diagnosis and experiment
 
-Status: **proposal, 2026-11-03; diagnosis measured, experiment not built.**
+Status: **2026-11-03; diagnosis measured, Fix 0 built, proposal-quality experiment not built.**
 The owner chose to aim the query-tools idea from von Hippel's "Your software
 should build itself" at proposal quality rather than speed. Section 6 lists the
 decisions it needs. It changes no Specs, Props, Statements or Comparator files.
@@ -65,19 +65,21 @@ scroll pixels, pointer travel, keystrokes):
 The checker is not the problem: it passed 159 of 160 candidates, and no night
 needed a repair round.
 
-### 2.1 Cause 1: density is a no-op in the measured UI
+### 2.1 Historical cause 1: density was a no-op in the measured UI
 
 * 36 candidates were patches whose every operation sets `/size` (normal →
   compact). All 36 measured exactly zero. 34 of them are labeled
   `composeTaskView` and 2 `reorder`.
-* Geometry is captured in Chromium from the semantic UI tree (`renderScreens`
-  with `ui: true`, `agent/src/browser-geometry.ts`). That tree, `UiNode`
-  (`lean/Ehr/Render/Types.lean`), has no density field, so the React renderer
-  never sees `compact`. Only the older HTML renderer honors it
+The following diagnosis describes the frozen run before Fix 0 below.
+
+* Geometry was captured in Chromium from the semantic UI tree (`renderScreens`
+  with `ui: true`, `agent/src/browser-geometry.ts`). That export carried no
+  density metadata (`lean/Ehr/Render/Types.lean`), so React never received
+  `compact`. Only the older HTML renderer honored it
   (`lean/Ehr/Render/Page.lean:230`).
 * The manual (`agent/src/manual.ts:83`) and the prompt's program format both
-  advertise compact density as a supported change. So the agent keeps
-  proposing a move that cannot change any measurement.
+  advertised compact density as a supported change. The agent kept proposing
+  a move that could not change any measurement.
 
 ### 2.2 Cause 2: no memory of measured ideas
 
@@ -131,22 +133,155 @@ on the same inputs, so it is not fooled by this trend; a full run would be.
 
 ## 3. Design
 
-### 3.1 Fix 0: make density real, or stop offering it
+### 3.1 Fix 0: render component density
 
-Two options; the owner picks (section 6):
+**Approved by the owner and built, 2026-11-03.** `UiScreen.compact?` and
+`UiPaneMetadata.compact?` carry the IDs of shown compact components. Empty tables
+are omitted. Native and WASM use the same derived JSON export. This is a side
+table, rather than the wrapper originally proposed here: footer placement, row
+actions and the urgent strip inspect the existing tree, which remains exact.
+React scopes the table to each screen/patient pane, marks existing containers
+with `data-density="compact"`, and cascades less vertical padding, smaller gaps
+and tighter table/field rows through compact sections and tabs. Ordinary,
+composed-board and research painters share the markers and CSS. Fonts and colors
+are unchanged; text retains the 12px floor, interactive targets retain 24×24px,
+and wrapping/overflow remain with the audited painter. Agent manual and program
+format text describe the measurable spacing effect and the unchanged floors;
+other nightly prompt content is unchanged.
 
-* **Render density (recommended).** Real EHRs use dense layouts, and density
-  changes scroll distance, so leaving it out lowers simulation fidelity. Add a
-  density layout hint to the semantic UI tree, as a presentation wrapper like
-  the existing ones ("a layout hint around ordinary semantic nodes; never a
-  visibility filter"), so `meaning` is unchanged by construction and existing
-  presentation proofs carry over. The WCAG floor (24×24 px targets, 4.5:1
-  contrast) still applies to compact controls; the screen check enforces it.
-* **Remove compact from the agent's vocabulary.** Cheaper, but it removes a
-  real design lever, so it is a scope cut and needs the owner's approval.
+`DensityProofs.lean` kernel-checks invariance of visibility (including parent
+traversal), the ordered shown-ID list in the actual interpreter view, and
+`meaning` under changes to the side table alone. Every new theorem's printed
+axioms are within `propext`, `Classical.choice`, `Quot.sound`. The full universal
+statement equating `renderUi` workspace/side/nav/banner/modal across size-only
+program changes remains open in [TODO_PROOFS.md](../../TODO_PROOFS.md), with the
+missing renderer/guard congruence lemmas described there. Exact native fixture
+and native/WASM differential regressions compare complete semantic screens after
+removing only the `compact` key. No existing proof or protected rule changed.
 
-Either way, the experiment runs after this lands, so no arm spends candidates
-on a move that cannot be measured.
+Geometry regression (`app/e2e/density.spec.ts`), built production painter:
+
+| Operative-note fixture | Normal scroll height | Compact components | Compact sections |
+|---|---:|---:|---:|
+| 1440×900 | 1,190px | 1,126px | 1,154px |
+| 390×844 | 2,525px | 2,250px | 2,471px |
+
+The same source fixture's automatic side rail is removed in both arms to isolate
+the long form: at desktop its taller review rail otherwise determines the page
+height. All 40 rendered component entries and their font sizes are identical.
+A separate native table fixture keeps every cell while reducing padding and
+height. All six browser cases pass their physical-policy checks.
+
+Zero-model reruns of the three preselected historical candidates, using the real
+`TrainEstimator`, frozen programs/patches/specs, original seeds and training
+partitions only (savings per training day; positive means less travel):
+
+| Candidate | Night; training days | Clicks saved | Scrolls saved | Scroll px saved | Pointer px saved |
+|---|---|---:|---:|---:|---:|
+| `p1-compact-order-entry` | 1; 1 | 0 | 0 | 44 | 14.33 |
+| `p5-compact-postoperative-editor` | 4; 1, 3 | 0 | 0 | 0 | 0 |
+| `p3-compact-administration` | 2; 1 | 0 | 0 | −861 | −6.82 |
+
+Both arms complete every paired task: P1 28/28, P5 24/24 across its two days,
+and P3 25/25. Keystroke savings are zero. P5's emitted postoperative fields move
+up, but its training traces never visit `w6PostOp`; its zero estimate is retained.
+P3's negative savings mean **more** travel, despite smaller spacing. Compact is
+now measurable; it does not guarantee an objective improvement. No acceptance
+rule changed. Geometry totals also differ from the historical run because these
+pairs use the current painter/capture environment; the within-build difference
+isolates the density candidate.
+
+The restored world's SHA-256 exactly matches the run's recorded fingerprint:
+`7f4f9dabc4ad609422fb5be4598e54a30a285bb9f4022b72b078bc074dc3e26d`.
+Historical specs are necessary: today's successor alert spec rejects the old
+P1 program for lacking its critical-result component. The harness does not
+substitute or weaken those rules. It retains spec/program/build hashes, complete
+geometry atlases, replay results, original and recomputed estimates under
+`$TMPDIR/density-estimates-final/`. No model, validation or blind-day evaluation
+runs. Historical run files and certificates stay unchanged. Both the certified
+app hash and Lean/WASM binding change.
+
+The retained replay rerun reproduces all three estimates exactly. All eight
+before/after day results have empty `geometry.missingTargets`; the retained P5
+traces confirm zero postoperative-screen events in both versions.
+
+Verification commands (repository root; disk-backed scratch throughout):
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6
+(cd lean && lake build && lake exe gents)
+JOBS=4 EM_CACHE="$TMPDIR/density-emcache" make wasm
+make wasm-check
+pnpm --filter app build
+pnpm --filter app lint
+pnpm --filter app test --maxWorkers=2
+pnpm --filter agent lint
+pnpm --filter agent typecheck
+pnpm --filter agent test --maxWorkers=2
+pnpm --filter agent exec tsc --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --strict --exactOptionalPropertyTypes --noUncheckedIndexedAccess --skipLibCheck --jsx react-jsx ../app/scripts/density-estimates.ts
+APP_TEST_PREVIEW=1 APP_TEST_PORT=4291 pnpm --filter app exec playwright test 'e2e/density.spec.ts' --workers=2
+node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/density-estimates.ts "$TMPDIR/density-estimates-final"
+EHR_SCREEN_WORKERS=5 EHR_SCREEN_MAX_WORKERS=5 APP_TEST_PORT=4293 node scripts/audit-alert-policy.mjs "$TMPDIR/density-audit-templates"
+EHR_SCREEN_WORKERS=6 APP_TEST_PORT=4293 node scripts/audit-alert-policy.mjs "$TMPDIR/density-audit-personas" --personas
+EHR_SCREEN_WORKERS=6 APP_TEST_PORT=4294 node app/scripts/density-screen-check.mjs "$TMPDIR/density-estimates-final"
+```
+
+Lean builds (455 jobs), generated types, WASM freshness, production app build,
+lint and type checks pass. App unit tests: 304 pass / 28 skip. Agent unit tests:
+68 pass / 50 skip. Archive-dependent skips reflect the additional historical
+runs absent from this worktree. All six density browser tests pass. The full
+normal-density audit pair is serialized on the machine-wide lock; the separate
+compact gate selects all 98 emitted native compact states plus three cascading
+form/table fixture controls. It uses the unchanged complete physical matrix and
+fidelity assertions, with passing-tree receipts disabled.
+
+The full template audit passes: 1,826 states / 16,434 physical measurements,
+zero findings and zero retries (5 workers; gate elapsed 31m 20s). The full persona
+audit also passes: 1,296 states / 11,664 physical measurements, zero findings and
+zero retries (6 workers; gate elapsed 14m 59s). The pair ran once, sequentially.
+The compact-state gate passes all 101 inputs / 70 distinct trees: 90 emitted
+native clinical states plus three form/table controls supply 837 physical
+measurements across 93 states, with zero findings and zero retries. Eight
+additional synthetic popup-geometry probes retain the stock gate's existing
+coverage rules. Browser batches total 1m 44s, excluding the shared-lock wait.
+All physical and fidelity assertions are unchanged. Artifacts:
+`$TMPDIR/density-audit-templates/{result,physical}.json`,
+`$TMPDIR/density-audit-personas/{result,physical}.json`, and
+`$TMPDIR/density-estimates-final/compact-{screen-result,physical}.json`.
+
+Evidence bindings: app `0d6235a922b48ced45c620887a2b3e97a87d68aff999882c26049fc3285e91bc`,
+WASM `1138574dedc474f885fb37f969f94706f11b8af74e5d3a833bf84edd8cbb43d0`,
+native `c89cd5066752ab2d1f11805fd57b47207cb2d8fcd22ea876fe3af3b7bb1b188e`.
+Historical certificates are not rebound or deployed.
+
+The standalone density contract passes both actual interpreter fixtures,
+normal/compact native/WASM JSON equality, exact shown compact IDs, and complete
+semantic-screen equality after removing only the `compact` key:
+
+```sh
+(cd lean && lake env lean --run Ehr/Render/ExportTests.lean "$TMPDIR/density-render-api")
+node lean/Ehr/Render/density-contract.mjs "$TMPDIR/density-render-api"
+```
+
+The broader `node lean/Ehr/Render/test-wasm.mjs` run also matches all 324 patient
+bundle projections, 897 clinical HTML/semantic render variants, and the density
+cases, then exits on the existing P1 tracked-snapshot comparison: current native
+and WASM output includes the Reports panel, while `app/src/fixtures/ui` omits it.
+Those snapshot assertions remain exact. Its default all-workspace input also
+hits an existing clinical-banner assumption at unbound home. To reach all
+clinical variants, the broader run used an explicit scratch copy of the current
+canonical with `patientSelection: false` (no other program changes):
+
+```sh
+(cd lean && lake env lean --run Ehr/Render/ExportTests.lean "$TMPDIR/density-render-clinical" ../fixtures/synthea/Aaron_Ankunding_4966bd28.json ../releases/v1/spec.json "$TMPDIR/density-contract-program.json")
+node lean/Ehr/Render/test-wasm.mjs "$TMPDIR/density-render-clinical"
+```
+
+The stored fixtures and patient-workspace implementation are unchanged by this
+lane. Their broader contract repair is outside the density change; no assertion
+was loosened to obtain a passing result. The standalone density contract is also
+called by the broader script.
+
 
 ### 3.2 Measured-ideas ledger (train-only)
 
@@ -277,8 +412,7 @@ If B or C wins, adopt it in the agent loop of the shared-world simulation
 
 ## 6. Owner decisions
 
-1. **Density (cause 1):** render compact density in the measured UI
-   (recommended), or remove it from the agent's vocabulary (a scope cut).
+1. **Density (cause 1): approved 2026-11-03.** Render compact density in the measured UI; implemented in section 3.1.
 2. **Query tools (arm C):** allow the designer to run read-only commands inside
    the existing confinement, for the experiment only.
 3. **Acceptance rule (cause 4):** keep validation acceptance without a minimum

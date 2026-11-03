@@ -2508,6 +2508,10 @@ export interface UiPaneMetadata {
   fieldSources: [string, string][];
   entryHints: [CompId, string][];
   fieldChoices: [CompId, UiCodeChoices][];
+  /**
+   * Shown compact component IDs, scoped to this patient pane.
+   */
+  compact?: CompId[];
   urgent?: UiStripAtom[];
 }
 
@@ -2548,6 +2552,10 @@ export interface UiScreen {
    * Stable view identity for scroll/focus lifecycle; never a visible label.
    */
   screen?: ScreenId;
+  /**
+   * Shown compact component IDs; presentation metadata only.
+   */
+  compact?: CompId[];
   /**
    * Public source captions for fields whose exact provenance remains in their node.
    */
