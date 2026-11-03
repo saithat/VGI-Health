@@ -20,7 +20,8 @@
     "rebind": "tsx src/rebind.ts",
     "verify-resume": "tsx src/verify-resume.ts",
     "verify-determinism": "tsx src/verify-determinism.ts",
-    "verify-crash-resume": "tsx test/crash-resume-harness.ts"
+    "verify-crash-resume": "tsx test/crash-resume-harness.ts",
+    "proposal-quality-compare": "tsx src/cli.ts proposal-quality-compare"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",
