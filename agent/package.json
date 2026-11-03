@@ -5,6 +5,8 @@
   "type": "module",
   "description": "Overnight agent loop: proposes UI-program changes, gates them through the Lean checker, records decisions.",
   "scripts": {
+    "proposal-quality": "tsx src/cli.ts proposal-quality",
+    "proposal-quality-report": "tsx src/cli.ts proposal-quality-report",
     "run-days": "tsx src/cli.ts run-days",
     "night": "tsx src/cli.ts night",
     "try-to-break-it": "tsx src/cli.ts try-to-break-it",

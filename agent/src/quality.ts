@@ -1,0 +1,258 @@
+/** Frozen one-night experiment. No deployment, screen gate, query tools, or model calls on import. */
+import { existsSync } from 'node:fs';
+import { cp, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { performance } from 'node:perf_hooks';
+import { tmpdir } from 'node:os';
+import { z } from 'zod';
+import { LlmAgent } from './agent.js';
+import { createBackend } from './backends/index.js';
+import { RecordingLlm, llmRecordSchema, llmRecordPath } from './backends/recording.js';
+import type { JsonLlm, JsonResponse } from './backends/types.js';
+import { browserGeometry } from './browser-geometry.js';
+import { createEhr } from './ehr.js';
+import { fileHash, treeHash } from './fingerprints.js';
+import { geometryComponentsHash, geometryEhr, geometryProgramHash, loadGeometry } from './geometry.js';
+import { localityDigest } from './locality.js';
+import { retryInfrastructure } from './infrastructure.js';
+import { daySeed, makeHoldout, runNight, type LoopDeps, type NightInput } from './night.js';
+import { auditedOperation } from './operation-manifest.js';
+import { measuredLedger, physicalKeys } from './quality-context.js';
+import { OFFLINE_LABEL, offlineRecordSchema, repetitionCount, writeQualityReport, type OfflineRecord, type QualityArm, type TokenCounts } from './quality-report.js';
+import { calibrationDay, calibrationPartition, isMeasurementDay } from './protocol.js';
+import { recordingEhr } from './recording-ehr.js';
+import { loadRelease, releaseForPersona } from './releases.js';
+import { retryEhr } from './retry-boundaries.js';
+import { historyItem } from './run.js';
+import { dayResultSchema, decisionRecordSchema, type DecisionRecord, type Program } from './schema.js';
+import { RunStore } from './store.js';
+import { REPO_ROOT, pad2, readJson, writeJson } from './util.js';
+import { loadWorld, type World } from './world.js';
+
+export const decisionId = (r: Pick<DecisionRecord,'night'|'persona'>) => `night-${pad2(r.night)}/${r.persona}`;
+export async function historicalDecisions(runDir:string):Promise<DecisionRecord[]> {
+  const rows:DecisionRecord[]=[];
+  for(const night of (await readdir(path.join(runDir,'decisions'))).filter(n=>/^night-\d+$/.test(n)).sort()) {
+    for(const file of (await readdir(path.join(runDir,'decisions',night))).filter(f=>f.endsWith('.json')).sort()) rows.push(await readJson(path.join(runDir,'decisions',night,file),decisionRecordSchema));
+  }
+  return rows.sort((a,b)=>a.night-b.night||a.persona.localeCompare(b.persona));
+}
+export function selectDecisions(records:readonly DecisionRecord[],selection?:readonly string[]) {
+  const nightly=records.filter(r=>r.mode==='nightly');
+  if(!selection)return nightly;
+  const ids=new Set(selection);
+  for(const id of ids)if(!nightly.some(r=>decisionId(r)===id))throw new Error(`Not a nightly decision: ${id}; use night-01/P1`);
+  return nightly.filter(r=>ids.has(decisionId(r)));
+}
+
+/** versionBefore is authoritative; never infer from current deployment or an arm output. */
+export async function frozenNight(runDir:string,record:DecisionRecord,records:readonly DecisionRecord[],world:World,deps:LoopDeps):Promise<NightInput> {
+  const store=new RunStore(runDir),params=world.personas.get(record.persona);
+  if(!params)throw new Error(`Missing persona ${record.persona}`);
+  const persona={id:record.persona,userId:world.userId(record.persona),params};
+  const programs=new Map<number,Program>();
+  for(const file of (await readdir(path.join(runDir,'programs',record.persona))).filter(f=>/^v\d+\.json$/.test(f))) {
+    const version=Number(file.slice(1,-5));programs.set(version,await store.readProgram(record.persona,version));
+  }
+  const current=programs.get(record.versionBefore);if(!current)throw new Error(`Missing versionBefore ${record.versionBefore}`);
+  const train=[];
+  for(const day of record.evidence.trainDays) {
+    if(day>record.night||isMeasurementDay(day))throw new Error(`Non-training evidence day ${day}`);
+    const full=await world.schedule(day,record.persona);if(!full)throw new Error(`Missing schedule ${day}`);
+    const recorded=await readJson(store.dayPath(day,record.persona),dayResultSchema);
+    const program=programs.get(recorded.programVersion);if(!program)throw new Error(`Missing historical train program ${recorded.programVersion}`);
+    const schedule=calibrationPartition(full,'train');
+    const check=await deps.ehr.check({specVersion:program.specVersion,program,prev:program,canonical:program});
+    if(check!=='ok')throw new Error('Historical training program no longer certified');
+    const result=await deps.ehr.simulate({specVersion:program.specVersion,program,persona:params,schedule,worldDir:world.dir,seed:daySeed(world.manifest.seed,day)});
+    if(JSON.stringify(result.tasks.map(t=>t.task).sort())!==JSON.stringify(schedule.tasks.map(t=>t.id).sort()))throw new Error('Training replay changed scheduled tasks');
+    train.push({schedule,result});
+  }
+  return {night:record.night,persona,current,programs,train,
+    release:await releaseForPersona(await loadRelease(record.specVersion,deps.ehr),record.persona),
+    history:records.filter(r=>r.persona===record.persona&&r.night<record.night).map(historyItem),
+    holdout:makeHoldout(deps,persona,await world.schedule(calibrationDay(record.night),record.persona))};
+}
+
+const usageSchema=z.object({input_tokens:z.number(),output_tokens:z.number(),cached_input_tokens:z.number().optional()});
+function usageOf(response:Pick<JsonResponse,'usage'|'transcript'>):Omit<TokenCounts,'source'>|null {
+  const direct=usageSchema.safeParse(response.usage);
+  if(direct.success)return {input:direct.data.input_tokens,output:direct.data.output_tokens,cachedInput:direct.data.cached_input_tokens??0};
+  const transcript=z.object({stdout:z.string()}).safeParse(response.transcript);
+  if(transcript.success) for(const line of transcript.data.stdout.split('\n').reverse().filter(Boolean)) {
+    let parsed:unknown;try{parsed=JSON.parse(line);}catch{continue;}
+    const event=z.object({type:z.literal('turn.completed'),usage:usageSchema}).safeParse(parsed);
+    if(event.success)return {input:event.data.usage.input_tokens,output:event.data.usage.output_tokens,cachedInput:event.data.usage.cached_input_tokens??0};
+  }
+  return null;
+}
+function metered(inner:JsonLlm,source:string) {
+  const calls:{callId:string;promptMatched:boolean|null;tokens:TokenCounts}[]=[];
+  const llm:JsonLlm={name:inner.name,model:inner.model,async complete(req){
+    const response=await inner.complete(req);
+    const reference=inner.name==='replay'?await readJson(llmRecordPath(source,req.callId),llmRecordSchema):response;
+    const usage=usageOf(reference);
+    calls.push({callId:req.callId,promptMatched:response.promptMatched,tokens:usage?{...usage,source:inner.name==='replay'?'recorded-reference':'backend'}:{input:null,output:null,cachedInput:null,source:'unavailable'}});
+    return response;
+  }};
+  const tokens=():TokenCounts=>({
+    input:calls.every(c=>c.tokens.input!==null)?calls.reduce((n,c)=>n+(c.tokens.input??0),0):null,
+    output:calls.every(c=>c.tokens.output!==null)?calls.reduce((n,c)=>n+(c.tokens.output??0),0):null,
+    cachedInput:calls.every(c=>c.tokens.cachedInput!==null)?calls.reduce((n,c)=>n+(c.tokens.cachedInput??0),0):null,
+    source:calls.some(c=>c.tokens.source==='unavailable')?'unavailable':inner.name==='replay'?'recorded-reference':'backend'});
+  return {llm,calls,tokens};
+}
+
+export function candidateDiffs(before:DecisionRecord,after:DecisionRecord) {
+  return before.candidates.filter(e=>!e.candidate.seeded).map(old=>{
+    const now=after.candidates.find(e=>e.candidate.id===old.candidate.id);
+    const deltas:Record<string,number|null>={};
+    for(const side of ['before','after','saving'] as const)for(const key of physicalKeys) {
+      const a=old.trainEstimate?.[side][key],b=now?.trainEstimate?.[side][key];
+      deltas[`${side}.${key}`]=typeof a==='number'&&typeof b==='number'?Math.round((b-a)*100)/100:null;
+    }
+    for(const side of ['before','after'] as const)for(const key of ['tasks','completed'] as const) {
+      const a=old.trainEstimate?.[side][key],b=now?.trainEstimate?.[side][key];
+      deltas[`${side}.${key}`]=typeof a==='number'&&typeof b==='number'?b-a:null;
+    }
+    return {id:old.candidate.id,recorded:old.trainEstimate,recomputed:now?.trainEstimate??null,
+      recordedCheck:old.check.status,recomputedCheck:now?.check.status??'missing',deltas,
+      countMismatch:['before.clicks','after.clicks','before.keystrokes','after.keystrokes','before.tasks','after.tasks','before.completed','after.completed'].some(k=>deltas[k]!==0 && deltas[k]!==null),
+      daysMismatch:old.trainEstimate!==null&&JSON.stringify(old.trainEstimate.days)!==JSON.stringify(now?.trainEstimate?.days),
+      missing:!now||(old.trainEstimate!==null&&now.trainEstimate===null)};
+  });
+}
+export interface QualityOptions {
+  runDir:string;outDir:string;arms:readonly QualityArm[];samples:number;backend:'replay'|'codex';workers:number;
+  decisions?:readonly string[];worldDir?:string;model?:string;reasoningEffort?:string;serviceTier?:string;
+}
+export async function freshOutput(runDir:string,outDir:string) {
+  const runs=await realpath(path.join(REPO_ROOT,'runs')),source=await realpath(runDir);
+  const target=path.resolve(outDir);
+  if(path.dirname(target)!==runs||target===source||existsSync(target))throw new Error('--out must be a NEW direct child of this worktree runs/');
+  await mkdir(target);return target;
+}
+
+export async function evaluateQuality(opts:QualityOptions) {
+  if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>2)throw new Error('--workers must be 1 or 2 (14 GB budget)');
+  if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
+  if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','sanity'].includes(a)))throw new Error('Implemented arms: A, B, sanity; C awaits owner decision');
+  if(opts.arms.includes('sanity')&&opts.backend!=='replay')throw new Error('Sanity requires replay; no new proposals');
+  const source=await realpath(opts.runDir),historical=await historicalDecisions(source),selected=selectDecisions(historical,opts.decisions);
+  if(!selected.length)throw new Error('No nightly decisions selected');
+  const manifest=await readJson(path.join(source,'manifest.json'),z.object({world:z.string(),model:z.string().optional(),
+    fingerprints:z.object({world:z.string(),fixtures:z.string()}).optional()}));
+  const worldSource=await realpath(opts.worldDir??manifest.world);
+  const worldSha256=await treeHash(worldSource);
+  const worldManifest=await readJson(path.join(worldSource,'manifest.json'),z.object({fixtures:z.object({index:z.string()}).passthrough()}).passthrough());
+  const fixtureIndex=path.resolve(REPO_ROOT,worldManifest.fixtures.index),fixtureSource=path.dirname(fixtureIndex);
+  const fixturesSha256=await treeHash(fixtureSource);
+  if(manifest.fingerprints&&(worldSha256!==manifest.fingerprints.world||fixturesSha256!==manifest.fingerprints.fixtures))throw new Error('World/fixtures differ from the frozen run fingerprints; supply the original inputs');
+  const out=await freshOutput(source,opts.outDir),inputs=path.join(out,'inputs');await mkdir(inputs);
+  // Copy only read-only inputs. No source login/recover/write methods are called.
+  await cp(worldSource,path.join(inputs,'world'),{recursive:true});
+  if(await treeHash(path.join(inputs,'world'))!==worldSha256)throw new Error('World changed while snapshotting');
+  await cp(fixtureSource,path.join(inputs,'fixtures'),{recursive:true});
+  if(await treeHash(path.join(inputs,'fixtures'))!==fixturesSha256)throw new Error('Fixtures changed while snapshotting');
+  // Only the copied index location changes; all clinical/world bytes stay frozen.
+  await writeJson(path.join(inputs,'world/manifest.json'),{...worldManifest,fixtures:{...worldManifest.fixtures,index:path.join(inputs,'fixtures',path.basename(fixtureIndex))}});
+  await cp(path.join(source,'manifest.json'),path.join(inputs,'source-manifest.json'));
+  await cp(path.join(source,'programs'),path.join(inputs,'programs'),{recursive:true});
+  await cp(path.join(source,'days'),path.join(inputs,'days'),{recursive:true});
+  await cp(path.join(source,'decisions'),path.join(inputs,'decisions'),{recursive:true});
+  await cp(path.join(source,'llm'),path.join(inputs,'llm'),{recursive:true});
+  const native=createEhr({fake:false});
+  const binding={source,worldSource,originalWorldSha256:worldSha256,fixturesSha256,worldSha256:await treeHash(path.join(inputs,'world')),sourceDecisionsSha256:await treeHash(path.join(inputs,'decisions')),
+    sourceProgramsSha256:await treeHash(path.join(inputs,'programs')),sourceDaysSha256:await treeHash(path.join(inputs,'days')),sourceLlmSha256:await treeHash(path.join(inputs,'llm')),
+    ehrSha256:native.binary?await fileHash(native.binary):null,agentSha256:await treeHash(path.join(REPO_ROOT,'agent/src')),
+    app:JSON.parse(await readFile(path.join(REPO_ROOT,'app/dist/build.json'),'utf8')),selected:selected.map(decisionId),options:opts,label:OFFLINE_LABEL,
+    geometryCache:path.join(tmpdir(),'vgi-proposal-quality-geometry-cache')};
+  await writeJson(path.join(inputs,'binding.json'),binding);
+  const world=await loadWorld(path.join(inputs,'world')),records:OfflineRecord[]=[];
+  const sanity:{decisionId:string;candidates:ReturnType<typeof candidateDiffs>}[]=[];
+  const state:{status:string;label:string;error:string|null;completed:number;planned:number}={status:'running',label:OFFLINE_LABEL,error:null,completed:0,planned:selected.length*opts.arms.reduce((n,a)=>n+(a==='sanity'?1:opts.samples),0)};
+  await writeJson(path.join(out,'manifest.json'),state);
+  let cursor=0,stopped=false;
+  async function worker(index:number) {
+    const workerDir=path.join(out,`worker-${index}`),ehrNative=retryEhr(recordingEhr(native,path.join(workerDir,'ehr')));
+    const catalog=await readJson(path.join(inputs,'fixtures',path.basename(fixtureIndex)),z.object({patients:z.array(z.object({file:z.string(),flags:z.object({pediatric:z.boolean(),surgical:z.boolean()})}))}));
+    const browser=browserGeometry(ehrNative,input=>{
+      const sample=input.program.role==='np'?catalog.patients.find(p=>p.flags.pediatric):input.program.role==='surgeon'?catalog.patients.find(p=>p.flags.surgical):{file:'Ashly_Rippin_149fcc1f.json'};
+      if(!sample)throw new Error('Missing mandatory geometry fixture');return [path.join(inputs,'fixtures',sample.file)];
+    },binding.geometryCache);
+    try {
+      while(!stopped) {
+        const original=selected[cursor++];if(!original)break;
+        const ehr=geometryEhr(ehrNative,input=>retryInfrastructure('geometry',()=>browser.provider(input),true),workerDir);
+        const started=performance.now();
+        const deps:LoopDeps={runId:path.basename(out),store:new RunStore(workerDir),ehr,
+          screens:{mode:'real',async check(){throw new Error('Offline screen check prohibited');}},
+          agent:new LlmAgent(new RecordingLlm(createBackend('replay',{replayFrom:inputs,replayAllowDrift:true}),workerDir)),
+          seedPolicy:'none',seedState:{injected:0,rejected:new Set()},worldDir:world.dir,worldSeed:world.manifest.seed};
+        const input=await frozenNight(inputs,original,historical,world,deps);
+        const inputDir=path.join(out,'frozen',decisionId(original));
+        await writeJson(path.join(inputDir,'input.json'),{...input,programs:Object.fromEntries(input.programs),holdout:{day:input.holdout.day}});
+        const prepareMs=performance.now()-started;
+        const contextStarted=performance.now();
+        const locality=opts.arms.includes('B')?localityDigest(await Promise.all(input.train.map(async d=>{
+          const program=input.programs.get(d.result.programVersion);if(!program)throw new Error('Missing train program');
+          const atlas=await loadGeometry(path.join(workerDir,'geometry',`${geometryProgramHash(program)}.${geometryComponentsHash(program)}.json`));
+          return {result:d.result,atlas:{...atlas,aliases:atlas.aliases??{}}};
+        }))):null;
+        const contextMs=performance.now()-contextStarted;
+        for(const arm of opts.arms)for(let sample=1;sample<=(arm==='sanity'?1:opts.samples);sample++) {
+          if(stopped)break;
+          const sampleDir=path.join(out,'samples',decisionId(original),arm,String(sample));
+          const first=await readJson(llmRecordPath(inputs,`night-${pad2(original.night)}/${original.persona}/propose-0`),llmRecordSchema);
+          const usage=z.object({reasoningEffort:z.string().optional(),serviceTier:z.string().nullable().optional()}).safeParse(first.usage);
+          const meter=metered(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:inputs,replayAllowDrift:true,model:opts.model??manifest.model??first.model,
+            reasoningEffort:opts.reasoningEffort??(usage.success?usage.data.reasoningEffort:undefined)??'high',serviceTier:opts.serviceTier??(usage.success?usage.data.serviceTier:undefined)??'fast'}),inputs);
+          const sampleDeps:LoopDeps={...deps,store:new RunStore(sampleDir),agent:new LlmAgent(new RecordingLlm(meter.llm,sampleDir)),seedState:{injected:0,rejected:new Set()}};
+          const tick=performance.now();
+          const result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,
+            ...(arm==='B'&&locality?{quality:{ledger:measuredLedger(historical,original.persona,original.night),locality}}:{})}));
+          const record:OfflineRecord={...result.record,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:decisionId(original),arm,sample,
+            tokens:meter.tokens(),callCount:meter.calls.length,wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'?contextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
+            repeatedMeasuredBad:repetitionCount(result.record,historical),proposedCandidates:result.record.candidates.filter(e=>!e.candidate.seeded).length};
+          await writeJson(path.join(sampleDir,'record.json'),offlineRecordSchema.parse(record));await writeJson(path.join(sampleDir,'calls.json'),meter.calls);
+          if(arm==='sanity') {
+            const diff=candidateDiffs(original,result.record);
+            await writeJson(path.join(sampleDir,'candidate-diffs.json'),{label:OFFLINE_LABEL,decisionId:record.decisionId,candidates:diff});
+            sanity.push({decisionId:record.decisionId,candidates:diff});
+            await writeJson(path.join(out,'sanity-diffs.json'),{label:OFFLINE_LABEL,decisions:sanity});
+            if(diff.some(d=>d.countMismatch||d.missing||d.daysMismatch)) {stopped=true;throw new Error(`Unexplained click/keystroke/task count, changed train days or missing estimate in ${record.decisionId}; inspect candidate-diffs.json; results suppressed`);}
+          }
+          records.push(record);state.completed++;
+          await writeJson(path.join(out,'manifest.json'),state);
+          console.log(`${record.decisionId} ${arm}/${sample}: ${record.outcome}, ${Math.round(record.wallTimeMs/1000)}s, ${meter.calls.filter(c=>c.promptMatched===false).length} prompt mismatches`);
+        }
+      }
+    } catch(error){stopped=true;throw error;} finally {await browser.close();}
+  }
+  try {
+  const workers=await Promise.allSettled(Array.from({length:Math.min(opts.workers,selected.length)},(_,i)=>worker(i)));
+  const failed=workers.find(w=>w.status==='rejected');
+  if(failed?.status==='rejected') throw failed.reason;
+  // The frozen copy, including world bytes, must remain unchanged during evaluation.
+  if(await treeHash(path.join(inputs,'world'))!==binding.worldSha256)throw new Error('Frozen world changed');
+  if(await treeHash(path.join(inputs,'fixtures'))!==binding.fixturesSha256)throw new Error('Frozen fixtures changed');
+  for(const [directory,expected] of [['programs',binding.sourceProgramsSha256],['days',binding.sourceDaysSha256],['decisions',binding.sourceDecisionsSha256],['llm',binding.sourceLlmSha256]]) {
+    if(!directory||!expected||await treeHash(path.join(inputs,directory))!==expected)throw new Error(`Frozen ${directory} changed`);
+  }
+  records.sort((a,b)=>a.decisionId.localeCompare(b.decisionId)||a.arm.localeCompare(b.arm)||a.sample-b.sample);
+  await writeJson(path.join(out,'records.json'),records);const report=await writeQualityReport(out,records);
+  if(sanity.length) {
+    await writeJson(path.join(out,'sanity-diffs.json'),{label:OFFLINE_LABEL,decisions:sanity});
+    const candidates=sanity.flatMap(d=>d.candidates),keys=Object.keys(candidates[0]?.deltas??{});
+    const lines=[`# ${OFFLINE_LABEL}`,'',`Sanity: ${sanity.length} decisions, ${candidates.length} nonseeded historical candidates. Click/keystroke counts agree; every formerly measured candidate is present.`,
+      '', '| Metric (recomputed − recorded) | Candidates changed | Largest absolute delta |','|---|---:|---:|',
+      ...keys.map(key=>{const deltas=candidates.flatMap(c=>typeof c.deltas[key]==='number'?[c.deltas[key]]:[]);return `| ${key} | ${deltas.filter(d=>d!==0).length} | ${Math.max(0,...deltas.map(Math.abs))} |`;}),
+      '', 'Full per-candidate estimates/deltas are in sanity-diffs.json. Geometry-derived scroll/pixel differences require interpretation against renderer/capture changes; this table alone does not establish their cause.'];
+    await writeFile(path.join(out,'sanity.md'),lines.join('\n')+'\n');
+  }
+  state.status='completed';await writeJson(path.join(out,'manifest.json'),state);return report;
+  } catch(error) {
+    state.status='aborted';state.error=String(error);await writeJson(path.join(out,'manifest.json'),state);throw error;
+  }
+}
+

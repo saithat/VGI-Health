@@ -1,6 +1,6 @@
 # Overnight proposal quality: diagnosis and experiment
 
-Status: **proposal, 2026-11-03; diagnosis measured, experiment not built.**
+Status: **phases 1–2 implemented, 2026-11-03; replay verification in progress.**
 The owner chose to aim the query-tools idea from von Hippel's "Your software
 should build itself" at proposal quality rather than speed. Section 6 lists the
 decisions it needs. It changes no Specs, Props, Statements or Comparator files.
@@ -285,3 +285,65 @@ If B or C wins, adopt it in the agent loop of the shared-world simulation
    effect size for now (recommended, so the experiment compares like with
    like), or add one. Adding one changes what "accepted" means in every later
    run.
+
+
+## 7. Phase 1–2 implementation (2026-11-03)
+
+`agent/src/quality.ts` and the `proposal-quality` CLI reuse `runNight` with an
+explicit offline stop after validation. They never call the screen gate,
+`ehr deploy`, publication or the simulated user-offer step. Native checker
+certification remains the existing merged-patch/repair path; no deployment
+certificate is minted. Arm B appends the same train-only ledger/digest to
+proposal, choice and repair. Defaults and all original prompt builders are
+unchanged. The outcome `validation-accepted` denotes offline acceptance without
+deployment; every offline record has `offline: true`, `screenCheck: "skipped"`,
+arm/sample, call/token accounting and wall time.
+
+A fresh output is required directly under `runs/`. Its `inputs/` snapshot holds
+source programs, days, historical decisions/responses, world and fixture bytes.
+The original world/fixture fingerprints must match; only the copied world's
+fixture-index location is relocated. `inputs/binding.json` records source and
+current evaluator hashes, the selected decisions and backend settings.
+`frozen/night-NN/P/input.json` stores each historical `versionBefore`, train
+schedules/results/programs and outcome history once, independently of arm output.
+Training evidence is resimulated on the historical day's program; candidate
+estimates retain the existing two-most-recent-training-days rule. Validation
+keeps the original past-calibration partition and independent seed namespace.
+
+`locality.ts` attributes the existing pointer state machine's costs to event
+screens and destination targets, including lookahead attribution for explicit
+scrolls, alert aliases, workspace-day states and missing-geometry nulls. It
+checks per-task costs against `pointerTravel` and native click/keystroke totals.
+Pixel rounding conserves task totals in hundredths. Screen share is the fraction
+of activations, visits count task/screen arrivals, and scroll-past means centers
+crossed by container offsets (a geometric proxy, not measured visual attention).
+Top 15 targets retain an aggregate remainder. Repeated 2–4-step sequences count
+distinct tasks. Only completed training tasks contribute to aggregate costs.
+KLM stays hidden through the existing prompt replacer; no app geometry source
+is edited. The ledger lists every earlier candidate for this persona, including
+unchosen/seeded candidates with an explicit seeded flag, with physical training
+savings only. Unknown effects stay unknown. Schema projections strip additional
+fields from the new context before any prompt serialization.
+
+`quality-report.ts` writes Markdown and JSON, including per-sample decision
+metrics. Samples are averaged within each decision; accepted-change rates weight
+decisions equally, and validation totals sum decision means. Seeded candidates
+are excluded from candidate-quality rates. Zero effect requires all five
+physical metrics to be measured and zero; its denominator is all nonseeded
+candidates, with the measured count also reported. A repeated measured-bad idea
+means the same id **or** the same move type and nonempty sorted target set,
+previously nonpositive on every measured physical dimension. The bootstrap uses
+10,000 decision resamples with seed 20261103 and applies §4.4 unchanged. C−B is
+reported as not evaluated until C records exist; no query tools are implemented.
+Replay token counts are labeled historical references; unavailable usage remains
+null. Wall time per sample includes frozen evidence preparation, charged once
+to each sample for comparability; geometry is reused by exact content. These
+are evaluator timings, not a model latency guarantee.
+
+The sanity arm writes `candidate-diffs.json` for every decision. It stops on
+unexplained click/keystroke deltas or missing formerly measured candidates and
+suppresses the aggregate quality report. Pixel and geometry-derived scroll
+changes must be interpreted against known renderer/capture changes; recorded
+estimates are never overwritten. Replay smoke is plumbing verification, not
+an arm-quality result. No density change, query relaxation, live experiment,
+Lean change or certified app-source change belongs to this implementation.

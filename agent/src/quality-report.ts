@@ -1,0 +1,97 @@
+import { writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { z } from 'zod';
+import { decisionRecordSchema, type DecisionRecord } from './schema.js';
+import { measuredLedger, physicalSaving, sameIdea, zeroEffect, zeroOrWorse } from './quality-context.js';
+import { rng, writeJson } from './util.js';
+
+export const OFFLINE_LABEL = 'offline, screen check skipped, simulator only';
+export type QualityArm = 'A' | 'B' | 'C' | 'sanity';
+export interface TokenCounts { input: number | null; output: number | null; cachedInput: number | null; source: 'backend' | 'recorded-reference' | 'unavailable' }
+export type OfflineRecord = Omit<DecisionRecord,'screenCheck'> & {
+  offline:true; screenCheck:'skipped'; label:typeof OFFLINE_LABEL; decisionId:string; arm:QualityArm; sample:number;
+  tokens:TokenCounts; callCount:number; wallTimeMs:number; frozenInputs:string;
+  repeatedMeasuredBad:number; proposedCandidates:number;
+};
+export const offlineRecordSchema = decisionRecordSchema.omit({screenCheck:true}).extend({
+  offline:z.literal(true),screenCheck:z.literal('skipped'),label:z.literal(OFFLINE_LABEL),decisionId:z.string(),
+  arm:z.enum(['A','B','C','sanity']),sample:z.number().int().positive(),
+  tokens:z.object({input:z.number().nullable(),output:z.number().nullable(),cachedInput:z.number().nullable(),source:z.enum(['backend','recorded-reference','unavailable'])}),
+  callCount:z.number(),wallTimeMs:z.number(),frozenInputs:z.string(),repeatedMeasuredBad:z.number(),proposedCandidates:z.number(),
+});
+const mean = (xs: readonly number[]) => xs.reduce((a,b)=>a+b,0)/Math.max(1,xs.length);
+export function decisionMetrics(r: OfflineRecord) {
+  const candidates=r.candidates.filter(e=>!e.candidate.seeded);
+  return {
+    decisionId:r.decisionId,arm:r.arm,sample:r.sample,accepted:Number(r.validation.accepted),
+    validationClicks:r.validation.accepted?r.validation.replay?.saving.clicks??0:0,
+    validationScrolls:r.validation.accepted?r.validation.replay?.saving.scrolls??0:0,
+    zeroEffect:candidates.filter(e=>zeroEffect(physicalSaving(e.trainEstimate?.saving??null))).length,
+    measured:candidates.filter(e=>e.trainEstimate!==null).length,candidates:candidates.length,
+    repeatedMeasuredBad:r.repeatedMeasuredBad,noChange:Number(r.outcome==='no-change'),
+    checkerPassed:candidates.filter(e=>e.check.status==='pass').length,
+    zeroEffectShare:candidates.length?candidates.filter(e=>zeroEffect(physicalSaving(e.trainEstimate?.saving??null))).length/candidates.length:null,
+    repeatMeasuredBadShare:candidates.length?r.repeatedMeasuredBad/candidates.length:null,
+    checkerPassRate:candidates.length?candidates.filter(e=>e.check.status==='pass').length/candidates.length:null,
+    tokens:r.tokens,calls:r.callCount,wallTimeMs:r.wallTimeMs,
+  };
+}
+export function repetitionCount(record: DecisionRecord, history: readonly DecisionRecord[]): number {
+  const ledger=measuredLedger(history,record.persona,record.night).filter(e=>!e.seeded && zeroOrWorse(e.trainDaySaving));
+  return record.candidates.filter(e=>!e.candidate.seeded && ledger.some(old=>sameIdea(old,e.candidate))).length;
+}
+
+/** Average samples within decision, then resample whole decisions (never individual samples). */
+export function pairedComparison(records: readonly OfflineRecord[], lower: QualityArm, upper: QualityArm, iterations=10000, seed=20261103) {
+  const ids=[...new Set(records.map(r=>r.decisionId))].sort();
+  const pairs=ids.flatMap(id=>{
+    const a=records.filter(r=>r.decisionId===id&&r.arm===lower).map(decisionMetrics);
+    const b=records.filter(r=>r.decisionId===id&&r.arm===upper).map(decisionMetrics);
+    if(!a.length||!b.length)return [];
+    return [{id,rate:mean(b.map(r=>r.accepted))-mean(a.map(r=>r.accepted)),
+      clicks:mean(b.map(r=>r.validationClicks))-mean(a.map(r=>r.validationClicks)),
+      scrolls:mean(b.map(r=>r.validationScrolls))-mean(a.map(r=>r.validationScrolls))}];
+  });
+  if(!pairs.length)return {comparison:`${upper}−${lower}`,decisions:0,status:'not evaluated' as const,beats:null};
+  const random=rng(seed),bootstrap:number[]=[];
+  for(let i=0;i<iterations;i++) bootstrap.push(mean(pairs.map(()=>pairs[Math.floor(random()*pairs.length)]?.rate??0)));
+  bootstrap.sort((a,b)=>a-b);
+  const ci=[bootstrap[Math.floor(iterations*0.025)]??0,bootstrap[Math.min(iterations-1,Math.floor(iterations*0.975))]??0];
+  const rate=mean(pairs.map(p=>p.rate)),clicks=pairs.reduce((n,p)=>n+p.clicks,0),scrolls=pairs.reduce((n,p)=>n+p.scrolls,0);
+  return {comparison:`${upper}−${lower}`,decisions:pairs.length,status:'evaluated' as const,rateDifference:rate,rate95:ci,
+    validationClicksDifference:clicks,validationScrollsDifference:scrolls,beats:rate>=0.1-1e-12&&clicks>=0&&scrolls>=0&&(ci[0]??0)>0,
+    bootstrap:{iterations,seed,unit:'decision; samples averaged within decision'}};
+}
+
+export function qualityReport(records: readonly OfflineRecord[]) {
+  const rows=records.map(decisionMetrics);
+  const arms=[...new Set(records.map(r=>r.arm))].sort().map(arm=>{
+    const own=rows.filter(r=>r.arm===arm),count=own.reduce((n,r)=>n+r.candidates,0);
+    const decisions=[...new Set(own.map(r=>r.decisionId))];
+    const avg=(f:(r:typeof own[number])=>number)=>mean(decisions.map(id=>mean(own.filter(r=>r.decisionId===id).map(f))));
+    const total=(f:(r:typeof own[number])=>number)=>decisions.reduce((n,id)=>n+mean(own.filter(r=>r.decisionId===id).map(f)),0);
+    const tokens=(key:'input'|'output'|'cachedInput')=>own.every(r=>r.tokens[key]!==null)?total(r=>r.tokens[key]??0):null;
+    return {arm,decisions:decisions.length,samples:own.length,acceptedChangeRate:avg(r=>r.accepted),
+      validationClicks:total(r=>r.validationClicks),validationScrolls:total(r=>r.validationScrolls),
+      zeroEffectShare:count?own.reduce((n,r)=>n+r.zeroEffect,0)/count:null,
+      measuredCandidates:own.reduce((n,r)=>n+r.measured,0),candidates:count,
+      repeatMeasuredBadShare:count?own.reduce((n,r)=>n+r.repeatedMeasuredBad,0)/count:null,
+      noChangeRate:avg(r=>r.noChange),checkerPassRate:count?own.reduce((n,r)=>n+r.checkerPassed,0)/count:null,
+      inputTokensPerDecision:tokens('input')===null?null:(tokens('input')??0)/decisions.length,
+      outputTokensPerDecision:tokens('output')===null?null:(tokens('output')??0)/decisions.length,
+      callsPerDecision:avg(r=>r.calls),wallTimeMsPerDecision:avg(r=>r.wallTimeMs)};
+  });
+  return {label:OFFLINE_LABEL,note:'Sample means within decision; validation totals sum those means. Unknown token counts remain null. Replay tokens are recorded references, not new model usage. Wall time includes charged shared evidence preparation; the shared exact-content geometry cache makes timings cache-order dependent. Idea repeats = same id OR same move type and nonempty target set. Zero effect requires all five physical metrics measured and zero; denominator is all nonseeded candidates.',
+    arms,perDecision:rows,comparisons:[pairedComparison(records,'A','B'),pairedComparison(records,'B','C')]};
+}
+export async function writeQualityReport(dir:string,records:readonly OfflineRecord[]) {
+  const report=qualityReport(records);await writeJson(path.join(dir,'report.json'),report);
+  const pct=(n:number|null)=>n===null?'unknown':`${(n*100).toFixed(1)}%`;
+  const lines=[`# ${OFFLINE_LABEL}`,'',report.note,'',
+    '| Arm | Decisions / samples | Accepted | Validation clicks saved | Validation scrolls saved | Zero effect | Repeat bad idea | No change | Checker pass | Input tokens / decision | Calls / decision | Seconds / decision |',
+    '|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|',
+    ...report.arms.map(a=>`| ${a.arm} | ${a.decisions} / ${a.samples} | ${pct(a.acceptedChangeRate)} | ${a.validationClicks} | ${a.validationScrolls} | ${pct(a.zeroEffectShare)} | ${pct(a.repeatMeasuredBadShare)} | ${pct(a.noChangeRate)} | ${pct(a.checkerPassRate)} | ${a.inputTokensPerDecision??'unknown'} | ${a.callsPerDecision} | ${(a.wallTimeMsPerDecision/1000).toFixed(1)} |`),'',
+    ...report.comparisons.map(c=>c.status==='not evaluated'?`${c.comparison}: not evaluated.`:`${c.comparison}: Δ accepted ${pct(c.rateDifference??0)}, paired 95% interval ${c.rate95?.map(pct).join(' to ')}; Δ clicks ${c.validationClicksDifference}, Δ scrolls ${c.validationScrollsDifference}; decision rule: ${c.beats?'beats':'does not beat'}.`),'',
+    'Per-decision candidate shares, tokens, calls and wall time are in report.json. Replay plumbing does not estimate prompt quality. Arm C is not implemented.'];
+  await writeFile(path.join(dir,'report.md'),lines.join('\n')+'\n');return report;
+}

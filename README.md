@@ -362,14 +362,55 @@ with interaction only from owner-reviewed widgets; a predeclared held-out
 benefit gate and owner approval precede any release. The agent could extend the
 vocabulary, not the specs, properties, checker, gates or metrics.
 
-A [proposal-quality diagnosis](docs/design/proposal-quality.md) (experiment not
-built) explains why 17 of 35 nightly decisions in `core-10day-live` changed
-nothing. Compact density is a no-op in the measured UI, so all 36
-density-only candidates measured zero. The agent also sees neither its earlier
-measured ideas nor per-screen costs, and small picks don't survive validation.
-It proposes an offline three-arm comparison on the run's frozen night inputs:
-today's prompt, a train-only ledger plus locality digest, and the same plus
-read-only query tools.
+The [proposal-quality evaluator](docs/design/proposal-quality.md) implements
+phases 1–2 of the frozen-night experiment. Arm A retains the default prompt;
+arm B adds a train-only measured-ideas ledger and physical locality digest to
+proposal, choice and repair requests. The sanity arm serves recorded responses
+by call ID and compares every nonseeded candidate's recomputed training estimate.
+Unexplained click/keystroke differences or missing estimates stop reporting.
+All outputs say **offline, screen check skipped, simulator only**. Production
+nightly behavior is unchanged. Density (phase 0), query tools/arm C (phase 3)
+and the live experiment (phase 4) remain deferred.
+
+The evaluator freezes `versionBefore`, historical training program versions,
+recorded training-day selections, original world/fixtures and earlier historical
+decisions. World and fixture hashes must match the source run. Inputs are copied
+under the new output directory; arms and samples share frozen inputs and never
+feed their own outputs into history. Evidence, estimates, checks, repair,
+certification and validation use the existing loop and current evaluator.
+It stops after validation, with no user offer, screen gate or deployment.
+Geometry uses the existing pinned Chromium collector and an exact-content cache
+under `$TMPDIR/vgi-proposal-quality-geometry-cache`; it does not mint screen-gate
+receipts. Target attribution is checked against existing per-task physical costs.
+Screen share means fraction of activations; scroll-past lists component centers
+crossed by container offsets. An explicit remainder bucket preserves totals
+when only the top 15 targets are shown. KLM time stays hidden.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+pnpm --filter app build
+pnpm --filter agent proposal-quality --run runs/core-10day-live \
+  --arms sanity --backend replay --workers 2 --out runs/quality-sanity-new
+pnpm --filter agent proposal-quality --run runs/core-10day-live \
+  --decisions night-01/P1,night-01/P2 --arms A,B --samples 1 \
+  --backend replay --workers 2 --out runs/quality-smoke-new
+pnpm --filter agent proposal-quality-report --run runs/quality-smoke-new
+```
+
+`--out` must be a new direct child of this worktree's `runs/`; default selection
+is all 35 nightly decisions, excluding migrations and feature surfacing.
+`--world` locates an original world moved since recording; its hash must still
+match. Workers are limited to 1–2. Historical manual examples in
+`runs/run1-P3/decisions` are also required (see Data). Replay records prompt
+matches without rejecting drift, and reports historical reference tokens where
+available, never new model usage. `report.md` and `report.json` contain the
+predeclared rates, validation savings and decision-paired bootstrap; samples
+are averaged within each decision before resampling. Unknown tokens remain
+unknown. The repetition metric uses the same id, or the same move type and
+nonempty target set. The fixed digest and ledger have explicit field projections;
+validation/test data cannot enter through extra context fields. Regression
+hashes cover all 105 default propose/choose/repair prompts on the 35 frozen
+contexts. No live model call is needed for these checks.
 
 [Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
 (78 exact IDs including inherited variants), with explicit law, accreditation,
