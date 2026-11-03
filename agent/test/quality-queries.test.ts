@@ -87,6 +87,7 @@ it('audits command cwd, writes, forbidden tools, deduplicated queries and bounde
  expect(auditQueryTranscript(item('/usr/bin/pwd && jq . traces.json',undefined,'/outside\n{}'),dir).status).toBe('fail');
  const command='node query.mjs screens',started=JSON.stringify({type:'item.started',item:{id:'tool-1',type:'command_execution',command}});
  const audit=auditQueryTranscript(started+'\n'+item(command,undefined,JSON.stringify({query:'screens',cwd:dir})),dir);
+ expect(auditQueryTranscript(item('node query.mjs targets --target "(untargeted)"',undefined,JSON.stringify({query:'targets',cwd:dir})),dir).status).toBe('pass');
  expect(audit.status).toBe('pass');expect(audit.commands).toHaveLength(1);expect(queryUsage({isolationAudit:audit})).toEqual({count:1,tally:{screens:1}});
  const bounded=auditQueryTranscript(item('jq . traces.json',dir,'x'.repeat(50000)),dir);expect(bounded.commands[0]?.output).toHaveLength(16000);expect(bounded.commands[0]?.truncated).toBe(true);
  const persisted=z.object({item:z.object({aggregated_output:z.string()})}).parse(JSON.parse(boundedQueryTranscript(item('jq . traces.json',dir,'x'.repeat(50000)))));

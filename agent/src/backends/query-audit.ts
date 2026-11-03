@@ -44,7 +44,7 @@ export function auditQueryTranscript(stdout:string,directory:string) {
       const unwrapped=c.command.replace(/^\/bin\/(?:ba)?sh\s+-lc\s+(['"])(.*)\1$/,'$2');
       const pwd=/^\/usr\/bin\/pwd\s*&&\s*/.exec(unwrapped);
       const queryCommand=pwd?unwrapped.slice(pwd[0].length):unwrapped;
-      const cli=/^(?:\/usr\/bin\/)?node\s+(?:\.\/)?query\.mjs\s+(screens|steps|targets|scroll-past|sequences|ledger)(?:\s+--[a-z-]+\s+[\w./:-]+)*$/.exec(queryCommand);
+      const cli=/^(?:\/usr\/bin\/)?node\s+(?:\.\/)?query\.mjs\s+(screens|steps|targets|scroll-past|sequences|ledger)(?:\s+--[a-z-]+\s+(?:[\w./:()@+-]+|'[^'\r\n]*'|"[^"$`\r\n]*"))*$/.exec(queryCommand);
       let attested:string|null=null;
       if(pwd&&output.includes('\n'))attested=output.split('\n')[0]?.replace(/\r$/,'')||null;
       else try{const result=z.object({cwd:z.string(),query:z.string()}).parse(JSON.parse(output));if(cli&&result.query===cli[1])attested=result.cwd;}catch{/* Other reads must print cwd first or carry explicit cwd. */}
