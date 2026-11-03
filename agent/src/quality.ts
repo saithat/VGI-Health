@@ -104,6 +104,17 @@ export async function frozenNight(runDir:string,record:DecisionRecord,records:re
     holdout:makeHoldout(deps,persona,await world.schedule(calibrationDay(record.night),record.persona))};
 }
 
+export async function frozenLocality(input:Pick<NightInput,'train'|'programs'>,geometryDir:string) {
+  return localityDigest(await Promise.all(input.train.map(async day=>{
+    const program=input.programs.get(day.result.programVersion);if(!program)throw new Error('Missing train program');
+    const hash=geometryProgramHash(program),components=geometryComponentsHash(program);
+    const atlas=await loadGeometry(path.join(geometryDir,'geometry',`${hash}.${components}.json`));
+    if(atlas.programHash!==hash||atlas.componentsSha256!==components)throw new Error('Frozen train atlas belongs to different program inputs');
+    if(day.result.geometry?.programHash!==hash||day.result.geometry.componentsSha256!==components||day.result.geometry.appSha256!==atlas.appSha256)throw new Error('Frozen train trace and atlas bindings differ');
+    return {result:day.result,atlas:{...atlas,aliases:atlas.aliases??{}}};
+  })));
+}
+
 const usageSchema=z.object({input_tokens:z.number(),output_tokens:z.number(),cached_input_tokens:z.number().optional()});
 function usageOf(response:Pick<JsonResponse,'usage'|'transcript'>):Omit<TokenCounts,'source'>|null {
   const direct=usageSchema.safeParse(response.usage);
@@ -216,7 +227,10 @@ export async function evaluateQuality(opts:QualityOptions) {
       while(!stopped) {
         const original=selected[cursor++];if(!original)break;
         specFiles.clear();for(const [version,file] of await frozenSpecs(inputs,original.persona))specFiles.set(version,file);
-        const ehr=geometryEhr(boundNative,input=>retryInfrastructure('geometry',()=>browser.provider(input),true),workerDir);
+        // A new namespace prevents a prior sample's persisted validation atlas from
+        // contributing states to this decision's train-only locality digest.
+        const geometryDir=path.join(workerDir,decisionId(original));
+        const ehr=geometryEhr(boundNative,input=>retryInfrastructure('geometry',()=>browser.provider(input),true),geometryDir);
         const started=performance.now();
         const deps:LoopDeps={runId:path.basename(out),store:new RunStore(workerDir),ehr,
           screens:{mode:'real',async check(){throw new Error('Offline screen check prohibited');}},
@@ -227,11 +241,7 @@ export async function evaluateQuality(opts:QualityOptions) {
         await writeJson(path.join(inputDir,'input.json'),{...input,programs:Object.fromEntries(input.programs),holdout:{day:input.holdout.day}});
         const prepareMs=performance.now()-started;
         const contextStarted=performance.now();
-        const locality=opts.arms.includes('B')?localityDigest(await Promise.all(input.train.map(async d=>{
-          const program=input.programs.get(d.result.programVersion);if(!program)throw new Error('Missing train program');
-          const atlas=await loadGeometry(path.join(workerDir,'geometry',`${geometryProgramHash(program)}.${geometryComponentsHash(program)}.json`));
-          return {result:d.result,atlas:{...atlas,aliases:atlas.aliases??{}}};
-        }))):null;
+        const locality=opts.arms.includes('B')?await frozenLocality(input,geometryDir):null;
         const contextMs=performance.now()-contextStarted;
         for(const arm of opts.arms)for(let sample=1;sample<=(arm==='sanity'?1:opts.samples);sample++) {
           if(stopped)break;

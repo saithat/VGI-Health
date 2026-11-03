@@ -410,8 +410,9 @@ predeclared rates, validation savings and decision-paired bootstrap; samples
 are averaged within each decision before resampling. Unknown tokens remain
 unknown. The repetition metric uses the same id, or the same move type and
 nonempty target set. The fixed digest and ledger have explicit field projections;
-validation/test data cannot enter through extra context fields. Regression
-hashes cover all 105 default propose/choose/repair prompts on the 35 frozen
+validation/test data cannot enter through extra context fields. Atlases are
+persisted in a separate namespace per frozen decision; the digest is constructed
+before any sample validation, from training captures only. Regression hashes cover all 105 default propose/choose/repair prompts on the 35 frozen
 contexts. No live model call is needed for these checks.
 
 [Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds

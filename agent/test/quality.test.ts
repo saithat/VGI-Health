@@ -4,10 +4,10 @@ import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { pointerTravel, type GeometryAtlas } from '../../app/src/metrics/geometry.js';
 import { attributeDay, localityDigest } from '../src/locality.js';
-import { attachGeometry } from '../src/geometry.js';
+import { attachGeometry, geometryProgramHash, geometryComponentsHash } from '../src/geometry.js';
 import { measuredLedger, withQuality, type QualityContext } from '../src/quality-context.js';
 import { nightlyPrompt, choosePrompt, repairPrompt } from '../src/prompts.js';
-import { archivedSpecEhr, candidateDiffs, freshOutput, frozenNight, selectDecisions } from '../src/quality.js';
+import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, selectDecisions } from '../src/quality.js';
 import { OFFLINE_LABEL, pairedComparison, qualityReport, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
 import { FAKE_PERSONAS, writeFakeWorld } from '../src/fake/world.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
@@ -95,6 +95,17 @@ describe('train-only prompts and offline loop',()=>{
       if(arm==='A')expect(result).toBe(p);
     }
     const current={...prior,night:2};expect(repetitionCount(current,[prior])).toBe(1);
+  });
+  it('cannot borrow validation atlas states from another frozen decision',async()=>{
+    const root=await mkdtemp(path.join(tmpdir(),'quality-atlas-boundary-'));
+    const hash=geometryProgramHash(program),components=geometryComponentsHash(program),name=`${hash}.${components}.json`;
+    const previous={...atlas,programHash:hash,componentsSha256:components,states:atlas.states.map(state=>({...state,components:{...state.components,VALIDATION_SECRET:{center:{x:100,y:1000},reveal:{x:100,y:200},chain:['root'],offsets:{root:{x:0,y:800}}}}}))};
+    await writeJson(path.join(root,'previous/geometry',name),previous);
+    const input={train:[{result:day(trace,3,4),schedule:{day:1,persona:'P1',load:'busy',tasks:[]}}],programs:new Map([[0,program]])};
+    const metadata=input.train[0]?.result.geometry;if(!metadata)throw new Error('Missing geometry fixture');metadata.programHash=hash;metadata.componentsSha256=components;
+    await expect(frozenLocality(input,path.join(root,'current'))).rejects.toThrow('ENOENT');
+    await writeJson(path.join(root,'current/geometry',name),{...atlas,programHash:hash,componentsSha256:components});
+    expect(JSON.stringify(await frozenLocality(input,path.join(root,'current')))).not.toContain('VALIDATION_SECRET');
   });
   it('uses validation acceptance without calling screens, deploy, or offering a user change',async()=>{
     const base=record(deps),result=day([],0,0);

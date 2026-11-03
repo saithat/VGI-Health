@@ -315,6 +315,9 @@ keeps the original past-calibration partition and independent seed namespace.
 screens and destination targets, including lookahead attribution for explicit
 scrolls, alert aliases, workspace-day states and missing-geometry nulls. It
 checks per-task costs against `pointerTravel` and native click/keystroke totals.
+Persisted atlases are namespaced per frozen decision, and the digest is built
+before any sample validation; prior decisions or samples cannot contribute
+validation-only states through accumulated atlas coverage.
 Pixel rounding conserves task totals in hundredths. Screen share is the fraction
 of activations, visits count task/screen arrivals, and scroll-past means centers
 crossed by container offsets (a geometric proxy, not measured visual attention).
