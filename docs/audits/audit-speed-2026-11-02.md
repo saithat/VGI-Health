@@ -71,7 +71,7 @@ startup and report serialization. Artifacts are under
 
 Measured results and the selected default are pending the quiet window; no
 throughput or equivalence result is claimed yet. The provisional target remains
-three workers, matching the owner’s current operating setting. The queued sweep
+three workers, matching the owner’s current operating setting. The prepared sweep
 is additionally guarded before exceeding six workers: the ground rule caps
 Playwright at six, while the task requests measurements at eight, ten and
 twelve. The owner has been asked which limit applies.
@@ -86,3 +86,53 @@ Native export inventory:
 The owner's pre-change template reference is 47 minutes at three workers on the
 previously shared machine. It is a historical reference, separate from the
 quiet-machine measurements.
+
+## Outstanding browser validation
+
+The host checks repeatedly found the two promote full audits plus nightly
+screen checks. No Chrome process was started by this lane. The idle benchmark
+queue was stopped and its lock released while awaiting owner coordination; no
+benchmark, equivalence or full-audit timing result is claimed.
+
+Remaining work:
+
+1. Reserve a quiet host window with no other audit/screen-check processes.
+2. Resolve the six-worker ground rule versus the requested 8/10/12 sweep.
+3. Run the frozen subset sweep, choose the default from throughput/timeouts and
+   measured memory, and update the scripts' comments and README accordingly.
+4. Run the full template/persona pair with that default and record before/after
+   wall time, coverage, findings, memory and retries.
+5. Compare uncached/non-deduped and optimized v1 template and P5 persona physical
+   arrays and coverage totals. The prepared comparator checks exact JSON equality
+   of every per-state measurement/finding, rather than comparing timing metadata.
+
+Prepared commands (not executed past their quiet-host wait):
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+node "$TMPDIR/auditspeed-benchmark.mjs"
+# After calibration and changing the measured default:
+node "$TMPDIR/auditspeed-verification.mjs"
+```
+
+The second harness includes a three-worker uncached full-persona reference,
+then the full audit pair and the v1/P5 equivalence comparisons. Both harnesses
+and frozen exports remain in scratch; none is tracked as data. The sweep guard
+requires resolution before workers above six are launched.
+
+Exact completed verification commands:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+pnpm --filter app lint
+pnpm --filter app exec tsc --noEmit
+pnpm --filter app test --maxWorkers=2
+pnpm --filter app test --maxWorkers=2 tests/audit-execution.test.js tests/browser-heavy-lock.test.js
+pnpm --filter app build
+node scripts/audit-alert-policy.mjs "$TMPDIR/auditspeed-export-templates" --export-only
+node scripts/audit-alert-policy.mjs "$TMPDIR/auditspeed-export-personas" --personas --export-only
+```
+
+No Lean build or axiom audit was run because no Lean file changed. No application
+source, policy threshold or `ui-check.spec.ts` plumbing/assertion was edited. No
+other branch/worktree was modified and nothing was pushed.

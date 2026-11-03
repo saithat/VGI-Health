@@ -1145,7 +1145,9 @@ Worker selection accepts `EHR_SCREEN_WORKERS` and `EHR_SCREEN_MAX_WORKERS`
 2 GiB reserved for controllers/Vite plus 500 MiB per worker for Chromium, Node
 and headroom. The provisional target is three workers, matching the owner’s
 current operating setting; quiet-machine calibration is pending in the
-[audit-speed report](docs/audits/audit-speed-2026-11-02.md).
+[audit-speed report](docs/audits/audit-speed-2026-11-02.md). Browser validation
+awaits a quiet host window and resolution of the six-worker ground rule versus
+the requested higher-worker sweep; no measured higher default is claimed yet.
 Large export lists use file manifests and sequential 64-tree batches
 (`EHR_SCREEN_BATCH_SIZE`, at most 128). Independent regression controls run once
 per invocation; every distinct tree gets both fidelity projects and the full
