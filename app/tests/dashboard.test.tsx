@@ -213,7 +213,9 @@ withData("runs/mock").describe("archive-backed tests", () => {
    const complexity=complexitySchema.parse({schemaVersion:1,runId:'mock',suite:'bounded fixture',search:'Reporting only',personas:[{persona:'P3',iterations:[{version:0,label:'v0',specVersion:'v1',total:values,floor:values,workflows:[{workflow:'W4',metrics:values,floor:values,coverage:{expected:1,computed:0,notComputed:1}}],coverage:{expected:1,computed:0,notComputed:1},tasks:[{status:'not-computed',reason:'search bound',space:null,exact:false}]}],markers:[]}]});
    const view=render(<WorkflowComplexity run={{...run,complexity}} persona="P3"/>);
    // With no complete exact floor the chart opens on workload; switch to the expert measure under test.
-   expect((view.getByLabelText('Complexity measure') as HTMLSelectElement).value).toBe('workload');
+   const measure=view.getByLabelText('Complexity measure');
+   if(!(measure instanceof HTMLSelectElement))throw new Error('Complexity measure is not a select');
+   expect(measure.value).toBe('workload');
    fireEvent.change(view.getByLabelText('Complexity measure'),{target:{value:'expert'}});
    expect(view.getAllByText('not computed (search bound)').length).toBeGreaterThan(0);
    expect(view.getByText(/0\/1 tasks computed; missing tasks excluded/)).toBeTruthy();
