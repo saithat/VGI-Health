@@ -4,9 +4,11 @@ import { clickSavings, type ControlMetrics } from "./trajectory-filter";
 export function TaskControlSummary({
   entry,
   control,
+  title = "Same task without the agent",
 }: {
   entry: TrajectoryEntry;
   control: ControlMetrics | undefined;
+  title?: string;
 }) {
   const savings = clickSavings(entry, control);
   return (
@@ -14,7 +16,7 @@ export function TaskControlSummary({
       className="trajectory-control-summary"
       aria-label="Same task agent versus control"
     >
-      <h3>Same task · recorded agent arm vs no-agent control</h3>
+      <h3>{title}</h3>
       {control ? (
         <>
           <table>
@@ -37,7 +39,14 @@ export function TaskControlSummary({
                     <th>{String(label)}</th>
                     <td>{metrics.clicks}</td>
                     <td>{metrics.scrolls}</td>
-                    <td>{metrics.mouseTravelPx ?? "—"}</td>
+                    <td>
+                      {metrics.mouseTravelPx === null ||
+                      metrics.mouseTravelPx === undefined
+                        ? "—"
+                        : Math.round(metrics.mouseTravelPx).toLocaleString(
+                            "en-US",
+                          )}
+                    </td>
                     <td>{metrics.completed ? "Completed" : "Incomplete"}</td>
                   </tr>
                 );
@@ -47,8 +56,10 @@ export function TaskControlSummary({
           <p>
             {savings === null
               ? "Savings unavailable: both arms must complete and control clicks must be nonzero."
-              : `${savings.toFixed(1)}% fewer clicks vs no-agent (${control.clicks - entry.metrics.clicks} clicks saved).`}{" "}
-            Same persona, day and task id. These are simulated outcomes.
+              : control.clicks === entry.metrics.clicks
+                ? "Same clicks with and without the agent."
+                : `${savings.toFixed(1)}% fewer clicks vs no-agent (${control.clicks - entry.metrics.clicks} clicks saved).`}{" "}
+            Same persona, day and task id; simulated outcomes.
           </p>
         </>
       ) : (

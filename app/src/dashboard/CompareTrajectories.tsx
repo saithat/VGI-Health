@@ -1,3 +1,5 @@
+import { ReplayError } from "./ReplayError";
+import { InfoTip } from "./EvolutionSummary";
 import { TaskControlSummary } from "./TaskControlSummary";
 import { noAgentMetrics, controlKey } from "./trajectory-filter";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -12,7 +14,6 @@ import type { InterpFactory } from "./replay";
 import { type TrajectoryIndex } from "./trajectories-data";
 import { TrajectoryPlayer, type LoadedTrajectory } from "./TrajectoryPlayer";
 import { loadTrajectory } from "./trajectory-loader";
-import { personas } from "./WorkflowComplexity";
 import {
   comparisonOptions,
   defaultComparison,
@@ -87,13 +88,11 @@ export function CompareTrajectories({
   run,
   persona,
   active = true,
-  onPersonaChange,
   factory: suppliedFactory,
 }: {
   run: RunData;
   active?: boolean;
   persona: string;
-  onPersonaChange: (persona: string) => void;
   factory?: InterpFactory | undefined;
 }) {
   const runId = run.manifest.runId;
@@ -475,38 +474,7 @@ export function CompareTrajectories({
       className="trajectories trajectory-comparison"
       aria-label="Compare trajectories"
     >
-      <div className="comparison-heading">
-        <div>
-          <h3>Compare trajectories</h3>
-          <p>Compare completed tasks within the same workflow.</p>
-        </div>
-        <a
-          href={`/dashboard?${new URLSearchParams({ run: runId, persona, view: "Trajectories" })}`}
-        >
-          Single trajectory →
-        </a>
-      </div>
       <div className="trajectory-controls comparison-filters">
-        <label>
-          Persona{" "}
-          <select
-            aria-label="Comparison persona"
-            value={persona}
-            onChange={(event) => onPersonaChange(event.target.value)}
-          >
-            {personas.map((person) => (
-              <option
-                key={person.id}
-                value={person.id}
-                disabled={
-                  !index?.tasks.some((task) => task.persona === person.id)
-                }
-              >
-                {person.id} · {person.name}
-              </option>
-            ))}
-          </select>
-        </label>
         <label>
           Workflow{" "}
           <select
@@ -548,6 +516,25 @@ export function CompareTrajectories({
             <option value="cross-day">Across days / revisions</option>
           </select>
         </label>
+        <InfoTip label="How comparisons are measured" align="right">
+          <p>
+            Full-trace totals · delta = Right − Left · green means less work.
+            Scroll counts and keys come from trace operations; pixels require
+            recorded geometry. Screens count distinct event screens. Day
+            comparisons are observational.
+          </p>
+          <p>
+            Synchronized steps: one event on each side; the shorter replay holds
+            at the end. Space: play/pause · ←/→: step. Change links align each
+            side to its relevant pre-event screen.
+          </p>
+        </InfoTip>
+        <a
+          className="comparison-single"
+          href={`/dashboard?${new URLSearchParams({ run: runId, persona, view: "Trajectories" })}`}
+        >
+          Single trajectory →
+        </a>
       </div>
       <div className="comparison-pickers">
         <ComparisonPicker
@@ -595,13 +582,7 @@ export function CompareTrajectories({
             `Release ${left.entry.release} → ${right.entry.release}; includes vendor changes.`}
         </p>
       )}
-      {right?.source === "recorded" && (
-        <TaskControlSummary
-          entry={right.task}
-          control={controls.get(controlKey(right.task))}
-        />
-      )}
-      {error && <p role="alert">{error}</p>}
+      {error && <ReplayError error={error} runId={run.manifest.runId} />}
       {!index && !error && <p role="status">Loading recorded trajectories…</p>}
       {index && !options.length && (
         <p role="status">
@@ -648,12 +629,6 @@ export function CompareTrajectories({
           })}
         </dl>
       )}
-      <p className="trajectory-caption comparison-metric-note">
-        Full-trace totals · delta = Right − Left · green means less work. Scroll
-        counts and keys come from trace operations; pixels require recorded
-        geometry. Screens count distinct event screens. Day comparisons are
-        observational.
-      </p>
       <div
         ref={player}
         className="trajectory-playback comparison-player"
@@ -747,11 +722,6 @@ export function CompareTrajectories({
             {fullscreen ? "Exit fullscreen" : "Fullscreen"}
           </button>
         </div>
-        <p className="trajectory-caption">
-          Synchronized steps: one event on each side; the shorter replay holds
-          at the end. Space: play/pause · ←/→: step. Change links align each
-          side to its relevant pre-event screen.
-        </p>
         {pair && factory && left && right ? (
           <div className="trajectory-panels compare" key={pair.key}>
             <div className="comparison-side">
@@ -795,11 +765,7 @@ export function CompareTrajectories({
           className="comparison-changes"
           aria-label="Changes between revisions"
         >
-          <h3>What changed</h3>
-          <p>
-            Readable differences from certified decision records. Jump to see
-            each change in context.
-          </p>
+          <h3>What changed between these revisions</h3>
           {changeStatus && <p role="status">{changeStatus}</p>}
           <div className="comparison-change-list">
             {anchoredGroups.map((group) => (
@@ -853,6 +819,13 @@ export function CompareTrajectories({
             ))}
           </div>
         </section>
+      )}
+      {right?.source === "recorded" && (
+        <TaskControlSummary
+          entry={right.task}
+          control={controls.get(controlKey(right.task))}
+          title="Right task without the agent"
+        />
       )}
     </section>
   );

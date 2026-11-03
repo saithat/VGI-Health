@@ -1015,7 +1015,11 @@ main carries its pinned urgent alerts and acknowledgment controls in typed pane
 metadata, preserving the board's modal ownership and patient-scoped events.
 Critical-result workflow steps retain clinical commits, preserving the original
 commit-guard theorem. The promotion gate shares the canonical physical-policy
-collector and pinned Noto/capture environment. See the
+collector and pinned Noto/capture environment. The integration includes main
+through `19a569b6`; subsequent dashboard/browser changes preserve the clinical
+bindings verified by the full physical audits and promotion cohort. Dashboard
+trajectory browsing stacks above replay on narrow screens, preserving a nonzero
+replay stage and the recording’s fixed 1440×900 logical viewport. See the
 [integration audit](docs/audits/promote-main-integration-2026-11-02.md).
 See the [round-two report](docs/design/exploration-round2.md) for current tiers,
 measurements, exposure limits and the native/WASM/browser verification record.

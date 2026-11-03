@@ -37,6 +37,28 @@ function propertyOf(output: unknown): string {
     ? String(violation.property)
     : "";
 }
+/** True when the badge would say plain "✓ Certified"; the grid shows only exceptions. */
+function certifiedPlain(
+  program: ProgramEntry,
+  verdicts: Verdicts,
+  run?: RunData,
+) {
+  if (program.mock) return false;
+  const record = run?.records.find(
+    (record) =>
+      record.versionAfter === program.version &&
+      record.persona === program.persona &&
+      record.certificate,
+  );
+  const certificate = run?.certs.get(
+    `certs/${program.persona}/v${program.version}.json`,
+  );
+  const status =
+    program.run && (record?.certificate || certificate?.verdict === "ok")
+      ? "certified"
+      : (program.recordedCertificate ?? verdicts[program.path]?.status);
+  return status === "certified";
+}
 function CertificateBadge({
   program,
   verdicts,
@@ -238,11 +260,9 @@ function Timeline({
                 <strong>
                   {persona} <span>{personaNames[persona]}</span>
                 </strong>
-                <span>
-                  {run?.manifest.personas.includes(persona)
-                    ? "Recorded personalization"
-                    : "Certified role view · no run yet"}
-                </span>
+                {!run?.manifest.personas.includes(persona) && (
+                  <span>No run yet</span>
+                )}
               </div>
               {Array.from({ length: 11 }, (_, day) => {
                 const node = nodes.find(
@@ -278,18 +298,13 @@ function Timeline({
                           <span className="timeline-dot" aria-hidden="true">
                             {node.kept ? "" : "✓"}
                           </span>
-                          <span>
-                            {node.baseline
-                              ? node.program.release
-                              : `rev ${node.program.version}`}
-                          </span>
-                          <small>
+                          <span aria-hidden={node.kept || undefined}>
                             {node.kept
-                              ? "kept"
+                              ? "\u00a0"
                               : node.baseline
-                                ? "baseline"
-                                : "certified"}
-                          </small>
+                                ? node.program.release
+                                : `rev ${node.program.version}`}
+                          </span>
                         </button>
                         {node.rejected.length > 0 && (
                           <span
@@ -304,14 +319,6 @@ function Timeline({
                             × {node.rejected.length}
                           </span>
                         )}
-                        {[4, 7].includes(day) && (
-                          <span
-                            className="migration-badge"
-                            title="Vendor release merged and role view certified"
-                          >
-                            ↳ ✓
-                          </span>
-                        )}
                       </>
                     )}
                   </div>
@@ -320,10 +327,10 @@ function Timeline({
             </div>
           ))}
           <p className="timeline-legend">
-            <span>● Deployed</span>
-            <span>○ Kept</span>
-            <span className="allergy-text">× Rejected candidate</span>
-            <span>⇢ Vendor release / re-certification</span>
+            <span>● New certified revision</span>
+            <span>○ No change that night</span>
+            <span className="allergy-text">× Rejected candidates</span>
+            <span>┆ Vendor release, merged and re-certified</span>
           </p>
         </div>
         {selected && (
@@ -358,78 +365,43 @@ function Timeline({
               run={run}
             />
             <div className="timeline-measure">
-              <strong>
-                Observed workload change (after − before), vs{" "}
+              <strong
+                title={`Mean workload per workflow, after − before, vs ${run?.manifest.measurementProtocol ? "active canonical" : "rev 0"}; differs from the fixed-case exact minimum on Evolution. Negative means fewer interactions.`}
+              >
+                Workload change vs{" "}
                 {run?.manifest.measurementProtocol
                   ? "active canonical"
                   : "rev 0"}
               </strong>
               {delta ? (
                 <>
-                  <p className="browser-muted">
-                    Mean workload per workflow; differs from the fixed-case
-                    exact minimum on Evolution. Negative means fewer
-                    interactions.
-                  </p>
-                  <dl>
-                    {(delta.scrollPx === null ||
-                      delta.mouseTravelPx === null) && (
-                      <div>
-                        <dt>Pixel metrics</dt>
-                        <dd>not measured for archived runs</dd>
-                      </div>
-                    )}
-                    <div>
-                      <dt>Clicks</dt>
-                      <dd>
-                        {delta.clicks > 0 ? "+" : ""}
-                        {delta.clicks.toFixed(1)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>Scrolls</dt>
-                      <dd>
-                        {delta.scrolls > 0 ? "+" : ""}
-                        {delta.scrolls.toFixed(1)}
-                      </dd>
-                    </div>
-                    {delta.scrollPx !== null && (
-                      <div>
-                        <dt>Scroll distance</dt>
-                        <dd>
-                          {delta.scrollPx !== null && delta.scrollPx > 0
-                            ? "+"
-                            : ""}
-                          {delta.scrollPx === null
-                            ? "—"
-                            : delta.scrollPx.toFixed(1)}{" "}
-                          px
+                  <dl className="timeline-measure-main">
+                    {(
+                      [
+                        ["Clicks", delta.clicks],
+                        ["Scrolls", delta.scrolls],
+                      ] as const
+                    ).map(([label, value]) => (
+                      <div key={label}>
+                        <dt>{label}</dt>
+                        <dd
+                          className={
+                            value < 0 ? "better" : value > 0 ? "worse" : ""
+                          }
+                        >
+                          {value > 0 ? "+" : value < 0 ? "−" : ""}
+                          {Math.abs(value).toFixed(1)}
                         </dd>
                       </div>
-                    )}
-                    <div>
-                      <dt>Keys (secondary)</dt>
-                      <dd>
-                        {delta.keys > 0 ? "+" : ""}
-                        {delta.keys.toFixed(1)}
-                      </dd>
-                    </div>
-                    {delta.mouseTravelPx !== null && (
-                      <div>
-                        <dt>Mouse travel</dt>
-                        <dd>
-                          {delta.mouseTravelPx !== null &&
-                          delta.mouseTravelPx > 0
-                            ? "+"
-                            : ""}
-                          {delta.mouseTravelPx === null
-                            ? "—"
-                            : delta.mouseTravelPx.toFixed(1)}{" "}
-                          px
-                        </dd>
-                      </div>
-                    )}
+                    ))}
                   </dl>
+                  <p className="browser-muted timeline-measure-minor">
+                    {delta.scrollPx === null || delta.mouseTravelPx === null
+                      ? "Pixel metrics not measured for archived runs"
+                      : `Scroll ${delta.scrollPx > 0 ? "+" : ""}${Math.round(delta.scrollPx)} px · mouse ${delta.mouseTravelPx > 0 ? "+" : ""}${Math.round(delta.mouseTravelPx)} px`}{" "}
+                    · keys {delta.keys > 0 ? "+" : ""}
+                    {delta.keys.toFixed(1)}
+                  </p>
                 </>
               ) : (
                 <p className="browser-muted">
@@ -542,9 +514,6 @@ export function Browse() {
       <main className="browser-page">
         <div className="browse-heading">
           <div>
-            <span className="browser-eyebrow">
-              CANONICAL EHR & PERSONALIZATION
-            </span>
             <h1>Open a clinical UI</h1>
             <p>
               One vendor baseline. A certified view for every role.
@@ -590,17 +559,13 @@ export function Browse() {
           <p role="status">Loading certified UI catalog…</p>
         ) : (
           <>
-            <div className="browse-context">
-              <span>
-                Choose a chart day on the timeline. Select a patient inside the
-                EHR.
-              </span>
-              {run?.manifest.ehr.mode === "fake" && (
+            {run?.manifest.ehr.mode === "fake" && (
+              <div className="browse-context">
                 <span className="browser-badge warning">
                   MOCK authored data
                 </span>
-              )}
-            </div>
+              </div>
+            )}
             {runId && !run && !runError ? (
               <p role="status">Loading recorded deployments…</p>
             ) : (
@@ -614,7 +579,10 @@ export function Browse() {
                 <div className="browser-section-heading">
                   <ClinicalIcon name="lock" />
                   <h2 id="program-title">Certified role views</h2>
-                  <span>Open at the role’s landing activity</span>
+                  <span>
+                    Every view below is certified unless marked · opens at the
+                    role’s landing activity
+                  </span>
                 </div>
                 <div className="program-grid-scroll">
                   <table className="program-grid">
@@ -653,11 +621,9 @@ export function Browse() {
                                 ? "Vendor reference"
                                 : `${persona} · ${personaNames[persona]}`}
                             </strong>
-                            <small>
-                              {persona === "vendor"
-                                ? "Shared source · compare only"
-                                : "Canonical with role permissions"}
-                            </small>
+                            {persona === "vendor" && (
+                              <small>Shared source · compare only</small>
+                            )}
                           </th>
                           {vendorReleases.map((release) => {
                             const program = programs.find(
@@ -669,10 +635,12 @@ export function Browse() {
                               <td key={release.id}>
                                 {program ? (
                                   <>
-                                    <CertificateBadge
-                                      program={program}
-                                      verdicts={verdicts}
-                                    />
+                                    {!certifiedPlain(program, verdicts) && (
+                                      <CertificateBadge
+                                        program={program}
+                                        verdicts={verdicts}
+                                      />
+                                    )}
                                     <Button
                                       component="a"
                                       href={ehrUrl(
@@ -711,15 +679,23 @@ export function Browse() {
                                 )[0];
                               return latest ? (
                                 <>
-                                  <CertificateBadge
-                                    program={latest}
-                                    verdicts={verdicts}
-                                    run={
-                                      run?.manifest.runId === latest.run
-                                        ? run
-                                        : undefined
-                                    }
-                                  />
+                                  {!certifiedPlain(
+                                    latest,
+                                    verdicts,
+                                    run?.manifest.runId === latest.run
+                                      ? run
+                                      : undefined,
+                                  ) && (
+                                    <CertificateBadge
+                                      program={latest}
+                                      verdicts={verdicts}
+                                      run={
+                                        run?.manifest.runId === latest.run
+                                          ? run
+                                          : undefined
+                                      }
+                                    />
+                                  )}
                                   <Button
                                     component="a"
                                     href={ehrUrl(latest)}

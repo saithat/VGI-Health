@@ -1,7 +1,9 @@
 # Promotion integration with main
 
-Integration: `lane/promote` (`1272fe10`) merges local `main`
-(`11354642`). No fetch was necessary. The owner cleared the two source-index
+Integration: `28d0e14f` merges local `main` (`11354642`) into
+`lane/promote` (`1272fe10`). While verification ran, main advanced to `19a569b6`;
+that later dashboard/browser-only snapshot is integrated in a second merge.
+No fetch was necessary. The owner cleared the two source-index
 blockers before this integration; no push is authorized.
 
 ## Conflict resolutions
@@ -206,3 +208,81 @@ All **4,615 distinct emitted ordinary views** pass at 1440 and 390 px
 ordinary admission, checker acceptance and passed screen gates; neither receives
 a deployment certificate. The three-worker negative fixture places a wrong banner
 in the second worker and is rejected (child exit 1); no success report is written.
+
+
+## Current-main follow-up
+
+`git merge --no-commit main` at `19a569b6` applied without conflicts after
+`28d0e14f`. Its twelve changed files are confined to dashboard/browser review
+code, `app/e2e/dashboard.spec.ts` and `docs/design/agent-admissions.md`.
+All **451** recorded clinical/Lean/capture/experiment source files are byte-identical.
+The rebuilt app retains the exact app hash above; the physical audits, source
+checks, geometry, complete cohort and view coverage therefore retain their bindings.
+Final-tree Lean/Comparator/axiom/type generation, WASM build/check, app
+build/lint/typecheck/tests and full E2E are rechecked after this follow-up.
+
+
+Follow-up verification: Lean build (453 jobs), Comparator, 98-theorem axiom audit,
+176-type/42-sample generation, WASM rebuild/check, app build/lint/typecheck,
+324 app tests in 41 files, all 9,230 view checks, the 14-record/44-comparison
+promotion gate and geometry determinism pass on the `19a569b6` integration.
+The unchanged agent source retains its passing typecheck and 118 tests.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+(cd lean && lake build)
+(cd lean && lake exe gents)
+(cd lean && lake env lean ../runs/promote-merge-v5/axioms.lean)
+(cd lean && lake env lean Ehr/Render/Dated.lean)
+(cd lean && COMPARATOR_BWRAP=/home/saithat/Projects/VGI-promote/scripts/lean-bwrap.py lake comparator)
+JOBS=4 EM_CACHE="$TMPDIR/promote-emcache" make wasm
+make wasm-check
+pnpm --filter app build
+pnpm --filter app lint
+pnpm --filter app exec tsc --noEmit
+pnpm --filter app test --maxWorkers=2 --testTimeout=20000
+EHR_ORDINARY_WORKERS=3 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-merge-v5
+node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/promote-gate.mjs runs/promote-merge-gate
+pnpm --filter app test:geometry-determinism
+APP_TEST_PREVIEW=1 APP_TEST_PORT=4263 PLAYWRIGHT_JSON_OUTPUT_NAME="$TMPDIR/promote-latest-e2e.json" pnpm --filter app exec playwright test --workers=3 --reporter=line,json
+```
+
+
+The first follow-up full E2E run reported **245 passed / 67 skipped / 42 failed**.
+The original 39 failures retained their classifications; three additional narrow
+`trajectories.spec.ts` cases were **NEW**: all-trajectories replay, fixed playback,
+and the aliased-run playback fixture. Incoming main's fixed 340px task-browser
+column left the replay column at zero width on narrow screens, scaling the
+recorded iframe to zero. The dashboard now stacks browser and replay below
+1000px, bounds the task-list scroller, and preserves the desktop split and fixed
+1440×900 logical recording viewport. No test assertion or certificate is relaxed.
+The pre-fix JSON/errors are retained as `e2e-classification-before-responsive-fix.json`.
+
+
+All **six** unchanged trajectory playback E2E cases pass (desktop and narrow)
+after the responsive fix. The app build, lint and typecheck pass; the 451 clinical,
+Lean, capture and experiment source bindings and the app hash remain unchanged.
+
+```sh
+APP_TEST_PREVIEW=1 APP_TEST_PORT=4266 PLAYWRIGHT_JSON_OUTPUT_NAME="$TMPDIR/promote-latest-trajectories.json" pnpm --filter app exec playwright test trajectories.spec.ts --workers=3 --reporter=line,json
+```
+
+
+The final corrected full E2E run reports **248 passed / 67 skipped / 39 failed /
+0 flaky**. Every failed project/test key is identical to the 39-row table above:
+**32 known live-auth/setup, 4 known recorded-dashboard/stale binding, 3 known
+urgency, 0 NEW**. All three new narrow-playback failures are resolved. The final
+classification and complete errors are in `e2e-classification-latest.json`;
+pre-fix results remain separate. App unit tests rerun after the fix: **324 passed
+in 41 files**. All test assertions are retained.
+
+No push, deployment or historical certificate rebinding was performed; these
+are outside the authorized integration. The certified app and Lean/WASM bindings
+changed from the pre-integration revision, as recorded above. Ignored runs,
+fixtures, programs and verdict data are not staged; protected files and
+`.gitignore` match incoming main. No new owner decision is required. The known
+live setup, stale recording and legacy urgency fixture failures remain separate
+follow-up work.
+
+Raw evidence is rescued under
+`/home/saithat/Projects/run-tmp/promote-merge-rescue-20261102/runs/`.
