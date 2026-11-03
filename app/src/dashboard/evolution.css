@@ -502,3 +502,19 @@
 .migrated {
   color: var(--clinical-yellow-ink);
 }
+.replay-error {
+  padding: 10px 14px;
+  border-left: 3px solid var(--clinical-yellow-ink);
+  background: var(--clinical-yellow-tint);
+  color: var(--clinical-ink);
+  border-radius: 4px;
+  font-size: 13px;
+}
+.replay-error p {
+  margin: 4px 0;
+}
+.replay-error details {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}

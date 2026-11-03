@@ -1621,7 +1621,6 @@ export function Dashboard({
                       active={view === "Compare"}
                       run={run}
                       persona={persona}
-                      onPersonaChange={setPersona}
                       factory={interpFactory}
                     />
                   </Suspense>
