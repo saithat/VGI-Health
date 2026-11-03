@@ -100,7 +100,7 @@
   overflow: hidden;
 }
 .trajectory-event {
-  font-family: monospace;
+  font-family: "VGI Noto Sans Mono", "VGI Noto Symbols", monospace;
   font-size: 11px;
   min-height: 28px;
   overflow-wrap: anywhere;

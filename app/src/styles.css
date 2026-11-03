@@ -1,9 +1,11 @@
+@import "./ehr/ui/fonts/fonts.css";
+
 body {
   margin: 0;
   background: var(--clinical-canvas, #f3f5f7);
   color: var(--clinical-ink, #243341);
   font:
-    13px/1.5 system-ui,
+    13px/1.5 "VGI Noto Sans", "VGI Noto Symbols",
     sans-serif;
 }
 .live-controls {

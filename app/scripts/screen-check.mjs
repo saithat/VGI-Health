@@ -48,6 +48,8 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
   const sources = [
     "e2e/ui-check.spec.ts",
     "e2e/geometry-capture.ts",
+    "e2e/capture-environment.ts",
+    "src/ehr/ui/fonts/manifest.json",
     "playwright.config.ts",
     "src/ehr/ui/fidelity.ts",
     "src/ehr/ui/display.tsx",
@@ -126,6 +128,7 @@ if (ui) {
     app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
     ui: digest(readFileSync(resolve(appDir, "e2e/ui-check.spec.ts"))),
     config: digest(readFileSync(resolve(appDir, "playwright.config.ts"))),
+    environment: digest(readFileSync(resolve(appDir, "e2e/capture-environment.ts"))),
     browser: digest(readFileSync(chromium.executablePath())),
     playwright: digest(
       readFileSync(

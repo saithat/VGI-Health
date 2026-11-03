@@ -94,3 +94,23 @@ card columns at desktop and narrow widths. Solid chrome and contrasting chart st
 contrast measurement; reference intervals retain outlines and labeled curves.
 See the [repair report](../../../../docs/audits/wcag-2026-11-02.md) for sampled
 coverage and the separately owned urgent-alert/integration findings.
+
+Clinical typography is bundled from OFL-1.1 Noto fonts: normal Noto Sans
+400–800, regular Noto Sans Mono for hotkeys/code, and a two-glyph Symbols 2
+fallback. `fonts/fonts.css` uses private family names with no `local()` lookup;
+`fonts/manifest.json` names every face/weight required before measurement.
+The Latin repertoire and pinned generation inputs are documented in
+[scripts/fonts](../../../../scripts/fonts/README.md). Add font coverage when
+introducing new scripts or symbols. Binary bytes enter the certified app hash.
+
+The collector gives every active/background state a fresh BrowserContext/page
+at 1440×900, DPR 1, reduced motion, light scheme, en-US and
+America/Los_Angeles. The screen/WCAG gate shares these settings and checks each
+font after `document.fonts.ready`; a missing font fails capture. Both disable
+animation, transitions, smooth scrolling and caret paint during measurement.
+`pnpm --filter app test:geometry-determinism` performs independent uncached
+repeat/alternate-fontconfig captures of representative fixtures. The full
+canonical check and before/after measurements are recorded in the
+[geometry report](../../../../docs/audits/geometry-determinism-2026-11-02.md).
+Changing these fonts invalidates historical app bindings and geometry caches;
+this lane does not rebind recordings.

@@ -29,7 +29,8 @@
       "@ehr/presentation": [
         "./src/ehr/ui/presentation-helpers.tsx"
       ]
-    }
+    },
+    "allowImportingTsExtensions": true
   },
   "include": [
     "src",
