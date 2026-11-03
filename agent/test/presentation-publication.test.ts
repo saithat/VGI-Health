@@ -27,7 +27,9 @@ it('stages program, source and component bundle together; failed bundle publicat
   expect(pointer.components).toBe('programs/P1/v1.components.json');
   expect(JSON.parse(await readFile(publishing.programPath('P1', 1), 'utf8'))).toEqual(expandProgram(next));
   expect((await publishing.login('P1')).program.presentationComponents).toHaveLength(1);
-  await expect(publishing.deploy('P1', next, certificate, bindBuild(build, next, certificate))).rejects.toThrow('immutable');
+  expect(await publishing.deploy('P1', next, certificate, bindBuild(build, next, certificate))).toEqual(pointer);
+  const changed={...next,id:'changed'};
+  await expect(publishing.deploy('P1', changed, certificate, bindBuild(build, changed, certificate))).rejects.toThrow('immutable');
   await writeFile(path.join(directory, pointer.components ?? ''), '{}');
   await expect(publishing.login('P1')).rejects.toThrow();
 });

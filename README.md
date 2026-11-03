@@ -964,6 +964,32 @@ TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dis
 ```
 
 
+### Determinism and replay
+
+The agent fails closed when replayed system/user prompts diverge. Explicit
+`--replay-allow-drift` records the policy and affected calls in the manifest.
+Native, screen/geometry and LLM transport failures retry identical inputs
+(`EHR_INFRA_RETRIES=2` by default), then stop with `infrastructure-error` for
+resume; failed transport cannot become a nightly decision. Existing historical
+error outcomes remain readable. Daily and completed-run content digests exclude
+declared provenance metadata while retaining clinical trace times and order.
+Resume reloads persisted geometry coverage before accumulating new states.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+pnpm --filter agent verify-determinism
+pnpm --filter agent verify-crash-resume --points 8 --seed 20261102
+```
+
+These commands exercise two days × two personas with the real prebuilt native
+binary, scripted zero-model responses and fixed synthetic geometry. They compare
+serial/serial/parallel execution and seeded SIGKILL/resume results, reporting the
+first differing file and JSON path. Artifacts stay in disk-backed scratch.
+The crash hook refuses live model backends. This checks the fixture's
+orchestration and publication boundaries; browser geometry and fonts are handled
+by a separate lane. The [boundary inventory and scope](agent/DETERMINISM.md)
+describe metadata exclusions, recording IDs, retry audits and remaining coverage.
+
 ## Development checks
 
 Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check

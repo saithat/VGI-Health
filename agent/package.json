@@ -16,7 +16,9 @@
     "report": "tsx src/report.ts",
     "dry-run": "tsx src/dry-run.ts",
     "rebind": "tsx src/rebind.ts",
-    "verify-resume": "tsx src/verify-resume.ts"
+    "verify-resume": "tsx src/verify-resume.ts",
+    "verify-determinism": "tsx src/verify-determinism.ts",
+    "verify-crash-resume": "tsx test/crash-resume-harness.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

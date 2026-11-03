@@ -1,4 +1,5 @@
 /** Deterministic vendor-only control: no designer/model calls, no optional surfacing. */
+import { InfrastructureError } from './errors.js';
 import path from 'node:path';
 import {existsSync} from 'node:fs';
 import {RunStore} from './store.js';
@@ -31,7 +32,7 @@ export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Relea
   for(const candidate of accepted?[]:[restamped.program,canonical]){
    if(!candidate)continue;
    const fallback=candidate===canonical;
-   const validation=await holdout.validate(canonical,candidate,release.specVersion).catch(error=>{attempts.push({fallback,error:String(error)});return null;});
+   const validation=await holdout.validate(canonical,candidate,release.specVersion).catch(error=>{if(error instanceof InfrastructureError)throw error;attempts.push({fallback,error:String(error)});return null;});
    if(!completionOk(validation)){attempts.push({fallback,reason:'validation incomplete'});continue;}
    const checked=await deps.ehr.check({specVersion:release.specVersion,program:candidate,prev:fallback?canonical:gate.prev,canonical:release.canonical});
    if(checked!=='ok'){attempts.push({fallback,check:checked});continue;}

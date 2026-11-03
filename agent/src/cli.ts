@@ -1,3 +1,5 @@
+import { auditedOperation } from './operation-manifest.js';
+import { retryEhr,retryScreens } from './retry-boundaries.js';
 /**
  * CLI entry (see package.json scripts):
  *
@@ -65,12 +67,12 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
-      days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' },
+      days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false},
       'run-id': { type: 'string' }, parallel:{type:'boolean',default:false},resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
       model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' }, 'v3-day': { type: 'string' }, 'v2-day': { type: 'string' }, 'feature-day': { type: 'string' }, 'migration-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
-  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
+  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const summary = await runDays({
     days: intArg(values.days, 'days', 10),
     resume: values.resume,parallel:values.parallel,
@@ -96,11 +98,11 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
     args: argv,
     options: {
       persona: { type: 'string' }, request: { type: 'string' }, backend: { type: 'string' }, run: { type: 'string' },
-      world: { type: 'string' }, 'replay-from': { type: 'string' }, spec: { type: 'string' }, out: { type: 'string' }, model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' },
+      world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false}, spec: { type: 'string' }, out: { type: 'string' }, model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' },
     },
   });
   if (!values.persona || !values.request) throw new Error('--persona and --request are required');
-  const ehr = createEhr();
+  const ehr = retryEhr(createEhr());
   const runDir = opt(values.run);
   let worldDir = opt(values.world);
   if (!worldDir && runDir) {
@@ -119,12 +121,13 @@ async function cmdTryToBreakIt(argv: string[]): Promise<void> {
   const program = deployed?.program ?? personalize(release.canonical, params, persona.userId);
 
   const outDir = opt(values.out) ?? runDir ?? path.join(REPO_ROOT, 'runs', `break-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`);
-  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
+  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const store = new RunStore(outDir);
-  const res = await runTryToBreakIt(
-    { runId: path.basename(outDir), store, ehr, screens: createScreenChecker(ehr), agent: new LlmAgent(new RecordingLlm(llm, outDir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir, worldSeed: world.manifest.seed },
-    { persona, release, program, request: values.request },
-  );
+  const request=values.request;
+  const res = await auditedOperation(path.join(outDir,'break'),llm,persona.id,null,()=>runTryToBreakIt(
+    { runId: path.basename(outDir), store, ehr, screens: retryScreens(createScreenChecker(ehr)), agent: new LlmAgent(new RecordingLlm(llm, outDir)), seedPolicy: 'none', seedState: { rejected: new Set(), injected: 0 }, worldDir, worldSeed: world.manifest.seed },
+    { persona, release, program, request },
+  ));
   console.log(JSON.stringify({
     request: res.request,
     persona: res.persona,
@@ -153,7 +156,7 @@ async function cmdNight(argv: string[]): Promise<void> {
     args: argv,
     options: {
       run: { type: 'string' }, persona: { type: 'string' }, night: { type: 'string' }, backend: { type: 'string' },
-      mode: { type: 'string' }, 'replay-from': { type: 'string' }, out: { type: 'string' }, model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' },
+      mode: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false}, out: { type: 'string' }, model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' },
     },
   });
   if (!values.run || !values.persona || !values.night) throw new Error('--run, --persona and --night are required');
@@ -161,7 +164,7 @@ async function cmdNight(argv: string[]): Promise<void> {
     runDir: resolveUserPath(values.run),
     persona: values.persona,
     night: intArg(values.night, 'night', 1),
-    llm: createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] }),
+    llm: createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] }),
     ehr: createEhr(),
     mode: modeArg(values.mode),
     ...(values.out ? { outDir: resolveUserPath(values.out) } : {}),
