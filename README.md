@@ -388,7 +388,8 @@ Screen share means fraction of activations; scroll-past lists components whose
 reveal offsets were traversed within a scroll container. An explicit remainder bucket preserves totals
 when only the top 15 targets are shown. Ranking prioritizes activations and
 reveal-scroll counts, then pointer travel; keystrokes remain secondary. KLM time
-stays hidden.
+stays hidden. Digest pixel aggregates are rounded to hundredths, preserving task
+totals without floating-point display noise.
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2

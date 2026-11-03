@@ -203,6 +203,10 @@ export interface PhysicalTotals {
   clicks: number; keystrokes: number; scrolls: number; scrollPx: number | null; mouseTravelPx: number | null; visits: number;
 }
 const empty = (): PhysicalTotals => ({clicks:0,keystrokes:0,scrolls:0,scrollPx:0,mouseTravelPx:0,visits:0});
+const rounded = (cost:PhysicalTotals):PhysicalTotals => ({...cost,
+  scrollPx:cost.scrollPx===null?null:round(cost.scrollPx),
+  mouseTravelPx:cost.mouseTravelPx===null?null:round(cost.mouseTravelPx),
+});
 const accumulate = (a: PhysicalTotals, b: PhysicalTotals) => {
   a.clicks += b.clicks; a.keystrokes += b.keystrokes; a.scrolls += b.scrolls; a.visits += b.visits;
   a.scrollPx = plus(a.scrollPx,b.scrollPx); a.mouseTravelPx = plus(a.mouseTravelPx,b.mouseTravelPx);
@@ -237,10 +241,10 @@ export function localityDigest(days: readonly { result: DayResult; atlas: Geomet
   const aggregate = (rows: PhysicalTotals[]) => {const out=empty(); rows.forEach(r=>accumulate(out,r)); return out;};
   return {
     trainDays: days.map(d=>d.result.day), units: 'counts and CSS pixels at 1440×900; completed tasks; share = fraction of activations; scroll-past = component reveal offsets traversed within a container',
-    totals,
-    screens:[...screens].sort(([a],[b])=>a.localeCompare(b)).map(([screen,cost])=>({screen,...cost,share:totals.clicks?cost.clicks/totals.clicks:0})),
-    components:ranked.slice(0,topN).map(({scrollPast,...cost})=>({...cost,scrollPast:[...scrollPast].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([component,scrolls])=>({component,scrolls}))})),
-    otherComponents:aggregate(ranked.slice(topN)),
+    totals:rounded(totals),
+    screens:[...screens].sort(([a],[b])=>a.localeCompare(b)).map(([screen,cost])=>({screen,...rounded(cost),share:totals.clicks?cost.clicks/totals.clicks:0})),
+    components:ranked.slice(0,topN).map(({scrollPast,...cost})=>({...cost,...rounded(cost),scrollPast:[...scrollPast].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0])).map(([component,scrolls])=>({component,scrolls}))})),
+    otherComponents:rounded(aggregate(ranked.slice(topN))),
     sequences:[...sequences].filter(([,tasks])=>tasks.size>1).sort((a,b)=>b[1].size-a[1].size||a[0].localeCompare(b[0])).slice(0,topN).map(([steps,tasks])=>({steps:JSON.parse(steps),tasks:tasks.size})),
   };
 }

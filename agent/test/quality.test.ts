@@ -95,6 +95,18 @@ describe('physical locality conservation',()=>{
     const result=attachGeometry(copy,atlas),digest=localityDigest([{result,atlas}]);
     expect(digest.sequences.some(s=>s.tasks===2)).toBe(true);expect(digest.totals.clicks).toBe(6);
   });
+  it('reports hundredths without floating-point accumulation noise',()=>{
+    const fractional={...atlas,states:atlas.states.map(state=>({...state,components:{...state.components,
+      a:{center:{x:720.1,y:450},reveal:{x:720.1,y:450},chain:['root'],offsets:{root:{x:0,y:0}}},
+      b:{center:{x:720.3,y:450},reveal:{x:720.3,y:450},chain:['root'],offsets:{root:{x:0,y:0}}},
+    }}))};
+    const events:TraceEvent[]=[
+      {task:'t',t:0,screen:'s',event:{click:{comp:'a'}},ops:['point','click'],result:'ok'},
+      {task:'t',t:1,screen:'s',event:{click:{comp:'b'}},ops:['point','click'],result:'ok'},
+    ];
+    const result=attachGeometry(day(events,2,0),fractional),digest=localityDigest([{result,atlas:fractional}]);
+    expect(result.tasks[0]?.mouseTravelPx).toBe(0.3);expect(digest.totals.mouseTravelPx).toBe(0.3);expect(digest.screens[0]?.mouseTravelPx).toBe(0.3);
+  });
   it('keeps keystrokes secondary when ranking top targets',()=>{
     const flat={...atlas,states:atlas.states.map(state=>({...state,components:{...state.components,
       b:{center:{x:50,y:400},reveal:{x:50,y:400},chain:['root'],offsets:{root:{x:0,y:0}}},
