@@ -1,3 +1,10 @@
+// Full --ui runs share $TMPDIR/vgi-browser-heavy.lock (inherited audit token;
+// EHR_BROWSER_LOCK=off opts out). Worker defaults are memory bounded; see README
+// for calibration. Only timeout/crash batches retry failed tests, twice at half
+// workers. Exact tree/context/bundle dedupe expands all per-state measurements;
+// atomic physical samples are shared under $TMPDIR/vgi-screen-check-cache.
+// Iterate with targeted --grep/subsets; run the full audit pair once before
+// reporting; the merge session runs it once on main. Agent calls do not lock.
 import { randomUUID } from "node:crypto";
 import { Buffer } from "node:buffer";
 import { performance } from "node:perf_hooks";
@@ -21,6 +28,17 @@ import {
   cachedTree,
   recordBatch,
 } from "./screen-cache.mjs";
+import { acquireBrowserLock } from "../../scripts/browser-heavy-lock.mjs";
+import {
+  isAgentScreenCheck,
+  workerCount,
+  dedupeFiles,
+  expandMeasurements,
+  reportTests,
+  failureKind,
+  recoverTimeouts,
+  exactGrep,
+} from "./audit-execution.mjs";
 const started = performance.now();
 const ui = process.argv[2] === "--ui";
 // Explicit 0 is the operator escape hatch; certification uses the full matrix.
@@ -38,6 +56,11 @@ if (!files.length || files.some((file) => !existsSync(file))) {
   );
   process.exit(1);
 }
+// Nightly agent invocations deliberately retain their existing scheduling.
+const browserLock =
+  ui && !isAgentScreenCheck(process.env, files)
+    ? await acquireBrowserLock()
+    : null;
 const appDir = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const policyPath = resolve(appDir, "../docs/design/alert-urgency.json");
 const policy = JSON.parse(readFileSync(policyPath, "utf8"));
@@ -56,6 +79,7 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
     "src/ehr/ui/types.ts",
     "scripts/screen-check.mjs",
     "scripts/screen-cache.mjs",
+    "scripts/audit-execution.mjs",
   ];
   const context = contextDigest({
     app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
@@ -122,13 +146,16 @@ if (ui && !process.env.EHR_GEOMETRY_DIR)
 // Measurement caches bind painter, assertions, policy, browser and configuration;
 // they may retain failures but can never mint a whole-version pass receipt.
 let sampleDirectory = resolve(output, "physical-samples");
+let measurementContext = "non-ui";
 if (ui) {
   const { chromium } = await import("@playwright/test");
   const sampleContext = {
     app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
     ui: digest(readFileSync(resolve(appDir, "e2e/ui-check.spec.ts"))),
     config: digest(readFileSync(resolve(appDir, "playwright.config.ts"))),
-    environment: digest(readFileSync(resolve(appDir, "e2e/capture-environment.ts"))),
+    environment: digest(
+      readFileSync(resolve(appDir, "e2e/capture-environment.ts")),
+    ),
     browser: digest(readFileSync(chromium.executablePath())),
     playwright: digest(
       readFileSync(
@@ -147,8 +174,12 @@ if (ui) {
     urgentAlertIds: process.env.EHR_URGENT_ALERT_IDS ?? "[]",
   };
   const context = contextDigest(sampleContext);
+  measurementContext = context;
   sampleDirectory = resolve(
-    process.env.EHR_PHYSICAL_SAMPLE_CACHE ?? resolve(tmpdir(), "ehr-physical-samples"),
+    process.env.EHR_PHYSICAL_SAMPLE_CACHE === "0"
+      ? resolve(output, "physical-samples")
+      : (process.env.EHR_PHYSICAL_SAMPLE_CACHE ??
+          resolve(tmpdir(), "vgi-screen-check-cache/physical")),
     context,
   );
   mkdirSync(sampleDirectory, { recursive: true });
@@ -166,6 +197,18 @@ if (ui) {
     `Physical measurement context: ${context}; samples ${sampleDirectory}\n`,
   );
 }
+const mapping = dedupeFiles(
+  checkedFiles,
+  measurementContext,
+  ui && process.env.EHR_SCREEN_DEDUPE !== "0",
+);
+const representatives = [
+  ...new Set(mapping.map((entry) => entry.representative)),
+];
+const workers = workerCount();
+process.stdout.write(
+  `Screen execution: ${checkedFiles.length} states, ${representatives.length} distinct trees; ${workers} workers\n`,
+);
 const batchSize = ui
   ? Math.min(
       128,
@@ -174,118 +217,142 @@ const batchSize = ui
         Number.parseInt(process.env.EHR_SCREEN_BATCH_SIZE ?? "64", 10) || 64,
       ),
     )
-  : Math.max(1, checkedFiles.length);
-const batches = checkedFiles.length
-  ? Array.from({ length: Math.ceil(checkedFiles.length / batchSize) }, (_, i) =>
-      checkedFiles.slice(i * batchSize, (i + 1) * batchSize),
+  : Math.max(1, representatives.length);
+const batches = representatives.length
+  ? Array.from(
+      { length: Math.ceil(representatives.length / batchSize) },
+      (_, i) => representatives.slice(i * batchSize, (i + 1) * batchSize),
     )
   : [[]];
 let gateStatus = "pass";
-const physical = [];
+const measured = [];
 const batchResults = [];
+const retries = [];
 for (const [index, batch] of batches.entries()) {
   const batchStarted = performance.now();
-  const batchOutput = resolve(output, `batch-${index}`);
-  const report = resolve(output, `playwright-${index}.json`);
   const inputManifest = resolve(output, `inputs-${index}.json`);
   if (ui) writeFileSync(inputManifest, JSON.stringify(batch));
   process.stdout.write(
     `Screen batch ${index + 1}/${batches.length}: ${batch.length} trees\n`,
   );
-  const result = spawnSync(
-    process.execPath,
-    [
-      resolve(appDir, "node_modules/@playwright/test/cli.js"),
-      "test",
-      ui ? "ui-check.spec.ts" : "screen-check.spec.ts",
-      "--reporter",
-      "list,json",
-      "--output",
-      batchOutput,
-      ui ? "--max-failures=0" : "--max-failures=1",
-      // Independent controls run once per invocation; every tree still gets
-      // both fidelity projects and the complete physical matrix.
-      ...(ui && index > 0
-        ? ["--grep", "semantic UI fidelity:|physical policy:"]
-        : []),
-      "--workers",
-      String(
-        Math.min(
-          6,
-          Math.max(
-            1,
-            Number.parseInt(process.env.EHR_SCREEN_WORKERS ?? "1", 10) || 1,
-          ),
-        ),
-      ),
-      "--config",
-      resolve(appDir, "playwright.config.ts"),
-    ],
-    {
-      cwd: appDir,
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        PLAYWRIGHT_JSON_OUTPUT_NAME: report,
-        APP_TEST_PORT: port,
-        APP_TEST_PREVIEW: "1",
-        EHR_PHYSICAL_SAMPLE_DIR: sampleDirectory,
-        EHR_COLLECT_PHYSICAL: "1",
-        ...(ui
-          ? { EHR_UI_MANIFEST: inputManifest, EHR_UI_FILES: "[]" }
-          : { EHR_SCREEN_FILES: JSON.stringify(batch) }),
+  function runTests(attempt, count, targets, project) {
+    const suffix = `${index}-${attempt}-${project ?? "all"}`;
+    const report = resolve(output, `playwright-${suffix}.json`);
+    const result = spawnSync(
+      process.execPath,
+      [
+        resolve(appDir, "node_modules/@playwright/test/cli.js"),
+        "test",
+        ui ? "ui-check.spec.ts" : "screen-check.spec.ts",
+        "--reporter",
+        "list,json",
+        "--output",
+        resolve(output, `batch-${suffix}`),
+        ui ? "--max-failures=0" : "--max-failures=1",
+        ...(targets
+          ? ["--grep", exactGrep(targets), "--project", project]
+          : ui && index > 0
+            ? ["--grep", "semantic UI fidelity:|physical policy:"]
+            : []),
+        "--workers",
+        String(count),
+        "--config",
+        resolve(appDir, "playwright.config.ts"),
+      ],
+      {
+        cwd: appDir,
+        stdio: "inherit",
+        env: {
+          ...process.env,
+          PLAYWRIGHT_JSON_OUTPUT_NAME: report,
+          APP_TEST_PORT: port,
+          APP_TEST_PREVIEW: "1",
+          EHR_PHYSICAL_SAMPLE_DIR:
+            process.env.EHR_PHYSICAL_SAMPLE_CACHE === "0"
+              ? ""
+              : sampleDirectory,
+          EHR_COLLECT_PHYSICAL: "1",
+          ...(ui
+            ? { EHR_UI_MANIFEST: inputManifest, EHR_UI_FILES: "[]" }
+            : { EHR_SCREEN_FILES: JSON.stringify(batch) }),
+        },
       },
+    );
+    if (result.error) process.stderr.write(`${result.error.message}\n`);
+    try {
+      const json = JSON.parse(readFileSync(report, "utf8"));
+      return { result, tests: reportTests(json), errors: json.errors ?? [] };
+    } catch {
+      return {
+        result,
+        tests: [],
+        errors: [{ message: "Missing or invalid Playwright report" }],
+      };
+    }
+  }
+  function physicalAttachments(tests) {
+    return tests.flatMap((test) =>
+      test.run?.status !== "passed"
+        ? []
+        : (test.run.attachments ?? [])
+            .filter((attachment) => ui && attachment.name === "physical-policy")
+            .map((attachment) => {
+              const bytes = attachment.path
+                ? readFileSync(attachment.path)
+                : Buffer.from(attachment.body, "base64");
+              return JSON.parse(bytes.toString());
+            }),
+    );
+  }
+  const first = runTests(0, workers);
+  const recovered = recoverTimeouts(first, {
+    // Legacy non-UI checks retain their one-shot behavior.
+    workers,
+    run: runTests,
+    hasFindings: (tests) =>
+      !ui ||
+      physicalAttachments(tests).some((state) =>
+        state.measurements.some((sample) => sample.findings.length),
+      ),
+    onRetry: (retry) => {
+      process.stdout.write(
+        `Retry batch ${index + 1}, attempt ${retry.attempt}: ${retry.tests.length} ${retry.tests[0].project} tests at ${retry.workers} workers\n`,
+      );
     },
+  });
+  retries.push(
+    ...recovered.retries.map((retry) => ({ batch: index, ...retry })),
   );
+  const { tests, errors, exitCode } = recovered;
   if (ui) rmSync(inputManifest, { force: true });
-  let status = result.status === 0 ? "pass" : "error";
-  let physicalStates = 0;
-  let physicalFindings = 0;
-  if (existsSync(report)) {
-    const json = JSON.parse(readFileSync(report, "utf8"));
-    const errors = [];
-    const walk = (suite) => {
-      for (const spec of suite.specs ?? [])
-        for (const test of spec.tests ?? [])
-          for (const run of test.results ?? []) {
-            errors.push(...(run.errors ?? []));
-            for (const attachment of run.attachments ?? [])
-              if (ui && attachment.name === "physical-policy") {
-                const bytes = attachment.path
-                  ? readFileSync(attachment.path)
-                  : Buffer.from(attachment.body, "base64");
-                const measurement = JSON.parse(bytes.toString());
-                physical.push(measurement);
-                physicalStates++;
-                physicalFindings += measurement.measurements.reduce(
-                  (n, sample) => n + sample.findings.length,
-                  0,
-                );
-              }
-          }
-      for (const child of suite.suites ?? []) walk(child);
-    };
-    walk(json);
-    if (
-      result.status !== 0 &&
-      !json.errors?.length &&
-      errors.length &&
-      errors.every(
-        (e) => e.matcherResult || /(?:expect\(|expect\.)/.test(e.message ?? ""),
-      )
-    )
-      status = "fail";
-    // A missing physical attachment cannot certify a supplied clinical state.
-    if (
-      ui &&
-      physicalEnabled &&
-      batch.length &&
-      physicalStates !==
-        batch.filter((file) => !/-geometry\.json$/.test(file)).length
-    )
-      status = "error";
-  } else status = "error";
-  // Findings fail by default; an explicit operator override is context-bound.
+  const failed = tests.filter((test) => failureKind(test));
+  let status =
+    errors.length ||
+    !tests.length ||
+    failed.some((test) => failureKind(test) !== "assertion")
+      ? "error"
+      : failed.length
+        ? "fail"
+        : exitCode === 0
+          ? "pass"
+          : "error";
+  // Read only final successful attempts; timed-out partial attempts contribute nothing.
+  const batchPhysical = physicalAttachments(tests);
+  measured.push(...batchPhysical);
+  const physicalStates = batchPhysical.length;
+  const physicalFindings = batchPhysical.reduce(
+    (n, state) =>
+      n +
+      state.measurements.reduce((m, sample) => m + sample.findings.length, 0),
+    0,
+  );
+  if (
+    ui &&
+    physicalEnabled &&
+    physicalStates !==
+      batch.filter((file) => !/-geometry\.json$/.test(file)).length
+  )
+    status = "error";
   if (physicalFindings && physicalEnforced && status !== "error")
     status = "fail";
   if (status === "error" || (gateStatus !== "error" && status === "fail"))
@@ -297,10 +364,10 @@ for (const [index, batch] of batches.entries()) {
     physicalStates,
     physicalFindings,
     elapsedMs: Math.round(performance.now() - batchStarted),
-    exitCode: result.status,
+    exitCode,
   });
-  if (result.error) process.stderr.write(`${result.error.message}\n`);
 }
+const physical = expandMeasurements(mapping, measured);
 if (ui) {
   const summary = {
     policyStatus: policy.status,
@@ -328,6 +395,8 @@ if (ui) {
           ...summary,
           policy: policy.physical,
           batches: batchResults,
+          retries,
+          execution: { workers, distinctTrees: representatives.length },
           states: physical,
         },
         null,
@@ -346,6 +415,12 @@ if (process.env.EHR_SCREEN_RESULT)
       elapsedMs: Math.round(performance.now() - started),
       physical,
       batches: batchResults,
+      retries,
+      workers,
+      coverage: {
+        states: checkedFiles.length,
+        distinctTrees: representatives.length,
+      },
       geometry: ui
         ? files
             .flatMap((file) =>
@@ -379,4 +454,5 @@ if (cache) {
 }
 if (gateStatus === "pass") rmSync(output, { recursive: true, force: true });
 else process.stderr.write(`Screen-check artifacts: ${output}\n`);
+browserLock?.release();
 process.exit(gateStatus === "pass" ? 0 : 1);
