@@ -4,6 +4,12 @@ An EHR whose screens adapt to each clinician's work. An overnight (whenever the 
 proposes UI changes; the Lean checker blocks changes that violate the hospital
 rules. The same Lean interpreter runs natively and in the browser as WebAssembly.
 
+**New to the project?** Start with the [guided tour](docs/GUIDE.md): the core
+types, a map of the repository, the proofs layer by layer, how they are proved,
+a glossary of labels (T0–T11, A1–A4, D1–D6) and commands to check everything
+yourself. This README tracks status and measurements;
+[VERIFICATION.md](docs/VERIFICATION.md) is the reviewer's audit.
+
 ## How it works
 
 The hospital defines the clinical obligations. The AI proposes how to arrange
@@ -70,6 +76,11 @@ Start with these files, in order:
    Its `sorry` bodies are deliberate: it is the Comparator challenge file. `lake comparator` checks that
    [Solution.lean](lean/Solution.lean), which imports the proofs in `Ehr/Proofs/`, proves exactly these
    statements ([comparator.json](lean/comparator.json)) using only `propext`, `Quot.sound` and `Classical.choice`.
+   These 18 theorems hold for every program. The checker-soundness theorems (`accepted_*`, T7, T8) are a
+   second challenge, [Check/ComparatorStatements.lean](lean/Ehr/Check/ComparatorStatements.lean)
+   ([Check/comparator.json](lean/Ehr/Check/comparator.json)), and the completion fragments a third
+   ([Check/completion-comparator.json](lean/Ehr/Check/completion-comparator.json)). Run each with
+   `lake comparator --config <file>`; see the [guide](docs/GUIDE.md#8-check-it-yourself).
 2. [Props/Properties.lean](lean/Ehr/Props/Properties.lean): the thirteen UI requirements.
 3. [Specs/V1.lean](lean/Ehr/Specs/V1.lean): hospital rules, with law and policy labels.
 4. [Core/Interp.lean](lean/Ehr/Core/Interp.lean): the interpreter the app runs.
@@ -82,22 +93,25 @@ Lean is both the programming language and the proof language here. The code
 implements the EHR, describes its rules, and proves selected guarantees about
 its behavior.
 
-As counted on 2026-11-01, the repository has **245 Lean source files and
-42,927 lines**, including comments and blank lines. The default build imports
-184 of those files, containing **693 named theorem declarations** and 59
-additional unnamed proof examples. These counts exclude dependencies and build
-outputs. The source is distributed approximately as follows:
+As counted on 2026-11-03, `lean/` has **285 Lean source files and 47,265
+lines**, including comments and blank lines. The default build (`Ehr` and
+`Main`) imports 225 of those files, containing **912 `theorem` declarations**
+(824 of them public) and 75 unnamed `example`s. These counts exclude
+dependencies and build outputs. The source is distributed approximately as
+follows:
 
 | Part | Lines | What it does |
 |---|---:|---|
-| [Data projection and screen rendering](lean/Ehr/Render/) | 9,700 | Reads FHIR records, constructs chart rows and screen trees, and proves selected content-preservation guarantees. |
-| [Hospital rule definitions](lean/Ehr/Specs/) | 7,700 | Defines required fields, reviews, permissions, alerts, units and regulatory/policy requirements. |
+| [Data projection and screen rendering](lean/Ehr/Render/) | 10,400 | Reads FHIR records, constructs chart rows and screen trees, and proves selected content-preservation guarantees. |
+| [Hospital rule definitions](lean/Ehr/Specs/) | 7,900 | Defines required fields, reviews, permissions, alerts, units and regulatory/policy requirements. |
 | [Interface checker and its proofs](lean/Ehr/Check/) | 7,100 | Examines proposed screen programs and connects acceptance to the specified properties. |
 | [Reference interfaces](lean/Ehr/Canonical/) | 5,500 | Defines the starting visit, medication, results, pediatric and surgical workflows that the AI can adapt. |
-| [Execution engine](lean/Ehr/Core/) | 4,100 | Handles entering values, navigating, reviewing, acknowledging alerts and signing; maintains the interaction state. |
+| [Execution engine](lean/Ehr/Core/) | 4,200 | Handles entering values, navigating, reviewing, acknowledging alerts and signing; maintains the interaction state. |
 | [Simulation and search](lean/Ehr/Sim/) | 3,200 | Runs simulated clinicians, measures interactions and computes certified minima within defined search spaces. |
-| [Property definitions](lean/Ehr/Props/) and [central proofs](lean/Ehr/Proofs/) | 2,900 | Defines precisely what the guarantees mean and proves guard, receipt, automation and alert behavior. Other proofs also live in the sections above. |
-| Supporting code | 2,700 | APIs, command-line tools, examples, exports and proof audits. |
+| [Property definitions](lean/Ehr/Props/) and [central proofs](lean/Ehr/Proofs/) | 3,000 | Defines precisely what the guarantees mean and proves guard, receipt, automation and alert behavior. Other proofs also live in the sections above. |
+| [Semantic extensions](lean/Ehr/Sem/) | 2,200 | Layout-independent perception, urgency, timelines and multi-patient boards, with explicit exposure hypotheses. |
+| [Commit reducers](lean/Ehr/Commit/) and [multi-actor models](lean/Ehr/Multi/) | 1,200 | Server-side MAR/ADT reducers and shared-workflow invariants (dose once, bed exclusivity, critical results). |
+| Supporting code | 2,600 | APIs, command-line tools, examples, exports and proof audits. |
 
 For example, when **signing a medication order**, the rule definitions specify
 the required entries, reviews and acknowledgments. The execution engine checks
@@ -108,11 +122,11 @@ guard" and "a macro cannot supply a human-only action." The rendering code
 constructs the fields, review panels and enabled or disabled button. Simulation
 exercises the workflow and measures interaction costs.
 
-The **693 named theorems include many supporting lemmas and concrete examples**.
+The **912 theorems include many supporting lemmas and concrete examples**.
 A small theorem may establish that a value survives navigation, a lookup finds
 the right requirement, a macro preserves acknowledgments, or a required row
 appears in the output. Larger theorems assemble these results into guarantees
-about complete actions or accepted programs. This is not a count of 693
+about complete actions or accepted programs. This is not a count of 912
 independent clinical safety rules.
 
 There are **13 main checker properties**. Checker acceptance generally implies
@@ -134,7 +148,7 @@ code.
 |---|---|---|
 | Nothing is signed unless the guard passes: required entries confirmed (human-entered where required, in the declared unit), reviews shown or validly receipted, interruptive alerts acknowledged, role allowed for this encounter | 🟢 **Proved**, for every program, record and event sequence | `Proofs/T0.lean`, `Proofs/T2.lean` (`T0_commit_needs_guard`, `commitGuard_iff`, `T0_entry_values`, `T2_receipts_sound`) |
 | Native commit-check acceptance implies the guard holds on the supplied current FHIR projection | 🟢 **Proved** for the prototype; freshness, authenticated state and persistence remain trusted integration obligations | `Commit/Check.lean` (`accepted_current_guard`); [concurrency design](docs/design/concurrency.md) |
-| W4 MAR reduction preserves dose-once safety and accepted administrations pass the guard at the written version | 🟢 **Proved** for the Lean reducer; 🔵 Postgres/JWKS/SSE correspondence checked in integration tests. Other live workflows retain G3 | `Commit/Mar.lean`, `services/commit/`; [storage contract](docs/design/concurrency.md) |
+| W4 MAR reduction preserves dose-once safety and accepted administrations pass the guard at the written version | 🟢 **Proved** for the Lean reducer; 🔵 Postgres/JWKS/SSE correspondence checked in integration tests. Other live workflows still rely on the client-side guard | `Commit/Mar.lean`, `services/commit/`; [storage contract](docs/design/concurrency.md) |
 | ADT preserves bed exclusivity and one bed per patient; a transfer publishes one complete successor, and accepted commands pass their administrative guard on the checked version vector | 🟢 **Proved** for the native reducer using executable pre/post validation; 🔵 Postgres atomic publication/read correspondence tested | `Commit/Adt.lean`, `Commit/AdtTests.lean`, `services/commit/test/adt.integration.test.ts` |
 | Shared scheduled doses are administered at most once; each bed holds at most one patient | 🟢 **Proved for the executable multi-actor model**, over all finite interleavings; Postgres correspondence is integration-tested, not proved | `Multi/Proofs.lean` (`reachable_invariant`, `run_invariant`); `Multi/Tests.lean` rejects a stale-read race |
 | Macros and prefills can't sign, acknowledge, create receipts or enter human-only values; a high-alert cosign names a different human | 🟢 **Proved** | `Proofs/T3.lean`, `Proofs/T6.lean`, `T3_cosign_distinct` |
@@ -179,10 +193,12 @@ work; historical W2 goal completion does not establish critical resolution.
 These changes alter the certified application and Lean/WASM hashes. Recorded
 certificates require fresh validation; historical certificates are not rebound.
 See [urgency verification](docs/design/urgency-follow-through.md) for exact checks,
-findings and integration limits. Run with disk-backed scratch and bounded Lean:
+findings and integration limits. Run with disk-backed scratch and bounded Lean
+(the shell examples in this README use `$HOME/run-tmp`; create it with
+`mkdir -p "$HOME/run-tmp"` or substitute another disk-backed directory):
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=4
 (cd lean && lake build && lake comparator)
 node scripts/audit-alert-policy.mjs "$TMPDIR/urgency-policy-audit" --urgency-only
 JOBS=4 make wasm
@@ -476,8 +492,8 @@ certificates are not part of this lane.
 
 **Other live workflows retain the existing client-side guard and Medplum writer.**
 The diagram below describes that path. General clinical reducers, production
-provenance/access review and writer cutover remain open; W4 does not close G3
-for the rest of the EHR.
+provenance/access review and writer cutover remain open; W4 does not move the
+guard to the server for the rest of the EHR.
 
 ```mermaid
 flowchart LR
@@ -602,7 +618,7 @@ before reuse. The root dependency lock and existing Medplum database are untouch
 Build and verify the native boundary from the repository root:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
 (cd lean && lake build)
 python3 scripts/test-commit-check.py
 (cd lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$TMPDIR/commit-service-fixture.json"
@@ -667,7 +683,7 @@ The native geometry verifier also recognizes the current Lean alert-condition
 constructors (`minorInteraction`, `criticalResult`) in its wire validator.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
 pnpm --filter app build
 pnpm --filter app test:geometry-determinism
 node scripts/audit-alert-policy.mjs "$TMPDIR/geometry-canonicals" --personas --export-only
@@ -751,7 +767,7 @@ step 2.
 - **Client-side guard.** The live commit guard runs in the client. Medplum
   accepts any write that the signed-in user's access policy allows. These workflows have not moved their guards into the server write
   path.
-  The Postgres service mediates W4 MAR and administrative ADT; see G3 for the remaining writes.
+  The Postgres service mediates W4 MAR and administrative ADT; the remaining writes still rely on the client-side guard.
 
 ### Replay mode (`/ehr`, `/browse`, `/dashboard`)
 
@@ -834,7 +850,7 @@ The five-persona run (`runs/core-10day-live/`) completed all **10 of 10 days** a
 - Held-out rule conformance (200 scenarios the agent never sees; report-only): 3497 passed, 15 failed, 3088 not applicable, across 33 revisions. Failures: `v2.prior-auth.imaging` on P1 v3, P1 v4, P1 v5, P5 v2: the agent chose not to surface the optional v2 prior-auth controls, which left no reachable way to complete a prior-auth imaging order; `v2.prior-auth.procedure` on P1 v3, P1 v4, P1 v5, P5 v2: the same hidden prior-auth controls left no way to complete a prior-auth procedure order; `entry.signNote.claimDiagnosis` on P2 v1, P2 v2, P2 v3, P2 v4, P2 v5, P2 v6, P2 v7: night 1 moved diagnosis entry beside the provider note, and the claim diagnosis is no longer confirmed from the visit diagnosis (a billing rule the checker's properties do not express).
 - Native vs. browser WASM: 72636 recorded events over 1284 trajectories replayed through both, with 0 mismatches.
 - The run stopped once after day 7, when the agent process hit Node's default heap limit. Days 8–10 were resumed from the run-start commit, with every resume fingerprint matching (app, agent, gate, world, `ehr`).
-- These are simulated clinicians with deterministic policies, not user studies (see gap G2).
+- These are simulated clinicians with deterministic policies, not user studies (see "Assurance by layer, and gaps to deployment").
 <!-- results:end -->
 
 In these runs each persona's day is simulated alone, against a fixed task list
@@ -1061,7 +1077,7 @@ the scrollable patient-pane root included. The original frozen archive and
 before/after geometry remain in the run; no choices or archive members changed.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=4
 (cd lean && lake build && lake build exotic-api)
 JOBS=4 EM_CACHE="$TMPDIR/explore2-emcache" make wasm
 pnpm --filter app build
@@ -1095,7 +1111,7 @@ patient isolation. This is sample coverage, not admission of all view transition
 Promotion verification and rerun (outputs stay ignored):
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=4
 (cd lean && lake build && lake build exotic-api)
 (cd lean && COMPARATOR_BWRAP="$PWD/../scripts/lean-bwrap.py" lake comparator)
 JOBS=4 EM_CACHE="$TMPDIR/promote-emcache" make wasm
@@ -1127,8 +1143,8 @@ Those finite checks supply sampled geometry evidence; they do not prove pixels.
 
 
 ```sh
-TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
-TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
+TMPDIR="$HOME/run-tmp" pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
+TMPDIR="$HOME/run-tmp" node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
 ```
 
 
@@ -1144,7 +1160,7 @@ declared provenance metadata while retaining clinical trace times and order.
 Resume reloads persisted geometry coverage before accumulating new states.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp
+export TMPDIR="$HOME/run-tmp"
 pnpm --filter agent verify-determinism
 pnpm --filter agent verify-crash-resume --points 8 --seed 20261102
 ```
@@ -1164,7 +1180,7 @@ Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check
 process in a checkout at a time:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
 (cd lean && lake build)
 pnpm --filter app lint && pnpm --filter app exec tsc --noEmit
 pnpm --filter agent lint && pnpm --filter agent typecheck

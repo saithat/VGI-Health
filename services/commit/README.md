@@ -10,7 +10,7 @@ pnpm lock or the app's certified build inputs. Run package commands from this
 directory; the default `EHR_BIN` is `../../lean/.lake/build/bin/ehr`.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
 (cd ../../lean && lake build)
 npm ci --cache "$TMPDIR/npm-cache" --ignore-scripts
 # New Compose project, volume and port; leaves the Medplum stack untouched.
@@ -131,7 +131,7 @@ real Postgres instance and fail if `DATABASE_URL`/`COMMIT_FIXTURE` is absent.
 They allocate and delete one random tenant and never truncate shared tables.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
 (cd ../../lean && lake build)
 (cd ../../lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$TMPDIR/commit-service-fixture.json"
 export COMMIT_FIXTURE="$TMPDIR/commit-service-fixture.json"
@@ -163,7 +163,7 @@ tracked-code-only fixture. These commands do not need the archived dataset:
 
 ```sh
 # Repository root
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=2
 pnpm install --frozen-lockfile
 (cd lean && lake build)
 (cd services/commit && npm ci --cache "$TMPDIR/npm-cache" --ignore-scripts)

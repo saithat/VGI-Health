@@ -20,7 +20,7 @@ const backend=arg('backend','codex');
 if(!['codex','claude','none'].includes(backend))throw Error('Backend must be codex, claude or none');
 const budget=Number(arg('budget','4')),iterations=Number(arg('iterations','4'));
 if(!Number.isInteger(budget)||budget<0||budget>60||!Number.isInteger(iterations)||iterations<1||iterations>60)throw Error('Invalid budget/iterations (1–60)');
-const binary=process.env['EHR_BIN']??'/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr';
+const binary=process.env['EHR_BIN']??path.resolve('lean/.lake/build/bin/ehr');
 const read=async(file:string):Promise<unknown>=>JSON.parse(await readFile(file,'utf8'));
 const baseline=programSchema.parse(await read('releases/v1/personas/P2.json'));
 const spec=specSchema.parse(await read('releases/v1/spec.json'));

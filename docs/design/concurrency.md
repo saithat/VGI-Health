@@ -4,7 +4,8 @@ Status: W4 medication administration is the first live workflow on the Postgres
 commit authority (2026-11-02). Identity for this path is Keycloak OIDC. FHIR is
 import/export; Medplum may be an asynchronous projection. Administrative ADT now uses the same authority with a native reducer, multi-stream
 transactions and snapshot SSE. Other workflows still
-use the client-side guard and Medplum transaction path. G3 remains open there.
+use the client-side guard and Medplum transaction path; their guard is not yet
+enforced on the server.
 
 ## Boundary and implementation scope
 
