@@ -181,6 +181,33 @@ it("paints a semantic narrative editor and dispatches its complete multiline tex
     },
   });
 });
+it("keeps plain text values and confirmation events in a wrapping textbox", () => {
+  const onEvent = vi.fn();
+  const value = "Called patient; arranged emergency evaluation";
+  const model = { ...field, value, pendingConfirm: true };
+  const paint = (value: string) => (
+    <MantineProvider>
+      <UiNodeView node={{ field: { ...model, value } }} onEvent={onEvent} />
+    </MantineProvider>
+  );
+  const { rerender } = render(paint(value));
+  const editor = screen.getByRole("textbox", { name: field.label });
+  if (!(editor instanceof HTMLTextAreaElement)) throw new Error("Expected a wrapping textbox");
+  expect(editor.value).toBe(value);
+  expect(editor.rows).toBe(1);
+  expect(editor.wrap).toBe("soft");
+  const edited = `${value}; reviewed follow-up plan`;
+  fireEvent.change(editor, { target: { value: edited } });
+  expect(onEvent).toHaveBeenLastCalledWith({
+    enter: { comp: field.comp, value: { text: { s: edited } } },
+  });
+  rerender(paint(edited));
+  expect(screen.getByRole("textbox", { name: field.label })).toBe(editor);
+  expect(editor.value).toBe(edited);
+  fireEvent.click(screen.getByRole("button", { name: `Confirm ${field.label}` }));
+  expect(onEvent).toHaveBeenLastCalledWith({ confirm: { comp: field.comp } });
+});
+
 const button: NodeOf<"button"> = {
   comp: "action",
   label: "Continue",

@@ -12,7 +12,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/dashboard?run=run1-P3&view=Evolution");
   await expect(
-    page.getByRole("heading", { name: "Evolution", exact: true }),
+    page.getByRole("heading", { name: "UI evolution", exact: true }),
   ).toBeVisible();
   expect(requests.filter((p) => /trajectories\/tasks\//.test(p))).toHaveLength(
     0,
@@ -96,8 +96,17 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   await view.getByLabel("Compare baseline rev 0").uncheck();
   // Jump across both episode resets and a clinical alert, keeping the controls usable.
   await view.getByLabel("Replay event").fill("30");
-  await expect(frame.getByRole("dialog")).toBeVisible();
+  const urgent = frame.getByRole("region", { name: "Urgent clinical alerts" });
+  const highAlert = urgent.getByRole("alert", {
+    name: "High-alert medication: double check required", exact: true,
+  });
+  await expect(highAlert).toBeVisible();
+  await expect(urgent.getByRole("button", { name: "Acknowledge", exact: true })).toBeVisible();
+  await expect(frame.getByRole("dialog")).toHaveCount(0);
   await view.getByRole("button", { name: "Step", exact: true }).click();
+  // Acknowledgment clears the offered ack, not the active clinical condition.
+  await expect(highAlert).toBeVisible();
+  await expect(urgent.getByRole("button", { name: "Acknowledge", exact: true })).toHaveCount(0);
   await expect(frame.getByRole("dialog")).toHaveCount(0);
   await view.getByLabel("Replay event").fill("69");
   await expect(

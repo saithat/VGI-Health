@@ -114,3 +114,12 @@ canonical check and before/after measurements are recorded in the
 [geometry report](../../../../docs/audits/geometry-determinism-2026-11-02.md).
 Changing these fonts invalidates historical app bindings and geometry caches;
 this lane does not rebind recordings.
+
+Plain `text` fields use a one-row `textarea` with native `field-sizing: content`,
+soft wrapping and no row cap. Long prose and unbroken values remain visible as
+field width, font metrics or text size changes. The complete value, label,
+component ID, textbox role and Lean enter/confirmation events are unchanged;
+short values retain the dense one-row footprint. Search, scanner, identity,
+user/cosign and coded kinds retain their existing widgets. Browser regressions
+check both scroll axes, exact values and semantic ARIA fidelity at 320px and at
+200% text size. See the [merge follow-up](../../../../docs/audits/wcag-merge-followup-2026-11-02.md).

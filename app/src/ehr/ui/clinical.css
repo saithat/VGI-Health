@@ -1274,3 +1274,10 @@
 .clinical-timeline > ol { list-style: none; margin: 0; padding: 0 0 0 1rem; border-left: 2px solid #526e82; }
 .clinical-timeline > ol > li { position: relative; min-width: 0; margin: 0 0 1rem; padding: 0 0 0 0.75rem; }
 .clinical-timeline > ol > li::before { content: ""; position: absolute; left: -1.35rem; top: 0.5rem; width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #526e82; }
+
+/* Plain text values remain fully visible as their field or text size changes. */
+.clinical-control textarea[data-wrap-text] {
+  field-sizing: content;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}

@@ -974,7 +974,7 @@ test("fidelity gate detects label drift, wrong disabled state, illegible and cov
     .getByRole("button", { name: "Sign orders" })
     .evaluate((el) => el.setAttribute("disabled", ""));
   const small = await page.addStyleTag({
-    content: ".clinical-field input { font-size: 8px !important; }",
+    content: ".clinical-field :is(input, textarea) { font-size: 8px !important; }",
   });
   await expect(visibility(page)).rejects.toThrow();
   await small.evaluate((el) => el.parentNode?.removeChild(el));
@@ -1666,7 +1666,7 @@ test("physical gate detects undersized targets, text and essential boundary cont
   ).toEqual([]);
   await page.addStyleTag({
     content:
-      "[data-comp-id='probe-button'] button, button[data-comp-id='probe-button'] { min-width:0!important; min-height:0!important; width:20px!important; height:20px!important; padding:0!important } [data-comp-id='probe-input'] input, input[data-comp-id='probe-input'] { background:white!important; border:1px solid #eee!important; color:#eee!important }",
+      "[data-comp-id='probe-button'] button, button[data-comp-id='probe-button'] { min-width:0!important; min-height:0!important; width:20px!important; height:20px!important; padding:0!important } [data-comp-id='probe-input'] :is(input, textarea), :is(input, textarea)[data-comp-id='probe-input'] { background:white!important; border:1px solid #eee!important; color:#eee!important }",
   });
   await page
     .locator("[data-info-id='probe-svg'] polyline")
@@ -1804,5 +1804,96 @@ test("card navigation retains the physical target floor", async ({ page }) => {
     await render(page, screen);
     await expect(page.locator(".clinical-card-grid")).toHaveCount(1);
     expect((await physicalBounds(page)).findings).toEqual([]);
+  }
+});
+
+test("plain text fields expose complete long values at reflow and text resize", async ({
+  page,
+}) => {
+  const values = [
+    "Called patient; arranged emergency evaluation",
+    "Review the complete clinical history and arrange a documented follow-up plan. ".repeat(
+      4,
+    ),
+    "reference-" + "0123456789abcdef".repeat(8),
+  ];
+  const screen: UiScreen = {
+    banner: [],
+    nav: [],
+    title: "Text entry",
+    side: [],
+    modal: null,
+    workspace: [
+      {
+        section: {
+          id: "text-values",
+          title: "Clinical text",
+          children: values.map((value, index) => ({
+            field: {
+              comp: `text-${index}`,
+              label: `Clinical text ${index}`,
+              kind: "text",
+              value,
+              unit: null,
+              provenance: null,
+              pendingConfirm: false,
+              humanOnly: true,
+              required: true,
+            },
+          })),
+        },
+      },
+    ],
+  };
+  expect(
+    await page.evaluate(() => CSS.supports("field-sizing", "content")),
+  ).toBe(true);
+  for (const [width, textPercent] of [
+    [1280, 100],
+    [1280, 200],
+    [768, 200],
+    [320, 100],
+  ] as const) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/screen-check.html");
+    await page.waitForFunction(() => typeof window.renderUi === "function");
+    await render(page, screen, 0);
+    if (textPercent === 200)
+      await page.evaluate(() => {
+        const elements = Array.from(
+          document.querySelectorAll<HTMLElement>("body *"),
+        ).filter((el) => !el.closest("svg, script, style"));
+        const sizes = elements.map((el) =>
+          parseFloat(getComputedStyle(el).fontSize),
+        );
+        elements.forEach((el, index) =>
+          el.style.setProperty(
+            "font-size",
+            `${(sizes[index] ?? 0) * 2}px`,
+            "important",
+          ),
+        );
+      });
+    expect(observedAria(await page.locator("body").ariaSnapshot())).toEqual(
+      expectedAria(screen),
+    );
+    expect((await physicalBounds(page)).findings).toEqual([]);
+    for (const [index, value] of values.entries()) {
+      const editor = page.getByRole("textbox", {
+        name: `Clinical text ${index}`,
+        exact: true,
+      });
+      await expect(editor).toHaveValue(value);
+      const size = await editor.evaluate((el) => ({
+        tag: el.tagName,
+        width: el.clientWidth,
+        contentWidth: el.scrollWidth,
+        height: el.clientHeight,
+        contentHeight: el.scrollHeight,
+      }));
+      expect(size.tag).toBe("TEXTAREA");
+      expect(size.contentWidth).toBeLessThanOrEqual(size.width + 1);
+      expect(size.contentHeight).toBeLessThanOrEqual(size.height + 1);
+    }
   }
 });
