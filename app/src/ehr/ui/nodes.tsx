@@ -1,3 +1,4 @@
+import { useDensity } from "./Density";
 import { Board, PatientPane } from "./Board";
 import { DatedTimeline } from "./DatedTimeline";
 import { Timeline } from "./Timeline";
@@ -174,6 +175,7 @@ export function SectionNode({ node, onEvent }: Props<"section">) {
   return (
     <Paper
       component="section"
+      data-density={useDensity(node.id)}
       data-section-id={node.id}
       data-section-tone={sectionTone(node.title)}
       role="region"
@@ -218,6 +220,7 @@ export function TabsNode({ node, onEvent }: Props<"tabs">) {
         if (value !== null)
           onEvent({ selectTab: { comp: node.id, idx: Number(value) } });
       }}
+      data-density={useDensity(node.id)}
       className="clinical-tabs"
     >
       <Tabs.List aria-label="Chart tabs">
@@ -388,6 +391,7 @@ export function FieldNode({
   );
   return (
     <Box
+      data-density={useDensity(node.comp)}
       className={`clinical-field${node.pendingConfirm ? " pending" : ""}${special ? ` field-${special}` : ""}${kind === "textarea" ? " field-narrative" : ""}${kind === "search" ? " field-search" : ""}`}
     >
       <Group
@@ -645,6 +649,7 @@ function ReportedMedicationList({ node }: { node: NodeOf<"info"> }) {
 }
 export function InfoNode({ node, onEvent }: Props<"info">) {
   const presentation = useContext(PresentationContext);
+  const density = useDensity(node.comp);
   if (node.display === "document") return <ClinicalDocument node={node} />;
   if (node.display === "status") {
     return (
@@ -653,6 +658,7 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
         aria-label={node.label}
         className="clinical-info info-status clinical-review-status"
         data-comp-id={node.comp || undefined}
+        data-density={density}
         data-info-id={node.infoId}
       >
         <ClinicalIcon name="check" />
@@ -708,6 +714,7 @@ export function InfoNode({ node, onEvent }: Props<"info">) {
       className={`clinical-info info-${node.display}`}
       data-section-tone={sectionTone(node.label)}
       data-comp-id={node.comp || undefined}
+      data-density={density}
       data-info-id={node.infoId}
     >
       {!(empty && node.infoId === "orderCatalog") && (
@@ -835,6 +842,7 @@ export function AlertNode({ node }: Props<"alert">) {
       color={color}
       variant="light"
       data-comp-id={node.comp}
+      data-density={useDensity(node.comp)}
       className="clinical-alert"
       data-alert-tone={color}
       data-alert-id={node.alertId}
@@ -857,6 +865,7 @@ export function ButtonNode({ node, onEvent }: Props<"button">) {
   const reasonId = useId();
   return (
     <div
+      data-density={useDensity(node.comp)}
       className={`clinical-action${primary ? " primary-action" : ""}${node.role === "nav" ? " clinical-navigation-action" : ""}`}
     >
       <Tooltip
@@ -987,7 +996,11 @@ export function StockUiNodeView({
         <Board
           node={node.board}
           render={(child, i) => (
-            <UiChildren key={"patientPane" in child ? child.patientPane.patient : i} nodes={[child]} onEvent={onEvent} />
+            <UiChildren
+              key={"patientPane" in child ? child.patientPane.patient : i}
+              nodes={[child]}
+              onEvent={onEvent}
+            />
           )}
         />
       );

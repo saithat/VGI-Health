@@ -1703,3 +1703,71 @@ it("timeline retains sibling confirmation identity without synthesizing a second
   fireEvent.click(screen.getByRole("button", { name: "Confirm prefilled value" }));
   expect(emit).toHaveBeenCalledExactlyOnceWith({ confirm: { comp: "weight" } });
 });
+
+it("scopes compact IDs to their patient pane and preserves strict wire validation", () => {
+  const base = uiScreenSchema.parse(rooming);
+  const pane = (patient: string, compact?: string[]): UiNode => ({
+    patientPane: {
+      patient,
+      banner: [["Patient", patient]],
+      metadata: {
+        sourceLabels: [],
+        fieldSources: [],
+        entryHints: [],
+        fieldChoices: [],
+        ...(compact ? { compact } : {}),
+      },
+      children: [
+        {
+          field: {
+            comp: "shared-dose",
+            label: "Dose",
+            kind: "text",
+            value: null,
+            unit: null,
+            provenance: null,
+            pendingConfirm: false,
+            humanOnly: false,
+            required: false,
+          },
+        },
+      ],
+      modal: [],
+    },
+  });
+  const model = uiScreenSchema.parse({
+    ...base,
+    side: [],
+    nav: [],
+    workspace: [
+      {
+        board: {
+          urgent: [],
+          children: [pane("A", ["shared-dose"]), pane("B")],
+        },
+      },
+    ],
+  });
+  const { container } = render(
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={() => {}} />
+    </MantineProvider>,
+  );
+  expect(
+    container
+      .querySelector('[data-patient="A"] .clinical-field')
+      ?.getAttribute("data-density"),
+  ).toBe("compact");
+  expect(
+    container
+      .querySelector('[data-patient="B"] .clinical-field')
+      ?.hasAttribute("data-density"),
+  ).toBe(false);
+  expect(uiScreenSchema.safeParse({ ...base, compact: [17] }).success).toBe(
+    false,
+  );
+  expect(
+    uiScreenSchema.safeParse({ ...base, compact: ["x"], unknownDensity: true })
+      .success,
+  ).toBe(false);
+});

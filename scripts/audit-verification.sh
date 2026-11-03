@@ -106,12 +106,8 @@ for i, items in enumerate(groups, 1):
 for j, (_, items) in enumerate(bundles, 1):
     lines += ['', f'<a id="audit-b{j}"></a>', '<details>', f'<summary>B{j}: {len(items)} shared definitions and types</summary>', '',
               ', '.join('`' + x + '`' for x in items), '', '</details>']
-doc = p('../docs/VERIFICATION.md')
-text = doc.read_text()
-start, end = '<!-- BEGIN GENERATED AUDIT -->', '<!-- END GENERATED AUDIT -->'
-assert text.count(start) == text.count(end) == 1, 'Missing/duplicate document markers'
-text = text.split(start)[0] + start + '\n\n' + '\n'.join(lines) + '\n\n' + end + text.split(end)[1]
-doc.write_text(text)
+doc = cache / 'report.md'
+doc.write_text('\n'.join(lines) + '\n')
 (cache / 'report.json').write_text(json.dumps(records, indent=2) + '\n')
-print(f'Updated {doc}: {len(axioms)} theorems; no unexpected axioms.')
+print(f'Wrote {doc}: {len(axioms)} theorems; no unexpected axioms.')
 PY

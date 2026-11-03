@@ -1,5 +1,5 @@
 # Top-level targets. Lanes fill these in as they land.
-.PHONY: install run run-live check lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
+.PHONY: install run run-live check verify lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
 
 COMPOSE := docker compose -f infra/docker-compose.yml
 # Bound fresh Lean builds on shared development/judging machines.
@@ -42,6 +42,15 @@ run-live:
 
 check:
 	cd lean && lake build
+
+# Build the proofs and run all three Comparator challenges (needs bubblewrap):
+# interpreter theorems, checker soundness, and completion fragments.
+.PHONY: verify
+verify:
+	cd lean && lake build
+	cd lean && COMPARATOR_BWRAP="$$PWD/../scripts/lean-bwrap.py" lake comparator
+	cd lean && COMPARATOR_BWRAP="$$PWD/../scripts/lean-bwrap.py" lake comparator --config Ehr/Check/comparator.json
+	cd lean && COMPARATOR_BWRAP="$$PWD/../scripts/lean-bwrap.py" lake comparator --config Ehr/Check/completion-comparator.json
 
 # Start the Medplum stack (server :8103, app :3000, Postgres, Redis) and block until healthy.
 infra-up:
@@ -110,6 +119,9 @@ rebind:
 decision-server:
 	sh explore/decision-server.sh $(DECISION_ARGS)
 
+# Disk-backed scratch for exploration tools; override with SCRATCH=/path.
+SCRATCH ?= $(HOME)/run-tmp
 explore-test:
-	TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
-	TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
+	mkdir -p $(SCRATCH)
+	TMPDIR=$(SCRATCH) pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
+	TMPDIR=$(SCRATCH) node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
