@@ -184,10 +184,10 @@ hand-built.
 
 ### 5.4 Admission pipeline
 
-1. **Backlog from sandbox demand.** The explorer already marks candidates that
-   need an unsupported primitive as sandbox. Tally them per primitive, with their
-   sandbox simulation results. The owner, or a rule the owner sets, picks what
-   the agent attempts.
+1. **Backlog from complaints.** The design agent files typed complaints when
+   it cannot express a design (section 5.7). Tally the primitive complaints,
+   together with the explorer's sandbox manifests and their simulation results.
+   The owner, or a rule the owner sets, picks what the agent attempts.
 2. **Agent draft.** In its own worktree (Codex): Lean declarations in namespace
    `Ehr.Ext.<id>`, a declarative presentation and examples. A change outside the
    writable paths fails the pipeline.
@@ -260,6 +260,42 @@ trusted set; it does not remove the set.
 * Benefit is judged on held-out cohorts and, once built, the shared-world
   simulation; never on the days used to choose the primitive.
 
+### 5.7 Complaints
+
+Adapted from the "complain" primitive in Max von Hippel's *Your software should
+build itself* (LessWrong, July 2026). Today the only signal that something is
+missing is implicit: the explorer's sandbox manifest lists `customComponents`
+(`explore/generator.ts`), and the overnight agent has no channel at all. It
+returns weaker candidates or `noChange`.
+
+Both the explorer operator and the overnight agent get an optional
+`complaints` array in their response schemas. Each complaint records:
+
+| Field | Content |
+|---|---|
+| `kind` | `primitive` (the language cannot express it), `widget` (an interaction the presentation sandbox lacks), `information` (a fact or trace the agent needed but was not given), `rule` (a requirement that blocks a design), `measurement` (an interaction the cost model cannot price) |
+| `missing` | A typed name where one exists: a design-dimension value such as `navigation=command`, a fact or info ID, a rule ID |
+| `wanted` | The design the agent would have built, in one or two sentences |
+| `evidence` | Train-day trace or metric references that motivated it |
+| `context` | Night, persona or department × role, workflow, program version |
+
+Rules:
+
+* **Complaints are data, never instructions.** They are tallied and shown to the
+  owner. Nothing acts on them automatically.
+* **They never affect the agent's score**, so complaining has no strategic value.
+* **Each kind has an owner-side destination:**
+  - `primitive` and `widget` go to the admission backlog;
+  - `information` goes to simulation and data fidelity;
+  - `measurement` goes to the cost table.
+* **A `rule` complaint never leads to a weaker spec.** It is evidence of friction
+  for the owner to weigh, and it does not reduce what a rule requires.
+* Complaints are stored with run outputs (local, not committed). The dashboard
+  may show the tallies.
+
+Collecting complaints changes no certification, spec or metric, so it can start
+before anything else in this proposal.
+
 ## 6. Risks
 
 | Risk | Mitigation |
@@ -277,6 +313,8 @@ trusted set; it does not remove the set.
 
 **Phase 0, prerequisites** (lanes, owner-reviewed):
 
+* Add complaint collection (5.7) to the explorer and the overnight agent; it can
+  run during every later phase.
 * Let `lane/promote` land. Freeze a complete inventory of its cost as the
   hand-built baseline: tracked and untracked files, proof lines, agent time and
   review rounds.
