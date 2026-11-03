@@ -518,3 +518,87 @@
   font-size: 12px;
   color: var(--clinical-muted);
 }
+
+/* Try to break it */
+.break-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 980px;
+}
+.dashboard .break-intro {
+  margin: 0;
+  font-size: 14px;
+  line-height: 21px;
+}
+.break-rules {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.break-rules .summary-label {
+  margin-right: 4px;
+}
+.break-rule {
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--clinical-red-tint);
+  color: var(--clinical-red-ink);
+  font-size: 12px;
+}
+.dashboard .break-form {
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+.dashboard .break-form label {
+  font-weight: 500;
+  color: var(--clinical-muted);
+}
+.break-result,
+.break-live {
+  padding: 14px 16px;
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-border);
+  border-radius: 6px;
+}
+.dashboard .break-result h3 {
+  font-size: 15px;
+  margin: 2px 0 10px;
+}
+.break-result .failure-message {
+  border-radius: 4px;
+}
+.break-result .failure-message p {
+  margin: 4px 0 0;
+}
+.break-replay {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dashboard .break-live h3 {
+  font-size: 13px;
+}
+.break-live form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.dashboard .break-live label {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  font-weight: 500;
+  color: var(--clinical-muted);
+}
+.break-live textarea {
+  width: 100%;
+  font: inherit;
+  padding: 8px;
+  border: 1px solid var(--clinical-control);
+  border-radius: 3px;
+  resize: vertical;
+}

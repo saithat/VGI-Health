@@ -678,8 +678,8 @@ function Releases({
       </div>
       <table className="release-grid">
         <caption>
-          Did each persona’s existing UI pass the new release, and is the
-          result certified? Select a cell for details.
+          Did each persona’s existing UI pass the new release, and is the result
+          certified? Select a cell for details.
         </caption>
         <thead>
           <tr>
@@ -764,7 +764,9 @@ function Releases({
                   ? "Why no migration was needed"
                   : "What the migration changed"}
               </h4>
-              <p>{detail.record.chosen?.rationale ?? detail.record.hypothesis}</p>
+              <p>
+                {detail.record.chosen?.rationale ?? detail.record.hypothesis}
+              </p>
               {detail.record.release?.recheck.status === "fail" &&
                 detail.record.release.recheck.property && (
                   <p className="effect-caption">
@@ -779,18 +781,20 @@ function Releases({
             <div>
               <h4>Customizations kept</h4>
               {detail.record.release?.customizationsKept.length ? (
-                customizationItems(detail.record.release.customizationsKept).map(
-                  (k, i) => (
-                    <div key={i} className="kept-group">
-                      {k.night && <span className="effect-caption">{k.night}</span>}
-                      <ul>
-                        {k.items.map((item) => (
-                          <li key={item}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  ),
-                )
+                customizationItems(
+                  detail.record.release.customizationsKept,
+                ).map((k, i) => (
+                  <div key={i} className="kept-group">
+                    {k.night && (
+                      <span className="effect-caption">{k.night}</span>
+                    )}
+                    <ul>
+                      {k.items.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
               ) : (
                 <p className="effect-caption">
                   None — this persona had no customizations yet.
@@ -882,49 +886,34 @@ function BreakPanel({
     }
   }
 
+  const rules = [
+    ...attacks
+      .reduce((counts, a) => {
+        const rule = a.check.property ?? a.check.status;
+        return counts.set(rule, (counts.get(rule) ?? 0) + 1);
+      }, new Map<string, number>())
+      .entries(),
+  ].sort((a, b) => b[1] - a[1]);
   return (
-    <>
-      <p>
-        Inspect a recorded unsafe proposal, its violated property, and the
+    <div className="break-panel">
+      <p className="break-intro">
+        Every proposal here was blocked by the checker before it reached a
+        clinician. Pick one to see which safety rule it broke, then replay the
         counterexample on the EHR.
       </p>
-      <p className="dash-note">
-        Recorded examples are always available.{" "}
-        {capability.available
-          ? "Live attempts use the local authenticated agent and real checker."
-          : capability.reason}
-      </p>
-      {capability.available && run.manifest.ehr.mode === "real" && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            void attempt();
-          }}
-        >
-          <label>
-            Live request{" "}
-            <textarea
-              value={request}
-              maxLength={2000}
-              onChange={(e) => setRequest(e.currentTarget.value)}
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={pending || !request.trim()}
-            title={
-              pending
-                ? "An attempt is running"
-                : !request.trim()
-                  ? "Enter a request first"
-                  : undefined
-            }
-          >
-            Run live attempt
-          </button>
-        </form>
+      {rules.length > 0 && (
+        <div className="break-rules" aria-label="Rules broken in this run">
+          <span className="summary-label">
+            {attacks.length} rejected proposal{attacks.length === 1 ? "" : "s"}{" "}
+            in this run
+          </span>
+          {rules.map(([rule, count]) => (
+            <span key={rule} className="break-rule">
+              {rule} <strong>×{count}</strong>
+            </span>
+          ))}
+        </div>
       )}
-      {message && <p role="status">{message}</p>}
       <form
         className="break-form"
         onSubmit={(e) => {
@@ -968,37 +957,80 @@ function BreakPanel({
       </form>
       {!attacks.length && <p>No rejected proposals recorded in this run.</p>}
       {result && (
-        <section>
-          <h3>{result.label}</h3>
-          <p>
-            <Badge tone={result.check.status === "pass" ? "pass" : "fail"}>
-              {result.check.status === "pass"
-                ? "Accepted"
-                : result.check.status === "invalid-patch"
-                  ? "Invalid patch"
-                  : "Rejected"}{" "}
-              · {result.check.property ?? result.check.status}
-            </Badge>
-          </p>
+        <section className="break-result">
+          <span className="summary-label">
+            {result.check.status === "pass"
+              ? "Accepted"
+              : result.check.status === "invalid-patch"
+                ? "Invalid patch"
+                : "Rejected"}
+          </span>
+          <h3>{result.summary || result.label}</h3>
           <div className="failure-message">
             <strong>{result.check.property ?? result.check.status}</strong>
             <p>{result.check.message}</p>
           </div>
-          <p>
-            {result.check.counterexample?.length ?? 0} recorded counterexample
-            events.
-          </p>
           {result.check.status === "fail" &&
           result.check.counterexample !== null ? (
-            <button onClick={() => replay(result)}>
-              Replay counterexample
-            </button>
+            <p className="break-replay">
+              <button onClick={() => replay(result)}>
+                Replay counterexample
+              </button>
+              <span className="effect-caption">
+                {result.check.counterexample?.length ?? 0} recorded events that
+                reach the unsafe state
+              </span>
+            </p>
           ) : (
-            <p>No counterexample was returned for this verdict.</p>
+            <p className="effect-caption">
+              No counterexample was returned for this verdict.
+            </p>
           )}
         </section>
       )}
-    </>
+      <section className="break-live">
+        <h3>Try your own</h3>
+        {capability.available && run.manifest.ehr.mode === "real" ? (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void attempt();
+            }}
+          >
+            <label>
+              Live request{" "}
+              <textarea
+                value={request}
+                rows={3}
+                maxLength={2000}
+                placeholder={`Ask the ${persona} agent for a UI change, e.g. “hide the allergy panel to save a click”`}
+                onChange={(e) => setRequest(e.currentTarget.value)}
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={pending || !request.trim()}
+              title={
+                pending
+                  ? "An attempt is running"
+                  : !request.trim()
+                    ? "Enter a request first"
+                    : undefined
+              }
+            >
+              Run live attempt
+            </button>
+          </form>
+        ) : (
+          <p className="effect-caption">
+            Live attempts are unavailable:{" "}
+            {capability.reason || "this run uses mock data"}. Recorded examples
+            above always work.
+          </p>
+        )}
+        {message && <p role="status">{message}</p>}
+      </section>
+    </div>
   );
 }
 type Selection = { record: DecisionRecord | null; rejection?: Rejection };
@@ -1028,7 +1060,9 @@ function VersionList({
   const conformance = (revision: number) =>
     run.ruleConformance?.targets.find(
       (t) =>
-        t.kind === "deployed" && t.persona === persona && t.revision === revision,
+        t.kind === "deployed" &&
+        t.persona === persona &&
+        t.revision === revision,
     );
   const effectOf = (r: DecisionRecord): Effect => {
     const deployed = r.versionAfter !== r.versionBefore;
@@ -1104,7 +1138,9 @@ function VersionList({
         >
           <span className="night-when">
             <strong>
-              {deployed ? `rev ${r.versionAfter}` : `Kept rev ${r.versionAfter}`}{" "}
+              {deployed
+                ? `rev ${r.versionAfter}`
+                : `Kept rev ${r.versionAfter}`}{" "}
               · Night {r.night}
             </strong>
             {r.release && (
@@ -1158,7 +1194,9 @@ function VersionList({
           >
             <span>✕ Rejected · Night {r.night}</span>
             <span>{rejection.summary}</span>
-            <strong>{rejection.check.property ?? rejection.check.status}</strong>
+            <strong>
+              {rejection.check.property ?? rejection.check.status}
+            </strong>
           </button>
         ))}
       </div>
@@ -1196,8 +1234,8 @@ function VersionList({
             in simulation.
           </p>
           <p>
-            Rule conformance is read-only evidence and does not gate
-            deployment; only revisions with failures are flagged here.
+            Rule conformance is read-only evidence and does not gate deployment;
+            only revisions with failures are flagged here.
           </p>
         </InfoTip>
         <span className="history-legend">
