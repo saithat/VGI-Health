@@ -6,7 +6,7 @@ import {createHash} from 'node:crypto';
 import {parseArgs,promisify} from 'node:util';
 import {execFile} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
-import {tmpdir} from 'node:os';
+import {homedir,tmpdir} from 'node:os';
 import {exportReplay} from './export-replay.mjs';
 import {indexTrajectories,verifySavedTrajectories} from './trajectories/index.mjs';
 import {compute} from './complexity/compute.mjs';
@@ -169,7 +169,7 @@ export async function finalizeStopped({root,id,binary,execute=promisify(execFile
 export async function main(args=process.argv.slice(2)){
  const {values}=parseArgs({args:args.filter(a=>a!=='--'),options:{run:{type:'string'},into:{type:'string'},'in-place':{type:'boolean'},watch:{type:'boolean'},'repo-root':{type:'string'},'poll-ms':{type:'string',default:'15000'},'task-timeout-ms':{type:'string',default:'1000'},'search-bound':{type:'string',default:'1000'}}});
  if(values.watch&&values['in-place'])throw new Error('--watch is read-only on its source; --in-place requires a stopped run');
- process.env.TMPDIR='/home/saithat/Projects/run-tmp';await mkdir(process.env.TMPDIR,{recursive:true});
+ process.env.TMPDIR||=path.join(homedir(),'run-tmp');await mkdir(process.env.TMPDIR,{recursive:true});
  const options={root:values['repo-root']??defaultRoot,run:values.run,into:values.into,inPlace:values['in-place'],taskTimeoutMs:Number(values['task-timeout-ms']),searchBound:Number(values['search-bound'])};
  const poll=Number(values['poll-ms']);if(!Number.isSafeInteger(poll)||poll<100)throw new Error('--poll-ms must be at least 100');
  let stop=false;const done=()=>{stop=true;};process.once('SIGINT',done);process.once('SIGTERM',done);

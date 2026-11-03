@@ -808,7 +808,7 @@ def write_outputs(catalog, files, excluded):
     lines.append(table(['Rank','Rule / source','Field(s) / info(s)','Gate / placement'],[(i+1,f"{r['title']} (`{r['id']}`)",', '.join(e['id'] for e in r['proposedEncoding']['elements']+r['proposedEncoding']['infos']),', '.join(c['id'] for c in r['proposedEncoding']['commits'])+' / '+', '.join(p['screen'] for p in r['proposedEncoding']['placement'])) for i,r in enumerate(selected)]))
     lines.append(CATALOG_CONTEXT)
     lines.extend(['## Input audit\n',table(['File','Rows','SHA-256'],[(f['path'],f['rows'],f['sha256']) for f in files]),
-        table(['Encoding baseline','SHA-256'],[(p,hashlib.sha256((ROOT/p).read_bytes()).hexdigest()) for p in ['lean/Ehr/Core/Types.lean','lean/Ehr/Specs/V1.lean','docs/design/core-model.md','docs/hackathon/BRIEF.md']]),
+        table(['Encoding baseline','SHA-256'],[(p,hashlib.sha256((ROOT/p).read_bytes()).hexdigest()) for p in ['lean/Ehr/Core/Types.lean','lean/Ehr/Specs/V1.lean','docs/design/core-model.md']]),
         '### Excluded source rows\n',table(['File','ID','Reason'],[(r['file'],r['id'],r['reason']) for r in excluded]),
         '### Spot-checked primary sources\n',
         'The source-law research is inherited. Two decisive classification points were spot-checked against current official text: the [Schedule II no-refill rule](https://www.ecfr.gov/current/title-21/chapter-II/part-1306/section-1306.12) and the distinction between operative content and actual surgical timing in [CMS surgical services](https://www.ecfr.gov/current/title-42/chapter-IV/subchapter-G/part-482/subpart-D/section-482.51). No blanket legal completeness or currency verification is claimed.\n'])

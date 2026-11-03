@@ -1,6 +1,7 @@
 #!/bin/sh
 set -eu
-export TMPDIR=/home/saithat/Projects/run-tmp
+export TMPDIR="${TMPDIR:-$HOME/run-tmp}"
+mkdir -p "$TMPDIR"
 export UV_CACHE_DIR="$TMPDIR/uv-cache"
 export XDG_CACHE_HOME="$TMPDIR/cache"
 export HF_HOME="$TMPDIR/huggingface"

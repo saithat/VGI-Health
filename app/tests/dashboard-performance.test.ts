@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { mkdtemp, readFile, rm, writeFile, mkdir } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
+import { withData } from "./data";
 import { createJsonCache } from "../src/browser/json-cache";
 import { geometrySliceFile, sliceGeometry } from "../scripts/geometry-slice";
 import { pointerTravel } from "../src/metrics/geometry";
@@ -49,9 +51,13 @@ describe("shared JSON cache", () => {
   });
 });
 const root = resolve(import.meta.dirname, "../../runs/core-10day-live");
-const index = trajectoryIndexSchema.parse(
-  JSON.parse(await readFile(join(root, "trajectories/index.json"), "utf8")),
-);
+// The recorded run is archive data (see README "Data"); its tests skip without it.
+const run = withData("runs/core-10day-live/trajectories/index.json");
+async function loadIndex() {
+  return trajectoryIndexSchema.parse(
+    JSON.parse(await readFile(join(root, "trajectories/index.json"), "utf8")),
+  );
+}
 function required<T>(value: T | undefined): T {
   if (value === undefined) throw new Error("Missing test fixture");
   return value;
@@ -64,7 +70,8 @@ const filters = {
   search: "",
   sort: "recorded",
 };
-it("filters incomplete tasks, searches ids, sorts costs, and excludes incomplete or unlike comparisons", () => {
+run.it("filters incomplete tasks, searches ids, sorts costs, and excludes incomplete or unlike comparisons", async () => {
+  const index = await loadIndex();
   const incomplete = filterTrajectories(
     index.tasks,
     { ...filters, completed: "false" },
@@ -104,7 +111,8 @@ it("filters incomplete tasks, searches ids, sorts costs, and excludes incomplete
     comparisonOptions([{ ...first, baseline: fakeBaseline }]),
   ).toHaveLength(1);
 });
-it("matches no-agent outcomes by persona/day/id and never reports savings for incomplete arms", async () => {
+run.it("matches no-agent outcomes by persona/day/id and never reports savings for incomplete arms", async () => {
+  const index = await loadIndex();
   const day = JSON.parse(
     await readFile(join(root, "no-agent/days/day-01/P1.json"), "utf8"),
   );
@@ -119,7 +127,8 @@ it("matches no-agent outcomes by persona/day/id and never reports savings for in
   expect(clickSavings({ ...task, completed: false }, task.metrics)).toBeNull();
 });
 describe("geometry slices", () => {
-  it("preserves every prefix's measured pointer/scroll result across workflows and days", async () => {
+  run.it("preserves every prefix's measured pointer/scroll result across workflows and days", async () => {
+    const index = await loadIndex();
     const tasks = [
       required(index.tasks[0]),
       required(index.tasks.find((t) => t.day === 3 && t.workflow === "W1")),
@@ -155,9 +164,7 @@ describe("geometry slices", () => {
     }
   });
   it("uses disk cache, coalesces, invalidates changed inputs, rejects traversal and wrong hashes", async () => {
-    const temp = await mkdtemp(
-      "/home/saithat/Projects/run-tmp/dashboard-slice-",
-    );
+    const temp = await mkdtemp(join(tmpdir(), "dashboard-slice-"));
     try {
       const hash = "a".repeat(64);
       await mkdir(join(temp, "geometry"));
