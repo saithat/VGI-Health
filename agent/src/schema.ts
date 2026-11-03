@@ -283,6 +283,7 @@ export const screenCheckResultSchema = z.object({
 });
 
 export const outcomeSchema = z.enum([
+  'validation-accepted',
   'error', 'infrastructure-error', 'llm-error', 'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'screen-check-failed', 'validation-rejected',
   'user-reverted', 'migrated', 'migration-fallback', 'recertified', 'surfaced', 'not-surfaced',
   'break-attempt-rejected', 'break-attempt-passed',

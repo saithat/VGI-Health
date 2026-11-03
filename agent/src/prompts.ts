@@ -1,3 +1,4 @@
+import type { QueryBundle } from './quality-queries.js';
 /**
  * Prompt builders. INTEGRITY BOUNDARY (BRIEF 8.4): every builder takes only
  * train-safe inputs (TrainSummary over days <= d, the current program, the
@@ -8,6 +9,7 @@ import { promptContext } from './manual.js';
 import type { CheckResult, Component, EvaluatedCandidate, JsonPatchOp, PersonaParams, Program, Spec, TrainSummary } from './schema.js';
 
 export interface PromptParts {
+  queryBundle?: QueryBundle;
   system: string;
   prompt: string;
 }

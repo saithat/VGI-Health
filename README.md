@@ -156,7 +156,7 @@ sequenceDiagram
 |---|---|
 | `lean/` | Rulebook, interpreter, checker, renderer, simulator and all proofs. |
 | `app/` | React app: clinical painter, live and replay modes, dashboard. |
-| `agent/` | Nightly loop: observe traces, prompt an LLM for JSON patches, check, gate, deploy. |
+| `agent/` | Nightly loop: observe traces, prompt an LLM for JSON patches, check, gate, deploy. Also an offline harness (`proposal-quality`) that re-runs recorded nights to compare prompt variants; it never deploys. |
 | `services/commit/` | Postgres commit authority for MAR and ADT, driven by the native Lean binary. |
 | `wasm/` | Lean → C → Emscripten build. |
 | `world/` | Generator of simulated clinical days (patients, tasks, schedules). |

@@ -52,6 +52,7 @@ export class LlmAgent implements AgentBackend {
   async proposeCandidates(ctx: ProposeContext): Promise<Proposal> {
     const req: JsonRequest = {
       callId: ctx.callId, purpose: ctx.purpose, system: ctx.parts.system, prompt: ctx.parts.prompt,
+      ...(ctx.parts.queryBundle?{queryBundle:ctx.parts.queryBundle}:{}),
       schemaName: 'LlmProposal', schema: LLM_PROPOSAL_JSON_SCHEMA,
     };
     const res = await this.llm.complete(req);
@@ -76,6 +77,7 @@ export class LlmAgent implements AgentBackend {
   async chooseCandidates(ctx: ChooseContext): Promise<Choice> {
     const req: JsonRequest = {
       callId: ctx.callId, purpose: 'choose', system: ctx.parts.system, prompt: ctx.parts.prompt,
+      ...(ctx.parts.queryBundle?{queryBundle:ctx.parts.queryBundle}:{}),
       schemaName: 'LlmChoice', schema: LLM_CHOICE_JSON_SCHEMA,
     };
     const res = await this.llm.complete(req);

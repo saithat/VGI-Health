@@ -64,7 +64,7 @@ export class RecordingLlm implements JsonLlm {
       catch(error){
         if(error instanceof ReplayDivergedError || error instanceof ReplayMissingError)throw error;
         attempt++;
-        const detail={callId:req.callId,error:error instanceof Error?error.message:String(error),time:new Date().toISOString(),...((error&&typeof error==='object'&&'transcript' in error)?{transcript:error.transcript}:{})};
+        const detail={callId:req.callId,error:error instanceof Error?error.message:String(error),time:new Date().toISOString(),...((error&&typeof error==='object'&&'transcript' in error)?{transcript:error.transcript}:{}),...((error&&typeof error==='object'&&'audit' in error)?{audit:error.audit}:{})};
         let number=attempt;
         while(existsSync(file.replace(/\.json$/,`.attempt-${number}.error.json`)))number++;
         await writeJson(file.replace(/\.json$/,`.attempt-${number}.error.json`),detail);
