@@ -1,0 +1,5 @@
+[
+  {"family":"VGI Noto Sans","weights":[400,600,650,700,750,800],"probe":"Clinical review 0123","file":"noto-sans.woff2"},
+  {"family":"VGI Noto Sans Mono","weights":[400],"probe":"Ctrl+K 0123","file":"noto-sans-mono.woff2"},
+  {"family":"VGI Noto Symbols","weights":[400],"probe":"✓◷","file":"noto-symbols.woff2"}
+]

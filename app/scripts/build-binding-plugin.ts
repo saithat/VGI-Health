@@ -36,6 +36,11 @@ export function buildBindingPlugin(): Plugin {
             modules.set(key, firstPartySource ? readFileSync(file, "utf8") : (info.code ?? ""));
           }
         }
+        // Binary font bytes affect layout and must bind certificates exactly.
+        for (const file of ["noto-sans.woff2", "noto-sans-mono.woff2", "noto-symbols.woff2"])
+          modules.set("font:" + file, createHash("sha256").update(readFileSync(resolve("src/ehr/ui/fonts", file))).digest("hex"));
+        for (const file of ["NotoSans-OFL.txt", "NotoSansMono-OFL.txt", "NotoSymbols-OFL.txt"])
+          this.emitFile({ type: "asset", fileName: "fonts/" + file, source: readFileSync(resolve("src/ehr/ui/fonts", file)) });
         for (const pinned of ["../pnpm-lock.yaml", "vite.config.ts", "index.html"])
           modules.set("pinned:" + pinned, readFileSync(pinned, "utf8"));
         for (const [key, code] of [...modules].sort(([a], [b]) => a.localeCompare(b)))

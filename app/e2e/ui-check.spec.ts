@@ -1,3 +1,4 @@
+import { waitForCaptureFonts, captureCss } from "./capture-environment";
 import { captureGeometry } from "./geometry-capture";
 import { createHash, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, writeFileSync, renameSync } from "node:fs";
@@ -27,6 +28,15 @@ import type {} from "../src/ehr/offline";
 
 // Each test renders one independent screen file in its own page.
 test.describe.configure({ mode: "parallel" });
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript((css) => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const style = document.createElement("style");
+      style.textContent = css;
+      document.head.append(style);
+    });
+  }, captureCss);
+});
 
 const supplied = z
   .array(z.string())
@@ -65,7 +75,7 @@ async function render(page: Page, screen: UiScreen, settleMs = 220) {
     ({ screen, presentations }) => window.renderUi(screen, presentations),
     { screen, presentations },
   );
-  await page.evaluate(() => document.fonts.ready);
+  await waitForCaptureFonts(page);
   // Wait for presentation transitions before inspecting the expected regions.
   if (settleMs) await page.waitForTimeout(settleMs);
   else

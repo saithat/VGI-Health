@@ -621,6 +621,57 @@ been rebound.
   loader URL (`interp-loader.mjs?v=<hash>`), so a browser cannot keep a
   stale interpreter from its cache.
 
+### Build and browser geometry determinism
+
+The clinical painter bundles OFL-1.1 Noto Sans (normal variable 400–800),
+Noto Sans Mono (400), and two Noto Sans Symbols 2 glyphs as local WOFF2 assets.
+No font CDN or installed-font lookup participates in those faces. The reviewed
+Latin repertoire, upstream revisions/licenses and reproducible generation are
+in [scripts/fonts](scripts/fonts/README.md). Measurements explicitly load and
+check every declared face and wait for `document.fonts.ready`; missing assets
+fail capture. New scripts or characters outside that repertoire need font
+coverage review and renewed measurements.
+
+Geometry capture uses 1440×900 CSS px, device scale factor 1, light scheme,
+reduced motion, `en-US` and `America/Los_Angeles`. Its injected stylesheet
+disables animation, transitions, smooth scrolling and the visible caret. Each
+active or modal-free collector state has its own BrowserContext/page. The
+screen/WCAG gate uses the same environment and font checks. Geometry cache
+contexts bind the certified app hash, exact font bytes, capture sources/settings,
+stylesheet, Chromium version and executable bytes. State keys bind tree bytes
+and presentation bundles; filenames/day tags are assigned after cache lookup.
+Host platform, fontconfig paths and temporary directories are not layout inputs.
+
+These changes invalidate recorded app certificates and geometry caches; rebuild
+and revalidate before reuse. Historical runs are not automatically rebound.
+The native geometry verifier also recognizes the current Lean alert-condition
+constructors (`minorInteraction`, `criticalResult`) in its wire validator.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+pnpm --filter app build
+pnpm --filter app test:geometry-determinism
+node scripts/audit-alert-policy.mjs "$TMPDIR/geometry-canonicals" --personas --export-only
+node app/scripts/geometry-determinism.mjs "$TMPDIR/geometry-independence" "$TMPDIR/geometry-canonicals/exports.json"
+node --import ./agent/node_modules/tsx/dist/loader.mjs agent/src/geometry-verify.ts canonicals "$TMPDIR/geometry-verified"
+```
+
+Retain a pre-change verification directory to compute task-aligned mean/max
+and signed pixel deltas with `node app/scripts/geometry-compare.mjs <before-dir>
+<after-dir> <output.json>`; the comparison requires identical native/world hashes
+and task completion.
+
+The CI-friendly test requires a built app, Playwright Chromium, Linux fontconfig
+and Liberation Sans/Mono with different baseline generic families. The full command checks every distinct exported
+persona tree, including modal-free probes where present. It captures twice normally and once
+in a separate Chromium process with generic sans/system/mono aliases mapped to
+Liberation, verifies `fc-match` resolutions, bypasses cache reads in all passes,
+and requires identical geometry JSON and context. It writes pass JSON and a
+verification digest under the supplied scratch directory. This checks the
+selected Chromium/repertoire/states; it is not a cross-engine rendering proof.
+See the [geometry lane report](docs/audits/geometry-determinism-2026-11-02.md)
+for isolation cost, before/after task metrics, WCAG changes and exact checks.
+
 ### One screen, step by step
 
 1. **Facts.** `ehr_facts` takes a FHIR Bundle and a context (user, role,
