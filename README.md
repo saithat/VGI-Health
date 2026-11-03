@@ -382,11 +382,13 @@ desktop 1280/1440/1600/1920px, with 320/640px reflow equivalents and text-only
 paint effects require review. This is a bounded browser gate, not full WCAG
 certification. [Canonical audit findings](docs/design/alert-urgency-findings.md)
 record the baseline: 8,418 exports (2,673 distinct trees), 32,094 matrix cases.
-The [WCAG repair report](docs/audits/wcag-2026-11-02.md) records the repaired
-painter's counts, verification and remaining urgency/integration findings.
-Physical findings fell from 451,695/368,914 (templates/personas) to zero across
-32,094 matrix records. The gates retain 900/540 urgency findings; the full browser
-suite still has urgency and local live/recorded-build integration failures.
+The [original WCAG repair report](docs/audits/wcag-2026-11-02.md) records the
+pre-urgency-merge physical findings falling from 451,695/368,914
+(templates/personas) to zero. The [merged UI follow-up](docs/audits/wcag-merge-followup-2026-11-02.md)
+records the later critical-result text-field repair, timeout-state rechecks and
+full merged-suite/audit results. Plain `text` entries use a one-row, soft-wrapping
+textbox that grows with its value and text metrics; full values and Lean enter
+and confirmation events are preserved. Other entry kinds retain their widgets.
 
 Dense controls retain a 24px target floor, including card-navigation overrides; labels
 and line boxes grow with resized text.
