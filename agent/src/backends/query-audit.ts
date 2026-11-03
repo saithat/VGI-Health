@@ -9,8 +9,40 @@ const queryNames=['screens','steps','targets','scroll-past','sequences','ledger'
 export const queryAuditSchema=z.object({queryMode:z.literal(true),requestDirectory:z.string(),commands:z.array(z.object({
   id:z.string(),command:z.string(),cwd:z.string().nullable(),output:z.string(),truncated:z.boolean(),query:z.string().nullable(),
 }))});
-function shellSyntax(command:string) {
-  const unwrapped=command.replace(/^(?:\/bin\/)?(?:ba)?sh\s+-[lc]{1,2}\s+(['"])(.*)\1$/s,'$2');
+/** POSIX word splitting with quote concatenation (`"a"'b'"c"` is one word); null if unbalanced. */
+function shellWords(command:string):string[]|null {
+  const words:string[]=[];let word='',inWord=false,quote='';
+  for(let i=0;i<command.length;i++){
+    const char=command.charAt(i),next=command.charAt(i+1);
+    if(quote==="'"){if(char==="'")quote='';else word+=char;continue;}
+    if(quote==='"'){
+      if(char==='"')quote='';
+      else if(char==='\\'&&/["\\$`]/.test(next)){word+=next;i++;}
+      else word+=char;
+      continue;
+    }
+    if(/\s/.test(char)){if(inWord)words.push(word);word='';inWord=false;continue;}
+    inWord=true;
+    if(char==="'"||char==='"')quote=char;
+    else if(char==='\\'&&next){word+=next;i++;}
+    else word+=char;
+  }
+  if(quote)return null;
+  if(inWord)words.push(word);
+  return words;
+}
+// Codex wraps each command as `<shell> -lc <script>`; the shell path varies by release
+// and host (`/bin/bash`, `/usr/bin/bash`, `bash`, `/usr/bin/sh`). Unbalanced quoting
+// returns null, which the audit treats as a write attempt.
+function shellScript(command:string):string|null {
+  const words=shellWords(command);
+  if(!words)return null;
+  const [shell,flag,script]=words;
+  return words.length===3&&script!==undefined&&/^(?:(?:\/usr)?\/bin\/)?(?:ba)?sh$/.test(shell??'')&&/^-[lc]{1,2}$/.test(flag??'')?script:command;
+}
+function shellSyntax(command:string):string|null {
+  const unwrapped=shellScript(command);
+  if(unwrapped===null)return null;
   let syntax='',quote='',escaped=false;
   for(const char of unwrapped){
     if(escaped){escaped=false;continue;}
@@ -24,7 +56,8 @@ function shellSyntax(command:string) {
 export function writeAttempt(command:string) {
   // Conservative by design: reject output redirection, command substitution and mutators,
   // including common interpreter file writes; stdout printing remains allowed.
-  if(shellSyntax(command).includes('>'))return true;
+  const syntax=shellSyntax(command);
+  if(syntax===null||syntax.includes('>'))return true;
   return /[`]|\$\(|\$\{|\b(?:tee|mv|cp|rm|touch|mkdir|rmdir|install|truncate|chmod|chown|ln|dd|patch|apply_patch|sed\s+-[^\s]*i|curl|wget|git|cd|pushd|popd)\b|\bexec\b|\b(?:writeFile(?:Sync)?|appendFile(?:Sync)?|write_text|write_bytes|chdir|fchdir|unlink(?:Sync)?|rename(?:Sync)?|rmtree|makedirs)\s*\(|\bopen\s*\([\s\S]*?(?:["'][wax+][bt+]*["']|O_WRONLY|O_RDWR|O_CREAT)|(?:\bcodex-home\b|\bauth\.json\b|\/(?:proc|dev|etc)(?:\/|\b))/i.test(command);
 }
 export function auditQueryTranscript(stdout:string,directory:string) {
@@ -41,7 +74,7 @@ export function auditQueryTranscript(stdout:string,directory:string) {
       const c=command.data,id=c.id??`event-${sequence++}`,old=commands.get(id),output=c.aggregated_output??c.output??old?.output??'';
       // Accept the immutable CLI or a leading, absolute pwd for cwd attestation.
       // The latter allows read-only interpreter commands on CLI versions without cwd metadata.
-      const unwrapped=c.command.replace(/^\/bin\/(?:ba)?sh\s+-lc\s+(['"])(.*)\1$/s,'$2');
+      const unwrapped=shellScript(c.command)??c.command;
       const pwd=/^\/usr\/bin\/pwd\s*&&\s*/.exec(unwrapped);
       const queryCommand=pwd?unwrapped.slice(pwd[0].length):unwrapped;
       const cli=/^(?:\/usr\/bin\/)?node\s+(?:\.\/)?query\.mjs\s+(screens|steps|targets|scroll-past|sequences|ledger)(?:\s+--[a-z-]+\s+(?:[\w./:()@+-]+|'[^'\r\n]*'|"[^"$`\r\n]*"))*$/.exec(queryCommand);

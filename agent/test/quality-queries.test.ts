@@ -82,6 +82,12 @@ it('audits command cwd, writes, forbidden tools, deduplicated queries and bounde
  expect(auditQueryTranscript(item("python3 -c 'open(\n\"f\",\n\"w\")'",dir),dir).status).toBe('fail');
  expect(auditQueryTranscript(item("jq '.clicks > 0' locality.json",dir),dir).status).toBe('pass');
  expect(auditQueryTranscript(item("/bin/bash -lc 'echo x > f'",dir),dir).status).toBe('fail');
+ // Codex 0.166 wraps commands as `/usr/bin/bash -lc <script>`, sometimes concatenating quote styles.
+ const wrappedQuery=auditQueryTranscript(item("/usr/bin/bash -lc '/usr/bin/pwd && /usr/bin/node query.mjs targets --day 9 --sort travel --limit 18'",undefined,dir+'\n{}'),dir);
+ expect(wrappedQuery.status).toBe('pass');expect(wrappedQuery.commands[0]?.query).toBe('targets');
+ expect(auditQueryTranscript(item(String.raw`/usr/bin/bash -lc "/usr/bin/pwd && /usr/bin/node -e 'const t=JSON.parse(require(\"fs\").readFileSync(\"traces.json\",\"utf8\")).filter(([k])=>"'!k.includes("x")).map(([k,v])=>[k,v]);console.log(t)'"'"`,undefined,dir+'\n[]'),dir).status).toBe('pass');
+ for(const command of ["/usr/bin/bash -lc 'echo x > f'",`/usr/bin/bash -lc "/usr/bin/pwd && cat traces.json"'> f'`,"/usr/bin/bash -lc '/usr/bin/pwd && cat traces.json"])
+  expect(auditQueryTranscript(item(command,undefined,dir+'\n'),dir).status).toBe('fail');
  const pwdCommand='/usr/bin/pwd && jq . traces.json';
  const pwdStart=JSON.stringify({type:'item.started',item:{id:'tool-1',type:'command_execution',command:pwdCommand,aggregated_output:''}});
  expect(auditQueryTranscript(pwdStart+'\n'+item(pwdCommand,undefined,dir+'\n{}'),dir).status).toBe('pass');
