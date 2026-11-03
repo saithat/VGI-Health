@@ -41,9 +41,9 @@ import { createScreenChecker } from './screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, readJson, resolveUserPath } from './util.js';
 import { loadWorld } from './world.js';
-import { evaluateQuality } from './quality.js';
+import { evaluateQuality, historicalDecisions } from './quality.js';
 import type { QualityArm } from './quality-report.js';
-import { offlineRecordSchema, writeQualityReport } from './quality-report.js';
+import { offlineRecordSchema, refreshSanityRepetitions, writeQualityReport } from './quality-report.js';
 
 function backendArg(v: string | undefined): BackendChoice {
   const b = BACKENDS.find((x) => x === v);
@@ -201,7 +201,11 @@ const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
     if(!values.run)throw new Error('--run is required');
     const dir=resolveUserPath(values.run);
     const manifest=await readJson(path.join(dir,'manifest.json'),z.object({status:z.literal('completed')}));
-    if(manifest.status==='completed')await writeQualityReport(dir,await readJson(path.join(dir,'records.json'),z.array(offlineRecordSchema)));
+    if(manifest.status==='completed'){
+      const records=await readJson(path.join(dir,'records.json'),z.array(offlineRecordSchema));
+      const rows=records.every(r=>r.arm==='sanity')?refreshSanityRepetitions(records,await historicalDecisions(path.join(dir,'inputs'))):records;
+      await writeQualityReport(dir,rows);
+    }
   },
   'proposal-quality': async argv => {
     const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'}}});

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { z } from 'zod';
 import { decisionRecordSchema, type DecisionRecord } from './schema.js';
 import { measuredLedger, physicalSaving, sameIdea, zeroEffect, zeroOrWorse, type MeasuredSavings } from './quality-context.js';
+import { recomputedSavings } from './quality-ledger.js';
 import { rng, writeJson } from './util.js';
 
 export const OFFLINE_LABEL = 'offline, screen check skipped, simulator only';
@@ -41,6 +42,16 @@ export function decisionMetrics(r: OfflineRecord) {
 export function repetitionCount(record: DecisionRecord, history: readonly DecisionRecord[], measured:Readonly<MeasuredSavings>): number {
   const ledger=measuredLedger(history,record.persona,record.night,measured).filter(e=>!e.seeded && zeroOrWorse(e.trainDaySaving));
   return record.candidates.filter(e=>!e.candidate.seeded && ledger.some(old=>sameIdea(old,e.candidate))).length;
+}
+
+/** A long sanity job can finish under an older reporter. Regeneration derives
+ * repeats from its own measured train estimates, never historical saved values.
+ * Partial sanity selections lack complete history; leave their metadata alone.
+ */
+export function refreshSanityRepetitions(records:readonly OfflineRecord[],history:readonly DecisionRecord[]) {
+  if(!records.length||records.some(r=>r.arm!=='sanity')||records.length!==history.filter(r=>r.mode==='nightly').length)return records;
+  const measured=recomputedSavings(history,records.map(r=>({...r,screenCheck:null})));
+  return records.map(r=>({...r,repeatedMeasuredBad:repetitionCount({...r,screenCheck:null},history,measured)}));
 }
 
 /** Average samples within decision, then resample whole decisions (never individual samples). */

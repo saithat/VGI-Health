@@ -11,7 +11,7 @@ import { measuredLedger, withQuality, type QualityContext } from '../src/quality
 import { withQueries } from '../src/quality-queries.js';
 import { nightlyPrompt, choosePrompt, repairPrompt } from '../src/prompts.js';
 import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, meteredLlm, selectDecisions, evaluateQuality } from '../src/quality.js';
-import { OFFLINE_LABEL, pairedComparison, qualityReport, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
+import { OFFLINE_LABEL, pairedComparison, qualityReport, refreshSanityRepetitions, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
 import { FAKE_PERSONAS, writeFakeWorld } from '../src/fake/world.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
 import { fakeCanonical, fakeSpec } from '../src/fake/fixtures.js';
@@ -161,6 +161,9 @@ describe('train-only prompts and offline loop',()=>{
     expect(measuredLedger([historical],'P1',2,loaded)).toEqual(ledger);
     const offlineHistory={...offline('night-01/P1','A',false),arm:'sanity' as const,candidates:historical.candidates};
     const offlineNow={...offlineHistory,candidates:current.candidates};
+    const stale={...offlineNow,night:2,decisionId:'night-02/P1',repeatedMeasuredBad:99};
+    const fresh=refreshSanityRepetitions([offlineNow,stale],[historical,{...historical,night:2}]);
+    expect(fresh[1]?.repeatedMeasuredBad).toBe(1);expect(stale.repeatedMeasuredBad).toBe(99);
     const comparison=compareSanityRecords([offlineHistory],[offlineNow]);
     expect(comparison.changed[0]?.id).toBe('idea');expect(comparison.signChanged[0]?.signChanged).toEqual(['scrolls','scrollPx']);
     const broken={...offlineNow,candidates:current.candidates.map(c=>({...c,trainEstimate:c.trainEstimate?{...c.trainEstimate,before:{...c.trainEstimate.before,clicks:1}}:null}))};
