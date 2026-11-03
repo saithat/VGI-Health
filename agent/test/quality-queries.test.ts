@@ -78,6 +78,8 @@ it('audits command cwd, writes, forbidden tools, deduplicated queries and bounde
  expect(auditQueryTranscript(item('jq . traces.json','/outside'),dir).status).toBe('fail');
  expect(auditQueryTranscript(item('jq . traces.json'),dir).status).toBe('fail');
  expect(auditQueryTranscript(item('jq . traces.json',dir),dir).status).toBe('pass');
+ expect(auditQueryTranscript(item("/usr/bin/pwd && python3 -c 'import json\nprint(1)'",undefined,dir+'\n1'),dir).status).toBe('pass');
+ expect(auditQueryTranscript(item("python3 -c 'open(\n\"f\",\n\"w\")'",dir),dir).status).toBe('fail');
  expect(auditQueryTranscript(item("jq '.clicks > 0' locality.json",dir),dir).status).toBe('pass');
  expect(auditQueryTranscript(item("/bin/bash -lc 'echo x > f'",dir),dir).status).toBe('fail');
  const pwdCommand='/usr/bin/pwd && jq . traces.json';
