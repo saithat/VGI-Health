@@ -1,4 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { BoardEvents } from "./Board";
+import { UrgentStrip } from "./UrgentStrip";
+import { clinicalCssVariables } from "./theme";
 import { z } from "zod";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import { UiChildren } from "./nodes";
@@ -15,6 +18,8 @@ import "./exotic.css";
 
 export const researchSchema = z
   .strictObject({
+    ordinary: uiNodeSchema.optional(),
+    indexObservation: z.array(uiNodeSchema).optional(),
     mode: z.enum(["command", "spatial", "board", "dated"]),
     panes: z
       .array(
@@ -41,7 +46,7 @@ export const researchSchema = z
       });
     if (
       new Set(v.panes.map((p) => p.patient)).size !== v.panes.length ||
-      v.panes.some((p) => !p.screen.banner.length)
+      (v.panes.some((p) => !p.screen.banner.length) && !v.ordinary)
     )
       ctx.addIssue({
         code: "custom",
@@ -64,6 +69,14 @@ export function activeButtons(
   const walk = (n: UiNode): ReturnType<typeof activeButtons> => {
     if ("button" in n) return [n.button];
     if ("section" in n) return n.section.children.flatMap(walk);
+    if ("datedTimeline" in n) return n.datedTimeline.children.flatMap(walk);
+    if ("board" in n) return n.board.children.flatMap(walk);
+    if ("patientPane" in n)
+      return (
+        n.patientPane.modal.length
+          ? n.patientPane.modal
+          : n.patientPane.children
+      ).flatMap(walk);
     if ("timeline" in n) return n.timeline.children.flatMap(walk);
     if ("columns" in n) return n.columns.children.flatMap(walk);
     if ("tabs" in n) return n.tabs.body.flatMap(walk);
@@ -250,12 +263,43 @@ export function ResearchWorkspace({
   onEvent: (e: ScopedEvent) => void;
 }) {
   const view = researchSchema.parse(value);
+  const firstPatient = view.panes[0]?.patient;
+  if (!firstPatient) throw new Error("Missing patient pane");
+  if (view.ordinary)
+    return (
+      <BoardEvents.Provider value={onEvent}>
+        <main className="clinical-app research" style={{...clinicalCssVariables,fontVariantNumeric:"tabular-nums"}}>
+          <div className="research-label">
+            {view.mode === "dated"
+              ? "VGI · Ordinary dated timeline · Research · No clinical writes"
+              : "VGI · Ordinary patient board · Research · No clinical writes"}
+          </div>
+          <UiChildren
+            nodes={[view.ordinary]}
+            onEvent={(event) => onEvent({ patient: firstPatient, event })}
+          />
+        </main>
+      </BoardEvents.Provider>
+    );
   const modalOwner = view.panes.find((p) => p.screen.modal !== null)?.patient;
   return (
-    <main className={`research research-${view.mode}`}>
+    <main className={`clinical-app research research-${view.mode}`} style={{...clinicalCssVariables,fontVariantNumeric:"tabular-nums"}}>
       <div className="research-label">
-        VGI · Exploration laboratory · Sandbox · No clinical writes
+        {view.mode === "dated" &&
+        view.panes.some((p) =>
+          p.screen.workspace.some((n) => "datedTimeline" in n),
+        )
+          ? "VGI · Ordinary dated timeline · Research · No clinical writes"
+          : "VGI · Exploration laboratory · Sandbox · No clinical writes"}
       </div>
+      <aside className="research-urgency" aria-label="Urgent patients">
+        {view.panes.filter(p=>p.screen.urgent?.length).map(p=>(
+          <section key={p.patient} data-urgent-strip-patient={p.patient} aria-label={`Urgent clinical alerts for ${p.patient}`}>
+            <strong>{p.screen.banner.find(([key])=>key==="Patient")?.[1]??p.patient}</strong>
+            <UrgentStrip nodes={p.screen.urgent??[]} onEvent={event=>onEvent({patient:p.patient,event})}/>
+          </section>
+        ))}
+      </aside>
       <div className="research-panes">
         {view.panes.map(({ patient, screen }) => {
           const emit = (event: Event) => {

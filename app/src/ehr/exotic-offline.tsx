@@ -44,7 +44,7 @@ import type {
 } from "../../../lean/generated/ehr-types";
 import { loadEhrInterp } from "../../public/ehr/interp-loader.mjs";
 import { UiScreenView } from "./ui/Screen";
-import { researchSchema, sourceAxis } from "./ui/Exotic";
+import { researchSchema } from "./ui/Exotic";
 declare global {
   interface Window {
     startResearch: (
@@ -69,7 +69,45 @@ window.startResearch = async (mode, inputs, exampleAxis) => {
     if ((source ?? input.facts.patientId) !== patient)
       throw new Error("Patient binding mismatch");
   }
+  let boardReceipts: Record<string, unknown[]> = Object.fromEntries(
+    inputs.map((p) => [p.patient, []]),
+  );
+  const nativeBoard = (patient?: string, event?: ScopedEvent["event"]) => {
+    const result: {
+      error?: string;
+      node: ResearchView["ordinary"];
+      sessions: { patient: string; input: RenderInput; receipts: unknown[] }[];
+    } = JSON.parse(
+      wasm.call(
+        "ehr_exotic",
+        JSON.stringify({
+          op: "board",
+          sessions: [...sessions].map(([key, input]) => ({
+            patient: key,
+            input,
+            receipts: boardReceipts[key] ?? [],
+          })),
+          ...(patient && event ? { patient, event } : {}),
+        }),
+      ),
+    );
+    if (result.error) throw new Error(result.error);
+    boardReceipts = Object.fromEntries(
+      result.sessions.map((s: { patient: string; receipts: unknown[] }) => [
+        s.patient,
+        s.receipts,
+      ]),
+    );
+    for (const s of result.sessions) sessions.set(s.patient, s.input);
+    return result.node;
+  };
   const emit = ({ patient, event }: ScopedEvent) => {
+    if (mode === "board") {
+      nativeBoard(patient, event);
+      window.researchEvents.push({ patient, event });
+      draw();
+      return;
+    }
     const input = sessions.get(patient);
     if (!input) throw new Error("Unknown patient session");
     const result: StepOutput = JSON.parse(
@@ -91,6 +129,10 @@ window.startResearch = async (mode, inputs, exampleAxis) => {
         context.patient === input.facts.sourcePatientId &&
         context.bound !== context.patient
       ) {
+        if (mode === "board") {
+          nativeBoard(patient, { scroll: { screen: input.state.screen } });
+          continue;
+        }
         const output: StepOutput = JSON.parse(
           wasm.step(
             JSON.stringify({
@@ -107,7 +149,10 @@ window.startResearch = async (mode, inputs, exampleAxis) => {
       const result = JSON.parse(
         wasm.call(
           "ehr_exotic",
-          JSON.stringify({ op: "render", render: input }),
+          JSON.stringify({
+            op: mode === "dated" ? "dated" : "render",
+            render: input,
+          }),
         ),
       );
       if (result.error) throw new Error(result.error);
@@ -117,7 +162,7 @@ window.startResearch = async (mode, inputs, exampleAxis) => {
     // Lookup has no patient banner or clinical authority. Use its ordinary
     // native painter until the selected source is bound, retaining other panes.
     const landing = panes.find((pane) => pane.screen.banner.length === 0);
-    if (landing) {
+    if (landing && mode !== "board" && mode !== "dated") {
       flushSync(() =>
         root.render(
           <MantineProvider theme={clinicalTheme}>
@@ -134,8 +179,22 @@ window.startResearch = async (mode, inputs, exampleAxis) => {
     const view = researchSchema.parse({
       mode,
       panes,
+      ...(mode === "board" ? { ordinary: nativeBoard() } : {}),
       ...(mode === "dated" && first
-        ? { axis: exampleAxis ?? sourceAxis(first.screen) }
+        ? {
+            ordinary: JSON.parse(
+              wasm.call(
+                "ehr_exotic",
+                JSON.stringify({
+                  op: "dated",
+                  render: sessions.get(first.patient),
+                }),
+              ),
+            ).node,
+          }
+        : {}),
+      ...(mode === "dated" && first && exampleAxis
+        ? { axis: exampleAxis }
         : {}),
     });
     flushSync(() =>
@@ -166,6 +225,7 @@ if (!new URLSearchParams(location.search).has("harness")) {
     const input = structuredClone(canonical.input);
     input.facts.patientId = patient;
     input.facts.sourcePatientId = patient;
+    input.display.sourcePatientId = patient;
     input.display.banner.name = `Example patient ${i + 1}`;
     input.display.banner.mrn = patient;
     return { patient, input };

@@ -1688,6 +1688,7 @@ it("timeline forwards exact child events and retains complete source cells", asy
   expect(emit).toHaveBeenCalledExactlyOnceWith({ click: { comp: "next" } });
   const sign = screen.getByRole("button", { name: "Sign" });
   if (!(sign instanceof HTMLButtonElement)) throw new Error("Sign must be a native button");
+
   expect(sign.disabled).toBe(true);
 });
 

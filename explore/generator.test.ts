@@ -27,3 +27,14 @@ test('renaming tags cannot evade independent movement budget',()=>{
   for(const s of c.program.screens) for(const x of s.components) if(n++<9){x.parent='new-parent';x.tag='renamed';}
   assert.throws(()=>validateCandidate(c,baseline,spec),/budget/);
 });
+
+test('admitted board and dated constructors retain the original clinical contract',()=>{
+  for(const point of [{...defaultPoint,layout:'board' as const,patientScope:'multi' as const},
+    {...defaultPoint,layout:'timeline' as const,temporalView:'aligned' as const}]){
+    const candidate=generate(point,['W3'],baseline,spec);
+    assert.equal(candidate.sandbox,null);
+    assert.deepEqual(taskContract(spec,candidate.program,['W3']).contracts,taskContract(spec,baseline,['W3']).contracts);
+    if(point.temporalView==='aligned')assert.ok(candidate.program.screens.some(s=>s.components.some(c=>c.tag.endsWith('.layout.datedTimeline'))));
+  }
+  assert.throws(()=>generate({...defaultPoint,patientScope:'multi'},['W3'],baseline,spec),/extension/);
+});

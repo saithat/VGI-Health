@@ -7,7 +7,52 @@ const run=process.argv[2]??'runs/explore-round2';
 if(!path.resolve(run).startsWith(path.resolve('runs')+path.sep))throw Error('Expected runs/');
 const read=async p=>JSON.parse(await readFile(p,'utf8'));
 const report=await read(`${run}/round2-report.json`);if(report.phase!=='complete')throw Error('Evaluation not complete');
-const protocol=await read(`${run}/protocol.json`),cal=await read(`${run}/calibration/calibration.json`),gate=await read(`${run}/exotic-gate.json`),agreement=await read(`${run}/agreement.json`);
+const protocol=await read(`${run}/protocol.json`);
+if(protocol.promotion){
+ const coverage=await read(`${run}/promotion-coverage.json`),exports=await read(`${run}/export-coverage.json`);
+ const reference=await read(`${run}/reference-stack.json`),sources=await read(`${run}/source-time-check.json`);
+ if(report.rows.map(r=>r.id).sort().join(',')!=='r2-007,r2-008')throw Error('Unexpected promotion members');
+ if(report.rows.length!==2||report.rows.some(r=>r.tier!=='proved'||r.leanVerdict!=='ok'||r.screen.status!=='pass'||r.certified||r.search.missingGeometry||r.heldout.missingGeometry))throw Error('Ordinary promotion gates incomplete');
+ if(report.newModelRequests!==0||report.codexCalls!==0)throw Error('Expected recorded-cache validation');
+ const f=n=>Number(n).toFixed(1),spread=s=>`${f(s.mean)} ± ${f(s.sd)} [${f(s.min)}, ${f(s.max)}]`;
+ const row=(r,tier)=>`| ${r.id} | ${tier} | ${r.heldout.members.reduce((n,p)=>n+p.completed,0)}/24 | ${spread(r.heldout.effort)} | ${spread(r.heldout.mouseTravelPx)} | ${spread(r.heldout.scrollPx)} |`;
+ const results=`| Design | Current tier | Held-out completion | Effort / task | Mouse px / task | Scroll px / task |
+|---|---|---|---|---|---|
+${row(reference,'stack reference; no new certificate')}
+${report.rows.map(r=>row(r,'proved ordinary; ordinary gate passed')).join('\n')}
+
+Spreads are mean ± population SD [min,max] across 12 physicians’ two-task means.
+The original search/held-out split and seed 20261103 are retained. Both designs
+completed ${report.rows.map(r=>r.search.members.reduce((n,p)=>n+p.completed,0)+'/24').join(' and ')} search executions.
+Compared with this build’s stack reference, held-out mouse travel changes by
+${report.rows.map(r=>r.id+': '+f(100*(r.heldout.mouseTravelPx.mean/reference.heldout.mouseTravelPx.mean-1))+'%').join('; ')}.
+These are simulator/geometry measurements, not human travel paths or elapsed time.
+Scrolling rises to ${report.rows.map(r=>r.id+': '+f(r.heldout.scrollPx.mean/reference.heldout.scrollPx.mean)+'×').join('; ')}
+the stack reference. The declared composite effort rises by
+${report.rows.map(r=>r.id+': '+f(100*(r.heldout.effort.mean/reference.heldout.effort.mean-1))+'%').join('; ')}.
+No outcome-driven layout change or archive replacement follows this rerun.
+
+All **${coverage.views}** distinct emitted ordinary views pass at 1440 and 390 px
+(**${coverage.checks} checks**), including **${exports.states} native exports**.
+Real W3 source checks on the actual laboratory tab emit ${sources.cases.map(c=>c.dated).join(', ')} dated entries
+from shown backing rows; ${sources.cases.map(c=>c.withheld).join(', ')} unshown or unsupported
+candidates are withheld. Scope is effectiveDateTime (otherwise effectivePeriod.start)
+and issued on supported vital/lab rows. There are zero native/WASM mismatches. The original
+**${report.importedModelScores}** probability entries suffice: **0 new model requests,
+0 proposal calls**. Raw task traces, source hashes and coverage remain in
+\`${run}/\`; no deployment certificate was produced.`;
+ let text=await readFile('docs/design/exploration-round2.md','utf8');
+ const block=`<!-- promotion-results:start -->\n${results}\n<!-- promotion-results:end -->`;
+ if(text.includes('PROMOTION_RESULTS_PENDING'))text=text.replace('PROMOTION_RESULTS_PENDING',block);
+ else if(text.includes('<!-- promotion-results:start -->'))text=text.replace(/<!-- promotion-results:start -->[\s\S]*?<!-- promotion-results:end -->/,block);
+ else throw Error('Promotion report section missing');
+ await writeFile('docs/design/exploration-round2.md',text);
+ const files=['explore/round2.mjs','explore/workspace.mjs','explore/promote-coverage.mjs','explore/promote-coverage-negative.mjs','explore/promote-exports.mjs','explore/promote-source-check.mjs','explore/prepare-promotion.mjs','explore/round2-report.mjs','app/scripts/promote-gate.mjs'];
+ await writeFile(`${run}/source-provenance.json`,JSON.stringify({files:Object.fromEntries(await Promise.all(files.map(async f=>[f,createHash('sha256').update(await readFile(f)).digest('hex')]))),protocol,manifest:await read('app/public/ehr/manifest.json'),baseCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()},null,2));
+ console.log(JSON.stringify({report:'docs/design/exploration-round2.md',ordinaryViews:coverage.views,newModelRequests:0}));
+ process.exit(0);
+}
+const cal=await read(`${run}/calibration/calibration.json`),gate=await read(`${run}/exotic-gate.json`),agreement=await read(`${run}/agreement.json`);
 let geometryCorrection=null;
 try{geometryCorrection=await read(`${run}/geometry-corrections.json`);}catch(error){if(error.code!=='ENOENT')throw error;}
 const manifest=await read('app/public/ehr/manifest.json');

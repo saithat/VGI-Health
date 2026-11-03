@@ -32,7 +32,9 @@ function expectedRowPlacement(
   const actions: NodeOf<"rowAction">[] = [];
   const scan = (nodes: UiNode[], view: UiPresentationKind) => {
     for (const node of nodes) {
-      if ("timeline" in node) scan(node.timeline.children, view);
+      if ("datedTimeline" in node) scan(node.datedTimeline.children, view);
+      else if ("board" in node || "patientPane" in node) continue;
+      else if ("timeline" in node) scan(node.timeline.children, view);
       else if ("presentation" in node)
         scan(node.presentation.children, node.presentation.kind);
       else if ("valueSet" in node) scan(node.valueSet.children, view);
@@ -80,6 +82,67 @@ export function expectedNodeAria(
   inheritedConfirms: ReadonlySet<string> = new Set(),
 ): AriaEntry[] {
   switch (true) {
+    case "board" in node: {
+      const owner = node.board.children.find(
+        (n) => "patientPane" in n && n.patientPane.modal.length,
+      );
+      const patient =
+        owner && "patientPane" in owner ? owner.patientPane.patient : null;
+      return nest(entry(patient ? "dialog" : "region", "Multi-patient board"), [
+        ...(node.board.urgent.length || node.board.children.some(n=>"patientPane" in n && n.patientPane.metadata.urgent?.length)
+          ? nest(
+              entry("complementary", "Urgent patients"),
+              [ ...node.board.urgent.map(() => entry("alert", "")),
+                ...node.board.children.flatMap(child=> "patientPane" in child && child.patientPane.metadata.urgent?.length
+                  ? nest(entry("region",`Urgent clinical alerts for ${child.patientPane.patient}`),expectedChildrenAria(child.patientPane.metadata.urgent.map(n=>
+                    "button" in n && patient && patient!==child.patientPane.patient ? {button:{...n.button,enabled:false}} : n))) : []) ],
+            )
+          : []),
+        ...node.board.children.flatMap((child) => {
+          if (!("patientPane" in child)) return expectedNodeAria(child);
+          const pane = child.patientPane;
+          return nest(entry("region", `Patient ${pane.patient}`), [
+            entry(
+              "region",
+              pane.banner.length ? "Patient banner" : "Patient selection",
+            ),
+            ...(patient === null ? expectedChildrenAria(pane.children) : []),
+            ...(patient === pane.patient
+              ? nest(
+                  entry(
+                    "region",
+                    `Clinical acknowledgment for ${pane.patient}`,
+                  ),
+                  expectedChildrenAria(pane.modal),
+                )
+              : []),
+          ]);
+        }),
+      ]);
+    }
+    case "patientPane" in node:
+      return nest(entry("region", `Patient ${node.patientPane.patient}`), [
+        entry(
+          "region",
+          node.patientPane.banner.length
+            ? "Patient banner"
+            : "Patient selection",
+        ),
+      ]);
+    case "datedTimeline" in node:
+      return nest(entry("region", node.datedTimeline.title), [
+        entry("img", "Proportional UTC time axis"),
+        entry("list", "Dated source events"),
+        ...(node.datedTimeline.undated.length
+          ? nest(entry("region", "Unpositioned source events"), [entry("list", "")])
+          : []),
+        ...expectedChildrenAria(
+          node.datedTimeline.children,
+          presentation,
+          placement,
+          inheritedConfirms,
+        ),
+      ]);
     case "timeline" in node:
       return nest(
         entry("region", node.timeline.title),

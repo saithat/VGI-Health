@@ -39,3 +39,16 @@ export function boundInitial(call,input) {
   }
   throw Error('Native patient initialization exceeded its setup bound');
 }
+
+/** Archived W3 facts use the UUID alias declared in Synthea's Patient fullUrl.
+Supply that ID on the copied resource before projecting its display, retaining
+fullUrl for reference resolution. Never infer identity from a name or MRN. */
+export function archivedBundle(bundle, source) {
+  const patients=bundle.entry.filter(e=>e.resource?.resourceType==='Patient');
+  if(patients.length!==1)throw Error('Expected exactly one source Patient');
+  const p=patients[0];
+  if(p.resource.id!==source && !(p.resource.id===undefined &&
+    (p.fullUrl===source || p.fullUrl===`urn:uuid:${source}`)))
+    throw Error('Archived source is not a declared Patient identity');
+  return {...bundle,entry:bundle.entry.map(e=>e===p?{...e,resource:{...e.resource,id:source}}:e)};
+}

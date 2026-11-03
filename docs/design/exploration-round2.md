@@ -1,5 +1,259 @@
 # ED exploration, round 2
 
+## Ordinary promotion (`lane/promote`)
+
+The multi-patient board **r2-007** and source-dated timeline **r2-008** are now
+**proved ordinary primitives**, with typed constructors, schemas, traversals,
+meaning adapters, interpreter/view proofs and independent painter gates.
+Command and spatial designs remain **sandbox**. This is language admission with
+explicit exposure assumptions; it is not a deployment certificate.
+
+The owner blocked merge after reviewing `ade9f407`: its clinical projection
+erased the index and the whole-bundle candidate list could disclose hidden
+records. The review repair uses exact shown-row permissions, occurrence numbers,
+a shared binding gate and a separate full payload observer. The owner cleared both blockers after re-reviewing `1272fe10`. Integration with
+current main is recorded separately in [the integration audit](../audits/promote-main-integration-2026-11-02.md). The previous `runs/promote-ordinary-v2/`
+results are historical and do not certify this revision.
+
+The review rerun lives in ignored `runs/promote-review-v3/`. It uses the
+original two clinical programs, the original 24 seeded profiles and four W3
+tasks, and the exact-input frozen probability cache. No decision server, new
+proposal call or replacement probability is used. The stack reference is
+remeasured on the same build. These known held-out profiles validate the
+preselected designs; they are not a new blind study or a new archive search.
+
+<!-- promotion-results:start -->
+| Design | Current tier | Held-out completion | Effort / task | Mouse px / task | Scroll px / task |
+|---|---|---|---|---|---|
+| reference-stack | stack reference; no new certificate | 24/24 | 55.3 ± 15.9 [34.1, 78.8] | 9152.8 ± 5035.4 [3338.6, 17660.0] | 15170.6 ± 1539.2 [12718.0, 17585.5] |
+| r2-007 | proved ordinary; ordinary gate passed | 24/24 | 97.5 ± 14.4 [80.1, 116.9] | 5598.3 ± 2771.9 [1790.1, 9861.0] | 60901.9 ± 6067.6 [49964.0, 72109.5] |
+| r2-008 | proved ordinary; ordinary gate passed | 24/24 | 95.9 ± 14.4 [72.9, 116.9] | 6118.4 ± 3342.5 [1648.5, 11335.9] | 59165.8 ± 4898.0 [52894.0, 68014.5] |
+
+Spreads are mean ± population SD [min,max] across 12 physicians’ two-task means.
+The original search/held-out split and seed 20261103 are retained. Both designs
+completed 24/24 and 24/24 search executions.
+Compared with this build’s stack reference, held-out mouse travel changes by
+r2-007: -38.8%; r2-008: -33.2%.
+These are simulator/geometry measurements, not human travel paths or elapsed time.
+Scrolling rises to r2-007: 4.0×; r2-008: 3.9×
+the stack reference. The declared composite effort rises by
+r2-007: 76.2%; r2-008: 73.3%.
+No outcome-driven layout change or archive replacement follows this rerun.
+
+All **4615** distinct emitted ordinary views pass at 1440 and 390 px
+(**9230 checks**), including **1006 native exports**.
+Real W3 source checks on the actual laboratory tab emit 60, 69, 121, 19 dated entries
+from shown backing rows; 43, 50, 51, 40 unshown or unsupported
+candidates are withheld. Scope is effectiveDateTime (otherwise effectivePeriod.start)
+and issued on supported vital/lab rows. There are zero native/WASM mismatches. The original
+**18767** probability entries suffice: **0 new model requests,
+0 proposal calls**. Raw task traces, source hashes and coverage remain in
+`runs/promote-review-v3/`; no deployment certificate was produced.
+<!-- promotion-results:end -->
+
+The subsequent urgency/WCAG/font integration rerun uses
+`runs/promote-merge-v5/`; the preceding table is the pre-integration review build.
+The merged build completes all 144 search/held-out executions with zero missing
+geometry or new model requests. Held-out mouse travel is 6,194.2 px/task for the
+board and 6,573.9 for dated timeline versus 9,584.5 for its stack reference;
+composite effort is 90.3 / 86.9 versus 55.8, and scrolling is 53,081.8 / 49,715.1
+versus 15,241.7 px/task. These are simulator measurements. Exact merged-build
+coverage, physical audits, bindings and commands appear in the
+[integration audit](../audits/promote-main-integration-2026-11-02.md).
+
+
+The first promotion rerun is excluded in `runs/promote-ordinary/` with its
+`banner-occlusion-diagnostic.json` and `diagnostic-exclusion.json`. Visual review
+and a real hit-test found that a long sticky full banner covered **55/55 enabled
+controls** in a 390 px W3 pane. Its completion/geometry records do not establish
+physical action exposure and are not included in the current results. The fix
+keeps a compact patient/MRN identity pinned and the complete banner in flow,
+fits independent panes below the urgent rail, and positions the modal below the
+measured rail edge. The strengthened gate scrolls to **every enabled control**,
+checks its hit-test and patient identity, and rejects a covering overlay. The
+same long-banner state now passes at both widths. The replacement rerun retains
+all original designs, probabilities, profiles, tasks, seed and objective; this
+is an exposure repair, with no new proposal or archive membership decision.
+In the historical v2 exposure-repair comparison, all **144 clinical traces** (events,
+results, devices, predictions and non-geometric metrics) and **4,615 native
+view payloads** matched the excluded run exactly. Only geometry was remeasured;
+old trace data was not read by the replacement decision process. The comparison
+is recorded in `runs/promote-ordinary-v2/exposure-repair-trace-agreement.json`. This comparison is not a claim that the disclosure-repair views are unchanged.
+
+### Admission and policy
+
+`Render/Dated.lean`, `Sem/Board.lean`, `Sem/BoardView.lean` and
+`Sem/DatedTimeline.lean` discharge the extension obligations described in
+[semantic-ui.md](semantic-ui.md). The review audit covers **94 distinct theorem prints**, using
+only `propext`, `Classical.choice` and `Quot.sound`, or no axioms. Comparator
+accepts the solution. Protected Specs, Props, Statements and comparator files
+are unchanged, as are the existing urgency semantic modules.
+
+The board independently decodes its emitted panes to the exact patient-scoped
+ordinary screen meaning, including navigation and foreground controls. Its
+dispatcher is the ordinary interpreter on the selected pane; other complete
+sessions are unchanged through arbitrary foreign-event traces. Both facts and
+display must carry the pane source ID. Commit guards are retained at the exact
+hydrated state. Imported receipts name patient and episode; every render/step
+clears unscoped incoming receipt lists and imports only matching envelopes.
+Foreign receipts cannot change any review or guard. Core version, age and role
+checks remain in force. Host authentication, FHIR/display authenticity, persisted
+state provenance and clinical writes remain trusted integration boundaries.
+There is no shared dose, bed or cross-session concurrency authority here.
+
+The chosen cross-patient policy is a **global patient-labelled urgent rail**:
+every active designated urgent rule contributes, including hidden and already
+acknowledged conditions. The rail stays outside pane scrolling and inside the
+global modal interaction boundary. The first pending modal owns clinical
+actions; other panes are inert until it is discharged. Lookup, hydration and
+return retain every pane and the rail. The dated native presentation composes
+a single-patient board with the same rail. `BoardView` models actual scoped
+events and physical steps with a supplied measured-transition relation,
+modal-aware action readiness, source binding and finite reachability witnesses.
+Equal clinical state alone cannot witness an arbitrary exposure jump. The
+emitted patient-scoped rail satisfies the existing `Perceives` and
+`UrgentVisible` predicates, preserving alert identity, label and severity. Continuous urgency holds under explicit
+viewport, legibility and occlusion evidence at **every reached moment**.
+Browser checks supply finite exposure samples, not an unconditional pixel
+theorem; a rail that cannot fit is a gate finding. No urgency ID or clinical
+severity was changed. The existing 77 urgency classifications still await
+owner review.
+
+The dated contract requires seconds and an explicit `Z` or numeric offset,
+at most ±14:00, with up to nine fractional digits. Lean normalizes to signed UTC
+seconds and bounded nanoseconds (`Fin 1000000000`) and stably sorts; permutation
+proofs retain every eligible occurrence, including duplicate times. Candidate
+extraction covers exactly `effectiveDateTime`, otherwise `effectivePeriod.start`,
+plus `issued` separately. Onset, authoredOn, performed*, recordedDate, occurrence*
+and Encounter.period are outside this contract. This is not every FHIR timestamp.
+
+Only candidates with an exact backing row under its information ID in the actual
+rendered workspace/side are indexed. Supported backings cover latest vital rows
+(including all latest-time ties) and full laboratory histories. Payload overrides
+carry no inferred permission. Occurrence numbers prevent an identical hidden
+candidate from borrowing a shown occurrence's permission. `selected_occurrence`,
+`timeline_backing_provenance`, `timeline_backing_occurrence`,
+`uiDateSourcesAt_shown`/`uiDateSources_present` and `sources_shown` connect the
+index to emitted source rows. Both native and ordinary paths require workspace
+binding and matching present source patient IDs; unbound lookup adds no index.
+`demands_prepared` separately proves receipt sanitization does not change rail
+activation, so raw-input demands and prepared panes agree.
+
+The clinical `meaning` projection and its preservation/perception lemmas still
+cover clinical children only. Full index admission additionally requires
+`IndexedExtension.full`: `DateIndex.observe` retains all index bytes, order,
+multiplicity and patient/modal namespaces. `full_preserves`, `render_full`,
+`node_observation` and `uiDatedWorkspace_observed` prove this for the emitted
+presentations. The native API exports this observer and the browser gate compares
+its payloads and patient scopes to DOM rows. Erasure cannot establish index
+admission (`payload_injective`).
+
+Pre-1970 instants are supported. Invalid, date-only, local, unknown-offset
+`-00:00`, leap-second and higher-precision values remain explicitly unpositioned.
+No local timezone or midnight is invented. W3 source offsets already exist; the
+adapter retains them separately from formatted captions. The copied Synthea
+Patient receives its archived UUID only after alias validation; ignored fixtures
+and clinical facts remain unchanged. Clinical rows, actions and modals are retained.
+
+The independent ordinary gate checks patient-scoped ARIA, unique DOM IDs and
+provenance references, complete source cells, honest actions, exact date order
+and multiplicity, and sampled rail exposure. Native exports and all emitted
+cohort views are mandatory inputs. The legacy backing renderer was also
+submitted to its full gate: unrelated interaction modals still hide
+`doseRangeOrder`, or `interactionOrder` plus `doseRangeOrder`. These are
+retained failures, not passes and not certificates for the promoted painter.
+The gate now recognizes the proof’s same-alert modal alternative (labelled
+title plus enabled acknowledgment); regressions still reject unrelated
+modals and hidden/disabled acknowledgments at both widths.
+
+### Verification and bindings
+
+Environment: `TMPDIR=/home/saithat/Projects/run-tmp`, `LEAN_NUM_THREADS=4`;
+Playwright test workers capped at four, cohort actors at three; the corpus gate uses at most three workers and six browser pages. Commands:
+
+```sh
+(cd lean && lake build && lake build exotic-api)
+(cd lean && lake exe gents)
+(cd lean && lake env lean ../runs/promote-review-v3/axioms.lean)
+(cd lean && lake env lean Ehr/Render/Dated.lean)
+(cd lean && COMPARATOR_BWRAP=/home/saithat/Projects/VGI-promote/scripts/lean-bwrap.py lake comparator)
+JOBS=4 EM_CACHE="$TMPDIR/promote-emcache" make wasm
+make wasm-check
+pnpm --filter app build
+pnpm --filter app lint
+pnpm --filter app exec tsc --noEmit
+pnpm --filter app test --maxWorkers=2 --testTimeout=20000
+pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
+node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
+APP_TEST_PREVIEW=1 APP_TEST_PORT=4292 pnpm --filter app exec playwright test ui-check.spec.ts --grep 'urgency gate' --workers=2
+node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/promote-gate.mjs runs/promote-review-gate
+node explore/prepare-promotion.mjs runs/explore-round2 runs/promote-review-v3
+EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4282 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs runs/promote-review-v3 --promote --cache-only
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-exports.mjs runs/promote-review-v3
+EHR_ORDINARY_WORKERS=3 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-review-v3 --incremental
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage-negative.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/full-binding-check.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-source-check.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-agreement.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/geometry-check.mjs runs/promote-review-v3
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs runs/promote-review-v3
+```
+
+Full Lean build: **427 jobs passed**; `#print axioms` output for 94 relevant
+theorems contains only the permitted axioms. Comparator’s default kernel accepts
+the solution. Generated bindings: 170 types, 42 samples. WASM rebuild and source
+binding check pass. App build, full lint and both typechecks pass. App tests:
+**323 passed in 41 files**, with two workers and a 20-second default timeout.
+Exploration tests: **14 passed, 1 optional endpoint
+skip**. Urgency regressions: **4 passed** at desktop/narrow widths. Ordinary
+canonical gate: 12 recorded browser checks and 38 native/WASM comparisons, with
+hidden-urgent, reversed/dropped-date, duplicate-patient, wrong-binding, foreign
+receipt and blocked-background-event adversaries. New checks reject hidden-row,
+payload-override and unbacked-duplicate index disclosure, mismatched binding,
+and out-of-range nanoseconds. Additional agreement: six
+primitive cases, 24 W3 choice boundaries and four interpreter transitions with
+rendered outputs, zero mismatches. Full binding: two real W3 patients, unbound
+signing blocked, lookup/open/hydrate/return/reopen at both widths, other session
+unchanged and patient A’s urgency visible while patient B selects. Geometry
+regressions count document scrolling once and include the pane scroll root.
+The parallel corpus runner rejects a wrong banner in its second worker and writes
+no successful coverage report after that failure.
+Final whole-corpus coverage and completion counts appear in the results above;
+backing-renderer urgency failures remain in `legacy-backing-gates/` and
+`stock-gates/`, including screenshots and native export coverage.
+
+Source binding: `0d7e0c8982c838161d1526129012e062ca291b6f34626160eb24ca8b2cba276d`.
+WASM SHA-256: `f4bea289266735c1e47ec9dc42bf440a75a87b909032c4858847d9450bce4e12`.
+Production app SHA-256:
+`ae7d6628345cf0cb8adeaec80f99f178892556e6cb823d46973def9bd203457e`.
+The frozen replacement cohort uses these app and WASM bindings and its recorded
+renderer source hash. The disclosure repair changes WASM bytes and source binding. All current geometry is
+remeasured after the exposure repair. Source provenance and every emitted view hash are recorded
+in the ignored run. The ordinary painter changes the certified app hash, and the
+new interpreter changes the WASM binding; historical certificates are invalid.
+No certificate is rebound, no design deployed and no push made.
+
+Current canonical ordinary-constructor review images, from the repaired painter:
+
+- `runs/promote-review-gate/screenshots/board-1440.png`
+- `runs/promote-review-gate/screenshots/board-390.png`
+- `runs/promote-review-gate/screenshots/dated-1440.png`
+- `runs/promote-review-gate/screenshots/dated-390.png`
+
+No protected clinical files, urgency semantic modules, other branches/worktrees,
+or ignore rules were edited. Data outputs remain untracked. Full live/persistence,
+replay and conformance suites were not run: this lane verifies primitive admission
+and offline evaluation, and intentionally does not rebind the historical clinical
+recordings. Command/spatial admission and human clinician validation remain open.
+
+
+## Original experiment (historical)
+
+The sections below preserve the original experiment, metrics and bindings.
+Their sandbox gaps and original verification results describe that build; the
+board/dated admission and promotion results above supersede them.
+
 Research output on branch `lane/explore2`; no deployment or publication. Raw
 records: `runs/explore-round2/`. README.md was read first; CLAUDE.md is absent in this
 worktree. The policy lane's semantic modules and gate files were not edited.
@@ -22,11 +276,11 @@ and exclusion are recorded in `probability-cache-origin.json` and
 `diagnostic-exclusion.json`. The final held-out profiles were not used during
 development.
 
-All four exotic primitives remain **sandbox**. Kernel lemmas and working painters
-are useful progress; the ordinary-program extension contract is not yet discharged.
+In the original build all four exotic primitives were **sandbox**. Kernel
+lemmas and working painters did not yet discharge the extension contract.
 A backing program's certificate cannot certify a different renderer.
 
-| Candidate | Realized niche | Tier | Held-out completion (mean ± SD [min,max]) | Effort / task | Mouse px / task | Scroll px / task |
+| Candidate | Realized niche | Original tier | Held-out completion (mean ± SD [min,max]) | Effort / task | Mouse px / task | Scroll px / task |
 |---|---|---|---|---|---|---|
 | r2-001 | list / stack | proved · gates passed | 24/24; 1.0 ± 0.0 [1.0, 1.0] | 55.3 ± 15.9 [34.1, 78.8] | 9152.8 ± 5035.4 [3338.6, 17660.0] | 15170.6 ± 1539.2 [12718.0, 17585.5] |
 | r2-002 | list / columns | proved · gates passed | 24/24; 1.0 ± 0.0 [1.0, 1.0] | 88.0 ± 17.2 [61.0, 108.1] | 10080.0 ± 5862.8 [2420.9, 19200.7] | 47028.5 ± 8220.4 [39804.0, 63622.0] |
@@ -347,13 +601,11 @@ samples use two actual source-patient projections, matching the cohort context.
 - `runs/explore-round2/screenshots/spatial-1440.png`
 - `runs/explore-round2/screenshots/spatial-390.png`
 
-## Owner decisions still open
+## Remaining owner decisions
 
-1. Whether to fund ordinary-language admission of command, spatial, board and
-   dated-axis constructors, with the missing obligations listed above.
-2. Whether to add an explicit density field/painter preset; this run does not
-   claim a realized compact-control niche.
-3. Which human-owned cross-patient urgency and receipt/version policy a board
-   must enforce; this lane does not choose that policy.
-4. A larger patient/task sample and human clinician validation before treating
+1. Review the existing 77 urgency classifications and the global-rail policy
+   selected for this promotion; exposure bounds remain explicit.
+2. Whether to fund ordinary admission of command/spatial primitives and a
+   density field/painter preset. Those niches remain sandbox.
+3. A larger patient/task sample and human clinician validation before treating
    these simulator metrics or the poorly calibrated tiny model as usability evidence.

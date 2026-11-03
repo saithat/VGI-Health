@@ -292,3 +292,71 @@
   color: #526a75;
   background: #edf2f4;
 }
+
+/* Compact controls: one toolbar, then a Left and Right card with Day · Revision · Task on one row. */
+.dashboard .comparison-filters {
+  align-items: flex-end;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  margin: 0 0 12px;
+}
+.dashboard .comparison-filters label {
+  font-weight: 500;
+  color: var(--clinical-muted);
+}
+.comparison-single {
+  margin-left: auto;
+  align-self: center;
+}
+.dashboard .comparison-pickers {
+  gap: 12px;
+}
+.dashboard .comparison-picker {
+  display: grid;
+  grid-template-columns: 52px 110px 110px minmax(0, 1fr);
+  align-items: end;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-border);
+  border-radius: 6px;
+}
+.dashboard .comparison-picker > strong {
+  align-self: center;
+  font-size: 14px;
+}
+.dashboard .comparison-day-revision {
+  display: contents;
+}
+.dashboard .comparison-pickers label {
+  gap: 2px;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.dashboard .comparison-pickers select {
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+.dashboard .comparison-context {
+  margin: 10px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--clinical-muted);
+}
+.dashboard .comparison-delta {
+  margin-top: 12px;
+}
+.dashboard .comparison-delta > div {
+  border-radius: 6px;
+}
+.dashboard .comparison-delta dt {
+  min-height: 0;
+  font-size: 12px;
+}
+.dashboard .comparison-player {
+  margin-top: 12px;
+}

@@ -132,8 +132,8 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
 
   await nav.getByRole("button", { name: "Releases", exact: true }).click();
   await expect(page.getByRole("table")).toHaveCount(1);
-  await expect(page.getByRole("row")).toHaveCount(11);
-  await expect(page.getByRole("table")).toContainText("Old UI: fail");
+  await expect(page.getByRole("row")).toHaveCount(6);
+  await expect(page.getByRole("table")).toContainText("Old UI failed");
   await checkLayout(page);
   if (testInfo.project.name === "desktop")
     await page.screenshot({
