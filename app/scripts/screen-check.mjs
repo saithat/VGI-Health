@@ -47,6 +47,7 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
   const { chromium } = await import("@playwright/test");
   const sources = [
     "e2e/ui-check.spec.ts",
+    "e2e/physical-policy.ts",
     "e2e/geometry-capture.ts",
     "e2e/capture-environment.ts",
     "src/ehr/ui/fonts/manifest.json",

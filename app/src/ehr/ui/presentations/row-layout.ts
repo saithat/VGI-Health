@@ -30,7 +30,9 @@ export function rowLayout(
   const controls: RowAction[] = [];
   function visit(nodes: UiNode[], current: UiPresentationKind) {
     for (const node of nodes) {
-      if ("timeline" in node) visit(node.timeline.children, current);
+      if ("datedTimeline" in node) visit(node.datedTimeline.children, current);
+      else if ("board" in node || "patientPane" in node) continue;
+      else if ("timeline" in node) visit(node.timeline.children, current);
       else if ("presentation" in node)
         visit(node.presentation.children, node.presentation.kind);
       else if ("valueSet" in node) visit(node.valueSet.children, current);

@@ -149,6 +149,8 @@ code.
 | Minor-interaction advisory requires explicit minor severity; severe evidence/formulary hazards exclude it | 🟢 **Proved** for the successor trigger | `Proofs/InteractionSeverity.lean` |
 | WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; enforced by default** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
 | Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
+| Multi-patient board preserves patient-scoped screen meaning, guarded effects and other sessions; foreign receipts are inert | 🟢 **Proved** for source-bound inputs; urgency perception and action discovery retain explicit exposure hypotheses; 🔵 all emitted promotion views checked | `Sem/Board.lean`, `Sem/BoardView.lean`, `app/scripts/promote-gate.mjs` |
+| Dated FHIR index retains eligible shown-row source occurrences and orders positioned entries by normalized UTC instant | 🟢 **Proved** with bound patient IDs and shown vital/lab backing rows; full index observation and bounded nanoseconds; exact field scope below | `Render/Dated.lean`, `Sem/DatedTimeline.lean` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
 | The browser's accessibility tree equals Lean's screen tree; every control works | 🔵 **Checked** (browser tests, button audit) | `app/e2e/` |
@@ -967,13 +969,60 @@ remains enabled: native lookup/open/hydration precedes bound clinical work, and
 the laboratory can return to that native picker without discarding other panes. New
 `Ehr.Sem.Exotic` proofs cover offered click-command IDs/reasons, unique patient
 routing/banner selection, complete zones and chronological axis admission.
-These four richer views remain **sandbox**: typed ordinary-program constructors,
-view-transition/exposure refinement and whole-version custom-renderer coverage
-are still missing; board source/receipt/concurrency obligations remain explicit.
-The existing `layout.timeline` stays the admitted ordered-child primitive.
-The canonical dated demo has a proportional time axis. Sampled W3 display rows
-omit timezone offsets, so the cohort index conservatively remains empty; retaining
-machine-readable source dates is unfinished integration work.
+The board and dated timeline now have ordinary `UiNode` constructors and typed
+schemas. `Ehr.Sem.Board` proves exact patient-scoped screen meaning, ordinary
+interpreter refinement, preservation of other panes, patient/episode-scoped
+receipt import, guard preservation and coverage of every active urgent condition.
+`Ehr.Sem.BoardView` gives the scoped event/physical view graph, modal-aware
+action reachability and binding preservation over complete traces. A board-wide
+urgent rail stays inside the active interaction boundary while a modal blocks
+other clinical actions; its continuous perception requires explicit
+viewport, legibility and occlusion evidence at every reached moment. A compact
+patient/MRN identity stays pinned; full banner detail remains in flow. The pane grid fits below the global rail, and modal placement follows its
+measured lower edge. The gate checks every enabled control and patient identity
+after scrolling, including a covered-control adversary. Shared
+clinical persistence and cross-session concurrency remain outside this composition.
+`Ehr.Render.Dated` normalizes offset-bearing source times to UTC seconds and
+bounded nanoseconds (`Fin 1000000000`), sorts stably and retains every eligible
+occurrence across dated and explicitly unpositioned entries. Candidate extraction
+covers exactly `effectiveDateTime`, otherwise `effectivePeriod.start`, plus
+`issued` separately. It does not cover onset, authoredOn, performed, recordedDate,
+occurrence or Encounter.period. Backings currently support latest vital rows and
+full laboratory histories. Only candidates whose exact backing row appears under
+its information ID in the emitted workspace/side are indexed; payload overrides
+supply no inferred permission. Occurrence numbers prevent an identical hidden
+candidate from borrowing another occurrence's permission. Both ordinary and native
+paths require the workspace binding gate and matching present source patient IDs.
+Date-only/local, invalid, unknown-offset (`-00:00`), leap-second and unsupported
+precision values remain unpositioned. Pre-epoch times are supported; formatted W3
+captions are not parsed as dates. `DateIndex.observe` retains complete index
+payloads and patient namespaces; `IndexedExtension.full` and production source
+witness theorems cover the index, beyond the unchanged clinical-only projection.
+`layout.datedTimeline` and the native `dated` API use this restricted source index.
+The provenance theorems describe adapter-built displays. Derived `Display.FromJson`
+accepts arbitrary `timelineBackings`: JSON-supplied backings are trusted input,
+and the host must supply authentic adapter output; decoding does not validate provenance.
+The dated laboratory uses the same rail in a single-patient board. Lookup and
+return retain the ordinary panes and rail; the source-date index appears only
+for a bound chart. Command and spatial views remain **sandbox**; `layout.timeline` remains the
+admitted ordered-child primitive. The promotion rerun uses the original 24 seeded
+profiles and exact-input recorded probabilities, with no decision server or new
+proposal calls. It is validation of the preselected designs, not a new blind study.
+The corpus gate supports three workers (six pages), propagates every worker/viewport failure,
+and checks that every input view appears exactly once in its coverage report.
+The owner cleared the disclosure blockers on `1272fe10`. Integration with current
+main carries its pinned urgent alerts and acknowledgment controls in typed pane
+metadata, preserving the board's modal ownership and patient-scoped events.
+Critical-result workflow steps retain clinical commits, preserving the original
+commit-guard theorem. The promotion gate shares the canonical physical-policy
+collector and pinned Noto/capture environment. The integration includes main
+through `19a569b6`; subsequent dashboard/browser changes preserve the clinical
+bindings verified by the full physical audits and promotion cohort. Dashboard
+trajectory browsing stacks above replay on narrow screens, preserving a nonzero
+replay stage and the recording’s fixed 1440×900 logical viewport. See the
+[integration audit](docs/audits/promote-main-integration-2026-11-02.md).
+See the [round-two report](docs/design/exploration-round2.md) for current tiers,
+measurements, exposure limits and the native/WASM/browser verification record.
 The laboratory uses the real interpreter and has no clinical persistence path.
 Launch it with `TAILSCALE_SERVE=0 pnpm --filter app dev`.
 
@@ -988,9 +1037,10 @@ choices. Outputs and screenshots stay in ignored `runs/explore-round2/`; the
 tracked report retains the niche table, screenshot inventory, exclusions and
 proof gaps. Descriptors name realized behavior: spatial/dated views retain list
 navigation, and no compact-control density niche is claimed. The new WASM API root is `Ehr.Sem.ExoticApi`; rebuilding changes the
-Lean/WASM bindings, invalidating historical certificates. The production app
-fingerprint is unchanged in a same-worktree baseline build because the laboratory
-is a separate development entry; its source hashes are recorded independently.
+Lean/WASM bindings, invalidating historical certificates. The original isolated laboratory left the production app fingerprint unchanged.
+Promotion changes the ordinary painter and therefore the certified production app
+hash as well as the Lean/WASM binding. Historical certificates are invalid for this
+build; none is rebound or deployed. Laboratory source hashes remain separate.
 No historical certificate is rebound and no exploration design is deployed.
 The report writer also consumes the run's captured `app-binding-comparison.json`;
 that baseline comparison is evidence from a pre-change build, not reconstructed
@@ -1029,6 +1079,40 @@ workspace per actor. The held-out stage does not select or replace archive entri
 `app/scripts/exotic-gate.mjs` checks canonical views at 1440 and 390 px, source
 cells, action honesty, hidden content, proportional dated order and real WASM
 patient isolation. This is sample coverage, not admission of all view transitions.
+
+
+Promotion verification and rerun (outputs stay ignored):
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=4
+(cd lean && lake build && lake build exotic-api)
+(cd lean && COMPARATOR_BWRAP="$PWD/../scripts/lean-bwrap.py" lake comparator)
+JOBS=4 EM_CACHE="$TMPDIR/promote-emcache" make wasm
+make wasm-check
+pnpm --filter app build
+node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/promote-gate.mjs runs/promote
+pnpm --filter app test --maxWorkers=2 --testTimeout=20000
+node explore/prepare-promotion.mjs runs/explore-round2 runs/promote-ordinary-v2
+EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4282 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs runs/promote-ordinary-v2 --promote --cache-only
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-exports.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-source-check.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs runs/promote-ordinary-v2
+```
+
+The preparation command requires a fresh directory. The stack reference is
+remeasured with the same profiles and build, after the two preselected designs.
+Cache misses fail rather than
+substituting probabilities. The board API clears unscoped legacy receipts;
+imported receipts must name their source patient and supplied episode, and the
+original core still checks data version, age and reviewer role. The board API
+binds both facts and display to the pane's source Patient.id. FHIR authenticity,
+loaded-state provenance and persistence remain integration trust boundaries.
+All exported backing-program states are submitted to the stock gate; its
+unrelated-modal urgency failures remain recorded findings. The ordinary gate
+also checks composed native exports and every emitted cohort view at both widths,
+including patient-scoped ARIA references, complete content and dated order.
+Those finite checks supply sampled geometry evidence; they do not prove pixels.
 
 
 ```sh

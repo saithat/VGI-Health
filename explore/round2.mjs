@@ -1,6 +1,6 @@
 /** Frozen-archive, decision-driven ED cohort experiment. Outputs are always ignored. */
 import path from 'node:path';
-import { readFile, mkdir } from 'node:fs/promises';
+import { readFile, mkdir, readdir } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { loadEhrInterp } from '../app/public/ehr/interp-loader.mjs';
 import { createEhr } from '../agent/src/ehr.ts';
@@ -11,11 +11,13 @@ import { programSchema, specSchema } from '../agent/src/schema.ts';
 import { LocalDecision } from './decision.ts';
 import { CachedDecision, PhysicianDecision, physicians, spread, digest } from './cohort.ts';
 import { sourceAxis } from '../app/src/ehr/ui/exotic-axis.ts';
-import { patientBound, hydrationEvent, workspaceChoice, boundInitial } from './workspace.mjs';
+import { patientBound, hydrationEvent, workspaceChoice, boundInitial, archivedBundle } from './workspace.mjs';
 import { typingCost } from './cost.ts';
 import { niche } from './design.ts';
 import { write } from './evaluate.ts';
 import { startLab, paint, measureEvent, atoms } from '../app/scripts/exotic-gate.mjs';
+const promotion=process.argv.includes('--promote');
+const cacheOnly=process.argv.includes('--cache-only');
 const out=path.resolve(process.argv[2]??'runs/explore-round2');
 if(!out.startsWith(path.resolve('runs')+path.sep))throw Error('Use ignored runs/');
 const read=async f=>JSON.parse(await readFile(f,'utf8'));
@@ -31,9 +33,11 @@ const cohortSeed=seedIndex<0?20261103:Number(process.argv[seedIndex+1]);
 if(!Number.isInteger(cohortSeed))throw Error('Integer cohort seed required');
 const cohort=physicians(cohortSeed);
 if(priorProtocol&&(priorProtocol.evaluationVersion!==3||priorProtocol.geometryVersion!==3||priorProtocol.seed!==cohortSeed))throw Error('Resume cohort/protocol mismatch');
-const health=await fetch('http://127.0.0.1:8788/health',{signal:AbortSignal.timeout(5000)}).then(r=>r.json());
-if(health.device!=='cuda')throw Error('Expected supplied GPU server; CPU fallback must be explicitly recorded');
-const model=new CachedDecision(new LocalDecision('http://127.0.0.1:8788/v1',health.model));
+const health=cacheOnly?{device:'recorded-cache',model:'Mapika/decider-0.8b',networkRequests:0}:
+ await fetch('http://127.0.0.1:8788/health',{signal:AbortSignal.timeout(5000)}).then(r=>r.json());
+if(!cacheOnly&&!['cpu','cuda'].includes(health.device))throw Error('Expected an explicitly recorded CPU or CUDA server');
+const base=cacheOnly?{choice:async input=>{throw Error(`Recorded probability cache miss: ${digest(input)}`);},screen:async()=>{throw Error('No cache screen inference');}}:new LocalDecision('http://127.0.0.1:8788/v1',health.model);
+const model=new CachedDecision(base);
 try { model.prime((await read(path.join(out,'decision-cache.json'))).rows); }
 catch(error) { if(error.code!=='ENOENT')throw error; }
 const importedModelRows=model.rows.length;
@@ -57,7 +61,7 @@ for(const [split,ids]of Object.entries({search:searchIds,heldout:heldIds})) {
  scenarios[split]=await Promise.all(ids.map(async entry=>{
   const trajectory=await read(path.join('runs/core-10day-live/trajectories',entry.file));
   const task=schedules[split].tasks.find(t=>t.id===entry.id);if(!task)throw Error('Missing task');
-  const bundle=await read(trajectory.context.fixtureFile);
+  const bundle=archivedBundle(await read(trajectory.context.fixtureFile),trajectory.context.segments[0].facts.sourcePatientId);
   const projected=call('ehr_facts',{bundle:{...bundle,entry:[...bundle.entry,...trajectory.context.resources.map(resource=>({resource}))]},context:{today:trajectory.context.today,now:task.startMin,receipts:[],record:[]}});
   // Reuse the archived clinical projection and episode segmentation, never its action labels.
   return {id:entry.id,patient:entry.patient.syntheaId,task,segments:trajectory.context.segments,display:projected.display};
@@ -65,7 +69,15 @@ for(const [split,ids]of Object.entries({search:searchIds,heldout:heldIds})) {
 }
 const modeOf=c=>c.point.patientScope==='multi'?'board':c.point.navigation==='command'?'command':c.point.layout==='spatial'?'spatial':c.point.temporalView==='aligned'?'dated':null;
 const build=await read('app/dist/build.json');
-await write(path.join(out,'protocol.json'),{schemaVersion:1,evaluationVersion:3,geometryVersion:3,patientSelection:'Unchanged true; actual native open/hydrate controls are exercised and measured',smoke,cohort,seed:cohortSeed,health,build,
+const rendererFiles=[];
+async function collectRenderer(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const file=path.join(dir,entry.name);if(entry.isDirectory())await collectRenderer(file);else if(/\.(tsx?|css)$/.test(file))rendererFiles.push(file);}}
+if(promotion)await collectRenderer('app/src/ehr');
+const rendererHash=async()=>digest(await Promise.all(rendererFiles.sort().map(async file=>[file,digest(await readFile(file,'utf8'))])));
+const rendererSourceHash=promotion?await rendererHash():null;
+if(priorProtocol&&promotion&&(priorProtocol.promotion!==true||priorProtocol.build.appSha256!==build.appSha256||priorProtocol.rendererSourceHash!==rendererSourceHash))throw Error('Promotion resume renderer binding mismatch');
+
+if(promotion&&proposals.results.some(p=>!['r2-007','r2-008'].includes(p.id)))throw Error('Promotion rerun must preselect the original two designs');
+await write(path.join(out,'protocol.json'),{schemaVersion:1,promotion,cacheOnly,rendererSourceHash,evaluationVersion:3,geometryVersion:3,patientSelection:'Unchanged true; actual native open/hydrate controls are exercised and measured',smoke,cohort,seed:cohortSeed,health,build,
  wasmSha256:(await read('app/public/ehr/manifest.json')).assets['ehr-interp.wasm'],baselineSha256:digest(baseline),
  searchTasks:searchIds.map(t=>t.id),heldoutTasks:heldIds.map(t=>t.id),taskSplit:'Day 1 search; disjoint day 2 patients held out; no recorded next-action label supplied to cohort decisions',
  learning:'Experience resets for each design and increases after each task',
@@ -92,12 +104,17 @@ async function evaluate(candidate,id,split) {
  const mode=modeOf(candidate),people=cohort.filter(p=>p.split===split).slice(0,smoke?1:undefined),memberRows=[];
 
  const inputFor=(scenario,facts,state)=>({spec,program,facts,display:scenario.display,user:{id:program.owner,role:'physician'},state});
+ const boardInputs=new Map();
  const boardOthers=new Map(scenarios[split].map(other=>{
    const facts=other.segments[0].facts;
    const state=boundInitial(call,{spec,program,facts,display:other.display,user:{id:program.owner,role:'physician'}});
+   boardInputs.set(other.patient,inputFor(other,facts,state));
    return [other.patient,exotic({op:'render',render:inputFor(other,facts,state)}).screen];
  }));
  const step=(input,event)=>call('ehr_step_envelope',{...input,event});
+ const boardSessionsFor=(scenario,input,receipts)=>[{patient:scenario.patient,input,receipts},
+   ...scenarios[split].filter(other=>other.patient!==scenario.patient).map(other=>({patient:other.patient,input:boardInputs.get(other.patient),receipts:[]}))];
+
  const runMember=async physician=>{
   // Complete saved members are replay-independent checkpoints. Preserve their
   // measured geometry and recompute the declared typing proxy from raw events.
@@ -122,11 +139,18 @@ async function evaluate(candidate,id,split) {
     for(const [episode,segment]of scenario.segments.entries()) {
      const facts=segment.facts;
      let state=call('ehr_init_envelope',{spec,program,facts,user:{id:program.owner,role:'physician'}});
-     let done=false;
+     let done=false,scopedReceipts=[];
      for(let fuel=0;fuel<450;fuel++) {
       let input=inputFor(scenario,facts,state);
       const hydrate=hydrationEvent(input);
-      if(hydrate){const r=step(input,hydrate);state=r.state;input=inputFor(scenario,facts,state);trace.push({episode,phase:'hydration',event:hydrate,result:r.result,stateScreen:state.screen,device:'host',geometry:{mouseTravelPx:0,scrollPx:0,position:previous,missing:false},choice:null,prediction:null});}
+      if(hydrate){
+       let r;
+       if(promotion&&mode==='board'){
+        const board=exotic({op:'board',sessions:boardSessionsFor(scenario,input,scopedReceipts),patient:scenario.patient,event:hydrate});
+        const own=board.sessions.find(s=>s.patient===scenario.patient);scopedReceipts=own.receipts;r={state:own.input.state,result:board.result};
+       }else r=step(input,hydrate);
+       state=r.state;input=inputFor(scenario,facts,state);trace.push({episode,phase:'hydration',event:hydrate,result:r.result,stateScreen:state.screen,device:'host',geometry:{mouseTravelPx:0,scrollPx:0,position:previous,missing:false},choice:null,prediction:null});
+      }
       const envelope=exotic({op:'render',render:input}),s=envelope.screen;
       const selecting=!patientBound(input);
       const workspace=selecting?workspaceChoice(input,s):null;
@@ -146,11 +170,21 @@ async function evaluate(candidate,id,split) {
        options:offers.map(o=>({...o,event:{kind:Object.keys(o.event)[0],comp:Object.values(o.event)[0]?.comp}}))});
       const choice=policy.sample(prediction),event=offers.find(o=>o.id===choice).event;
       const keyboard=policy.random()<physician.keyboardShare;
-      const view=mode&&!selecting?{mode,panes:[{patient:scenario.patient,screen:s},...(mode==='board'?scenarios[split].filter(x=>x.patient!==scenario.patient).map(other=>({patient:other.patient,screen:boardOthers.get(other.patient)})):[])],...(mode==='dated'?{axis:sourceAxis(s)}:{})}:null;
+      let view=mode&&(!selecting||promotion)?{mode,panes:[{patient:scenario.patient,screen:s},...(mode==='board'?scenarios[split].filter(x=>x.patient!==scenario.patient).map(other=>({patient:other.patient,screen:boardOthers.get(other.patient)})):[])],...(mode==='dated'?{axis:sourceAxis(s)}:{})}:null;
+      const sessions=promotion&&mode==='board'?boardSessionsFor(scenario,input,scopedReceipts):null;
+      if(promotion&&mode){
+        if(mode==='board'){const board=exotic({op:'board',sessions});view={...view,ordinary:board.node,indexObservation:board.indexObservation};}
+        else if(mode==='dated'){const dated=exotic({op:'dated',render:input});view={mode,panes:[{patient:scenario.patient,screen:dated.screen}],ordinary:dated.node,indexObservation:dated.indexObservation};}
+        const viewHash=digest(view);
+        if(!geometryCache.has(`view:${viewHash}`)){
+          geometryCache.set(`view:${viewHash}`,true);
+          await write(path.join(out,'views',`${id}-${viewHash}.json`),view);
+        }
+      }
       const target=Object.values(event)[0]?.comp??Object.values(event)[0]?.alert;
       const key=digest({s,mode,target,keyboard});
-      const currentPage=selecting?picker:page;
-      if(mode&&!selecting)await paint(currentPage,view);else await currentPage.evaluate(screen=>window.renderUi(screen),s);
+      const currentPage=selecting&&!promotion?picker:page;
+      if(mode&&(!selecting||promotion))await paint(currentPage,view);else await currentPage.evaluate(screen=>window.renderUi(screen),s);
       const geo=await measureEvent(currentPage,{patient:scenario.patient,event,keyboard,previous});
       geometryCache.set(key,geo);
       if(split==='search'&&physician===people[0]&&fuel===0&&episode===0) {
@@ -163,7 +197,14 @@ async function evaluate(candidate,id,split) {
       metric.actions++;metric.clicks+=Number(!keyboard);metric.keys+=typingCost(event,keyboard,mode==='command'&&!selecting);
       metric.backtracks+=Number(choice==='detour');
       state={...state,clock:state.clock+10};
-      const result=step({...input,state},event);state=result.state;metric.blocked+=Number(typeof result.result==='object'&&'blocked'in result.result);
+      let result;
+      if(promotion&&mode==='board'){
+        sessions[0].input={...input,state};
+        const board=exotic({op:'board',sessions,patient:scenario.patient,event});
+        const own=board.sessions.find(s=>s.patient===scenario.patient);
+        scopedReceipts=own.receipts;result={state:own.input.state,result:board.result};
+      }else result=step({...input,state},event);
+      state=result.state;metric.blocked+=Number(typeof result.result==='object'&&'blocked'in result.result);
       trace.push({episode,phase:selecting?'selection':'clinical',event,result:result.result,stateScreen:state.screen,device:keyboard?'keyboard':'mouse',geometry:geo,choice,prediction});
      }
      metric.completed&&=done;
@@ -197,7 +238,13 @@ try {
    validateCandidate(candidate,baseline,spec);
    row.leanVerdict=await ehr.check({specVersion:'v1',program:candidate.program,prev:baseline,canonical:baseline});
    if(row.leanVerdict!=='ok')throw Error(`Lean rejected ${JSON.stringify(row.leanVerdict)}`);
-   if(candidate.point.tier!=='sandbox') {
+   if(promotion) {
+    row.semanticAdmission=modeOf(candidate)==='board'?'Ehr.Sem.Board':'Ehr.Sem.DatedTimeline';
+    const backing=await screen.check({specVersion:'v1',program:candidate.program});
+    // Preserve the legacy renderer's findings; the promoted node has its own mandatory gate.
+    await write(path.join(out,'legacy-backing-gates',`${id}.json`),backing);
+    row.screen={status:'pending',backing,scope:'Ordinary constructor coverage is gated after cohort views are exported'};
+   }else if(candidate.point.tier!=='sandbox') {
     row.screen=await screen.check({specVersion:'v1',program:candidate.program});
     if(row.screen.status!=='pass')throw Error(`Screen rejected ${row.screen.message}`);
     row.certified=true;
@@ -210,14 +257,21 @@ try {
    const previous=archive[row.niche];
    if(!previous||row.search.completion.mean>previous.search.completion.mean||row.search.completion.mean===previous.search.completion.mean&&row.search.effort.mean<previous.search.effort.mean)archive[row.niche]=row;
   }catch(error){row.rejection=String(error);rejections.push({id,reason:String(error)});}
+  if(promotion&&row.rejection)throw Error(row.rejection);
   rows.push(row);await write(path.join(out,'round2-report.json'),{phase:'search',rows,archive,rejections,codexCalls:proposals.calls});
  }
  // This immutable manifest is written BEFORE the first held-out choice request.
  await write(path.join(out,'frozen-archive.json'),{ids:Object.values(archive).map(r=>r.id),searchOnly:true,selectionHash:digest(Object.values(archive).map(r=>({id:r.id,search:r.search}))),time:new Date().toISOString()});
  for(const row of Object.values(archive)) {
   row.heldout=await evaluate(proposals.results.find(p=>p.id===row.id).candidate,row.id,'heldout');
+  if(promotion&&row.heldout.missingGeometry)throw Error('Missing held-out target geometry');
   await write(path.join(out,'round2-report.json'),{phase:'heldout',rows,archive,rejections,codexCalls:proposals.calls});
  }
+ if(promotion&&proposals.promotionBaseline){
+  const reference={id:'reference-stack',search:await evaluate(proposals.promotionBaseline,'reference-stack','search'),heldout:await evaluate(proposals.promotionBaseline,'reference-stack','heldout')};
+  await write(path.join(out,'reference-stack.json'),reference);
+ }
+ if(promotion&&await rendererHash()!==rendererSourceHash)throw Error('Renderer changed during the frozen cohort');
  await write(path.join(out,'round2-report.json'),{phase:'complete',rows,archive,rejections,codexCalls:proposals.calls,modelCalls:model.calls,geometryStates:geometryCache.size,importedModelScores:importedModelRows,newModelRequests:model.calls-importedModelRows});
  console.log(JSON.stringify({out,niches:Object.keys(archive).length,modelCalls:model.calls}));
 }finally{await lab.close();}

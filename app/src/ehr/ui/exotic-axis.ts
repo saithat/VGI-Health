@@ -61,6 +61,9 @@ export function sourceAxis(screen: UiScreen): SourceAxis {
             });
         }
       }
+    if ("datedTimeline" in node) node.datedTimeline.children.forEach(visit);
+    if ("board" in node) node.board.children.forEach(visit);
+    if ("patientPane" in node) node.patientPane.children.forEach(visit);
     if ("section" in node) node.section.children.forEach(visit);
     if ("columns" in node) node.columns.children.forEach(visit);
     if ("timeline" in node) node.timeline.children.forEach(visit);

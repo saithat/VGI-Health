@@ -13,26 +13,56 @@ def UiReadOnly : UiNode → Prop
   | .info "" _ _ _ _ | .stepper _ _ => True
   | _ => False
 
-mutual
-/-- Walk a semantic tree, retaining each container's identity with an empty
-body. Leaf nodes are unchanged. This observes presence, never browser styling. -/
-def uiAtoms : UiNode → List UiNode
-  | .timeline _ kids => uiAtomsList kids
-  | .presentation _ kids => uiAtomsList kids
-  | .valueSet _ _ kids => uiAtomsList kids
-  | .chartReferences _ kids => uiAtomsList kids
-  | .rowAction _ _ kids => uiAtomsList kids
-  | .section id title kids => .section id title [] :: uiAtomsList kids
-  | .columns kids => .columns [] :: uiAtomsList kids
-  | .tabs id labels selected body => .tabs id labels selected [] :: uiAtomsList body
-  | n => [n]
-termination_by n => sizeOf n
+@[simp] theorem uiDatedWorkspace_atoms (cx : Ctx) :
+    uiAtomsList (uiDatedWorkspace cx) = uiAtomsList (uiWorkspace cx) := by
+  unfold uiDatedWorkspace
+  split <;> simp [uiAtomsList, uiAtoms]
 
-def uiAtomsList : List UiNode → List UiNode
-  | [] => []
-  | n :: ns => uiAtoms n ++ uiAtomsList ns
-termination_by ns => sizeOf ns
-end
+#print axioms uiDatedWorkspace_atoms
+
+/-- Any emitted index row requires binding and matching present source identities. -/
+theorem uiDateSourcesAt_bound (cx : Ctx) (nodes : List UiNode) (source : UiSourceDate)
+    (h : source ∈ uiDateSourcesAt cx nodes) :
+    (Workspace.enabled cx.prog = false ∨ Workspace.bound cx.facts cx.s = true) ∧
+      cx.facts.sourcePatientId?.isSome = true ∧ cx.facts.sourcePatientId? = cx.disp.sourcePatientId? := by
+  unfold uiDateSourcesAt at h
+  split at h
+  · rename_i gate
+    simp only [uiDateBound, Bool.and_eq_true, Bool.or_eq_true, Bool.not_eq_true', beq_iff_eq] at gate
+    exact ⟨gate.1.1, gate.1.2, gate.2⟩
+  · simp at h
+
+/-- A real rendered info row, not an arbitrary whole-bundle candidate, authorizes
+this source. Payload overrides deliberately carry no implicit authorization. -/
+theorem uiDateSourcesAt_shown (cx : Ctx) (nodes : List UiNode) (source : UiSourceDate)
+    (h : source ∈ uiDateSourcesAt cx nodes) :
+    source ∈ cx.disp.timelineSources?.getD [] ∧
+    ∃ b ∈ cx.disp.timelineBackings?.getD [], b.source = source ∧
+      (infoPayload cx.facts b.info).isNone = true ∧ ∃ comp title style rows,
+        UiNode.info comp title b.info style rows ∈ uiAtomsList nodes ∧ b.row ∈ rows := by
+  unfold uiDateSourcesAt at h
+  split at h
+  · obtain ⟨hc, b, hb, hs, witness⟩ := DateIndex.selected_source _ _ _ _ h
+    obtain ⟨hb, hp⟩ := List.mem_filter.mp hb
+    simp only [Bool.and_eq_true] at hp
+    exact ⟨hc, b, hb, hs, hp.2, witness⟩
+  · simp at h
+
+/-- Direct ordinary calls cannot build a clinical index during unbound lookup. -/
+theorem uiDatedWorkspace_unbound (cx : Ctx)
+    (enabled : Workspace.enabled cx.prog = true) (unbound : Workspace.bound cx.facts cx.s = false) :
+    uiDatedWorkspace cx = uiWorkspace cx := by
+  simp [uiDatedWorkspace, uiDateBound, enabled, unbound]
+
+theorem uiDateSourcesAt_unbound (cx : Ctx) (nodes : List UiNode)
+    (enabled : Workspace.enabled cx.prog = true) (unbound : Workspace.bound cx.facts cx.s = false) :
+    uiDateSourcesAt cx nodes = [] := by
+  simp [uiDateSourcesAt, uiDateBound, enabled, unbound]
+
+#print axioms uiDateSourcesAt_bound
+#print axioms uiDateSourcesAt_shown
+#print axioms uiDatedWorkspace_unbound
+#print axioms uiDateSourcesAt_unbound
 
 /-- Nav pairs carry real click component ids. This observer expands each pair
 into its semantic button meaning; it adds no rendered workspace node. -/
@@ -49,6 +79,38 @@ Modals have their separate D4 presentation contract. -/
 def UiPresent (screen : UiScreen) (node : UiNode) : Prop :=
   node ∈ uiAtomsList screen.workspace ++ uiAtomsList screen.side ++
     uiNavAtoms screen.nav ++ [uiBannerAtom screen]
+
+/-- The witness is present in the actual ordinary renderer, not merely in a
+candidate display list or an unrendered program item. -/
+theorem uiDateSources_present (cx : Ctx) (source : UiSourceDate)
+    (h : source ∈ uiDateSources cx) :
+    ∃ b ∈ cx.disp.timelineBackings?.getD [], b.source = source ∧
+      ∃ comp title style rows,
+        UiPresent (renderUi cx.sp cx.prog cx.facts cx.disp cx.user cx.s)
+          (.info comp title b.info style rows) ∧ b.row ∈ rows := by
+  obtain ⟨_, b, hb, hs, _, comp, title, style, rows, hn, hr⟩ :=
+    uiDateSourcesAt_shown cx _ source h
+  refine ⟨b, hb, hs, comp, title, style, rows, ?_, hr⟩
+  simp only [uiAtomsList_append, List.mem_append] at hn
+  simp only [UiPresent, renderUi, Ctx.rebuild, uiDatedWorkspace_atoms,
+    List.mem_append, List.mem_singleton]
+  rcases hn with hw | hs
+  · simp [hw]
+  · simp [hs]
+
+/-- The ordinary observer records the entire payload and all inherited indexes. -/
+theorem uiDatedWorkspace_observed (cx : Ctx) :
+    DateIndex.observeList (uiDatedWorkspace cx) =
+      if uiDateBound cx && cx.v.items.any (fun it => it.shown &&
+          (it.comp.tag == "layout.datedTimeline" || it.comp.tag.endsWith ".layout.datedTimeline")) then
+        [.datedTimeline "Dated clinical timeline (UTC)" (Dated.dated (uiDateSources cx))
+          (Dated.undated (uiDateSources cx)) []] ++ DateIndex.observeList (uiWorkspace cx)
+      else DateIndex.observeList (uiWorkspace cx) := by
+  unfold uiDatedWorkspace
+  split <;> simp_all [DateIndex.observeList, DateIndex.observe]
+
+#print axioms uiDateSources_present
+#print axioms uiDatedWorkspace_observed
 
 /-- D2 retains the stricter workspace-only requirement for commit reviews. -/
 def UiWorkspacePresent (screen : UiScreen) (node : UiNode) : Prop :=
