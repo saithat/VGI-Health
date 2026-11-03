@@ -1,5 +1,11 @@
 #!/usr/bin/env node
-// Canonical release audit; exports representative native states without editing releases/data.
+// Full audits hold $TMPDIR/vgi-browser-heavy.lock, passing its token to nested
+// screen checks (EHR_BROWSER_LOCK=off opts out). Default: 6 memory-bounded
+// workers (ceiling 6), 64-tree batches, shared atomic physical samples under
+// $TMPDIR/vgi-screen-check-cache/physical. Timeout/crash-only retries halve
+// workers, at most twice; exact tree/context/bundle dedupe maps every state.
+// Iterate with targeted --grep/subsets; run the full audit pair once before
+// reporting; the merge session runs it once on main. See README for defaults.
 import { createHash } from "node:crypto";
 import {
   readFileSync,
@@ -11,10 +17,14 @@ import {
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
+import { acquireBrowserLock } from "./browser-heavy-lock.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 if (!process.env.TMPDIR)
   throw new Error("Set TMPDIR to disk-backed scratch space");
+const browserLock = process.argv.includes("--export-only")
+  ? null
+  : await acquireBrowserLock();
 const destination = process.argv.slice(2).find((arg) => !arg.startsWith("--"));
 const output = destination
   ? resolve(destination)
@@ -153,7 +163,6 @@ const result = spawnSync(
     stdio: "inherit",
     env: {
       ...process.env,
-      EHR_SCREEN_WORKERS: process.env.EHR_SCREEN_WORKERS ?? "4",
       EHR_SCREEN_CACHE: "0",
       EHR_PHYSICAL_POLICY: "1",
       EHR_ENFORCE_PHYSICAL: "1",
@@ -162,4 +171,5 @@ const result = spawnSync(
     },
   },
 );
+browserLock?.release();
 process.exit(result.status ?? 1);

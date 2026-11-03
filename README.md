@@ -390,6 +390,8 @@ pre-urgency-merge physical findings falling from 451,695/368,914
 records the critical-result text-field repair and final full audits: all
 1,826 template and 1,296 persona trees pass with zero findings (16,434 and
 11,664 matrix cases). Both previously timed-out batches pass at three workers.
+The [audit-speed follow-up](docs/audits/audit-speed-2026-11-02.md) records the
+measured six-worker default, shared lock/cache and exact-equivalence checks.
 The full merged e2e run has 240 passes, 67 skips and 39 known failures
 (32 live-auth/setup, four recorded-dashboard, three legacy urgency); all new
 merge failures are repaired. Plain `text` entries use a one-row, soft-wrapping
@@ -1213,14 +1215,76 @@ reflow at the viewports above) **runs and fails on findings by default**.
 `EHR_ENFORCE_PHYSICAL=0` explicitly selects diagnostic report-only measurements;
 `EHR_PHYSICAL_POLICY=0` explicitly disables the matrix. Both settings enter the
 whole-tree cache context, so a bypass receipt cannot satisfy the default gate.
-Physical sample caches bind the app, assertions, policy, browser and configuration;
-they persist under `$TMPDIR/ehr-physical-samples` (override with
-`EHR_PHYSICAL_SAMPLE_CACHE`). Failed measurements never mint passing whole-tree
-receipts. The worker count is capped at six; large export lists use file manifests
-and sequential 64-tree batches. Independent regression controls run once per
-invocation; every tree gets both fidelity projects and the full physical matrix.
-JSON reports include total and per-batch elapsed milliseconds. The agent enumerates
-the candidate states before calling this gate.
+Full `scripts/audit-alert-policy.mjs` audits and standalone `screen-check.mjs
+--ui` runs serialize on the machine-wide `$TMPDIR/vgi-browser-heavy.lock`.
+Linux `flock` releases dead owners automatically; the inode is retained to avoid
+stale-lock deletion races. Wait messages identify the owner's PID, command and
+start time. Nested checks inherit `EHR_BROWSER_LOCK_TOKEN` and
+`EHR_BROWSER_LOCK_PATH`; `EHR_BROWSER_LOCK=off` explicitly opts out. All lanes
+must use the same disk-backed `TMPDIR`. Export-only audits do not lock. Nightly
+`agent/src/screencheck.ts` calls keep their scheduling: the existing private
+`screens-*/gate-result.json` protocol is recognized and exempted; the agent
+source and its worker selection are unchanged.
+
+Worker selection accepts `EHR_SCREEN_WORKERS` and `EHR_SCREEN_MAX_WORKERS`
+(default and owner ceiling 6), bounded by Linux `MemAvailable` and an 8 GiB
+lane budget:
+2 GiB reserved for controllers/Vite plus 500 MiB per worker for Chromium, Node
+and headroom. The measured default is six workers: the same 256-state subset
+without dedupe or cache reached 37.36 / 48.32 / 68.21 states per minute at
+3 / 4 / 6 workers, with zero timeouts or retries in each run. Peak
+Chromium-inclusive RSS/PSS at six was 6,852/3,825 MiB. One exempt one-worker
+nightly check remained active;
+no other heavy audit overlapped. Workers above six remain disabled. See the
+[audit-speed report](docs/audits/audit-speed-2026-11-02.md) for bindings, artifacts,
+exact-equivalence comparisons and full-audit wall times.
+
+The merged-main cold template audit covers 1,826 states / 16,434 measurements
+in 26m 23s (43.9% less wall time than the historical 47-minute three-worker
+reference). The sequential persona audit covers 1,296 states / 11,664
+measurements in 15m 29s, reusing the shared samples where content matches.
+Both have zero physical findings and zero retries. The historical reference
+used an earlier build/load; the report records the measurement conditions.
+Cold versus optimized v1/P5 comparisons preserve every per-state physical value
+and coverage total (1,609/412 files; 14,481/3,708 measurements); dedupe checks
+1,248/316 representatives. Numeric geometry measurements also match exactly.
+
+Large export lists use file manifests and sequential 64-tree batches
+(`EHR_SCREEN_BATCH_SIZE`, at most 128). Independent regression controls run once
+per invocation; every distinct tree gets both fidelity projects and the full
+physical matrix.
+
+A batch with only test/navigation/wait timeouts or worker crashes retries only
+the failed project/title pairs, at half the initial workers and then one quarter
+(minimum one), at most twice. Assertions and physical/urgency findings are never
+retried. Missing reports, incomplete physical coverage and exhausted retries
+remain `error`; partial attempts cannot supply measurements. Both JSON reports
+record each retry's batch, selected tests/projects, attempt and worker count,
+alongside total and per-batch elapsed milliseconds.
+
+Within a run, identical tree bytes under the same presentation bundle and
+measurement context are checked once; synthetic geometry probes remain distinct
+from clinical states. Measurements and findings are mapped back to every
+supplied filename, preserving `expectedStates`, state and measurement totals.
+`EHR_SCREEN_DEDUPE=0` disables this optimization for equivalence checks. The
+canonical audit retains its existing export-hash representatives and
+`exports.json` mapping (1,826 template / 1,296 persona trees).
+
+Physical sample caches bind the app, assertions, policy, browser, fonts and
+configuration. Their shared content-addressed default is
+`$TMPDIR/vgi-screen-check-cache/physical` (override with
+`EHR_PHYSICAL_SAMPLE_CACHE`; `0` disables sample reads and writes).
+Writers publish complete samples by atomic rename; cached JSON must pass the
+measurement schema. Invalid or partial data cannot certify a state. Failed
+measurements never mint passing whole-tree receipts. Whole-tree passing receipts
+remain separately controlled by `EHR_SCREEN_CACHE`; full policy audits disable
+those receipts so every selected tree retains physical coverage in its report.
+The agent enumerates candidate states before calling this gate.
+
+Iterate with targeted `--grep`/subsets; run the full audit pair once before
+reporting; the merge session runs it once on main. `--grep` is a Playwright
+option; pass a subset of JSON paths to `screen-check.mjs --ui`.
+
 `docs/audits/` retains the control-regression and performance-report inputs consumed
 by these commands; dated one-off audits are under `docs/hackathon/`.
 
