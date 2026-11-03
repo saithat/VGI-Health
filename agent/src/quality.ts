@@ -178,6 +178,7 @@ export async function freshOutput(runDir:string,outDir:string) {
 }
 
 export async function evaluateQuality(opts:QualityOptions) {
+  if(opts.backend==='codex'&&(opts.serviceTier==='fast'||process.env['CODEX_SERVICE_TIER']==='fast'))throw new Error('Codex fast mode is prohibited; use --service-tier default');
   if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>2)throw new Error('--workers must be 1 or 2 (14 GB budget)');
   if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
   if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','sanity'].includes(a)))throw new Error('Implemented arms: A, B, sanity; C awaits owner decision');
@@ -252,7 +253,7 @@ export async function evaluateQuality(opts:QualityOptions) {
           const first=await readJson(llmRecordPath(inputs,`night-${pad2(original.night)}/${original.persona}/propose-0`),llmRecordSchema);
           const usage=z.object({reasoningEffort:z.string().optional(),serviceTier:z.string().nullable().optional()}).safeParse(first.usage);
           const meter=meteredLlm(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:inputs,replayAllowDrift:true,model:opts.model??manifest.model??first.model,
-            reasoningEffort:opts.reasoningEffort??(usage.success?usage.data.reasoningEffort:undefined)??'high',serviceTier:opts.serviceTier??(usage.success?usage.data.serviceTier:undefined)??'fast'}),inputs);
+            reasoningEffort:opts.reasoningEffort??(usage.success?usage.data.reasoningEffort:undefined)??'high',serviceTier:opts.backend==='codex'?(opts.serviceTier??'default'):opts.serviceTier??(usage.success?usage.data.serviceTier:undefined)??'default'}),inputs);
           const sampleDeps:LoopDeps={...deps,store:new RunStore(sampleDir),agent:new LlmAgent(new RecordingLlm(meter.llm,sampleDir)),seedState:{injected:0,rejected:new Set()}};
           const tick=performance.now();
           const result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,

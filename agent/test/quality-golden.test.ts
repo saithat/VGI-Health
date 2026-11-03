@@ -8,7 +8,7 @@ import { sha256 } from '../src/program.js';
 import { REPO_ROOT } from '../src/util.js';
 import { withData } from './data.js';
 
-// Hashes captured with the builders from 4be4b528, before introducing offline arms.
+// Hashes captured with the builders from merged main 18a0b70c (compact density), independently of arm additions.
 withData('runs/core-10day-live/decisions','runs/run1-P3/decisions').it('arm A matches pre-change propose, choose and repair bytes on all 35 frozen contexts',async()=>{
   const records=await historicalDecisions(path.join(REPO_ROOT,'runs/core-10day-live'));
   const actual:Record<string,string[]>={};

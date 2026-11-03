@@ -20,7 +20,7 @@ it('rejects tool events including outside-temp file reads', () => {
   expect(auditTranscript('{"type":"item.completed","item":{"type":"agent_message","text":"{}"}}').status).toBe('pass');
 });
 
-it('passes fast service tier and high reasoning to a confined stub with zero LLM calls', async()=>{
+it('passes default service tier and high reasoning to a confined stub with zero LLM calls', async()=>{
  const dir=await tmp('codex-stub'), binary=path.join(dir,'stub');
  await writeFile(binary,`#!/bin/sh
  for arg in "$@"; do printf '{"type":"item.completed","item":{"type":"agent_message","text":"%s"}}\\n' "$(printf '%s' "$arg" | sed 's/"/\\\\"/g')"; done
@@ -28,9 +28,9 @@ it('passes fast service tier and high reasoning to a confined stub with zero LLM
  cat >/dev/null
  `);
  await chmod(binary,0o755);
- const result=await new CodexLlm({binary,model:'FAKE',serviceTier:'fast',reasoningEffort:'high'}).complete({callId:'stub',purpose:'test',system:'FAKE',prompt:'FAKE',schemaName:'Fake',schema:{}});
+ const result=await new CodexLlm({binary,model:'FAKE',serviceTier:'default',reasoningEffort:'high'}).complete({callId:'stub',purpose:'test',system:'FAKE',prompt:'FAKE',schemaName:'Fake',schema:{}});
  const transcript=JSON.stringify(result.transcript);
- expect(transcript).toContain('service_tier=');expect(transcript).toContain('fast');expect(transcript).toContain('model_reasoning_effort=');expect(transcript).toContain('high');
+ expect(transcript).toContain('service_tier=');expect(transcript).toContain('default');expect(transcript).toContain('model_reasoning_effort=');expect(transcript).toContain('high');
  expect(result.json).toEqual({ok:true});
 });
 it('accepts the captured live stream and safe metadata items, and records served model only when present',async()=>{
@@ -50,3 +50,5 @@ it('passes the configured model explicitly when no CLI model is supplied',async(
  try{const backend=new CodexLlm({binary}),res=await backend.complete({callId:'configured',purpose:'test',system:'FAKE',prompt:'FAKE',schemaName:'Fake',schema:{}});expect(res.json).toEqual({model:'configured-model'});expect(res.model).toBe('configured-model');expect(res.servedBy).toBe('actual-served');}
  finally{if(original===undefined)delete process.env['CODEX_HOME'];else process.env['CODEX_HOME']=original;}
 });
+
+it('rejects Codex fast mode before starting a subprocess',()=>{expect(()=>new CodexLlm({model:'FAKE',serviceTier:'fast'})).toThrow('fast mode is prohibited');});

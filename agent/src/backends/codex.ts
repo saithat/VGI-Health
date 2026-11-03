@@ -48,7 +48,8 @@ export class CodexLlm implements JsonLlm {
   constructor(opts: { model?: string; binary?: string; timeoutMs?: number; serviceTier?: string; reasoningEffort?: string } = {}) {
     this.serviceTier = opts.serviceTier ?? process.env['CODEX_SERVICE_TIER'] ?? null;
     this.reasoningEffort = opts.reasoningEffort ?? process.env['CODEX_REASONING_EFFORT'] ?? 'high';
-    if (this.serviceTier !== null && !['fast', 'flex', 'default'].includes(this.serviceTier)) throw new Error('Invalid Codex service tier');
+    if (this.serviceTier === 'fast') throw new Error('Codex fast mode is prohibited; use --service-tier default');
+    if (this.serviceTier !== null && !['flex', 'default'].includes(this.serviceTier)) throw new Error('Invalid Codex service tier');
     if (!['low', 'medium', 'high', 'xhigh', 'max', 'ultra'].includes(this.reasoningEffort)) throw new Error('Invalid reasoning effort');
     const model=opts.model ?? process.env['CODEX_MODEL'] ?? configuredModel();
     if (!model) throw new Error('Codex requires --model, CODEX_MODEL or model in config.toml; refusing an unrecorded CLI default');
