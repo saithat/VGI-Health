@@ -84,7 +84,7 @@ export function qualityReport(records: readonly OfflineRecord[]) {
       queriesPerDecision:avg(r=>r.queries.count),queryTally:Object.fromEntries([...new Set(own.flatMap(r=>Object.keys(r.queries.tally)))].map(q=>[q,own.reduce((n,r)=>n+(r.queries.tally[q]??0),0)])),
       callsPerDecision:avg(r=>r.calls),wallTimeMsPerDecision:avg(r=>r.wallTimeMs)};
   });
-  return {label:OFFLINE_LABEL,note:'Sample means within decision; validation totals sum those means. Unknown token counts remain null. Replay tokens are recorded references, not new model usage. Wall time includes charged shared evidence preparation; the shared exact-content geometry cache makes timings cache-order dependent. Idea repeats = same id OR same move type and nonempty target set. Zero effect requires all five physical metrics measured and zero; denominator is all nonseeded candidates.',
+  return {label:OFFLINE_LABEL,note:'Sample means within decision; validation totals sum those means. Unknown token counts remain null. Calls count backend completion attempts including retries; Codex internal model turns are not separately exposed. Query counts include all command executions, with non-CLI reads tallied as other. Replay tokens are recorded references, not new model usage. Wall time includes charged shared evidence preparation; the shared exact-content geometry cache makes timings cache-order dependent. Idea repeats = same id OR same move type and nonempty target set. Zero effect requires all five physical metrics measured and zero; denominator is all nonseeded candidates.',
     arms,perDecision:rows,comparisons:[pairedComparison(records,'A','B'),pairedComparison(records,'B','C')]};
 }
 export async function writeQualityReport(dir:string,records:readonly OfflineRecord[]) {

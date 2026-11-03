@@ -10,7 +10,7 @@ import { loadMeasuredSavings, recomputedSavings } from '../src/quality-ledger.js
 import { measuredLedger, withQuality, type QualityContext } from '../src/quality-context.js';
 import { withQueries } from '../src/quality-queries.js';
 import { nightlyPrompt, choosePrompt, repairPrompt } from '../src/prompts.js';
-import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, meteredLlm, selectDecisions } from '../src/quality.js';
+import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, meteredLlm, selectDecisions, evaluateQuality } from '../src/quality.js';
 import { OFFLINE_LABEL, pairedComparison, qualityReport, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
 import { FAKE_PERSONAS, writeFakeWorld } from '../src/fake/world.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
@@ -218,6 +218,9 @@ function offline(id:string,arm:'A'|'B'|'C',accepted:boolean,sample=1):OfflineRec
   return {...base,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:id,arm,sample,tokens:{input:100,output:5,cachedInput:0,source:'backend'},callCount:2,wallTimeMs:10,frozenInputs:'input.json',repeatedMeasuredBad:0,proposedCandidates:0};
 }
 describe('paired reporting and input guardrails',()=>{
+  it('rejects evaluator fast mode before resolving inputs or starting any process',async()=>{
+    await expect(evaluateQuality({runDir:'/missing',outDir:'/missing',arms:['C'],samples:1,backend:'codex',workers:1,serviceTier:'fast'})).rejects.toThrow('Codex fast mode is prohibited');
+  });
   it('counts failed transport attempts and leaves their unknown token usage unknown',async()=>{
     let attempt=0;
     const backend:JsonLlm={name:'scripted',model:'fixture',async complete(){

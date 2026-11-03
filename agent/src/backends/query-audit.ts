@@ -1,6 +1,6 @@
 /** Static audit is a tripwire, not a shell parser or the write barrier. Codex's
  * read-only OS sandbox enforces writes; outer bwrap enforces filesystem scope.
- * Missing cwd fails closed, except for the immutable query CLI's cwd attestation.
+ * Missing cwd fails closed unless the immutable CLI or a leading /usr/bin/pwd attests it.
  * CLI JSONL omits cwd on some releases, so arbitrary unattested commands are rejected.
  */
 import path from 'node:path';
@@ -9,10 +9,23 @@ const queryNames=['screens','steps','targets','scroll-past','sequences','ledger'
 export const queryAuditSchema=z.object({queryMode:z.literal(true),requestDirectory:z.string(),commands:z.array(z.object({
   id:z.string(),command:z.string(),cwd:z.string().nullable(),output:z.string(),truncated:z.boolean(),query:z.string().nullable(),
 }))});
+function shellSyntax(command:string) {
+  const unwrapped=command.replace(/^(?:\/bin\/)?(?:ba)?sh\s+-[lc]{1,2}\s+(['"])(.*)\1$/,'$2');
+  let syntax='',quote='',escaped=false;
+  for(const char of unwrapped){
+    if(escaped){escaped=false;continue;}
+    if(char==='\\'&&quote!=="'"){escaped=true;continue;}
+    if(quote){if(char===quote)quote='';continue;}
+    if(char==="'"||char==='"'){quote=char;continue;}
+    syntax+=char;
+  }
+  return syntax;
+}
 export function writeAttempt(command:string) {
   // Conservative by design: reject shell expansion/control and known mutators,
   // including common interpreter file writes; stdout printing remains allowed.
-  return /[>\n\r`]|\$\(|\$\{|\b(?:tee|mv|cp|rm|touch|mkdir|rmdir|install|truncate|chmod|chown|ln|dd|patch|apply_patch|sed\s+-[^\s]*i|curl|wget|git|cd|pushd|popd)\b|\bexec\b|\b(?:writeFile(?:Sync)?|appendFile(?:Sync)?|write_text|write_bytes|chdir|fchdir|unlink(?:Sync)?|rename(?:Sync)?|rmtree|makedirs)\s*\(|\bopen\s*\([^\n]*(?:["'][wax+][bt+]*["']|O_WRONLY|O_RDWR|O_CREAT)|\b(?:codex-home|auth\.json|\/proc\/|\/dev\/|\/etc\/)/i.test(command);
+  if(shellSyntax(command).includes('>'))return true;
+  return /[\n\r`]|\$\(|\$\{|\b(?:tee|mv|cp|rm|touch|mkdir|rmdir|install|truncate|chmod|chown|ln|dd|patch|apply_patch|sed\s+-[^\s]*i|curl|wget|git|cd|pushd|popd)\b|\bexec\b|\b(?:writeFile(?:Sync)?|appendFile(?:Sync)?|write_text|write_bytes|chdir|fchdir|unlink(?:Sync)?|rename(?:Sync)?|rmtree|makedirs)\s*\(|\bopen\s*\([^\n]*(?:["'][wax+][bt+]*["']|O_WRONLY|O_RDWR|O_CREAT)|(?:\bcodex-home\b|\bauth\.json\b|\/(?:proc|dev|etc)(?:\/|\b))/i.test(command);
 }
 export function auditQueryTranscript(stdout:string,directory:string) {
   const forbidden:unknown[]=[],commands=new Map<string,z.infer<typeof queryAuditSchema>['commands'][number]>();
@@ -26,16 +39,17 @@ export function auditQueryTranscript(stdout:string,directory:string) {
       const command=z.object({id:z.string().optional(),command:z.string(),cwd:z.string().optional(),working_directory:z.string().optional(),aggregated_output:z.string().optional(),output:z.string().optional()}).safeParse(item);
       if(!command.success){forbidden.push(json);continue;}
       const c=command.data,id=c.id??`event-${sequence++}`,old=commands.get(id),output=c.aggregated_output??c.output??old?.output??'';
-      // Accept only the fixed CLI for cwd attestation. Shell wrappers may quote a
-      // simple command, but no chaining or substitution is allowed on this route.
+      // Accept the immutable CLI or a leading, absolute pwd for cwd attestation.
+      // The latter allows read-only interpreter commands on CLI versions without cwd metadata.
       const unwrapped=c.command.replace(/^\/bin\/(?:ba)?sh\s+-lc\s+(['"])(.*)\1$/,'$2');
       const pwd=/^\/usr\/bin\/pwd\s*&&\s*/.exec(unwrapped);
       const queryCommand=pwd?unwrapped.slice(pwd[0].length):unwrapped;
       const cli=/^(?:\/usr\/bin\/)?node\s+(?:\.\/)?query\.mjs\s+(screens|steps|targets|scroll-past|sequences|ledger)(?:\s+--[a-z-]+\s+[\w./:-]+)*$/.exec(queryCommand);
       let attested:string|null=null;
-      if(pwd)attested=output.split('\n')[0]?.replace(/\r$/,'')??null;
+      if(pwd&&output.includes('\n'))attested=output.split('\n')[0]?.replace(/\r$/,'')||null;
       else try{const result=z.object({cwd:z.string(),query:z.string()}).parse(JSON.parse(output));if(cli&&result.query===cli[1])attested=result.cwd;}catch{/* Other reads must print cwd first or carry explicit cwd. */}
       const cwd=c.cwd??c.working_directory??old?.cwd??attested;
+      if(attested&&cwd&&path.resolve(attested)!==path.resolve(cwd))forbidden.push({id,reason:'cwd attestation conflicts with command metadata'});
       const row={id,command:c.command,cwd,output:output.slice(0,16000),truncated:output.length>16000,query:cli?.[1]??null};
       if(old&&old.command!==c.command)forbidden.push({id,reason:'command changed within transcript item'});
       commands.set(id,row);

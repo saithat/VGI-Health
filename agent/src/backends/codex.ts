@@ -97,13 +97,14 @@ export class CodexLlm implements JsonLlm {
       if(this.queryMode)transcript.stdout=boundedQueryTranscript(transcript.stdout);
       if (audit.status !== 'pass') throw Object.assign(new Error('Codex attempted forbidden tools; request rejected'), { transcript, audit });
       const servedBy=servedModel(transcript.stdout);
-      if (transcriptFailure(transcript.stdout)) throw Object.assign(new Error('Codex reported a failed turn'),{transcript});
-      const text = await readFile(outFile, 'utf8');
+      if (transcriptFailure(transcript.stdout)) throw Object.assign(new Error('Codex reported a failed turn'),{transcript,audit});
+      let text:string;
+      try{text=await readFile(outFile, 'utf8');}catch(error){throw Object.assign(new Error(`codex backend: missing output for ${req.callId}`,{cause:error}),{transcript,audit});}
       let json: unknown;
       try {
         json = JSON.parse(text);
       } catch {
-        throw new Error(`codex backend: last message for ${req.callId} is not JSON`);
+        throw Object.assign(new Error(`codex backend: last message for ${req.callId} is not JSON`),{transcript,audit});
       }
       return { json, backend: 'codex', model: this.model, servedBy, replayOf: null, promptMatched: null, usage: { reasoningEffort: this.reasoningEffort, serviceTier: this.serviceTier, isolationAudit: audit }, transcript };
     } finally {

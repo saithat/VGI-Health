@@ -75,7 +75,12 @@ it('audits command cwd, writes, forbidden tools, deduplicated queries and bounde
  expect(auditQueryTranscript(item('jq . traces.json','/outside'),dir).status).toBe('fail');
  expect(auditQueryTranscript(item('jq . traces.json'),dir).status).toBe('fail');
  expect(auditQueryTranscript(item('jq . traces.json',dir),dir).status).toBe('pass');
- expect(auditQueryTranscript(item('/usr/bin/pwd && jq . traces.json',undefined,dir+'\n{}'),dir).status).toBe('pass');
+ expect(auditQueryTranscript(item("jq '.clicks > 0' locality.json",dir),dir).status).toBe('pass');
+ expect(auditQueryTranscript(item("/bin/bash -lc 'echo x > f'",dir),dir).status).toBe('fail');
+ const pwdCommand='/usr/bin/pwd && jq . traces.json';
+ const pwdStart=JSON.stringify({type:'item.started',item:{id:'tool-1',type:'command_execution',command:pwdCommand,aggregated_output:''}});
+ expect(auditQueryTranscript(pwdStart+'\n'+item(pwdCommand,undefined,dir+'\n{}'),dir).status).toBe('pass');
+ expect(auditQueryTranscript(item('node query.mjs screens',dir,JSON.stringify({cwd:'/outside',query:'screens'})),dir).status).toBe('fail');
  expect(auditQueryTranscript(item('/usr/bin/pwd && jq . traces.json',undefined,'/outside\n{}'),dir).status).toBe('fail');
  const command='node query.mjs screens',started=JSON.stringify({type:'item.started',item:{id:'tool-1',type:'command_execution',command}});
  const audit=auditQueryTranscript(started+'\n'+item(command,undefined,JSON.stringify({query:'screens',cwd:dir})),dir);

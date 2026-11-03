@@ -81,15 +81,19 @@ it.skipIf(!existsSync('/usr/local/bin/codex'))('enforces managed auth read denia
  const dir=await tmp('codex-query-permissions'),home=path.join(dir,'codex-home');await mkdir(home,{mode:0o700});
  await writeFile(path.join(home,'auth.json'),'FAKE_CREDENTIAL_MARKER');
  await writeFile(path.join(home,'query-requirements.toml'),queryRequirements(dir));
- await writeFile(path.join(dir,'traces.json'),'TRAIN_ONLY');
- const probe=`import json
+ const {trainingQueryBundle,writeQueryDirectory}=await import('../src/quality-queries.js');
+ const {localityDigest}=await import('../src/locality.js');
+ await writeQueryDirectory(dir,trainingQueryBundle({night:1,train:[]},[],{ledger:[],locality:localityDigest([])}));
+ const probe=`import json, subprocess
 r={}
 for key,filename,mode in [('train','traces.json','r'),('credential','codex-home/auth.json','r'),('write','new-file','w')]:
  try:
   with open(filename,mode) as f: pass
   r[key]='allowed'
  except OSError: r[key]='denied'
+query=subprocess.run(['/usr/bin/node','query.mjs','screens'],capture_output=True,text=True,check=True)
+r['query']=json.loads(query.stdout)['query']
 print(json.dumps(r))`;
  const run=spawnSync('bwrap',confinedArgs(dir,'/usr/local/bin/codex',['sandbox','-P',':read-only','--include-managed-config','-C',dir,'--','/usr/bin/python3','-c',probe],true),{cwd:dir,encoding:'utf8'});
- expect(run.stderr).toBe('');expect(run.status).toBe(0);expect(JSON.parse(run.stdout)).toEqual({train:'allowed',credential:'denied',write:'denied'});
+ expect(run.stderr).toBe('');expect(run.status).toBe(0);expect(JSON.parse(run.stdout)).toEqual({train:'allowed',credential:'denied',write:'denied',query:'screens'});
 });
