@@ -18,7 +18,10 @@
     "shots": "node scripts/shots.mjs",
     "audit:buttons": "APP_TEST_PREVIEW=1 playwright test --config e2e/audit/playwright.config.ts buttons.spec.ts",
     "test:buttons": "APP_TEST_PREVIEW=1 playwright test --config e2e/audit/playwright.config.ts regression.spec.ts",
-    "audit:performance": "APP_TEST_PREVIEW=1 playwright test --config e2e/audit/playwright.config.ts performance.spec.ts && node scripts/performance-report.mjs"
+    "audit:performance": "APP_TEST_PREVIEW=1 playwright test --config e2e/audit/playwright.config.ts performance.spec.ts && node scripts/performance-report.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:geometry-determinism": "node --test scripts/geometry-determinism.test.mjs",
+    "geometry-determinism": "node scripts/geometry-determinism.mjs"
   },
   "dependencies": {
     "@mantine/core": "^8.3.17",

@@ -153,12 +153,14 @@ export class ScriptedLlm implements JsonLlm {
   readonly name = 'scripted' as const;
   readonly model = 'scripted-test';
   readonly prompts: JsonRequest[] = [];
+  constructor(private readonly fixture?:LlmProposal) {}
 
   async complete(req: JsonRequest): Promise<JsonResponse> {
     this.prompts.push(req);
     const persona = /(?:^|\/)(P\d)[/-]/.exec(req.callId)?.[1] ?? 'P1';
     const attempt = Number(/-(\d+)$/.exec(req.callId)?.[1] ?? '1');
     const json = req.purpose === 'choose' ? choose(req.prompt, persona)
+      : this.fixture ? this.fixture
       : req.purpose === 'repair' ? repair(persona)
         : req.purpose === 'migrate' ? migrate(persona, attempt)
           : req.purpose === 'surface' ? surface(persona)

@@ -101,7 +101,7 @@ class CliScreenChecker implements ScreenChecker {
   readonly mode = 'real' as const;
   private readonly atlases=new Map<string,GeometryAtlas>();
   private atlasKey(input:Parameters<GeometryProvider>[0]){return geometryCacheKey(input.program)+(input.schedule&&input.worldDir?`:${sha256(JSON.stringify([input.worldDir,input.schedule]))}`:'');}
-  geometry:GeometryProvider=async input=>{const hash=this.atlasKey(input);if(!this.atlases.has(hash)){let result:ScreenCheckResult;try{result=await this.check(input);}catch(error){throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${errorMessage(error)}`);}if(result.status==='error')throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}return this.atlases.get(hash)??null;};
+  geometry:GeometryProvider=async input=>{const hash=this.atlasKey(input);if(!this.atlases.has(hash)){let result:ScreenCheckResult;try{result=await this.check(input);}catch(error){this.atlases.delete(hash);throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${errorMessage(error)}`);}if(result.status==='error'){this.atlases.delete(hash);throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}}return this.atlases.get(hash)??null;};
   constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string,private readonly preferredBundles:Record<string,number>={},private readonly cacheDir?:string) {}
 
   async check(input: { specVersion: string; program: Program } & Partial<Pick<SimulateInput,'schedule'|'worldDir'>>): Promise<ScreenCheckResult> {
@@ -140,7 +140,7 @@ class CliScreenChecker implements ScreenChecker {
       }
       const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; one browser, desktop + narrow\n`);
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:process.env['EHR_SCREEN_WORKERS']??'1', EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:String(Math.max(1,Math.min(4,Number(process.env['EHR_SCREEN_WORKERS']??1)||1))), EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
       const measured=z.object({geometry:z.array(screenGeometrySchema).optional()}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(()=>'{}')));

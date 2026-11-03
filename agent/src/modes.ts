@@ -1,3 +1,4 @@
+import { ReplayDivergedError, ReplayMissingError } from './backends/replay.js';
 /**
  * Release-night modes and the live "try to break it" mode.
  *
@@ -115,6 +116,7 @@ export async function runSurfaceFeature(deps: LoopDeps, input: ReleaseNightInput
       }),
     });
   } catch (e) {
+    if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
     rec.flags.push(`llm-error: ${errorMessage(e)}`);
     rec.hypothesis = '(no decision: the LLM call failed; program recertified unchanged)';
     if (rec.release) rec.release.surfaced = false;
@@ -202,7 +204,7 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
       if (!await deployInto(deps, rec, persona.id, program, gate)) throw new Error('release check/screen/deploy gate refused');
       rec.outcome = rec.flags.some((f) => f.startsWith('llm-error')) ? 'llm-error' : outcome;
       return finishRecord(deps, rec, calls, program);
-    } catch (error) { failure = error; }
+    } catch (error) { if(error instanceof InfrastructureError || error instanceof ReplayDivergedError || error instanceof ReplayMissingError)throw error; failure = error; }
     if (outcome === 'migration-fallback') {
       rec.flags.push(`ABORT: certified canonical fallback failed: ${errorMessage(failure)}`);
       rec.outcome = rec.screenCheck?.status==='error'?'error':rec.flags.some(f=>f.startsWith('infrastructure-error'))?'infrastructure-error':'certification-failed';
@@ -236,6 +238,7 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
         }),
       });
     } catch (e) {
+    if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
       rec.flags.push(`llm-error (migrate ${attempt}): ${errorMessage(e)}`);
       break;
     }

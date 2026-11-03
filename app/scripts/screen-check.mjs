@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Buffer } from "node:buffer";
+import { performance } from "node:perf_hooks";
 import { resolve, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -20,7 +21,14 @@ import {
   cachedTree,
   recordBatch,
 } from "./screen-cache.mjs";
+const started = performance.now();
 const ui = process.argv[2] === "--ui";
+// Explicit 0 is the operator escape hatch; certification uses the full matrix.
+const physicalEnabled = process.env.EHR_PHYSICAL_POLICY !== "0";
+const physicalEnforced =
+  physicalEnabled && process.env.EHR_ENFORCE_PHYSICAL !== "0";
+process.env.EHR_PHYSICAL_POLICY = physicalEnabled ? "1" : "0";
+process.env.EHR_ENFORCE_PHYSICAL = physicalEnforced ? "1" : "0";
 const files = process.argv
   .slice(ui ? 3 : 2)
   .map((file) => resolve(process.env.INIT_CWD ?? process.cwd(), file));
@@ -40,6 +48,8 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
   const sources = [
     "e2e/ui-check.spec.ts",
     "e2e/geometry-capture.ts",
+    "e2e/capture-environment.ts",
+    "src/ehr/ui/fonts/manifest.json",
     "playwright.config.ts",
     "src/ehr/ui/fidelity.ts",
     "src/ehr/ui/display.tsx",
@@ -66,6 +76,8 @@ if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
     platform: process.platform,
     policy: digest(readFileSync(policyPath)),
     minimumFont: process.env.EHR_MIN_FONT_PX ?? "12",
+    physicalEnabled,
+    physicalEnforced,
     urgentAlertIds: process.env.EHR_URGENT_ALERT_IDS ?? "[]",
     projects: ["desktop", "narrow"],
   });
@@ -116,6 +128,7 @@ if (ui) {
     app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
     ui: digest(readFileSync(resolve(appDir, "e2e/ui-check.spec.ts"))),
     config: digest(readFileSync(resolve(appDir, "playwright.config.ts"))),
+    environment: digest(readFileSync(resolve(appDir, "e2e/capture-environment.ts"))),
     browser: digest(readFileSync(chromium.executablePath())),
     playwright: digest(
       readFileSync(
@@ -129,11 +142,13 @@ if (ui) {
     node: process.version,
     platform: process.platform,
     minimumFont: process.env.EHR_MIN_FONT_PX ?? "12",
+    physicalEnabled,
+    physicalEnforced,
     urgentAlertIds: process.env.EHR_URGENT_ALERT_IDS ?? "[]",
   };
   const context = contextDigest(sampleContext);
   sampleDirectory = resolve(
-    process.env.EHR_PHYSICAL_SAMPLE_CACHE ?? sampleDirectory,
+    process.env.EHR_PHYSICAL_SAMPLE_CACHE ?? resolve(tmpdir(), "ehr-physical-samples"),
     context,
   );
   mkdirSync(sampleDirectory, { recursive: true });
@@ -169,6 +184,7 @@ let gateStatus = "pass";
 const physical = [];
 const batchResults = [];
 for (const [index, batch] of batches.entries()) {
+  const batchStarted = performance.now();
   const batchOutput = resolve(output, `batch-${index}`);
   const report = resolve(output, `playwright-${index}.json`);
   const inputManifest = resolve(output, `inputs-${index}.json`);
@@ -187,6 +203,11 @@ for (const [index, batch] of batches.entries()) {
       "--output",
       batchOutput,
       ui ? "--max-failures=0" : "--max-failures=1",
+      // Independent controls run once per invocation; every tree still gets
+      // both fidelity projects and the complete physical matrix.
+      ...(ui && index > 0
+        ? ["--grep", "semantic UI fidelity:|physical policy:"]
+        : []),
       "--workers",
       String(
         Math.min(
@@ -257,15 +278,15 @@ for (const [index, batch] of batches.entries()) {
     // A missing physical attachment cannot certify a supplied clinical state.
     if (
       ui &&
-      process.env.EHR_PHYSICAL_POLICY &&
+      physicalEnabled &&
       batch.length &&
       physicalStates !==
         batch.filter((file) => !/-geometry\.json$/.test(file)).length
     )
       status = "error";
   } else status = "error";
-  // WCAG physical findings are reported; they fail the gate only when enforced.
-  if (physicalFindings && process.env.EHR_ENFORCE_PHYSICAL && status !== "error")
+  // Findings fail by default; an explicit operator override is context-bound.
+  if (physicalFindings && physicalEnforced && status !== "error")
     status = "fail";
   if (status === "error" || (gateStatus !== "error" && status === "fail"))
     gateStatus = status;
@@ -275,6 +296,7 @@ for (const [index, batch] of batches.entries()) {
     status,
     physicalStates,
     physicalFindings,
+    elapsedMs: Math.round(performance.now() - batchStarted),
     exitCode: result.status,
   });
   if (result.error) process.stderr.write(`${result.error.message}\n`);
@@ -282,6 +304,7 @@ for (const [index, batch] of batches.entries()) {
 if (ui) {
   const summary = {
     policyStatus: policy.status,
+    elapsedMs: Math.round(performance.now() - started),
     expectedStates: checkedFiles.filter(
       (file) => !/-geometry\.json$/.test(file),
     ).length,
@@ -320,6 +343,7 @@ if (process.env.EHR_SCREEN_RESULT)
     process.env.EHR_SCREEN_RESULT,
     JSON.stringify({
       status: gateStatus,
+      elapsedMs: Math.round(performance.now() - started),
       physical,
       batches: batchResults,
       geometry: ui

@@ -1,0 +1,379 @@
+/* Evolution view: answer first, method notes on demand, only nights that changed something. */
+.dashboard .page-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 4px 0 16px;
+}
+.dashboard .page-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.page-heading-id {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--clinical-muted);
+}
+.dashboard .page-heading .run-banner {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--clinical-gray-tint);
+}
+.dashboard .page-heading .persona-selector {
+  margin-left: auto;
+}
+
+.info-tip {
+  position: relative;
+  display: inline-block;
+  margin: 0;
+}
+.dashboard .info-tip > summary {
+  list-style: none;
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--clinical-control);
+  color: var(--clinical-muted);
+  font: italic 600 12px/1 Georgia, serif;
+  background: var(--clinical-surface);
+}
+.info-tip > summary::-webkit-details-marker {
+  display: none;
+}
+.info-tip[open] > summary {
+  border-color: var(--clinical-primary);
+  color: var(--clinical-primary);
+}
+.info-tip-panel {
+  position: absolute;
+  z-index: 20;
+  top: 28px;
+  left: -8px;
+  width: min(440px, 86vw);
+  padding: 4px 14px;
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-border);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgb(16 32 48 / 16%);
+  color: var(--clinical-ink);
+  font-size: 13px;
+  line-height: 19px;
+  font-weight: 400;
+}
+.info-tip.right .info-tip-panel {
+  left: auto;
+  right: -8px;
+}
+
+.evolution {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.evolution-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+.summary-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--clinical-surface);
+  border: 1px solid var(--clinical-border);
+  border-radius: 6px;
+}
+.summary-tile.attention {
+  border-color: var(--clinical-red-ink);
+  box-shadow: inset 3px 0 0 var(--clinical-red-ink);
+}
+.summary-label {
+  font-size: 12px;
+  color: var(--clinical-muted);
+  font-weight: 600;
+}
+.summary-value {
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 600;
+}
+.summary-value em {
+  font-style: normal;
+  font-size: 15px;
+}
+.summary-detail {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--clinical-muted);
+}
+.better {
+  color: var(--clinical-green-ink);
+}
+.worse {
+  color: var(--clinical-red-ink);
+}
+.flat {
+  color: var(--clinical-muted);
+}
+
+.evolution .workflow-complexity {
+  border-radius: 6px;
+  padding: 14px 16px 6px;
+}
+.evolution .complexity-controls h3 {
+  font-size: 15px;
+}
+.evolution .complexity-controls label {
+  font-weight: 500;
+  color: var(--clinical-muted);
+}
+.evolution .complexity-key {
+  margin: 10px 0 0;
+  color: var(--clinical-muted);
+  align-items: center;
+}
+.workflow-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--clinical-ink);
+}
+.workflow-key i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.release-key {
+  padding: 0 6px;
+  border-radius: 3px;
+  background: var(--clinical-gray-tint);
+}
+.unit-key {
+  margin-left: auto;
+}
+.evolution .complexity-numbers {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+
+.evolution .version-history {
+  margin: 0;
+  border-radius: 6px;
+  overflow: visible;
+}
+.history-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--clinical-border);
+}
+.dashboard .history-heading h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.history-legend {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.history-legend .better,
+.history-legend .worse {
+  font-weight: 700;
+}
+.dashboard .evolution .version-row {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 220px 150px;
+  align-items: start;
+  gap: 16px;
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 19px;
+  background: transparent;
+}
+.dashboard .evolution .version-row:hover {
+  background: var(--clinical-hover);
+}
+.dashboard .evolution .version-row.unchanged-row {
+  background: transparent;
+  color: var(--clinical-muted);
+}
+.night-when {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.night-when strong {
+  color: var(--clinical-primary);
+  font-weight: 600;
+}
+.unchanged-row .night-when strong {
+  color: var(--clinical-muted);
+  font-weight: 500;
+}
+.release-tag {
+  font-size: 12px;
+  line-height: 16px;
+  padding: 0 6px;
+  border-radius: 3px;
+  color: var(--clinical-surface);
+  background: var(--clinical-appbar, #243341);
+}
+.night-what {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+.night-effect {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.effect-value {
+  font-weight: 600;
+  font-size: 15px;
+}
+.effect-none {
+  color: var(--clinical-muted);
+}
+.effect-caption {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--clinical-muted);
+}
+.night-status {
+  font-size: 12px;
+  text-align: right;
+}
+.status-ok {
+  color: var(--clinical-green-ink);
+}
+/* Rejections read as part of their night: quiet text, red only on the marker and the violated rule. */
+.dashboard .evolution .rejected-row {
+  width: calc(100% - 198px);
+  margin: -8px 16px 0 182px;
+  padding: 3px 0;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--clinical-muted);
+  font-size: 12px;
+  line-height: 17px;
+}
+.dashboard .evolution .rejected-row:hover {
+  background: var(--clinical-hover);
+}
+.evolution .rejected-row > span:first-child {
+  color: var(--clinical-red-ink);
+  white-space: nowrap;
+}
+.evolution .rejected-row > strong {
+  color: var(--clinical-red-ink);
+  font-weight: 500;
+}
+.evolution .night {
+  border-bottom: 1px solid var(--clinical-border);
+}
+.evolution .night:has(.rejected-row) {
+  padding-bottom: 10px;
+}
+.dashboard .evolution .night > .version-row {
+  border-bottom: 0;
+}
+.evolution .rule-conformance {
+  margin: 0 16px 8px 182px;
+}
+.quiet-nights {
+  border-bottom: 1px solid var(--clinical-border);
+}
+.dashboard .quiet-nights > summary {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--clinical-muted);
+}
+.quiet-nights[open] > summary {
+  border-bottom: 1px solid var(--clinical-border);
+}
+.dashboard .evolution .quiet-nights .version-row {
+  padding-left: 32px;
+}
+.evolution .trajectory-compare-entry {
+  margin: 0;
+  text-align: right;
+}
+@media (max-width: 1000px) {
+  .dashboard .evolution .version-row {
+    grid-template-columns: 120px minmax(0, 1fr) 160px;
+  }
+  .night-status {
+    grid-column: 2 / -1;
+    text-align: left;
+  }
+  .dashboard .evolution .rejected-row {
+    width: calc(100% - 168px);
+    margin-left: 152px;
+  }
+}
+@media (max-width: 720px) {
+  .evolution-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dashboard .evolution .version-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+  .night-status {
+    grid-column: auto;
+  }
+  .night-when {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .night-effect,
+  .night-status {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 8px;
+  }
+  /* Keep the labels for screen readers; the layout already says what each value is. */
+  .night-effect .mobile-label,
+  .night-status .mobile-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .dashboard .evolution .rejected-row {
+    width: auto;
+    margin: 0 8px;
+  }
+  .evolution .rule-conformance {
+    margin: 0 8px 8px;
+  }
+  .dashboard .page-heading .persona-selector {
+    margin-left: 0;
+  }
+  .unit-key {
+    margin-left: 0;
+  }
+}

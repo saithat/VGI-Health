@@ -147,7 +147,7 @@ code.
 | Active urgent alerts remain perceivable at every reachable view moment | 🟢 **Proved for the additive pinned-strip renderer under explicit finite-fit/legibility/unoccluded layout evidence**, including simultaneous alerts, navigation and acknowledgment; browser geometry is sampled; all 78 ID assignments **approved by the owner on 2026-11-02** | `Specs/AlertUrgency.lean`, `Sem/UrgentStrip.lean`; [policy and sources](docs/design/alert-urgency.md) |
 | Critical results are delivered and resolved or escalated by the configured bound; UI acknowledgment never resolves them | 🟢 **Proved for the multi-actor workflow under fair minute service**; recipient authentication, durable dispatch and clinical action truth remain integration obligations | `Multi/Critical.lean`, `Specs/CriticalResults.lean`; [workflow scope](docs/design/alert-urgency.md) |
 | Minor-interaction advisory requires explicit minor severity; severe evidence/formulary hazards exclude it | 🟢 **Proved** for the successor trigger | `Proofs/InteractionSeverity.lean` |
-| WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; canonical gate fails** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
+| WCAG 2.2 AA physical policy (24×24 CSS px, 4.5:1 text, 3:1 non-text, resize/reflow) | 🔵 **Measured per exported state; enforced by default** at 768/1280/1440/1600/1920px plus reflow/resize probes; violations remain findings | `Specs/PhysicalBounds.lean`, `app/e2e/ui-check.spec.ts`; [audit](docs/design/alert-urgency-findings.md) |
 | Ordered timeline extension preserves screen meaning and is admitted in a canonical program | 🟢 **Proved** semantic preservation and checker acceptance; 🔵 **checked** DOM order, complete detail and child events | `Sem/Timeline*.lean`, `app/src/ehr/ui/Timeline.tsx`, `app/e2e/ui-check.spec.ts` |
 | Navigation is sane (D5) | 🔵 **Checked** per program (overview, not the clickable tree) | `Check/NavigationSound.lean` |
 | Known-bad UIs are rejected | 🟢 **Proved** for 3 small programs and the completion counterexample; 🔵 **checked** (native checker) for all 23 | `Check/TinyRejections.lean`, `Check/DoseCompletionObstruction.lean` |
@@ -352,6 +352,14 @@ preservation, and `Sem/TimelineProgram.lean` proves checker acceptance for a
 canonical program. DOM fidelity remains checked; physical perception needs
 exposure evidence, and general completion remains open.
 
+An [agent-authored extensions proposal](docs/design/agent-admissions.md)
+(pending owner review; not built) would let the overnight agent author new
+primitives as values of fixed, owner-reviewed admission types. The kernel
+checks their proofs; presentations go through the existing declarative sandbox,
+with interaction only from owner-reviewed widgets; a predeclared held-out
+benefit gate and owner approval precede any release. The agent could extend the
+vocabulary, not the specs, properties, checker, gates or metrics.
+
 [Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
 (78 exact IDs including inherited variants), with explicit law, accreditation,
 guidance and hospital-policy labels. It is **APPROVED by the owner on 2026-11-02**.
@@ -373,17 +381,31 @@ desktop 1280/1440/1600/1920px, with 320/640px reflow equivalents and text-only
 200% resize probes. Reports name element IDs and measured violations; complex
 paint effects require review. This is a bounded browser gate, not full WCAG
 certification. [Canonical audit findings](docs/design/alert-urgency-findings.md)
-record the unchanged painter's results: 8,418 exports (2,673 distinct trees),
-32,094 matrix cases; both template and persona batches fail. Run
+record the baseline: 8,418 exports (2,673 distinct trees), 32,094 matrix cases.
+The [original WCAG repair report](docs/audits/wcag-2026-11-02.md) records the
+pre-urgency-merge physical findings falling from 451,695/368,914
+(templates/personas) to zero. The [merged UI follow-up](docs/audits/wcag-merge-followup-2026-11-02.md)
+records the critical-result text-field repair and final full audits: all
+1,826 template and 1,296 persona trees pass with zero findings (16,434 and
+11,664 matrix cases). Both previously timed-out batches pass at three workers.
+The full merged e2e run has 240 passes, 67 skips and 39 known failures
+(32 live-auth/setup, four recorded-dashboard, three legacy urgency); all new
+merge failures are repaired. Plain `text` entries use a one-row, soft-wrapping
+textbox that grows with its value and text metrics; full values and Lean enter
+and confirmation events are preserved. Other entry kinds retain their widgets.
+
+Dense controls retain a 24px target floor, including card-navigation overrides; labels
+and line boxes grow with resized text.
+Chrome uses opaque solid fills; chart grids, points and reference interval outlines
+use contrasting strokes. Run
 `node scripts/audit-alert-policy.mjs "$TMPDIR/policy-canonical"` after building
 to reproduce the native release exports and gate; add `--personas` for the 15 role-specific candidates.
 Set `EHR_PHYSICAL_REPORT` for durable per-state measurements when using
 `app/scripts/screen-check.mjs --ui` directly. Exact duplicate trees share browser
 measurements; the audit manifest maps every export to its checked tree.
-The new policy/proof modules do not change WASM API dependencies. `make wasm`
-refreshes the all-source manifest; executable WASM assets and `appSha256` are
-unchanged. Gate/policy cache contexts change; existing run certificates are not
-rebound by this audit.
+These painter repairs change `appSha256` and invalidate recorded app bindings.
+Lean/WASM sources and executable assets are unchanged. Gate/policy cache contexts
+also change; existing run certificates are not rebound by this audit.
 
 Painter/interpreter
 changes invalidate recorded build bindings: rebuild and rebind before replay.
@@ -605,6 +627,57 @@ been rebound.
   loader URL (`interp-loader.mjs?v=<hash>`), so a browser cannot keep a
   stale interpreter from its cache.
 
+### Build and browser geometry determinism
+
+The clinical painter bundles OFL-1.1 Noto Sans (normal variable 400–800),
+Noto Sans Mono (400), and two Noto Sans Symbols 2 glyphs as local WOFF2 assets.
+No font CDN or installed-font lookup participates in those faces. The reviewed
+Latin repertoire, upstream revisions/licenses and reproducible generation are
+in [scripts/fonts](scripts/fonts/README.md). Measurements explicitly load and
+check every declared face and wait for `document.fonts.ready`; missing assets
+fail capture. New scripts or characters outside that repertoire need font
+coverage review and renewed measurements.
+
+Geometry capture uses 1440×900 CSS px, device scale factor 1, light scheme,
+reduced motion, `en-US` and `America/Los_Angeles`. Its injected stylesheet
+disables animation, transitions, smooth scrolling and the visible caret. Each
+active or modal-free collector state has its own BrowserContext/page. The
+screen/WCAG gate uses the same environment and font checks. Geometry cache
+contexts bind the certified app hash, exact font bytes, capture sources/settings,
+stylesheet, Chromium version and executable bytes. State keys bind tree bytes
+and presentation bundles; filenames/day tags are assigned after cache lookup.
+Host platform, fontconfig paths and temporary directories are not layout inputs.
+
+These changes invalidate recorded app certificates and geometry caches; rebuild
+and revalidate before reuse. Historical runs are not automatically rebound.
+The native geometry verifier also recognizes the current Lean alert-condition
+constructors (`minorInteraction`, `criticalResult`) in its wire validator.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=2
+pnpm --filter app build
+pnpm --filter app test:geometry-determinism
+node scripts/audit-alert-policy.mjs "$TMPDIR/geometry-canonicals" --personas --export-only
+node app/scripts/geometry-determinism.mjs "$TMPDIR/geometry-independence" "$TMPDIR/geometry-canonicals/exports.json"
+node --import ./agent/node_modules/tsx/dist/loader.mjs agent/src/geometry-verify.ts canonicals "$TMPDIR/geometry-verified"
+```
+
+Retain a pre-change verification directory to compute task-aligned mean/max
+and signed pixel deltas with `node app/scripts/geometry-compare.mjs <before-dir>
+<after-dir> <output.json>`; the comparison requires identical native/world hashes
+and task completion.
+
+The CI-friendly test requires a built app, Playwright Chromium, Linux fontconfig
+and Liberation Sans/Mono with different baseline generic families. The full command checks every distinct exported
+persona tree, including modal-free probes where present. It captures twice normally and once
+in a separate Chromium process with generic sans/system/mono aliases mapped to
+Liberation, verifies `fc-match` resolutions, bypasses cache reads in all passes,
+and requires identical geometry JSON and context. It writes pass JSON and a
+verification digest under the supplied scratch directory. This checks the
+selected Chromium/repertoire/states; it is not a cross-engine rendering proof.
+See the [geometry lane report](docs/audits/geometry-determinism-2026-11-02.md)
+for isolation cost, before/after task metrics, WCAG changes and exact checks.
+
 ### One screen, step by step
 
 1. **Facts.** `ehr_facts` takes a FHIR Bundle and a context (user, role,
@@ -750,6 +823,12 @@ The five-persona run (`runs/core-10day-live/`) completed all **10 of 10 days** a
 - The run stopped once after day 7, when the agent process hit Node's default heap limit. Days 8–10 were resumed from the run-start commit, with every resume fingerprint matching (app, agent, gate, world, `ehr`).
 - These are simulated clinicians with deterministic policies, not user studies (see gap G2).
 <!-- results:end -->
+
+In these runs each persona's day is simulated alone, against a fixed task list
+and frozen data, so no persona's work affects another's. The proposed
+[shared-world simulator](docs/design/shared-world-sim.md) would run every
+simulated clinician in one shared EHR state through the commit reducers. The
+design is accepted; implementation has not started.
 
 ## Run it
 
@@ -958,6 +1037,32 @@ TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dis
 ```
 
 
+### Determinism and replay
+
+The agent fails closed when replayed system/user prompts diverge. Explicit
+`--replay-allow-drift` records the policy and affected calls in the manifest.
+Native, screen/geometry and LLM transport failures retry identical inputs
+(`EHR_INFRA_RETRIES=2` by default), then stop with `infrastructure-error` for
+resume; failed transport cannot become a nightly decision. Existing historical
+error outcomes remain readable. Daily and completed-run content digests exclude
+declared provenance metadata while retaining clinical trace times and order.
+Resume reloads persisted geometry coverage before accumulating new states.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+pnpm --filter agent verify-determinism
+pnpm --filter agent verify-crash-resume --points 8 --seed 20261102
+```
+
+These commands exercise two days × two personas with the real prebuilt native
+binary, scripted zero-model responses and fixed synthetic geometry. They compare
+serial/serial/parallel execution and seeded SIGKILL/resume results, reporting the
+first differing file and JSON path. Artifacts stay in disk-backed scratch.
+The crash hook refuses live model backends. This checks the fixture's
+orchestration and publication boundaries; browser geometry and fonts are handled
+by a separate lane. The [boundary inventory and scope](agent/DETERMINISM.md)
+describe metadata exclusions, recording IDs, retry audits and remaining coverage.
+
 ## Development checks
 
 Set `TMPDIR` to disk-backed scratch space and run only one Lake build/check
@@ -1020,12 +1125,18 @@ verification.
 at desktop and narrow widths, for visibility, legibility, occlusion and component
 fidelity, and (when urgent alert IDs are configured) continuous perceivability of
 urgent alerts. The WCAG 2.2 AA physical-policy matrix (target size, contrast,
-reflow at the viewports above) is **opt-in and report-only** while the canonical
-UI still has findings: `EHR_PHYSICAL_POLICY=1` runs it and reports findings;
-`EHR_ENFORCE_PHYSICAL=1` additionally fails the gate on any finding. Enforcement
-becomes the default once the canonical UI passes. The worker count is capped at
-six; large export lists use file manifests and sequential 64-tree batches. The
-agent enumerates the candidate states before calling this gate.
+reflow at the viewports above) **runs and fails on findings by default**.
+`EHR_ENFORCE_PHYSICAL=0` explicitly selects diagnostic report-only measurements;
+`EHR_PHYSICAL_POLICY=0` explicitly disables the matrix. Both settings enter the
+whole-tree cache context, so a bypass receipt cannot satisfy the default gate.
+Physical sample caches bind the app, assertions, policy, browser and configuration;
+they persist under `$TMPDIR/ehr-physical-samples` (override with
+`EHR_PHYSICAL_SAMPLE_CACHE`). Failed measurements never mint passing whole-tree
+receipts. The worker count is capped at six; large export lists use file manifests
+and sequential 64-tree batches. Independent regression controls run once per
+invocation; every tree gets both fidelity projects and the full physical matrix.
+JSON reports include total and per-batch elapsed milliseconds. The agent enumerates
+the candidate states before calling this gate.
 `docs/audits/` retains the control-regression and performance-report inputs consumed
 by these commands; dated one-off audits are under `docs/hackathon/`.
 

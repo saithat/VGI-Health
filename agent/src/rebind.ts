@@ -1,3 +1,7 @@
+import { InfrastructureError } from './errors.js';
+import { retryEhr,retryScreens } from './retry-boundaries.js';
+import { retryInfrastructure,infrastructurePersona } from './infrastructure.js';
+import { auditedOperation } from './operation-manifest.js';
 import { assertCertified } from './certification.js';
 import { z } from 'zod';
 /** No model, no program edits. Revalidate every published version against its frozen inputs. */
@@ -15,11 +19,11 @@ import { programSchema, certificateSchema, screenCheckResultSchema } from './sch
 import { sha256, stableStringify } from './program.js';
 import { REPO_ROOT, writeJsonAtomic, readJson } from './util.js';
 
-export async function rebindRun(dir: string, options: {ehr?: EhrClient; screens?: ScreenChecker; build?: Awaited<ReturnType<typeof installedBuild>>} = {}) {
+async function rebindRunImpl(dir: string, options: {ehr?: EhrClient; screens?: ScreenChecker; build?: Awaited<ReturnType<typeof installedBuild>>} = {}) {
   const underlying = options.ehr ?? createEhr({fake:false});
-  const ehr = recordingEhr(underlying,path.join(dir,'rebind/ehr'));
-  const screens = options.screens ?? createScreenChecker(ehr,{artifactsDir:path.join(dir,'rebind/screens')});
-  const build = options.build ?? await installedBuild(undefined,ehr.binary ?? undefined);
+  const ehr = retryEhr(recordingEhr(underlying,path.join(dir,'rebind/ehr')));
+  const screens = retryScreens(options.screens ?? createScreenChecker(ehr,{artifactsDir:path.join(dir,'rebind/screens')}));
+  const build = options.build ?? await retryInfrastructure('rebind:build',()=>installedBuild(undefined,ehr.binary ?? undefined),true);
   await mkdir(path.join(dir,'rebind'),{recursive:true});
   const lock = path.join(dir,'rebind/lock');
   if (existsSync(lock)) {
@@ -73,9 +77,9 @@ export async function rebindRun(dir: string, options: {ehr?: EhrClient; screens?
         if (target.certificateSha256 !== original.certificateSha256 || target.componentsSha256 !== original.componentsSha256) throw new Error('Certificate/component artifacts changed since original binding');
         // A completed receipt for these exact inputs and this build is a resumable checkpoint.
         if (alreadyRebound && old && stableStringify(old) === stableStringify(target)) {results.push({persona,version,status:'cached'});continue;}
-        check = await ehr.check({specVersion:specFile,program,prev:inputs.prev,canonical:inputs.canonical});
+        check = await infrastructurePersona(persona,()=>ehr.check({specVersion:specFile,program,prev:inputs.prev,canonical:inputs.canonical}));
         if (check !== 'ok') throw new Error(`CURRENT CHECKER REFUSED: ${JSON.stringify(check)}`);
-        screen = await screens.check({specVersion:specFile,program});
+        screen = await infrastructurePersona(persona,()=>screens.check({specVersion:specFile,program}));
         if (screenCheckResultSchema.parse(screen).status !== 'pass') throw new Error(`CURRENT SCREEN GATE REFUSED: ${JSON.stringify(screen)}`);
         const files = await readdir(path.dirname(prefix));
         const generations = files.flatMap((f) => {const m=new RegExp(`^v${version}\\.build\\.(\\d+)\\.json$`).exec(f);return m?[Number(m[1])]:[];});
@@ -88,6 +92,7 @@ export async function rebindRun(dir: string, options: {ehr?: EhrClient; screens?
         await writeJsonAtomic(currentFile,{status:'bound',current:path.basename(file),timestamp});
         results.push({persona,version,status:'bound'});
       } catch (error) {
+        if(error instanceof InfrastructureError)throw error;
         const reason=error instanceof Error?error.message:String(error);
         if (old && !existsSync(`${prefix}.build.0.json`)) await writeJsonAtomic(`${prefix}.build.0.json`,old);
         const entry = {persona,version,status:'rejected',timestamp,reason,old,new:build,check,screen};
@@ -100,6 +105,9 @@ export async function rebindRun(dir: string, options: {ehr?: EhrClient; screens?
   } finally {await handle.close();await rm(lock,{force:true});}
   await writeJsonAtomic(path.join(dir,'rebind/result.json'),{timestamp:new Date().toISOString(),build,results});
   return results;
+}
+export async function rebindRun(dir:string,options:Parameters<typeof rebindRunImpl>[1]={}){
+ return auditedOperation(path.join(dir,'rebind'),{name:'scripted',model:'no-model-rebind',complete:async()=>{throw new Error('Rebind never calls a model');}},null,null,()=>rebindRunImpl(dir,options));
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const {values}=parseArgs({options:{run:{type:'string'}}});

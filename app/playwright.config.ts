@@ -1,3 +1,4 @@
+import { captureSettings } from "./e2e/capture-environment";
 import { defineConfig } from "@playwright/test";
 const port = Number(process.env.APP_TEST_PORT ?? 4179);
 // Recorded certificates require the built renderer. Explicit 1 reuses an
@@ -13,6 +14,7 @@ export default defineConfig({
   workers: 1,
   reporter: "list",
   use: {
+    ...captureSettings,
     baseURL: `http://127.0.0.1:${port}`,
     screenshot: "only-on-failure",
     headless: true,

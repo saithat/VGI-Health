@@ -38,7 +38,7 @@ Do not encode drug class by arbitrary color. Use generic names, with standardize
 
 ## Typography and clinical notation
 
-System sans-serif stack: `system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`. Avoid a downloaded branding font; the offline demo must render consistently. Default weight 400, labels/section headers 600, clinical emphasis 600–700. Do not make every table cell semibold.
+Clinical typography uses locally bundled OFL-1.1 Noto Sans, with Noto Sans Mono for hotkeys/code and a two-glyph Noto Sans Symbols 2 fallback. No CDN or installed font precedes those faces. The normal sans range is 400–800, retaining intermediate 650/750 weights; mono is regular 400. Default weight is 400, labels/section headers 600, clinical emphasis 600–700. Do not make every table cell semibold. Geometry capture explicitly loads/checks each face and awaits `document.fonts.ready`. The reviewed repertoire and pinned generation inputs are in [scripts/fonts](../../scripts/fonts/README.md).
 
 | Element | Size / line-height | Use |
 | --- | --- | --- |

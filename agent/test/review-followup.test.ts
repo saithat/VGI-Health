@@ -29,13 +29,13 @@ it.each(['screen-check','native-deploy','publication'])('records %s infrastructu
  const original=RunStore.prototype.deploy;
  const spy=stage==='publication'?vi.spyOn(RunStore.prototype,'deploy').mockImplementation(async function(this:RunStore,...args:Parameters<RunStore['deploy']>){if(args[1].version>0)throw new Error('FAKE store I/O');return original.apply(this,args);}):null;
  try{
- const run=await runDays({days:2,personas:['P1'],worldDir:await fakeWorld(2),runsRoot:await tmp('infra'),llm:new ScriptedLlm(),ehr,screens,releaseDays:{v2:99,v3:99}});
- const record=await new RunStore(run.dir).readDecision(1,'P1');
- expect(record.outcome).toBe(stage==='screen-check'?'error':'infrastructure-error');
- expect(record.screenCheck?.status).toBe(stage==='screen-check'?'error':'pass');
- expect(record.flags.some(f=>f.includes(`[${stage}]`))).toBe(true);
- expect(run.rejections.every(r=>r.property!=='ScreenCheck')).toBe(true);
- expect(JSON.parse(await readFile(path.join(run.dir,'manifest.json'),'utf8')).status).toBe('infrastructure-error');
+ const runsRoot=await tmp('infra');
+ await expect(runDays({days:2,runId:'failure',personas:['P1'],worldDir:await fakeWorld(2),runsRoot,llm:new ScriptedLlm(),ehr,screens,releaseDays:{v2:99,v3:99}})).rejects.toThrow('failed after 3 attempts');
+ const dir=path.join(runsRoot,'failure');
+ await expect(readFile(new RunStore(dir).decisionPath(1,'P1'),'utf8')).rejects.toThrow('ENOENT');
+ const manifest=JSON.parse(await readFile(path.join(dir,'manifest.json'),'utf8'));
+ expect(manifest.status).toBe('infrastructure-error');
+ expect(manifest.infrastructureRetries.at(-1)).toMatchObject({persona:'P1',night:1,attempts:3});
  }finally{spy?.mockRestore();}
 });
 });
@@ -43,7 +43,7 @@ it.each(['screen-check','native-deploy','publication'])('records %s infrastructu
 it('initial deployment infrastructure failure has a manifest status',async()=>{
  const ehr=createFakeEhr();ehr.deploy=async()=>{throw new Error('FAKE initial native I/O');};
  const runsRoot=await tmp('initial-infra');
- await expect(runDays({days:1,runId:'initial',personas:['P1'],worldDir:await fakeWorld(1),runsRoot,llm:new ScriptedLlm(),ehr})).rejects.toThrow('day-1');
+ await expect(runDays({days:1,runId:'initial',personas:['P1'],worldDir:await fakeWorld(1),runsRoot,llm:new ScriptedLlm(),ehr})).rejects.toThrow('failed after 3 attempts');
  expect(JSON.parse(await readFile(path.join(runsRoot,'initial/manifest.json'),'utf8')).status).toBe('infrastructure-error');
 });
 withData("runs/run1-P3/decisions").it('a no-change designer has zero agent saving through both releases despite canonical drift, and staging is cleaned',async()=>{

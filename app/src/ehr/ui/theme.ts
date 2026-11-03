@@ -1,3 +1,4 @@
+import "./fonts/fonts.css";
 import { createTheme, defaultVariantColorsResolver } from "@mantine/core";
 
 /** Original VGI tokens from docs/design/visual-style.md. */
@@ -61,9 +62,11 @@ export const clinicalTheme = createTheme({
   black: clinicalTokens.ink,
   white: clinicalTokens.surface,
   fontFamily:
-    'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    '"VGI Noto Sans", "VGI Noto Symbols", sans-serif',
+  fontFamilyMonospace: '"VGI Noto Sans Mono", "VGI Noto Symbols", monospace',
   fontSizes: { xs: "12px", sm: "12px", md: "12px", lg: "13px", xl: "16px" },
-  lineHeights: { xs: "16px", sm: "16px", md: "16px", lg: "18px", xl: "22px" },
+  // Unitless line boxes follow text-only resizing as well as ordinary zoom.
+  lineHeights: { xs: "1.333333", sm: "1.333333", md: "1.333333", lg: "1.384615", xl: "1.375" },
   spacing: { xs: "4px", sm: "8px", md: "12px", lg: "16px", xl: "24px" },
   radius: { xs: "3px", sm: "4px", md: "4px", lg: "4px", xl: "4px" },
   defaultRadius: "sm",

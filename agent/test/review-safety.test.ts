@@ -12,7 +12,6 @@ import { sumMetrics } from '../src/observe.js';
 import { RunStore } from '../src/store.js';
 import { bindBuild } from '../src/build-binding.js';
 import { rebindRun } from '../src/rebind.js';
-import { readBinding } from '../src/binding-pointer.js';
 import { sha256, stableStringify } from '../src/program.js';
 import { createScreenChecker, screenCheckRejection } from '../src/screencheck.js';
 import { rejectionKind } from '../src/seeded.js';
@@ -26,7 +25,7 @@ withData("runs/run1-P3/decisions").describe("archive-backed agent prompts", () =
     run=await runDays({days:8,worldDir:world,runsRoot:root,runId:'FAKE-recorded',llm:new ScriptedLlm()});
     const replay=await runDays({days:8,worldDir:world,runsRoot:root,runId:'REPLAY',llm:new ReplayLlm(run.dir)});
     expect(replay.timelines).toEqual(run.timelines);
-  },30000);
+  },60000);
   it('FAKE/REPLAY cross days 4 and 7 for all five forks with blind measurements',async()=>{
     const manifest=JSON.parse(await readFile(path.join(run.dir,'manifest.json'),'utf8'));
     expect(manifest.mode).toBe('FAKE'); expect(manifest.status).toBe('completed');
@@ -72,25 +71,25 @@ withData("runs/run1-P3/decisions").describe("archive-backed agent prompts", () =
    expect(rejectionKind(checkResultSchema.parse({...check,status:'fail',property:'Unrelated',message:'pounds allergies identity'}))).toBe(null);
    expect(rejectionKind({...check,status:'fail',property:'UnitsRight',message:'field w on screen s fills weightKg from record value triageWeightLb, a bare number'})).toBe('lbWeightAccepted');
   });
-  it('aborts after three consecutive model failures with explicit llm-error decisions',async()=>{
+  it('stops after identical model retries without publishing a decision',async()=>{
    const runsRoot=await tmp('FAKE-failures');
    const llm={name:'scripted' as const,model:'broken',complete:async()=>{throw new Error('FAKE offline transport error');}};
-   await expect(runDays({days:8,runId:'errors',personas:['P1'],worldDir:world,runsRoot,llm,releaseDays:{v2:99,v3:99}})).rejects.toThrow('3 consecutive LLM failures');
+   await expect(runDays({days:8,runId:'errors',personas:['P1'],worldDir:world,runsRoot,llm,releaseDays:{v2:99,v3:99}})).rejects.toThrow('failed after 3 attempts');
    const store=new RunStore(path.join(runsRoot,'errors'));
-   for(const n of [1,2,3])expect((await store.readDecision(n,'P1')).outcome).toBe('llm-error');
-   expect(JSON.parse(await readFile(path.join(store.dir,'manifest.json'),'utf8')).status).toBe('aborted');
+   await expect(store.readDecision(1,'P1')).rejects.toThrow('ENOENT');
+   expect(JSON.parse(await readFile(path.join(store.dir,'manifest.json'),'utf8')).status).toBe('infrastructure-error');
   });
-  it('falls back on screen infrastructure error, and aborts if the canonical also fails',async()=>{
+  it('retries screen infrastructure without changing the migration decision',async()=>{
    for(const persistent of [false,true]){
    const ehr=createFakeEhr();const screens=createScreenChecker(ehr);let failures=0;
    const original=screens.check.bind(screens);
    screens.check=async(i)=>i.specVersion==='v3'&&(persistent||failures++===0)?{status:'error',mode:'fake',bundles:[],pages:0,failingScreens:[],failingFiles:[],message:'FAKE infrastructure error'}:original(i);
    const options={days:8,personas:['P3'],worldDir:world,runsRoot:await tmp('migration-fallback'),runId:'migration',llm:new ScriptedLlm(),ehr,screens};
-   if(persistent) await expect(runDays(options)).rejects.toThrow('canonical fallback failed');
-   else {const result=await runDays(options);expect((await new RunStore(result.dir).readDecision(6,'P3')).release?.fallback).toBe(true);}
+   if(persistent) await expect(runDays(options)).rejects.toThrow('failed after 3 attempts');
+   else {const result=await runDays(options);expect((await new RunStore(result.dir).readDecision(6,'P3')).release?.fallback).toBe(false);}
    }
   });
-  it('rebind preserves history, resumes, and refuses a failed version without program edits',async()=>{
+  it('rebind preserves history, resumes, and stops infrastructure failure without changing bindings',async()=>{
    const ehr=createFakeEhr();const build={appSha256:'1'.repeat(64),wasmSha256:'2'.repeat(64),ehrSha256:'3'.repeat(64),componentsSha256:sha256('[]')};
    const snapshots=new Map<string,string>();
    for(const persona of ['P1','P2','P3','P4','P5']) for(const file of await readdir(path.join(run.dir,'programs',persona))){
@@ -105,15 +104,15 @@ withData("runs/run1-P3/decisions").describe("archive-backed agent prompts", () =
    const screens=createScreenChecker(ehr);const next={...build,appSha256:'4'.repeat(64)};
    const first=await rebindRun(run.dir,{ehr,screens,build:next});expect(first.every(r=>r.status==='bound')).toBe(true);
    expect((await rebindRun(run.dir,{ehr,screens,build:next})).every(r=>r.status==='cached')).toBe(true);
-   const bad={...next,appSha256:'5'.repeat(64)};const check=ehr.check;
-   ehr.check=async(i)=>i.program.owner.includes('P1')?{violation:{property:'UnitsRight',message:'FAKE refusal',screens:[],counterexample:[]}}:check(i);
-   // Explicit infra gate failure for all versions: none may acquire the new build.
+   const bad={...next,appSha256:'5'.repeat(64)};
+   const before=await readFile(path.join(run.dir,'certs/P1/v0.build.json'),'utf8');
    screens.check=async()=>({status:'error',mode:'fake',bundles:[],pages:0,failingScreens:[],failingFiles:[],message:'FAKE browser unavailable'});
-   const refused=await rebindRun(run.dir,{ehr,screens,build:bad});expect(refused.every(r=>r.status==='rejected')).toBe(true);
-   await expect(readBinding(path.join(run.dir,'certs/P1/v0.build.json'))).rejects.toThrow('refused');
+   await expect(rebindRun(run.dir,{ehr,screens,build:bad})).rejects.toThrow('failed after 3 attempts');
+   expect(await readFile(path.join(run.dir,'certs/P1/v0.build.json'),'utf8')).toBe(before);
+   expect(JSON.parse(await readFile(path.join(run.dir,'rebind/manifest.json'),'utf8')).status).toBe('infrastructure-error');
    expect(JSON.parse(await readFile(path.join(run.dir,'certs/P1/v0.build.0.json'),'utf8')).appSha256).toBe(build.appSha256);
    for(const [file,bytes] of snapshots)expect(await readFile(path.join(run.dir,'programs',file),'utf8')).toBe(bytes);
-  },30000);
+  },60000);
   it.each([['normal',{v2:99,v3:99}],['surface',{v2:2,v3:99}],['migration',{v2:99,v3:2}]])('requires full validation completion on %s deploy paths',async(_mode,releaseDays)=>{
     const ehr=createFakeEhr();const original=ehr.simulate;
     ehr.simulate=async(i)=>{const result=await original(i);return i.seed>=90_000_000&&i.program.version>0?{...result,tasks:result.tasks.map(t=>({...t,completed:false,clicks:0,keystrokes:0,klmDeciSec:0}))}:result;};

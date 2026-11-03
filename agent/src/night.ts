@@ -1,4 +1,7 @@
-import {InfrastructureError,ScreenInfrastructureError} from './errors.js';
+import { retryInfrastructure } from './infrastructure.js';
+import { retryScreens } from './retry-boundaries.js';
+import { ReplayDivergedError, ReplayMissingError } from './backends/replay.js';
+import {InfrastructureError} from './errors.js';
 import { calibrationPartition, validationSeed } from './protocol.js';
 import { expandProgram } from './composites.js';
 import { compilePresentations } from './presentation-compiler.js';
@@ -102,6 +105,7 @@ export async function checkPatch(ehr: EhrClient, base: Program, patch: readonly 
     expandProgram(program);
     compilePresentations(program);
   } catch (e) {
+    if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
     return { program: null, check: invalidPatch(e) };
   }
   const verdict = await ehr.check({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical });
@@ -292,27 +296,29 @@ export async function deployVersion(deps: LoopDeps, persona: string, program: Pr
   try {
   if (gate.night !== undefined && !completionOk(gate.validation ?? null)) throw new Error('Full validation completion required before deploy');
   stage='build';
-  const build = deps.ehr.mode === 'real' ? await installedBuild(undefined, deps.ehr.binary ?? undefined) : undefined;
+  const build = deps.ehr.mode === 'real' ? await retryInfrastructure('deploy:build',()=>installedBuild(undefined, deps.ehr.binary ?? undefined),true) : undefined;
   stage='screen-check';
-  screenCheck = await deps.screens.check({ specVersion: gate.specVersion, program });
+  screenCheck = await retryScreens(deps.screens).check({ specVersion: gate.specVersion, program });
+  if (screenCheck.status === 'error') throw new InfrastructureError(screenCheck.message);
   if (screenCheck.status !== 'pass') return { ok: false, reason: 'screen-check', check: screenCheckRejection(screenCheck), screenCheck };
   stage='native-deploy';
   const res = await deps.ehr.deploy({ specVersion: gate.specVersion, program, prev: gate.prev, canonical: gate.canonical, outDir: path.join(deps.store.dir, 'native', persona, `v${program.version}`) });
   if (!res.deployed) return { ok: false, reason: 'deploy-refused', check: toCheckResult(res.verdict), screenCheck };
   stage='snapshot';
+  const {spec,inputs}=await retryInfrastructure('deploy:snapshot',async()=>{
   const specFile = gate.specVersion.endsWith('.json') ? gate.specVersion : path.join((await import('./util.js')).REPO_ROOT, 'releases', gate.specVersion, 'spec.json');
   const spec = deps.ehr.mode === 'real' ? JSON.parse(await (await import('node:fs/promises')).readFile(specFile, 'utf8')) : await deps.ehr.specExport(gate.specVersion);
   const inputsDir = path.join(deps.store.dir, 'certifications', persona, `v${program.version}`);
   await (await import('./util.js')).writeJson(path.join(inputsDir, 'spec.json'), spec);
   const inputs = { specVersion: res.certificate.specVersion, prev: expandProgram(gate.prev), canonical: expandProgram(gate.canonical), program, night: gate.night ?? null };
   await (await import('./util.js')).writeJson(path.join(inputsDir, 'inputs.json'), inputs);
+  return {spec,inputs};
+  },true);
   stage='publication';
-  const deployed = await deps.store.deploy(persona, program, res.certificate, build ? { ...bindBuild(build, program, res.certificate), certificationInputsSha256: (await import('./program.js')).sha256((await import('./program.js')).stableStringify({spec,inputs})) } : undefined, gate.night);
+  const deployed = await retryInfrastructure('deploy:publication',async()=>deps.store.deploy(persona, program, res.certificate, build ? { ...bindBuild(build, program, res.certificate), certificationInputsSha256: (await import('./program.js')).sha256((await import('./program.js')).stableStringify({spec,inputs})) } : undefined, gate.night),true);
   return { ok: true, certificate: res.certificate, deployed, screenCheck };
   } catch (error) {
-    const message=`infrastructure-error [${stage}]: ${errorMessage(error)}`;
-    if(stage==='screen-check')screenCheck={status:'error',mode:deps.screens.mode,bundles:[],pages:0,failingScreens:[],failingFiles:[],message};
-    return {ok:false,reason:'infrastructure-error',stage,check:{status:'error',property:'DeploymentInfrastructure',message,counterexample:null,screens:null,verdict:null},screenCheck};
+    throw error instanceof InfrastructureError ? error : new InfrastructureError(`Deployment ${stage}: ${errorMessage(error)}`);
   }
 }
 
@@ -365,7 +371,6 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     return { record: rec, deployed };
   };
 
-  try {
   // 2-3. Hypothesize and generate.
   let proposal: Proposal;
   try {
@@ -374,6 +379,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
       parts: nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }),
     });
   } catch (e) {
+    if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
     rec.hypothesis = '(no hypothesis: the LLM call failed)';
     rec.flags.push(`llm-error: ${errorMessage(e)}`);
     rec.outcome = 'llm-error';
@@ -436,6 +442,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
       rec.chosen = { candidateIds: chosen.map((c) => c.id), rationale: choice.rationale + note, rejectedAlternatives: choice.rejected, choiceBy: 'llm' };
     }
   } catch (e) {
+    if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
     rec.flags.push(`llm-error (choose): ${errorMessage(e)}`);
     rec.outcome = 'llm-error';
     return finish(null);
@@ -469,6 +476,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
         parts: repairPrompt({ night, persona, spec: release.spec, program: current, attempt: r, maxAttempts: MAX_REPAIRS, failedSummaries: failed.ids, failedPatch: failed.patch, check: failed.check }),
       });
     } catch (e) {
+    if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
       rec.flags.push(`llm-error (repair ${r}): ${errorMessage(e)}`);
       rec.outcome = 'llm-error';
       return finish(null);
@@ -538,11 +546,4 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   rec.versionAfter = finalProgram.version;
   rec.outcome = 'deployed';
   return finish(finalProgram);
-  } catch(error) {
-    if(error instanceof InfrastructureError){
-      rec.outcome=error instanceof ScreenInfrastructureError?'error':'infrastructure-error';
-      rec.flags.push(errorMessage(error));await finish(null);
-    }
-    throw error;
-  }
 }

@@ -27,8 +27,8 @@ withData("runs/run1-P3/decisions").describe("archive-backed agent prompts", () =
    await expect(runDays({...opts,llm:new ScriptedLlm(),runId:'FAKE-parallel',resume:true,parallel:false})).rejects.toThrow('parallel mode');
   });
   it('joins other workers before recording failure and resumes only the unfinished persona',async()=>{
-   const worldDir=await fakeWorld(3),runsRoot=await tmp('parallel-error'),ehr=markingEhr(),simulate=ehr.simulate.bind(ehr);let failed=false;
-   ehr.simulate=async i=>{if(i.persona.id==='P4'&&i.schedule.day===2&&!failed){failed=true;throw new InfrastructureError('FAKE native timeout');}return simulate(i);};
+   const worldDir=await fakeWorld(3),runsRoot=await tmp('parallel-error'),ehr=markingEhr(),simulate=ehr.simulate.bind(ehr);let failed=0;
+   ehr.simulate=async i=>{if(i.persona.id==='P4'&&i.schedule.day===2&&failed<3){failed++;throw new InfrastructureError('FAKE native timeout');}return simulate(i);};
    const opts={days:3,worldDir,runsRoot,parallel:true,ehr,runId:'FAKE-resume'};
    await expect(runDays({...opts,llm:new ScriptedLlm()})).rejects.toThrow('FAKE native timeout');
    const file=path.join(runsRoot,'FAKE-resume/days/day-02/P5.json'),before=await readFile(file,'utf8');
