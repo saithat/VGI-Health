@@ -419,6 +419,17 @@ persisted in a separate namespace per frozen decision; the digest is constructed
 before any sample validation, from training captures only. Regression hashes cover all 105 default propose/choose/repair prompts on the 35 frozen
 contexts. No live model call is needed for these checks.
 
+Replay verification covered all **35 nightly decisions**, with 120 historical
+nonseeded candidates (119 measured) and no click, keystroke, task, completion or
+checker-status drift. The two-decision A/B smoke produced four completed records:
+both arms accepted 50% and saved 8 validation clicks and 7 scrolls. This verifies
+plumbing; live proposal quality remains unmeasured. The agent suite passes 132
+tests, with two archive-dependent skips. The [verification and timing report](docs/design/proposal-quality.md)
+explains geometry deltas, records the audit waiver, and gives the orchestrator's
+A/B command and measured evaluator-time budget. Generated reports remain ignored
+under `runs/quality-sanity-frozen-spec-20261103/` and
+`runs/quality-smoke-20261103/`.
+
 [Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
 (78 exact IDs including inherited variants), with explicit law, accreditation,
 guidance and hospital-policy labels. It is **APPROVED by the owner on 2026-11-02**.
