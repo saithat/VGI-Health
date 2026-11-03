@@ -362,6 +362,15 @@ with interaction only from owner-reviewed widgets; a predeclared held-out
 benefit gate and owner approval precede any release. The agent could extend the
 vocabulary, not the specs, properties, checker, gates or metrics.
 
+A [proposal-quality diagnosis](docs/design/proposal-quality.md) (experiment not
+built) explains why 17 of 35 nightly decisions in `core-10day-live` changed
+nothing. Compact density is a no-op in the measured UI, so all 36
+density-only candidates measured zero. The agent also sees neither its earlier
+measured ideas nor per-screen costs, and small picks don't survive validation.
+It proposes an offline three-arm comparison on the run's frozen night inputs:
+today's prompt, a train-only ledger plus locality digest, and the same plus
+read-only query tools.
+
 [Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
 (78 exact IDs including inherited variants), with explicit law, accreditation,
 guidance and hospital-policy labels. It is **APPROVED by the owner on 2026-11-02**.
