@@ -1,16 +1,44 @@
 # VGI Health
 
-An electronic health record (EHR) whose screens adapt to each clinician. An AI
-agent proposes changes to one clinician's screens from how they actually work;
-a checker written in Lean rejects any change that would break the hospital's
-rules, and Lean proofs say what an accepted change guarantees. The same Lean
-interpreter runs every click, natively and in the browser as WebAssembly.
+A research system for clinical software that can safely change itself. It has
+three parts:
+
+1. **A realistic EHR simulator.** A hospital and clinic electronic health
+   record (EHR) built on the conventions of the dominant commercial systems,
+   Epic and Oracle Health (Cerner). It includes a patient banner and
+   storyboard, in-basket, chart review, ED track board, MAR and flowsheets,
+   order entry with preference lists, interruptive and passive alerts, and
+   vendor releases that change the rules. It runs on synthetic FHIR patients.
+   Simulated clinicians work through generated clinical days in it, so any
+   change to the screens can be measured in clicks, scrolls and mouse travel.
+2. **Lean proofs of what a clinician-facing interface must preserve.** The
+   hospital's rules (law, regulators and hospital policy) are written in Lean,
+   and a Lean interpreter runs every click. The theorems hold for every screen
+   layout. Nothing is signed without its required entries, reviews and alert
+   acknowledgments. The patient banner, required information and interruptive
+   alerts stay on screen. Macros never act for a human.
+3. **A way for an AI model to change the interface and stay within those
+   proofs.** The model edits only the screens, never the rules. A Lean checker
+   accepts or rejects each proposed layout and gives a counterexample when it
+   rejects one. Only accepted layouts deploy, and the guarantees of part 2
+   carry over to them.
+
+Part 2 is what makes part 3 possible. Clinical software is normally locked
+down because every change must be re-validated. Here the guarantees are proved
+once for every accepted layout, so the screens can be reshaped for each
+clinician without re-validating each version by hand. [What is
+proved](#what-is-proved) lists what is covered and what is not. [Open
+problems](#open-problems) describes the weakest parts: how users are simulated
+and how the agent makes its changes.
+
+The same Lean interpreter runs natively and in the browser as WebAssembly. The
+project is not affiliated with Epic or Oracle.
 
 | Primary care order entry | ED track board | Inpatient MAR |
 |---|---|---|
 | ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-track-board.png) | ![MAR](app/shots/final/P3-MAR.png) |
 
-## The idea
+## How the parts fit
 
 Two things are kept apart:
 
@@ -176,7 +204,30 @@ product.
 | **Regulatory updates** | Vendor releases v1 → v2 → v3 that add rules, migrated per clinician and re-certified. | Real vendor upgrade tooling. |
 | **Data and storage** | FHIR R4 on Medplum: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Postgres event streams with version checks and live updates for MAR and ADT. | HL7v2 interfaces, master patient index, production audit logging, high availability. |
 | **Identity** | Keycloak single sign-on (PKCE) for MAR and bed management; development password login elsewhere. | Production identity, break-the-glass access. |
-| **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. | Real clinicians; no user study. |
+| **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. They plan the shortest path through the current screens. | Real clinicians; no user study. Visual search, learning, forgetting and relearning after a change (see [Open problems](#open-problems)). |
+
+## Open problems
+
+How users are simulated and how the agent changes the interface are the two
+weakest parts.
+
+- **Simulated clinicians already know the interface.** A simulated clinician
+  takes its goals from the rulebook. It then plans the shortest path to them
+  through the whole current layout, by breadth-first search over real
+  interpreter steps (`lean/Ehr/Sim/Interaction.lean`). Seeded noise adds
+  detours, backtracking, search, keyboard use and interruptions. Even so, the
+  clinician never has to hunt for a control, never reaches for where a control
+  used to be, and never makes the slips the rules exist to catch. A
+  rearranged layout therefore costs nothing on its first day. Learning,
+  relearning and discoverability are not measured. The stability budget (at
+  most N components moved per version, checked in Lean) stands in for them.
+- **The agent changes the interface on its own, in small greedy steps.** Each
+  night it reads one clinician's traces and proposes 3–5 patches. It deploys
+  the best passing patch, or a few that touch different components. It does
+  not explore the wider design space: the quality-diversity search in
+  `explore/` runs offline and never deploys. The clinician takes no part. They
+  cannot ask for a change, try alternatives or turn one down, and a change
+  arrives whenever the agent finds one.
 
 ## Data sources
 
