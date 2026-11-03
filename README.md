@@ -373,11 +373,13 @@ nightly behavior is unchanged. Density (phase 0), query tools/arm C (phase 3)
 and the live experiment (phase 4) remain deferred.
 
 The evaluator freezes `versionBefore`, historical training program versions,
-recorded training-day selections, original world/fixtures and earlier historical
-decisions. World and fixture hashes must match the source run. Inputs are copied
+recorded training-day selections, original world/fixtures, archived spec/canonical
+certification inputs and earlier historical decisions. World and fixture hashes must match the source run. Inputs are copied
 under the new output directory; arms and samples share frozen inputs and never
 feed their own outputs into history. Evidence, estimates, checks, repair,
 certification and validation use the existing loop and current evaluator.
+Logical release ids stay unchanged; native calls resolve to the archived spec
+files. This avoids silently imposing newer hospital rules on historical programs.
 It stops after validation, with no user offer, screen gate or deployment.
 Geometry uses the existing pinned Chromium collector and an exact-content cache
 under `$TMPDIR/vgi-proposal-quality-geometry-cache`; it does not mint screen-gate

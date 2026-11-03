@@ -10,7 +10,7 @@ import { createBackend } from './backends/index.js';
 import { RecordingLlm, llmRecordSchema, llmRecordPath } from './backends/recording.js';
 import type { JsonLlm, JsonResponse } from './backends/types.js';
 import { browserGeometry } from './browser-geometry.js';
-import { createEhr } from './ehr.js';
+import { createEhr, type EhrClient } from './ehr.js';
 import { fileHash, treeHash } from './fingerprints.js';
 import { geometryComponentsHash, geometryEhr, geometryProgramHash, loadGeometry } from './geometry.js';
 import { localityDigest } from './locality.js';
@@ -24,7 +24,7 @@ import { recordingEhr } from './recording-ehr.js';
 import { loadRelease, releaseForPersona } from './releases.js';
 import { retryEhr } from './retry-boundaries.js';
 import { historyItem } from './run.js';
-import { dayResultSchema, decisionRecordSchema, type DecisionRecord, type Program } from './schema.js';
+import { dayResultSchema, decisionRecordSchema, programSchema, specSchema, type DecisionRecord, type Program } from './schema.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, pad2, readJson, writeJson } from './util.js';
 import { loadWorld, type World } from './world.js';
@@ -45,6 +45,29 @@ export function selectDecisions(records:readonly DecisionRecord[],selection?:rea
   return nightly.filter(r=>ids.has(decisionId(r)));
 }
 
+/** Keep the logical release id in programs/prompts; only native file resolution changes. */
+export function archivedSpecEhr(inner:EhrClient,specs:ReadonlyMap<string,string>):EhrClient {
+  const location=(version:string)=>{const file=specs.get(version);if(!file)throw new Error(`No frozen spec for ${version}`);return file;};
+  return {...inner,
+    check:i=>inner.check({...i,specVersion:location(i.specVersion)}),
+    simulate:i=>inner.simulate({...i,specVersion:location(i.specVersion)}),
+    renderScreens:i=>inner.renderScreens({...i,specVersion:location(i.specVersion)}),
+    minClicks:i=>inner.minClicks({...i,specVersion:location(i.specVersion)}),
+    specExport:version=>readJson(location(version),specSchema),
+    async deploy(){throw new Error('Offline deployment prohibited');},
+  };
+}
+async function frozenSpecs(runDir:string,persona:string):Promise<Map<string,string>> {
+  const directory=path.join(runDir,'certifications',persona),specs=new Map<string,string>();
+  for(const version of (await readdir(directory)).filter(v=>/^v\d+$/.test(v)).sort()) {
+    const inputs=await readJson(path.join(directory,version,'inputs.json'),z.object({specVersion:z.string()}));
+    const file=path.join(directory,version,'spec.json'),prior=specs.get(inputs.specVersion);
+    if(prior&&await fileHash(prior)!==await fileHash(file))throw new Error(`Conflicting frozen specs for ${persona}/${inputs.specVersion}`);
+    specs.set(inputs.specVersion,file);
+  }
+  return specs;
+}
+
 /** versionBefore is authoritative; never infer from current deployment or an arm output. */
 export async function frozenNight(runDir:string,record:DecisionRecord,records:readonly DecisionRecord[],world:World,deps:LoopDeps):Promise<NightInput> {
   const store=new RunStore(runDir),params=world.personas.get(record.persona);
@@ -55,6 +78,13 @@ export async function frozenNight(runDir:string,record:DecisionRecord,records:re
     const version=Number(file.slice(1,-5));programs.set(version,await store.readProgram(record.persona,version));
   }
   const current=programs.get(record.versionBefore);if(!current)throw new Error(`Missing versionBefore ${record.versionBefore}`);
+  const certification=path.join(runDir,'certifications',record.persona,`v${record.versionBefore}`);
+  const release=deps.ehr.mode==='fake'?await releaseForPersona(await loadRelease(record.specVersion,deps.ehr),record.persona):{
+    id:record.specVersion,specVersion:record.specVersion,
+    spec:await readJson(path.join(certification,'spec.json'),specSchema),
+    canonical:(await readJson(path.join(certification,'inputs.json'),z.object({canonical:programSchema}))).canonical,
+    notes:'Frozen certification inputs',leanSpecSource:null,fake:false,
+  };
   const train=[];
   for(const day of record.evidence.trainDays) {
     if(day>record.night||isMeasurementDay(day))throw new Error(`Non-training evidence day ${day}`);
@@ -69,7 +99,7 @@ export async function frozenNight(runDir:string,record:DecisionRecord,records:re
     train.push({schedule,result});
   }
   return {night:record.night,persona,current,programs,train,
-    release:await releaseForPersona(await loadRelease(record.specVersion,deps.ehr),record.persona),
+    release,
     history:records.filter(r=>r.persona===record.persona&&r.night<record.night).map(historyItem),
     holdout:makeHoldout(deps,persona,await world.schedule(calibrationDay(record.night),record.persona))};
 }
@@ -161,9 +191,10 @@ export async function evaluateQuality(opts:QualityOptions) {
   await cp(path.join(source,'days'),path.join(inputs,'days'),{recursive:true});
   await cp(path.join(source,'decisions'),path.join(inputs,'decisions'),{recursive:true});
   await cp(path.join(source,'llm'),path.join(inputs,'llm'),{recursive:true});
+  await cp(path.join(source,'certifications'),path.join(inputs,'certifications'),{recursive:true});
   const native=createEhr({fake:false});
   const binding={source,worldSource,originalWorldSha256:worldSha256,fixturesSha256,worldSha256:await treeHash(path.join(inputs,'world')),sourceDecisionsSha256:await treeHash(path.join(inputs,'decisions')),
-    sourceProgramsSha256:await treeHash(path.join(inputs,'programs')),sourceDaysSha256:await treeHash(path.join(inputs,'days')),sourceLlmSha256:await treeHash(path.join(inputs,'llm')),
+    sourceProgramsSha256:await treeHash(path.join(inputs,'programs')),sourceDaysSha256:await treeHash(path.join(inputs,'days')),sourceLlmSha256:await treeHash(path.join(inputs,'llm')),sourceCertificationsSha256:await treeHash(path.join(inputs,'certifications')),
     ehrSha256:native.binary?await fileHash(native.binary):null,agentSha256:await treeHash(path.join(REPO_ROOT,'agent/src')),
     app:JSON.parse(await readFile(path.join(REPO_ROOT,'app/dist/build.json'),'utf8')),selected:selected.map(decisionId),options:opts,label:OFFLINE_LABEL,
     geometryCache:path.join(tmpdir(),'vgi-proposal-quality-geometry-cache')};
@@ -175,15 +206,17 @@ export async function evaluateQuality(opts:QualityOptions) {
   let cursor=0,stopped=false;
   async function worker(index:number) {
     const workerDir=path.join(out,`worker-${index}`),ehrNative=retryEhr(recordingEhr(native,path.join(workerDir,'ehr')));
+    const specFiles=new Map<string,string>(),boundNative=archivedSpecEhr(ehrNative,specFiles);
     const catalog=await readJson(path.join(inputs,'fixtures',path.basename(fixtureIndex)),z.object({patients:z.array(z.object({file:z.string(),flags:z.object({pediatric:z.boolean(),surgical:z.boolean()})}))}));
-    const browser=browserGeometry(ehrNative,input=>{
+    const browser=browserGeometry(boundNative,input=>{
       const sample=input.program.role==='np'?catalog.patients.find(p=>p.flags.pediatric):input.program.role==='surgeon'?catalog.patients.find(p=>p.flags.surgical):{file:'Ashly_Rippin_149fcc1f.json'};
       if(!sample)throw new Error('Missing mandatory geometry fixture');return [path.join(inputs,'fixtures',sample.file)];
     },binding.geometryCache);
     try {
       while(!stopped) {
         const original=selected[cursor++];if(!original)break;
-        const ehr=geometryEhr(ehrNative,input=>retryInfrastructure('geometry',()=>browser.provider(input),true),workerDir);
+        specFiles.clear();for(const [version,file] of await frozenSpecs(inputs,original.persona))specFiles.set(version,file);
+        const ehr=geometryEhr(boundNative,input=>retryInfrastructure('geometry',()=>browser.provider(input),true),workerDir);
         const started=performance.now();
         const deps:LoopDeps={runId:path.basename(out),store:new RunStore(workerDir),ehr,
           screens:{mode:'real',async check(){throw new Error('Offline screen check prohibited');}},
@@ -236,7 +269,7 @@ export async function evaluateQuality(opts:QualityOptions) {
   // The frozen copy, including world bytes, must remain unchanged during evaluation.
   if(await treeHash(path.join(inputs,'world'))!==binding.worldSha256)throw new Error('Frozen world changed');
   if(await treeHash(path.join(inputs,'fixtures'))!==binding.fixturesSha256)throw new Error('Frozen fixtures changed');
-  for(const [directory,expected] of [['programs',binding.sourceProgramsSha256],['days',binding.sourceDaysSha256],['decisions',binding.sourceDecisionsSha256],['llm',binding.sourceLlmSha256]]) {
+  for(const [directory,expected] of [['programs',binding.sourceProgramsSha256],['days',binding.sourceDaysSha256],['decisions',binding.sourceDecisionsSha256],['llm',binding.sourceLlmSha256],['certifications',binding.sourceCertificationsSha256]]) {
     if(!directory||!expected||await treeHash(path.join(inputs,directory))!==expected)throw new Error(`Frozen ${directory} changed`);
   }
   records.sort((a,b)=>a.decisionId.localeCompare(b.decisionId)||a.arm.localeCompare(b.arm)||a.sample-b.sample);

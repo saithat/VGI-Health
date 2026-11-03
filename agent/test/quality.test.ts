@@ -7,7 +7,7 @@ import { attributeDay, localityDigest } from '../src/locality.js';
 import { attachGeometry } from '../src/geometry.js';
 import { measuredLedger, withQuality, type QualityContext } from '../src/quality-context.js';
 import { nightlyPrompt, choosePrompt, repairPrompt } from '../src/prompts.js';
-import { candidateDiffs, freshOutput, frozenNight, selectDecisions } from '../src/quality.js';
+import { archivedSpecEhr, candidateDiffs, freshOutput, frozenNight, selectDecisions } from '../src/quality.js';
 import { OFFLINE_LABEL, pairedComparison, qualityReport, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
 import { FAKE_PERSONAS, writeFakeWorld } from '../src/fake/world.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
@@ -136,6 +136,15 @@ function offline(id:string,arm:'A'|'B',accepted:boolean,sample=1):OfflineRecord 
   return {...base,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:id,arm,sample,tokens:{input:100,output:5,cachedInput:0,source:'backend'},callCount:2,wallTimeMs:10,frozenInputs:'input.json',repeatedMeasuredBad:0,proposedCandidates:0};
 }
 describe('paired reporting and input guardrails',()=>{
+  it('resolves archived specs without changing logical program release identities',async()=>{
+    const check=vi.fn(deps.ehr.check).mockResolvedValue('ok'),simulate=vi.fn(deps.ehr.simulate),renderScreens=vi.fn(deps.ehr.renderScreens);
+    const frozen=archivedSpecEhr({...deps.ehr,check,simulate,renderScreens},new Map([['v1','/frozen/v1/spec.json']]));
+    await frozen.check({specVersion:'v1',program,prev:program,canonical:program});
+    expect(check.mock.calls[0]?.[0].specVersion).toBe('/frozen/v1/spec.json');
+    expect(check.mock.calls[0]?.[0].program.specVersion).toBe(program.specVersion);
+    expect(()=>frozen.check({specVersion:'v2',program,prev:program,canonical:program})).toThrow('No frozen spec');
+    await expect(frozen.deploy({specVersion:'v1',program,prev:program,canonical:program,outDir:'/unused'})).rejects.toThrow('deployment prohibited');
+  });
   it('bootstraps decisions after averaging samples and applies all three conditions',()=>{
     const rows=Array.from({length:20},(_,i)=>[offline(String(i),'A',false),offline(String(i),'B',true),offline(String(i),'B',true,2)]).flat();
     const comparison=pairedComparison(rows,'A','B');expect(comparison.beats).toBe(true);expect(comparison.rate95).toEqual([1,1]);

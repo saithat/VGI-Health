@@ -300,7 +300,8 @@ deployment; every offline record has `offline: true`, `screenCheck: "skipped"`,
 arm/sample, call/token accounting and wall time.
 
 A fresh output is required directly under `runs/`. Its `inputs/` snapshot holds
-source programs, days, historical decisions/responses, world and fixture bytes.
+source programs, days, historical decisions/responses, certification inputs,
+world and fixture bytes.
 The original world/fixture fingerprints must match; only the copied world's
 fixture-index location is relocated. `inputs/binding.json` records source and
 current evaluator hashes, the selected decisions and backend settings.
@@ -347,3 +348,24 @@ changes must be interpreted against known renderer/capture changes; recorded
 estimates are never overwritten. Replay smoke is plumbing verification, not
 an arm-quality result. No density change, query relaxation, live experiment,
 Lean change or certified app-source change belongs to this implementation.
+
+
+### Frozen specification binding
+
+The first native sanity attempt stopped before producing estimates: main's v1
+spec now requires passive `criticalResult` inline on W2 (`86aab52d`), while the
+frozen P1 program was certified against the original v1. The evaluator therefore
+freezes the original spec and role canonical from each version's archived
+`certifications/P/vN/{spec,inputs}.json`, as well as the program/world inputs.
+Every native check, render and simulation resolves its logical release id to
+that immutable archived spec; program ids and prompt release ids remain intact.
+The current native interpreter and current browser painter still recompute the
+results. Conflicting archived specs under one logical release id fail closed.
+No current spec, definition, property or gate is edited or weakened. Replaying
+the historical workload under today's clinical rules would be a different
+experiment, rather than a proposal-quality comparison.
+
+The orchestrator waived this lane's full WCAG/screen audit pair after the
+model-capacity interruption on 2026-11-03: source changes are confined to agent/
+and documentation, and lane/density needs the serialized browser-audit slot.
+The interrupted template audit is not claimed as a completed verification.
