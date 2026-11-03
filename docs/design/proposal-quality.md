@@ -343,7 +343,9 @@ previously nonpositive on every measured physical dimension. The bootstrap uses
 10,000 decision resamples with seed 20261103 and applies §4.4 unchanged. C−B is
 reported as not evaluated until C records exist; no query tools are implemented.
 Replay token counts are labeled historical references; unavailable usage remains
-null. Wall time per sample includes frozen evidence preparation, charged once
+null. Calls count backend attempts, including transport failures; if failed
+attempt usage is unavailable, token totals remain null (successful-call usage
+is retained separately). Wall time per sample includes frozen evidence preparation, charged once
 to each sample for comparability; geometry is reused by exact content. These
 are evaluator timings, not a model latency guarantee.
 

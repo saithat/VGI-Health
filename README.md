@@ -407,7 +407,8 @@ is all 35 nightly decisions, excluding migrations and feature surfacing.
 match. Workers are limited to 1–2. Historical manual examples in
 `runs/run1-P3/decisions` are also required (see Data). Replay records prompt
 matches without rejecting drift, and reports historical reference tokens where
-available, never new model usage. `report.md` and `report.json` contain the
+available, never new model usage. Call counts include backend transport attempts;
+unknown usage from failed attempts leaves token totals unknown. `report.md` and `report.json` contain the
 predeclared rates, validation savings and decision-paired bootstrap; samples
 are averaged within each decision before resampling. Unknown tokens remain
 unknown. The repetition metric uses the same id, or the same move type and

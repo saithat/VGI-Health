@@ -7,13 +7,14 @@ import { attributeDay, localityDigest } from '../src/locality.js';
 import { attachGeometry, geometryProgramHash, geometryComponentsHash } from '../src/geometry.js';
 import { measuredLedger, withQuality, type QualityContext } from '../src/quality-context.js';
 import { nightlyPrompt, choosePrompt, repairPrompt } from '../src/prompts.js';
-import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, selectDecisions } from '../src/quality.js';
+import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, meteredLlm, selectDecisions } from '../src/quality.js';
 import { OFFLINE_LABEL, pairedComparison, qualityReport, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
 import { FAKE_PERSONAS, writeFakeWorld } from '../src/fake/world.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
 import { fakeCanonical, fakeSpec } from '../src/fake/fixtures.js';
 import { emptyRecord, runNight, type LoopDeps } from '../src/night.js';
 import { LlmAgent } from '../src/agent.js';
+import type { JsonLlm } from '../src/backends/types.js';
 import { RecordingLlm } from '../src/backends/recording.js';
 import { ScriptedLlm } from './scripted.js';
 import { RunStore } from '../src/store.js';
@@ -177,6 +178,18 @@ function offline(id:string,arm:'A'|'B',accepted:boolean,sample=1):OfflineRecord 
   return {...base,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:id,arm,sample,tokens:{input:100,output:5,cachedInput:0,source:'backend'},callCount:2,wallTimeMs:10,frozenInputs:'input.json',repeatedMeasuredBad:0,proposedCandidates:0};
 }
 describe('paired reporting and input guardrails',()=>{
+  it('counts failed transport attempts and leaves their unknown token usage unknown',async()=>{
+    let attempt=0;
+    const backend:JsonLlm={name:'scripted',model:'fixture',async complete(){
+      if(++attempt===1)throw new Error('transport failure');
+      return {json:{},backend:'scripted',model:'fixture',servedBy:null,replayOf:null,promptMatched:null,usage:{input_tokens:7,output_tokens:2}};
+    }};
+    const meter=meteredLlm(backend,''),request={callId:'test',purpose:'propose',system:'system',prompt:'train',schemaName:'fixture',schema:{}};
+    await expect(meter.llm.complete(request)).rejects.toThrow('transport failure');
+    await meter.llm.complete(request);
+    expect(meter.callCount()).toBe(2);expect(meter.calls).toHaveLength(1);
+    expect(meter.calls[0]?.tokens.input).toBe(7);expect(meter.tokens()).toEqual({input:null,output:null,cachedInput:null,source:'unavailable'});
+  });
   it('resolves archived specs without changing logical program release identities',async()=>{
     const check=vi.fn(deps.ehr.check).mockResolvedValue('ok'),simulate=vi.fn(deps.ehr.simulate),renderScreens=vi.fn(deps.ehr.renderScreens);
     const frozen=archivedSpecEhr({...deps.ehr,check,simulate,renderScreens},new Map([['v1','/frozen/v1/spec.json']]));

@@ -127,21 +127,24 @@ function usageOf(response:Pick<JsonResponse,'usage'|'transcript'>):Omit<TokenCou
   }
   return null;
 }
-function metered(inner:JsonLlm,source:string) {
+export function meteredLlm(inner:JsonLlm,source:string) {
   const calls:{callId:string;promptMatched:boolean|null;tokens:TokenCounts}[]=[];
+  let attempts=0,unknownAttemptUsage=false;
   const llm:JsonLlm={name:inner.name,model:inner.model,async complete(req){
-    const response=await inner.complete(req);
+    attempts++;
+    let response:JsonResponse;
+    try {response=await inner.complete(req);}catch(error){unknownAttemptUsage=true;throw error;}
     const reference=inner.name==='replay'?await readJson(llmRecordPath(source,req.callId),llmRecordSchema):response;
     const usage=usageOf(reference);
     calls.push({callId:req.callId,promptMatched:response.promptMatched,tokens:usage?{...usage,source:inner.name==='replay'?'recorded-reference':'backend'}:{input:null,output:null,cachedInput:null,source:'unavailable'}});
     return response;
   }};
-  const tokens=():TokenCounts=>({
+  const tokens=():TokenCounts=>unknownAttemptUsage?{input:null,output:null,cachedInput:null,source:'unavailable'}:({
     input:calls.every(c=>c.tokens.input!==null)?calls.reduce((n,c)=>n+(c.tokens.input??0),0):null,
     output:calls.every(c=>c.tokens.output!==null)?calls.reduce((n,c)=>n+(c.tokens.output??0),0):null,
     cachedInput:calls.every(c=>c.tokens.cachedInput!==null)?calls.reduce((n,c)=>n+(c.tokens.cachedInput??0),0):null,
     source:calls.some(c=>c.tokens.source==='unavailable')?'unavailable':inner.name==='replay'?'recorded-reference':'backend'});
-  return {llm,calls,tokens};
+  return {llm,calls,tokens,callCount:()=>attempts};
 }
 
 export function candidateDiffs(before:DecisionRecord,after:DecisionRecord) {
@@ -248,14 +251,14 @@ export async function evaluateQuality(opts:QualityOptions) {
           const sampleDir=path.join(out,'samples',decisionId(original),arm,String(sample));
           const first=await readJson(llmRecordPath(inputs,`night-${pad2(original.night)}/${original.persona}/propose-0`),llmRecordSchema);
           const usage=z.object({reasoningEffort:z.string().optional(),serviceTier:z.string().nullable().optional()}).safeParse(first.usage);
-          const meter=metered(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:inputs,replayAllowDrift:true,model:opts.model??manifest.model??first.model,
+          const meter=meteredLlm(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:inputs,replayAllowDrift:true,model:opts.model??manifest.model??first.model,
             reasoningEffort:opts.reasoningEffort??(usage.success?usage.data.reasoningEffort:undefined)??'high',serviceTier:opts.serviceTier??(usage.success?usage.data.serviceTier:undefined)??'fast'}),inputs);
           const sampleDeps:LoopDeps={...deps,store:new RunStore(sampleDir),agent:new LlmAgent(new RecordingLlm(meter.llm,sampleDir)),seedState:{injected:0,rejected:new Set()}};
           const tick=performance.now();
           const result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,
             ...(arm==='B'&&locality?{quality:{ledger:measuredLedger(historical,original.persona,original.night),locality}}:{})}));
           const record:OfflineRecord={...result.record,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:decisionId(original),arm,sample,
-            tokens:meter.tokens(),callCount:meter.calls.length,wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'?contextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
+            tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'?contextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
             repeatedMeasuredBad:repetitionCount(result.record,historical),proposedCandidates:result.record.candidates.filter(e=>!e.candidate.seeded).length};
           await writeJson(path.join(sampleDir,'record.json'),offlineRecordSchema.parse(record));await writeJson(path.join(sampleDir,'calls.json'),meter.calls);
           if(arm==='sanity') {
