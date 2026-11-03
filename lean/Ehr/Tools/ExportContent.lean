@@ -1,3 +1,4 @@
+import Ehr.Canonical.Urgency
 import Ehr.Core.Json
 import Ehr.Canonical.Personas
 import Ehr.Canonical.BadPrograms
@@ -54,8 +55,7 @@ def exportAll (root : System.FilePath) : IO Unit := do
   writeJson root "programs/canonical/v1.json" canonicalV1
   writeJson root "lean/Ehr/Check/bad-program-profiles.json"
     (Bad.corePrograms.map (·.1) |>.zip Bad.coreExpectedProperties, Bad.fullProfileOnly)
-  for (v, sp, p) in [("v1", Specs.V1.specV1, canonicalV1),
-      ("v2", Specs.V2.specV2, canonicalV2), ("v3", Specs.V3.specV3, canonicalV3)] do
+  for (v, sp, p) in Urgency.releases do
     writeJson root s!"releases/{v}/spec.json" sp
     writeJson root s!"releases/{v}/canonical.json" p
     for (persona, role) in personaRoles do

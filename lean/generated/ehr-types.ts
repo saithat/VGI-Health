@@ -4,6 +4,35 @@
 // The types mirror Lean's derived JSON encoding exactly.
 /* eslint-disable */
 
+export interface Result {
+  id: string;
+  patient: string;
+  label: string;
+  responsible: string;
+  covering: string;
+  availableAt: number;
+  limit: number;
+  /**
+   * Exact source snapshot identity; corrected data must not inherit resolution.
+   */
+  source?: string;
+}
+
+export interface Resolution {
+  actor: string;
+  recordedAt: number;
+  action: string;
+}
+
+export interface Ticket {
+  result: Result;
+  deliveredAt: number | null;
+  receivedBy: string[];
+  acknowledgedBy: string[];
+  escalatedAt: number | null;
+  resolution: Resolution | null;
+}
+
 /**
  * A data element in the spec, e.g. `"weight"`, `"patientIdReentry"`.
  */
@@ -690,6 +719,8 @@ export interface ReviewReq {
 export type AlertCond =
   | "drugAllergy"
   | "interaction"
+  | "minorInteraction"
+  | "criticalResult"
   | "duplicateTherapy"
   | "doseOutOfRange"
   | "weightInLb"
@@ -1057,6 +1088,23 @@ export interface Receipt {
 }
 
 /**
+ * Explicit interaction severity from the clinical source.
+ */
+export type InteractionSeverity =
+  | "minor"
+  | "severe";
+/** All values of `InteractionSeverity`. */
+export const InteractionSeverityValues = ["minor", "severe"] as const;
+
+/**
+ * Source-labelled severity; missing evidence never implies minor.
+ */
+export interface InteractionEvidence {
+  key: string;
+  severity: InteractionSeverity;
+}
+
+/**
  * The few facts from the patient record the spec needs.
  */
 export interface Facts {
@@ -1119,6 +1167,8 @@ export interface Facts {
    * Read-only day lists and the searchable patient directory.
    */
   patientDirectory?: PatientDirectory;
+  interactions?: InteractionEvidence[];
+  criticalResults?: Ticket[];
 }
 
 /**
@@ -1213,6 +1263,7 @@ export interface State {
    * Present only for programs using in-UI patient selection.
    */
   patientContext?: PatientContext;
+  criticalResults?: Ticket[];
 }
 
 /**
@@ -2443,6 +2494,13 @@ export interface UiCodeChoices {
 }
 
 /**
+ * The pinned strip emits alerts and their permitted acknowledgment controls.
+ */
+export type UiStripAtom =
+  | { alert: { comp: CompId; alertId: AlertId; label: string; severity: string } }
+  | { button: { comp: string; label: string; role: string; enabled: boolean; blockedReason: string | null; hotkey: string | null } };
+
+/**
  * Per-pane guidance has the same provenance and choices as an ordinary screen.
  */
 export interface UiPaneMetadata {
@@ -2450,6 +2508,7 @@ export interface UiPaneMetadata {
   fieldSources: [string, string][];
   entryHints: [CompId, string][];
   fieldChoices: [CompId, UiCodeChoices][];
+  urgent?: UiStripAtom[];
 }
 
 /**
@@ -2519,6 +2578,7 @@ export interface UiScreen {
   workspace: UiNode[];
   side: UiNode[];
   modal: UiNode | null;
+  urgent?: UiNode[];
 }
 
 /**

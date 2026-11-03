@@ -49,7 +49,11 @@ export const uiNodeSchema: z.ZodType<UiNode> = z.lazy(() =>
             fieldSources: z.array(pair),
             entryHints: z.array(pair),
             fieldChoices: z.array(z.tuple([label, codeChoices])),
-          }),
+            urgent: z.array(z.union([
+              z.strictObject({alert:z.strictObject({comp:label,alertId:label,label,severity:label})}),
+              z.strictObject({button:z.strictObject({comp:label,label,role:label,enabled:z.boolean(),blockedReason:z.string().nullable(),hotkey:z.string().nullable()})}),
+            ])).optional(),
+          }).transform(({urgent,...metadata})=>({...metadata,...(urgent===undefined?{}:{urgent})})),
           children: z.array(uiNodeSchema),
           modal: z.array(uiNodeSchema),
         }),
@@ -230,6 +234,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
     screen: label.optional(),
     fieldSources: z.array(pair).optional(),
     title: label,
+    urgent: z.array(uiNodeSchema).optional(),
     workspace: z.array(uiNodeSchema),
     side: z.array(uiNodeSchema),
     modal: uiNodeSchema.nullable(),
@@ -243,6 +248,7 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
       sourceLabels,
       entryHints,
       fieldChoices,
+      urgent,
       ...screen
     }) => ({
       ...screen,
@@ -253,5 +259,6 @@ export const uiScreenSchema: z.ZodType<UiScreen> = z
       ...(sourceLabels === undefined ? {} : { sourceLabels }),
       ...(entryHints === undefined ? {} : { entryHints }),
       ...(fieldChoices === undefined ? {} : { fieldChoices }),
+      ...(urgent === undefined ? {} : { urgent }),
     }),
   );

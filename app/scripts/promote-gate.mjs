@@ -1,6 +1,7 @@
-/* global document, window, getComputedStyle, innerWidth, innerHeight, structuredClone, console */
+/* global requestAnimationFrame, document, window, getComputedStyle, innerWidth, innerHeight, structuredClone, console */
 /** Independent projection for native ordinary board/dated nodes. No clinical writes. */
 import assert from "node:assert/strict";
+import { physicalBounds } from "../e2e/physical-policy.ts";
 import { execFileSync } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -20,6 +21,9 @@ export const native = (input) =>
 
 /** Expected source list is supplied by Lean, independently from the painter. */
 export async function gateOrdinary(page, view) {
+  // Snapshot endpoints exclude a hover carried over from a previous probe.
+  await page.mouse.move(0,0);
+  await page.evaluate(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done))));
   const owner = view.ordinary?.board?.children.find(n => n.patientPane?.modal.length)?.patientPane.patient;
   const expectedPanes = view.panes.map((p) => ({
     interactive: !owner || owner === p.patient,
@@ -184,7 +188,7 @@ export async function gateOrdinary(page, view) {
             !target ||
             target.closest("[data-patient]") !== el.closest("[data-patient]")
           )
-            errors.push("Cross-pane ARIA reference");
+            errors.push(`Cross-pane ARIA reference: ${el.outerHTML} -> ${target?.outerHTML}`);
         }
       return errors;
     }, expected);
@@ -254,6 +258,8 @@ export async function gateOrdinary(page, view) {
       for (const value of Object.values(item))
         assert.ok(observed[i].undated[j].includes(value));
   }
+  const physical=await physicalBounds(page);
+  assert.deepEqual(physical.findings,[],"Default owner physical policy");
   return {
     panes: view.panes.length,
     dated: expectedDates.reduce((n, d) => n + d.dated.length, 0),
@@ -374,6 +380,15 @@ async function main() {
   });
   assert.deepEqual(blocked.sessions, urgent);
   assert.ok(blocked.result.blocked);
+  const stripSessions=structuredClone(urgent);
+  stripSessions[1].input.state.popup=null;
+  stripSessions[0].input.state.popup=["drugAllergyOrder","careGap"];
+  const stripBoard=check({op:"board",sessions:stripSessions});
+  assert.equal(stripBoard.node.board.children[0].patientPane.modal.length,0,"Urgent popup moves into the pinned strip");
+  assert.ok(stripBoard.node.board.children[0].patientPane.metadata.urgent.some(n=>n.button?.role==="ack"));
+  const received=check({op:"board",sessions:stripSessions,patient:"patient-a",event:{ack:{alert:"drugAllergyOrder"}}});
+  assert.equal(received.result,"ok");
+  assert.ok(received.sessions[0].input.state.acked.some(([id])=>id==="drugAllergyOrder"));
   const dated = check({ op: "dated", render: sessions[0].input });
   assert.deepEqual(
     dated.dated.map((d) => d.source.resource),
@@ -441,6 +456,7 @@ async function main() {
             el.style.display = "none";
           });
           await assert.rejects(() => gateOrdinary(page, view));
+          await page.locator("[data-urgent-patient]").evaluate(el=>el.style.removeProperty("display"));
           checks.push({ width, hiddenUrgent: "rejected" });
         } else {
           const button = canonical.commands.find((c) => c.enabled);
@@ -466,6 +482,11 @@ async function main() {
           checks.push({width,coveredControls:"rejected"});
         }
       }
+      const stripView={mode:"board",panes:stripSessions.map(s=>({patient:s.patient,screen:check({op:"render",render:s.input}).screen})),ordinary:stripBoard.node,indexObservation:stripBoard.indexObservation};
+      await paint(page,stripView);await gateOrdinary(page,stripView);
+      await page.locator('[data-urgent-strip-patient="patient-a"] button').click();
+      assert.deepEqual(await page.evaluate(()=>window.researchEvents.at(-1)),{patient:"patient-a",event:{ack:{alert:"drugAllergyOrder"}}});
+      checks.push({width,stripAcknowledgment:"patient-scoped"});
       const view = {
         mode: "dated",
         panes: [{ patient: "patient-a", screen: dated.screen }],

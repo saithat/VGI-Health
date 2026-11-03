@@ -11,8 +11,8 @@ explicit exposure assumptions; it is not a deployment certificate.
 The owner blocked merge after reviewing `ade9f407`: its clinical projection
 erased the index and the whole-bundle candidate list could disclose hidden
 records. The review repair uses exact shown-row permissions, occurrence numbers,
-a shared binding gate and a separate full payload observer. Merge remains blocked
-until the owner re-reviews the repair. The previous `runs/promote-ordinary-v2/`
+a shared binding gate and a separate full payload observer. The owner cleared both blockers after re-reviewing `1272fe10`. Integration with
+current main is recorded separately in [the integration audit](../audits/promote-main-integration-2026-11-02.md). The previous `runs/promote-ordinary-v2/`
 results are historical and do not certify this revision.
 
 The review rerun lives in ignored `runs/promote-review-v3/`. It uses the
@@ -50,6 +50,17 @@ and issued on supported vital/lab rows. There are zero native/WASM mismatches. T
 0 proposal calls**. Raw task traces, source hashes and coverage remain in
 `runs/promote-review-v3/`; no deployment certificate was produced.
 <!-- promotion-results:end -->
+
+The subsequent urgency/WCAG/font integration rerun uses
+`runs/promote-merge-v5/`; the preceding table is the pre-integration review build.
+The merged build completes all 144 search/held-out executions with zero missing
+geometry or new model requests. Held-out mouse travel is 6,194.2 px/task for the
+board and 6,573.9 for dated timeline versus 9,584.5 for its stack reference;
+composite effort is 90.3 / 86.9 versus 55.8, and scrolling is 53,081.8 / 49,715.1
+versus 15,241.7 px/task. These are simulator measurements. Exact merged-build
+coverage, physical audits, bindings and commands appear in the
+[integration audit](../audits/promote-main-integration-2026-11-02.md).
+
 
 The first promotion rerun is excluded in `runs/promote-ordinary/` with its
 `banner-occlusion-diagnostic.json` and `diagnostic-exclusion.json`. Visual review

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BoardEvents } from "./Board";
+import { UrgentStrip } from "./UrgentStrip";
+import { clinicalCssVariables } from "./theme";
 import { z } from "zod";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import { UiChildren } from "./nodes";
@@ -266,7 +268,7 @@ export function ResearchWorkspace({
   if (view.ordinary)
     return (
       <BoardEvents.Provider value={onEvent}>
-        <main className="research">
+        <main className="clinical-app research" style={{...clinicalCssVariables,fontVariantNumeric:"tabular-nums"}}>
           <div className="research-label">
             {view.mode === "dated"
               ? "VGI · Ordinary dated timeline · Research · No clinical writes"
@@ -281,7 +283,7 @@ export function ResearchWorkspace({
     );
   const modalOwner = view.panes.find((p) => p.screen.modal !== null)?.patient;
   return (
-    <main className={`research research-${view.mode}`}>
+    <main className={`clinical-app research research-${view.mode}`} style={{...clinicalCssVariables,fontVariantNumeric:"tabular-nums"}}>
       <div className="research-label">
         {view.mode === "dated" &&
         view.panes.some((p) =>
@@ -290,6 +292,14 @@ export function ResearchWorkspace({
           ? "VGI · Ordinary dated timeline · Research · No clinical writes"
           : "VGI · Exploration laboratory · Sandbox · No clinical writes"}
       </div>
+      <aside className="research-urgency" aria-label="Urgent patients">
+        {view.panes.filter(p=>p.screen.urgent?.length).map(p=>(
+          <section key={p.patient} data-urgent-strip-patient={p.patient} aria-label={`Urgent clinical alerts for ${p.patient}`}>
+            <strong>{p.screen.banner.find(([key])=>key==="Patient")?.[1]??p.patient}</strong>
+            <UrgentStrip nodes={p.screen.urgent??[]} onEvent={event=>onEvent({patient:p.patient,event})}/>
+          </section>
+        ))}
+      </aside>
       <div className="research-panes">
         {view.panes.map(({ patient, screen }) => {
           const emit = (event: Event) => {

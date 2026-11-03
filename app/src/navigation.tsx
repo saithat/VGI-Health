@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 
+const Adt = lazy(() => import("./AdtApp").then((m) => ({ default: m.AdtApp })));
 const Live = lazy(() =>
   import("./LiveApp").then((m) => ({ default: m.LiveApp })),
 );
@@ -79,6 +80,8 @@ export function Router() {
         <Dashboard key={`${route}:${episode}`} />
       ) : path === "/browse" ? (
         <Browse key={`${route}:${episode}`} />
+      ) : url.searchParams.get("workflow") === "adt" ? (
+        <Adt key={`${route}:${episode}`} />
       ) : url.searchParams.get("mode") === "replay" ? (
         <Replay key={`${route}:${episode}`} />
       ) : (

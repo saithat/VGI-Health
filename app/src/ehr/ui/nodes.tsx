@@ -484,6 +484,16 @@ export function FieldNode({
           }}
           nothingFoundMessage="No matching options"
         />
+      ) : kind === "text" ? (
+        <Textarea
+          {...common}
+          value={node.value ?? ""}
+          onChange={(e) => send(e.currentTarget.value)}
+          rows={1}
+          wrap="soft"
+          data-wrap-text
+          autoComplete="off"
+        />
       ) : kind === "textarea" ? (
         <Textarea
           {...common}

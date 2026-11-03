@@ -32,7 +32,12 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   await page.goto("/dashboard?run=run1-P3");
   await expect(page.getByLabel("Recorded run")).toHaveValue("run1-P3");
   await expect(
-    page.getByRole("heading", { name: "Evolution", exact: true }),
+    page
+      .getByRole("navigation", { name: "Dashboard areas" })
+      .getByRole("button", { name: "Evolution", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
+  await expect(
+    page.getByRole("heading", { name: /^Inpatient RN/ }),
   ).toBeVisible();
   const nav = page.getByRole("navigation", { name: "Dashboard areas" });
   await expect(nav.getByRole("button")).toHaveCount(5);
@@ -57,7 +62,7 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   }
 
   const version = page.getByRole("button", { name: /^rev 3 · Night 4/ });
-  await expect(version).toHaveAccessibleName(/vs previous:.*vs baseline:/);
+  await expect(version).toHaveAccessibleName(/Effect:.*clicks.*Status:/);
   await version.click();
   const drawer = page.getByRole("dialog");
   await expect(drawer).toContainText("01 · Evidence");
@@ -85,7 +90,15 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
     .getByRole("button", { name: "Next task event", exact: true })
     .click();
   await expect(pair.getByText(/^Event 1 \/ /)).toBeVisible();
-  await expect(pair.getByRole("alert")).toHaveCount(0);
+  // Both replays retain their active high-alert condition in the pinned strip.
+  // The exact set also rejects unexpected runtime-error alerts.
+  const alerts = pair.getByRole("alert");
+  await expect(alerts).toHaveCount(2);
+  for (const alert of await alerts.all()) {
+    await expect(alert).toHaveAttribute("data-alert-id", "highAlertAdmin");
+    await expect(alert).toHaveAccessibleName("High-alert medication: double check required");
+    await expect(alert).toBeVisible();
+  }
   await pair.getByRole("button", { name: "Close EHR replay" }).click();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -109,7 +122,10 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   await expect(
     replay.getByRole("alert", { name: "Care gaps due", exact: true }),
   ).toBeVisible();
-  await expect(replay.getByRole("alert")).toHaveCount(1);
+  await expect(replay.getByRole("alert", {
+    name: "High-alert medication: double check required", exact: true,
+  })).toBeVisible();
+  await expect(replay.getByRole("alert")).toHaveCount(2);
   await expect(replay.getByRole("alertdialog")).toHaveCount(0);
   await replay.getByRole("button", { name: "Close EHR replay" }).click();
   await page.keyboard.press("Escape");
@@ -143,8 +159,9 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
       name: "High-alert medication: double check required",
       exact: true,
     }),
-  ).toHaveCount(2);
-  await expect(migration.getByRole("alert")).toHaveCount(2);
+  ).toHaveCount(4);
+  await expect(migration.locator(".urgent-alert-strip [data-alert-id='highAlertAdmin']")).toHaveCount(2);
+  await expect(migration.getByRole("alert")).toHaveCount(4);
   await expect(migration.getByRole("alertdialog")).toHaveCount(0);
   await migration.getByRole("button", { name: "Close EHR replay" }).click();
   await page.keyboard.press("Escape");
@@ -170,7 +187,10 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
       .getByRole("dialog", { name: "Replay counterexample", exact: true })
       .locator(".clinical-shell"),
   ).toHaveCount(1);
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByRole("alert", {
+    name: "High-alert medication: double check required", exact: true,
+  })).toBeVisible();
+  await expect(page.getByRole("alert")).toHaveCount(1);
   expect(errors).toEqual([]);
 });
 

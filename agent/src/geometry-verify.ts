@@ -55,6 +55,7 @@ try{
   if(JSON.stringify(first.timelines)!==JSON.stringify(replay.timelines))throw new Error('Geometry replay differs');
   let measuredDays=0,tasks=0;
   for(const run of [first.dir,replay.dir])for(const day of await readdir(path.join(run,'days')))for(const file of await readdir(path.join(run,'days',day))){
+   if(file==='digest.json')continue;
    const result=JSON.parse(await readFile(path.join(run,'days',day,file),'utf8'));
    if(result.geometry?.missingTargets.length||result.tasks.some((t:{mouseTravelPx?:number;scrollPx?:number})=>typeof t.mouseTravelPx!=='number'||typeof t.scrollPx!=='number'))throw new Error(`Incomplete geometry: ${run}/${day}/${file}`);
    measuredDays++;tasks+=result.tasks.length;

@@ -42,6 +42,12 @@ export class RunStore {
     const currentPointerFile = path.join(this.dir, 'programs', persona, 'deployed.json');
     if (existsSync(currentPointerFile)) {
       const current = await readJson(currentPointerFile, deployedPointerSchema);
+      if(program.version===current.version){
+        const source=await readJson(path.join(this.dir,current.source??current.program),programSchema);
+        const certified=await readJson(path.join(this.dir,current.certificate),certificateSchema);
+        const sameBuild=!build||(current.build&&stableStringify(await readBinding(path.join(this.dir,current.build)))===stableStringify(build));
+        if(stableStringify(source)===stableStringify(program)&&stableStringify(certified)===stableStringify(certificate)&&sameBuild)return {version:current.version,program:current.program,certificate:current.certificate,...(current.build?{build:current.build}:{}),...(current.source?{source:current.source}:{}),...(current.components?{components:current.components}:{})};
+      }
       if (program.version <= current.version) throw new Error('Published versions are immutable; deploy a new version');
     }
     const programFile = this.programPath(persona, program.version);

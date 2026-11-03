@@ -29,7 +29,7 @@ open Lean
 namespace Ehr.Tools.GenTS
 
 /-- Modules whose types are exported. -/
-def sourceModules : List Name := [`Ehr.Core.Types, `Ehr.Core.Json, `Ehr.Render.Types, `Ehr.Render.Json, `Ehr.Render.Fhir]
+def sourceModules : List Name := [`Ehr.Multi.Critical, `Ehr.Core.Types, `Ehr.Core.Json, `Ehr.Render.Types, `Ehr.Render.Json, `Ehr.Render.Fhir]
 
 /-- The TypeScript name of a Lean declaration: its last component. -/
 def tsName (n : Name) : String :=
@@ -173,6 +173,7 @@ def collect (env : Environment) : List Decl := Id.run do
     let some idx := env.getModuleIdx? m | continue
     let mut here : Array Decl := #[]
     for n in env.header.moduleData[idx.toNat]!.constNames do
+      if m == `Ehr.Multi.Critical && ![``Ehr.Multi.Critical.Result, ``Ehr.Multi.Critical.Resolution, ``Ehr.Multi.Critical.Ticket].contains n then continue
       if let some d := classify env n then
         here := here.push d
     out := out ++ here.qsort (fun a b => declLine env a.name < declLine env b.name)

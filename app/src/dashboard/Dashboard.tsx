@@ -1,5 +1,12 @@
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import { RuleConformanceBadge } from "./RuleConformance";
+import {
+  EvolutionSummary,
+  InfoTip,
+  delta,
+  deltaTone,
+  round,
+} from "./EvolutionSummary";
 import { AppHeader } from "../ehr/ui/AppHeader";
 import { loadWasmInterp } from "../core/wasmInterp";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
@@ -21,6 +28,7 @@ import {
 } from "./data";
 import { ReplayScreen, type InterpFactory } from "./replay";
 import "./dashboard.css";
+import "./evolution.css";
 const Trajectories = lazy(() =>
   import("./Trajectories").then((m) => ({ default: m.Trajectories })),
 );
@@ -33,7 +41,6 @@ import { WorkflowComplexity, personas } from "./WorkflowComplexity";
 import { Drawer, Modal } from "@mantine/core";
 import { programAt } from "./data";
 import { workloadAt, versionsFor } from "./workload";
-import { formatComplexity as fmt } from "./complexity-data";
 
 const views = [
   "Evolution",
@@ -888,6 +895,7 @@ function BreakPanel({
   );
 }
 type Selection = { record: DecisionRecord | null; rejection?: Rejection };
+type Effect = { value: number | null; caption: string };
 function VersionList({
   run,
   persona,
@@ -901,175 +909,244 @@ function VersionList({
     (r) => r.persona === persona && r.mode !== "try-to-break-it",
   );
   const blindProtocol = !!run.manifest.measurementProtocol;
-  const baseline = run.complexity?.personas.find((p) => p.persona === persona)
-    ?.iterations[0];
-  const exactAt = (version: number) =>
-    run.complexity?.personas
+  const exactAt = (version: number) => {
+    const i = run.complexity?.personas
       .find((p) => p.persona === persona)
       ?.iterations.find((i) => i.version === version);
-  const change = (
-    after: ReturnType<typeof exactAt>,
-    before: ReturnType<typeof exactAt>,
-  ) =>
-    after &&
-    before &&
-    typeof after.total.clicks === "number" &&
-    typeof before.total.clicks === "number" &&
-    !after.coverage?.notComputed &&
-    !before.coverage?.notComputed
-      ? `${after.total.clicks - before.total.clicks > 0 ? "+" : ""}${fmt(after.total.clicks - before.total.clicks)} clicks${before.total.mouseTravelPx !== null && after.total.mouseTravelPx !== null ? ` / ${fmt(after.total.mouseTravelPx - before.total.mouseTravelPx)}px mouse` : " · pixel metrics not measured for archived runs"}`
-      : "Unavailable";
+    return i && !i.coverage?.notComputed && typeof i.total.clicks === "number"
+      ? i.total.clicks
+      : null;
+  };
+  const baseline = exactAt(0);
+  const conformance = (revision: number) =>
+    run.ruleConformance?.targets.find(
+      (t) =>
+        t.kind === "deployed" && t.persona === persona && t.revision === revision,
+    );
+  const effectOf = (r: DecisionRecord): Effect => {
+    const deployed = r.versionAfter !== r.versionBefore;
+    if (blindProtocol) {
+      const test = r.measured.test;
+      if (test) {
+        const noAgent = r.measured.testNoAgent;
+        return {
+          value: -test.saving.clicks,
+          caption: `vs certified canonical${noAgent ? ` · agent-only ${delta(-noAgent.saving.clicks)}` : ""} · ${test.after.completed}/${test.after.tasks} tasks`,
+        };
+      }
+      return {
+        value: null,
+        caption: r.release
+          ? "Vendor release · cost tracked separately"
+          : r.outcome === "llm-error"
+            ? "LLM error"
+            : deployed
+              ? "Not independently measured"
+              : "",
+      };
+    }
+    const [after, before] = [exactAt(r.versionAfter), exactAt(r.versionBefore)];
+    if (!deployed) return { value: null, caption: "" };
+    return after !== null && before !== null
+      ? {
+          value: after - before,
+          caption: `expert minimum${baseline !== null ? ` · ${delta(after - baseline)} vs baseline` : ""}`,
+        }
+      : { value: null, caption: "Not measured" };
+  };
+  const describe = (r: DecisionRecord) => {
+    const chosen = r.candidates
+      .filter((c) => r.chosen?.candidateIds.includes(c.candidate.id))
+      .map((c) => c.candidate.summary);
+    return chosen.length
+      ? chosen
+      : [
+          r.release
+            ? r.release.surfaced === false
+              ? "Optional feature left out of nursing workflow"
+              : "Release migration"
+            : r.outcome === "llm-error"
+              ? "LLM error — no design decision"
+              : "No change deployed",
+        ];
+  };
+  const quiet = (r: DecisionRecord) =>
+    r.versionAfter === r.versionBefore &&
+    !r.release &&
+    !r.measured.test &&
+    r.outcome !== "llm-error" &&
+    !getRejections({ ...run, records: [r] }).length;
+  // Collapse runs of quiet nights so the list shows only nights where something happened.
+  const groups: DecisionRecord[][] = [];
+  for (const r of records) {
+    const last = groups[groups.length - 1];
+    if (quiet(r) && last?.[0] && quiet(last[0])) last.push(r);
+    else groups.push([r]);
+  }
+  const row = (r: DecisionRecord) => {
+    const deployed = r.versionAfter !== r.versionBefore;
+    const effect = effectOf(r);
+    const target = conformance(r.versionAfter);
+    const rejected = getRejections({ ...run, records: [r] });
+    const lines = describe(r);
+    return (
+      <div key={`${r.mode}-${r.night}`} className="night">
+        <button
+          className={`version-row ${deployed ? "" : "unchanged-row"}`}
+          onClick={() => open({ record: r })}
+        >
+          <span className="night-when">
+            <strong>
+              {deployed ? `rev ${r.versionAfter}` : `Kept rev ${r.versionAfter}`}{" "}
+              · Night {r.night}
+            </strong>
+            {r.release && (
+              <span className="release-tag">
+                {releaseLabel(r.release.id, run.manifest.runId)} release
+              </span>
+            )}
+          </span>
+          <span className="night-what">
+            {lines.map((line, i) => (
+              <span key={i}>{line}</span>
+            ))}
+          </span>
+          <span className="night-effect">
+            <span className="mobile-label">Effect: </span>
+            {effect.value === null ? (
+              <span className="effect-none">—</span>
+            ) : (
+              <span className={`effect-value ${deltaTone(effect.value)}`}>
+                {delta(effect.value)} clicks
+              </span>
+            )}
+            {effect.caption && (
+              <span className="effect-caption">{effect.caption}</span>
+            )}
+          </span>
+          <span className="night-status">
+            <span className="mobile-label">Status: </span>
+            {r.certificate ? (
+              <span className="status-ok">
+                ✓ {r.ehr.mode === "fake" ? "MOCK" : "Certified"}{" "}
+                {releaseLabel(r.certificate.specVersion, run.manifest.runId)}
+              </span>
+            ) : deployed || r.release ? (
+              <Badge>{r.certification.result}</Badge>
+            ) : null}
+          </span>
+        </button>
+        {target?.failed ? (
+          <RuleConformanceBadge
+            data={run.ruleConformance}
+            persona={persona}
+            revision={r.versionAfter}
+          />
+        ) : null}
+        {rejected.map((rejection) => (
+          <button
+            key={rejection.id}
+            className="rejected-row"
+            onClick={() => open({ record: r, rejection })}
+          >
+            <span>✕ Rejected · Night {r.night}</span>
+            <span>{rejection.summary}</span>
+            <strong>{rejection.check.property ?? rejection.check.status}</strong>
+          </button>
+        ))}
+      </div>
+    );
+  };
+  const baseCert =
+    run.certs.has(`certs/${persona}/v0.json`) ||
+    run.files?.includes(`certs/${persona}/v0.json`);
   return (
     <section className="version-history" aria-label="Version history">
-      <div className="section-heading">
-        <h3>Revisions and decisions</h3>
-        {blindProtocol && (
+      <div className="history-heading">
+        <h3>Night by night</h3>
+        <InfoTip label="How nights are measured" align="right">
+          {blindProtocol && (
+            <p>
+              One canonical EHR, with role permissions and preset views. The
+              agent evolves each persona’s fork. Odd days calibrate; even days
+              are blind measurements and never select changes. Savings compare
+              the certified canonical for that day’s release on identical
+              schedules and seeds; canonical differences include vendor/fork
+              drift. Agent-only savings use the no-agent fork carried through
+              recertification and canonical fallback without LLM changes. Even
+              nights reuse past data; superseded changes have no independent
+              test. Blind per-day task counts are shown, including the smaller
+              P5 samples.
+            </p>
+          )}
           <p>
-            One canonical EHR, with role permissions and preset views. The agent
-            evolves each persona’s fork. Odd days calibrate; even days are blind
-            measurements and never select changes. Savings compare the certified
-            canonical for that day’s release on identical schedules and seeds;
-            canonical differences include vendor/fork drift. Agent-only savings
-            use the no-agent fork carried through recertification and canonical
-            fallback without LLM changes. Even nights reuse past data;
-            superseded changes have no independent test. Blind per-day task
-            counts are shown, including the smaller P5 samples.
+            Effect is the change in clicks; negative means less work.{" "}
+            {blindProtocol
+              ? "Blind tests compare after − before against the certified canonical."
+              : "Exact savings compare fixed benchmark values on the workflow union."}{" "}
+            For realistic effort, choose “Realistic workload” on the chart; a
+            flat expert minimum can coexist with less scrolling or mouse travel
+            in simulation.
           </p>
-        )}
-        <span>Saving: positive = less effort · exact fixed workflow union</span>
-      </div>
-      <div className="version-column-head" aria-hidden="true">
-        <span>Revision / night / change</span>
-        <span>vs previous</span>
-        <span>vs baseline</span>
-        <span>Certificate</span>
+          <p>
+            Rule conformance is read-only evidence and does not gate
+            deployment; only revisions with failures are flagged here.
+          </p>
+        </InfoTip>
+        <span className="history-legend">
+          <span className="better">−</span> less work ·{" "}
+          <span className="worse">+</span> more work
+        </span>
       </div>
       <button
         className="version-row baseline-row"
         onClick={() => open({ record: null })}
       >
-        <span className="version-open">
+        <span className="night-when">
           <strong>rev 0 · Baseline</strong>
+        </span>
+        <span className="night-what">
           <span>Canonical program</span>
         </span>
-        <span>—</span>
-        <span>0 clicks</span>
-        <Badge
-          tone={
-            run.certs.has(`certs/${persona}/v0.json`) ||
-            run.files?.includes(`certs/${persona}/v0.json`)
-              ? "pass"
-              : ""
-          }
-        >
-          {run.manifest.ehr.mode === "fake"
-            ? "MOCK certificate"
-            : run.certs.has(`certs/${persona}/v0.json`) ||
-                run.files?.includes(`certs/${persona}/v0.json`)
-              ? "Certificate recorded"
-              : "Certificate unavailable"}
-        </Badge>
+        <span className="night-effect">
+          {baseline !== null && (
+            <span className="effect-caption">
+              {round(baseline)} clicks expert minimum
+            </span>
+          )}
+        </span>
+        <span className="night-status">
+          {run.manifest.ehr.mode === "fake" ? (
+            <Badge>MOCK certificate</Badge>
+          ) : baseCert ? (
+            <span className="status-ok">✓ Certificate recorded</span>
+          ) : (
+            <Badge>Certificate unavailable</Badge>
+          )}
+        </span>
       </button>
-      <RuleConformanceBadge
-        data={run.ruleConformance}
-        persona={persona}
-        revision={0}
-      />
-      {records.map((r) => {
-        // Behavioral conformance is recorded after deployment; certification remains the gate.
-        const deployed = r.versionAfter !== r.versionBefore;
-        const after = exactAt(r.versionAfter),
-          before = exactAt(r.versionBefore);
-        const chosen = r.candidates
-          .filter((c) => r.chosen?.candidateIds.includes(c.candidate.id))
-          .map((c) => c.candidate.summary)
-          .join("; ");
-        const rejected = getRejections({ ...run, records: [r] });
-        return (
-          <div key={`${r.mode}-${r.night}`}>
-            <button
-              className={`version-row ${deployed ? "" : "unchanged-row"}`}
-              onClick={() => open({ record: r })}
-            >
-              <span className="version-open">
-                <strong>
-                  {deployed
-                    ? `rev ${r.versionAfter}`
-                    : `Kept rev ${r.versionAfter}`}{" "}
-                  · Night {r.night}
-                  {r.release
-                    ? ` · ${releaseLabel(r.release.id, run.manifest.runId)}`
-                    : ""}
-                </strong>
-                <span>
-                  {chosen ||
-                    (r.release
-                      ? r.release.surfaced === false
-                        ? "Optional feature left out of nursing workflow"
-                        : "Release migration"
-                      : r.outcome === "llm-error"
-                        ? "LLM error — no design decision"
-                        : "No change deployed")}
-                </span>
-              </span>
-              <span>
-                <span className="mobile-label">vs previous: </span>
-                {blindProtocol
-                  ? r.release
-                    ? "Vendor release: separate cost"
-                    : r.measured.test
-                      ? "Blind measurement recorded"
-                      : r.outcome === "llm-error"
-                        ? "LLM error"
-                        : "Not independently measured"
-                  : deployed
-                    ? change(after, before)
-                    : "0 clicks"}
-              </span>
-              <span>
-                <span className="mobile-label">vs baseline: </span>
-                {blindProtocol
-                  ? r.measured.test
-                    ? `${-r.measured.test.saving.clicks > 0 ? "+" : ""}${fmt(-r.measured.test.saving.clicks)} clicks vs active canonical (after − before); ${r.measured.testNoAgent ? `${-r.measured.testNoAgent.saving.clicks > 0 ? "+" : ""}${fmt(-r.measured.testNoAgent.saving.clicks)} clicks agent-only vs no-agent` : "no-agent unavailable"}; ${r.measured.test.after.completed}/${r.measured.test.after.tasks} tasks`
-                    : "Unavailable"
-                  : change(after, baseline)}
-              </span>
-              {r.certificate ? (
-                <Badge tone="pass">
-                  {r.ehr.mode === "fake" ? "MOCK" : "Certified"} ·{" "}
-                  {releaseLabel(r.certificate.specVersion, run.manifest.runId)}
-                </Badge>
-              ) : (
-                <Badge>{r.certification.result}</Badge>
-              )}
-            </button>
-            <RuleConformanceBadge
-              data={run.ruleConformance}
-              persona={persona}
-              revision={r.versionAfter}
-            />
-            {rejected.map((rejection) => (
-              <button
-                key={rejection.id}
-                className="rejected-row"
-                onClick={() => open({ record: r, rejection })}
-              >
-                <span>↳ Rejected · Night {r.night}</span>
-                <span>{rejection.summary}</span>
-                <strong>
-                  {rejection.check.property ?? rejection.check.status}
-                </strong>
-              </button>
-            ))}
-          </div>
+      {conformance(0)?.failed ? (
+        <RuleConformanceBadge
+          data={run.ruleConformance}
+          persona={persona}
+          revision={0}
+        />
+      ) : null}
+      {groups.map(([first, ...rest]) => {
+        if (!first) return null;
+        const last = rest[rest.length - 1];
+        return last ? (
+          <details key={`quiet-${first.night}`} className="quiet-nights">
+            <summary>
+              Nights {first.night}–{last.night} · no change, rev{" "}
+              {first.versionAfter} kept
+            </summary>
+            {[first, ...rest].map(row)}
+          </details>
+        ) : (
+          row(first)
         );
       })}
-      <p className="dash-note">
-        Exact savings compare fixed benchmark values. For realistic effort,
-        choose “Simulated realistic workload” above; its samples and day
-        coverage are listed in chart data. A flat expert minimum can coexist
-        with less scrolling or mouse travel in simulation.
-      </p>
     </section>
   );
 }
@@ -1268,11 +1345,6 @@ export function Dashboard({
           Open EHR
         </a>
       </AppHeader>
-      <p className="dash-description">
-        One canonical EHR, with role permissions and a preset view. The
-        overnight agent evolves each persona’s fork; vendor releases merge into
-        every fork and are re-certified.
-      </p>
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button
@@ -1311,8 +1383,24 @@ export function Dashboard({
         ))}
       </nav>
       <main className="dash-content">
-        <div className="section-heading">
-          <h2>{view}</h2>
+        <div className="page-heading">
+          <h2>
+            {personas.find((p) => p.id === persona)?.name ?? persona}
+            <span className="page-heading-id">{persona}</span>
+          </h2>
+          <InfoTip label="About this dashboard">
+            <p>
+              One canonical EHR, with role permissions and a preset view. The
+              overnight agent evolves each persona’s fork; vendor releases merge
+              into every fork and are re-certified.
+            </p>
+          </InfoTip>
+          {run && (
+            <span className="run-banner" role="status">
+              {run.manifest.warning ??
+                `${runId} · Real checker · ${run.manifest.days} recorded days`}
+            </span>
+          )}
           <div className="persona-selector" role="group" aria-label="Persona">
             {personas.map((p) => (
               <button
@@ -1339,7 +1427,6 @@ export function Dashboard({
                 {p.id}
               </button>
             ))}
-            <span>{personas.find((p) => p.id === persona)?.name}</span>
           </div>
         </div>
         {error && (
@@ -1356,12 +1443,25 @@ export function Dashboard({
         )}
         {run && (
           <>
-            <p className="run-banner" role="status">
-              {run.manifest.warning ??
-                `${runId} · Real checker · ${run.manifest.days} recorded days`}
-            </p>
             {view === "Evolution" && (
-              <>
+              <div className="evolution">
+                <EvolutionSummary
+                  run={run}
+                  persona={persona}
+                  rejected={
+                    rejections.filter(
+                      (r) =>
+                        r.record.persona === persona &&
+                        r.record.mode !== "try-to-break-it",
+                    ).length
+                  }
+                />
+                <WorkflowComplexity
+                  key={`${runId}-${persona}`}
+                  run={run}
+                  persona={persona}
+                />
+                <VersionList run={run} persona={persona} open={open} />
                 {run.files?.includes("trajectories/index.json") && (
                   <p className="trajectory-compare-entry">
                     <a
@@ -1371,9 +1471,7 @@ export function Dashboard({
                     </a>
                   </p>
                 )}
-                <WorkflowComplexity key={runId} run={run} persona={persona} />
-                <VersionList run={run} persona={persona} open={open} />
-              </>
+              </div>
             )}
             {retained("Trajectories") &&
               (run.files?.includes("trajectories/index.json") ? (

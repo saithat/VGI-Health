@@ -1,4 +1,5 @@
-import { mkdir, readFile, writeFile, rename, rm } from 'node:fs/promises';
+import { durableWriteCompleted } from './crash-hook.js';
+import { mkdir, readFile, writeFile, rename, rm, open } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,8 +15,7 @@ export function resolveUserPath(p: string): string {
 }
 
 export async function writeJson(file: string, value: unknown): Promise<void> {
-  await mkdir(path.dirname(file), { recursive: true });
-  await writeFile(file, JSON.stringify(value, null, 2) + '\n');
+  await writeJsonAtomic(file, value);
 }
 
 export async function readJson<T extends z.ZodType>(file: string, schema: T): Promise<z.infer<T>> {
@@ -62,11 +62,20 @@ export function errorMessage(e: unknown): string {
 
 /** A same-directory rename is the single publication point; readers see old or new JSON. */
 export async function writeJsonAtomic(file: string, value: unknown): Promise<void> {
+  await writeFileAtomic(file,JSON.stringify(value,null,2)+'\n');
+}
+
+export async function writeFileAtomic(file:string,content:string|Uint8Array):Promise<void>{
   await mkdir(path.dirname(file), { recursive: true });
   const temporary = `${file}.${process.pid}.${crypto.randomUUID()}.tmp`;
   try {
-    await writeFile(temporary, JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
+    await writeFile(temporary, content, { flag: 'wx' });
+    const handle = await open(temporary, 'r');
+    try { await handle.sync(); } finally { await handle.close(); }
     await rename(temporary, file);
+    const directory = await open(path.dirname(file), 'r');
+    try { await directory.sync(); } finally { await directory.close(); }
+    durableWriteCompleted(file);
   } finally {
     await rm(temporary, { force: true });
   }

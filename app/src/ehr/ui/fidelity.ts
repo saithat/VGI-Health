@@ -89,10 +89,13 @@ export function expectedNodeAria(
       const patient =
         owner && "patientPane" in owner ? owner.patientPane.patient : null;
       return nest(entry(patient ? "dialog" : "region", "Multi-patient board"), [
-        ...(node.board.urgent.length
+        ...(node.board.urgent.length || node.board.children.some(n=>"patientPane" in n && n.patientPane.metadata.urgent?.length)
           ? nest(
               entry("complementary", "Urgent patients"),
-              node.board.urgent.map(() => entry("alert", "")),
+              [ ...node.board.urgent.map(() => entry("alert", "")),
+                ...node.board.children.flatMap(child=> "patientPane" in child && child.patientPane.metadata.urgent?.length
+                  ? nest(entry("region",`Urgent clinical alerts for ${child.patientPane.patient}`),expectedChildrenAria(child.patientPane.metadata.urgent.map(n=>
+                    "button" in n && patient && patient!==child.patientPane.patient ? {button:{...n.button,enabled:false}} : n))) : []) ],
             )
           : []),
         ...node.board.children.flatMap((child) => {
@@ -372,11 +375,20 @@ function exhaust(node: never): never {
   throw new Error(`Unknown node: ${String(node)}`);
 }
 export function expectedAria(screen: UiScreen): AriaEntry[] {
+  const strip = screen.urgent?.length
+    ? nest(
+        entry("region", "Urgent clinical alerts"),
+        expectedChildrenAria(screen.urgent),
+      )
+    : [];
   if (screen.modal)
-    return nest(
-      entry("dialog", modalName(screen.modal) ?? "Clinical alert"),
-      expectedNodeAria(screen.modal),
-    );
+    return [
+      ...strip,
+      ...nest(
+        entry("dialog", modalName(screen.modal) ?? "Clinical alert"),
+        expectedNodeAria(screen.modal),
+      ),
+    ];
   return [
     entry(
       "banner",
@@ -411,6 +423,7 @@ export function expectedAria(screen: UiScreen): AriaEntry[] {
         : []),
       ...expectedChildrenAria(screen.workspace),
     ]),
+    ...strip,
   ];
 }
 

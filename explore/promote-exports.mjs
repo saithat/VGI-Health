@@ -18,7 +18,7 @@ const wasm=await loadEhrInterp({wasmBinary:await readFile('app/public/ehr/ehr-in
 const canonical=JSON.parse(wasm.call('ehr_exotic',JSON.stringify({op:'canonical'})));
 const sourceInput=structuredClone(canonical.input);sourceInput.facts.sourcePatientId='reference';sourceInput.display.sourcePatientId='reference';
 const other=JSON.parse(wasm.call('ehr_exotic',JSON.stringify({op:'board',sessions:[{patient:'reference',input:sourceInput,receipts:[]}]}))).node.board.children[0];
-const pane=(patient,s)=>({patientPane:{patient,banner:s.banner,metadata:{sourceLabels:s.sourceLabels??[],fieldSources:s.fieldSources??[],entryHints:s.entryHints??[],fieldChoices:s.fieldChoices??[]},
+const pane=(patient,s)=>({patientPane:{patient,banner:s.banner,metadata:{sourceLabels:s.sourceLabels??[],fieldSources:s.fieldSources??[],entryHints:s.entryHints??[],fieldChoices:s.fieldChoices??[],...(s.urgent?{urgent:s.urgent}:{})},
  children:[...s.workspace,...s.side,...s.nav.flatMap(([,entries])=>entries.map(([comp,label])=>({button:{comp,label,role:'nav',enabled:true,blockedReason:null,hotkey:null}})))],modal:s.modal?[s.modal]:[]}});
 const attention=await read('docs/design/alert-urgency.json');
 const urgentIds=new Set(attention.assignments.filter(a=>a.urgency==='urgent').map(a=>a.id));

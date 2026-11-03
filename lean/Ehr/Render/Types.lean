@@ -620,12 +620,19 @@ structure UiCodeChoices where
   allowOther : Bool := true
   deriving Repr, Inhabited
 
+/-- The pinned strip emits alerts and their permitted acknowledgment controls. -/
+inductive UiStripAtom
+  | alert (comp : CompId) (alertId : AlertId) (label severity : String)
+  | button (comp label role : String) (enabled : Bool) (blockedReason hotkey : Option String)
+  deriving Repr, Inhabited
+
 /-- Per-pane guidance has the same provenance and choices as an ordinary screen. -/
 structure UiPaneMetadata where
   sourceLabels : List (String × String)
   fieldSources : List (String × String)
   entryHints : List (CompId × String)
   fieldChoices : List (CompId × UiCodeChoices)
+  urgent? : Option (List UiStripAtom) := none
   deriving Repr, Inhabited
 
 /-- Semantic EHR nodes. Only the selected tab body is emitted. -/
@@ -662,6 +669,15 @@ inductive UiNode
   | text (s : String)
   deriving Repr, Inhabited
 
+def UiStripAtom.toNode : UiStripAtom → UiNode
+  | .alert comp id label severity => .alert comp id label severity
+  | .button comp label role enabled reason key => .button comp label role enabled reason key
+
+def stripAtom? : UiNode → Option UiStripAtom
+  | .alert comp id label severity => some (.alert comp id label severity)
+  | .button comp label role enabled reason key => some (.button comp label role enabled reason key)
+  | _ => none
+
 /-- A semantic screen. The banner is the first and sole banner landmark. -/
 structure UiScreen where
   /-- Stable view identity for scroll/focus lifecycle; never a visible label. -/
@@ -684,6 +700,7 @@ structure UiScreen where
   workspace : List UiNode
   side : List UiNode
   modal : Option UiNode
+  urgent? : Option (List UiNode) := none
   deriving Repr, Inhabited
 
 /-! ## API records -/

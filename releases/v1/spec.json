@@ -1896,5 +1896,11 @@
    "screens": [],
    "label": "Interaction information",
    "id": "minorInteractionPopup",
-   "cond": "interaction",
-   "commit": "administerMed"}]}
+   "cond": "minorInteraction",
+   "commit": "administerMed"},
+  {"tier": "passive",
+   "screens": ["W2"],
+   "label": "Critical result requires clinician action",
+   "id": "criticalResult",
+   "cond": "criticalResult",
+   "commit": "ackResult"}]}

@@ -1,5 +1,5 @@
 .research {
-  font: 15px/1.5 system-ui;
+  font: 15px/1.5 "VGI Noto Sans", "VGI Noto Symbols", sans-serif;
   color: #152c40;
   background: #edf3f7;
   min-height: 100vh;
@@ -161,3 +161,11 @@
     padding: 6px;
   }
 }
+
+.research-urgency:empty { display:none; }
+.research-urgency { position:sticky;top:0;z-index:1200;background:white; }
+.research-urgency .urgent-alert-strip { position:static; }
+
+/* The research composition uses production control tokens and target rules.
+Its urgent strip is already in flow, so the fixed-shell spacer is unnecessary. */
+.clinical-app.research:has(.urgent-alert-strip) { padding-top:16px; }

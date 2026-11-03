@@ -6,6 +6,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createServer } from "../node_modules/vite/dist/node/index.js";
 import { chromium } from "../node_modules/@playwright/test/index.mjs";
 import { pathToFileURL } from "node:url";
+import { captureSettings, captureCss, waitForCaptureFonts } from "../e2e/capture-environment.ts";
 export function atoms(nodes) {
   return nodes.flatMap((n) => {
     const [kind, v] = Object.entries(n)[0];
@@ -26,6 +27,14 @@ export async function startLab() {
   });
   await server.listen();
   const browser = await chromium.launch({ headless: true });
+  const newPage=browser.newPage.bind(browser);
+  browser.newPage=async options=>{
+    const page=await newPage({...captureSettings,...options});
+    // tsx keeps function names in imported TS browser callbacks.
+    await page.addInitScript("globalThis.__name = value => value");
+    await page.addInitScript(css=>{const add=()=>{const style=document.createElement("style");style.textContent=css;document.head.append(style);};if(document.head)add();else document.addEventListener("DOMContentLoaded",add,{once:true});},captureCss);
+    return page;
+  };
   const address = server.httpServer.address();
   return {
     browser,
@@ -39,7 +48,7 @@ export async function startLab() {
 }
 export async function paint(page, view) {
   await page.evaluate((v) => window.renderResearch(v), view);
-  await page.evaluate(() => document.fonts.ready);
+  await waitForCaptureFonts(page);
 }
 /** Expected content comes only from the supplied tree, independently of React. */
 export async function gateView(page, view) {
@@ -193,7 +202,8 @@ export async function measureEvent(
         [...document.querySelectorAll("[data-patient]")].find(
           (el) => el.dataset.patient === patient,
         ) ?? document;
-      const candidates = [...pane.querySelectorAll("[data-comp-id]")].filter(
+      const strip=[...document.querySelectorAll("[data-urgent-strip-patient]")].find(el=>el.dataset.urgentStripPatient===patient);
+      const candidates = [...pane.querySelectorAll("[data-comp-id]"),...(strip?.querySelectorAll("[data-comp-id]")??[])].filter(
         (el) => el.dataset.compId === id,
       );
       const target = candidates.find(

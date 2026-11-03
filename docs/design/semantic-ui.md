@@ -315,3 +315,14 @@ it. Regression checks cover the positive same-alert case, unrelated modals,
 hidden acknowledgments and disabled acknowledgments at both widths. The initial
 promotion gate failures and the correction remain in the ignored run artifacts;
 no urgency ID, tier or hospital obligation was changed.
+
+The source provenance theorems apply to adapter-built `Display` values. Its derived
+JSON decoder accepts arbitrary `timelineBackings`; externally supplied backings
+are trusted input, whose authenticity the host must establish. The decoder does
+not recompute or validate source provenance. Board pane metadata also carries
+all production urgent-strip alerts/acknowledgments; `pane_strip_exact` and
+`metadata_strip_exact` prove exact transport, alongside the unchanged clinical
+meaning. The global board rail pins these patient-labelled controls above pane
+scrolling and unrelated dialogs. The existing modal owner still controls which
+patient may act. Critical-result receive/document/resolve steps preserve clinical
+commits (`critical_handle_commits`), retaining the original guard theorem.

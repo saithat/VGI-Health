@@ -1,6 +1,8 @@
 import { createContext, useContext, useLayoutEffect, useRef, type ReactNode } from "react";
 import type { Event } from "../../../../lean/generated/ehr-types";
 import type { NodeOf, UiNode } from "./types";
+import { UiChildren } from "./nodes";
+import "./urgent-strip.css";
 import { FieldSourceContext } from "./clinical-metadata";
 import { EntryHintsContext, SourceLabelsContext } from "./SourceLabels";
 import { FieldChoicesContext } from "./FieldChoices";
@@ -19,6 +21,7 @@ export function Board({
   node: NodeOf<"board">;
   render: (child: UiNode, index: number) => ReactNode;
 }) {
+  const dispatch = useContext(BoardEvents);
   const board = useRef<HTMLElement>(null);
   const rail = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
@@ -67,6 +70,15 @@ export function Board({
               {" · "}
               {d.banner.find(([key]) => key === "MRN")?.[1]} · {d.label}
             </div>
+          ))}
+          {node.children.flatMap(n=>"patientPane" in n && n.patientPane.metadata.urgent?.length ? [n.patientPane] : []).map(pane=>(
+            <section key={pane.patient} className="urgent-alert-strip board-native-strip"
+              data-urgent-strip-patient={pane.patient} aria-label={`Urgent clinical alerts for ${pane.patient}`}>
+              <strong>{pane.banner.find(([key])=>key==="Patient")?.[1]??pane.patient} · {pane.banner.find(([key])=>key==="MRN")?.[1]}</strong>
+              <UiChildren nodes={(pane.metadata.urgent??[]).map(n=> "button" in n && owner && "patientPane" in owner && owner.patientPane.patient!==pane.patient
+                ? {button:{...n.button,enabled:false,blockedReason:"Another patient's clinical acknowledgment owns interaction"}} : n)}
+                onEvent={event=>{if(!owner || ("patientPane" in owner && owner.patientPane.patient===pane.patient))dispatch?.({patient:pane.patient,event});}} />
+            </section>
           ))}
         </aside>
         <div className="board-panes">{node.children.map(render)}</div>

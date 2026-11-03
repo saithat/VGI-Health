@@ -15,8 +15,9 @@ import { spawnSync } from "node:child_process";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 if (!process.env.TMPDIR)
   throw new Error("Set TMPDIR to disk-backed scratch space");
-const output = process.argv[2]
-  ? resolve(process.argv[2])
+const destination = process.argv.slice(2).find((arg) => !arg.startsWith("--"));
+const output = destination
+  ? resolve(destination)
   : mkdtempSync(resolve(process.env.TMPDIR, "policy-canonical-"));
 mkdirSync(output, { recursive: true });
 const index = JSON.parse(
@@ -30,6 +31,7 @@ const cases = [
   ["pediatric", index.patients.find((p) => p.flags.pediatric)],
 ];
 const personaMode = process.argv.includes("--personas");
+const urgencyOnly = process.argv.includes("--urgency-only");
 const hashes = new Map();
 const exports = [];
 for (const version of ["v1", "v2", "v3"]) {
@@ -98,6 +100,20 @@ for (const version of ["v1", "v2", "v3"]) {
     }
   }
 }
+// Exercise workflow snapshots and simultaneous conditions through the same
+// native semantic renderer, even when historical patient fixtures lack panic results.
+const probeExport = spawnSync(resolve(root, "lean/.lake/build/bin/ehr"), ["urgency-probes"], {
+  cwd: root, encoding: "utf8",
+});
+if (probeExport.status !== 0) throw new Error(probeExport.stderr || "urgency-probes failed");
+const probes = JSON.parse(probeExport.stdout).map(([name, tree]) => {
+  const file = resolve(output, `${name}.json`);
+  writeFileSync(file, JSON.stringify(tree));
+  const sha256 = createHash("sha256").update(readFileSync(file)).digest("hex");
+  if (!hashes.has(sha256)) hashes.set(sha256, file);
+  return { file, sha256, checkedAs: hashes.get(sha256) };
+});
+exports.push({ version: "v1", candidate: "urgency-workflow", scenario: "critical-and-concurrent", states: probes });
 writeFileSync(
   resolve(output, "exports.json"),
   JSON.stringify({ date: index.referenceDate, exports }, null, 2),
@@ -106,9 +122,32 @@ console.log(
   `Canonical policy audit: ${exports.reduce((n, entry) => n + entry.states.length, 0)} exports, ${hashes.size} unique trees. Output: ${output}`,
 );
 if (process.argv.includes("--export-only")) process.exit(0);
+// Focused urgency audit: retain every distinct strip/modal/banner presentation,
+// choosing the largest body as its scroll stress case. Critical workflow states
+// are all retained. This is representative geometry, not whole-version approval.
+let selected = [...hashes.values()];
+if (urgencyOnly) {
+  const groups = new Map();
+  for (const file of selected) {
+    const content = readFileSync(file, "utf8");
+    const tree = JSON.parse(content);
+    if (!tree.urgent?.length) continue;
+    const key = JSON.stringify([tree.banner, tree.urgent, tree.modal]);
+    const group = groups.get(key) ?? { file, bytes: 0, members: [] };
+    group.members.push(file);
+    if (content.length > group.bytes) { group.file = file; group.bytes = content.length; }
+    groups.set(key, group);
+  }
+  selected = [...new Set([...groups.values()].map((group) => group.file).concat(probes.map((p) => p.file)))];
+  writeFileSync(resolve(output, "urgency-selection.json"), JSON.stringify({
+    scope: "representative distinct strip/modal/banner presentations; largest body per group; all critical workflow states",
+    sourceTrees: hashes.size, selected, groups: [...groups.values()],
+  }, null, 2));
+  console.log(`Urgency audit: ${selected.length} representatives from ${hashes.size} unique source trees`);
+}
 const result = spawnSync(
   process.execPath,
-  [resolve(root, "app/scripts/screen-check.mjs"), "--ui", ...hashes.values()],
+  [resolve(root, "app/scripts/screen-check.mjs"), "--ui", ...selected],
   {
     cwd: root,
     stdio: "inherit",

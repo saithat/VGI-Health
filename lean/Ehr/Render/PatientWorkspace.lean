@@ -1,5 +1,5 @@
 import Ehr.Core.Workspace
-import Ehr.Render.Ui
+import Ehr.Render.UrgentStrip
 
 namespace Ehr.Render
 
@@ -32,9 +32,10 @@ def patientLandingUi (p : Program) (f : Facts) (u : User) (s : State) : UiScreen
 
 /-- Patient-scoped renderUi retains all clinical presentation guarantees. -/
 def renderPatientWorkspace (sp : Spec) (p : Program) (f : Facts) (d : Display) (u : User) (s : State) : UiScreen :=
-  if !Workspace.enabled p then renderUi sp p f d u s else
+  let effective := CriticalRuntime.effectiveFacts f s
+  if !Workspace.enabled p then withUrgentStrip sp effective u s (renderUi sp p effective d u s) else
   if Workspace.bound f s then
-    let clinical := renderUi sp p f d u s
+    let clinical := withUrgentStrip sp effective u s (renderUi sp p effective d u s)
     { clinical with nav := workspaceNav p f s :: clinical.nav }
   else patientLandingUi p f u s
 

@@ -55,14 +55,15 @@ it('does not reuse geometry across presentation-only alternatives sharing an exe
  const a=await ehr.simulate({...args,program:one});await ehr.simulate({...args,program:one});const b=await ehr.simulate({...args,program:two});
  expect(captures).toBe(2);expect(a.geometry?.componentsSha256).not.toBe(b.geometry?.componentsSha256);
 });
-withData("runs/run1-P3/decisions").it('records a geometry screen infrastructure error before aborting and never calls it a rejection',async()=>{
+withData("runs/run1-P3/decisions").it('stops on exhausted geometry infrastructure without publishing a night outcome',async()=>{
  const {runDays}=await import('../src/run.js');const {createFakeEhr}=await import('../src/fake/ehr-fake.js');
  const {ScreenInfrastructureError}=await import('../src/errors.js');const {fakeWorld,tmp}=await import('./helpers.js');
  const {ScriptedLlm}=await import('./scripted.js');const {readFile}=await import('node:fs/promises');
  const root=await tmp('geometry-infrastructure');
  await expect(runDays({days:2,worldDir:await fakeWorld(2),runsRoot:root,runId:'FAKE',ehr:createFakeEhr(),llm:new ScriptedLlm(),geometry:async input=>{if(input.program.version>0)throw new ScreenInfrastructureError('FAKE geometry browser unavailable');return null;}})).rejects.toThrow('FAKE geometry browser unavailable');
- const manifest=JSON.parse(await readFile(root+'/FAKE/manifest.json','utf8')),record=JSON.parse(await readFile(root+'/FAKE/decisions/night-01/P1.json','utf8'));
- expect(manifest.status).toBe('infrastructure-error');expect(record.outcome).toBe('error');expect(record.flags).toContain('FAKE geometry browser unavailable');
+ const manifest=JSON.parse(await readFile(root+'/FAKE/manifest.json','utf8'));
+ expect(manifest.status).toBe('infrastructure-error');expect(manifest.infrastructureRetries.at(-1).attempts).toBe(3);
+ await expect(readFile(root+'/FAKE/decisions/night-01/P1.json','utf8')).rejects.toThrow('ENOENT');
 });
 
 it('uses the measured workspace for the actual day without depending on task naming', () => {
@@ -82,4 +83,19 @@ it('captures different calibration partitions independently even on the same day
  const args={specVersion:'v1',program,persona:params,worldDir:world.dir,seed:1};
  await ehr.simulate({...args,schedule});await ehr.simulate({...args,schedule:{...schedule,tasks:schedule.tasks.slice(0,1)}});
  expect(captures).toBe(2);
+});
+
+it('reloads persisted geometry coverage when simulation resumes in a new process',async()=>{
+ const {geometryEhr,geometryProgramHash,geometryComponentsHash,loadGeometry}=await import('../src/geometry.js');
+ const {createFakeEhr}=await import('../src/fake/ehr-fake.js');const {fakeCanonical}=await import('../src/fake/fixtures.js');
+ const {fakeWorld,tmp}=await import('./helpers.js');const {loadWorld}=await import('../src/world.js');const path=await import('node:path');
+ const world=await loadWorld(await fakeWorld(2)),dir=await tmp('geometry-resume'),program=fakeCanonical('v1');
+ const params=world.personas.get('P1');if(!params)throw new Error('Missing fixture persona');
+ const provider:import('../src/geometry.js').GeometryProvider=async input=>({...atlas,programHash:geometryProgramHash(input.program),states:atlas.states.map(state=>({...state,state:`fixture-day-${input.schedule?.day}`}))});
+ for(const day of [1,2]){
+  const schedule=await world.schedule(day,'P1');if(!schedule)throw new Error('Missing fixture schedule');
+  await geometryEhr(createFakeEhr(),provider,dir).simulate({specVersion:'v1',program,persona:params,schedule,worldDir:world.dir,seed:day});
+ }
+ const recorded=await loadGeometry(path.join(dir,'geometry',`${geometryProgramHash(program)}.${geometryComponentsHash(program)}.json`));
+ expect(recorded.states.map(state=>state.state)).toEqual(['fixture-day-1','fixture-day-2']);
 });

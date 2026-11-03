@@ -11,7 +11,7 @@
 import { type DayBuild, isPcnAllergic } from "../build";
 import { homeOrder, isDiabetic, nsaidOk, prn } from "../clinical";
 import { controlledPrescriptions, hasChronicOpioid } from "../controlled";
-import { labObservation, refillTask, type LabKey, type ClinicalObservation } from "../fhir";
+import { criticalResultObservation, labObservation, refillTask, type LabKey, type ClinicalObservation } from "../fhir";
 import { drugDef, isBenzodiazepine, isControlled, isOpioid, order, serviceOrder } from "../formulary";
 import type { HomeMed, PatientProfile } from "../patients";
 import { homeMed } from "../patients";
@@ -450,13 +450,15 @@ function hashCode(s: string): number {
 function resultTask(b: DayBuild, lab: PendingLab, start: number, rng: Rng): void {
   const abnormal = lab.interpretation !== "N";
   const notes = abnormal ? ["resultNote", "patientMessage"] : rng.chance(0.6) ? ["patientMessage"] : [];
+  const firstResult = !b.tasks.P1.some((task) => task.workflow === "W2");
   b.addTask(
     "P1",
     "W2",
     lab.patientId,
     start,
     { ackResult: true, orders: lab.followUp, noteSections: notes },
-    [labObservation(`${lab.id}-result`, lab.patientId, lab.resultDay, 7 * 60 + 15, lab.lab, lab.value, lab.interpretation, lab.text ?? undefined)],
+    [labObservation(`${lab.id}-result`, lab.patientId, lab.resultDay, 7 * 60 + 15, lab.lab, lab.value, lab.interpretation, lab.text ?? undefined),
+      ...(firstResult ? [criticalResultObservation(`${lab.id}-critical`, lab.patientId, b.day, start)] : [])],
     b.interruptions("P1", rng, 0.5),
   );
 }

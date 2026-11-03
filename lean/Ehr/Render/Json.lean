@@ -20,7 +20,7 @@ instance {n : Nat} : Lean.FromJson (Fin n) where
     if h : value < n then pure ⟨value, h⟩ else throw "finite number out of bounds"
 
 deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
-  UiPresentationKind, UiCodeChoice, UiChartReference, UiSourceDate, UiDateBacking, UiDatedItem, UiBoardDemand, UiCodeChoices, UiPaneMetadata, UiNode, UiScreen
+  UiPresentationKind, UiCodeChoice, UiChartReference, UiSourceDate, UiDateBacking, UiDatedItem, UiBoardDemand, UiCodeChoices, UiStripAtom, UiPaneMetadata, UiNode, UiScreen
 
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, LabResultRow, ProblemRow, ImmRow,

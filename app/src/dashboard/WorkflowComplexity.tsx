@@ -26,6 +26,17 @@ const workflowNames: Record<string, string> = {
   W7: "Refills",
 };
 type Measure = "expert" | "workload";
+const colors = [
+  "#245A81",
+  "#7A8FA6",
+  "#65448B",
+  "#256348",
+  "#825300",
+  "#243341",
+  "#9C2833",
+];
+const workflowColor = (workflow: string, workflows: string[]) =>
+  colors[Math.max(0, workflows.indexOf(workflow)) % colors.length];
 interface Point {
   version: number;
   spec: string;
@@ -120,15 +131,6 @@ function Chart({
   const workflows = [
     ...new Set(points.flatMap((p) => p.values.map((w) => w.workflow))),
   ];
-  const colors = [
-    "#245A81",
-    "#526171",
-    "#65448B",
-    "#256348",
-    "#825300",
-    "#243341",
-    "#9C2833",
-  ];
   const markers = run.records.filter((r) => r.persona === persona && r.release);
   // Draw separate line segments around missing values; unknown is never zero.
   const line = (key: "floor" | "expert", dashed: boolean) =>
@@ -221,7 +223,7 @@ function Chart({
                     y={y(acc)}
                     width={bw}
                     height={Math.max(0, y(before) - y(acc))}
-                    fill={colors[workflows.indexOf(w.workflow) % colors.length]}
+                    fill={workflowColor(w.workflow, workflows)}
                   >
                     <title>
                       rev {p.version} · {w.workflow}: {fmt(w.value)}
@@ -249,7 +251,12 @@ export function WorkflowComplexity({
   run: RunData;
   persona: string;
 }) {
-  const [measure, setMeasure] = useState<Measure>("expert");
+  // Open on whichever measure has data, so the first view is never an empty chart.
+  const [measure, setMeasure] = useState<Measure>(() =>
+    pointsFor(run, persona, "expert", "clicks").some((p) => p.total !== null)
+      ? "expert"
+      : "workload",
+  );
   const [metric, setMetric] = useState<Metric>("clicks");
   const [compare, setCompare] = useState(false);
   const selected = pointsFor(run, persona, measure, metric);
@@ -281,9 +288,8 @@ export function WorkflowComplexity({
       className="workflow-complexity"
       aria-label="Union workflow complexity"
     >
-      <p>Geometry model: Chromium at 1440×900, representative screen states, straight-line travel between control centers with no tremor. Scroll distance includes measured reveal offsets. Missing pixels are unavailable; these are modeled interactions, not observed humans.</p>
       <div className="complexity-controls">
-        <h3>Union workflow complexity</h3>
+        <h3>Effort by revision</h3>
         <label>
           Measure{" "}
           <select
@@ -297,8 +303,8 @@ export function WorkflowComplexity({
                 setMetric("clicks");
             }}
           >
-            <option value="expert">Exact expert minimum (min-clicks)</option>
-            <option value="workload">Simulated realistic workload</option>
+            <option value="expert">Expert minimum</option>
+            <option value="workload">Realistic workload</option>
           </select>
         </label>
         <label>
@@ -329,25 +335,27 @@ export function WorkflowComplexity({
           Compare personas
         </label>
       </div>
-      <p className="complexity-method">
-        {measure === "expert"
-          ? "Fixed representative case per workflow, summed across the workflow union. Exact within the reported search space; Interaction geometry and other counts follow the minimum-click path. Keystrokes are optimized separately."
-          : "Simulated day results: mean clicks, scrolls and mouse pixels per completed paired task within each workflow, then sum those workflow means. Incomplete tasks are counted separately and excluded from savings. Patient mix varies by iteration; this is observed effort, not a controlled causal estimate."}
-      </p>
       <div className="complexity-key">
-        <span>
-          Bars:{" "}
-          {measure === "expert"
-            ? "exact expert minimum"
-            : "simulated realistic workload"}{" "}
-          · {unit} / workflow union
-        </span>
-        <span className="floor-key">Theoretical minimum · fixed benchmark</span>
+        {workflows.map((w) => (
+          <span key={w} className="workflow-key">
+            <i style={{ background: workflowColor(w, workflows) }} />
+            {w} · {workflowNames[w]}
+          </span>
+        ))}
+        <span className="floor-key">Theoretical minimum</span>
         {measure === "workload" && (
           <span className="expert-key">
-            Solid line: {run.manifest.measurementProtocol ? "certified canonical for each day’s active release · same schedule and seed" : "exact expert minimum · fixed cases"}
+            {run.manifest.measurementProtocol ? "Certified canonical" : "Expert minimum"}
           </span>
         )}
+        {exact?.markers
+          .filter((m) => m.kind === "release")
+          .map((m) => (
+            <span key={`${m.version}-${m.label}`} className="release-key">
+              Release {m.label} · rev {m.version}
+            </span>
+          ))}
+        <span className="unit-key">{unit} per workflow union</span>
       </div>
       {compare ? (
         <div className="complexity-multiples">
@@ -384,23 +392,25 @@ export function WorkflowComplexity({
           recorded for this persona.
         </p>
       )}
-      <p className="complexity-method">
-        {compare && `Shared scale: 0–${fmt(ceiling)} ${unit}. `}
-        {workflows.map((w) => `${w} · ${workflowNames[w]}`).join("; ")}
-      </p>
-      {exact && (
-        <p className="complexity-markers">
-          {exact.markers
-            .filter((m) => m.kind === "release")
-            .map((m) => (
-              <span key={`${m.version}-${m.label}`}>
-                Release {m.label} · rev {m.version}
-              </span>
-            ))}
+      {compare && (
+        <p className="complexity-method">
+          Shared scale: 0–{fmt(ceiling)} {unit}.
         </p>
       )}
       <details className="complexity-numbers">
         <summary>Chart data and measurement definitions</summary>
+        <p className="complexity-method">
+          {measure === "expert"
+            ? "Bars: exact expert minimum. Fixed representative case per workflow, summed across the workflow union. Exact within the reported search space; Interaction geometry and other counts follow the minimum-click path. Keystrokes are optimized separately."
+            : `Bars: simulated realistic workload. Simulated day results: mean clicks, scrolls and mouse pixels per completed paired task within each workflow, then sum those workflow means. Incomplete tasks are counted separately and excluded from savings. Patient mix varies by iteration; this is observed effort, not a controlled causal estimate. Solid line: ${run.manifest.measurementProtocol ? "certified canonical for each day’s active release · same schedule and seed" : "exact expert minimum · fixed cases"}.`}{" "}
+          Dashed line: theoretical minimum · fixed benchmark.
+        </p>
+        <p className="complexity-method">
+          Geometry model: Chromium at 1440×900, representative screen states,
+          straight-line travel between control centers with no tremor. Scroll
+          distance includes measured reveal offsets. Missing pixels are
+          unavailable; these are modeled interactions, not observed humans.
+        </p>
         <div className="table-scroll">
           <table>
             <caption>

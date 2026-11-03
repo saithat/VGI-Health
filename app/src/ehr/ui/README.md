@@ -75,3 +75,51 @@ constructor through ordinary native/WASM `renderUi`; `renderTimelineUi` also
 provides a whole-workspace wrapper. The canonical browser fixture is exported
 by `lake env lean --run Ehr/Sem/ExportTimeline.lean`; `program-screen` selects
 the accepted program's actual signing screen.
+
+`UiScreen.urgent` is supplied by Lean independently of workspace/modal contents.
+`UrgentStrip` draws it in a fixed layer outside the inert chart shell and above
+dialogs, with no local dismissal or clinical classification. An urgent popup's
+acknowledgment remains the original Lean event in the strip. An unrelated dialog
+keeps the chart inert while allowing the strip to remain perceivable; its focus
+trap and `aria-modal` declaration account for this separate active layer. The
+screen gate rejects any strip warning outside the viewport or under another
+surface. Finite capacity/zoom are measured, not inferred from CSS or tree presence.
+
+The screen gate also enforces the owner-selected WCAG 2.2 AA matrix by default:
+24×24 CSS px enabled targets, 4.5:1 text, 3:1 control/state/chart paint, 320px
+reflow and 200% text resize. Text line boxes, badges, button labels and inputs
+grow with type while preserving compact baseline spacing. Checkbox inputs are
+24px themselves. A browser regression checks short navigation labels inside
+card columns at desktop and narrow widths. Solid chrome and contrasting chart strokes permit numerical
+contrast measurement; reference intervals retain outlines and labeled curves.
+See the [repair report](../../../../docs/audits/wcag-2026-11-02.md) for sampled
+coverage and the separately owned urgent-alert/integration findings.
+
+Clinical typography is bundled from OFL-1.1 Noto fonts: normal Noto Sans
+400–800, regular Noto Sans Mono for hotkeys/code, and a two-glyph Symbols 2
+fallback. `fonts/fonts.css` uses private family names with no `local()` lookup;
+`fonts/manifest.json` names every face/weight required before measurement.
+The Latin repertoire and pinned generation inputs are documented in
+[scripts/fonts](../../../../scripts/fonts/README.md). Add font coverage when
+introducing new scripts or symbols. Binary bytes enter the certified app hash.
+
+The collector gives every active/background state a fresh BrowserContext/page
+at 1440×900, DPR 1, reduced motion, light scheme, en-US and
+America/Los_Angeles. The screen/WCAG gate shares these settings and checks each
+font after `document.fonts.ready`; a missing font fails capture. Both disable
+animation, transitions, smooth scrolling and caret paint during measurement.
+`pnpm --filter app test:geometry-determinism` performs independent uncached
+repeat/alternate-fontconfig captures of representative fixtures. The full
+canonical check and before/after measurements are recorded in the
+[geometry report](../../../../docs/audits/geometry-determinism-2026-11-02.md).
+Changing these fonts invalidates historical app bindings and geometry caches;
+this lane does not rebind recordings.
+
+Plain `text` fields use a one-row `textarea` with native `field-sizing: content`,
+soft wrapping and no row cap. Long prose and unbroken values remain visible as
+field width, font metrics or text size changes. The complete value, label,
+component ID, textbox role and Lean enter/confirmation events are unchanged;
+short values retain the dense one-row footprint. Search, scanner, identity,
+user/cosign and coded kinds retain their existing widgets. Browser regressions
+check both scroll axes, exact values and semantic ARIA fidelity at 320px and at
+200% text size. See the [merge follow-up](../../../../docs/audits/wcag-merge-followup-2026-11-02.md).

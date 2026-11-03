@@ -20,7 +20,7 @@ await collect('app/src/ehr');
 assert.equal(digest(await Promise.all(rendererFiles.sort().map(async f=>[f,digest(await readFile(f,'utf8'))]))),protocol.rendererSourceHash,'Renderer changed after the cohort protocol');
 assert.deepEqual(JSON.parse(await readFile('app/dist/build.json','utf8')),protocol.build,'App binding changed');
 assert.equal(manifest.assets['ehr-interp.wasm'],protocol.wasmSha256,'WASM binding changed');
-const context=digest([protocol.rendererSourceHash,protocol.build,manifest.assets,await readFile('app/scripts/promote-gate.mjs','utf8')]);
+const context=digest([protocol.rendererSourceHash,protocol.build,manifest.assets,await readFile('app/scripts/promote-gate.mjs','utf8'),await readFile('app/e2e/physical-policy.ts','utf8'),await readFile('app/e2e/capture-environment.ts','utf8'),await readFile('docs/design/alert-urgency.json','utf8'),await readFile('app/src/ehr/ui/fonts/manifest.json','utf8')]);
 let completed={};try{const old=JSON.parse(await readFile(`${out}/ordinary-view-cache.json`,'utf8'));if(old.context===context)completed=old.completed;}catch(error){if(error.code!=='ENOENT')throw error;}
 const lab=await startLab(),coverage=[];
 try{

@@ -99,3 +99,26 @@ theorem coverage : ∀ a ∈ declaredAlerts, ∃ p ∈ assignments, p.id = a.id 
 
 #print axioms coverage
 end Ehr.Specs.AlertUrgency
+
+/-! Owner-approved successor policy. The original proposal above is retained
+verbatim as the source reviewed on 2026-11-02. Production/export use this layer. -/
+namespace Ehr.Specs.AlertUrgency
+
+def approvedPolicy : Source := ⟨.hospitalPolicy,
+  "Hospital policy (not law): APPROVED by the owner on 2026-11-02",
+  "docs/design/alert-urgency.md"⟩
+def jointCommission : Source := ⟨.accreditation,
+  "Joint Commission NPG.01.02.01 EPs 1-2 (January 2026; succeeds NPSG.02.03.01): critical-result reporting and timeliness",
+  "https://digitalassets.jointcommission.org/api/public/content/9ca80055182b4274842a5780a94f2c82?v=149a13a9"⟩
+def clia : Source := ⟨.regulation,
+  "42 CFR 493.1291(g): immediate notification of life-threatening or panic results",
+  "https://www.ecfr.gov/current/title-42/section-493.1291#p-493.1291(g)"⟩
+def approvedAssignments : List Assignment :=
+  (assignments.map fun p => { p with decision := approvedPolicy, pendingOwnerReview := false }) ++
+  [⟨"criticalResult", .urgent, approvedPolicy, [jointCommission, clia], false⟩]
+def approvedTier (id : AlertId) : Option Urgency :=
+  ((approvedAssignments.find? (·.id == id)).map (·.urgency))
+#guard approvedAssignments.length == 78
+#guard approvedAssignments.all (! ·.pendingOwnerReview)
+#guard (approvedAssignments.map (·.id)).Nodup
+end Ehr.Specs.AlertUrgency

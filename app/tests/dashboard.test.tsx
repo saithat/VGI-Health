@@ -1,7 +1,7 @@
 import { withData } from "./data";
 import { readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
-import { render, cleanup } from "@testing-library/react";
+import { render, cleanup, fireEvent } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { decisionRecordSchema, candidateSchema } from "../../agent/src/schema";
 import {
@@ -212,6 +212,11 @@ withData("runs/mock").describe("archive-backed tests", () => {
    const values={clicks:null,keystrokes:null,scrolls:null,scrollPx:null,mouseTravelPx:null,screens:null,requiredFields:null,popups:null};
    const complexity=complexitySchema.parse({schemaVersion:1,runId:'mock',suite:'bounded fixture',search:'Reporting only',personas:[{persona:'P3',iterations:[{version:0,label:'v0',specVersion:'v1',total:values,floor:values,workflows:[{workflow:'W4',metrics:values,floor:values,coverage:{expected:1,computed:0,notComputed:1}}],coverage:{expected:1,computed:0,notComputed:1},tasks:[{status:'not-computed',reason:'search bound',space:null,exact:false}]}],markers:[]}]});
    const view=render(<WorkflowComplexity run={{...run,complexity}} persona="P3"/>);
+   // With no complete exact floor the chart opens on workload; switch to the expert measure under test.
+   const measure = view.getByLabelText('Complexity measure');
+   if (!(measure instanceof HTMLSelectElement)) throw new Error('Expected a native measure selector');
+   expect(measure.value).toBe('workload');
+   fireEvent.change(view.getByLabelText('Complexity measure'),{target:{value:'expert'}});
    expect(view.getAllByText('not computed (search bound)').length).toBeGreaterThan(0);
    expect(view.getByText(/0\/1 tasks computed; missing tasks excluded/)).toBeTruthy();
    expect(view.queryByRole('img',{name:'P3 union exact expert minimum by UI iteration'})).toBeNull();

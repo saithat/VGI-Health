@@ -1,8 +1,10 @@
+import { waitForCaptureFonts, captureCss } from './capture-environment.ts';
 import type {Page} from '@playwright/test';
 /** Captured by the same Chromium painter as the safety gate, at a fixed viewport. */
 export async function captureGeometry(page:Page,screen:string,state:string){
  await page.setViewportSize({width:1440,height:900});
- await page.evaluate(()=>document.fonts.ready);
+ await page.addStyleTag({content:captureCss});
+ await waitForCaptureFonts(page);
  return page.evaluate(({screen,state})=>{
   const elements=[...document.querySelectorAll<HTMLElement>('[data-comp-id]')];
   const containers=[...document.querySelectorAll<HTMLElement>('*')].filter(el=>el.clientHeight>0&&(el.scrollHeight>el.clientHeight+1||el.scrollWidth>el.clientWidth+1));

@@ -1,8 +1,18 @@
 import Ehr.Sem.Board
 import Ehr.Sem.BoardView
 import Ehr.Sem.DatedTimeline
+import Ehr.Canonical.Urgency
+import Ehr.Render.UrgencyTests
+import Ehr.Multi.CriticalTests
+import Ehr.Sem.UrgentStrip
+import Ehr.Render.UrgentStrip
+import Ehr.Specs.CriticalResults
+import Ehr.Proofs.InteractionSeverity
+import Ehr.Multi.Critical
+
 import Ehr.Sem.UrgencyExamples
 import Ehr.Commit.MarTests
+import Ehr.Commit.AdtTests
 import Ehr.Sem.Exotic
 import Ehr.Sem.TimelineProgram
 import Ehr.Canonical.PresetTests

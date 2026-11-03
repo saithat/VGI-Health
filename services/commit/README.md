@@ -1,7 +1,7 @@
 # Lean commit service
 
 Node 22.18+ and Postgres, with the native Lean binary as the commit authority.
-W4 MAR uses this authority with Keycloak; other live workflows still use
+W4 MAR and administrative ADT use this authority with Keycloak; other live workflows still use
 Medplum and their client-side guards. See [concurrency and the storage contract](../../docs/design/concurrency.md)
 for proof scope, trust assumptions and the remaining workflow migration work.
 
@@ -263,3 +263,55 @@ an explicit prerequisite skip unless `MAR_E2E=1`; setting it requires all backin
 services and the fixture, and failures are not skipped. Existing `ui-check.spec.ts`
 is untouched. App/W4 source changes invalidate old certified app hashes; recorded
 certificates must be revalidated before reuse.
+
+## ADT and 4 West
+
+The [rollout guide](../../docs/design/adt-rollout.md) gives exact commands for
+additive migration of the existing Keycloak realm, unit-scoped RN provisioning,
+synthetic stream import, initial ADT provisioning, startup and rollback. Reuse
+existing containers; no Medplum resources or volumes are changed.
+
+Operator config adds `units:{[id]:{name,marOnService}}`, actor `units` and
+`adtRoles`, and `adt:{patients:[id,...],beds:[{id,unit},...]}`. Board identifiers
+are unique, unit references must exist, and the closed board is capped at
+64 patients/64 beds. `provision-adt` is an initial-only CLI operation after
+patient import; it fails on existing beds/ADT state. Combined ADT and legacy
+shared-bed workflows are rejected. Every replica must retain the same board set.
+OIDC administrative roles and units override role metadata; signed units are
+intersected with operator scope. Static ADT tokens are limited to isolated tests.
+
+| Endpoint | Contract |
+|---|---|
+| `GET /adt/board` | Complete consistent `{state:{patients,beds},versions,cursor,roles}` from one primary MVCC statement. |
+| `POST /adt/commands` | `{requestId,expected:[{key,version}],action,patient,bed?,source?}`. Actions: admit/assign/transfer/release/discharge/clean/ready. |
+| `GET /adt/events?after=<digest>` | SSE complete `event: board` snapshots; opaque version-vector digest IDs; `Last-Event-ID` takes precedence. Reconnect catches up to current state. |
+
+The command's `expected` is the **entire ordered vector** returned by board GET;
+callers cannot select the read set. `patient` is the authorization/outcome anchor
+for clean/ready (choose any configured board patient); those commands change only
+the bed. Transfer supplies `bed` as destination and `source` as the displayed
+source. Release supplies its current `bed`; discharge supplies neither bed nor
+source. All outcomes use existing durable request semantics: 201 persisted,
+409 stale-vector conflict, 422 administrative guard rejection. After ambiguous
+503/transport failure retry the identical payload/key. The browser preserves it
+until reconciliation, blocking new commands. Do not rebase a pending intent.
+
+ADT guards/reduction run only in native `adt-commit`. SQL locks the complete board,
+then persists only changed patient/bed streams plus events/outcome in one
+transaction. Board SSE synchronizes current snapshots rather than replaying every
+intermediate historical state. Patient-only histories/exports redact full board
+context unless the reader has complete administrative board authorization. ADT
+Basic exports retain the command and authorized audit evidence; ADT does not yet
+rewrite standard Encounter resources or author clinical orders.
+
+When `units` is configured, every MAR binding must specify `mar.unit`. Disabled
+or unauthorized units cannot list/open MAR, append session evidence, cosign or
+commit through existing sessions. Unconfigured legacy isolated MAR tenants retain
+the prior unit-less behavior. The 4 West generator always supplies explicit
+unit bindings, with `4-west` enabled and `5-east` disabled. Unit changes require
+immutable binding reconciliation; they cannot repoint an imported scheduled dose.
+
+`npm run test:integration` now runs files serially against the existing Postgres,
+including the new ADT race/replay/redaction tests and MAR unit-cutover test. The
+new `app/e2e/adt-service.spec.ts` uses real Keycloak/Postgres/Lean, all seven ADT
+operations, charge-nurse SSE updates and provisioned 4 West service MAR.

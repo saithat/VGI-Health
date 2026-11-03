@@ -1,0 +1,73 @@
+{
+  "date": "2026-11-02",
+  "branch": "lane/urgency",
+  "policyStatus": "APPROVED by the owner on 2026-11-02",
+  "scope": "representative distinct strip/modal/banner presentations; largest body per group; all critical workflow states",
+  "exports": 4813,
+  "uniqueSourceTrees": 1826,
+  "distinctAttentionPresentations": 6,
+  "representatives": 11,
+  "measurements": 99,
+  "urgencyFindings": [],
+  "otherPhysicalFindings": {
+    "1.4.10": 3,
+    "1.4.11": 2214,
+    "1.4.4/1.4.10": 410,
+    "contrast-review": 1359
+  },
+  "overallPhysicalGate": "fail",
+  "playwright": {
+    "passed": 50,
+    "skipped": 14,
+    "failed": 0
+  },
+  "appSha256": "331f385049ebd20d3bbcb2dd411e8c84bd4a5572c020a09c2498dd3095d56d4e",
+  "leanSourceHash": "b9f0dcbe9e433f225a4eb7e0882327ae72c10438bccb901ce859a42d2f553fe5",
+  "wasmSha256": "88871cfc0b03f46680187d5e1b31f6b0fd81b16f4251856a6e71cdae0962520e",
+  "selected": [
+    {
+      "file": "v3/canonical/adult-allergic/w6PostOp-popup-doseRangeOrder.json",
+      "sha256": "02e67478498c49dad2a7856f2bd7dbd7614e1cc1fb134a8ab654c50993beb69c"
+    },
+    {
+      "file": "v3/canonical/adult-allergic/w6PostOp-popup-highAlertAdmin.json",
+      "sha256": "20273f0a7e301a801608b78976684f31b03dfdf107d5675b689d909954ef4869"
+    },
+    {
+      "file": "v1/canonical/pediatric/chartSummary-popup-doseRangeOrder.json",
+      "sha256": "c5a44baa74291634f57ea8ca6bf6c0b8ce0f721b1f40f289865f917854a333d7"
+    },
+    {
+      "file": "v1/canonical/pediatric/chartSummary-popup-highAlertAdmin.json",
+      "sha256": "2dc8c732bad63de3303fe2602f7f37a3952f36818f7971c61213f1e719ccbc6b"
+    },
+    {
+      "file": "critical-received.json",
+      "sha256": "242d17404921daf68669f4a2c7dccb0b198e021f2c0dda855b65fbfd9a543997"
+    },
+    {
+      "file": "urgent-concurrent.json",
+      "sha256": "42e420108cb8e6094768b0187aaaff2f0dae953576838616f3be6ebc510e3f8f"
+    },
+    {
+      "file": "critical-delivered.json",
+      "sha256": "6631d99f14d9ef73005691efa1777ce255e045a130e83de57b3f9ebcb092094c"
+    },
+    {
+      "file": "critical-documented.json",
+      "sha256": "a6d1d423cb49d9ac2d474cafae456a3e6c11e392b23700775a1952ad2fb3cc2e"
+    },
+    {
+      "file": "critical-resolved.json",
+      "sha256": "921e97ec6ee59d78ccc57131da150aa2a3b6fa9cbc1c57dd5c560e3e80e10b27"
+    },
+    {
+      "file": "critical-escalated.json",
+      "sha256": "18ea12e7e15064f6d0fd56af9c1fb370321927a9086d5791ef5daeb424078c21"
+    },
+    {
+      "file": "critical-covering.json",
+      "sha256": "18ea12e7e15064f6d0fd56af9c1fb370321927a9086d5791ef5daeb424078c21"
+    }
+  ]
+}

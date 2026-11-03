@@ -1,5 +1,7 @@
 import Ehr.Sem.TimelineProgram
 import Ehr.Render.Api
+import Ehr.Sem.BoardCritical
+import Ehr.Render.PaneUrgency
 import Ehr.Specs.AlertUrgency
 import Ehr.Proofs.T2
 
@@ -41,7 +43,19 @@ def valid (sessions : List Session) : Bool :=
 def screen (s : Session) : UiScreen := runRenderUi (prepared s)
 
 def metadata (ui : UiScreen) : UiPaneMetadata :=
-  ⟨ui.sourceLabels?.getD [], ui.fieldSources?.getD [], ui.entryHints?.getD [], ui.fieldChoices?.getD []⟩
+  { sourceLabels := ui.sourceLabels?.getD [], fieldSources := ui.fieldSources?.getD [],
+    entryHints := ui.entryHints?.getD [], fieldChoices := ui.fieldChoices?.getD [],
+    urgent? := ui.urgent?.map (fun ns => ns.filterMap stripAtom?) }
+
+/-- Actual production strip payloads survive pane metadata without dropping a node. -/
+theorem metadata_strip_exact (sp facts user state base) :
+    ((metadata (withUrgentStrip sp facts user state base)).urgent?.getD []).map UiStripAtom.toNode =
+      (withUrgentStrip sp facts user state base).urgent?.getD [] := by
+  have exactNodes := pane_strip_exact sp facts user state base
+  cases h : (withUrgentStrip sp facts user state base).urgent? <;>
+    simpa [metadata, h] using exactNodes
+
+#print axioms metadata_strip_exact
 
 def encodeScreen (patient : String) (ui : UiScreen) : UiNode :=
   .patientPane patient ui.banner (metadata ui)
@@ -213,8 +227,17 @@ theorem clinical_commit_guard (s : Session) (e : Event) (c : CommitId)
     (after : c ∈ (advance s e).input.state.commits) :
     commitGuard (prepared s).spec (prepared s).program (prepared s).facts
       (prepared s).user (prepared s).state c = true := by
-  apply Proofs.T0_commit_needs_guard _ _ _ _ .human _ e c before
-  simpa [advance, runStep, prepared, ordinary] using after
+  change c ∈ (runStep { spec := (prepared s).spec, program := (prepared s).program, facts := (prepared s).facts, user := (prepared s).user, state := (prepared s).state, event := e }).state.commits at after
+  have ho : Workspace.enabled (prepared s).program = false := ordinary
+  simp only [runStep, ho, Bool.false_and, Bool.false_eq_true, ↓reduceIte] at after
+  cases hh : CriticalRuntime.handle (prepared s).facts (prepared s).user (prepared s).state e with
+  | none =>
+    simp only [hh, Option.getD_none] at after
+    exact Proofs.T0_commit_needs_guard _ _ _ _ .human _ e c before after
+  | some output =>
+    simp only [hh, Option.getD_some] at after
+    rw [critical_handle_commits _ _ _ _ _ hh] at after
+    exact False.elim (before after)
 
 /-- Same-patient version checks are still the original core checks. Foreign
 patient/episode namespaces cannot contribute an accepted receipt value. -/
