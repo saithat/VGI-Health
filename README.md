@@ -352,6 +352,14 @@ preservation, and `Sem/TimelineProgram.lean` proves checker acceptance for a
 canonical program. DOM fidelity remains checked; physical perception needs
 exposure evidence, and general completion remains open.
 
+An [agent-authored extensions proposal](docs/design/agent-admissions.md)
+(pending owner review; not built) would let the overnight agent author new
+primitives as values of fixed, owner-reviewed admission types. The kernel
+checks their proofs; presentations go through the existing declarative sandbox,
+with interaction only from owner-reviewed widgets; a predeclared held-out
+benefit gate and owner approval precede any release. The agent could extend the
+vocabulary, not the specs, properties, checker, gates or metrics.
+
 [Alert urgency policy](docs/design/alert-urgency.md) classifies 18 alert kinds
 (78 exact IDs including inherited variants), with explicit law, accreditation,
 guidance and hospital-policy labels. It is **APPROVED by the owner on 2026-11-02**.
