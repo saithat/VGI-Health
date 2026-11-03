@@ -724,6 +724,10 @@ def uiDatedWorkspace (cx : Ctx) : List UiNode :=
       (Dated.undated (uiDateSources cx)) (uiWorkspace cx)]
   else uiWorkspace cx
 
+/-- Density decorates shown components without wrapping or filtering semantic nodes. -/
+def uiCompact (cx : Ctx) : List CompId :=
+  (cx.v.items.filter (fun it => it.shown && it.comp.size == .compact)).map (·.comp.id)
+
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
@@ -732,10 +736,12 @@ def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
   let sources := uiSourceLabels cx
   let hints := uiEntryHints cx
   let choices := uiFieldChoices cx
+  let compact := uiCompact cx
   { screen? := some s.screen, fieldSources? := some (uiFieldSources cx),
     banner := uiClinicalBanner facts disp, viewer? := some (uiClinicianViewer user disp),
     nav := uiNav cx, activeNav? := uiActiveNav cx, title := cx.v.title,
     sourceLabels? := if sources.isEmpty then none else some sources,
+    compact? := if compact.isEmpty then none else some compact,
     entryHints? := if hints.isEmpty then none else some hints,
     fieldChoices? := if choices.isEmpty then none else some choices,
     workspace := uiDatedWorkspace cx, side := uiSide cx, modal := uiModal cx }

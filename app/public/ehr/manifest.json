@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "629fa342ded40d2f6aa7a27026601e236461ce65d5ff3663189a4716b4e87db6",
+  "leanSourceHash": "e75a46f4d4f5956a3fbfc96252eb1dd81cb7c4484700ed23cac731848a71c7b0",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "34dc959bbd641d1048cc8511ac3a3fb233a6c105f63afdb31ff3f0579859b5ed",
@@ -192,6 +192,7 @@
     "lean/Ehr/Render/Contracts.lean": "986c9cbeb081af74aeeedcf22fe480984c1323cd924cf9f63df0160b6cb95de6",
     "lean/Ehr/Render/DateIndex.lean": "f4aa2994cd634d46352ddcab470593388fbda02b3fa4caf728b31753c7e38174",
     "lean/Ehr/Render/Dated.lean": "4352fde5315b811e0a1087dd404d0a904b9f56110f60b7c2955af411a5b3f26c",
+    "lean/Ehr/Render/DensityProofs.lean": "5b7f3c7392792cc53da4b8986aacff0edf2eaef713b6717d6cdc653357e5048d",
     "lean/Ehr/Render/ExportTests.lean": "41bb16e573ae9f6f9810bf85c7d201d3745919d7ed32d5f756853cc629b8b11b",
     "lean/Ehr/Render/Fhir.lean": "d200ed53fadffed207caadad27e842585d7cec7b0d32a3feedcc26e9935bdc3e",
     "lean/Ehr/Render/FhirAcuteTests.lean": "531ad7aa9068f18c36b6fd48ca8d230b0f0b8d201d0d19e87736c22e8ffcb90a",
@@ -216,17 +217,17 @@
     "lean/Ehr/Render/Presentations.lean": "d9dbeb7974c1dbf732ee4bc3533f9852a3fc993498b6f9b01c4769e08178589e",
     "lean/Ehr/Render/Proofs.lean": "47079e61dad32674c70d451f72539012be58eafd2c674709eab39b1d88ae9cce",
     "lean/Ehr/Render/SurgeryChoices.lean": "fdd7e32e6322909b0a90f77fc89d1268d404c8db5bc50ccbed9c45b83b54c4ea",
-    "lean/Ehr/Render/Types.lean": "5c649bea43d4a56a9c54bc8a363f16049eb7961b3aa0ed7b08e204794678ac42",
-    "lean/Ehr/Render/Ui.lean": "18dbc93462c545d8c3266fa8800f9fb9ecb06fc1e86232f62e2ee974b69e7775",
+    "lean/Ehr/Render/Types.lean": "0493a8646c5d6ab2d770e3a7f73cbd7acad4e03f6b5fb39d1c7e73d31c056829",
+    "lean/Ehr/Render/Ui.lean": "b62eb29a9d9a79d4b4dca04eb3aab1f312f05997553ef6253d89910d30262a66",
     "lean/Ehr/Render/UiContracts.lean": "d3500a8d8974444946d45f554ca6d87bb671a7711dec0d63718e386769ff6226",
     "lean/Ehr/Render/UiData.lean": "7cd1d91d7c97ac5d52468581cc153fe9b185493c1ac69ef5b6ce178dfb250bab",
     "lean/Ehr/Render/UiProofs.lean": "07f3ccf309c80f0b0882fda0d2dbd59bb0754fb2335797656faf666214a3d8b8",
-    "lean/Ehr/Render/UiTests.lean": "ed424c883fd203b0d0b51b2f075dfed728af12fb9c7ceef9ff532c8652652735",
+    "lean/Ehr/Render/UiTests.lean": "cd006598d0f935b7a89b5a0abd31a67d6d9cc2a32e5037eeb721c6060941a468",
     "lean/Ehr/Render/UrgencyTests.lean": "e040b8d51e4db4f3645e530641fc1cc6740cf78c914f8f985788eaedfc054bc0",
     "lean/Ehr/Render/UrgentStrip.lean": "95093290caf4f06e2e61acd00141140c4a82bab930aace1e31a5f7408b178e88",
     "lean/Ehr/Render/WorkspaceProofs.lean": "d5aaa108299ec881ba34a2d502b94fc665043c060770e3d773560c288a116ddd",
     "lean/Ehr/Sem/Admission.lean": "9689d41535e9bc27772356ee74fbf2deb65949570464cc007615f07b33e340e4",
-    "lean/Ehr/Sem/Board.lean": "1c2de141b293e4c7750d7f8abce4c942e6285160620c6dee511b3429807c504c",
+    "lean/Ehr/Sem/Board.lean": "8d7c749b878162165d97fc4fc250344ed3473f537c0e568b9b8bf1f071c887ad",
     "lean/Ehr/Sem/BoardCritical.lean": "1e3eb023943b0dce2bb8602453199eb3918391cf720f221f3830ac3d700194f2",
     "lean/Ehr/Sem/BoardView.lean": "753ce3e226f6a776b25067016ecc2b4316ef1cf6cf59b3b93ead61531e199106",
     "lean/Ehr/Sem/Bridge.lean": "26d20e942cedc9c0c0b61935591f5186f9201955c69e7cb5555a9e562d93e243",
@@ -306,7 +307,7 @@
   },
   "assets": {
     "ehr-interp.mjs": "a5ee302823303ec307f99d7133b5d079674983ce2b085e916341bf199e4ba23a",
-    "ehr-interp.wasm": "19e1a81725ede2111c17749c103e2ebeadf1a2a966dcd84a0f37a13ebd798e07",
+    "ehr-interp.wasm": "1138574dedc474f885fb37f969f94706f11b8af74e5d3a833bf84edd8cbb43d0",
     "interp-loader.mjs": "c3c270d0dde95d4409514aee86de29c7fa670c2932ba5c620cee3505e1f0feea",
     "interp-loader.d.mts": "54fde0e9c2df324935f718b901b3867740166eaa1c16827e144f8de260bc09fc"
   }

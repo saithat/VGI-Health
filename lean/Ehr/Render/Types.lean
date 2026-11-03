@@ -632,6 +632,8 @@ structure UiPaneMetadata where
   fieldSources : List (String × String)
   entryHints : List (CompId × String)
   fieldChoices : List (CompId × UiCodeChoices)
+  /-- Shown compact component IDs, scoped to this patient pane. -/
+  compact? : Option (List CompId) := none
   urgent? : Option (List UiStripAtom) := none
   deriving Repr, Inhabited
 
@@ -682,6 +684,8 @@ def stripAtom? : UiNode → Option UiStripAtom
 structure UiScreen where
   /-- Stable view identity for scroll/focus lifecycle; never a visible label. -/
   screen? : Option ScreenId := none
+  /-- Shown compact component IDs; presentation metadata only. -/
+  compact? : Option (List CompId) := none
   /-- Public source captions for fields whose exact provenance remains in their node. -/
   fieldSources? : Option (List (CompId × String)) := none
   banner : List (String × String)

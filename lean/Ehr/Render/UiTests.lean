@@ -1,3 +1,4 @@
+import Ehr.Render.DensityProofs
 import Ehr.Render.UiProofs
 import Ehr.Render.Api
 import Ehr.Render.NavRules
@@ -666,4 +667,23 @@ def emergencyClassExample := uiEncounterClass "EMER"
 #guard ((uiBanner { Display.empty with banner := { Display.empty.banner with sex := "F" } }).lookup "Age / sex") ==
   some "Age not recorded / F"
 
+end Ehr.Render
+
+namespace Ehr.Render
+/-- Export density only for shown components, keeping the clinical tree exact. -/
+def compactRoomCtx : Ctx :=
+  { uiRoomCtx with viewCache := ⟨_, rfl⟩, prog := { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun sc =>
+      { sc with components := sc.components.map (withDensity (fun _ => true)) } } }
+def compactRoomUi : UiScreen := renderUi compactRoomCtx.sp compactRoomCtx.prog
+  compactRoomCtx.facts compactRoomCtx.disp compactRoomCtx.user compactRoomCtx.s
+#guard !(compactRoomUi.compact?.getD []).isEmpty
+#guard compactRoomUi.compact?.getD [] ==
+  ((compactRoomCtx.v.items.filter (·.shown)).map (·.comp.id))
+#guard match (Lean.toJson compactRoomUi).getObjValAs? (List String) "compact" with
+  | .ok ids => ids == compactRoomUi.compact?.getD []
+  | .error _ => false
+#guard Lean.toJson compactRoomUi.workspace == Lean.toJson uiScreenTest.workspace
+#guard Lean.toJson compactRoomUi.side == Lean.toJson uiScreenTest.side
+#guard compactRoomUi.nav == uiScreenTest.nav
+#guard compactRoomUi.banner == uiScreenTest.banner
 end Ehr.Render

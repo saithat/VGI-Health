@@ -1,3 +1,4 @@
+import { CompactContext } from "./Density";
 import { useEffect, useRef, useState } from "react";
 import { BoardEvents } from "./Board";
 import { UrgentStrip } from "./UrgentStrip";
@@ -15,6 +16,7 @@ import { SourceLabelsContext, EntryHintsContext } from "./SourceLabels";
 import { FieldSourceContext } from "./clinical-metadata";
 import { FieldChoicesContext } from "./FieldChoices";
 import "./exotic.css";
+import "./density.css";
 
 export const researchSchema = z
   .strictObject({
@@ -268,7 +270,13 @@ export function ResearchWorkspace({
   if (view.ordinary)
     return (
       <BoardEvents.Provider value={onEvent}>
-        <main className="clinical-app research" style={{...clinicalCssVariables,fontVariantNumeric:"tabular-nums"}}>
+        <main
+          className="clinical-app research"
+          style={{
+            ...clinicalCssVariables,
+            fontVariantNumeric: "tabular-nums",
+          }}
+        >
           <div className="research-label">
             {view.mode === "dated"
               ? "VGI · Ordinary dated timeline · Research · No clinical writes"
@@ -283,7 +291,10 @@ export function ResearchWorkspace({
     );
   const modalOwner = view.panes.find((p) => p.screen.modal !== null)?.patient;
   return (
-    <main className={`clinical-app research research-${view.mode}`} style={{...clinicalCssVariables,fontVariantNumeric:"tabular-nums"}}>
+    <main
+      className={`clinical-app research research-${view.mode}`}
+      style={{ ...clinicalCssVariables, fontVariantNumeric: "tabular-nums" }}
+    >
       <div className="research-label">
         {view.mode === "dated" &&
         view.panes.some((p) =>
@@ -293,12 +304,24 @@ export function ResearchWorkspace({
           : "VGI · Exploration laboratory · Sandbox · No clinical writes"}
       </div>
       <aside className="research-urgency" aria-label="Urgent patients">
-        {view.panes.filter(p=>p.screen.urgent?.length).map(p=>(
-          <section key={p.patient} data-urgent-strip-patient={p.patient} aria-label={`Urgent clinical alerts for ${p.patient}`}>
-            <strong>{p.screen.banner.find(([key])=>key==="Patient")?.[1]??p.patient}</strong>
-            <UrgentStrip nodes={p.screen.urgent??[]} onEvent={event=>onEvent({patient:p.patient,event})}/>
-          </section>
-        ))}
+        {view.panes
+          .filter((p) => p.screen.urgent?.length)
+          .map((p) => (
+            <section
+              key={p.patient}
+              data-urgent-strip-patient={p.patient}
+              aria-label={`Urgent clinical alerts for ${p.patient}`}
+            >
+              <strong>
+                {p.screen.banner.find(([key]) => key === "Patient")?.[1] ??
+                  p.patient}
+              </strong>
+              <UrgentStrip
+                nodes={p.screen.urgent ?? []}
+                onEvent={(event) => onEvent({ patient: p.patient, event })}
+              />
+            </section>
+          ))}
       </aside>
       <div className="research-panes">
         {view.panes.map(({ patient, screen }) => {
@@ -327,62 +350,71 @@ export function ResearchWorkspace({
                   </span>
                 ))}
               </header>
-              <FieldSourceContext.Provider
-                value={new Map(screen.fieldSources ?? [])}
-              >
-                <SourceLabelsContext.Provider value={screen.sourceLabels ?? []}>
-                  <EntryHintsContext.Provider value={screen.entryHints ?? []}>
-                    <FieldChoicesContext.Provider
-                      value={screen.fieldChoices ?? []}
-                    >
-                      <div
-                        ref={(el) => {
-                          if (el) el.inert = Boolean(screen.modal);
-                        }}
+              <CompactContext.Provider value={screen.compact ?? []}>
+                <FieldSourceContext.Provider
+                  value={new Map(screen.fieldSources ?? [])}
+                >
+                  <SourceLabelsContext.Provider
+                    value={screen.sourceLabels ?? []}
+                  >
+                    <EntryHintsContext.Provider value={screen.entryHints ?? []}>
+                      <FieldChoicesContext.Provider
+                        value={screen.fieldChoices ?? []}
                       >
-                        <h1>{screen.title}</h1>
-                        {view.mode === "command" && !screen.modal && (
-                          <Palette screen={screen} emit={emit} />
-                        )}
-                        {view.mode === "dated" && view.axis && (
-                          <TimeAxis axis={view.axis} />
-                        )}
-                        <nav aria-label="Patient navigation">
-                          {screen.nav.flatMap(([, pairs]) =>
-                            pairs.map(([id, label]) => (
-                              <button
-                                key={id}
-                                data-comp-id={id}
-                                onClick={() => emit({ click: { comp: id } })}
-                              >
-                                {label}
-                              </button>
-                            )),
-                          )}
-                        </nav>
-                        <div className="research-zones">
-                          <section aria-label="Work zone">
-                            {draw(screen.workspace)}
-                          </section>
-                          <aside aria-label="Pinned review zone">
-                            {draw(screen.side)}
-                          </aside>
-                        </div>
-                      </div>
-                      {screen.modal && (
                         <div
-                          className="research-modal"
-                          role="dialog"
-                          aria-modal="true"
-                          aria-label="Clinical acknowledgment"
+                          ref={(el) => {
+                            if (el) el.inert = Boolean(screen.modal);
+                          }}
                         >
-                          {draw([screen.modal])}
+                          <h1>{screen.title}</h1>
+                          {view.mode === "command" && !screen.modal && (
+                            <Palette screen={screen} emit={emit} />
+                          )}
+                          {view.mode === "dated" && view.axis && (
+                            <TimeAxis axis={view.axis} />
+                          )}
+                          <nav aria-label="Patient navigation">
+                            {screen.nav.flatMap(([, pairs]) =>
+                              pairs.map(([id, label]) => (
+                                <button
+                                  key={id}
+                                  data-density={
+                                    screen.compact?.includes(id)
+                                      ? "compact"
+                                      : undefined
+                                  }
+                                  data-comp-id={id}
+                                  onClick={() => emit({ click: { comp: id } })}
+                                >
+                                  {label}
+                                </button>
+                              )),
+                            )}
+                          </nav>
+                          <div className="research-zones">
+                            <section aria-label="Work zone">
+                              {draw(screen.workspace)}
+                            </section>
+                            <aside aria-label="Pinned review zone">
+                              {draw(screen.side)}
+                            </aside>
+                          </div>
                         </div>
-                      )}
-                    </FieldChoicesContext.Provider>
-                  </EntryHintsContext.Provider>
-                </SourceLabelsContext.Provider>
-              </FieldSourceContext.Provider>
+                        {screen.modal && (
+                          <div
+                            className="research-modal"
+                            role="dialog"
+                            aria-modal="true"
+                            aria-label="Clinical acknowledgment"
+                          >
+                            {draw([screen.modal])}
+                          </div>
+                        )}
+                      </FieldChoicesContext.Provider>
+                    </EntryHintsContext.Provider>
+                  </SourceLabelsContext.Provider>
+                </FieldSourceContext.Provider>
+              </CompactContext.Provider>
             </article>
           );
         })}
