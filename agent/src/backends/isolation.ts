@@ -43,7 +43,8 @@ export async function auditRunTranscripts(dir: string) {
         const record = z.object({transcript:z.object({stdout:z.string().optional()}).optional(),audit:z.unknown().optional(),usage:z.unknown().optional()}).parse(JSON.parse(await readFile(file,'utf8')));
         if (record.transcript?.stdout) {
           const query=z.object({isolationAudit:queryAuditSchema}).safeParse(record.usage??{isolationAudit:record.audit});
-          audits.push({ file:path.relative(dir,file), ...auditTranscript(record.transcript.stdout,query.success?query.data.isolationAudit.requestDirectory:undefined) });
+          const truncated=z.object({transcriptTruncated:z.literal(true)}).safeParse(record.audit);
+          audits.push({ file:path.relative(dir,file), ...auditTranscript(record.transcript.stdout,query.success?query.data.isolationAudit.requestDirectory:undefined),...(truncated.success?{status:'fail',transcriptTruncated:true}:{}) });
         }
         else if (record.audit) audits.push(record.audit);
       }

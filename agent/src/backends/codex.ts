@@ -117,12 +117,19 @@ export class CodexLlm implements JsonLlm {
       const child = spawn('bwrap', confinedArgs(cwd, executable, args,this.queryMode), { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
       let stderr = '';
       let stdout = '';
+      let stdoutTruncated=false;
       child.stderr.on('data', (d: Buffer) => { stderr = (stderr + d.toString()).slice(-2_000_000); });
-      child.stdout.on('data', (d: Buffer) => { stdout = (stdout + d.toString()).slice(-10_000_000); });
+      child.stdout.on('data', (d: Buffer) => {
+        const next=stdout+d.toString();
+        if(this.queryMode&&next.length>10_000_000){stdoutTruncated=true;stdout=next.slice(0,10_000_000);child.kill('SIGTERM');}
+        else stdout=next.slice(-10_000_000);
+      });
       const timer = setTimeout(() => { child.kill('SIGTERM'); reject(new Error('codex backend: timed out')); }, this.timeoutMs);
       child.on('error', (e) => { clearTimeout(timer); reject(new Error(`codex backend: ${e.message}`)); });
       child.on('close', (code) => {
         clearTimeout(timer);
+        // Never accept an arm-C turn after dropping command provenance.
+        if(this.queryMode&&stdoutTruncated){reject(Object.assign(new Error('codex backend: query transcript exceeded limit; complete audit unavailable'),{transcript:{stdout:boundedQueryTranscript(stdout),stderr},audit:{...auditTranscript(stdout,cwd),status:'fail',transcriptTruncated:true}}));return;}
         if (code === 0) resolve({ stdout, stderr });
         else reject(Object.assign(new Error(`codex backend: exit ${String(code)}: ${stderr}`), { transcript: {stdout:this.queryMode?boundedQueryTranscript(stdout):stdout,stderr}, audit: auditTranscript(stdout,this.queryMode?cwd:undefined) }));
       });

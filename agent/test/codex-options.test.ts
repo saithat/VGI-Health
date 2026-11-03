@@ -97,3 +97,17 @@ print(json.dumps(r))`;
  const run=spawnSync('bwrap',confinedArgs(dir,'/usr/local/bin/codex',['sandbox','-P',':read-only','--include-managed-config','-C',dir,'--','/usr/bin/python3','-c',probe],true),{cwd:dir,encoding:'utf8'});
  expect(run.stderr).toBe('');expect(run.status).toBe(0);expect(JSON.parse(run.stdout)).toEqual({train:'allowed',credential:'denied',write:'denied',query:'screens'});
 });
+
+it('rejects arm C transcript overflow rather than losing command provenance (stub, no model)',async()=>{
+ const dir=await tmp('codex-query-overflow'),binary=path.join(dir,'stub');
+ await writeFile(binary,`#!/usr/bin/python3
+import json, sys
+for i in range(12):
+ print(json.dumps({'type':'item.completed','item':{'type':'agent_message','text':'x'*1000000}}),flush=True)
+sys.stdin.read()
+`);await chmod(binary,0o755);
+ const {trainingQueryBundle}=await import('../src/quality-queries.js');
+ const {localityDigest}=await import('../src/locality.js');
+ const bundle=trainingQueryBundle({night:1,train:[]},[],{ledger:[],locality:localityDigest([])});
+ await expect(new CodexLlm({binary,model:'FAKE',queryMode:true}).complete({callId:'overflow',purpose:'test',system:'FAKE',prompt:'FAKE',schemaName:'Fake',schema:{},queryBundle:bundle})).rejects.toThrow('complete audit unavailable');
+});
