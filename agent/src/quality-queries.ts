@@ -7,6 +7,7 @@ import type { GeometryAtlas } from '../../app/src/metrics/geometry.js';
 import { geometryAtlasSchema } from './geometry.js';
 import { attributeDay, eventTarget } from './locality.js';
 import type { NightInput } from './night.js';
+import { isMeasurementDay } from './protocol.js';
 import type { PromptParts } from './prompts.js';
 import { contextSchema, type QualityContext } from './quality-context.js';
 import { dayResultSchema } from './schema.js';
@@ -40,7 +41,7 @@ export function trainingQueryBundle(input:Pick<NightInput,'night'|'train'>, atla
   const clean=contextSchema.parse(context);
   const days=input.train.map((d,i)=>{
     const result=dayResultSchema.parse(d.result),atlas=geometryAtlasSchema.parse(atlases[i]);
-    if(result.day!==d.schedule.day||result.day>input.night||result.day%2===0||!clean.locality.trainDays.includes(result.day))throw new Error('Query files require train days only');
+    if(result.day!==d.schedule.day||result.day>input.night||isMeasurementDay(result.day)||!clean.locality.trainDays.includes(result.day))throw new Error('Query files require train days only');
     const ids=new Set(d.schedule.tasks.map(t=>t.id));
     if(result.tasks.some(t=>!ids.has(t.task))||result.trace.some(t=>!ids.has(t.task)))throw new Error('Query trace contains non-training tasks');
     const geometry=result.geometry;

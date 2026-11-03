@@ -6,6 +6,7 @@ import { readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
 const directory=dirname(fileURLToPath(import.meta.url));
+function main(){
 if(process.cwd()!==directory)throw new Error('Run queries from the request directory');
 const [query,...args]=process.argv.slice(2),options={};
 for(let i=0;i<args.length;i+=2){const key=args[i],value=args[i+1];if(!['--day','--task','--screen','--target','--limit','--sort'].includes(key)||value===undefined)throw new Error('Expected --day, --task, --screen, --target, --limit or --sort with a value');options[key.slice(2)]=value;}
@@ -65,3 +66,9 @@ const result={query,cwd:process.cwd(),totalRows:rows.length,rows:rows.slice(0,li
 let output;
 for(;;){result.truncated=truncated;result.note=truncated?'Truncated to bounded output; narrow filters or lower --limit.':'';output=JSON.stringify(result);if(output.length<=15999)break;result.rows.pop();truncated=true;}
 process.stdout.write(output+'\n');
+
+}
+try{main();}catch(error){
+ process.stdout.write(JSON.stringify({query:(process.argv[2]??'').slice(0,100),cwd:process.cwd(),error:String(error instanceof Error?error.message:error).slice(0,2000)})+'\n');
+ process.exitCode=1;
+}

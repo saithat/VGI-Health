@@ -47,6 +47,9 @@ it('runs all six bounded queries inside bwrap with no dependencies or mutation',
   if(args[0]==='screens')expect(output.rows).toEqual(context.locality.screens);
   expect(auditQueryTranscript(item(`/usr/bin/node query.mjs ${args.join(' ')}`,undefined,run.stdout),dir).status).toBe('pass');
  }
+ const invalid=spawnSync('/usr/bin/node',['query.mjs','steps'],{cwd:dir,encoding:'utf8'});
+ expect(invalid.status).toBe(1);expect(JSON.parse(invalid.stdout).error).toContain('requires --task');
+ expect(auditQueryTranscript(item('node query.mjs steps',undefined,invalid.stdout),dir).status).toBe('pass');
  expect(await Promise.all(files.map(f=>readFile(path.join(dir,f),'utf8')))).toEqual(before);
  // Long values and huge row counts still produce bounded, parseable JSON.
  await chmod(path.join(dir,'ledger.json'),0o600);
