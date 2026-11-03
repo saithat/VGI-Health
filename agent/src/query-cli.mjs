@@ -12,7 +12,6 @@ for(let i=0;i<args.length;i+=2){const key=args[i],value=args[i+1];if(!['--day','
 const limit=options.limit===undefined?15:Number(options.limit);
 if(!Number.isInteger(limit)||limit<1||limit>100)throw new Error('--limit must be 1..100');
 const load=name=>JSON.parse(readFileSync(new URL(name,import.meta.url),'utf8'));
-const locality=load('locality.json');
 const matches=row=>(!options.task||row.task===options.task)&&(!options.screen||row.screen===options.screen)&&(!options.target||row.component===options.target);
 const selectedDays=rows=>rows.filter(d=>!options.day||String(d.day)===options.day);
 const physical=['clicks','keystrokes','scrolls','scrollPx','mouseTravelPx','visits'];
@@ -23,10 +22,20 @@ const aggregate=(rows,key)=>{
 };
 const byComponent=r=>`${r.screen}/${r.component}`;
 let rows;
-if(query==='ledger')rows=load('ledger.json');
+if(query==='ledger'){
+ if(options.day||options.task||options.screen||options.sort)throw new Error('ledger accepts --target and --limit');
+ rows=load('ledger.json').filter(row=>!options.target||row.targets.includes(options.target));
+}
 else if(query==='sequences'){
  if(options.day||options.task||options.screen||options.target)throw new Error('sequences covers all train days; filters unsupported');
- rows=locality.sequences;
+ const sequences=new Map();
+ for(const day of load('traces.json'))for(const task of day.tasks.filter(t=>t.completed)){
+  const steps=day.trace.filter(e=>e.task===task.task&&e.kind!=='scroll').map(e=>`${e.screen}:${e.kind}:${e.target}`);
+  for(let length=2;length<=4;length++)for(let i=0;i+length<=steps.length;i++){
+   const key=JSON.stringify(steps.slice(i,i+length)),tasks=sequences.get(key)??new Set();tasks.add(`${day.day}/${task.task}`);sequences.set(key,tasks);
+  }
+ }
+ rows=[...sequences].filter(([,tasks])=>tasks.size>1).sort((a,b)=>b[1].size-a[1].size||a[0].localeCompare(b[0])).map(([steps,tasks])=>({steps:JSON.parse(steps),tasks:tasks.size}));
 }else if(query==='steps'){
  if(!options.task)throw new Error('steps requires --task ID');
  const attributed=load('attribution.json');
@@ -36,10 +45,10 @@ else if(query==='sequences'){
  const attributed=selectedDays(load('attribution.json')).flatMap(d=>d.steps.filter(r=>completed.has(`${d.day}/${r.task}`)&&matches(r)));
  if(query==='screens'){
   rows=aggregate(attributed,r=>r.screen).sort((a,b)=>(b.clicks+b.scrolls)-(a.clicks+a.scrolls));
-  const total=rows.reduce((n,r)=>n+r.clicks+r.scrolls,0);rows=rows.map(r=>({...r,share:total?(r.clicks+r.scrolls)/total:0}));
+  const total=rows.reduce((n,r)=>n+r.clicks,0);rows=rows.map(r=>({...r,share:total?r.clicks/total:0}));
  }else if(query==='targets'){
   if(options.sort&&!['interactions','travel'].includes(options.sort))throw new Error('--sort must be interactions or travel');
-  rows=aggregate(attributed,byComponent).sort((a,b)=>options.sort==='travel'?(b.mouseTravelPx??-1)-(a.mouseTravelPx??-1):(b.clicks+b.scrolls)-(a.clicks+a.scrolls)||(b.mouseTravelPx??-1)-(a.mouseTravelPx??-1));
+  rows=aggregate(attributed,byComponent).sort((a,b)=>options.sort==='travel'?(b.mouseTravelPx??-1)-(a.mouseTravelPx??-1):(b.clicks+b.scrolls)-(a.clicks+a.scrolls)||(b.mouseTravelPx??-1)-(a.mouseTravelPx??-1)||b.keystrokes-a.keystrokes||byComponent(a).localeCompare(byComponent(b)));
  }else if(query==='scroll-past'){
   if(!options.target)throw new Error('scroll-past requires --target ID');
   const totals=new Map();for(const row of attributed)for(const component of row.scrollPast){const id=`${row.screen}/${component}`,old=totals.get(id)??{screen:row.screen,component,reveals:0,scrolls:0};old.reveals++;old.scrolls+=row.scrolls;totals.set(id,old);}rows=[...totals.values()].sort((a,b)=>b.scrolls-a.scrolls);

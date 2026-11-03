@@ -44,6 +44,7 @@ it('runs all six bounded queries inside bwrap with no dependencies or mutation',
   expect(run.stderr).toBe('');expect(run.status).toBe(0);expect(run.stdout.length).toBeLessThanOrEqual(16000);
   const output=z.object({query:z.string(),cwd:z.literal(dir),rows:z.array(z.unknown())}).parse(JSON.parse(run.stdout));
   expect(output.query).toBe(args[0]);
+  if(args[0]==='screens')expect(output.rows).toEqual(context.locality.screens);
   expect(auditQueryTranscript(item(`/usr/bin/node query.mjs ${args.join(' ')}`,undefined,run.stdout),dir).status).toBe('pass');
  }
  expect(await Promise.all(files.map(f=>readFile(path.join(dir,f),'utf8')))).toEqual(before);
@@ -53,6 +54,18 @@ it('runs all six bounded queries inside bwrap with no dependencies or mutation',
  const bounded=spawnSync('/usr/bin/node',['query.mjs','ledger','--limit','100'],{cwd:dir,encoding:'utf8'});
  expect(bounded.status).toBe(0);expect(bounded.stdout.length).toBeLessThanOrEqual(16000);expect(JSON.parse(bounded.stdout).truncated).toBe(true);
  const outside=spawnSync('/usr/bin/node',[path.join(dir,'query.mjs'),'screens'],{cwd:path.dirname(dir),encoding:'utf8'});expect(outside.status).not.toBe(0);
+});
+it('queries all repeated sequences rather than the fixed digest top-N',async()=>{
+ const ids=['first','second'];
+ const repeated=attachGeometry({...result,tasks:ids.map(task=>({...result.tasks[0],task,clicks:3,keystrokes:0,scrolls:0,popups:0,overrides:0,searches:0,backtracks:0,klmDeciSec:0,completed:true})),trace:ids.flatMap(task=>Array.from({length:3},(_,t)=>({task,t,screen:'screen',event:{click:{comp:'target'}},ops:['point' as const,'click' as const],result:'ok' as const})))},atlas);
+ const template=train[0]?.schedule.tasks[0];if(!template)throw new Error('Missing task fixture');
+ const days=[{result:repeated,schedule:{day:1,persona:'P1',load:'busy',tasks:ids.map(id=>({...template,id}))}}];
+ const quality={ledger:[],locality:localityDigest([{result:repeated,atlas}],1)};
+ const dir=await mkdtemp(path.join(tmpdir(),'quality-query-sequences-'));
+ await writeQueryDirectory(dir,trainingQueryBundle({night:1,train:days},[atlas],quality));
+ const query=spawnSync('/usr/bin/node',['query.mjs','sequences','--limit','100'],{cwd:dir,encoding:'utf8'});
+ expect(query.status).toBe(0);expect(quality.locality.sequences).toHaveLength(1);
+ expect(JSON.parse(query.stdout).rows).toHaveLength(2);
 });
 it('audits command cwd, writes, forbidden tools, deduplicated queries and bounded outputs',()=>{
  const dir='/private/request';

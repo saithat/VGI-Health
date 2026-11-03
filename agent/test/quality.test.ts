@@ -1,3 +1,4 @@
+import { compareSanityRecords } from '../src/quality-compare.js';
 vi.mock('../src/manual.js',()=>({promptContext:()=>({manual:'fixture manual',rules:'fixture rules',manualHash:'manual',ruleContextHash:'rules',ruleProfile:'core'})}));
 import path from 'node:path';
 import { mkdtemp, readFile } from 'node:fs/promises';
@@ -152,12 +153,18 @@ describe('train-only prompts and offline loop',()=>{
     expect(()=>recomputedSavings([historical],[{...current,candidates:[]}])).toThrow('Missing historical candidate');
     expect(()=>measuredLedger([historical],'P1',2,new Map())).toThrow('Missing recomputed');
     const root=await mkdtemp(path.join(tmpdir(),'quality-ledger-'));
-    const binding={originalWorldSha256:'world',fixturesSha256:'fixture',sourceDecisionsSha256:'decisions',sourceProgramsSha256:'programs',sourceDaysSha256:'days',sourceCertificationsSha256:'certs',ehrSha256:'native',app:{appSha256:'app'}};
+    const binding={originalWorldSha256:'world',fixturesSha256:'fixture',sourceDecisionsSha256:'decisions',sourceProgramsSha256:'programs',sourceLlmSha256:'llm',sourceDaysSha256:'days',sourceCertificationsSha256:'certs',ehrSha256:'native',app:{appSha256:'app'}};
     await writeJson(path.join(root,'manifest.json'),{status:'completed',completed:1,planned:1});
     await writeJson(path.join(root,'inputs/binding.json'),binding);
     await writeJson(path.join(root,'records.json'),[{...current,arm:'sanity'}]);
     const loaded=await loadMeasuredSavings(root,[historical],binding);
     expect(measuredLedger([historical],'P1',2,loaded)).toEqual(ledger);
+    const offlineHistory={...offline('night-01/P1','A',false),arm:'sanity' as const,candidates:historical.candidates};
+    const offlineNow={...offlineHistory,candidates:current.candidates};
+    const comparison=compareSanityRecords([offlineHistory],[offlineNow]);
+    expect(comparison.changed[0]?.id).toBe('idea');expect(comparison.signChanged[0]?.signChanged).toEqual(['scrolls','scrollPx']);
+    const broken={...offlineNow,candidates:current.candidates.map(c=>({...c,trainEstimate:c.trainEstimate?{...c.trainEstimate,before:{...c.trainEstimate.before,clicks:1}}:null}))};
+    expect(()=>compareSanityRecords([offlineHistory],[broken])).toThrow('Unexplained count');
     await expect(loadMeasuredSavings(root,[historical],{...binding,app:{appSha256:'density-changed'}})).rejects.toThrow('different app/native/frozen');
   });
   it('cannot borrow validation atlas states from another frozen decision',async()=>{

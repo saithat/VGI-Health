@@ -1,3 +1,4 @@
+import { compareSanityRuns } from './quality-compare.js';
 import { auditedOperation } from './operation-manifest.js';
 import { retryEhr,retryScreens } from './retry-boundaries.js';
 /**
@@ -189,6 +190,12 @@ async function cmdFakeWorld(argv: string[]): Promise<void> {
 }
 
 const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
+  'proposal-quality-compare': async argv => {
+    const {values}=parseArgs({args:argv,options:{before:{type:'string'},after:{type:'string'}}});
+    if(!values.before||!values.after)throw new Error('--before and --after sanity runs are required');
+    const comparison=await compareSanityRuns(resolveUserPath(values.before),resolveUserPath(values.after));
+    console.log(JSON.stringify({label:comparison.label,decisions:comparison.decisions,measured:comparison.measured,countDifferences:comparison.countDifferences,changed:comparison.changed.length,signChanged:comparison.signChanged.length}));
+  },
   'proposal-quality-report': async argv => {
     const {values}=parseArgs({args:argv,options:{run:{type:'string'}}});
     if(!values.run)throw new Error('--run is required');

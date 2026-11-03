@@ -187,7 +187,7 @@ export async function freshOutput(runDir:string,outDir:string) {
 }
 
 export async function evaluateQuality(opts:QualityOptions) {
-  if(opts.backend==='codex'&&(opts.serviceTier==='fast'||process.env['CODEX_SERVICE_TIER']==='fast'))throw new Error('Codex fast mode is prohibited; use --service-tier default');
+  if(opts.backend==='codex'&&opts.serviceTier==='fast')throw new Error('Codex fast mode is prohibited; use --service-tier default');
   if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>2)throw new Error('--workers must be 1 or 2 (14 GB budget)');
   if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
   if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, sanity');
@@ -259,9 +259,10 @@ export async function evaluateQuality(opts:QualityOptions) {
         const contextStarted=performance.now();
         const locality=opts.arms.some(a=>a==='B'||a==='C')?await frozenLocality(input,geometryDir):null;
         const quality=locality&&measured?{ledger:measuredLedger(historical,original.persona,original.night,measured),locality}:null;
+        const qualityContextMs=performance.now()-contextStarted;
         const queryBundle=opts.arms.includes('C')&&quality?trainingQueryBundle(input,(await frozenTrainAtlases(input,geometryDir)).map(d=>d.atlas),quality):null;
         if(queryBundle){const files=path.join(inputDir,'query-files');await mkdir(files);await writeQueryDirectory(files,queryBundle);}
-        const contextMs=performance.now()-contextStarted;
+        const queryContextMs=performance.now()-contextStarted-qualityContextMs;
         for(const arm of opts.arms)for(let sample=1;sample<=(arm==='sanity'?1:opts.samples);sample++) {
           if(stopped)break;
           const sampleDir=path.join(out,'samples',decisionId(original),arm,String(sample));
@@ -274,7 +275,7 @@ export async function evaluateQuality(opts:QualityOptions) {
           const result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,
             ...((arm==='B'||arm==='C')&&quality?{quality}:{}),...(arm==='C'&&queryBundle?{queryBundle}:{})}));
           const record:OfflineRecord={...result.record,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:decisionId(original),arm,sample,
-            queries:meter.queries(),tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'||arm==='C'?contextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
+            queries:meter.queries(),tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'?qualityContextMs:arm==='C'?qualityContextMs+queryContextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
             repeatedMeasuredBad:measured?repetitionCount(result.record,historical,measured):0,proposedCandidates:result.record.candidates.filter(e=>!e.candidate.seeded).length};
           await writeJson(path.join(sampleDir,'record.json'),offlineRecordSchema.parse(record));await writeJson(path.join(sampleDir,'calls.json'),meter.calls);
           if(arm==='sanity') {

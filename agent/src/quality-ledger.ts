@@ -10,7 +10,7 @@ import { decisionRecordSchema, type DecisionRecord } from './schema.js';
 export const ledgerKey = (r:Pick<DecisionRecord,'night'|'persona'>,id:string) => `${r.night}/${r.persona}/${id}`;
 const bindingSchema=z.object({
   originalWorldSha256:z.string(),fixturesSha256:z.string(),sourceDecisionsSha256:z.string(),
-  sourceProgramsSha256:z.string(),sourceDaysSha256:z.string(),sourceCertificationsSha256:z.string(),ehrSha256:z.string().nullable(),
+  sourceProgramsSha256:z.string(),sourceLlmSha256:z.string(),sourceDaysSha256:z.string(),sourceCertificationsSha256:z.string(),ehrSha256:z.string().nullable(),
   app:z.object({appSha256:z.string()}),
 });
 export type LedgerBinding=z.infer<typeof bindingSchema>;

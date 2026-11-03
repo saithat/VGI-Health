@@ -5,7 +5,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { GeometryAtlas } from '../../app/src/metrics/geometry.js';
 import { geometryAtlasSchema } from './geometry.js';
-import { attributeDay } from './locality.js';
+import { attributeDay, eventTarget } from './locality.js';
 import type { NightInput } from './night.js';
 import type { PromptParts } from './prompts.js';
 import { contextSchema, type QualityContext } from './quality-context.js';
@@ -22,6 +22,11 @@ Queries: screens (per-screen physical costs), steps (a task's ordered steps; pas
 --task), targets (top components by interactions or --sort travel), scroll-past
 (components crossed while revealing --target), sequences (repeated step sequences
 across tasks), ledger (earlier candidates and current-measurer train savings).
+Filters: screens and targets accept --day/--task/--screen/--target; steps requires
+--task and accepts --day/--screen; scroll-past requires --target and accepts the
+same physical-cost filters. Targets rank by clicks + scrolls, then pointer travel;
+--sort travel ranks by pointer travel. Screen share means fraction of clicks.
+Sequences covers all train tasks; ledger accepts --target; both accept --limit.
 Outputs are bounded to 100 rows / 16000 characters and include truncation notes.
 Stay in this directory. For other read-only commands, start the shell command with
 /usr/bin/pwd && (followed by your command, without parentheses) so the transcript
@@ -44,7 +49,7 @@ export function trainingQueryBundle(input:Pick<NightInput,'night'|'train'>, atla
     const states=atlas.states.filter(s=>!s.sample?.startsWith('workspace-d')||s.sample===`workspace-d${String(result.day).padStart(2,'0')}`);
     return {day:result.day,programVersion:result.programVersion,
       tasks:result.tasks.map(t=>({task:t.task,completed:t.completed,clicks:t.clicks,keystrokes:t.keystrokes,scrolls:t.scrolls,scrollPx:t.scrollPx??null,mouseTravelPx:t.mouseTravelPx??null})),
-      trace:result.trace.map((t,step)=>({step,task:t.task,screen:t.screen,event:t.event,ops:t.ops.filter(op=>!['think','wait'].includes(op)),result:t.result})),
+      trace:result.trace.map((t,step)=>({step,task:t.task,screen:t.screen,kind:Object.keys(t.event)[0],target:eventTarget(t.event)??'(untargeted)',event:t.event,ops:t.ops.filter(op=>!['think','wait'].includes(op)),result:t.result})),
       atlas:{...atlas,states},attribution:attributeDay(result,{...atlas,aliases:atlas.aliases??{}})};
   });
   const json=(value:unknown)=>JSON.stringify(value,null,2)+'\n';
