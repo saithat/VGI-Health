@@ -1,6 +1,7 @@
 // Run after ExportTests.lean, wasm/build-ehr.sh and wasm/install-into-app.sh.
 // Compares the real native/WASM APIs; no duplicate clinical logic.
 import assert from 'node:assert/strict';
+import { checkDensityUi } from './density-contract.mjs';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
@@ -56,6 +57,7 @@ function walk(nodes) {
 function checkUi(ui, view, program, display, name) {
   assert.deepEqual(ui.banner.slice(0, 3), [['Patient', display.banner.name], ['DOB', display.banner.dob ? new Date(display.banner.dob + 'T00:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''], ['MRN', display.banner.mrn]], name);
   assert.equal(ui.title, view.title);
+  assert.deepEqual(ui.compact ?? [], view.items.filter(it => it.shown && it.comp.size === "compact").map(it => it.comp.id), `${name}: exact compact side table`);
   for (const [group, entries] of ui.nav) {
     assert.ok(group.length);
     for (const [id, label] of entries) {
@@ -165,6 +167,8 @@ for (const [name, state] of states) {
   checkedStates++;
   if (checkedStates % 250 === 0) console.log(`Matched ${checkedStates}/${states.length} HTML + semantic UI variants.`);
 }
+// Density crosses both APIs without altering any semantic screen subtree.
+checkDensityUi(ehr, native, data('clinical-ui-cases'), checkUi);
 // These inputs are exported by Lean's actual interpreter regression fixtures.
 for (const [name, input] of data('clinical-ui-cases')) {
   const ui = JSON.parse(ehr.call('ehr_render_ui', JSON.stringify(input)));

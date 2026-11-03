@@ -1,8 +1,9 @@
+import { CompactContext } from "./Density";
 import { UrgentStrip } from "./UrgentStrip";
 import { sectionTone } from "./display";
 import { PresentationProvider } from "./presentations";
 import type { PresentationBundle } from "./presentation-types";
-import { useLayoutEffect, useRef } from "react";
+import { useContext, useLayoutEffect, useRef } from "react";
 import { AppShell, Badge, Group, Modal, Text, Title } from "@mantine/core";
 import { UiChildren, type Emit } from "./nodes";
 import { FieldSourceContext } from "./clinical-metadata";
@@ -16,6 +17,7 @@ import { FieldChoicesContext } from "./FieldChoices";
 import type { Pair, UiNode, UiScreen } from "./types";
 import "./clinical.css";
 import "./dense-shell.css";
+import "./density.css";
 
 function bannerValue(banner: Pair[], pattern: RegExp) {
   return banner.find(([label]) => pattern.test(label))?.[1];
@@ -232,6 +234,7 @@ export function WorkflowNav({
   active: string | undefined;
   onEvent: Emit;
 }) {
+  const compact = useContext(CompactContext);
   const available = groups.filter(([, items]) => items.length > 0);
   if (!available.length) return null;
   return (
@@ -277,6 +280,7 @@ export function WorkflowNav({
                     aria-current={id === active ? "page" : undefined}
                     className="clinical-nav-link"
                     data-section-tone={sectionTone(label)}
+                    data-density={compact.includes(id) ? "compact" : undefined}
                     data-comp-id={id}
                     data-event="click"
                     aria-label={label}
@@ -487,16 +491,18 @@ export function UiScreenView(props: {
   presentations?: PresentationBundle | null;
 }) {
   return (
-    <PresentationProvider bundle={props.presentations ?? null}>
-      <FieldSourceContext.Provider
-        value={new Map(props.screen.fieldSources ?? [])}
-      >
-        <StockUiScreenView
-          screen={props.screen}
-          onEvent={props.onEvent}
-          viewer={props.viewer}
-        />
-      </FieldSourceContext.Provider>
-    </PresentationProvider>
+    <CompactContext.Provider value={props.screen.compact ?? []}>
+      <PresentationProvider bundle={props.presentations ?? null}>
+        <FieldSourceContext.Provider
+          value={new Map(props.screen.fieldSources ?? [])}
+        >
+          <StockUiScreenView
+            screen={props.screen}
+            onEvent={props.onEvent}
+            viewer={props.viewer}
+          />
+        </FieldSourceContext.Provider>
+      </PresentationProvider>
+    </CompactContext.Provider>
   );
 }

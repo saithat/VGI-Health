@@ -1,3 +1,4 @@
+import { useDensity } from "../Density";
 import type { ReactNode } from "react";
 import type { UiPresentationKind } from "../../../../../lean/generated/ehr-types";
 import type { NodeOf, Pair } from "../types";
@@ -391,6 +392,7 @@ export function ClinicalDocument({ node }: { node: Info }) {
   return (
     <div
       className="clinical-info info-document"
+      data-density={useDensity(node.comp)}
       data-comp-id={node.comp || undefined}
       data-info-id={node.infoId}
     >
@@ -435,6 +437,7 @@ export function StructuredInfo({
   return (
     <div
       className={`clinical-info clinical-presentation presentation-${kind}`}
+      data-density={useDensity(node.comp)}
       data-comp-id={node.comp || undefined}
       data-info-id={node.infoId}
     >

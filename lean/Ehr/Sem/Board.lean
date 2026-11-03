@@ -44,6 +44,7 @@ def screen (s : Session) : UiScreen := runRenderUi (prepared s)
 
 def metadata (ui : UiScreen) : UiPaneMetadata :=
   { sourceLabels := ui.sourceLabels?.getD [], fieldSources := ui.fieldSources?.getD [],
+    compact? := ui.compact?,
     entryHints := ui.entryHints?.getD [], fieldChoices := ui.fieldChoices?.getD [],
     urgent? := ui.urgent?.map (fun ns => ns.filterMap stripAtom?) }
 
