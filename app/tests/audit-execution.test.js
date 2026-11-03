@@ -204,14 +204,21 @@ describe("audit execution", () => {
     }
   });
   it("bounds workers by configuration and the lane's 8 GiB memory budget", () => {
+    expect(workerCount({}, 64 * 1024 ** 3)).toBe(6);
     expect(
       workerCount(
         { EHR_SCREEN_WORKERS: "10", EHR_SCREEN_MAX_WORKERS: "8" },
         64 * 1024 ** 3,
       ),
-    ).toBe(8);
+    ).toBe(6);
+    expect(
+      workerCount(
+        { EHR_SCREEN_WORKERS: "6", EHR_SCREEN_MAX_WORKERS: "4" },
+        64 * 1024 ** 3,
+      ),
+    ).toBe(4);
     expect(workerCount({ EHR_SCREEN_WORKERS: "12" }, 3 * 1024 ** 3)).toBe(2);
-    expect(workerCount({ EHR_SCREEN_WORKERS: "12" }, 64 * 1024 ** 3)).toBe(12);
+    expect(workerCount({ EHR_SCREEN_WORKERS: "12" }, 64 * 1024 ** 3)).toBe(6);
   });
   it("exempts only the existing private nightly-agent protocol from locking", () => {
     expect(

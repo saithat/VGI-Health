@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Full audits hold $TMPDIR/vgi-browser-heavy.lock, passing its token to nested
-// screen checks (EHR_BROWSER_LOCK=off opts out). Memory-bounded calibrated
-// workers, two timeout-only retries at half workers, exact tree/context/bundle
-// dedupe and shared atomic physical samples are implemented by screen-check.
+// screen checks (EHR_BROWSER_LOCK=off opts out). Default: 6 memory-bounded
+// workers (ceiling 6), 64-tree batches, shared atomic physical samples under
+// $TMPDIR/vgi-screen-check-cache/physical. Timeout/crash-only retries halve
+// workers, at most twice; exact tree/context/bundle dedupe maps every state.
 // Iterate with targeted --grep/subsets; run the full audit pair once before
 // reporting; the merge session runs it once on main. See README for defaults.
 import { createHash } from "node:crypto";

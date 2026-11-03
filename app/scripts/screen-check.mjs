@@ -1,8 +1,8 @@
 // Full --ui runs share $TMPDIR/vgi-browser-heavy.lock (inherited audit token;
-// EHR_BROWSER_LOCK=off opts out). Worker defaults are memory bounded; see README
-// for calibration. Only timeout/crash batches retry failed tests, twice at half
-// workers. Exact tree/context/bundle dedupe expands all per-state measurements;
-// atomic physical samples are shared under $TMPDIR/vgi-screen-check-cache.
+// EHR_BROWSER_LOCK=off opts out). Default: 6 memory-bounded workers, ceiling 6,
+// 64-tree batches (README records calibration). Timeout/crash-only retries halve
+// workers, at most twice. Exact tree/context/bundle dedupe maps every state.
+// Atomic physical samples use $TMPDIR/vgi-screen-check-cache/physical.
 // Iterate with targeted --grep/subsets; run the full audit pair once before
 // reporting; the merge session runs it once on main. Agent calls do not lock.
 import { randomUUID } from "node:crypto";
@@ -153,6 +153,9 @@ if (ui) {
   const sampleContext = {
     app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
     ui: digest(readFileSync(resolve(appDir, "e2e/ui-check.spec.ts"))),
+    physicalCollector: digest(
+      readFileSync(resolve(appDir, "e2e/physical-policy.ts")),
+    ),
     config: digest(readFileSync(resolve(appDir, "playwright.config.ts"))),
     environment: digest(
       readFileSync(resolve(appDir, "e2e/capture-environment.ts")),

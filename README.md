@@ -390,6 +390,8 @@ pre-urgency-merge physical findings falling from 451,695/368,914
 records the critical-result text-field repair and final full audits: all
 1,826 template and 1,296 persona trees pass with zero findings (16,434 and
 11,664 matrix cases). Both previously timed-out batches pass at three workers.
+The [audit-speed follow-up](docs/audits/audit-speed-2026-11-02.md) records the
+measured six-worker default, shared lock/cache and exact-equivalence checks.
 The full merged e2e run has 240 passes, 67 skips and 39 known failures
 (32 live-auth/setup, four recorded-dashboard, three legacy urgency); all new
 merge failures are repaired. Plain `text` entries use a one-row, soft-wrapping
@@ -1225,13 +1227,28 @@ must use the same disk-backed `TMPDIR`. Export-only audits do not lock. Nightly
 source and its worker selection are unchanged.
 
 Worker selection accepts `EHR_SCREEN_WORKERS` and `EHR_SCREEN_MAX_WORKERS`
-(default maximum 12), bounded by Linux `MemAvailable` and an 8 GiB lane budget:
+(default and owner ceiling 6), bounded by Linux `MemAvailable` and an 8 GiB
+lane budget:
 2 GiB reserved for controllers/Vite plus 500 MiB per worker for Chromium, Node
-and headroom. The provisional target is three workers, matching the owner’s
-current operating setting; quiet-machine calibration is pending in the
-[audit-speed report](docs/audits/audit-speed-2026-11-02.md). Browser validation
-awaits a quiet host window and resolution of the six-worker ground rule versus
-the requested higher-worker sweep; no measured higher default is claimed yet.
+and headroom. The measured default is six workers: the same 256-state subset
+without dedupe or cache reached 37.36 / 48.32 / 68.21 states per minute at
+3 / 4 / 6 workers, with zero timeouts or retries in each run. Peak
+Chromium-inclusive RSS/PSS at six was 6,852/3,825 MiB. One exempt one-worker
+nightly check remained active;
+no other heavy audit overlapped. Workers above six remain disabled. See the
+[audit-speed report](docs/audits/audit-speed-2026-11-02.md) for bindings, artifacts,
+exact-equivalence comparisons and full-audit wall times.
+
+The merged-main cold template audit covers 1,826 states / 16,434 measurements
+in 26m 23s (43.9% less wall time than the historical 47-minute three-worker
+reference). The sequential persona audit covers 1,296 states / 11,664
+measurements in 15m 29s, reusing the shared samples where content matches.
+Both have zero physical findings and zero retries. The historical reference
+used an earlier build/load; the report records the measurement conditions.
+Cold versus optimized v1/P5 comparisons preserve every per-state physical value
+and coverage total (1,609/412 files; 14,481/3,708 measurements); dedupe checks
+1,248/316 representatives. Numeric geometry measurements also match exactly.
+
 Large export lists use file manifests and sequential 64-tree batches
 (`EHR_SCREEN_BATCH_SIZE`, at most 128). Independent regression controls run once
 per invocation; every distinct tree gets both fidelity projects and the full

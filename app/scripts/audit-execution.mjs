@@ -17,19 +17,21 @@ export function availableMemory() {
   return freemem();
 }
 
-// Calibrated target is supplied below after the worker sweep. Reserve 2 GiB for
+// The fixed 256-state sweep measured 37.36/48.32/68.21 states/min at 3/4/6
+// workers without cache or dedupe (zero timeouts/retries). Reserve 2 GiB for
 // controllers/Vite and budget 500 MiB per worker (browser + Node + headroom).
 export function workerCount(env = process.env, available = availableMemory()) {
   const positive = (value, fallback) =>
     Math.max(1, Number.parseInt(value, 10) || fallback);
-  const maximum = positive(env.EHR_SCREEN_MAX_WORKERS, 12);
+  // Owner ceiling remains six until explicitly revised.
+  const maximum = Math.min(6, positive(env.EHR_SCREEN_MAX_WORKERS, 6));
   const memory = Math.max(
     1,
     Math.floor(
       (Math.min(available, 8 * 1024 ** 3) - 2 * 1024 ** 3) / (500 * 1024 ** 2),
     ),
   );
-  return Math.min(maximum, memory, positive(env.EHR_SCREEN_WORKERS, 3));
+  return Math.min(maximum, memory, positive(env.EHR_SCREEN_WORKERS, 6));
 }
 
 /** Probe files bypass clinical assertions and must never substitute for states. */
