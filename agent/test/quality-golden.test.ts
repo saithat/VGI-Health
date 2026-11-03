@@ -1,3 +1,5 @@
+import { recomputedSavings } from '../src/quality-ledger.js';
+import { trainEstimateWindow } from '../src/protocol.js';
 import path from 'node:path';
 import hashes from './fixtures/quality-prompt-hashes.json';
 import { goldenContext } from './quality-golden-context.js';
@@ -17,4 +19,13 @@ withData('runs/core-10day-live/decisions','runs/run1-P3/decisions').it('arm A ma
     actual[decisionId(record)]=[nightlyPrompt(c.nightly),choosePrompt(c.choose),repairPrompt(c.repair)].map(p=>sha256(withQuality(p).system+'\0'+withQuality(p).prompt));
   }
   expect(Object.keys(actual)).toHaveLength(35);expect(actual).toEqual(hashes);
+});
+
+withData('runs/core-10day-live/decisions').it('validates archived ledger coverage using the actual last-two-training-days estimator window',async()=>{
+  const records=await historicalDecisions(path.join(REPO_ROOT,'runs/core-10day-live'));
+  const map=recomputedSavings(records,records);
+  expect(map.size).toBe(records.reduce((n,r)=>n+r.candidates.length,0));
+  const last=records.find(r=>r.night===9&&r.persona==='P4');if(!last)throw new Error('Missing archived decision');
+  expect(last.evidence.trainDays).toEqual([1,3,5,7,9]);expect(trainEstimateWindow(last.evidence.trainDays)).toEqual([7,9]);
+  for(const r of records)for(const c of r.candidates)if(c.trainEstimate)expect(c.trainEstimate.days).toEqual(trainEstimateWindow(r.evidence.trainDays));
 });

@@ -2,7 +2,7 @@ import { retryInfrastructure } from './infrastructure.js';
 import { retryScreens } from './retry-boundaries.js';
 import { ReplayDivergedError, ReplayMissingError } from './backends/replay.js';
 import {InfrastructureError} from './errors.js';
-import { calibrationPartition, validationSeed } from './protocol.js';
+import { calibrationPartition, validationSeed, trainEstimateWindow } from './protocol.js';
 import { expandProgram } from './composites.js';
 import { compilePresentations } from './presentation-compiler.js';
 import path from 'node:path';
@@ -39,7 +39,6 @@ import { withQueries, type QueryBundle } from './quality-queries.js';
 import { withQuality, type QualityContext } from './quality-context.js';
 
 export const MAX_REPAIRS = 3;
-const TRAIN_ESTIMATE_DAYS = 2;
 
 /** Opaque access to the past validation partition. Returns aggregates only; never feeds a prompt. */
 export interface Holdout {
@@ -120,7 +119,7 @@ export class TrainEstimator {
   constructor(private readonly deps: LoopDeps, private readonly input: NightInput, private readonly specVersion: string) {}
 
   private days(): readonly TrainDay[] {
-    return this.input.train.slice(-TRAIN_ESTIMATE_DAYS);
+    return trainEstimateWindow(this.input.train);
   }
 
   private async run(program: Program, day: TrainDay): Promise<DayResult> {

@@ -150,6 +150,8 @@ describe('train-only prompts and offline loop',()=>{
     const ledger=measuredLedger([historical],'P1',2,measured);
     expect(ledger[0]?.trainDaySaving?.scrollPx).toBe(-9144);expect(ledger[0]?.trainDaySaving?.scrolls).toBe(-3);
     expect(JSON.stringify(ledger)).not.toMatch(/17332|VALIDATION_SECRET|TEST_SECRET/);
+    const leaked={...current,candidates:current.candidates.map(c=>({...c,trainEstimate:c.trainEstimate?{...c.trainEstimate,days:[2]}:null}))};
+    expect(()=>recomputedSavings([historical],[leaked])).toThrow('Non-training ledger days');
     expect(()=>recomputedSavings([historical],[{...current,candidates:[]}])).toThrow('Missing historical candidate');
     expect(()=>measuredLedger([historical],'P1',2,new Map())).toThrow('Missing recomputed');
     const root=await mkdtemp(path.join(tmpdir(),'quality-ledger-'));

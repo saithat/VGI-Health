@@ -1,4 +1,9 @@
 import type { DaySchedule } from './schema.js';
+/** The nightly estimator measures the most recent two train days, while prompts
+ * and locality retain all past training evidence. Shared with ledger validation.
+ */
+const TRAIN_ESTIMATE_DAYS=2;
+export const trainEstimateWindow=<T>(days:readonly T[])=>days.slice(-TRAIN_ESTIMATE_DAYS);
 /** Odd calendar days are calibration only; even days are blind headline measurement. */
 export const isMeasurementDay = (day: number) => day % 2 === 0;
 export const calibrationDay = (night: number) => night % 2 ? night : night - 1;

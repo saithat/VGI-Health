@@ -3,6 +3,7 @@
  */
 import path from 'node:path';
 import { z } from 'zod';
+import { isMeasurementDay, trainEstimateWindow } from './protocol.js';
 import { readJson } from './util.js';
 import { physicalSaving, type MeasuredSavings } from './quality-context.js';
 import { decisionRecordSchema, type DecisionRecord } from './schema.js';
@@ -30,7 +31,7 @@ export function recomputedSavings(history:readonly DecisionRecord[],records:read
     if(matches.length!==1||!now||now.versionBefore!==old.versionBefore||now.specVersion!==old.specVersion||JSON.stringify(now.evidence.trainDays)!==JSON.stringify(old.evidence.trainDays))throw new Error(`Missing or inconsistent sanity decision for ${key}`);
     const candidates=now.candidates.filter(c=>!c.candidate.seeded&&c.candidate.id===candidate.candidate.id),entry=candidates[0];
     if(candidates.length!==1||!entry||(candidate.trainEstimate!==null&&entry.trainEstimate===null))throw new Error(`Missing historical candidate in --ledger-from: ${key}`);
-    if(entry.trainEstimate&&JSON.stringify(entry.trainEstimate.days)!==JSON.stringify(old.evidence.trainDays))throw new Error(`Non-training ledger days for ${key}`);
+    if(entry.trainEstimate&&(JSON.stringify(entry.trainEstimate.days)!==JSON.stringify(trainEstimateWindow(old.evidence.trainDays))||entry.trainEstimate.days.some(day=>isMeasurementDay(day)||day>old.night)||candidate.trainEstimate!==null&&JSON.stringify(entry.trainEstimate.days)!==JSON.stringify(candidate.trainEstimate.days)))throw new Error(`Non-training ledger days for ${key}`);
     map.set(key,physicalSaving(entry.trainEstimate?.saving??null));
   }
   return map;
