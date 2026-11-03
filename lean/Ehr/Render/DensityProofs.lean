@@ -1,5 +1,22 @@
 import Ehr.Sem.Screen
 
+/-! # Component density does not change what a screen shows
+
+Proved here: replacing normal/compact sizes throughout a program preserves the
+interpreter view's complete ordered list of shown component IDs (parent
+traversal, tabs, receipts and alert firing included; tiny sizes are kept).
+Changing the density side table of any `UiScreen` preserves `Ehr.Sem.meaning`
+definitionally, and side-table membership is characterized exactly.
+
+Open: for density assignments `f` and `g`, equality of the workspace, side,
+nav, banner and modal of `renderUi` on `programWithDensity f p` and
+`programWithDensity g p` (hence of `meaning`). Lifting size erasure through
+`Ctx`/`ScreenView` guards, the `uiNest` fold, row and presentation wrappers,
+review supplements, footer placement and dated-source indexing needs
+congruence lemmas that do not exist yet. Native fixture and native/WASM
+differential tests check full screen equality after removing only the
+`compact` key; they are regression tests, not a proof. -/
+
 namespace Ehr.Render
 
 /-- Change only normal/compact sizes. Tiny components retain their visibility. -/
