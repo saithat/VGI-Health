@@ -72,7 +72,8 @@ sys.stdin.read()
  const response=await new CodexLlm({binary,model:'FAKE',serviceTier:'default',queryMode:true}).complete(request);
  const {z}=await import('zod');
  const result=z.object({args:z.array(z.string()),files:z.array(z.string())}).parse(response.json);
- expect(result.args).toContain('features.shell_tool=true');expect(result.args).toContain('web_search="disabled"');expect(result.args).toContain('mcp_servers={}');expect(result.args).toContain('read-only');
+ expect(result.args).toContain('features.shell_tool=true');expect(result.args).toContain('web_search="disabled"');expect(result.args).toContain('mcp_servers={}');
+ for(const feature of ['apps','plugins','browser_use','code_mode'])expect(result.args).toContain(`features.${feature}=false`);expect(result.args).toContain('read-only');
  for(const file of ['traces.json','geometry.json','ledger.json','locality.json','query.mjs','README.md'])expect(result.files).toContain(file);
  const {queryUsage}=await import('../src/backends/query-audit.js');expect(queryUsage(response.usage)).toEqual({count:1,tally:{screens:1}});
 });

@@ -83,8 +83,10 @@ export class CodexLlm implements JsonLlm {
       const schemaFile = path.join(dir, 'schema.json');
       const outFile = path.join(dir, 'out.json');
       await writeFile(schemaFile, JSON.stringify(req.schema));
+      // A private config does not disable built-in app/plugin discovery. Arm C
+      // exposes only the command path; other tool families remain unavailable.
       const args = [
-        'exec', '--json', '-c', `features.shell_tool=${this.queryMode?'true':'false'}`, ...(this.queryMode?['-c','mcp_servers={}','-c','approval_policy="never"']:[]), '-c', 'web_search="disabled"', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
+        'exec', '--json', '-c', `features.shell_tool=${this.queryMode?'true':'false'}`, ...(this.queryMode?['-c','mcp_servers={}','-c','features.apps=false','-c','features.plugins=false','-c','features.browser_use=false','-c','features.code_mode=false','-c','approval_policy="never"']:[]), '-c', 'web_search="disabled"', '-c', `model_reasoning_effort="${this.reasoningEffort}"`, ...(this.serviceTier ? ['-c', `service_tier="${this.serviceTier}"`] : []), '--output-schema', schemaFile, '--sandbox', 'read-only', '--ephemeral', '-o', outFile,
         '--skip-git-repo-check', '-C', dir, '-m', this.model, '-',
       ];
       const stdin = `${req.system}\n\n---\n\n${req.prompt}\n\nReply with only the JSON object described by the output schema.`;
