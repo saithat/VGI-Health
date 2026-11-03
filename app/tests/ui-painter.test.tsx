@@ -1659,7 +1659,9 @@ it("timeline forwards exact child events and retains complete source cells", asy
   expect(screen.getByRole("list", { name: "Clinical timeline events" }).textContent).toContain("Rash");
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   expect(emit).toHaveBeenCalledExactlyOnceWith({ click: { comp: "next" } });
-  expect((screen.getByRole("button", { name: "Sign" }) as HTMLButtonElement).disabled).toBe(true);
+  const sign = screen.getByRole("button", { name: "Sign" });
+  if (!(sign instanceof HTMLButtonElement)) throw new Error("Expected the timeline signing button");
+  expect(sign.disabled).toBe(true);
 });
 
 it("timeline retains sibling confirmation identity without synthesizing a second control", () => {

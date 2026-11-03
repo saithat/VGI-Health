@@ -1,4 +1,6 @@
 import Ehr.Sem.Exotic
+import Ehr.Sem.Board
+import Ehr.Sem.DatedTimeline
 import Ehr.Render.Api
 import Ehr.Sim.Policy
 
@@ -34,6 +36,27 @@ def apiExotic (input : String) : String :=
   | .ok json =>
     match (json.getObjValAs? String "op") with
     | .error e => errorJson e
+    | .ok "timestamp" => match json.getObjValAs? String "timestamp" with
+      | .error e => errorJson e
+      | .ok timestamp => (toJson (Dated.parse timestamp)).compress
+    | .ok "board" => match json.getObjValAs? (List Board.Session) "sessions" with
+      | .error e => errorJson e
+      | .ok sessions =>
+        if !Board.valid sessions then errorJson "Unique source-bound patient sessions required" else
+          let next := match json.getObjValAs? String "patient", json.getObjValAs? Event "event" with
+            | .ok patient, .ok event => Board.dispatch sessions patient event
+            | _, _ => sessions
+          (Json.mkObj [("node", toJson (Board.render next)), ("sessions", toJson next),
+            ("result", toJson (match json.getObjValAs? String "patient", json.getObjValAs? Event "event" with
+              | .ok patient, .ok event => Board.eventResult sessions patient event
+              | _, _ => StepResult.ok))]).compress
+    | .ok "dated" => match json.getObjValAs? RenderInput "render" with
+      | .error e => errorJson e
+      | .ok i =>
+        let sources := DatedTimeline.sources i
+        (Json.mkObj [("screen", toJson (DatedTimeline.transform sources (runRenderUi i))),
+          ("node", toJson (DatedTimeline.node i)),
+          ("dated", toJson (Dated.dated sources)), ("undated", toJson (Dated.undated sources))]).compress
     | .ok "choices" => match fromJson? (α := ChoiceInput) json with
       | .error e => errorJson e
       | .ok i => (choiceOutput i).compress

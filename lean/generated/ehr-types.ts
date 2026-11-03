@@ -2286,10 +2286,30 @@ export interface ClinicianRow {
 }
 
 /**
+ * Exact source provenance for the dated index. Clinical detail remains in ordinary children.
+ */
+export interface UiSourceDate {
+  resource: string;
+  field: string;
+  timestamp: string;
+}
+
+/**
+ * UTC seconds plus nanoseconds avoid minute rounding and JavaScript integer overflow.
+ */
+export interface UiDatedItem {
+  source: UiSourceDate;
+  utcSecond: number;
+  nanosecond: number;
+}
+
+/**
  * The patient's records as the page shows them. Computed in Lean from the
  * FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first.
  */
 export interface Display {
+  sourcePatientId?: string;
+  timelineSources?: UiSourceDate[];
   /**
    * The date the records were read for (`YYYY-MM-DD`, "today").
    */
@@ -2387,9 +2407,44 @@ export interface UiChartReference {
 }
 
 /**
+ * A board-wide demand retains patient identity even behind another pane's modal.
+ */
+export interface UiBoardDemand {
+  patient: string;
+  banner: [string, string][];
+  alertId: string;
+  label: string;
+  severity: string;
+}
+
+/**
+ * Code quick picks carry their display mode, not clinical defaults or rules.
+ */
+export interface UiCodeChoices {
+  options: [string, string][];
+  showCode: boolean;
+  allowOther: boolean;
+}
+
+/**
+ * Per-pane guidance has the same provenance and choices as an ordinary screen.
+ */
+export interface UiPaneMetadata {
+  sourceLabels: [string, string][];
+  fieldSources: [string, string][];
+  entryHints: [CompId, string][];
+  fieldChoices: [CompId, UiCodeChoices][];
+}
+
+/**
  * Semantic EHR nodes. Only the selected tab body is emitted.
  */
 export type UiNode =
+  /** Independent patient panes; scoped events are dispatched by the board API. */
+  | { board: { urgent: UiBoardDemand[]; children: UiNode[] } }
+  | { patientPane: { patient: string; banner: [string, string][]; metadata: UiPaneMetadata; children: UiNode[]; modal: UiNode[] } }
+  /** Sorted, source-bound index plus unchanged complete clinical children. */
+  | { datedTimeline: { title: string; dated: UiDatedItem[]; undated: UiSourceDate[]; children: UiNode[] } }
   /** Ordered full-detail events; timeline never filters, sorts or invents timestamps. */
   | { timeline: { title: string; children: UiNode[] } }
   /** A layout hint around ordinary semantic nodes; never a visibility filter. */
@@ -2409,15 +2464,6 @@ export type UiNode =
   | { alert: { comp: CompId; alertId: AlertId; label: string; severity: string } }
   | { button: { comp: CompId; label: string; role: string; enabled: boolean; blockedReason: string | null; hotkey: string | null } }
   | { text: { s: string } };
-
-/**
- * Code quick picks carry their display mode, not clinical defaults or rules.
- */
-export interface UiCodeChoices {
-  options: [string, string][];
-  showCode: boolean;
-  allowOther: boolean;
-}
 
 /**
  * A semantic screen. The banner is the first and sole banner landmark.

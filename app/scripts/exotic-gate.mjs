@@ -355,6 +355,7 @@ async function main() {
         input = structuredClone(canonical.input);
       input.facts.patientId = patient;
       input.facts.sourcePatientId = patient;
+      input.display.sourcePatientId = patient;
       input.display.banner.name = `Bound patient ${i + 1}`;
       input.display.banner.mrn = patient;
       return { patient, input };

@@ -55,6 +55,8 @@ mutual
 /-- Raw-tree observer, independent of the semantic atom erasure. -/
 def containsTimeline : UiNode → Bool
   | .timeline _ _ => true
+  | .board _ kids | .datedTimeline _ _ _ kids => containsTimelineList kids
+  | .patientPane _ _ _ kids modal => containsTimelineList kids || containsTimelineList modal
   | .section _ _ kids | .columns kids | .tabs _ _ _ kids | .presentation _ kids
   | .valueSet _ _ kids | .chartReferences _ kids | .rowAction _ _ kids => containsTimelineList kids
   | _ => false

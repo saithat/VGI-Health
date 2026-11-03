@@ -1,5 +1,215 @@
 # ED exploration, round 2
 
+## Ordinary promotion (`lane/promote`)
+
+The multi-patient board **r2-007** and source-dated timeline **r2-008** are now
+**proved ordinary primitives**, with typed constructors, schemas, traversals,
+meaning adapters, interpreter/view proofs and independent painter gates.
+Command and spatial designs remain **sandbox**. This is language admission with
+explicit exposure assumptions; it is not a deployment certificate.
+
+The promotion rerun lives in ignored `runs/promote-ordinary-v2/`. It uses the
+original two clinical programs, the original 24 seeded profiles and four W3
+tasks, and the exact-input frozen probability cache. No decision server, new
+proposal call or replacement probability is used. The stack reference is
+remeasured on the same build. These known held-out profiles validate the
+preselected designs; they are not a new blind study or a new archive search.
+
+<!-- promotion-results:start -->
+| Design | Current tier | Held-out completion | Effort / task | Mouse px / task | Scroll px / task |
+|---|---|---|---|---|---|
+| reference-stack | stack reference; no new certificate | 24/24 | 55.3 ± 15.9 [34.1, 78.8] | 9152.8 ± 5035.4 [3338.6, 17660.0] | 15170.6 ± 1539.2 [12718.0, 17585.5] |
+| r2-007 | proved ordinary; ordinary gate passed | 24/24 | 97.5 ± 14.4 [80.1, 116.9] | 5598.3 ± 2771.9 [1790.1, 9861.0] | 60901.9 ± 6067.6 [49964.0, 72109.5] |
+| r2-008 | proved ordinary; ordinary gate passed | 24/24 | 98.0 ± 14.3 [75.4, 119.3] | 6081.6 ± 3304.2 [1648.6, 11235.2] | 61309.0 ± 4568.9 [55370.5, 69209.5] |
+
+Spreads are mean ± population SD [min,max] across 12 physicians’ two-task means.
+The original search/held-out split and seed 20261103 are retained. Both designs
+completed 24/24 and 24/24 search executions.
+Compared with this build’s stack reference, held-out mouse travel changes by
+r2-007: -38.8%; r2-008: -33.6%.
+These are simulator/geometry measurements, not human travel paths or elapsed time.
+Scrolling rises to r2-007: 4.0×; r2-008: 4.0×
+the stack reference. The declared composite effort rises by
+r2-007: 76.2%; r2-008: 77.1%.
+No outcome-driven layout change or archive replacement follows this rerun.
+
+All **4615** distinct emitted ordinary views pass at 1440 and 390 px
+(**9230 checks**), including **1006 native exports**.
+Real W3 source checks retain 103, 119, 172, 59 dated entries
+with zero unpositioned entries and zero native/WASM mismatches. The original
+**18767** probability entries suffice: **0 new model requests,
+0 proposal calls**. Raw task traces, source hashes and coverage remain in
+`runs/promote-ordinary-v2/`; no deployment certificate was produced.
+<!-- promotion-results:end -->
+
+The first promotion rerun is excluded in `runs/promote-ordinary/` with its
+`banner-occlusion-diagnostic.json` and `diagnostic-exclusion.json`. Visual review
+and a real hit-test found that a long sticky full banner covered **55/55 enabled
+controls** in a 390 px W3 pane. Its completion/geometry records do not establish
+physical action exposure and are not included in the current results. The fix
+keeps a compact patient/MRN identity pinned and the complete banner in flow,
+fits independent panes below the urgent rail, and positions the modal below the
+measured rail edge. The strengthened gate scrolls to **every enabled control**,
+checks its hit-test and patient identity, and rejects a covering overlay. The
+same long-banner state now passes at both widths. The replacement rerun retains
+all original designs, probabilities, profiles, tasks, seed and objective; this
+is an exposure repair, with no new proposal or archive membership decision.
+After the replacement cohort completed, all **144 clinical traces** (events,
+results, devices, predictions and non-geometric metrics) and **4,615 native
+view payloads** matched the excluded run exactly. Only geometry was remeasured;
+old trace data was not read by the replacement decision process. The comparison
+is recorded in `exposure-repair-trace-agreement.json`.
+
+### Admission and policy
+
+`Render/Dated.lean`, `Sem/Board.lean`, `Sem/BoardView.lean` and
+`Sem/DatedTimeline.lean` discharge the extension obligations described in
+[semantic-ui.md](semantic-ui.md). The audit covers **67 theorem prints**, using
+only `propext`, `Classical.choice` and `Quot.sound`, or no axioms. Comparator
+accepts the solution. Protected Specs, Props, Statements and comparator files
+are unchanged, as are the existing urgency semantic modules.
+
+The board independently decodes its emitted panes to the exact patient-scoped
+ordinary screen meaning, including navigation and foreground controls. Its
+dispatcher is the ordinary interpreter on the selected pane; other complete
+sessions are unchanged through arbitrary foreign-event traces. Both facts and
+display must carry the pane source ID. Commit guards are retained at the exact
+hydrated state. Imported receipts name patient and episode; every render/step
+clears unscoped incoming receipt lists and imports only matching envelopes.
+Foreign receipts cannot change any review or guard. Core version, age and role
+checks remain in force. Host authentication, FHIR/display authenticity, persisted
+state provenance and clinical writes remain trusted integration boundaries.
+There is no shared dose, bed or cross-session concurrency authority here.
+
+The chosen cross-patient policy is a **global patient-labelled urgent rail**:
+every active designated urgent rule contributes, including hidden and already
+acknowledged conditions. The rail stays outside pane scrolling and inside the
+global modal interaction boundary. The first pending modal owns clinical
+actions; other panes are inert until it is discharged. Lookup, hydration and
+return retain every pane and the rail. The dated native presentation composes
+a single-patient board with the same rail. `BoardView` models actual scoped
+events and physical steps with a supplied measured-transition relation,
+modal-aware action readiness, source binding and finite reachability witnesses.
+Equal clinical state alone cannot witness an arbitrary exposure jump. The
+emitted patient-scoped rail satisfies the existing `Perceives` and
+`UrgentVisible` predicates, preserving alert identity, label and severity. Continuous urgency holds under explicit
+viewport, legibility and occlusion evidence at **every reached moment**.
+Browser checks supply finite exposure samples, not an unconditional pixel
+theorem; a rail that cannot fit is a gate finding. No urgency ID or clinical
+severity was changed. The existing 77 urgency classifications still await
+owner review.
+
+The dated contract is full time with seconds and an explicit `Z` or numeric
+offset, at most ±14:00, with up to nine fractional digits. Lean normalizes to
+signed UTC seconds and nanoseconds and stably sorts; permutation and source
+proofs preserve every occurrence, including duplicate times. FHIR
+`effectiveDateTime`, otherwise `effectivePeriod.start`, and `issued` are
+retained separately with resource, field and raw timestamp. Pre-1970 instants
+are supported. Invalid, date-only, local, unknown-offset `-00:00`, leap-second
+and higher-precision values remain explicitly unpositioned. No local timezone
+or midnight is invented. The four W3 inputs already contain explicit source
+offsets; the integration fix retains those raw values in `Display.timelineSources`
+instead of parsing the offset-free display captions. The copied Synthea Patient
+resource receives the archived UUID only after checking it against its declared
+ID/fullUrl alias; the archived fixtures and clinical facts remain unchanged.
+`layout.datedTimeline` admits the index in ordinary programs; the native
+`dated` operation presents existing programs identically. Full clinical rows,
+actions, modals and their typed events are retained.
+
+The independent ordinary gate checks patient-scoped ARIA, unique DOM IDs and
+provenance references, complete source cells, honest actions, exact date order
+and multiplicity, and sampled rail exposure. Native exports and all emitted
+cohort views are mandatory inputs. The legacy backing renderer was also
+submitted to its full gate: unrelated interaction modals still hide
+`doseRangeOrder`, or `interactionOrder` plus `doseRangeOrder`. These are
+retained failures, not passes and not certificates for the promoted painter.
+The gate now recognizes the proof’s same-alert modal alternative (labelled
+title plus enabled acknowledgment); regressions still reject unrelated
+modals and hidden/disabled acknowledgments at both widths.
+
+### Verification and bindings
+
+Environment: `TMPDIR=/home/saithat/Projects/run-tmp`, `LEAN_NUM_THREADS=4`;
+Playwright workers capped at four, cohort actors at three. Commands:
+
+```sh
+(cd lean && lake build && lake build exotic-api)
+(cd lean && lake exe gents)
+(cd lean && COMPARATOR_BWRAP=/home/saithat/Projects/VGI-promote/scripts/lean-bwrap.py lake comparator)
+JOBS=4 EM_CACHE="$TMPDIR/promote-emcache" make wasm
+make wasm-check
+pnpm --filter app build
+pnpm --filter app lint
+pnpm --filter app exec tsc --noEmit
+pnpm --filter app test --maxWorkers=2 --testTimeout=20000
+pnpm --filter agent exec tsc -p ../explore/tsconfig.json --noEmit
+node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/*.test.ts
+APP_TEST_PREVIEW=1 APP_TEST_PORT=4292 pnpm --filter app exec playwright test ui-check.spec.ts --grep 'urgency gate' --workers=2
+node --import ./agent/node_modules/tsx/dist/loader.mjs app/scripts/promote-gate.mjs runs/promote
+node explore/prepare-promotion.mjs runs/explore-round2 runs/promote-ordinary-v2
+EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4282 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs runs/promote-ordinary-v2 --promote --cache-only
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-exports.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-coverage.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/full-binding-check.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/promote-source-check.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-agreement.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/geometry-check.mjs runs/promote-ordinary-v2
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-report.mjs runs/promote-ordinary-v2
+```
+
+Full Lean build: **421 jobs passed**; `#print axioms` output for 67 relevant
+theorems contains only the permitted axioms. Comparator’s default kernel accepts
+the solution. Generated bindings: 169 types, 42 samples. WASM rebuild and source
+binding check pass. App build, full lint and both typechecks pass. App tests:
+**323 passed in 41 files**, with two workers and a 20-second default timeout.
+The initial four-worker run hit one native revision-check test’s five-second
+timeout during concurrent exports; the unchanged suite passed on the bounded
+rerun. Exploration tests: **14 passed, 1 optional endpoint
+skip**. Urgency regressions: **4 passed** at desktop/narrow widths. Ordinary
+canonical gate: 12 recorded browser checks and 30 native/WASM comparisons, with
+hidden-urgent, reversed/dropped-date, duplicate-patient, wrong-binding, foreign
+receipt and blocked-background-event adversaries. Additional agreement: six
+primitive cases, 24 W3 choice boundaries and four interpreter transitions with
+rendered outputs, zero mismatches. Full binding: two real W3 patients, unbound
+signing blocked, lookup/open/hydrate/return/reopen at both widths, other session
+unchanged and patient A’s urgency visible while patient B selects. Geometry
+regressions count document scrolling once and include the pane scroll root.
+Final whole-corpus coverage and completion counts appear in the results above;
+backing-renderer urgency failures remain in `legacy-backing-gates/` and
+`stock-gates/`, including screenshots and native export coverage.
+
+Source binding: `679a88c748da69b7dbad0df8f20cfc4ffa44013eee0828958823b4ccbdb27150`.
+WASM SHA-256: `cbbb98fc2690ec3cc2e176fd9c87629ae305b6ee27eb5dfff998296275001c65`.
+Production app SHA-256:
+`e7c2a6487f355f418e3eb792b46ace54f50abd48dce03f2a237bda42ad8e5251`.
+The frozen replacement cohort uses these app and WASM bindings and its recorded
+renderer source hash. The final view-model proof strengthening leaves WASM bytes
+unchanged; the source binding includes those proofs. All current geometry is
+remeasured after the exposure repair. Source provenance and every emitted view hash are recorded
+in the ignored run. The ordinary painter changes the certified app hash, and the
+new interpreter changes the WASM binding; historical certificates are invalid.
+No certificate is rebound, no design deployed and no push made.
+
+Current real-W3 review images, from the repaired ordinary painter:
+
+- `runs/promote-ordinary-v2/screenshots/promoted-board-1440.png`
+- `runs/promote-ordinary-v2/screenshots/promoted-board-390.png`
+- `runs/promote-ordinary-v2/screenshots/promoted-dated-1440.png`
+- `runs/promote-ordinary-v2/screenshots/promoted-dated-390.png`
+
+No protected clinical files, urgency semantic modules, other branches/worktrees,
+or ignore rules were edited. Data outputs remain untracked. Full live/persistence,
+replay and conformance suites were not run: this lane verifies primitive admission
+and offline evaluation, and intentionally does not rebind the historical clinical
+recordings. Command/spatial admission and human clinician validation remain open.
+
+
+## Original experiment (historical)
+
+The sections below preserve the original experiment, metrics and bindings.
+Their sandbox gaps and original verification results describe that build; the
+board/dated admission and promotion results above supersede them.
+
 Research output on branch `lane/explore2`; no deployment or publication. Raw
 records: `runs/explore-round2/`. README.md was read first; CLAUDE.md is absent in this
 worktree. The policy lane's semantic modules and gate files were not edited.
@@ -22,11 +232,11 @@ and exclusion are recorded in `probability-cache-origin.json` and
 `diagnostic-exclusion.json`. The final held-out profiles were not used during
 development.
 
-All four exotic primitives remain **sandbox**. Kernel lemmas and working painters
-are useful progress; the ordinary-program extension contract is not yet discharged.
+In the original build all four exotic primitives were **sandbox**. Kernel
+lemmas and working painters did not yet discharge the extension contract.
 A backing program's certificate cannot certify a different renderer.
 
-| Candidate | Realized niche | Tier | Held-out completion (mean ± SD [min,max]) | Effort / task | Mouse px / task | Scroll px / task |
+| Candidate | Realized niche | Original tier | Held-out completion (mean ± SD [min,max]) | Effort / task | Mouse px / task | Scroll px / task |
 |---|---|---|---|---|---|---|
 | r2-001 | list / stack | proved · gates passed | 24/24; 1.0 ± 0.0 [1.0, 1.0] | 55.3 ± 15.9 [34.1, 78.8] | 9152.8 ± 5035.4 [3338.6, 17660.0] | 15170.6 ± 1539.2 [12718.0, 17585.5] |
 | r2-002 | list / columns | proved · gates passed | 24/24; 1.0 ± 0.0 [1.0, 1.0] | 88.0 ± 17.2 [61.0, 108.1] | 10080.0 ± 5862.8 [2420.9, 19200.7] | 47028.5 ± 8220.4 [39804.0, 63622.0] |
@@ -347,13 +557,11 @@ samples use two actual source-patient projections, matching the cohort context.
 - `runs/explore-round2/screenshots/spatial-1440.png`
 - `runs/explore-round2/screenshots/spatial-390.png`
 
-## Owner decisions still open
+## Remaining owner decisions
 
-1. Whether to fund ordinary-language admission of command, spatial, board and
-   dated-axis constructors, with the missing obligations listed above.
-2. Whether to add an explicit density field/painter preset; this run does not
-   claim a realized compact-control niche.
-3. Which human-owned cross-patient urgency and receipt/version policy a board
-   must enforce; this lane does not choose that policy.
-4. A larger patient/task sample and human clinician validation before treating
+1. Review the existing 77 urgency classifications and the global-rail policy
+   selected for this promotion; exposure bounds remain explicit.
+2. Whether to fund ordinary admission of command/spatial primitives and a
+   density field/painter preset. Those niches remain sandbox.
+3. A larger patient/task sample and human clinician validation before treating
    these simulator metrics or the poorly calibrated tiny model as usability evidence.

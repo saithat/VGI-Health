@@ -74,6 +74,9 @@ async function render(page: Page, screen: UiScreen, settleMs = 220) {
     );
 }
 function nodes(tree: UiNode): UiNode[] {
+  if ("board" in tree) return [tree, ...tree.board.children.flatMap(nodes)];
+  if ("patientPane" in tree) return [tree, ...tree.patientPane.children.flatMap(nodes), ...tree.patientPane.modal.flatMap(nodes)];
+  if ("datedTimeline" in tree) return [tree, ...tree.datedTimeline.children.flatMap(nodes)];
   if ("timeline" in tree)
     return [tree, ...tree.timeline.children.flatMap(nodes)];
   if ("valueSet" in tree)
@@ -95,6 +98,13 @@ async function urgentFindings(
   screen: UiScreen,
   policy = urgentAlertIds,
 ) {
+  // UrgentDemand permits the alert's own labeled modal plus enabled acknowledgment.
+  // A background copy of that same alert is inert while its modal owns interaction.
+  const modal = screen.modal && "section" in screen.modal ? screen.modal.section : null;
+  const modalNodes = screen.modal ? nodes(screen.modal) : [];
+  const ownModalAck = modal && modalNodes.some(node =>
+    "button" in node && node.button.comp === modal.id && node.button.role === "ack" &&
+      node.button.label === "Acknowledge" && node.button.enabled);
   const demands = [
     ...screen.workspace,
     ...screen.side,
@@ -103,7 +113,7 @@ async function urgentFindings(
     .flatMap(nodes)
     .flatMap((node) => {
       if ("alert" in node && policy.includes(node.alert.alertId))
-        return [{ kind: "alert", id: node.alert.alertId }];
+        return ownModalAck && modal?.id === node.alert.alertId ? [] : [{ kind: "alert", id: node.alert.alertId }];
       if ("section" in node && policy.includes(node.section.id))
         return [{ kind: "attention", id: node.section.id }];
       if (
@@ -134,6 +144,8 @@ async function urgentFindings(
             ) === demand.id,
         );
         const perceived = candidates.some((element) => {
+          if (demand.kind === "ack" && (element.hasAttribute("disabled") || element.getAttribute("aria-disabled") === "true"))
+            return false;
           if (element.closest("[inert], [hidden], [aria-hidden='true']"))
             return false;
           const rect = element.getBoundingClientRect();
@@ -1294,6 +1306,20 @@ test("urgency gate rejects out-of-view demands without scrolling them into view"
   await expect(
     urgentVisibility(page, screen, ["interaction"]),
   ).rejects.toThrow();
+});
+
+test("urgency gate accepts its own modal alternative and rejects hidden or disabled acknowledgments", async ({page}) => {
+  const screen:UiScreen={banner:[],nav:[],title:"Same urgent condition",side:[],workspace:[{alert:{comp:"warning",alertId:"interaction",label:"Interaction",severity:"interruptive"}}],
+    modal:{section:{id:"interaction",title:"Interaction",children:[{button:{comp:"interaction",label:"Acknowledge",role:"ack",enabled:true,blockedReason:null,hotkey:null}}]}}};
+  await page.goto("/screen-check.html");
+  await page.waitForFunction(()=>typeof window.renderUi === "function");
+  await render(page,screen);
+  await urgentVisibility(page,screen,["interaction"]);
+  const ack=page.locator("[data-event='ack']");
+  await ack.evaluate(el=>el.setAttribute("hidden",""));
+  await expect(urgentVisibility(page,screen,["interaction"])).rejects.toThrow();
+  await ack.evaluate(el=>{el.removeAttribute("hidden");el.setAttribute("disabled","");});
+  await expect(urgentVisibility(page,screen,["interaction"])).rejects.toThrow();
 });
 
 /** Finite scroll/focus samples catch regression; they are not a universal view proof. */

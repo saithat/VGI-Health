@@ -505,9 +505,25 @@ structure ClinicianRow where
   name : String
   deriving DecidableEq, Repr, Inhabited
 
+/-- Exact source provenance for the dated index. Clinical detail remains in ordinary children. -/
+structure UiSourceDate where
+  resource : String
+  field : String
+  timestamp : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- UTC seconds plus nanoseconds avoid minute rounding and JavaScript integer overflow. -/
+structure UiDatedItem where
+  source : UiSourceDate
+  utcSecond : Int
+  nanosecond : Nat
+  deriving DecidableEq, Repr, Inhabited
+
 /-- The patient's records as the page shows them. Computed in Lean from the
 FHIR bundle (`Ehr.Render.Fhir.parseBundle`). Lists are newest first. -/
 structure Display where
+  sourcePatientId? : Option String := none
+  timelineSources? : Option (List UiSourceDate) := none
   /-- The date the records were read for (`YYYY-MM-DD`, "today"). -/
   asOf : String
   banner : BannerInfo
@@ -576,8 +592,39 @@ structure UiChartReference where
   points : List (Nat × Nat)
   deriving DecidableEq, Repr, Inhabited
 
+/-- A board-wide demand retains patient identity even behind another pane's modal. -/
+structure UiBoardDemand where
+  patient : String
+  banner : List (String × String)
+  alertId : String
+  label : String
+  severity : String
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Code quick picks carry their display mode, not clinical defaults or rules. -/
+structure UiCodeChoices where
+  options : List (String × String)
+  showCode : Bool := false
+  allowOther : Bool := true
+  deriving Repr, Inhabited
+
+/-- Per-pane guidance has the same provenance and choices as an ordinary screen. -/
+structure UiPaneMetadata where
+  sourceLabels : List (String × String)
+  fieldSources : List (String × String)
+  entryHints : List (CompId × String)
+  fieldChoices : List (CompId × UiCodeChoices)
+  deriving Repr, Inhabited
+
 /-- Semantic EHR nodes. Only the selected tab body is emitted. -/
 inductive UiNode
+  /-- Independent patient panes; scoped events are dispatched by the board API. -/
+  | board (urgent : List UiBoardDemand) (children : List UiNode)
+  | patientPane (patient : String) (banner : List (String × String))
+      (metadata : UiPaneMetadata) (children : List UiNode) (modal : List UiNode)
+  /-- Sorted, source-bound index plus unchanged complete clinical children. -/
+  | datedTimeline (title : String) (dated : List UiDatedItem)
+      (undated : List UiSourceDate) (children : List UiNode)
   /-- Ordered full-detail events; timeline never filters, sorts or invents timestamps. -/
   | timeline (title : String) (children : List UiNode)
   /-- A layout hint around ordinary semantic nodes; never a visibility filter. -/
@@ -601,13 +648,6 @@ inductive UiNode
   | button (comp : CompId) (label : String) (role : String) (enabled : Bool)
       (blockedReason : Option String) (hotkey : Option String)
   | text (s : String)
-  deriving Repr, Inhabited
-
-/-- Code quick picks carry their display mode, not clinical defaults or rules. -/
-structure UiCodeChoices where
-  options : List (String × String)
-  showCode : Bool := false
-  allowOther : Bool := true
   deriving Repr, Inhabited
 
 /-- A semantic screen. The banner is the first and sole banner landmark. -/

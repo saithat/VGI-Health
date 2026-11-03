@@ -17,6 +17,8 @@ mutual
 /-- Walk a semantic tree, retaining each container's identity with an empty
 body. Leaf nodes are unchanged. This observes presence, never browser styling. -/
 def uiAtoms : UiNode → List UiNode
+  | .board _ kids | .datedTimeline _ _ _ kids => uiAtomsList kids
+  | .patientPane _ _ _ kids modal => uiAtomsList kids ++ uiAtomsList modal
   | .timeline _ kids => uiAtomsList kids
   | .presentation _ kids => uiAtomsList kids
   | .valueSet _ _ kids => uiAtomsList kids
@@ -33,6 +35,13 @@ def uiAtomsList : List UiNode → List UiNode
   | n :: ns => uiAtoms n ++ uiAtomsList ns
 termination_by ns => sizeOf ns
 end
+
+@[simp] theorem uiDatedWorkspace_atoms (cx : Ctx) :
+    uiAtomsList (uiDatedWorkspace cx) = uiAtomsList (uiWorkspace cx) := by
+  unfold uiDatedWorkspace
+  split <;> simp [uiAtomsList, uiAtoms]
+
+#print axioms uiDatedWorkspace_atoms
 
 /-- Nav pairs carry real click component ids. This observer expands each pair
 into its semantic button meaning; it adds no rendered workspace node. -/

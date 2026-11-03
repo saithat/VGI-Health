@@ -2356,10 +2356,24 @@ def baseFactsOf (ctx : FactsContext) (rs : List Json) (p : Json) : Facts :=
         ("encounterName", ccText (first enc "type")), ("department", ccText (field enc "serviceType")),
         ("postoperativeDay", ((arr enc "extension").find? (fun e => str e "url" == "https://vgi-health.example/fhir/StructureDefinition/postoperative-day")).map (fun e => qtyText (Json.mkObj [("value", field e "valueInteger")])) |>.getD "")]).filter (fun pair => pair.2 != "") }
 
+/-- Preserve every effective/issued source timestamp, including duplicates and ambiguous
+values. No timezone is inferred from the host or from a display caption. -/
+def timelineSources (rs : List Json) : List UiSourceDate :=
+  rs.flatMap fun r =>
+    let resource := resourceType r ++ "/" ++ str r "id"
+    let effective := str r "effectiveDateTime"
+    let period := str (field r "effectivePeriod") "start"
+    (if effective != "" then [{ resource, field := "effectiveDateTime", timestamp := effective }]
+     else if period != "" then [{ resource, field := "effectivePeriod.start", timestamp := period }] else []) ++
+    (let issued := str r "issued"
+     if issued == "" then [] else [{ resource, field := "issued", timestamp := issued }])
+
 /-- The display rows. -/
 def displayOf (ctx : FactsContext) (rs : List Json) (p : Json) : Display :=
   let dob := str p "birthDate"
   { asOf := ctx.today
+    sourcePatientId? := some (str p "id")
+    timelineSources? := some (timelineSources rs)
     banner := bannerFor ctx rs p
 
     allergies := allergyRows rs

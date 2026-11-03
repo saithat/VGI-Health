@@ -1,3 +1,5 @@
+import { Board, PatientPane } from "./Board";
+import { DatedTimeline } from "./DatedTimeline";
 import { Timeline } from "./Timeline";
 import { useContext, useId, useState } from "react";
 import { usePresentation } from "./presentations";
@@ -291,6 +293,7 @@ export function FieldNode({
       sourceLabels.find(([source]) => source === node.provenance)?.[1] ??
       formatProvenance(node.provenance))
     : undefined;
+  const sourceId = useId();
   const explicitConfirms = useContext(ExplicitConfirmContext);
   const send = (value: string | number | boolean) => {
     const event = entryEvent(node, value);
@@ -309,11 +312,11 @@ export function FieldNode({
   const common = {
     label: fieldCaption(node.label),
     "aria-label": node.label,
-    "aria-describedby": sourceCaption ? `field-source-${node.comp}` : undefined,
+    "aria-describedby": sourceCaption ? sourceId : undefined,
     ...(sourceCaption
       ? {
           attributes: {
-            input: { "aria-describedby": `field-source-${node.comp}` },
+            input: { "aria-describedby": sourceId },
           },
         }
       : {}),
@@ -525,7 +528,7 @@ export function FieldNode({
               color="gray"
               size="sm"
               className="provenance-chip"
-              id={`field-source-${node.comp}`}
+              id={sourceId}
             >
               <span
                 title={sourceCaption ?? formatProvenance(node.provenance)}
@@ -969,6 +972,33 @@ export function StockUiNodeView({
   confirmProvided?: boolean;
 }) {
   switch (true) {
+    case "board" in node:
+      return (
+        <Board
+          node={node.board}
+          render={(child, i) => (
+            <UiChildren key={"patientPane" in child ? child.patientPane.patient : i} nodes={[child]} onEvent={onEvent} />
+          )}
+        />
+      );
+    case "patientPane" in node:
+      return (
+        <PatientPane
+          node={node.patientPane}
+          render={(children, emit) => (
+            <UiChildren nodes={children} onEvent={emit} />
+          )}
+        />
+      );
+    case "datedTimeline" in node:
+      return (
+        <DatedTimeline
+          node={node.datedTimeline}
+          render={(children) => (
+            <UiChildren nodes={children} onEvent={onEvent} />
+          )}
+        />
+      );
     case "timeline" in node:
       return (
         <Timeline

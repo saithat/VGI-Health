@@ -1,4 +1,5 @@
 import Ehr.Core.Navigation
+import Ehr.Render.Dated
 import Ehr.Render.Presentations
 import Ehr.Render.SurgeryChoices
 import Ehr.Render.CodeChoices
@@ -696,6 +697,14 @@ def uiFieldSources (cx : Ctx) : List (CompId × String) :=
     | _ => none
 
 
+/-- Dated opt-in is a presentation of the unchanged complete workspace. -/
+def uiDatedWorkspace (cx : Ctx) : List UiNode :=
+  if cx.v.items.any (fun it => it.shown &&
+      (it.comp.tag == "layout.datedTimeline" || it.comp.tag.endsWith ".layout.datedTimeline")) then
+    [.datedTimeline "Dated clinical timeline (UTC)" (Dated.dated (cx.disp.timelineSources?.getD []))
+      (Dated.undated (cx.disp.timelineSources?.getD [])) (uiWorkspace cx)]
+  else uiWorkspace cx
+
 /-- The actual semantic UI sent to the browser. Program banners contribute to
 the single shell landmark and are excluded from workspace and side components. -/
 def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
@@ -710,6 +719,6 @@ def renderUi (sp : Spec) (prog : Program) (facts : Facts) (disp : Display)
     sourceLabels? := if sources.isEmpty then none else some sources,
     entryHints? := if hints.isEmpty then none else some hints,
     fieldChoices? := if choices.isEmpty then none else some choices,
-    workspace := uiWorkspace cx, side := uiSide cx, modal := uiModal cx }
+    workspace := uiDatedWorkspace cx, side := uiSide cx, modal := uiModal cx }
 
 end Ehr.Render

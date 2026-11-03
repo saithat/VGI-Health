@@ -1,3 +1,6 @@
+import Ehr.Sem.Board
+import Ehr.Sem.BoardView
+import Ehr.Sem.DatedTimeline
 import Ehr.Sem.UrgencyExamples
 import Ehr.Commit.MarTests
 import Ehr.Sem.Exotic

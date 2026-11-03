@@ -11,7 +11,7 @@ Optional fields follow the same naming rules as Ehr.Core.Json.
 namespace Ehr.Render
 
 deriving instance Lean.ToJson, Lean.FromJson for Tag, PageAttr, PageNode,
-  UiPresentationKind, UiCodeChoice, UiChartReference, UiNode, UiCodeChoices, UiScreen
+  UiPresentationKind, UiCodeChoice, UiChartReference, UiSourceDate, UiDatedItem, UiBoardDemand, UiCodeChoices, UiPaneMetadata, UiNode, UiScreen
 
 deriving instance Lean.ToJson, Lean.FromJson for
   BannerInfo, AllergyRow, MedRow, VitalRow, TrendPoint, LabRow, LabResultRow, ProblemRow, ImmRow,

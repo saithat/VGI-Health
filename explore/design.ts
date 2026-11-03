@@ -41,12 +41,12 @@ export function parsePoint(value: unknown): DesignPoint {
 export function unsupported(p: DesignPoint): string[] {
   return [
     ...(p.navigation !== 'list' ? [`navigation:${p.navigation}`] : []),
-    ...([p.layout, ...Object.values(p.taskLayouts)].filter(x => !['stack','columns','document','timeline'].includes(x)).map(x => `layout:${x}`)),
+    ...([p.layout, ...Object.values(p.taskLayouts)].filter(x => !['stack','columns','document','timeline'].includes(x) && !(x==='board'&&p.patientScope==='multi')).map(x => `layout:${x}`)),
     ...(p.navigation === 'timeline' && p.layout !== 'timeline' ? ['timeline navigation requires timeline layout'] : []),
     ...(p.input === 'voice' ? ['input:voice'] : []),
     ...(p.alertChannel !== 'spec' ? [`alertChannel:${p.alertChannel}`] : []),
-    ...(p.patientScope !== 'single' ? ['patientScope:multi'] : []),
-    ...(p.temporalView === 'aligned' ? ['temporalView:aligned'] : []),
+    ...(p.patientScope !== 'single' && p.layout !== 'board' ? ['patientScope:multi requires board layout'] : []),
+    ...(p.temporalView === 'aligned' && p.layout !== 'timeline' ? ['temporalView:aligned requires timeline layout'] : []),
   ];
 }
 export function niche(p: DesignPoint): string {
