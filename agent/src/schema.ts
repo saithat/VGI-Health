@@ -43,7 +43,7 @@ export const jsonPatchSchema = z.array(jsonPatchOpSchema);
 /** Predicted saving per average train day; positive = fewer. */
 export const savingsSchema = z.object({ clicks: int, keystrokes: int, scrolls: int, klmDeciSec: int.default(0), mouseTravelPx:z.number().nullable().optional(),scrollPx:z.number().nullable().optional() });
 
-export const candidateSourceSchema = z.enum(['llm', 'repair', 'seeded', 'user-request', 'migration-fallback']);
+export const candidateSourceSchema = z.enum(['llm', 'repair', 'seeded', 'user-request', 'migration-fallback', 'explore', 'archive-bundle']);
 export const seededKindSchema = z.enum(['allergyHidden', 'idReentryPrefilled', 'lbWeightAccepted']);
 
 export const candidateSchema = z.object({
@@ -283,6 +283,7 @@ export const screenCheckResultSchema = z.object({
 });
 
 export const outcomeSchema = z.enum([
+  'archived', 'release-deferred', 'review-declined',
   'validation-accepted',
   'error', 'infrastructure-error', 'llm-error', 'deployed', 'no-change', 'no-passing-candidate', 'certification-failed', 'screen-check-failed', 'validation-rejected',
   'user-reverted', 'migrated', 'migration-fallback', 'recertified', 'surfaced', 'not-surfaced',
@@ -296,7 +297,7 @@ export const decisionRecordSchema = z.object({
   night: nat,
   persona: str,
   owner: str,
-  mode: z.enum(['nightly', 'surface-feature', 'migrate', 'try-to-break-it']),
+  mode: z.enum(['nightly', 'cadence', 'surface-feature', 'migrate', 'try-to-break-it']),
   specVersion: str,
   versionBefore: nat,
   versionAfter: nat,
@@ -307,13 +308,17 @@ export const decisionRecordSchema = z.object({
   }),
   ehr: z.object({ mode: z.enum(['real', 'fake']), binary: str.nullable() }),
   evidence: trainSummarySchema,
+  cadence: z.object({ protocol: str, cadence: z.string(), due: z.boolean(), archive: str, niches: nat,
+    offers: z.array(z.object({ id: str, candidateIds: z.array(str), score: z.number(), switchCost: z.number(), switchModel: str, assumption: str })),
+    review: z.object({ gate: str, chosenBundle: str.nullable(), reason: str }).nullable(),
+  }).optional(),
   hypothesis: str,
   candidates: z.array(evaluatedCandidateSchema),
   chosen: z.object({
     candidateIds: z.array(str),
     rationale: str,
     rejectedAlternatives: z.array(z.object({ id: str, reason: str })),
-    choiceBy: z.enum(['llm', 'loop-fallback']),
+    choiceBy: z.enum(['llm', 'loop-fallback', 'review-gate']),
   }).nullable(),
   predicted: savingsSchema.nullable(),
   certification: z.object({

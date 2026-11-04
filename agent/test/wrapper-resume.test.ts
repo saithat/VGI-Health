@@ -37,3 +37,16 @@ withData("runs/world/2").it('resumes with real fingerprints, never rebuilds/call
   await expect(verifyResume(run)).rejects.toThrow('fingerprints changed');
  }finally{await rm(copied,{recursive:true,force:true});}
 },30000);
+
+withData('runs/world/2').it('verifies exploration fingerprints for native cadence manifests',async()=>{
+ const {CADENCE_PROTOCOL}=await import('../src/cadence.js');
+ const {treeHash}=await import('../src/fingerprints.js');
+ const directory=await tmp('cadence-native-resume'),ehr=createEhr({fake:false}),world=path.join(REPO_ROOT,'runs/world/2');
+ if(!ehr.binary)throw Error('native binary required');
+ const fingerprints={...await runFingerprints(ehr,world),explore:await treeHash(path.join(REPO_ROOT,'explore'))};
+ const manifest={protocol:CADENCE_PROTOCOL,world,ehr:{mode:'real',binary:ehr.binary},fingerprints};
+ await writeJson(path.join(directory,'manifest.json'),manifest);
+ expect(await verifyResume(directory)).toEqual(fingerprints);
+ await writeJson(path.join(directory,'manifest.json'),{...manifest,fingerprints:{...fingerprints,explore:'changed'}});
+ await expect(verifyResume(directory)).rejects.toThrow('fingerprints changed');
+});

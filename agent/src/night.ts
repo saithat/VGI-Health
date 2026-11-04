@@ -1,3 +1,10 @@
+import { CADENCE_PROTOCOL, autoApprove, releaseDue, usageWeightedSwitchCost, type ReleaseCadence, type ReviewGate, type ReviewBundle, type ReviewChoices, type SwitchCost } from './cadence.js';
+import { DesignArchiveStore, archiveFeedback, designHash, type ArchiveEntry, type ArchiveObservation } from './design-archive.js';
+import { describeProgram, generate, validateCandidate } from '../../explore/generator.js';
+import { seedPoints, niche, type Workflow } from '../../explore/design.js';
+import { archiveFrom } from '../../explore/search.js';
+import type { Evaluation } from '../../explore/archive.js';
+import { programHash, sha256, stableStringify } from './program.js';
 import { retryInfrastructure } from './infrastructure.js';
 import { retryScreens } from './retry-boundaries.js';
 import { ReplayDivergedError, ReplayMissingError } from './backends/replay.js';
@@ -28,7 +35,7 @@ import { applyToProgram, componentsMoved } from './program.js';
 import { choosePrompt, nightlyPrompt, repairPrompt, type HistoryItem, type PersonaView } from './prompts.js';
 import type { Release } from './releases.js';
 import {
-  violationOf, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
+  violationOf, jsonPatchSchema, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
   type JsonPatchOp, type LlmCallRef, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
 } from './schema.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
@@ -343,14 +350,18 @@ export function recordDeploy(rec: DecisionRecord, dep: DeployOutcome, attempt: {
   }
 }
 
-function compatible(a: Candidate, b: Candidate): boolean {
+export function compatible(a: Candidate, b: Candidate): boolean {
   const key = (p: string) => p.split('/').slice(0, 5).join('/');
   const ta = new Set(touchedPaths(a.patch).map(key));
   return touchedPaths(b.patch).every((p) => !ta.has(key(p)));
 }
 
 // ---------------------------------------------------------------- the nightly loop
-export async function runNight(deps: LoopDeps, input: NightInput, options: { offline?: boolean; quality?: QualityContext; queryBundle?:QueryBundle } = {}): Promise<NightResult> {
+export async function runNight(deps: LoopDeps, input: NightInput, options: { offline?: boolean; quality?: QualityContext; queryBundle?:QueryBundle; cadence?: CadenceNightOptions } = {}): Promise<NightResult> {
+  if (options.cadence) {
+    if (options.offline || options.quality || options.queryBundle) throw Error('Cadence uses its own protocol; offline quality arms remain unchanged');
+    return runCadenceNight(deps, input, options.cadence);
+  }
   if(options.queryBundle&&(!options.offline||!options.quality))throw new Error('Queries require offline arm C with train-only quality context');
   const { night, persona, release, current } = input;
   const specVersion = release.specVersion;
@@ -554,4 +565,228 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   rec.versionAfter = finalProgram.version;
   rec.outcome = 'deployed';
   return finish(finalProgram);
+}
+
+export interface CadenceNightOptions {
+  cadence?: ReleaseCadence;
+  department: string;
+  reviewGate?: ReviewGate;
+  switchCost?: SwitchCost;
+}
+
+const replacementPatch = (program: Program): JsonPatchOp[] => jsonPatchSchema.parse([
+  { op: 'replace', path: '/screens', value: program.screens },
+  { op: 'replace', path: '/macros', value: program.macros },
+]);
+
+/** Finding is train-only. Only this function crosses into Holdout, after ranking
+ * and review. Neither validation metrics nor outcomes return to archive feedback. */
+async function runCadenceNight(deps: LoopDeps, input: NightInput, options: CadenceNightOptions): Promise<NightResult> {
+  const { current, persona, night, release } = input;
+  if (input.train.some(d => d.schedule.day > night || d.schedule.day % 2 === 0 || d.result.day !== d.schedule.day ||
+    d.result.persona !== persona.id || d.schedule.persona !== persona.id))
+    throw Error('Cadence archive accepts past odd train days only');
+  if (!options.department.trim()) throw Error('Archive requires a department');
+  if (deps.ehr.mode === 'real' && deps.screens.mode !== 'real') throw Error('Real archive requires real screen evidence');
+  const cadence = options.cadence ?? { kind: 'nightly' };
+  const due = releaseDue(night, cadence);
+  const gate: Gate = { specVersion: release.specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
+  const archiveStore = new DesignArchiveStore(path.join(deps.store.dir, 'archives'), {
+    clinician: persona.id, owner: persona.userId, department: options.department, role: current.role,
+  });
+  const snapshot = await archiveStore.before(night, deps.ehr.mode);
+  const rec = emptyRecord(deps, { ...input, specVersion: release.specVersion, spec: release.spec },
+    summarizeTrain(persona.id, current, input.train, input.programs));
+  rec.mode = 'cadence';
+  rec.cadence = { protocol: CADENCE_PROTOCOL, cadence: stableStringify(cadence), due,
+    archive: path.relative(deps.store.dir, archiveStore.directory), niches: 0, offers: [], review: null };
+  const reviewGate = options.reviewGate ?? autoApprove;
+  const estimator = new TrainEstimator(deps, input, release.specVersion);
+  const context = { clinician: persona.id, department: options.department, role: current.role, train: trainEstimateWindow(input.train) };
+  const workflows: Workflow[] = [...new Set(context.train.flatMap(d => d.schedule.tasks.map(t => t.workflow)))];
+  const newCandidates: Candidate[] = [];
+  try {
+    const parts = nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence: rec.evidence, history: input.history });
+    parts.prompt += `\nStanding quality-diversity archive (train evidence only):\n${JSON.stringify(archiveFeedback(snapshot))}`;
+    const proposal = await deps.agent.proposeCandidates({ callId: callId(night, persona.id, 'propose-0'), purpose: 'propose', source: 'llm', parts });
+    rec.llmCalls.push(proposal.call);
+    rec.hypothesis = proposal.hypothesis;
+    newCandidates.push(...proposal.candidates);
+    for (const u of proposal.undecodable) {
+      const c: Candidate = { id: u.id, summary: u.summary, moveType: 'reorder', rationale: '', targets: [], patch: [],
+        predicted: sumSavings([]), source: 'llm', seeded: false, seededKind: null };
+      snapshot.entries.push({ id: `${night}:${u.id}`, night, candidateIds: [u.id], candidate: c, program: null,
+        observations: [{ night, baseHash: programHash(current), specHash: sha256(stableStringify(release.spec)), programHash: null, check: invalidPatch(u.error), trainEstimate: null, screen: null, switchCost: null, staticError: u.error }] });
+      rec.candidates.push({ candidate: c, check: invalidPatch(u.error), trainEstimate: null, componentsMoved: null });
+    }
+  } catch (error) {
+    if (error instanceof InfrastructureError || error instanceof ReplayDivergedError || error instanceof ReplayMissingError) throw error;
+    // A discovery failure does not cancel a due release of the standing archive.
+    rec.flags.push(`llm-error: ${errorMessage(error)}`);
+  }
+  rec.backend = backendInfo(deps.agent, rec.llmCalls);
+
+  // Reuse the admitted explore generator; cycle across layouts, density and
+  // input, skipping already evaluated designs. No additional model calls.
+  if (workflows.length) {
+    const points = seedPoints().flatMap(p => (['normal', 'compact'] as const).flatMap(density =>
+      (['mouse', 'keyboard'] as const).map(input => ({ ...p, density, input }))));
+    for (let offset = 0; offset < points.length; offset++) {
+      const point = points[(night - 1 + offset) % points.length];
+      if (!point) continue;
+      try {
+        const generated = generate(point, workflows, current, release.spec);
+        if (designHash(generated.program) === designHash(current) || snapshot.entries.some(e => e.program && designHash(e.program) === designHash(generated.program))) continue;
+        newCandidates.push({ id: `explore-${night}`, summary: `Explore ${niche(generated.point)}`, moveType: 'reorder',
+          rationale: 'Fill an admitted design niche', targets: [], patch: replacementPatch(generated.program),
+          predicted: sumSavings([]), source: 'explore', seeded: false, seededKind: null });
+        break;
+      } catch (error) {
+        // Missing realizations (e.g. no clinical groups) are unsupported seeds,
+        // not certified archive entries. LLM proposals are never discarded here.
+        rec.flags.push(`explore seed ${niche(point)} unavailable: ${errorMessage(error)}`);
+      }
+    }
+  }
+  const seeded = pickSeeded(deps.seedPolicy, deps.seedState, current, release.spec, night);
+  if (seeded) { deps.seedState.injected++; newCandidates.push(seeded); }
+  // Small disjoint bundles are additional designs, certified as a whole. The
+  // full merged stability budget is checked, never the sum of singleton claims.
+  const prior = snapshot.entries.filter(e => e.candidateIds.length === 1 && e.program?.specVersion === release.specVersion &&
+    !e.candidate.seeded && e.observations[0]?.baseHash === programHash(current) && e.observations.at(-1)?.check.status === 'pass' &&
+    e.observations.at(-1)?.screen?.status === 'pass' && (() => {
+      const o = e.observations.at(-1), t = o?.trainEstimate;
+      return t && (t.before.clicks + t.before.scrolls - t.after.clicks - t.after.scrolls) / t.days.length > (o?.switchCost?.cost ?? 0);
+    })())
+    .sort((a,b) => (b.observations.at(-1)?.trainEstimate?.saving.clicks ?? 0) - (a.observations.at(-1)?.trainEstimate?.saving.clicks ?? 0));
+  const singles = [...new Map([...prior.map(e => e.candidate), ...newCandidates.filter(c => !c.seeded)]
+    .filter(c => c.patch.every(op => op.path !== '/screens' && op.path !== '/macros'))
+    .map(c => [stableStringify(c.patch), c])).values()].slice(0, 6);
+  const members = new Map<string, string[]>();
+  for (let i = 0; i < singles.length; i++) for (let j = i+1; j < singles.length; j++) {
+    const a = singles[i], b = singles[j];
+    if (!a || !b || !compatible(a,b)) continue;
+    const id = `${a.id}+${b.id}`;
+    const patch = [...a.patch,...b.patch];
+    if (snapshot.entries.some(e => e.candidate.source === 'archive-bundle' && e.observations[0]?.baseHash === programHash(current) &&
+      stableStringify(e.candidate.patch) === stableStringify(patch))) continue;
+    members.set(id, [a.id,b.id]);
+    newCandidates.push({ ...a, id, source: 'archive-bundle', summary: `${a.summary}; ${b.summary}`, patch, predicted: sumSavings([a,b]) });
+  }
+  for (const candidate of newCandidates) {
+    const attempt = await checkPatch(deps.ehr, current, candidate.patch, gate);
+    const observation: ArchiveObservation = { night, baseHash: programHash(current), specHash: sha256(stableStringify(release.spec)),
+      programHash: attempt.program ? programHash(attempt.program) : null, check: attempt.check, trainEstimate: null, screen: null, staticError: null, switchCost: null };
+    const entry: ArchiveEntry = { id: `${night}:${candidate.id}`, night, candidateIds: members.get(candidate.id) ?? [candidate.id],
+      candidate, program: attempt.program, observations: [observation] };
+    snapshot.entries.push(entry);
+    if (!entry.program || candidate.seeded) rec.candidates.push({ candidate, check: attempt.check, trainEstimate: null, componentsMoved: null });
+  }
+
+  const evaluations: Evaluation[] = [];
+  const offers = new Map<string, ReviewBundle>();
+  // Re-score all unique retained designs on THIS clinician's recent train
+  // window, against the currently deployed baseline. Old specs remain recorded
+  // but cannot ship into a new release; candidates are never silently rebased.
+  const refreshed = new Map<string, ArchiveObservation>();
+  for (const entry of snapshot.entries) {
+    if (!entry.program || entry.candidate.seeded || entry.program.specVersion !== release.specVersion) continue;
+    const program = { ...entry.program, version: current.version + 1 };
+    if (program.owner !== current.owner || program.id !== current.id || program.role !== current.role) throw Error('Archive identity mismatch');
+    const hash = designHash(program);
+    let observation = refreshed.get(hash);
+    if (!observation) {
+      const check = toCheckResult(await deps.ehr.check({ specVersion: release.specVersion, program, prev: current, canonical: release.canonical }));
+      observation = { night, baseHash: programHash(current), specHash: sha256(stableStringify(release.spec)), programHash: programHash(program), check, trainEstimate: null, screen: null, staticError: null, switchCost: null };
+      try { validateCandidate(describeProgram(program, workflows), current, release.spec); }
+      catch (error) { observation.staticError = errorMessage(error); }
+      if (check.status === 'pass' && !observation.staticError) {
+        observation.screen = await retryScreens(deps.screens).check({ specVersion: release.specVersion, program });
+        if (observation.screen.status === 'pass') {
+          observation.trainEstimate = await estimator.estimate(program);
+          const cost = await (options.switchCost ?? usageWeightedSwitchCost)(current, program, context);
+          if (!Number.isFinite(cost.cost) || cost.cost < 0) throw Error('Switch cost must be finite and nonnegative');
+          observation.switchCost = cost;
+        }
+      }
+      refreshed.set(hash, observation);
+    }
+    if (entry.observations.at(-1)?.night === night) entry.observations[entry.observations.length-1] = observation;
+    else entry.observations.push(observation);
+    if (entry.night === night) {
+      rec.candidates.push({ candidate: entry.candidate, check: observation.check,
+        trainEstimate: observation.trainEstimate, componentsMoved: componentsMoved(current, program) });
+      if (observation.screen?.status === 'fail') rec.certification.attempts.push({
+        attempt: rec.certification.attempts.length, candidateIds: entry.candidateIds, source: 'screen-check',
+        patch: entry.candidate.patch, check: screenCheckRejection(observation.screen),
+      });
+    }
+    const estimate = observation.trainEstimate, cost = observation.switchCost, screen = observation.screen;
+    if (observation.check.status !== 'pass' || observation.staticError || !estimate || !cost || screen?.status !== 'pass' ||
+      estimate.after.tasks < 1 || estimate.before.tasks !== estimate.after.tasks || estimate.after.completed !== estimate.after.tasks) continue;
+    const candidate = describeProgram(program, workflows);
+    const score = (estimate.before.clicks + estimate.before.scrolls - estimate.after.clicks - estimate.after.scrolls) / estimate.days.length - cost.cost;
+    const id = hash;
+    evaluations.push({ id, candidate, status: 'accepted', metrics: estimate.after, quality: score,
+      evidence: { leanVerdict: 'ok', screenStatus: 'pass', trainDays: estimate.days } });
+    offers.set(id, { id, candidateIds: entry.candidateIds, program,
+      evidence: { train: estimate, switchCost: cost, score, moved: componentsMoved(current, program), leanVerdict: 'ok', screen, niche: niche(candidate.point) } });
+  }
+  const archive = archiveFrom(evaluations);
+  snapshot.night = night;
+  snapshot.cells = Object.fromEntries([...archive.cells].map(([key,e]) => [key,e.id]));
+  rec.cadence.niches = archive.cells.size;
+  rec.flags.push(...noteRejections(deps.seedState, rec.candidates));
+  await archiveStore.save(snapshot);
+  const finish = async (deployed: Program | null): Promise<NightResult> => {
+    await deps.store.writeDecision(rec);
+    return { record: rec, deployed };
+  };
+  if (!due) { rec.outcome = 'release-deferred'; rec.validation.reason = 'Candidates archived; next release slot pending'; return finish(null); }
+  const ranked = [...archive.cells.values()].map(e => offers.get(e.id)).filter((b): b is ReviewBundle => Boolean(b && b.evidence.score > 0))
+    .sort((a,b) => b.evidence.score-a.evidence.score || a.id.localeCompare(b.id)).slice(0,3);
+  const [first, second, third] = ranked;
+  if (!first) { rec.outcome = 'archived'; rec.validation.reason = 'No complete bundle with positive net train score'; return finish(null); }
+  const choices: ReviewChoices = second ? third ? [first,second,third] : [first,second] : [first];
+  rec.cadence.offers = choices.map(b => ({ id: b.id, candidateIds: b.candidateIds, score: b.evidence.score,
+    switchCost: b.evidence.switchCost.cost, switchModel: b.evidence.switchCost.model, assumption: b.evidence.switchCost.assumption }));
+  // Pass a clone: a UI hook can choose a bundle, never mutate certified bytes.
+  const review = await reviewGate.review(structuredClone({ protocol: CADENCE_PROTOCOL, night, clinician: persona.id,
+    department: options.department, role: current.role, bundles: choices }));
+  if (typeof review.reason !== 'string' || !review.reason.trim() ||
+    (review.chosenBundle !== null && !choices.some(b => b.id === review.chosenBundle))) throw Error('Review gate returned an invalid choice/reason');
+  rec.cadence.review = { gate: reviewGate.id, ...review };
+  if (review.chosenBundle === null) { rec.outcome = 'review-declined'; rec.validation.reason = review.reason; return finish(null); }
+  const chosen = choices.find(b => b.id === review.chosenBundle);
+  if (!chosen) throw Error('Review choice missing');
+  const program = chosen.program;
+  for (const id of chosen.candidateIds) {
+    if (rec.candidates.some(e => e.candidate.id === id)) continue;
+    const entry = snapshot.entries.find(e => e.candidate.id === id);
+    const observation = entry?.observations.at(-1);
+    if (entry && observation) rec.candidates.push({ candidate: entry.candidate, check: observation.check,
+      trainEstimate: observation.trainEstimate, componentsMoved: entry.program ? componentsMoved(current,entry.program) : null });
+  }
+  rec.chosen = { candidateIds: chosen.candidateIds, rationale: review.reason, choiceBy: 'review-gate', rejectedAlternatives: [] };
+  rec.predicted = { ...chosen.evidence.train.saving, klmDeciSec: 0 };
+  const patch = replacementPatch(program);
+  const check = toCheckResult(await deps.ehr.check({ specVersion: release.specVersion, program, prev: current, canonical: release.canonical }));
+  rec.certification.attempts.push({ attempt: 0, candidateIds: chosen.candidateIds, source: 'merged', patch, check });
+  rec.certification.result = check.status === 'pass' ? 'certified' : 'rejected';
+  if (check.status !== 'pass') { rec.outcome = 'certification-failed'; return finish(null); }
+  const replay = await input.holdout.validate(current, program, release.specVersion);
+  rec.validation = { replay, stabilityOk: chosen.evidence.moved <= release.spec.design.stabilityBudget,
+    improved: replay ? improved(replay) : null, accepted: false, reason: 'Release validation did not improve' };
+  rec.measured.validation = replay;
+  const prediction = predictionVerdict(rec.predicted, replay);
+  rec.measured.predictionHeld = prediction.held; rec.measured.predictionNote = prediction.note;
+  if (!rec.validation.stabilityOk || !rec.validation.improved) { rec.outcome = 'validation-rejected'; return finish(null); }
+  rec.validation.accepted = true; rec.validation.reason = 'Reviewed bundle passed past-calibration replay';
+  rec.userResponse = userResponse(deps, night, persona.id, chosen.evidence.moved);
+  if (rec.userResponse.response === 'reverted') { rec.outcome = 'user-reverted'; return finish(null); }
+  const deployed = await deployVersion(deps, persona.id, program, { ...gate, validation: replay });
+  recordDeploy(rec, deployed, { candidateIds: chosen.candidateIds, patch });
+  if (!deployed.ok) { rec.outcome = deployed.reason === 'screen-check' ? 'screen-check-failed' : 'certification-failed'; return finish(null); }
+  rec.versionAfter = program.version; rec.outcome = 'deployed';
+  return finish(program);
 }

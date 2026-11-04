@@ -10,6 +10,7 @@
     "run-days": "tsx src/cli.ts run-days",
     "night": "tsx src/cli.ts night",
     "try-to-break-it": "tsx src/cli.ts try-to-break-it",
+    "cadence-fake": "tsx src/cli.ts cadence-fake",
     "fake-world": "tsx src/cli.ts fake-world",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --max-warnings 0",

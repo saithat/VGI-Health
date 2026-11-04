@@ -1,3 +1,4 @@
+import { CADENCE_PROTOCOL } from './cadence.js';
 import { auditedOperation } from './operation-manifest.js';
 import { retryEhr,retryScreens } from './retry-boundaries.js';
 import {geometryEhr} from './geometry.js';
@@ -37,6 +38,7 @@ export type NightMode = 'auto' | 'nightly' | 'surface-feature' | 'migrate';
 export const NIGHT_MODES: readonly NightMode[] = ['auto', 'nightly', 'surface-feature', 'migrate'];
 
 const manifestSchema = z.object({
+  protocol: z.string().optional(),
   runId: z.string(),
   days: z.number().int(),
   world: z.string(),
@@ -48,6 +50,7 @@ export async function rerunNight(args: {
   runDir: string; persona: string; night: number; llm: JsonLlm; ehr: EhrClient; mode?: NightMode; outDir?: string; screens?: ScreenChecker;
 }): Promise<{ result: NightResult; outDir: string }> {
   const manifest = await readJson(path.join(args.runDir, 'manifest.json'), manifestSchema);
+  if (manifest.protocol === CADENCE_PROTOCOL) throw Error('Cadence runs require run-days --resume with their recorded review/cost policy; single-night reruns do not restore the archive');
   const world = await loadWorld(manifest.world);
   const params = world.personas.get(args.persona);
   if (!params) throw new Error(`persona ${args.persona} is not in the run's world`);
