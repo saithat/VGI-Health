@@ -1,7 +1,7 @@
 import { compareSanityRecords } from '../src/quality-compare.js';
 vi.mock('../src/manual.js',()=>({promptContext:()=>({manual:'fixture manual',rules:'fixture rules',manualHash:'manual',ruleContextHash:'rules',ruleProfile:'core'})}));
 import path from 'node:path';
-import { mkdtemp, readFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { pointerTravel, type GeometryAtlas } from '../../app/src/metrics/geometry.js';
 import { attributeDay, localityDigest } from '../src/locality.js';
@@ -10,7 +10,7 @@ import { loadMeasuredSavings, recomputedSavings } from '../src/quality-ledger.js
 import { measuredLedger, withQuality, type QualityContext } from '../src/quality-context.js';
 import { withQueries } from '../src/quality-queries.js';
 import { nightlyPrompt, choosePrompt, repairPrompt } from '../src/prompts.js';
-import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, meteredLlm, selectDecisions, evaluateQuality } from '../src/quality.js';
+import { archivedSpecEhr, candidateDiffs, freshOutput, frozenLocality, frozenNight, meteredLlm, resumedOutput, selectDecisions, evaluateQuality } from '../src/quality.js';
 import { OFFLINE_LABEL, pairedComparison, qualityReport, refreshSanityRepetitions, repetitionCount, type OfflineRecord } from '../src/quality-report.js';
 import { FAKE_PERSONAS, writeFakeWorld } from '../src/fake/world.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
@@ -263,5 +263,15 @@ describe('paired reporting and input guardrails',()=>{
     expect(()=>selectDecisions([{...record(deps),mode:'migrate'}],['night-01/P1'])).toThrow('Not a nightly');
     const base=record(deps);expect(candidateDiffs(base,base)).toEqual([]);
     expect(await readFile(path.join(deps.store.dir,'llm/night-01/P1/propose-0.json'),'utf8')).toContain('LlmProposal');
+  });
+  it('resumes only an interrupted run that has its frozen binding',async()=>{
+    const dir=await mkdtemp(path.join(tmpdir(),'quality-resume-'));
+    await expect(resumedOutput(dir)).rejects.toThrow();
+    await writeFile(path.join(dir,'manifest.json'),JSON.stringify({status:'aborted'}));
+    await expect(resumedOutput(dir)).rejects.toThrow('no inputs/binding.json');
+    await mkdir(path.join(dir,'inputs'));await writeFile(path.join(dir,'inputs/binding.json'),'{}');
+    expect(await resumedOutput(dir)).toBe(path.resolve(dir));
+    await writeFile(path.join(dir,'manifest.json'),JSON.stringify({status:'completed'}));
+    await expect(resumedOutput(dir)).rejects.toThrow('already completed');
   });
 });

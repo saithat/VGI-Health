@@ -1,6 +1,6 @@
 /** Frozen one-night experiment. No deployment, screen gate, or model calls on import. */
 import { existsSync } from 'node:fs';
-import { cp, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, realpath, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { tmpdir } from 'node:os';
@@ -178,12 +178,22 @@ export function candidateDiffs(before:DecisionRecord,after:DecisionRecord) {
 export interface QualityOptions {
   runDir:string;outDir:string;arms:readonly QualityArm[];samples:number;backend:'replay'|'codex';workers:number;
   decisions?:readonly string[];worldDir?:string;model?:string;reasoningEffort?:string;serviceTier?:string;ledgerFrom?:string;
+  /** Continue an interrupted run in the same --out: identical inputs, build and options required. */
+  resume?:boolean;
 }
 export async function freshOutput(runDir:string,outDir:string) {
   const runs=await realpath(path.join(REPO_ROOT,'runs')),source=await realpath(runDir);
   const target=path.resolve(outDir);
   if(path.dirname(target)!==runs||target===source||existsSync(target))throw new Error('--out must be a NEW direct child of this worktree runs/');
   await mkdir(target);return target;
+}
+
+export async function resumedOutput(outDir:string) {
+  const target=path.resolve(outDir);
+  const state=await readJson(path.join(target,'manifest.json'),z.object({status:z.string()}).passthrough());
+  if(state.status==='completed')throw new Error('--resume: run already completed');
+  if(!existsSync(path.join(target,'inputs/binding.json')))throw new Error('--resume: no inputs/binding.json in --out');
+  return target;
 }
 
 export async function evaluateQuality(opts:QualityOptions) {
@@ -203,7 +213,9 @@ export async function evaluateQuality(opts:QualityOptions) {
   const fixtureIndex=path.resolve(REPO_ROOT,worldManifest.fixtures.index),fixtureSource=path.dirname(fixtureIndex);
   const fixturesSha256=await treeHash(fixtureSource);
   if(manifest.fingerprints&&(worldSha256!==manifest.fingerprints.world||fixturesSha256!==manifest.fingerprints.fixtures))throw new Error('World/fixtures differ from the frozen run fingerprints; supply the original inputs');
-  const out=await freshOutput(source,opts.outDir),inputs=path.join(out,'inputs');await mkdir(inputs);
+  const out=opts.resume?await resumedOutput(opts.outDir):await freshOutput(source,opts.outDir),inputs=path.join(out,'inputs');
+  if(!opts.resume){
+  await mkdir(inputs);
   // Copy only read-only inputs. No source login/recover/write methods are called.
   await cp(worldSource,path.join(inputs,'world'),{recursive:true});
   if(await treeHash(path.join(inputs,'world'))!==worldSha256)throw new Error('World changed while snapshotting');
@@ -217,6 +229,7 @@ export async function evaluateQuality(opts:QualityOptions) {
   await cp(path.join(source,'decisions'),path.join(inputs,'decisions'),{recursive:true});
   await cp(path.join(source,'llm'),path.join(inputs,'llm'),{recursive:true});
   await cp(path.join(source,'certifications'),path.join(inputs,'certifications'),{recursive:true});
+  }
   const native=createEhr({fake:false});
   const binding={source,worldSource,originalWorldSha256:worldSha256,fixturesSha256,worldSha256:await treeHash(path.join(inputs,'world')),sourceDecisionsSha256:await treeHash(path.join(inputs,'decisions')),
     sourceProgramsSha256:await treeHash(path.join(inputs,'programs')),sourceDaysSha256:await treeHash(path.join(inputs,'days')),sourceLlmSha256:await treeHash(path.join(inputs,'llm')),sourceCertificationsSha256:await treeHash(path.join(inputs,'certifications')),
@@ -224,7 +237,14 @@ export async function evaluateQuality(opts:QualityOptions) {
     app:JSON.parse(await readFile(path.join(REPO_ROOT,'app/dist/build.json'),'utf8')),selected:selected.map(decisionId),options:opts,label:OFFLINE_LABEL,
     ...(opts.ledgerFrom?{ledgerSource:{directory:path.resolve(opts.ledgerFrom),recordsSha256:await fileHash(path.join(opts.ledgerFrom,'records.json'))}}:{}),
     geometryCache:path.join(tmpdir(),'vgi-proposal-quality-geometry-cache')};
-  await writeJson(path.join(inputs,'binding.json'),binding);
+  if(opts.resume){
+    // Every input, the native binary, agent sources, app build and options must match the
+    // interrupted run, so resumed samples are exchangeable with the ones already recorded.
+    const previous:unknown=JSON.parse(await readFile(path.join(inputs,'binding.json'),'utf8'));
+    const comparable=(b:unknown)=>{const {options,...rest}=z.object({options:z.record(z.string(),z.unknown())}).passthrough().parse(b);return JSON.stringify({...rest,options:Object.fromEntries(Object.entries(options).filter(([key])=>key!=='resume'))});};
+    if(comparable(previous)!==comparable(binding))throw new Error('--resume: inputs, build, agent sources or options differ from the interrupted run');
+  }
+  else await writeJson(path.join(inputs,'binding.json'),binding);
   const measured=opts.ledgerFrom?await loadMeasuredSavings(opts.ledgerFrom,historical,binding):null;
   const world=await loadWorld(path.join(inputs,'world')),records:OfflineRecord[]=[];
   const sanity:{decisionId:string;candidates:ReturnType<typeof candidateDiffs>}[]=[];
@@ -261,11 +281,18 @@ export async function evaluateQuality(opts:QualityOptions) {
         const quality=locality&&measured?{ledger:measuredLedger(historical,original.persona,original.night,measured),locality}:null;
         const qualityContextMs=performance.now()-contextStarted;
         const queryBundle=opts.arms.includes('C')&&quality?trainingQueryBundle(input,(await frozenTrainAtlases(input,geometryDir)).map(d=>d.atlas),quality):null;
-        if(queryBundle){const files=path.join(inputDir,'query-files');await mkdir(files);await writeQueryDirectory(files,queryBundle);}
+        if(queryBundle){const files=path.join(inputDir,'query-files');await rm(files,{recursive:true,force:true});await mkdir(files);await writeQueryDirectory(files,queryBundle);}
         const queryContextMs=performance.now()-contextStarted-qualityContextMs;
         for(const arm of opts.arms)for(let sample=1;sample<=(arm==='sanity'?1:opts.samples);sample++) {
           if(stopped)break;
           const sampleDir=path.join(out,'samples',decisionId(original),arm,String(sample));
+          if(opts.resume&&existsSync(path.join(sampleDir,'record.json'))){
+            const done=offlineRecordSchema.parse(JSON.parse(await readFile(path.join(sampleDir,'record.json'),'utf8')));
+            if(arm==='sanity')throw new Error('--resume does not support the sanity arm');
+            records.push(done);state.completed++;await writeJson(path.join(out,'manifest.json'),state);continue;
+          }
+          // An interrupted sample restarts from scratch; keep its partial files for audit.
+          if(opts.resume&&existsSync(sampleDir)){let n=1;while(existsSync(`${sampleDir}.partial-${n}`))n++;await rename(sampleDir,`${sampleDir}.partial-${n}`);}
           const first=await readJson(llmRecordPath(inputs,`night-${pad2(original.night)}/${original.persona}/propose-0`),llmRecordSchema);
           const usage=z.object({reasoningEffort:z.string().optional(),serviceTier:z.string().nullable().optional()}).safeParse(first.usage);
           const meter=meteredLlm(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:inputs,replayAllowDrift:true,queryMode:arm==='C',model:opts.model??manifest.model??first.model,
