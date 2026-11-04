@@ -33,3 +33,9 @@ export class LlmOperator {
     return {candidate,record:{request,response,hypothesis:v.hypothesis}};
   }
 }
+
+/** Same feedback envelope for offline exploration and the standing archive.
+ * Callers must supply train-safe evidence only. No holdout outcome belongs here. */
+export function designFeedback(archive: readonly string[], recent: readonly unknown[]) {
+  return { archive, recent, instruction: 'Avoid repeating known rejected or non-improving designs; target unoccupied admitted niches.' };
+}

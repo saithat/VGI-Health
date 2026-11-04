@@ -113,8 +113,8 @@ flowchart TB
   end
   WASM --> PAINTER
 
-  AGENT["agent/<br/>nightly AI loop"]:::untrusted
-  AGENT -->|"ehr check / deploy"| NATIVE
+  AGENT["agent/<br/>nightly discovery + release cadence"]:::untrusted
+  AGENT -->|"ehr check / gated release"| NATIVE
 
   subgraph BACKEND["Backends"]
     MEDPLUM[("Medplum FHIR R4<br/>Postgres + Redis")]:::trusted
@@ -156,14 +156,97 @@ sequenceDiagram
 |---|---|
 | `lean/` | Rulebook, interpreter, checker, renderer, simulator and all proofs. |
 | `app/` | React app: clinical painter, live and replay modes, dashboard. |
-| `agent/` | Nightly loop: observe traces, prompt an LLM for JSON patches, check, gate, deploy. Also an offline harness (`proposal-quality`) that re-runs recorded nights to compare prompt variants; it never deploys. |
+| `agent/` | Nightly discovery, certified design archives, configurable release cadence and a typed review gate. Historical nightly protocols remain available. The offline `proposal-quality` harness compares recorded prompt variants without deploying. |
 | `services/commit/` | Postgres commit authority for MAR and ADT, driven by the native Lean binary. |
 | `wasm/` | Lean → C → Emscripten build. |
 | `world/` | Generator of simulated clinical days (patients, tasks, schedules). |
 | `conformance/` | 200 held-out rule scenarios run against every deployed revision. |
 | `releases/` | Vendor releases v1–v3 (rulebook + reference screens). |
 | `infra/` | Docker Compose for Medplum; setup and data loading. |
-| `explore/` | Offline design-space research; never deploys. |
+| `explore/` | Quality-diversity archive, descriptors, admitted generators and search. The standalone research harness never deploys; `agent/` reuses these modules for cadence releases. |
+
+Cadence runs use protocol `certified-cadence-archive-v1`. `run-days` accepts
+`--protocol certified-cadence-archive-v1 --cadence nightly|weekly|N` (`N` is a
+positive number of simulation days); `--cadence` alone selects that protocol.
+Omitting both retains the historical `core-10day-live` nightly selection path.
+The archive protocol defaults to nightly shipping. Weekly slots are nights
+7, 14, …; every-N-day slots are N, 2N, …, anchored to the run calendar. A veto,
+failed validation or empty archive waits until the next slot. No discretionary
+release occurs after the final simulated day.
+
+`agent/src/night.ts` keeps the train/holdout boundary. Discovery uses past odd
+calibration days' train partitions only; archive scores are refreshed against
+the deployed layout on the latest two train days. It retains every proposal,
+including unchosen alternatives, failures and historical estimates, in atomic
+`<run>/archives/clinicians/<scope-hash>/night-N.json` snapshots. Only designs
+passing `ehr check`, the independent identity movement budget (screen, parent
+and tab, including renamed tags or existing IDs claiming `copyOf`) and the existing
+whole-version screen gate enter elite cells. The archive reuses `explore/`'s
+niches, generators, operators' feedback envelope and search/archive machinery.
+One deterministic admitted layout/density/input variant is explored per night
+without an extra model call; generating a new layout removes inherited layout
+tags from clinical groups so niche labels reflect the resulting layout. Disjoint pairs from the same deployed baseline
+are also checked as complete bundles. Whole archived programs are rechecked
+against the current version; old-spec candidates remain recorded but cannot
+ship into a new vendor release. Rejected and non-improving train evidence is
+fed back to the generator; validation/test measurements never enter that
+feedback. Full-program patches are summarized by hash and paths in prompts.
+
+Scopes include clinician, owner, department and role. `--departments` accepts a
+JSON object such as `'{"P1":"primary-care","P2":"emergency"}'`; omitted mappings
+use `unspecified`. Department × role views under `archives/departments/` index
+clinician shards and their niche winners. Estimates remain clinician-specific;
+there is no pooled department score or automatic cross-clinician deployment.
+Archives persist across nights and `--resume` within a run, not across unrelated
+runs. Retry reads only snapshots strictly earlier than the unfinished night.
+Manifests bind cadence, department mappings, review/switch-cost identities and
+exploration source fingerprints; resume refuses a changed policy. The native
+`verify-resume` preflight checks exploration fingerprints for cadence runs too.
+The single-night `night` command refuses cadence runs because it cannot restore
+their archive and external review/cost hooks; use `run-days --resume`.
+
+A complete bundle's score is daily train click-plus-scroll saving minus
+`switchCost(prev, next, clinicianContext)`. Pixel improvements still pass the
+existing no-regression validation gate; pixel-only improvements do not produce
+a positive scalar release score. The default `usage-weighted-movement-v1` is a
+**simulation assumption**: one extra click-equivalent per observed use/day of
+a displaced control. Displacement includes screen, parent, tab, order, size,
+layout tag and shortcut changes, including descendants of changed groups. This is not measured relearning, learning or
+forgetting. `agent/src/cadence.ts` exports the replaceable `SwitchCost` interface
+for the bounded-knowledge user-model lane.
+
+Before release, `ReviewGate.review` receives 1–3 positive-scoring niche winners
+(program bundles plus train estimates, switch costs, checker/screen evidence
+and movement counts). It returns an offered bundle ID or `null`, with a reason;
+`auto-approve-v1` chooses the highest score. `RunOptions.reviewGate` is the
+integration hook for tailoring sessions; `RunOptions.switchCost` and
+`switchCostModel` supply a replacement cost model. Both review and switch-cost hooks receive cloned inputs
+and cannot mutate certified program bytes or the loop’s train context. Selection is followed by the
+existing past-calibration validation, simulated user response, whole-version
+screen check and atomic certified deployment. Mandatory vendor recertification
+and migration retain their existing schedule and bypass discretionary cadence
+and review; an old-spec layout cannot remain active after a rulebook update.
+There is no clinician-facing review UI yet.
+
+The self-contained fake path uses synthetic geometry and the fake checker,
+certifies nothing, and makes no live model calls:
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent cadence-fake --out /home/saithat/Projects/run-tmp/cadence-demo
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/cadence.test.ts --maxWorkers=2
+```
+
+It exercises accumulation, weekly shipping, cross-night bundles, review vetoes,
+switch-cost blocking, screen rejection, train-only feedback and resume. Missing
+optional `runs/run1-P3` manual examples are omitted; formal rule context remains
+required. The browser audit script accepts `EHR_BIN` for a prebuilt native
+checker. Run the full template audit and then `--personas` sequentially, using
+`TMPDIR` on disk; neither builds Lean:
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/cadence-audit-templates
+TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/cadence-audit-personas --personas
+```
 
 ## What is proved
 
@@ -202,7 +285,7 @@ product.
 | **Documentation** | Visit and operative notes, nursing assessments, vaccine administration, consent, SBAR handoff, administration records. | Note templates, dictation. |
 | **Bed management (ADT)** | Admit, assign, transfer, release, discharge and bed cleaning on a unit bed board, with exclusive beds and atomic transfers. | Enterprise patient flow, transport, multiple facilities. |
 | **Regulatory updates** | Vendor releases v1 → v2 → v3 that add rules, migrated per clinician and re-certified. | Real vendor upgrade tooling. |
-| **Data and storage** | FHIR R4 on Medplum: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Postgres event streams with version checks and live updates for MAR and ADT. | HL7v2 interfaces, master patient index, production audit logging, high availability. |
+| **Data and storage** | FHIR R4 on Medplum: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Postgres event streams with version checks and live updates for MAR and ADT. | HL7v2 interfaces, enterprise patient index, production audit logging, high availability. |
 | **Identity** | Keycloak single sign-on (PKCE) for MAR and bed management; development password login elsewhere. | Production identity, break-the-glass access. |
 | **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. They plan the shortest path through the current screens. | Real clinicians; no user study. Visual search, learning, forgetting and relearning after a change (see [Open problems](#open-problems)). |
 
@@ -218,16 +301,20 @@ weakest parts.
   detours, backtracking, search, keyboard use and interruptions. Even so, the
   clinician never has to hunt for a control, never reaches for where a control
   used to be, and never makes the slips the rules exist to catch. A
-  rearranged layout therefore costs nothing on its first day. Learning,
-  relearning and discoverability are not measured. The stability budget (at
-  most N components moved per version, checked in Lean) stands in for them.
-- **The agent changes the interface on its own, in small greedy steps.** Each
-  night it reads one clinician's traces and proposes 3–5 patches. It deploys
-  the best passing patch, or a few that touch different components. It does
-  not explore the wider design space: the quality-diversity search in
-  `explore/` runs offline and never deploys. The clinician takes no part. They
-  cannot ask for a change, try alternatives or turn one down, and a change
-  arrives whenever the agent finds one.
+  rearranged layout therefore costs nothing inside the native planner. Learning,
+  relearning and discoverability are not measured. Cadence scoring adds an
+  explicitly assumed usage-weighted movement cost, outside Lean; it is not a
+  bounded-knowledge user model. The Lean stability budget still limits moves.
+- **Clinician participation and design exploration remain limited.** Historical
+  nightly runs still deploy a greedy patch or disjoint bundle. The opt-in
+  cadence protocol now keeps certified, screen-gated niche alternatives,
+  preserves unchosen train estimates and known duds, explores admitted
+  layout/density/input variants, and ships through a configurable schedule and
+  review hook with an assumed switch cost. The standalone `explore/` research
+  search still never deploys directly. The default review hook auto-approves;
+  clinicians cannot yet request changes or try/reject alternatives through a
+  session UI. No live cadence experiment or user study has validated these
+  choices, and unsupported interaction paradigms remain outside deployment.
 
 ## Data sources
 

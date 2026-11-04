@@ -38,3 +38,26 @@ test('admitted board and dated constructors retain the original clinical contrac
   }
   assert.throws(()=>generate({...defaultPoint,patientScope:'multi'},['W3'],baseline,spec),/extension/);
 });
+
+test('realized descriptors and refreshed niches reuse the offline archive', async () => {
+  const {describeProgram}=await import('./generator.js');
+  const {archiveFrom}=await import('./search.js');
+  const entries=seedPoints().map((point,index)=>{
+    const generated=generate(point,['W3'],baseline,spec);
+    const described=describeProgram(generated.program,['W3']);
+    assert.equal(described.point.layout,point.layout);
+    return {id:String(index),candidate:described,status:'accepted' as const,
+      metrics:{tasks:2,completed:2,clicks:index+1,scrolls:0,keystrokes:0},quality:-index,
+      evidence:{leanVerdict:'ok',screenStatus:'pass'}};
+  });
+  assert.equal(archiveFrom(entries).cells.size,4);
+});
+
+test('tab moves count by identity even when tags and copyOf claims change',()=>{
+  const candidate=generate(defaultPoint,['W3'],baseline,spec);
+  let changed=0;
+  for(const screen of candidate.program.screens)for(const component of screen.components){
+    if(changed++<=spec.design.stabilityBudget){component.tab++;component.tag=`renamed-${component.id}`;component.copyOf=component.id;}
+  }
+  assert.throws(()=>validateCandidate(candidate,baseline,spec),/Identity movement budget/);
+});

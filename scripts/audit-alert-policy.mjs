@@ -20,6 +20,7 @@ import { spawnSync } from "node:child_process";
 import { acquireBrowserLock } from "./browser-heavy-lock.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const ehrBinary = process.env.EHR_BIN ?? resolve(root, "lean/.lake/build/bin/ehr");
 if (!process.env.TMPDIR)
   throw new Error("Set TMPDIR to disk-backed scratch space");
 const browserLock = process.argv.includes("--export-only")
@@ -84,7 +85,7 @@ for (const version of ["v1", "v2", "v3"]) {
         directory,
       ];
       const result = spawnSync(
-        resolve(root, "lean/.lake/build/bin/ehr"),
+        ehrBinary,
         args,
         { cwd: root, stdio: "inherit" },
       );
@@ -112,7 +113,7 @@ for (const version of ["v1", "v2", "v3"]) {
 }
 // Exercise workflow snapshots and simultaneous conditions through the same
 // native semantic renderer, even when historical patient fixtures lack panic results.
-const probeExport = spawnSync(resolve(root, "lean/.lake/build/bin/ehr"), ["urgency-probes"], {
+const probeExport = spawnSync(ehrBinary, ["urgency-probes"], {
   cwd: root, encoding: "utf8",
 });
 if (probeExport.status !== 0) throw new Error(probeExport.stderr || "urgency-probes failed");
