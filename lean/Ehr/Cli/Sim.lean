@@ -10,6 +10,8 @@ VERSION resolves to releases/VERSION/spec.json; explicit JSON paths also work.
 World manifests may point at fixture indices. Patient bundles are merged with
 resources up to the task, by (resourceType,id), before render's FHIR parser.
 Precomputed patient Facts JSON is a fallback only, never preferred over FHIR.
+Simulation additionally accepts --policy expert|bounded and --memory-in/out.
+Persona policy is optional and defaults to the unchanged historical policy.
 -/
 namespace Ehr.Cli.Sim
 open Ehr Ehr.Sim Lean

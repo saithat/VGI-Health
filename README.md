@@ -221,7 +221,8 @@ arms. Empty memory represents an unfamiliar interface.
 experienced navigation route, last-use day and exposure count. Strength is
 `1000 * sqrt(exposures / (1 + ageDays))`, rounded down, with confidence at 1400.
 Using a newly discovered location resets its practice count; deploying a program
-never refreshes memory. Recall follows experienced events. A stale location
+never refreshes memory. Recall uses visible links to remembered screens and
+experienced container/tab events, without retracing earlier goals. A stale location
 causes a charged pointing/click attempt and then visual search. The attempted
 location is recorded in an observation; a guaranteed-absent ID goes through the
 interpreter and is ignored, rather than activating an unrelated clinical action.
@@ -244,7 +245,9 @@ Bounded results retain the original `tasks`, `trace`, `floor` and `complaints`.
 seed: the expert comparison, not a newly proved minimum (persona noise can make
 its cost exceed the bounded run). `floor` remains the ideal-interface clinical
 floor. `effort` adds per-task misses, visual searches, scanned items, backtracks,
-synthetic ordinal mouse travel and cognitive milliseconds. `observations` links
+synthetic ordinal mouse travel and cognitive milliseconds. `expertTravelUnits` reports the same ordinal proxy for the expert trace;
+`learnability` contains signed per-task gaps in clicks, scrolls, keystrokes,
+time and travel. `observations` links
 search/recall/miss decisions to trace indices and old locations. Task time
 includes cognitive time as well as trace KLM operators; visual searches are not
 search-box activations. Travel is an ordinal-layout proxy, not browser pixels.

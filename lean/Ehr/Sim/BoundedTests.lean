@@ -6,7 +6,14 @@ open Ehr Ehr.Sim Ehr.Sim.Bounded Ehr.Sim.FeatureTests Ehr.Examples.Tiny
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
 
-def entry : MemoryEntry := { key := "sign", intent := "commit:ackResult", control := "commit",   place := { screen := "s" }, exposures := 4, lastDay := 1 }
+def entry : MemoryEntry := {
+  key := "sign",
+  intent := "commit:ackResult",
+  control := "commit",
+  place := { screen := "s" },
+  exposures := 4,
+  lastDay := 1
+}
 #guard strength 1 entry == 2000
 #guard strength 2 entry < strength 1 entry
 #guard strength 100 entry < 1400
@@ -17,15 +24,90 @@ def entry : MemoryEntry := { key := "sign", intent := "commit:ackResult", contro
 #guard relearningCost [90] [100] == -10
 #guard seededPreferences 7 "actor" == seededPreferences 7 "actor"
 
-def prog := { fixtureProgram [] with screens := [{ id := "s", title := "Result", workflow := "W2",   components := [{ id := "commit", tag := "sign", label := "Acknowledge", kind := .button (.commit "ackResult") }] }] }
-def moved := { prog with version := 2, screens := [{ id := "s", title := "Result", workflow := "W2",   components := [{ id := "banner", kind := .banner },     { id := "renamedCommit", tag := "sign", label := "Acknowledge", kind := .button (.commit "ackResult") }] }] }
-def schedule : DaySchedule := { day := 1, persona := "P1", load := "normal",   tasks := (List.range 5).map fun n => { task with id := s!"learn{n}" } }
+def prog := { fixtureProgram [] with
+  screens := [{
+    id := "s",
+    title := "Result",
+    workflow := "W2",
+    components := [{ id := "commit", tag := "sign", label := "Acknowledge", kind := .button (.commit "ackResult") }]
+  }]
+}
+def moved := { prog with
+  version := 2,
+  screens := [{
+    id := "s",
+    title := "Result",
+    workflow := "W2",
+    components := [{ id := "banner", kind := .banner },     { id := "renamedCommit", tag := "sign", label := "Acknowledge", kind := .button (.commit "ackResult") }]
+  }]
+}
+def schedule : DaySchedule := {
+  day := 1,
+  persona := "P1",
+  load := "normal",
+  tasks := (List.range 5).map fun n => { task with id := s!"learn{n}" }
+}
 def trained := Bounded.simulate fixtureSpec prog params schedule (fun _ => facts) 7
 def afterSchedule : DaySchedule := { day := 2, persona := "P1", load := "normal",   tasks := [{ task with day := 2, id := "after" }] }
 def changed := Bounded.simulate fixtureSpec moved params afterSchedule (fun _ => facts) 7 trained.memory
 
+-- The first label is a dead end. Discovery must return through a real Back,
+-- not restore saved interpreter state or use a hidden-layout planner.
+def deadEndProgram : Program :=
+  { prog with
+    start := "root",
+    screens := [   {
+      id := "root",
+      title := "Root",
+      workflow := "W2",
+      components := [     { id := "trap", label := "Acknowledge", kind := .button (.goto "trap") },     { id := "find", label := "Next", kind := .button (.goto "s") }]
+    },   {
+      id := "trap",
+      title := "Empty",
+      workflow := "W2",
+      components := [     { id := "back", kind := .button .back }]
+    }, prog.screens.head!]
+  }
+def deadEnd := Bounded.simulate fixtureSpec deadEndProgram params schedule (fun _ => facts) 7
+def routeRoot : Screen := {
+  id := "root",
+  title := "Root",
+  workflow := "W2",
+  components := [   { id := "old", label := "Acknowledge", kind := .button (.goto "old") },   { id := "new", label := "Next", kind := .button (.goto "new") }]
+}
+def returnButton : Component := { id := "return", kind := .button .back }
+def oldLayout : Program := { prog with
+  start := "root",
+  screens := [routeRoot,   {
+    id := "old",
+    title := "Old",
+    workflow := "W2",
+    components := prog.screens.head!.components ++ [returnButton]
+  },   { id := "new", title := "New", workflow := "W2", components := [returnButton] }]
+}
+def newLayout : Program := { oldLayout with
+  version := 2,
+  screens := [routeRoot,   { id := "old", title := "Old", workflow := "W2", components := [returnButton] },   {
+    id := "new",
+    title := "New",
+    workflow := "W2",
+    components := prog.screens.head!.components ++ [returnButton]
+  }]
+}
+def routeTraining := Bounded.simulate fixtureSpec oldLayout params schedule (fun _ => facts) 7
+def routeMoved := Bounded.simulate fixtureSpec newLayout params afterSchedule (fun _ => facts) 7 routeTraining.memory
 def check (b : Bool) (msg : String) : IO Unit := unless b do throw (IO.userError msg)
 #eval do
+  let recallCtx : Context := { sp := fixtureSpec, prog := oldLayout, facts, user, goals := default }
+  let recallState := init fixtureSpec oldLayout facts user
+  check (Bounded.recalledEvent recallCtx recallState { entry with place := { screen := "old" }, route := [.click "trap", .click "old"] } == some (Event.click "old")) "recall uses a direct visible link, skipping learned detours"
+  let decayed := Bounded.simulate fixtureSpec moved params { afterSchedule with day := 10, tasks := [{ task with day := 10 }] } (fun _ => facts) 7 trained.memory
+  check (decayed.effort.all (·.misses == 0) && decayed.effort.any (·.searches > 0)) "weak decayed memory searches without a confident stale reach"
+  check (routeMoved.tasks.all (·.completed)) "moved screen discovered after stale navigation"
+  check (routeMoved.observations.any (fun o => o.kind == "miss" && o.place.screen == "old")) "reaches remembered screen and misses there"
+  check (routeMoved.effort.any (·.misses == 1)) "one stale-screen miss"
+  check (deadEnd.tasks.all (·.completed)) "backtracking finds the other branch"
+  check (deadEnd.effort.any (·.backtracks > 0)) "dead end charges backtracking"
   check (trained.tasks.all (·.completed)) "training completes"
   check ((trained.memory.entries.find? (fun (m : MemoryEntry) => m.key == "sign")).any (fun (m : MemoryEntry) => m.exposures == 5)) "use strengthens; stable tag key"
   check (changed.tasks.all (·.completed)) "moved control discovered"
@@ -36,6 +118,7 @@ def check (b : Bool) (msg : String) : IO Unit := unless b do throw (IO.userError
   check (encodeJson changed == encodeJson (Bounded.simulate fixtureSpec moved params afterSchedule (fun _ => facts) 7 trained.memory)) "seed reproduces trace, effort and memory"
   check (encodeJson trained.expert == encodeJson (Ehr.Sim.simulate fixtureSpec prog params schedule (fun _ => facts) 7)) "expert reference unchanged"
   check (roundTrips trained.memory) "memory JSON round trip"
+  check ((ratePrograms { placements := [{ tag := "sign", nearTag := "banner", weight := 1 }] } prog moved []).chooseAfter) "placement preference can outweigh neutral change aversion"
   check ((ratePrograms {} prog moved []).score == 0) "neutral preferences indifferent"
   check (!(ratePrograms { changeSensitivity := 100 } prog moved [{ usedTags := ["sign"], costMs := 0 }]).chooseAfter) "familiar moves penalized"
   let guarded := Bounded.simulate minorSpec (fixtureProgram []) params schedule (fun _ => clinicalFacts 17) 7
