@@ -159,6 +159,14 @@ export async function prepareSession(input: {
   const candidates: ArchivedSessionBundle[] = [];
   const ids = new Set(["current"]);
   const hashes = new Set<string>();
+  const layoutFingerprint = (program: Program) =>
+    stableStringify({
+      ...expandProgram(program),
+      version: 0,
+      ...(program.presentationComponents
+        ? { presentationComponents: program.presentationComponents }
+        : {}),
+    });
   for (const entry of [...(await input.archive.candidates())].sort((a, b) =>
     a.id.localeCompare(b.id),
   )) {
@@ -197,11 +205,8 @@ export async function prepareSession(input: {
       })) !== "ok"
     )
       continue;
-    const fingerprint = stableStringify({ ...p, version: 0 });
-    const currentFingerprint = stableStringify({
-      ...input.current,
-      version: 0,
-    });
+    const fingerprint = layoutFingerprint(p);
+    const currentFingerprint = layoutFingerprint(input.current);
     if (fingerprint === currentFingerprint || hashes.has(fingerprint)) continue;
     hashes.add(fingerprint);
     ids.add(entry.id);

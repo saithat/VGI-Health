@@ -237,7 +237,7 @@ weakest parts.
 `SessionArchive` of whole candidate bundles. It verifies the certificate's
 program hash/spec, rechecks each candidate against the current program and
 canonical reference (including the current stability budget), removes duplicate
-layouts, and selects 2–3 options by farthest-first diversity over component
+expanded layouts (ignoring unused definitions and version numbers), and selects 2–3 options by farthest-first diversity over component
 changes and locations. Fewer than two eligible, replay-complete options leaves
 the current layout in place by failing preparation; no option is invented or
 deployed. `phase: "offShift"` is required. Cadence is review metadata here;

@@ -180,6 +180,21 @@ describe("simulator-only tailoring", () => {
     input.ehr.simulate = async (i) => ({ ...(await simulate(i)), tasks: [] });
     await expect(prepareSession(input)).rejects.toThrow("Incomplete");
   });
+  it("deduplicates equivalent expanded layouts with different source-only definitions", async () => {
+    const { input, candidates } = await setup();
+    const first = candidates[0],
+      second = candidates[1];
+    if (!first || !second) throw new Error("Missing options");
+    const duplicate = structuredClone(first);
+    duplicate.id = "duplicate-definitions";
+    duplicate.program.componentDefs = [];
+    duplicate.certificate.programHash = programHash(duplicate.program);
+    const session = await prepareSession({
+      ...input,
+      archive: { candidates: async () => [first, duplicate, second] },
+    });
+    expect(session.options).toHaveLength(2);
+  });
   it("records old→new order, parent and tab as well as additions/removals", async () => {
     const { current } = await setup();
     const next = structuredClone(current);
