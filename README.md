@@ -307,11 +307,16 @@ For reproducible small comparisons, run
 --out /home/saithat/Projects/run-tmp/user-model-comparison`. It samples the first
 task of each represented workflow for every v1/v3 persona template, verifies
 byte determinism/default equivalence, and compares three adjacent historical
-P1 deployments. The per-deploy protocol uses k=2 matched dated workloads, five
-before-program training blocks, and an independent eight-block after-program
+P1 deployments. The template comparison fails on any task completed by the expert but missed by the
+bounded actor and reports its task ID. `--all-tasks --templates-only` instead
+checks entire day-1/v1 and day-7/v3 schedules for every persona, starting each
+workday with empty actor memory. The per-deploy protocol uses k=2 matched dated
+workloads, five before-program training blocks, and an independent eight-block after-program
 warm reference. It reports incomplete tasks, the common completed task set,
-expert and bounded effort, and signed relearning milliseconds. Scratch JSON is
-evidence output; no recorded runs, fixtures or certificates are rewritten.
+expert and bounded effort, help and visual-search milliseconds, and signed
+relearning milliseconds. Each report fingerprints the native binary and rejects
+evidence mixed across a rebuild. The completion-accounting regression runs with
+`python3 scripts/test-user-model-compare.py`. Scratch JSON is evidence output; no recorded runs, fixtures or certificates are rewritten.
 
 ## Open problems
 

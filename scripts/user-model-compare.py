@@ -10,6 +10,7 @@ Only tasks completed in every first/steady/expert replay enter cost differences.
 """
 import argparse
 import copy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -24,8 +25,15 @@ def load(p):
     return json.loads(Path(p).read_text())
 
 
-def workload(world, day, persona):
+def fingerprint(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def workload(world, day, persona, all_tasks=False):
     schedule = load(world / f'day-{day}-{persona}.json')
+    if all_tasks:
+        return schedule
     seen = set()
     tasks = []
     for task in schedule['tasks']:
@@ -50,14 +58,19 @@ def main():
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--seed', type=int, default=7)
     parser.add_argument('--k', type=int, default=2)
+    parser.add_argument('--all-tasks', action='store_true', help='audit entire cold-start persona workdays')
+    parser.add_argument('--templates-only', action='store_true', help='omit historical deploy comparison')
     args = parser.parse_args()
     if not 1 <= args.k <= 3:
         parser.error('--k must be 1..3 for the ten-day dated fixtures')
     if not os.environ.get('TMPDIR'):
         parser.error('set TMPDIR to disk-backed scratch')
     args.out.mkdir(parents=True, exist_ok=True)
+    (args.out / 'summary.json').unlink(missing_ok=True)
     cases = []
     calls = 0
+    binary = ROOT / 'lean/.lake/build/bin/ehr'
+    binary_hash = fingerprint(binary)
     with tempfile.TemporaryDirectory(prefix='user-model-', dir=os.environ['TMPDIR']) as scratch:
         scratch = Path(scratch)
 
@@ -84,7 +97,7 @@ def main():
         for release, day in [('v1', 1), ('v3', 7)]:
             for persona in ['P1', 'P2', 'P3', 'P4', 'P5']:
                 prog = ROOT / 'releases' / release / 'personas' / f'{persona}.json'
-                schedule = workload(args.world, day, persona)
+                schedule = workload(args.world, day, persona, args.all_tasks)
                 bounded, raw = run(prog, persona, schedule)
                 if release == 'v1' and persona == 'P1':
                     again, repeated = run(prog, persona, schedule)
@@ -97,7 +110,7 @@ def main():
 
         deploys = []
         # Same-release nightly changes, using the actual next-day task sample.
-        for before_v, after_v, day in [(0, 1, 2), (1, 2, 3), (3, 4, 5)]:
+        for before_v, after_v, day in ([] if args.templates_only else [(0, 1, 2), (1, 2, 3), (3, 4, 5)]):
             persona = 'P1'
             before = args.run / 'programs' / persona / f'v{before_v}.json'
             after = args.run / 'programs' / persona / f'v{after_v}.json'
@@ -138,10 +151,16 @@ def main():
                    'steadyCompleted': [sum(t['completed'] for t in r['tasks']) for r in steady]}
             deploys.append(row)
             print(json.dumps(row), flush=True)
-        report = {'seed': args.seed, 'k': args.k, 'calls': calls,
+        if fingerprint(binary) != binary_hash:
+            raise SystemExit('native binary changed during comparison; discard mixed evidence')
+        report = {'binarySha256': binary_hash, 'seed': args.seed, 'k': args.k, 'calls': calls,
                   'protocol': __doc__, 'comparisons': cases, 'deploys': deploys,
-                  'byteDeterminism': True, 'defaultUnchanged': True}
+                  'byteDeterminism': True, 'defaultUnchanged': True,
+                  'allTasks': args.all_tasks,
+                  'completionParity': all(not r['completionRegressions'] for r in cases)}
         (args.out / 'summary.json').write_text(json.dumps(report, indent=2) + '\n')
+        if not report['completionParity']:
+            raise SystemExit('bounded completion regressed; see named tasks in summary.json')
 
 
 def summarize(name, result):
@@ -155,7 +174,17 @@ def summarize(name, result):
             'bounded': costs(result), 'expert': costs(result['expert']),
             'effort': {key: sum(t[key] for t in result['effort'] if t['task'] in common)
                        for key in ['misses', 'searches', 'scannedItems', 'backtracks', 'mouseTravelUnits']},
-            'expertTravelUnits': sum(n for task, n in result['expertTravelUnits'] if task in common)}
+            'expertTravelUnits': sum(n for task, n in result['expertTravelUnits'] if task in common),
+            'completionRegressions': [t['task'] for t in result['expert']['tasks']
+                                      if t['completed'] and t['task'] not in common],
+            'ratio': (costs(result)['klmDeciSec'] / costs(result['expert'])['klmDeciSec'])
+                     if costs(result['expert'])['klmDeciSec'] else None,
+            'cognitiveMs': sum(t['cognitiveMs'] for t in result['effort'] if t['task'] in common),
+            'helpRequests': sum(t.get('helpRequests', 0) for t in result['effort'] if t['task'] in common),
+            'helpMs': sum(o['ms'] for o in result.get('observations', []) if o['task'] in common and o['kind'] == 'help'),
+            'visualSearchMs': sum(o['ms'] for o in result.get('observations', []) if o['task'] in common and o['kind'] == 'search'),
+            'assistance': result.get('assistance', []),
+            'zeroLabelMatches': [h for h in result.get('assistance', []) if h['targetControl'] and not h['labelMatch']]}
 
 
 if __name__ == '__main__':
