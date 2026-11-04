@@ -1,3 +1,6 @@
+import { generatorOnlyBackend } from './generator-only.js';
+import { BOUNDED_COST_MODEL } from './bounded-tailoring.js';
+import { SESSION_GATE_ID } from './session-gate.js';
 import { CADENCE_PROTOCOL, autoApprove, cadenceSchema, type ReleaseCadence, type ReviewGate, type SwitchCost } from './cadence.js';
 import { ReplayLlm } from './backends/replay.js';
 import { armCrashHook } from './crash-hook.js';
@@ -51,6 +54,12 @@ export interface RunOptions {
   protocol?: 'core-10day-live' | typeof CADENCE_PROTOCOL;
   cadence?: ReleaseCadence;
   departments?: Record<string, string>;
+  generatorOnly?: boolean;
+  /** Generator-only discovery cutoff; retained bundles are still rescored/reviewed. */
+  discoveryNights?: number;
+  boundedCosts?: boolean;
+  tailoringSessions?: boolean;
+  frictionFlags?: readonly import('./session-schema.js').FrictionFlag[];
   reviewGate?: ReviewGate;
   switchCost?: SwitchCost;
   /** Stable identity for a supplied switch-cost implementation (resume provenance). */
@@ -125,22 +134,26 @@ async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(item:T)
 }
 
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
+  const llm=opts.generatorOnly ? generatorOnlyBackend : opts.llm;
   const archiveMode = opts.protocol === CADENCE_PROTOCOL;
-  if (!archiveMode && (opts.cadence || opts.departments || opts.reviewGate || opts.switchCost || opts.switchCostModel))
+  if (!archiveMode && (opts.cadence || opts.departments || opts.reviewGate || opts.switchCost || opts.switchCostModel || opts.generatorOnly || opts.discoveryNights !== undefined || opts.boundedCosts || opts.tailoringSessions || opts.frictionFlags))
     throw Error(`Archive options require protocol ${CADENCE_PROTOCOL}`);
+  if (opts.discoveryNights !== undefined && (!opts.generatorOnly || !Number.isSafeInteger(opts.discoveryNights) || opts.discoveryNights<1)) throw Error('discoveryNights requires generator-only mode and a positive integer');
   if (opts.switchCost && !opts.switchCostModel?.trim()) throw Error('Custom switch cost requires switchCostModel');
   const releasePolicy = archiveMode ? {
     protocol: CADENCE_PROTOCOL, cadence: cadenceSchema.parse(opts.cadence ?? { kind: 'nightly' }),
-    departments: opts.departments ?? {}, reviewGate: (opts.reviewGate ?? autoApprove).id,
-    switchCostModel: opts.switchCostModel ?? 'usage-weighted-movement-v1',
+    departments: opts.departments ?? {}, reviewGate: opts.reviewGate?.id ?? (opts.tailoringSessions ? SESSION_GATE_ID : autoApprove.id),
+    ...(opts.generatorOnly ? {discovery:'admitted-generator-only-v1',...(opts.discoveryNights !== undefined ? {discoveryNights:opts.discoveryNights}:{})}:{}),
+    ...(opts.tailoringSessions ? {tailoring:'bounded-session-v1',friction:opts.frictionFlags??[]}:{}),
+    switchCostModel: opts.switchCostModel ?? (opts.boundedCosts ? BOUNDED_COST_MODEL : 'usage-weighted-movement-v1'),
     vendorReleases: 'Mandatory recertification/migration bypasses discretionary cadence and review; archive candidates from older specs cannot ship',
   } : null;
-  armCrashHook(opts.llm.name);
-  if(opts.verificationRelease&&opts.llm.name!=='scripted'&&opts.llm.name!=='replay')throw new Error('Verification release refuses live models');
+  armCrashHook(llm.name);
+  if(opts.verificationRelease&&llm.name!=='scripted'&&llm.name!=='replay')throw new Error('Verification release refuses live models');
   const log = opts.log ?? (() => undefined);
   const underlyingEhr = opts.ehr ?? createEhr();
   const world = await loadWorld(opts.worldDir);
-  if (['codex','claude'].includes(opts.llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
+  if (['codex','claude'].includes(llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
   const personaIds = opts.personas ?? world.manifest.personas;
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
     throw new Error('Every requested persona must occur exactly once in the world');
@@ -152,12 +165,12 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if(!Number.isSafeInteger(requested)||requested<1||requested>maximum)throw new Error(`EHR_SCREEN_WORKERS must be between 1 and ${maximum} for this run`);
   }
   const releaseDays = opts.releaseDays ?? RELEASE_DAYS;
-  const runId = opts.runId ?? `${opts.llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
+  const runId = opts.runId ?? `${llm.name}-w${world.manifest.seed}-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
   const dir = path.join(opts.runsRoot ?? path.join(REPO_ROOT, 'runs'), runId);
   await mkdir(dir, { recursive: true });
   const nativeEhr = underlyingEhr.mode === 'real' ? retryEhr(recordingEhr(underlyingEhr, path.join(dir, 'ehr/run'), 'run')) : retryEhr(underlyingEhr);
-  const store = new RunStore(dir,opts.verificationRelease?path.join(dir,'custom'):undefined);
-  const recorder = new RecordingLlm(opts.llm, dir, opts.resume ?? false);
+  const store = new RunStore(dir,opts.verificationRelease || opts.generatorOnly ? path.join(dir,'custom'):undefined);
+  const recorder = new RecordingLlm(llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
   const screens = opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), artifactsDir: path.join(dir, 'reports/screens') });
   const rawProvider=opts.geometry??screens.geometry;
@@ -187,8 +200,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
     if((previous.parallel??false)!==(opts.parallel??false))throw new Error('Resume parallel mode must match the recorded run');
-    if((previous.replayAllowDrift??false)!==(opts.llm instanceof ReplayLlm?opts.llm.options.allowDrift??false:false))throw new Error('Resume replay drift policy must match');
-    if (previous.world !== world.dir || previous.backend !== opts.llm.name || previous.model !== opts.llm.model || previous.ehr.mode !== ehr.mode ||
+    if((previous.replayAllowDrift??false)!==(llm instanceof ReplayLlm?llm.options.allowDrift??false:false))throw new Error('Resume replay drift policy must match');
+    if (previous.world !== world.dir || previous.backend !== llm.name || previous.model !== llm.model || previous.ehr.mode !== ehr.mode ||
         JSON.stringify(previous.personas) !== JSON.stringify(personaIds) ||
         JSON.stringify(previous.releaseDays) !== JSON.stringify(releaseDays) || previous.seedPolicy !== deps.seedPolicy) {
       throw new Error('resume world/backend/ehr/personas/release days/seed policy must match the recorded run');
@@ -197,18 +210,18 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const manifestData = {
     protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day-live', releasePolicy,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
-    replayAllowDrift:opts.llm instanceof ReplayLlm?opts.llm.options.allowDrift??false:false,
+    replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
     interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'raw only; not used'},
     status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:Math.max(1,Number.parseInt(process.env['EHR_SCREEN_WORKERS']??'1',10)||1),fingerprints, measurementProtocol,
-    mode: opts.llm.name === 'replay' ? 'REPLAY' : opts.llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
+    mode: opts.generatorOnly ? 'OFFLINE' : llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
     buildBindingRequired: ehr.mode === 'real',
     runId, createdAt: previous?.createdAt ?? new Date().toISOString(),
     resumes: [...(previous?.resumes ?? []), ...(opts.resume ? [new Date().toISOString()] : [])], days: opts.days, personas: personaIds, world: world.dir, worldSeed: world.manifest.seed,
-    worldIsFake: world.manifest.fake ?? false, backend: opts.llm.name, model: opts.llm.model, ehr: { mode: ehr.mode, binary: ehr.binary },
+    worldIsFake: world.manifest.fake ?? false, backend: llm.name, model: llm.model, ehr: { mode: ehr.mode, binary: ehr.binary },
     seedPolicy: deps.seedPolicy, releaseDays,
     warning: ehr.mode === 'fake' ? 'EHR_FAKE=1: checker and simulator are fakes; nothing in this run is certified' : null,
   };
@@ -328,7 +341,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (!isMeasurementDay(day)) {
         const trainingSchedule = calibrationPartition(schedule, 'train');
         const trainingFile = path.join(dir,'training',`day-${day}`,`${id}.json`);
-        const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(memory ? {memory} : {}) });
+        const trainingMemory = opts.boundedCosts || opts.tailoringSessions ? train.get(id)?.at(-1)?.result.memory : memory;
+        const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(trainingMemory ? {memory:trainingMemory} : {}) });
         if (!existsSync(trainingFile)) await writeJson(trainingFile, trainingResult);
         train.get(id)?.push({ result: trainingResult, schedule: trainingSchedule });
       }
@@ -377,6 +391,11 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       else if (next) res = await runMigration(deps, { ...nightInput, next });
       else res = await runNight(deps, nightInput, releasePolicy ? { cadence: {
         cadence: releasePolicy.cadence, department: releasePolicy.departments[id] ?? 'unspecified',
+        ...(opts.generatorOnly ? {generatorOnly:true}:{}),
+        ...(opts.discoveryNights !== undefined ? {discoveryNights:opts.discoveryNights}:{}),
+        ...(opts.boundedCosts ? {boundedCosts:true}:{}),
+        ...(opts.tailoringSessions ? {tailoringSessions:true}:{}),
+        ...(opts.frictionFlags ? {frictionFlags:opts.frictionFlags}:{}),
         ...(opts.reviewGate ? { reviewGate: opts.reviewGate } : {}),
         ...(opts.switchCost ? { switchCost: opts.switchCost } : {}),
       } } : {});
@@ -431,14 +450,14 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     infrastructureErrors: records.flatMap((r)=>(['error','infrastructure-error'].includes(r.outcome)||r.flags.some(f=>f.startsWith('infrastructure-error')))?[{persona:r.persona,night:r.night,message:r.screenCheck?.message??r.flags.join('; ')}]:[]),
     llmErrors: records.flatMap((r) => r.flags.filter((flag) => flag.startsWith('llm-error')).map((message) => ({ persona: r.persona, night: r.night, message }))),
   };
-  if(opts.llm instanceof ReplayLlm)manifestData.driftedCallIds=[...new Set([...manifestData.driftedCallIds,...opts.llm.driftedCallIds])].sort();
+  if(llm instanceof ReplayLlm)manifestData.driftedCallIds=[...new Set([...manifestData.driftedCallIds,...llm.driftedCallIds])].sort();
   await writeJson(path.join(dir, 'summary.json'), summary);
   await writeJson(manifestFile, { ...manifestData, status: summary.infrastructureErrors.length ? 'infrastructure-error' : summary.llmErrors.length ? 'completed-with-llm-errors' : 'completed', nightDeploys: records.filter(r=>r.deployed).length, infrastructureErrors:summary.infrastructureErrors, llmErrors: summary.llmErrors, transcriptAudit: await auditRunTranscripts(dir) });
   const digest=await contentDigest(dir);
   await writeJson(manifestFile,{...JSON.parse(await readFile(manifestFile,'utf8')),contentDigest:digest.contentDigest});
   return summary;
   } catch (error) {
-    if(opts.llm instanceof ReplayLlm)manifestData.driftedCallIds=[...new Set([...manifestData.driftedCallIds,...opts.llm.driftedCallIds])].sort();
+    if(llm instanceof ReplayLlm)manifestData.driftedCallIds=[...new Set([...manifestData.driftedCallIds,...llm.driftedCallIds])].sort();
     if(JSON.parse(await readFile(manifestFile,'utf8')).status!=='blocked')await writeJson(manifestFile, { ...manifestData, status: error instanceof InfrastructureError ? 'infrastructure-error' : 'aborted', error: error instanceof Error ? error.message : String(error), transcriptAudit: await auditRunTranscripts(dir) });
     throw error;
   }

@@ -1,3 +1,4 @@
+import { relearningEstimateSchema } from './session-schema.js';
 /** Durable, train-only archive. Night snapshots are atomic; an unfinished night
  * is rebuilt from strictly earlier snapshots, so retry never imports its future. */
 import { readdir } from 'node:fs/promises';
@@ -13,7 +14,8 @@ const observationSchema = z.object({
   check: checkResultSchema, trainEstimate: trainEstimateSchema.nullable(),
   screen: screenCheckResultSchema.nullable(),
   staticError: z.string().nullable(),
-  switchCost: z.object({ cost: z.number().finite().nonnegative(), model: z.string(), assumption: z.string() }).nullable(),
+  switchCost: z.object({ cost: z.number().finite().nonnegative(), model: z.string(), assumption: z.string(), relearning: relearningEstimateSchema.exactOptional() }).nullable(),
+  switchCostError: z.string().exactOptional(),
 });
 export type ArchiveObservation = z.infer<typeof observationSchema>;
 const entrySchema = z.object({
@@ -76,9 +78,9 @@ export function archiveFeedback(snapshot: ArchiveSnapshot) {
     };
     return { id: entry.id, specHash: observation?.specHash, baseHash: observation?.baseHash, summary: entry.candidate.summary, patch,
       check: observation?.check, staticError: observation?.staticError, screen: observation?.screen,
-      trainEstimate: train, switchCost: observation?.switchCost,
+      trainEstimate: train, switchCost: observation?.switchCost, switchCostError: observation?.switchCostError,
       knownDud: observation?.check.status !== 'pass' || observation.staticError !== null ||
-        observation.screen?.status !== 'pass' || Boolean(train && (train.before.clicks + train.before.scrolls - train.after.clicks - train.after.scrolls) / train.days.length <= (observation.switchCost?.cost ?? 0)) };
+        observation.screen?.status !== 'pass' || Boolean(observation.switchCostError) || Boolean(train && (train.before.clicks + train.before.scrolls - train.after.clicks - train.after.scrolls) / train.days.length <= (observation.switchCost?.cost ?? 0)) };
   });
   return designFeedback(Object.keys(snapshot.cells), recent);
 }

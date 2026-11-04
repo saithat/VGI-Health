@@ -99,3 +99,35 @@ it('reloads persisted geometry coverage when simulation resumes in a new process
  const recorded=await loadGeometry(path.join(dir,'geometry',`${geometryProgramHash(program)}.${geometryComponentsHash(program)}.json`));
  expect(recorded.states.map(state=>state.state)).toEqual(['fixture-day-1','fixture-day-2']);
 });
+
+it('accounts for bounded misses at an explicit measured-slot proxy without changing the clinical trace',async()=>{
+ const {projectBoundedPoints,pointingTrace,BOUNDED_POINT_ASSUMPTION}=await import('../../app/src/dashboard/bounded-pointing.js');
+ const {fakeCanonical}=await import('../src/fake/fixtures.js');
+ const {attributeDay}=await import('../src/locality.js');
+ const program=fakeCanonical('v1'),template=program.screens[0];if(!template)throw Error('screen');
+ const component=template.components[0];if(!component)throw Error('component');
+ program.screens=[{...template,id:'s',components:[{...component,id:'a',tab:0},{...component,id:'b',tab:0}]},
+  {...template,id:'remembered',components:[{...component,id:'old-slot',tab:0}]}];
+ const box={center:{x:740,y:450},reveal:{x:740,y:450},chain:[],offsets:{}};
+ const measured={...atlas,states:[...atlas.states,{screen:'remembered',state:'remembered-expanded',viewport:{width:1440,height:900},scrollers:{},components:{'old-slot':box}}]};
+ const ghost='#'.repeat(100);
+ const trace=[{task:'t',t:0,screen:'s',event:{click:{comp:'a'}},ops:['point' as const,'click' as const],result:'ok' as const},
+  {task:'t',t:450,screen:'s',event:{click:{comp:ghost}},ops:['point' as const,'click' as const],result:'ignored' as const},
+  {task:'t',t:900,screen:'s',event:{click:{comp:'b'}},ops:['point' as const,'click' as const],result:'ok' as const}];
+ const task={task:'t',clicks:3,keystrokes:0,scrolls:0,popups:0,overrides:0,searches:0,backtracks:0,klmDeciSec:10,completed:true};
+ const day={day:1,persona:'P1',programVersion:0,policy:'bounded' as const,trace,tasks:[task],floor:[],complaints:[],
+  observations:[{task:'t',traceIndex:1,kind:'miss',place:{screen:'remembered',parent:component.parent??'',tab:0,position:0},scannedItems:0,ms:450}]};
+ const original=structuredClone(day);
+ expect(attachGeometry(day,measured).tasks[0]?.mouseTravelPx).toBeNull();
+ const projected=projectBoundedPoints(day,program,measured);
+ const enriched=attachGeometry(day,projected);
+ expect(enriched.trace).toEqual(original.trace);expect(day).toEqual(original);
+ expect(enriched.tasks[0]?.mouseTravelPx).toBeCloseTo(5+Math.sqrt(305)+Math.sqrt(260),2);
+ expect(enriched.tasks[0]?.clicks).toBe(3);expect(enriched.tasks[0]?.scrolls).toBe(0);
+ expect(enriched.geometry?.missingTargets).toEqual([]);
+ expect(enriched.complaints).toContain(BOUNDED_POINT_ASSUMPTION);
+ expect(pointerTravel(pointingTrace(trace,projected),projected).t?.mouseTravelPx).toEqual(enriched.tasks[0]?.mouseTravelPx);
+ expect(attributeDay(enriched,projected)).toHaveLength(3);
+ const unavailable={...day,observations:day.observations.map(o=>({...o,place:{...o.place,position:999}}))};
+ expect(attachGeometry(unavailable,projectBoundedPoints(unavailable,program,measured)).tasks[0]?.mouseTravelPx).toBeNull();
+});

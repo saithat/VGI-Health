@@ -1,3 +1,4 @@
+import { pointingTrace } from '../../app/src/dashboard/bounded-pointing.js';
 /** Target attribution mirrors pointerTravel's state machine; conservation is checked against it.
  * No timing model. Scroll-past means component reveal offsets traversed in a container.
  */
@@ -160,7 +161,8 @@ const plus = (a: number | null, b: number | null) => a === null || b === null ? 
 
 /** Includes an explicit untargeted bucket; never drops an interaction. */
 export function attributeDay(day: DayResult, atlas: GeometryAtlas): Attribution[] {
-  const rows = attributePixels(day.trace, atlas, day.day);
+  const trace = pointingTrace(day.trace, atlas, day);
+  const rows = attributePixels(trace, atlas, day.day);
   let previous = '';
   for (const [i, ev] of day.trace.entries()) {
     const row = rows[i];
@@ -176,7 +178,7 @@ export function attributeDay(day: DayResult, atlas: GeometryAtlas): Attribution[
         : 'text' in v ? [...v.text.s].length : 'user' in v ? [...v.user.u].length : 0;
     }
   }
-  const expected = pointerTravel(day.trace, atlas, day.day);
+  const expected = pointerTravel(trace, atlas, day.day);
   for (const task of day.tasks) {
     const own = rows.filter(row => row.task === task.task);
     for (const key of ['clicks', 'keystrokes', 'scrolls', 'mouseTravelPx', 'scrollPx'] as const) {

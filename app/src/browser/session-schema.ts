@@ -84,6 +84,12 @@ const totalsSchema = z.object({
   scrolls: z.number(),
   completed: z.number().int().nonnegative(),
 });
+const effortCostSchema = z.object({ seconds: z.number().finite(), actions: z.number().finite() });
+export const relearningEstimateSchema = z.object({
+  model: z.string(), assumption: z.string(), k: z.number().int().positive(), warmBlocks: z.number().int().nonnegative(),
+  before: effortCostSchema, after: effortCostSchema, expertBefore: effortCostSchema, expertAfter: effortCostSchema,
+  beforeExcess: effortCostSchema, afterExcess: effortCostSchema, incremental: effortCostSchema,
+});
 export const sessionOptionSchema = z.object({
   id,
   label: text,
@@ -95,7 +101,8 @@ export const sessionOptionSchema = z.object({
     changes: z.array(changeSchema),
     relearning: z.object({
       estimatedMinutes: z.number().nonnegative(),
-      model: z.literal("heuristic-v1: 0.5 min/move + 0.25 min/other change"),
+      model: z.string(),
+      bounded: relearningEstimateSchema.optional(),
       simulatorOnly: z.literal(true),
     }),
   }),

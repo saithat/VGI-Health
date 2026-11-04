@@ -12,6 +12,8 @@ import {
 } from "./schema.js";
 import { frictionFlagSchema } from "./session-schema.js";
 import { answerSession, prepareSession, recordSession } from "./session.js";
+import { boundedSessionChooser } from "./bounded-tailoring.js";
+import { userMemorySchema } from "./schema.js";
 import { seededSessionChooser } from "./session-simulator.js";
 const inputSchema = z.object({
   id: z.string(),
@@ -25,6 +27,8 @@ const inputSchema = z.object({
   recentDays: z.array(dayScheduleSchema).min(1),
   worldDir: z.string(),
   seed: z.number().int(),
+  bounded: z.boolean().default(false),
+  memory: userMemorySchema.optional(),
   candidates: z.array(
     z.object({
       id: z.string(),
@@ -40,13 +44,16 @@ const file = process.argv[2];
 if (!file)
   throw new Error("Usage: tsx src/session-cli.ts input.json (see inputSchema)");
 const input = inputSchema.parse(JSON.parse(await readFile(file, "utf8")));
+const ehr=createEhr();
+const { bounded: useBounded, memory, ...sessionInput }=input;
 const prepared = await prepareSession({
-  ...input,
-  ehr: createEhr(),
+  ...sessionInput,
+  ehr,
+  ...(useBounded ? {bounded:{...(memory?{memory}:{})}}:{}),
   archive: { candidates: async () => input.candidates },
 });
 const answered = await answerSession(
   prepared,
-  seededSessionChooser(input.seed, prepared.clinician),
+  input.bounded && ehr.binary ? boundedSessionChooser(ehr.binary,input.persona,input.seed) : seededSessionChooser(input.seed, prepared.clinician),
 );
 console.log(await recordSession(answered, input.runsRoot));

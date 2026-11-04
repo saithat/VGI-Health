@@ -1,0 +1,70 @@
+import {describe,it,expect,vi} from 'vitest';
+import {mkdtemp,mkdir,writeFile} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import path from 'node:path';
+import {worldCoreHash,assertScreenFingerprints,cachedScreenReports} from '../src/offline-screen-evidence.js';
+import {primaryV1Schedule} from '../src/offline-workload.js';
+import {fakeCanonical} from '../src/fake/fixtures.js';
+import {fakeSchedule} from '../src/fake/world.js';
+import {writeJson} from '../src/util.js';
+import {geometryCacheKey,geometryProgramHash,geometryComponentsHash} from '../src/geometry.js';
+import {sha256} from '../src/program.js';
+import type {ScreenChecker} from '../src/screencheck.js';
+import type {ScreenCheckResult} from '../src/schema.js';
+import type {GeometryAtlas} from '../../app/src/metrics/geometry.js';
+
+describe('offline immutable evidence reuse',()=>{
+  it('binds all fingerprints except separately checked source/world and excludes only stored schedules from world core',async()=>{
+    expect(()=>assertScreenFingerprints({agent:'old',world:'old',ehr:'native',app:'build'},{agent:'new',world:'new',ehr:'native',app:'build'})).not.toThrow();
+    expect(()=>assertScreenFingerprints({ehr:'old'},{ehr:'new'})).toThrow('ehr');
+    expect(()=>assertScreenFingerprints({app:'old'},{app:'new'})).toThrow('app');
+    const root=await mkdtemp(path.join(tmpdir(),'world-core-'));
+    const a=path.join(root,'a'),b=path.join(root,'b');
+    for(const dir of [a,b]){await mkdir(path.join(dir,'schedules'),{recursive:true});await writeJson(path.join(dir,'world.json'),{seed:1});}
+    await writeJson(path.join(a,'schedules/a.json'),{task:'old'});await writeJson(path.join(b,'schedules/b.json'),{task:'new'});
+    expect(await worldCoreHash(a)).toBe(await worldCoreHash(b));
+    await writeJson(path.join(b,'world.json'),{seed:2});
+    expect(await worldCoreHash(a)).not.toBe(await worldCoreHash(b));
+  });
+  it('reuses exact program/workspace reports with matching screen context and checks measured atlas identities',async()=>{
+    const previous=await mkdtemp(path.join(tmpdir(),'prior-screen-'));
+    const oldWorld=path.join(previous,'world'),world=path.join(previous,'new-world');
+    const program=fakeCanonical('v1'),schedule=fakeSchedule(1,'P1',7),input={specVersion:'v1',program,schedule,worldDir:world};
+    const key=geometryCacheKey(program)+`:${sha256(JSON.stringify([oldWorld,schedule]))}`;
+    const dir=path.join(previous,'screens',program.owner,`v${program.version}`,key.replaceAll(':','.'));
+    await mkdir(dir,{recursive:true});
+    const pass:ScreenCheckResult={mode:'real',status:'pass',bundles:[],pages:1,failingFiles:[],failingScreens:[],message:'measured'};
+    const atlas:GeometryAtlas={schemaVersion:1,programHash:geometryProgramHash(program),componentsSha256:geometryComponentsHash(program),appSha256:'app',viewport:{width:1440,height:900},states:[],source:'chromium'};
+    await writeJson(path.join(dir,'result.json'),pass);await writeJson(path.join(dir,'geometry.json'),atlas);
+    await writeFile(path.join(dir,'output.txt'),'Whole-version screen coverage: Context context.\n');
+    const check=vi.fn(async()=>({...pass,message:'fresh'})),geometry=vi.fn(async()=>null);
+    const inner:ScreenChecker={mode:'real',check,geometry};
+    const cache=cachedScreenReports(inner,{previous,oldWorld,world,app:'app',context:'context'});
+    const result=await cache.screens.check(input);result.failingScreens.push('mutation');
+    expect((await cache.screens.check(input)).failingScreens).toEqual([]);
+    expect((await cache.screens.geometry?.(input))?.programHash).toBe(atlas.programHash);
+    expect(check).not.toHaveBeenCalled();expect(geometry).not.toHaveBeenCalled();
+    await cache.screens.check({...input,program:{...program,version:program.version+1}});
+    expect(check).toHaveBeenCalledOnce();
+    await cache.screens.geometry?.({...input,worldDir:'foreign'});expect(geometry).toHaveBeenCalledOnce();
+    await writeJson(path.join(dir,'result.json'),{...pass,status:'fail'});
+    expect((await cache.screens.check(input)).status).toBe('fail');
+    await cache.screens.geometry?.(input);expect(geometry).toHaveBeenCalledTimes(2);
+    await writeJson(path.join(dir,'result.json'),{...pass,status:'error'});
+    expect((await cache.screens.check(input)).message).toBe('fresh');
+    await writeJson(path.join(dir,'result.json'),pass);await writeJson(path.join(dir,'geometry.json'),{...atlas,appSha256:'different'});
+    await expect(cache.screens.geometry?.(input)).rejects.toThrow('identity mismatch');
+    await writeFile(path.join(dir,'output.txt'),'Context different.');
+    expect((await cache.screens.check(input)).message).toBe('fresh');
+  });
+  it('selects clinical types before costs and preserves the selected cases',()=>{
+    const source=fakeSchedule(1,'P1',7),base=source.tasks[0],order=base?.choices.orders[0];
+    if(!base || !order)throw Error('Missing fake order');
+    const a={...base,id:'a',workflow:'W1' as const},b={...base,id:'b',workflow:'W1' as const};
+    const imaging={...base,id:'imaging',workflow:'W1' as const,choices:{...base.choices,orders:[{...order,kind:'imaging' as const,code:'scan',drug:''}]}};
+    const schedule={...source,tasks:[imaging,a,b]};
+    expect(primaryV1Schedule(schedule).tasks).toEqual([a,b]);
+    expect(schedule.tasks[0]).toBe(imaging);
+    expect(()=>primaryV1Schedule({...schedule,tasks:[imaging,a]})).toThrow('Need two');
+  });
+});

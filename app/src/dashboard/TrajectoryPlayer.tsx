@@ -1,3 +1,4 @@
+import { pointingTrace } from "./bounded-pointing";
 import { useMemo } from "react";
 import type { Program } from "../../../agent/src/schema";
 import type { PresentationBundle } from "../ehr/ui/presentation-types";
@@ -53,7 +54,7 @@ export function TrajectoryPlayer({
   const travel = loaded.geometry
     ? count === 0
       ? 0
-      : pointerTravel(prefix, loaded.geometry)[loaded.task.id]?.mouseTravelPx
+      : pointerTravel(pointingTrace(prefix, loaded.geometry), loaded.geometry)[loaded.task.id]?.mouseTravelPx
     : count === loaded.task.trace.length
       ? metrics.mouseTravelPx
       : null;

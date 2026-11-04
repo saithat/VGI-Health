@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "leanSourceHash": "0d05174631c114d1c20655ded709b8a95f0938cb85202eb2d439c054ab260b6e",
+  "leanSourceHash": "47bbfcfa409839993a56ee6d920327d4e8ac48e54183eb27a4a3811e382fb917",
   "sources": {
     "lean/Audit/SpecSurface.lean": "bb84994dec1d9cb2cbf215481f47f6c575406c8454b2a2e6a6c06b635b1feffd",
     "lean/CompletionObligations.lean": "34dc959bbd641d1048cc8511ac3a3fb233a6c105f63afdb31ff3f0579859b5ed",
@@ -289,7 +289,7 @@
     "lean/Ehr/Tools/ProfileGoals.lean": "5baae991adacc4ff07c2146a0439d8a1a9cf44a0c8d153efa7416a77435c9399",
     "lean/Ehr/Tools/Samples.lean": "6012715f67a465920f2672f5f1dd3dad62ea7e8dd1133d9aca8d56d04c6a8480",
     "lean/EhrHeavy.lean": "617421f280fd38254a717a1b54cbb9de9763b375fe0704d69137732e65c6ef22",
-    "lean/Main.lean": "75588d712a2b62aa669628e9f14ca7ad8bdaccd309c03c5b09ca591e1e13a162",
+    "lean/Main.lean": "ba9eb52389460c20ee6d1475460337a29606e2050c614c9b3647eff033f19f91",
     "lean/Solution.lean": "3980bf655878a98e635ebe2edd0e01d7f66684e3e3344224d93f38106681db43",
     "lean/Statements.lean": "42d968271109385e57e946911e6cd184edae0a87b500353331c62d86642b230c",
     "lean/lake-manifest.json": "52aef06e9f439eb62ae88a13d1c6af5c89e0d7eff16a84feae38d4099fe5f16d",

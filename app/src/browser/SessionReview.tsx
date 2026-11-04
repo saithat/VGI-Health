@@ -207,8 +207,12 @@ export function RecordedSession({ session }: { session: TailoringSession }) {
                   option.evidence.changes.filter((c) => c.kind === "moved")
                     .length
                 }{" "}
-                things moved · ≈{option.evidence.relearning.estimatedMinutes}{" "}
-                min relearning (simulator heuristic)
+                things moved · ≈{option.evidence.relearning.estimatedMinutes.toFixed(2)}{" "}
+                min relearning ({option.evidence.relearning.model})
+                {option.evidence.relearning.bounded && <span> · bounded {option.evidence.relearning.bounded.before.seconds.toFixed(1)}→{option.evidence.relearning.bounded.after.seconds.toFixed(1)}s;
+                  expert floor {option.evidence.relearning.bounded.expertBefore.seconds.toFixed(1)}→{option.evidence.relearning.bounded.expertAfter.seconds.toFixed(1)}s;
+                  signed relearning {option.evidence.relearning.bounded.incremental.seconds.toFixed(1)}s / {option.evidence.relearning.bounded.incremental.actions} actions
+                  · {option.evidence.relearning.bounded.k} train days, {option.evidence.relearning.bounded.warmBlocks} practice blocks</span>}
               </p>
             </div>
             <CaseReplay
@@ -261,7 +265,7 @@ export function SessionReview({ path }: { path: string }) {
   const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
-    if (!/^\/runs\/sessions\/[\w.-]+\.json$/.test(path)) {
+    if (!/^\/runs\/(?:[\w-][\w.-]*\/runs\/)?sessions\/[\w.-]+\.json$/.test(path)) {
       setError("Invalid session artifact path");
       return;
     }

@@ -213,9 +213,37 @@ a positive scalar release score. The default `usage-weighted-movement-v1` is a
 a displaced control. Displacement includes screen, parent, tab, order, size,
 layout tag and shortcut changes, including descendants of changed groups. This is not measured relearning, learning or
 forgetting. `agent/src/cadence.ts` exports the replaceable `SwitchCost` interface
-for the bounded-knowledge user-model lane.
+for alternative cost models.
 
-Before release, `ReviewGate.review` receives 1–3 positive-scoring niche winners
+Opt in with `--bounded-costs` (`RunOptions.boundedCosts`) to use
+`bounded-matched-relearning-v1` from `agent/src/bounded-tailoring.ts`. It replays
+the latest two train schedules on both layouts from cloned carried train memory,
+then practices each layout for three matched blocks and measures a fourth warm
+reference. Dates, cases and paired seeds stay fixed. The signed first-k cost
+minus warm cost is reported separately for each layout, then differenced
+(after minus before). Archive observations retain seconds, click-plus-scroll
+actions, k, practice count and the unchanged BFS expert comparison. The release
+score subtracts only the nonnegative incremental actions divided by k; signed
+results remain in evidence. Incomplete bounded/expert replays leave the bundle
+ineligible, with `switchCostError` in its archive observation; a session with
+incomplete evidence keeps current. Identity mismatches abort rather than becoming
+fallback estimates. The next clinical day can proceed after a model obstruction.
+Ignored bounded clicks carry a guaranteed-absent ID through the interpreter.
+`app/src/dashboard/bounded-pointing.ts` supplies a separate metrics trace: it
+projects the browser-measured reveal point of the remembered ordinal slot onto
+the attempted viewport, without an extra scroll or clinical event. This is an
+explicit simulation assumption, recorded in complaints and named virtual atlas
+targets, not an observed click coordinate. Both release accounting and locality
+use that projection; the original guarded trace is retained. Unmappable slots
+and ordinary missing targets remain unavailable. This prevents deliberate
+failed points from making every pixel validation ineligible.
+Missing carried memory or a backend without bounded output uses the explicitly
+labeled movement-proxy fallback. Opted-in runs carry an independent train-only
+memory across odd calibration partitions; blind/validation cases never practice
+that actor. Rehearsal memory is discarded. This is an uncalibrated simulation
+estimate, not measured clinician learning or a guarantee of convergence.
+
+Before release, the default `ReviewGate.review` receives 1–3 positive-scoring niche winners
 (program bundles plus train estimates, switch costs, checker/screen evidence
 and movement counts). It returns an offered bundle ID or `null`, with a reason;
 `auto-approve-v1` chooses the highest score. `RunOptions.reviewGate` is the
@@ -226,7 +254,8 @@ existing past-calibration validation, simulated user response, whole-version
 screen check and atomic certified deployment. Mandatory vendor recertification
 and migration retain their existing schedule and bypass discretionary cadence
 and review; an old-spec layout cannot remain active after a rulebook update.
-There is no clinician-facing review UI yet.
+A read-only simulator review is available in the UI version browser (below);
+there is no live clinician review control.
 
 The self-contained fake path uses synthetic geometry and the fake checker,
 certifies nothing, and makes no live model calls:
@@ -374,7 +403,12 @@ boundary for the tailoring lane is
 the current assumption-based rating uses use frequency to weight disruption,
 placement distances to score preferences, and reserves costMs for later fitting.
 Positive score chooses after; ties keep before. `seededPreferences seed actor`
-provides optional deterministic tastes. These preferences do not alter clinical
+provides optional deterministic tastes. The native stdin command
+`ehr rate-programs` exposes this pure function for the private simulated chooser
+(`before`, `after`, `actor`, `seed`, optional `preferences`, and `recent`).
+Hidden preferences and change sensitivity are excluded from designer prompts;
+the session exports choices and qualitative reasons, not utility scores or taste
+weights. These preferences do not alter clinical
 goals or the historical default policy.
 
 World generation accepts `--policy bounded` and optional `--hidden-preferences`;
@@ -423,14 +457,14 @@ weakest parts.
   nightly runs deploy a greedy patch or disjoint bundle. The opt-in cadence
   protocol keeps certified, screen-gated alternatives in a quality-diversity
   archive, preserves unchosen train estimates and known duds, and ships through
-  a configurable schedule and review hook. Its switch cost is still a
-  usage-weighted movement proxy; it does not yet use the bounded clinician's
-  relearning cost. The default review hook auto-approves. A simulator-only
-  tailoring-session protocol (below) lets a simulated clinician choose among
-  2–3 certified options or keep the current layout, but it is not yet wired
-  into the cadence review hook, its chooser is a seeded stand-in for the
-  bounded clinician, and there is no in-app control. No live cadence
-  experiment has validated these choices.
+  a configurable schedule and review hook. Optional bounded switch costs and
+  tailoring sessions now connect that archive to the bounded clinician's
+  relearning estimate and private choice function. Defaults retain the movement
+  proxy and auto-approval. Sessions export train-only comparisons and friction
+  to later nightly prompts. The admitted generator currently changes layout
+  tags, density and shortcuts, not arbitrary preferred component placements;
+  participation cannot recover tastes outside that candidate space. There is
+  no live in-app choice/flag control, human calibration or live cadence study.
 
 ## Offline tailoring sessions (simulator only)
 
@@ -449,21 +483,29 @@ schedules, world and paired seeds for current versus each option. Future days,
 foreign schedules and incomplete/mismatched task replays are rejected. Totals
 report clicks, keystrokes and scrolls saved, with negative savings retained.
 `layoutChanges` expands composites and records additions, removals, edits and
-old→new screen, parent, tab and list position. Relearning is an explicitly
-unvalidated simulator heuristic: 0.5 minutes per moved component plus 0.25 per
-other component change. It is not a measured learning or clinical time benefit.
-These replays still use the existing simulator's knowledge of the whole layout.
+old→new screen, parent, tab and list position. Passing `bounded: {memory}` to
+`prepareSession` uses the shared bounded relearning estimator above and records
+bounded and expert costs beside signed relearning seconds/actions. Without
+that opt-in, or when bounded evidence is unavailable, the record labels its
+fallback: 0.5 minutes per moved component plus 0.25 per other change. Historical
+session callers retain their existing replay policy. Neither estimate is a
+measured clinician learning or clinical time benefit.
 
 `SessionChooser` accepts the prepared record and returns one option ID or
 `null` (keep current), a reason and optional per-option reasons. The temporary
 `seededSessionChooser` keeps seeded preference weights private in a closure,
 compares savings against estimated relearning, and can reject every option.
-It is the adapter boundary for the bounded-knowledge user-model lane, not a
+It remains the historical default. `boundedSessionChooser` instead calls
+Lean's `Bounded.ratePrograms` inside a private clinician closure, using hidden
+placement preferences, change sensitivity and train trace use frequencies;
+positive utility chooses an option, and ties keep current. Among positive
+options it chooses highest utility with an ID tie break. Hidden tastes do not
+enter the session record or designer prompt. This remains a simulation, not a
 human study. `answerSession` validates the choice and exports winner-versus-each
 alternative comparisons, including current, program hashes and change features;
 it infers no ranking among rejected options. `chosenSessionBundle` returns the
 whole selected bundle for a later cadence gate. None of these functions deploys
-or edits a program. The AI remains the author of every candidate.
+or edits a program. The agent's generator authors every candidate.
 
 `agent/src/session-schema.ts` reexports the shared review wire schema from
 `app/src/browser/session-schema.ts` (inside the review-only hash boundary).
@@ -475,7 +517,10 @@ annotation without an interpreter call or clinical-state mutation;
 `traceFriction` extracts it. `sessionGeneratorInput` scopes flags and recorded
 pairwise comparisons to this clinician and past days, and marks wishes/reasons
 as untrusted data. A generator passes this result as the optional
-`NightlyContext.tailoring` prompt input. Existing nightly callers are unchanged.
+`NightlyContext.tailoring` prompt input. Opting into cadence sessions wires this input into subsequent nightly prompts;
+flags must match actual train task/day IDs and the session owner, and sessions
+must precede the proposal night. Foreign, future, blind and validation feedback
+is excluded. Existing nightly callers are unchanged.
 There is no in-app flag control; a future control would enqueue this annotation
 without interrupting work or changing screens during a shift.
 
@@ -497,22 +542,149 @@ Use absolute input/world paths; output defaults to this repo's `runs/`. The
 harness always uses the simulated chooser. Fake backend evidence is permitted
 only in tests and certifies nothing.
 
-Open `/browse?session=/runs/sessions/<id>.json` for the desktop review. Current
+Open `/browse?session=/runs/sessions/<id>.json` for the desktop review.
+Cadence records served under a run use
+`/browse?session=/runs/<run-id>/runs/sessions/<id>.json`. Current
 and candidate layouts appear side by side for the same selectable recent case,
 with independently scrubbed recorded event sequences and highlighted targets
 in a component layout map. This map shows recorded screen/order/target, not
 clinical values or a full clinical painter replay. Savings, old→new locations,
-heuristic relearning, flags, the choice and reasons are shown explicitly. The
+labeled relearning, bounded/expert costs when available, flags, the choice and
+reasons are shown explicitly. The
 page is read-only, simulator-only, and covered at 1440×900. App changes stay
 inside `app/src/browser`; the certified clinical app hash is unchanged.
 
 Validation for this module uses the fake backend and no LLM calls:
 
 ```sh
-TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/session.test.ts
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/session.test.ts test/bounded-tailoring.test.ts --maxWorkers=2
 TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app build
 TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
 ```
+
+
+`run-days --protocol certified-cadence-archive-v1 --cadence weekly
+--bounded-costs --tailoring-sessions` enables the connected path. On a release
+slot, `sessionReviewGate` recertifies the archive's top three niche bundles in
+scratch and prepares 2–3 diverse replay-complete options. Sessions may consider
+nonpositive effort scores to express a placement preference; auto-approval still
+requires a positive net score. Fewer than two eligible options or a `null`
+choice keeps current. A choice still passes the existing validation, stability,
+screen and atomic deployment gates. It replaces the legacy random login veto;
+the simulated clinician has already decided. Session records live at
+`<run>/runs/sessions/`; retry compares against the same immutable bytes. Fresh
+certificate issuance times use the original timestamp for comparison; all other
+proof, evidence and choice fields must match, and saved bytes are never rewritten.
+Optional
+`RunOptions.frictionFlags` and recorded comparisons enter later
+`NightlyContext.tailoring`, scoped to past train tasks. Review/model identities,
+friction inputs and discovery mode are bound in the resume manifest.
+
+`--generator-only` selects admitted explore discovery without constructing a
+live backend or injecting scripted tempting moves. `runDays` substitutes a
+backend that refuses every model call, including accidental migration/repair
+calls. Optional `--discovery-nights N` stops new exploration after night N
+while retained bundles continue to be rescored and reviewed; the cutoff is
+bound in the manifest. Fixed-release experiments use `--feature-day 100 --migration-day 101`.
+It stages custom artifacts under the run directory, uses native certification
+and the usual screen/validation gates, and labels manifests `OFFLINE`.
+Omitting the new flags preserves the historical protocols.
+
+The native offline A/B/C harness creates independent archives and memories for
+nightly auto-ship, weekly auto-ship, and weekly sessions. It fixes v1, uses the
+same seed-1 world and P1/P2 seeded hidden preferences, and samples the first
+two v1-compatible W1 tasks for P1 and two W3 tasks for P2 on each of eight workdays (32 tasks
+per arm; one weekly slot, night 7). Discovery proposes one admitted variant on
+each of nights 1–3
+per clinician; nights 4–7 rescore the retained archive. All arms share the
+existing exact-tree/context screen cache, without sharing actor memory or train
+scores. Discovery starts from each arm's active program, so the equal proposal
+budget can produce different candidate sets after a release. Total KLM seconds
+include actual search, help and relearning;
+rehearsal and off-shift review duration are excluded. Reports include completion,
+click-plus-scroll actions, BFS expert costs, shipped changes, review keeps,
+placement availability/distance and whether each target pair ends within one
+ordinal position on the same screen. Missing tags count as unrecovered, not a
+neutral preference. This short experiment does not establish long-run cadence
+superiority or fit preference parameters.
+
+The fixed-v1 sample excludes W1 orders whose explicit kind is imaging or
+procedure: those require v2's `orderKind`/`orderCode` captures. Selection uses
+clinical type before any performance measurement, preserves selected tasks,
+and an independent expert preflight must complete every selected goal before
+the multi-night run starts (`--preflight-only` stops after that check).
+
+Measured on 2026-11-04 at `6ed7c8ad`: two clinicians × eight days × two cases,
+seed 1, fixed v1, three discovery nights and one weekly review slot. The native
+run completed in about 2h13m. Every arm completed all 32 bounded and 32 expert
+cases, with zero unresolved geometry targets and zero model calls. Native
+trace, expert output and timing matched the saved simulation journals for all
+48 clinician-days. Results are in the command's output `comparison.json`.
+
+| Arm | Bounded KLM seconds | Bounded actions | Expert-floor KLM seconds | Shipped changes | Session keeps |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| A: nightly auto-ship | 24,849.2 | 8,640 | 8,920.5 | 2 | — |
+| B: weekly auto-ship | 24,903.5 | 8,885 | 8,905.2 | 2 | — |
+| C: weekly sessions | 24,912.1 | 8,923 | 8,902.9 | 0 | 2/2 |
+
+A shipped both changes on night 1; B shipped both on night 7. C offered three
+options in each session, recorded six pairwise comparisons and kept current
+twice. All six options used bounded relearning evidence with expert comparisons;
+none used the heuristic fallback. No friction flags were supplied in this run;
+nonempty flags and their next-night train-only consumption are covered by tests.
+
+No arm recovered either seeded placement target (0/2). P1's allergy-list/dose
+pair stayed 54 ordinal positions apart (2,160 preference-distance units); P2's
+seeded W1 pair is absent from its program. The admitted generator does
+not move these preferred components, so this measures a limit of the candidate space,
+not evidence that sessions can infer unavailable placements. The small effort
+differences do not establish a preferred cadence. Review and hypothetical
+rehearsal duration remain unmodeled, and the window ends before another nightly
+generation after the session feedback.
+
+This measurement reused 10 prior exact screen reports and 96 geometry atlases
+from `11d11a4c`, through the identity checks below; actor state and simulations
+were recomputed. Its native binary SHA-256 was
+`948b1b6e68ebd27429b03a5a30a508ffde90a8969a0fa2b2c5b33e8e3c33de52`.
+
+Bounded action totals use browser-normalized scroll counts; the nested unchanged
+expert retains native scroll counts. Compare the reported KLM seconds for the
+time comparison. Those seconds retain native operator and cognitive timing;
+browser pixel accounting does not refit the timing model.
+
+Within this immutable world/build/assertion context, `immutableScreenChecks`
+also memoizes exact screen-check inputs to avoid re-exporting unchanged trees
+on every rescore. Workspace/program changes miss that cache, geometry remains
+delegated to the real checker, and infrastructure errors are retried. Cached
+results are cloned; a physical-policy rejection remains a rejection.
+
+Optional `--reuse-evidence <prior-output> --reuse-source <measured-commit>`
+reuses only prior real screen results/rectangles for exact program/workspace
+inputs. Native binary, specs, fixtures, painter/tests/policy/browser context,
+world metadata/facts and rendering/client source are checked. Stored schedule
+files may differ because the native API takes the full schedule explicitly;
+changed task inputs miss the cache. Actor memories, simulations, archive scores,
+choices and deployments are recomputed. Reuse provenance and hit counts enter
+`comparison.json`; resume fingerprint checks remain unchanged.
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp EHR_SCREEN_WORKERS=4 \
+flock /home/saithat/Projects/run-tmp/vgi-browser-heavy.lock \
+pnpm --filter agent exec tsx src/offline-tailoring-compare.ts \
+  --out /home/saithat/Projects/run-tmp/wire-tailoring-medication-comparison --days 8
+```
+
+The measured invocation additionally passed
+`--reuse-evidence /home/saithat/Projects/run-tmp/wire-tailoring-release-comparison --reuse-source 11d11a4c`.
+
+`--world` defaults to this checkout's `runs/world/2`. The outer `flock`
+serializes this harness against full audits; agent-internal
+screen checks do not take that lock themselves. Data, native transcripts,
+certificates and `comparison.json` remain outside git. `--resume` resumes the same fingerprinted inputs; it cannot mix rebuilt
+native binaries. The standalone session CLI accepts `bounded: true` plus
+`memory` to select bounded evidence/choice; omitted fields retain its historical
+seeded chooser and labeled heuristic. No WASM rebuild is needed to run this
+native adapter; a stale source manifest is left for the merge session to refresh.
 
 ## Data sources
 

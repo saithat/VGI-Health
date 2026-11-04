@@ -32,6 +32,7 @@ export interface SwitchCostEstimate {
   cost: number;
   model: string;
   assumption: string;
+  relearning?: import("./bounded-tailoring.js").RelearningEstimate;
 }
 export type SwitchCost = (prev: Program, next: Program, context: ClinicianContext) => SwitchCostEstimate | Promise<SwitchCostEstimate>;
 /** Simulation assumption: each displaced control costs one extra interaction per
@@ -94,6 +95,11 @@ export interface ReviewRequest {
   department: string;
   role: Program['role'];
   bundles: ReviewChoices;
+  /** Present only in the opt-in session protocol; train schedules and carried memory only. */
+  sessionContext?: {
+    current: Program; canonical: Program;
+    train: readonly TrainDay[]; worldDir: string; seed: number;
+  };
 }
 export interface ReviewDecision { chosenBundle: string | null; reason: string; }
 export interface ReviewGate {

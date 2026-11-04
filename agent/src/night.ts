@@ -1,3 +1,5 @@
+import { boundedSwitchCost, IncompleteBoundedReplay } from './bounded-tailoring.js';
+import { sessionReviewGate, tailoringFeedback } from './session-gate.js';
 import { CADENCE_PROTOCOL, autoApprove, releaseDue, usageWeightedSwitchCost, type ReleaseCadence, type ReviewGate, type ReviewBundle, type ReviewChoices, type SwitchCost } from './cadence.js';
 import { DesignArchiveStore, archiveFeedback, designHash, type ArchiveEntry, type ArchiveObservation } from './design-archive.js';
 import { describeProgram, generate, validateCandidate } from '../../explore/generator.js';
@@ -570,6 +572,11 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
 }
 
 export interface CadenceNightOptions {
+  generatorOnly?: boolean;
+  discoveryNights?: number;
+  boundedCosts?: boolean;
+  tailoringSessions?: boolean;
+  frictionFlags?: readonly import("./session-schema.js").FrictionFlag[];
   cadence?: ReleaseCadence;
   department: string;
   reviewGate?: ReviewGate;
@@ -602,13 +609,18 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   rec.mode = 'cadence';
   rec.cadence = { protocol: CADENCE_PROTOCOL, cadence: stableStringify(cadence), due,
     archive: path.relative(deps.store.dir, archiveStore.directory), niches: 0, offers: [], review: null };
-  const reviewGate = options.reviewGate ?? autoApprove;
+  const sessionRuns = path.join(deps.store.dir,'runs');
+  const reviewGate = options.reviewGate ?? (options.tailoringSessions ? sessionReviewGate({ehr:deps.ehr,persona:persona.params,runsRoot:sessionRuns,
+    ...(options.frictionFlags ? {flags:options.frictionFlags}: {})}) : autoApprove);
+  const costModel = options.switchCost ?? (options.boundedCosts ? boundedSwitchCost(deps.ehr,persona.params,deps.worldDir,deps.worldSeed*1000) : usageWeightedSwitchCost);
   const estimator = new TrainEstimator(deps, input, release.specVersion);
   const context = { clinician: persona.id, department: options.department, role: current.role, train: trainEstimateWindow(input.train) };
   const workflows: Workflow[] = [...new Set(context.train.flatMap(d => d.schedule.tasks.map(t => t.workflow)))];
   const newCandidates: Candidate[] = [];
-  try {
-    const parts = nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence: rec.evidence, history: input.history });
+  if (!options.generatorOnly) try {
+    const tailoring = options.tailoringSessions ? await tailoringFeedback(sessionRuns,night,current.owner,input.train,options.frictionFlags) : undefined;
+    const parts = nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence: rec.evidence, history: input.history,
+      ...(tailoring ? {tailoring}: {}) });
     parts.prompt += `\nStanding quality-diversity archive (train evidence only):\n${JSON.stringify(archiveFeedback(snapshot))}`;
     const proposal = await deps.agent.proposeCandidates({ callId: callId(night, persona.id, 'propose-0'), purpose: 'propose', source: 'llm', parts });
     rec.llmCalls.push(proposal.call);
@@ -630,7 +642,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
 
   // Reuse the admitted explore generator; cycle across layouts, density and
   // input, skipping already evaluated designs. No additional model calls.
-  if (workflows.length) {
+  if (workflows.length && (!options.generatorOnly || options.discoveryNights === undefined || night<=options.discoveryNights)) {
     const points = seedPoints().flatMap(p => (['normal', 'compact'] as const).flatMap(density =>
       (['mouse', 'keyboard'] as const).map(input => ({ ...p, density, input }))));
     for (let offset = 0; offset < points.length; offset++) {
@@ -650,7 +662,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
       }
     }
   }
-  const seeded = pickSeeded(deps.seedPolicy, deps.seedState, current, release.spec, night);
+  const seeded = options.generatorOnly ? null : pickSeeded(deps.seedPolicy, deps.seedState, current, release.spec, night);
   if (seeded) { deps.seedState.injected++; newCandidates.push(seeded); }
   // Small disjoint bundles are additional designs, certified as a whole. The
   // full merged stability budget is checked, never the sum of singleton claims.
@@ -706,9 +718,15 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
         observation.screen = await retryScreens(deps.screens).check({ specVersion: release.specVersion, program });
         if (observation.screen.status === 'pass') {
           observation.trainEstimate = await estimator.estimate(program);
-          const cost = await (options.switchCost ?? usageWeightedSwitchCost)(structuredClone(current), structuredClone(program), structuredClone(context));
-          if (!Number.isFinite(cost.cost) || cost.cost < 0) throw Error('Switch cost must be finite and nonnegative');
-          observation.switchCost = cost;
+          try {
+            const cost = await costModel(structuredClone(current), structuredClone(program), structuredClone(context));
+            if (!Number.isFinite(cost.cost) || cost.cost < 0) throw Error('Switch cost must be finite and nonnegative');
+            observation.switchCost = cost;
+          } catch(error) {
+            if(!(error instanceof IncompleteBoundedReplay))throw error;
+            observation.switchCostError=error.message;
+            rec.flags.push(`bounded-switch-cost-unavailable ${entry.id}: ${error.message}`);
+          }
         }
       }
       refreshed.set(hash, observation);
@@ -745,16 +763,17 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
     return { record: rec, deployed };
   };
   if (!due) { rec.outcome = 'release-deferred'; rec.validation.reason = 'Candidates archived; next release slot pending'; return finish(null); }
-  const ranked = [...archive.cells.values()].map(e => offers.get(e.id)).filter((b): b is ReviewBundle => Boolean(b && b.evidence.score > 0))
+  const ranked = [...archive.cells.values()].map(e => offers.get(e.id)).filter((b): b is ReviewBundle => Boolean(b && (options.tailoringSessions || b.evidence.score > 0)))
     .sort((a,b) => b.evidence.score-a.evidence.score || a.id.localeCompare(b.id)).slice(0,3);
   const [first, second, third] = ranked;
-  if (!first) { rec.outcome = 'archived'; rec.validation.reason = 'No complete bundle with positive net train score'; return finish(null); }
+  if (!first) { rec.outcome = 'archived'; rec.validation.reason = options.tailoringSessions ? 'No complete archived bundle for session review' : 'No complete bundle with positive net train score'; return finish(null); }
   const choices: ReviewChoices = second ? third ? [first,second,third] : [first,second] : [first];
   rec.cadence.offers = choices.map(b => ({ id: b.id, candidateIds: b.candidateIds, score: b.evidence.score,
     switchCost: b.evidence.switchCost.cost, switchModel: b.evidence.switchCost.model, assumption: b.evidence.switchCost.assumption }));
   // Pass a clone: a UI hook can choose a bundle, never mutate certified bytes.
   const review = await reviewGate.review(structuredClone({ protocol: CADENCE_PROTOCOL, night, clinician: persona.id,
-    department: options.department, role: current.role, bundles: choices }));
+    department: options.department, role: current.role, bundles: choices,
+    ...(options.tailoringSessions ? {sessionContext:{current,canonical:release.canonical,train:context.train,worldDir:deps.worldDir,seed:deps.worldSeed*1000}}: {}) }));
   if (typeof review.reason !== 'string' || !review.reason.trim() ||
     (review.chosenBundle !== null && !choices.some(b => b.id === review.chosenBundle))) throw Error('Review gate returned an invalid choice/reason');
   rec.cadence.review = { gate: reviewGate.id, ...review };
@@ -784,7 +803,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   rec.measured.predictionHeld = prediction.held; rec.measured.predictionNote = prediction.note;
   if (!rec.validation.stabilityOk || !rec.validation.improved) { rec.outcome = 'validation-rejected'; return finish(null); }
   rec.validation.accepted = true; rec.validation.reason = 'Reviewed bundle passed past-calibration replay';
-  rec.userResponse = userResponse(deps, night, persona.id, chosen.evidence.moved);
+  rec.userResponse = options.tailoringSessions ? {response:'accepted',probability:0,reason:'Simulated clinician already chose this bundle in the off-shift session'} : userResponse(deps, night, persona.id, chosen.evidence.moved);
   if (rec.userResponse.response === 'reverted') { rec.outcome = 'user-reverted'; return finish(null); }
   const deployed = await deployVersion(deps, persona.id, program, { ...gate, validation: replay });
   recordDeploy(rec, deployed, { candidateIds: chosen.candidateIds, patch });

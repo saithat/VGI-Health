@@ -1,3 +1,4 @@
+import { generatorOnlyBackend } from './generator-only.js';
 import { CADENCE_PROTOCOL, parseCadence } from './cadence.js';
 import { compareSanityRuns } from './quality-compare.js';
 import { auditedOperation } from './operation-manifest.js';
@@ -72,6 +73,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
+      'generator-only':{type:'boolean',default:false}, 'discovery-nights':{type:'string'}, 'bounded-costs':{type:'boolean',default:false}, 'tailoring-sessions':{type:'boolean',default:false},
       protocol: { type: 'string' }, cadence: { type: 'string' }, departments: { type: 'string' },
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false},
       'run-id': { type: 'string' }, parallel:{type:'boolean',default:false},resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
@@ -80,9 +82,13 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   });
   if (values.protocol && values.protocol !== 'core-10day-live' && values.protocol !== CADENCE_PROTOCOL) throw Error('Unknown release protocol');
   const useArchive = values.protocol === CADENCE_PROTOCOL || (!values.protocol && Boolean(values.cadence));
-  const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
+  const llm = values['generator-only'] ? generatorOnlyBackend : createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const summary = await runDays({
     ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
+    ...(values['generator-only'] ? {generatorOnly:true}:{}),
+    ...(values['discovery-nights'] ? {discoveryNights:intArg(values['discovery-nights'],'discovery-nights',3)}:{}),
+    ...(values['bounded-costs'] ? {boundedCosts:true}:{}),
+    ...(values['tailoring-sessions'] ? {tailoringSessions:true}:{}),
     ...(values.cadence ? { cadence: parseCadence(values.cadence) } : {}),
     ...(values.departments ? { departments: z.record(z.string(), z.string().trim().min(1)).parse(JSON.parse(values.departments)) } : {}),
     days: intArg(values.days, 'days', 10),

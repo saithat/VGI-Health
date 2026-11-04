@@ -73,7 +73,7 @@ export function formatProgram(p: Program): string {
   return `{"id":${JSON.stringify(p.id)},"version":${p.version},"owner":${JSON.stringify(p.owner)},"role":${JSON.stringify(p.role)},"specVersion":${JSON.stringify(p.specVersion)},"start":${JSON.stringify(p.start)},\n  "screens":[\n${screens}\n  ],\n  "macros":[${macros ? `\n${macros}\n  ` : ''}]${p.componentDefs ? `,"componentDefs":${JSON.stringify(p.componentDefs)}` : ''}${p.presentationComponents ? `,"presentationComponents":${JSON.stringify(p.presentationComponents)}` : ''}}`;
 }
 
-const json = (x: unknown) => JSON.stringify(x,(key,value)=>/klm|wallTime|timeSinksByScreen/i.test(key)?undefined:value);
+const json = (x: unknown) => JSON.stringify(x,(key,value)=>/klm|wallTime|timeSinksByScreen|hiddenPreferences/i.test(key)?undefined:value);
 
 function header(title: string, persona: PersonaView, program: Program, spec: Spec): string {
   return [

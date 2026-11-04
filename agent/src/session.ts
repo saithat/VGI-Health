@@ -1,3 +1,4 @@
+import { IncompleteBoundedReplay, boundedRelearning, type BoundedEstimator } from "./bounded-tailoring.js";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { EhrClient } from "./ehr.js";
@@ -34,6 +35,7 @@ export interface SessionArchive {
   candidates(): Promise<readonly ArchivedSessionBundle[]>;
 }
 class ReplayMismatchError extends Error {}
+export class SessionUnavailable extends Error {}
 
 /** Pure choice boundary for the user-model lane. null means keep the current bundle. */
 export type SessionChooser = (
@@ -118,6 +120,8 @@ export async function prepareSession(input: {
   ehr: EhrClient;
   flags?: readonly FrictionFlag[];
   maxOptions?: 2 | 3;
+  /** Opt in; omitted retains historical replay and labeled heuristic. */
+  bounded?: { memory?: import('./schema.js').UserMemory; estimate?: BoundedEstimator };
 }): Promise<TailoringSession> {
   // Runtime enforcement matters when called from JS or a future gate adapter.
   if (input.phase !== "offShift")
@@ -239,7 +243,11 @@ export async function prepareSession(input: {
     }
     return days;
   };
-  const currentDays = await replay(input.current),
+  const estimateBounded = input.bounded?.estimate ?? boundedRelearning(input.ehr);
+  const boundedFor = (after: Program) => input.bounded?.memory ? estimateBounded({before:input.current,after,
+    persona:input.persona,schedules:input.recentDays,worldDir:input.worldDir,seed:input.seed,memory:input.bounded.memory}) : Promise.resolve(null);
+  const currentBounded = await boundedFor(input.current);
+  const currentDays = currentBounded?.beforeDays ?? await replay(input.current),
     baseline = totals(currentDays);
   // Farthest-first selection over changed components and locations; deterministic tie break by ID.
   const selected: ArchivedSessionBundle[] = [];
@@ -261,10 +269,12 @@ export async function prepareSession(input: {
     const entry = candidates.shift();
     if (!entry) break;
     let days: DayResult[];
+    let bounded: Awaited<ReturnType<BoundedEstimator>> = null;
     try {
-      days = await replay(entry.program);
+      bounded = await boundedFor(entry.program);
+      days = bounded?.afterDays ?? await replay(entry.program);
     } catch (error) {
-      if (error instanceof ReplayMismatchError) continue;
+      if (error instanceof ReplayMismatchError || error instanceof IncompleteBoundedReplay) continue;
       throw error;
     }
     selected.push(entry);
@@ -282,18 +292,21 @@ export async function prepareSession(input: {
           completed: measured.completed,
         },
         relearning: {
-          estimatedMinutes: changes.reduce(
+          estimatedMinutes: bounded ? Math.max(0,bounded.estimate.incremental.seconds)/60 : changes.reduce(
             (n, c) => n + (c.kind === "moved" ? 0.5 : 0.25),
             0,
           ),
-          model: "heuristic-v1: 0.5 min/move + 0.25 min/other change",
+          model: bounded ? bounded.estimate.model : input.bounded
+            ? "heuristic-v1: 0.5 min/move + 0.25 min/other change (fallback: bounded evidence unavailable)"
+            : "heuristic-v1: 0.5 min/move + 0.25 min/other change",
+          ...(bounded ? { bounded: bounded.estimate } : {}),
           simulatorOnly: true,
         },
       },
     });
   }
   if (options.length < 2)
-    throw new Error(
+    throw new SessionUnavailable(
       "Need at least two distinct certified, replay-complete options; keep current",
     );
   return sessionSchema.parse({

@@ -72,10 +72,40 @@ test("bad and missing records show an explicit error", async ({ page }) => {
   await expect(page.getByRole("alert")).toContainText(
     "Invalid session artifact path",
   );
+  await page.goto("/browse?session=/runs/../runs/sessions/forbidden.json");
+  await expect(page.getByRole("alert")).toContainText("Invalid session artifact path");
   await page.route(
     (url) => url.pathname === "/runs/sessions/missing.json",
     (route) => route.fulfill({ status: 404, body: "missing" }),
   );
   await page.goto("/browse?session=/runs/sessions/missing.json");
   await expect(page.getByRole("alert")).toContainText("Cannot load");
+});
+
+test("bounded evidence shows expert costs and retains signed relearning", async ({ page }) => {
+  const session = await fakeRecordedSession();
+  const option = session.options[0];
+  if (!option) throw new Error("Missing option");
+  option.evidence.relearning = {
+    estimatedMinutes: 0,
+    model: "bounded-matched-relearning-v1",
+    simulatorOnly: true,
+    bounded: {
+      model: "bounded-matched-relearning-v1",
+      assumption: "Matched train workloads and independent practice reference",
+      k: 2, warmBlocks: 3,
+      before: { seconds: 150, actions: 20 }, after: { seconds: 120, actions: 18 },
+      expertBefore: { seconds: 90, actions: 15 }, expertAfter: { seconds: 80, actions: 14 },
+      beforeExcess: { seconds: 50, actions: 3 }, afterExcess: { seconds: 20, actions: 1 },
+      incremental: { seconds: -30, actions: -2 },
+    },
+  };
+  await page.route(
+    (url) => url.pathname === "/runs/cadence-example/runs/sessions/bounded-example.json",
+    (route) => route.fulfill({ json: session }),
+  );
+  await page.goto("/browse?session=/runs/cadence-example/runs/sessions/bounded-example.json");
+  await expect(page.getByText(/expert floor 90.0→80.0s/)).toBeVisible();
+  await expect(page.getByText(/signed relearning -30.0s \/ -2 actions/)).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });

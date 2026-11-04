@@ -70,9 +70,24 @@ def runBatch (path : System.FilePath) : IO UInt32 := do
     caseIdx := caseIdx + 1
   return if failed then 1 else 0
 
+/-- Private simulator choice input; preferences are never generator evidence. -/
+structure ChoiceInput where
+  before : Program
+  after : Program
+  actor : String
+  seed : Nat
+  preferences : Option Ehr.Sim.Bounded.HiddenPreferences := none
+  recent : List Ehr.Sim.Bounded.RecentDay := []
+  deriving Lean.FromJson
+
+def rateChoice (i : ChoiceInput) : Ehr.Sim.Bounded.Rating :=
+  Ehr.Sim.Bounded.ratePrograms
+    (i.preferences.getD (Ehr.Sim.Bounded.seededPreferences i.seed i.actor)) i.before i.after i.recent
+
 /-- Entry point. -/
 def main (args : List String) : IO UInt32 := do
   match args with
+  | ["rate-programs"] => stdinCommand ChoiceInput Ehr.Sim.Bounded.Rating rateChoice
   | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
   | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags
   | "render-screens" :: rest => Render.Cli.run rest
