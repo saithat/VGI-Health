@@ -277,6 +277,17 @@ and vendor-only controls retain independent actor memories. Train estimates
 compare both programs from the same training-day memory snapshot and discard
 counterfactual updates; validation without an explicit snapshot is a cold run.
 
+For reproducible small comparisons, run
+`TMPDIR=/home/saithat/Projects/run-tmp python3 scripts/user-model-compare.py
+--out /home/saithat/Projects/run-tmp/user-model-comparison`. It samples the first
+task of each represented workflow for every v1/v3 persona template, verifies
+byte determinism/default equivalence, and compares three adjacent historical
+P1 deployments. The per-deploy protocol uses k=2 matched dated workloads, five
+before-program training blocks, and an independent eight-block after-program
+warm reference. It reports incomplete tasks, the common completed task set,
+expert and bounded effort, and signed relearning milliseconds. Scratch JSON is
+evidence output; no recorded runs, fixtures or certificates are rewritten.
+
 ## Open problems
 
 How users are simulated and how the agent changes the interface are the two
