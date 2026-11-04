@@ -316,7 +316,11 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       programs.get(id)?.set(program.version, program);
       const recorded = opts.resume && existsSync(store.dayPath(day, id));
       if (!recorded) assertCertified(program, certificate, inForce.specVersion, ehr.mode);
-      const result = recorded ? await readJson(store.dayPath(day, id), dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+      // Read the prior committed day on every invocation: resume and crashes
+      // preserve actor memory; speculative evaluations never write this state.
+      const memory = view.params.policy === 'bounded' && day > 1
+        ? (await readJson(store.dayPath(day - 1, id), dayResultSchema)).memory : undefined;
+      const result = recorded ? await readJson(store.dayPath(day, id), dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(memory ? {memory} : {}) });
       if (!recorded) await store.writeDay(result);
       const resultProgram = await store.readProgram(id, result.programVersion);
       const recordedCert = await readJson(store.certPath(id, result.programVersion), (await import('./schema.js')).certificateSchema);
@@ -324,7 +328,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (!isMeasurementDay(day)) {
         const trainingSchedule = calibrationPartition(schedule, 'train');
         const trainingFile = path.join(dir,'training',`day-${day}`,`${id}.json`);
-        const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+        const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(memory ? {memory} : {}) });
         if (!existsSync(trainingFile)) await writeJson(trainingFile, trainingResult);
         train.get(id)?.push({ result: trainingResult, schedule: trainingSchedule });
       }
@@ -334,7 +338,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         const canonical = personalize(roleRelease.canonical, view.params, view.userId);
         const verdict = await ehr.check({ specVersion: inForce.specVersion, program: canonical, prev: canonical, canonical: roleRelease.canonical });
         if (verdict !== 'ok') throw new Error(`Uncertified canonical baseline ${id}/${day}`);
-        const baseline = await ehr.simulate({ specVersion: inForce.specVersion, program: canonical, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+        const priorBaseline = view.params.policy === 'bounded' && day > 1
+          ? await readJson(path.join(dir, 'baselines', `day-${String(day-1).padStart(2,'0')}`, `${id}.json`), dayResultSchema) : undefined;
+        const baseline = await ehr.simulate({ specVersion: inForce.specVersion, program: canonical, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(priorBaseline?.memory ? {memory:priorBaseline.memory} : {}) });
         await writeJson(baselineFile.replace('.json','.program.json'), canonical);
         await writeJson(baselineFile, baseline);
       }

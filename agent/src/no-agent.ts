@@ -44,7 +44,8 @@ export async function noAgentDay(deps:LoopDeps,persona:PersonaView,release:Relea
   if(!accepted)throw new Error(`ABORT no-agent canonical fallback failed: ${persona.id}/${release.id}`);
  }
  assertCertified(program,certificate,release.specVersion,deps.ehr.mode);
- const result=await deps.ehr.simulate({specVersion:release.specVersion,program,persona:persona.params,schedule,worldDir:deps.worldDir,seed:daySeed(deps.worldSeed,day)});
+ const memory=persona.params.policy==='bounded'&&previous?(await readJson(`${previous}.json`,dayResultSchema)).memory:undefined;
+ const result=await deps.ehr.simulate({specVersion:release.specVersion,program,persona:persona.params,schedule,worldDir:deps.worldDir,seed:daySeed(deps.worldSeed,day),...(memory?{memory}:{})});
  await writeJson(file.replace('.json','.program.json'),program);
  await writeJson(file.replace('.json','.certificate.json'),certificate);
  await writeJson(file,result);

@@ -11,3 +11,20 @@ export const PERSONA_PARAMS: Record<Persona, PersonaParams> = {
 };
 
 for (const params of Object.values(PERSONA_PARAMS)) PersonaParamsSchema.parse(params);
+
+/** Simulation assumption: independently seeded hidden tastes. Default output
+ * remains byte-compatible with historical persona parameters. Lean owns rating. */
+export function personaParams(id: Persona, seed: number, policy: "expert" | "bounded" = "expert", hidden = false): PersonaParams {
+  // Same FNV/taskSeed and SplitMix64 stream as Bounded.seededPreferences.
+  const wrap = (n: bigint) => BigInt.asUintN(64, n);
+  let stream = 14695981039346656037n ^ BigInt(seed);
+  for (const byte of new TextEncoder().encode(id)) stream = wrap((stream ^ BigInt(byte)) * 1099511628211n);
+  let n = wrap(stream + 0x9e3779b97f4a7c15n);
+  n = wrap((n ^ (n >> 30n)) * 0xbf58476d1ce4e5b9n);
+  n = wrap((n ^ (n >> 27n)) * 0x94d049bb133111ebn);
+  n ^= n >> 31n;
+  return PersonaParamsSchema.parse({...PERSONA_PARAMS[id],
+    ...(policy === "bounded" ? {policy} : {}),
+    ...(hidden ? {hiddenPreferences:{placements:[{tag:"w1Orders.storyboard.allergyList",nearTag:"w1Orders.dose",weight:1+Number(n%3n)}],changeSensitivity:100+Number(n%801n)}} : {}),
+  });
+}

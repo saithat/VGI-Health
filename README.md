@@ -287,34 +287,147 @@ product.
 | **Regulatory updates** | Vendor releases v1 → v2 → v3 that add rules, migrated per clinician and re-certified. | Real vendor upgrade tooling. |
 | **Data and storage** | FHIR R4 on Medplum: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Postgres event streams with version checks and live updates for MAR and ADT. | HL7v2 interfaces, enterprise patient index, production audit logging, high availability. |
 | **Identity** | Keycloak single sign-on (PKCE) for MAR and bed management; development password login elsewhere. | Production identity, break-the-glass access. |
-| **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. They plan the shortest path through the current screens. | Real clinicians; no user study. Visual search, learning, forgetting and relearning after a change (see [Open problems](#open-problems)). |
+| **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. The default policy plans through the current screens; an optional bounded policy learns locations and searches visible controls. | Real clinicians; no user study. Search, practice, forgetting and hidden tastes use uncalibrated simulation assumptions. |
+
+## Bounded clinician simulation
+
+`Ehr.Sim.Policy.simulate` and its historical JSON output are unchanged. Select
+`ehr simulate ... --policy bounded` (or `"policy":"bounded"` in the persona).
+`expert` is the default; an explicit CLI policy overrides the persona. Pass
+`--memory-in FILE --memory-out FILE` to carry one actor's layout knowledge
+across days and program revisions. The result also contains `memory`; an actor
+mismatch is rejected. Do not share memory between clinicians or counterfactual
+arms. Empty memory represents an unfamiliar interface.
+
+`lean/Ehr/Sim/Bounded.lean` owns the policy. Memory is keyed by stable component
+`tag`, falling back to `id`; it records screen, parent, tab, ordinal position,
+experienced navigation route, last-use day and exposure count. Strength is
+`1000 * sqrt(exposures / (1 + ageDays))`, rounded down, with confidence at 1400.
+Using a newly discovered location resets its practice count; deploying a program
+never refreshes memory. Recall uses visible links to remembered screens and
+experienced container/tab events, without retracing earlier goals. A stale location
+causes a charged pointing/click attempt and then visual search. The attempted
+location is recorded in an observation; a guaranteed-absent ID goes through the
+interpreter and is ignored, rather than activating an unrelated clinical action.
+
+Unknown controls incur a serial scan through the shown items preceding the
+control (180 ms/item). Episode-local visual working memory retains labels
+already scanned, so switching a tab or backtracking does not reread unchanged
+chrome. Persistent placement confidence still strengthens only on use. Navigation
+starts with lexical scent, then prefers unvisited screens/views when scent
+stalls. The patience budget is logarithmic in screen count; a separate hard fuel
+bound scales with component count and the number of clinical goals. These
+mechanics and budgets are simulation assumptions.
+
+A clinician who still cannot find a goal types its clinical rulebook label into
+a shown search box, if available, and asks for help. Internal intent keys and
+scent-expansion terms are not typed or charged as human query keystrokes. `Ehr.Sim.Discovery.Guide` is a pure assistance
+boundary (`Context → State → Option (List Event)`). The default simulated help
+desk knows the deployed layout and uses the existing BFS navigation solver to
+return one route. The unassisted clinician never gets that layout map. Help
+costs the actual search activation/typing, one `waitMs` (60 seconds), one
+`mentalMs` for the reply, instruction-reading time, and every guided UI event.
+The help wait is an uncalibrated simulation assumption. A failed provider reports
+an obstruction; it cannot supply captures, interpreter state, commits, or a guard
+exemption. Help answers are recorded separately from unassisted discoveries.
+
+Tabs expose their declared indices. `Bounded.Scent := String → Component → Nat`
+is the pure, replaceable scoring interface for a future decision model. Recall
+uses logarithmic choice time and a diminishing square-root practice term. The
+architecture follows Cockburn, Gutwin & Greenberg, CHI 2007,
+[doi:10.1145/1240624.1240723](https://doi.org/10.1145/1240624.1240723);
+the coefficients and memory law remain explicitly simulation assumptions.
+[CogTool's KLM tutorial](https://www.cogtool.org/tutorial/) describes skilled
+execution, not a general novice/expert multiplier. Cockburn's menu calibration
+also does not establish a whole-EHR ratio. Cost reports separate search/help
+contributions and retain all timing coefficients rather than tuning to a desired
+ratio. Every clinical event, including failed attempts and guided actions, uses
+the existing guarded interpreter. There are no new clinical rules or proof
+assumptions.
+
+Bounded results retain the original `tasks`, `trace`, `floor` and `complaints`.
+`expert` contains an independent unchanged BFS-policy run on the same inputs and
+seed: the expert comparison, not a newly proved minimum (persona noise can make
+its cost exceed the bounded run). `floor` remains the ideal-interface clinical
+floor. `effort` adds per-task misses, visual searches, scanned items, backtracks,
+synthetic ordinal mouse travel, cognitive milliseconds and `helpRequests`.
+`expertTravelUnits` reports the same ordinal proxy for the expert trace;
+`learnability` contains signed per-task gaps in clicks, scrolls, keystrokes,
+time and travel. `observations` links
+search/recall/miss decisions to trace indices and old locations. `assistance`
+records the task, request reason/query, hinted screen/control/caption, route, and
+caption-only `labelMatch` against the actual target's clinical intent. Zero
+lexical overlap is a named model finding, not proof of human undiscoverability.
+Task time includes cognitive time as well as trace KLM operators; visual searches are not
+search-box activations. Travel is an ordinal-layout proxy, not browser pixels.
+Report completion alongside costs; an incomplete task's lower cost is not an
+improvement. Signed bounded-minus-expert differences measure learnability cost.
+`Bounded.relearningCost firstDays steadyDays : Int` computes summed first-k-day
+cost minus k times mean steady cost; use matched workloads and report k and the
+steady-state sampling protocol, retaining negative results.
+
+Hidden persona preferences are optional `hiddenPreferences` with `placements`
+(`tag`, `nearTag`, `weight`) and `changeSensitivity` (zero is neutral). The pure
+boundary for the tailoring lane is
+`Bounded.ratePrograms (prefs : HiddenPreferences) (before after : Program)
+(recent : List RecentDay) : Rating`. Recent days contain `usedTags` and `costMs`;
+the current assumption-based rating uses use frequency to weight disruption,
+placement distances to score preferences, and reserves costMs for later fitting.
+Positive score chooses after; ties keep before. `seededPreferences seed actor`
+provides optional deterministic tastes. These preferences do not alter clinical
+goals or the historical default policy.
+
+World generation accepts `--policy bounded` and optional `--hidden-preferences`;
+its taste seed matches Lean's `seededPreferences`. Without these options the
+persona JSON stays unchanged. The agent adapter accepts optional `policy` and
+`memory` on `SimulateInput` and preserves the bounded result fields. `run-days`
+loads the prior committed day's memory, including on resume. Canonical baselines
+and vendor-only controls retain independent actor memories. Train estimates
+compare both programs from the same training-day memory snapshot and discard
+counterfactual updates; validation without an explicit snapshot is a cold run.
+
+For reproducible small comparisons, run
+`TMPDIR=/home/saithat/Projects/run-tmp python3 scripts/user-model-compare.py
+--out /home/saithat/Projects/run-tmp/user-model-comparison`. It samples the first
+task of each represented workflow for every v1/v3 persona template, verifies
+byte determinism/default equivalence, and compares three adjacent historical
+P1 deployments. The template comparison fails on any task completed by the expert but missed by the
+bounded actor and reports its task ID. `--all-tasks --templates-only` instead
+checks entire day-1/v1 and day-7/v3 schedules for every persona, starting each
+workday with empty actor memory. The per-deploy protocol uses k=2 matched dated
+workloads, five before-program training blocks, and an independent eight-block after-program
+warm reference. It reports incomplete tasks, the common completed task set,
+expert and bounded effort, help and visual-search milliseconds, and signed
+relearning milliseconds. Each report fingerprints the native binary and rejects
+evidence mixed across a rebuild. The completion-accounting regression runs with
+`python3 scripts/test-user-model-compare.py`. Scratch JSON is evidence output; no recorded runs, fixtures or certificates are rewritten.
 
 ## Open problems
 
 How users are simulated and how the agent changes the interface are the two
 weakest parts.
 
-- **Simulated clinicians already know the interface.** A simulated clinician
-  takes its goals from the rulebook. It then plans the shortest path to them
-  through the whole current layout, by breadth-first search over real
-  interpreter steps (`lean/Ehr/Sim/Interaction.lean`). Seeded noise adds
-  detours, backtracking, search, keyboard use and interruptions. Even so, the
-  clinician never has to hunt for a control, never reaches for where a control
-  used to be, and never makes the slips the rules exist to catch. A
-  rearranged layout therefore costs nothing inside the native planner. Learning,
-  relearning and discoverability are not measured. Cadence scoring adds an
-  explicitly assumed usage-weighted movement cost, outside Lean; it is not a
-  bounded-knowledge user model. The Lean stability budget still limits moves.
-- **Clinician participation and design exploration remain limited.** Historical
-  nightly runs still deploy a greedy patch or disjoint bundle. The opt-in
-  cadence protocol now keeps certified, screen-gated niche alternatives,
-  preserves unchosen train estimates and known duds, explores admitted
-  layout/density/input variants, and ships through a configurable schedule and
-  review hook with an assumed switch cost. The standalone `explore/` research
-  search still never deploys directly. The default review hook auto-approves;
-  clinicians cannot yet request changes or try/reject alternatives through a
-  session UI. No live cadence experiment or user study has validated these
-  choices, and unsupported interaction paradigms remain outside deployment.
+- **Simulated users are uncalibrated.** The default simulated clinician still
+  knows the layout: it plans the shortest path through the whole current
+  program by breadth-first search over real interpreter steps
+  (`lean/Ehr/Sim/Interaction.lean`), so a rearranged layout costs it nothing.
+  An opt-in bounded-knowledge clinician (`lean/Ehr/Sim/Bounded.lean`,
+  `Discovery.lean`) remembers where controls were, misses after a move,
+  searches by label and falls back to charged help; it measures discovery and
+  relearning cost, and the BFS result is kept as the expert floor. Its search,
+  memory, timing, help and preference parameters are simulation assumptions,
+  not estimates from clinician observations. Completion parity with the expert
+  is a regression requirement on the sampled and full persona workdays, not a
+  theorem. Patient-directory selection still uses the shared fixed policy.
+- **Clinician participation and design exploration are limited.** Historical
+  nightly runs deploy a greedy patch or disjoint bundle. The opt-in cadence
+  protocol keeps certified, screen-gated alternatives in a quality-diversity
+  archive, preserves unchosen train estimates and known duds, and ships through
+  a configurable schedule and review hook. Its switch cost is still a
+  usage-weighted movement proxy; it does not yet use the bounded clinician's
+  relearning cost. The default review hook auto-approves: clinicians cannot yet
+  request changes or try and reject alternatives. No live cadence experiment
+  has validated these choices.
 
 ## Data sources
 

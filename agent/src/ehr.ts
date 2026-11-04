@@ -11,7 +11,7 @@ import {exportPopupGeometry} from './geometry-popups.js';
  *   ehr check     --spec <spec.json> --program P.json --prev PREV.json --canonical C.json
  *                 stdout: Verdict              exit 0 = ok, 1 = violation
  *   ehr simulate  --spec <spec.json> --program P.json --persona PP.json --schedule DAY.json
- *                 --world <worldDir> --seed <n>
+ *                 --world <worldDir> --seed <n> [--policy expert|bounded] [--memory-in FILE]
  *                 stdout: DayResult
  *   ehr min-clicks --spec <spec.json> --program P.json --schedule DAY.json --world <worldDir>
  *                 stdout: { tasks: [{ task, workflow?, clicks, keystrokes }] }
@@ -44,7 +44,7 @@ import path from 'node:path';
 import type { z } from 'zod';
 import {
   certificateSchema, dayResultSchema, minClicksResultSchema, specSchema, verdictSchema,
-  type Certificate, type DayResult, type DaySchedule, type MinClicksResult, type PersonaParams, type Program,
+  type Certificate, type DayResult, type DaySchedule, type MinClicksResult, type PersonaParams, type Program, type UserMemory,
   type Spec, type Verdict,
 } from './schema.js';
 import { REPO_ROOT, writeJson } from './util.js';
@@ -58,6 +58,8 @@ export interface SimulateInput {
   schedule: DaySchedule;
   worldDir: string;
   seed: number;
+  memory?: UserMemory;
+  policy?: 'expert' | 'bounded';
 }
 export interface MinClicksInput { specVersion: string; program: Program; schedule: DaySchedule; worldDir: string }
 export interface DeployInput extends CheckInput { outDir: string }
@@ -143,10 +145,12 @@ class CliEhr implements EhrClient {
   }
 
   simulate(i: SimulateInput): Promise<DayResult> {
-    return this.withFiles({ program: i.program, persona: i.persona, schedule: i.schedule }, async (p) => {
+    return this.withFiles({ program: i.program, persona: i.persona, schedule: i.schedule, ...(i.memory ? {memory:i.memory} : {}) }, async (p) => {
       const res = await this.run([
         'simulate', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
         '--schedule', p['schedule'] ?? '', '--world', i.worldDir, '--seed', String(i.seed),
+        ...(i.policy ? ['--policy',i.policy] : []),
+        ...(i.memory ? ['--memory-in',p['memory'] ?? ''] : []),
       ]);
       if (res.code !== 0) throw new InfrastructureError(`ehr simulate: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);
       return parseOut('simulate', res, dayResultSchema);

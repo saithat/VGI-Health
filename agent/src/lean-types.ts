@@ -197,16 +197,29 @@ const taskSchema: z.ZodType<L.Task> = z.object({
   interruptions: nat,
 });
 export const dayScheduleSchema: z.ZodType<L.DaySchedule> = z.object({ day: nat, persona: str, load: str, tasks: z.array(taskSchema) });
-export const personaParamsSchema: z.ZodType<L.PersonaParams> = z.object({
+// Supplemental bounded-user formats live in Ehr.Sim.Bounded, leaving the
+// certified Core and its generated historical formats untouched.
+const placementSchema = z.object({screen:str,parent:str,tab:nat,position:nat});
+export const userMemorySchema = z.object({actor:str,entries:z.array(z.object({
+  key:str,intent:str,control:str,place:placementSchema,route:z.array(eventSchema),exposures:nat,lastDay:nat,
+}))});
+export type UserMemory = z.infer<typeof userMemorySchema>;
+export const hiddenPreferencesSchema = z.object({placements:z.array(z.object({tag:str,nearTag:str,weight:nat})),changeSensitivity:nat});
+export type HiddenPreferences = z.infer<typeof hiddenPreferencesSchema>;
+const userEffortSchema = z.object({task:str,misses:nat,searches:nat,scannedItems:nat,backtracks:nat,helpRequests:nat.exactOptional(),mouseTravelUnits:nat,cognitiveMs:nat});
+const userHelpSchema = z.object({task:str,traceIndex:nat,reason:str,query:str,targetScreen:str,targetControl:str,targetLabel:str,labelMatch:nat,route:z.array(eventSchema)});
+const userObservationSchema = z.object({task:str,traceIndex:nat,kind:str,place:placementSchema,scannedItems:nat,ms:nat});
+export const personaParamsSchema: z.ZodType<PersonaParams> = z.object({
   id: str, role: roleSchema, keyboardShare: nat, reviewsAllergiesEarly: z.boolean(), scansSidebar: z.boolean(),
   backtrackRate: nat, searchWhenBuried: z.boolean(), overrideRate: nat,
+  policy:z.enum(['expert','bounded']).exactOptional(),hiddenPreferences:hiddenPreferencesSchema.exactOptional(),
 });
 const taskMetricsSchema: z.ZodType<TaskMetrics> = z.object({
   task: str, clicks: nat, keystrokes: nat, scrolls: nat, popups: nat, overrides: nat, searches: nat, backtracks: nat,
   mouseTravelPx:z.number().nonnegative().nullable().exactOptional(),scrollPx:z.number().nonnegative().nullable().exactOptional(),rawScrolls:nat.exactOptional(),
   klmDeciSec: nat, completed: z.boolean(), wallTimeMinutes: nat.exactOptional(),
 });
-export const dayResultSchema: z.ZodType<DayResult> = z.object({
+const expertDayResultSchema = z.object({
   day: nat,
   persona: str,
   programVersion: nat,
@@ -218,6 +231,15 @@ export const dayResultSchema: z.ZodType<DayResult> = z.object({
   floor: z.array(taskMetricsSchema),
   geometry:z.object({programHash:str,componentsSha256:str.exactOptional(),appSha256:str,source:str,viewport:z.object({width:nat,height:nat}),missingTargets:z.array(str)}).exactOptional(),
   complaints: z.array(str),
+});
+
+export const dayResultSchema: z.ZodType<DayResult> = expertDayResultSchema.extend({
+  policy:z.literal('bounded').exactOptional(),memory:userMemorySchema.exactOptional(),
+  expert:expertDayResultSchema.exactOptional(),effort:z.array(userEffortSchema).exactOptional(),
+  observations:z.array(userObservationSchema).exactOptional(),
+  assistance:z.array(userHelpSchema).exactOptional(),
+  expertTravelUnits:z.array(z.tuple([str,nat])).exactOptional(),
+  learnability:z.array(z.object({task:str,clicks:z.number().int(),scrolls:z.number().int(),keystrokes:z.number().int(),timeMs:z.number().int(),mouseTravelUnits:z.number().int()})).exactOptional(),
 });
 
 // ---------------------------------------------------------------- checker
@@ -249,10 +271,10 @@ export type Event = L.Event;
 export type Workflow = L.Workflow;
 export type Task = L.Task;
 export type DaySchedule = L.DaySchedule;
-export type PersonaParams = L.PersonaParams;
+export type PersonaParams = L.PersonaParams & {policy?:'expert'|'bounded';hiddenPreferences?:HiddenPreferences};
 export type TraceEvent = L.TraceEvent;
 export type TaskMetrics = L.TaskMetrics & {mouseTravelPx?:number|null;scrollPx?:number|null;rawScrolls?:number};
-export type DayResult = Omit<L.DayResult,'tasks'> & {tasks:TaskMetrics[];geometry?:{programHash:string;componentsSha256?:string;appSha256:string;source:string;viewport:{width:number;height:number};missingTargets:string[]}};
+export type DayResult = Omit<L.DayResult,'tasks'> & {policy?:'bounded';memory?:UserMemory;expert?:L.DayResult;effort?:z.infer<typeof userEffortSchema>[];observations?:z.infer<typeof userObservationSchema>[];assistance?:z.infer<typeof userHelpSchema>[];expertTravelUnits?:[string,number][];learnability?:{task:string;clicks:number;scrolls:number;keystrokes:number;timeMs:number;mouseTravelUnits:number}[];tasks:TaskMetrics[];geometry?:{programHash:string;componentsSha256?:string;appSha256:string;source:string;viewport:{width:number;height:number};missingTargets:string[]}};
 export type Certificate = L.Certificate;
 
 export function violationOf(verdict: Verdict): Violation | null {
