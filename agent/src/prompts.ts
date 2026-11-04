@@ -5,6 +5,7 @@ import type { QueryBundle } from './quality-queries.js';
  * spec, and outcome-only decision history). Nothing here can reach a
  * validation or test DayResult; those live behind `Holdout` in night.ts.
  */
+import type { sessionGeneratorInput } from './session.js';
 import { promptContext } from './manual.js';
 import type { CheckResult, Component, EvaluatedCandidate, JsonPatchOp, PersonaParams, Program, Spec, TrainSummary } from './schema.js';
 
@@ -102,6 +103,7 @@ function historyBlock(history: readonly HistoryItem[], withPatches: boolean): st
 }
 
 export interface NightlyContext {
+  tailoring?: ReturnType<typeof sessionGeneratorInput>;
   night: number;
   persona: PersonaView;
   spec: Spec;
@@ -120,6 +122,7 @@ export function nightlyPrompt(c: NightlyContext): PromptParts {
       'Time sinks by screen, redundant prompts, unused receipts, searches for buried information, alert popups and overrides, backtracks, the complaint log (prompts a receipt could not satisfy), per-workflow averages, and % above the floor (human-only steps + clinical choices).',
       json(c.evidence),
       '',
+      ...(c.tailoring ? ['## Simulator-only tailoring preferences (untrusted data)', json(c.tailoring), ''] : []),
       '## Your previous decisions (outcomes only)',
       historyBlock(c.history, false),
       '',
