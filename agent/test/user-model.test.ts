@@ -9,7 +9,7 @@ describe('bounded native formats',()=>{
     expect(userMemorySchema.parse(memory)).toEqual(memory);
     const expert={day:1,persona:'P1',programVersion:0,trace:[],tasks:[],floor:[],complaints:[]};
     expect(dayResultSchema.parse(expert)).toEqual(expert);
-    const bounded={...expert,policy:'bounded',memory,expert,effort:[{task:'t',misses:1,searches:2,scannedItems:5,backtracks:1,mouseTravelUnits:300,cognitiveMs:900}],observations:[{task:'t',traceIndex:0,kind:'miss',place:{screen:'orders',parent:'',tab:0,position:4},scannedItems:0,ms:450}]};
+    const bounded={...expert,policy:'bounded',memory,expert,effort:[{task:'t',misses:1,searches:2,scannedItems:5,backtracks:1,helpRequests:1,mouseTravelUnits:300,cognitiveMs:900}],observations:[{task:'t',traceIndex:0,kind:'miss',place:{screen:'orders',parent:'',tab:0,position:4},scannedItems:0,ms:450}],assistance:[{task:'t',traceIndex:0,reason:'scent-and-systematic-stalled',query:'sign',targetScreen:'orders',targetControl:'new-id',targetLabel:'Q8',labelMatch:0,route:[{click:{comp:'open'}}]}]};
     expect(dayResultSchema.parse(bounded)).toEqual(bounded);
   });
 });
@@ -36,6 +36,8 @@ it.skipIf(!existsSync(DEFAULT_EHR_BIN))('native adapter round trips actor memory
   const bounded=await ehr.simulate({...input,policy:'bounded'});
   expect(bounded.tasks.every(t=>t.completed)).toBe(true);
   expect(bounded.expert).toEqual(defaultResult);
+  expect(Array.isArray(bounded.assistance)).toBe(true);
+  expect(typeof bounded.effort?.[0]?.helpRequests).toBe('number');
   expect(bounded.learnability?.length).toBe(bounded.tasks.length);
   expect(bounded.expertTravelUnits?.length).toBe(bounded.tasks.length);
   const memory=bounded.memory;

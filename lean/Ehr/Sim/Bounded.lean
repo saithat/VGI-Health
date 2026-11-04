@@ -1,9 +1,10 @@
-import Ehr.Sim.Policy
+import Ehr.Sim.Discovery
 
 /-!
 Bounded knowledge, separate from Policy.simulate. Only visible controls are
-inspected; never planNavigation or hidden-child relevance. Clinical goals
-supply intentions, not control locations.
+inspected by the unassisted policy; no hidden-child relevance. Clinical goals
+supply intentions, not control locations. Explicit paid help is supplied through
+Discovery.Guide; the default help desk knows the deployed layout.
 Cockburn, Gutwin & Greenberg, CHI 2007, doi:10.1145/1240624.1240723 motivates
 serial novice search, logarithmic expert decisions and practice transitions.
 All numerical coefficients, square-root practice/age law, confidence threshold,
@@ -119,6 +120,7 @@ structure Effort where
   searches : Nat := 0
   scannedItems : Nat := 0
   backtracks : Nat := 0
+  helpRequests : Nat := 0
   /-- Synthetic ordinal units, not browser pixels (simulation assumption). -/
   mouseTravelUnits : Nat := 0
   cognitiveMs : Nat := 0
@@ -130,6 +132,17 @@ structure Observation where
   place : Placement
   scannedItems : Nat := 0
   ms : Nat := 0
+  deriving BEq, Repr, ToJson, FromJson
+structure HelpRequest where
+  task : String
+  traceIndex : Nat
+  reason : String
+  query : String
+  targetScreen : String
+  targetControl : String
+  targetLabel : String
+  labelMatch : Nat
+  route : List Event
   deriving BEq, Repr, ToJson, FromJson
 structure Runner where
   episode : EpisodeResult
@@ -143,6 +156,13 @@ structure Runner where
   recalled : List String := []
   pointer : Placement := { screen := "" }
   lastEpisode : Bool := true
+  guide : Discovery.Guide := Discovery.helpDesk
+  guided : List Event := []
+  help : List HelpRequest := []
+  helpFailed : Bool := false
+  unsuccessful : Nat := 0
+  seenScreens : List String := []
+  scanned : List String := []
 /-- 180 ms/item search; 150+150 ceil(log2(n+1)) ms recall plus a
 practice^-1/2 term. Coefficients are simulation assumptions. -/
 def decisionMs (items practice : Nat) : Nat :=
@@ -158,6 +178,24 @@ def observe (task : Task) (r : Runner) (kind : String) (p : Placement)
     },
     observations := r.observations ++ [{ task := task.id,       traceIndex := r.episode.trace.length, kind, place := p, scannedItems := items, ms }]
   }
+/-- Visual working memory for an episode. Returning to a view or switching
+one tab does not require rereading every unchanged label. Persistent location
+practice still strengthens only on use. Cache behavior is a simulation assumption. -/
+def scanKey (screen : String) (c : Component) : String := screen ++ ":" ++ semanticKey c
+
+def visualScan (ctx : Context) (task : Task) (r : Runner) (target : Option Component := none) : Runner :=
+  let cs := shown ctx r.episode.state
+  let scanPrefix := match target with
+    | none => cs
+    | some c => cs.take (cs.findIdx (fun (x : Component) => x.id == c.id) + 1)
+  let keys := scanPrefix.map (scanKey r.episode.state.screen)
+  let unseen := keys.filter (!r.scanned.contains ·)
+  let cached := target.any (fun c => r.scanned.contains (scanKey r.episode.state.screen c))
+  let p := (target.map (placement ctx r.episode.state)).getD { screen := r.episode.state.screen }
+  let out := observe task r (if cached then "recognition" else "search") p unseen.length
+    (if cached then decisionMs cs.length 1 else 180 * unseen.length)
+  { out with scanned := (keys ++ out.scanned).eraseDups }
+
 def travel (a b : Placement) : Nat :=
   (if a.screen == b.screen then 0 else 400) +
   40 * (max a.position b.position - min a.position b.position)
@@ -226,11 +264,62 @@ def chooseNavigation (scent : Scent) (ctx : Context) (r : Runner) (workflow : St
     !r.tried.contains (edgeKey s e) && localKey ctx (ctx.next s e) != localKey ctx s &&
     !r.visited.contains (localKey ctx (ctx.next s e))
   let goal := goalText ctx s ++ " " ++ workflow
-  let score := fun e => ((eventComp e).bind (shownComp? ctx.sp ctx.prog ctx.facts s)).map
+  let score := fun e => if r.unsuccessful ≥ Discovery.patience ctx.prog then
+      if r.seenScreens.contains (ctx.next s e).screen then 0 else 1
+    else ((eventComp e).bind (shownComp? ctx.sp ctx.prog ctx.facts s)).map
     (scent goal) |>.getD 0
   candidates.foldl (fun best e => match best with
     | none => some e
     | some b => if score e > score b then some e else best) none
+/-- Caption-only diagnostic for the actual helped target, not the earlier
+query's first unmet goal. A zero overlap is a lexical-model finding, not proof
+that a human could not infer the caption's meaning. -/
+def targetLabelMatch (ctx : Context) (c : Component) : Nat :=
+  let clinicalLabel := match c.kind with
+    | .field e _ _ => ((ctx.sp.element? e).map (·.label)).getD ""
+    | .button (.commit cm) => ((ctx.sp.commit? cm).map (·.label)).getD ""
+    | .button (.markReviewed i) => ((ctx.sp.info? i).map (·.label)).getD ""
+    | _ => ""
+  lexicalScent (intentOf c ++ " " ++ clinicalLabel) { c with tag := "" }
+
+/-- Ask/search is observable and paid. Only this explicit provider boundary
+can know hidden layout; no interpreter state is copied from its answer. One
+waitMs (60 s) plus mentalMs is an uncalibrated simulation assumption for help,
+in addition to actual search-box activation/typing and each guided UI event. -/
+def askForHelp (ctx : Context) (params : PersonaParams) (task : Task)
+    (r : Runner) (reason : String) : Runner := Id.run do
+  let query := goalText ctx r.episode.state
+  let mut out := r
+  if searchShown ctx.sp ctx.prog ctx.facts out.episode.state then
+    out := act ctx params task out (.search query) false
+  out := observe task out "help" { screen := out.episode.state.screen } 0 (waitMs + mentalMs)
+  out := { out with
+    episode := { out.episode with state := { out.episode.state with clock := out.episode.elapsedMs / 100 } }
+  }
+  let path := out.guide ctx out.episode.state
+  let endpoint := (path.getD []).foldl ctx.next out.episode.state
+  let target := ((actions ctx endpoint).head?.bind eventComp).bind
+    (shownComp? ctx.sp ctx.prog ctx.facts endpoint)
+  let request : HelpRequest := {
+    task := task.id,
+    traceIndex := out.episode.trace.length,
+    reason,
+    query,
+    targetScreen := endpoint.screen,
+    targetControl := (target.map (·.id)).getD "",
+    targetLabel := (target.map (·.label)).getD "",
+    labelMatch := (target.map (targetLabelMatch ctx)).getD 0,
+    route := path.getD []
+  }
+  out := { out with
+    help := out.help ++ [request],
+    guided := path.getD [],
+    helpFailed := path.isNone,
+    unsuccessful := 0,
+    effort := { out.effort with helpRequests := out.effort.helpRequests + 1 }
+  }
+  return out
+
 /-- Recall only previously experienced events; no current-layout replanning. -/
 def recalledEvent (ctx : Context) (s : State) (m : MemoryEntry) : Option Event :=
   -- A visible navigation control to a remembered screen needs no exploration.
@@ -273,6 +362,7 @@ def loop (scent : Scent) (ctx : Context) (params : PersonaParams) (task : Task) 
     }
   }
   | fuel + 1, r => Id.run do
+    let r := { r with episode := { r.episode with state := { r.episode.state with clock := r.episode.elapsedMs / 100 } } }
     if ctx.done r.episode.state then return r
     let mut out := { r with episode := selectTaskPatient ctx task r.episode }
     let selectionTrace := out.episode.trace.drop r.episode.trace.length
@@ -283,9 +373,22 @@ def loop (scent : Scent) (ctx : Context) (params : PersonaParams) (task : Task) 
     let s := out.episode.state
     if s.screen != r.episode.state.screen then
       out := { out with stack := [], route := [] }
-    out := { out with visited := (localKey ctx s) :: out.visited }
+    out := { out with visited := (localKey ctx s) :: out.visited, seenScreens := s.screen :: out.seenScreens }
     if let some popup := s.popup? then
       return loop scent ctx params task fuel (act ctx params task out (.ack popup.1))
+    if out.helpFailed then
+      return { out with
+        episode := { out.episode with
+          complaints := out.episode.complaints ++
+            [task.id ++ ": assistance found no reachable unmet goal; incomplete"]
+        }
+      }
+    if let e :: rest := out.guided then
+      -- Read and execute the instruction, including scrolling, ordinary pointer
+      -- costs, and interpreter guards. The help service cannot mutate state.
+      out := observe task out "guidance" { screen := s.screen } 0 mentalMs
+      out := act ctx params task { out with guided := rest } e
+      return loop scent ctx params task fuel { out with route := out.route ++ [e] }
     let available := (if params.reviewsAllergiesEarly then earlyReview ctx s else none).or (actions ctx s).head?
     let targetMemory := out.memory.entries.find? fun m =>
       (match available with
@@ -323,33 +426,36 @@ def loop (scent : Scent) (ctx : Context) (params : PersonaParams) (task : Task) 
         let memory := out.memory.entries.find? (fun m => m.key == semanticKey c && m.place == p && confident task.day m)
         match memory with
         | some m => out := observe task out "recall" p 0 (decisionMs (shown ctx s).length m.exposures)
-        | none =>
-          let n := (shown ctx s).findIdx (·.id == c.id) + 1
-          out := observe task out "search" p n (180 * n)
+        | none => out := visualScan ctx task out (some c)
       out := act ctx params task out e
-      return loop scent ctx params task fuel { out with tried := [], visited := [], stack := [], recalled := [] }
-    let count := (shown ctx s).length
-    out := observe task out "search" { screen := s.screen } count (180 * count)
+      return loop scent ctx params task fuel { out with tried := [], visited := [], stack := [], recalled := [], unsuccessful := 0, seenScreens := [] }
+    out := visualScan ctx task out
+    if out.unsuccessful ≥ 2 * Discovery.patience ctx.prog then
+      return loop scent ctx params task fuel (askForHelp ctx params task out "scent-and-systematic-stalled")
     if let some e := chooseNavigation scent ctx out (match task.workflow with | .W1 => "w1" | .W2 => "w2" | .W3 => "w3" | .W4 => "w4" | .W5 => "w5" | .W6 => "w6" | .W7 => "w7") then
-      out := { out with tried := edgeKey s e :: out.tried, stack := (s, out.route) :: out.stack }
+      out := { out with
+        tried := edgeKey s e :: out.tried,
+        stack := (s, out.route) :: out.stack,
+        unsuccessful := out.unsuccessful + 1
+      }
       let next := act ctx params task out e
       return loop scent ctx params task fuel { next with route := out.route ++ [e] }
     match out.stack with
     | (prior, route) :: rest =>
       if let some e := reverseEvent ctx s prior then
-        out := { out with stack := rest, effort := { out.effort with backtracks := out.effort.backtracks + 1 } }
+        out := { out with
+          stack := rest,
+          unsuccessful := out.unsuccessful + 1,
+          effort := { out.effort with backtracks := out.effort.backtracks + 1 }
+        }
         out := observe task out "backtrack" { screen := prior.screen } 0 300
         let next := act ctx params task out e false
         return loop scent ctx params task fuel { next with route }
       -- A hidden toggle may differ after returning through another tab. Drop
       -- that obsolete frame and try the next experienced ancestor; never set
       -- interpreter state to the saved snapshot.
-      return loop scent ctx params task fuel { out with stack := rest, route }
-    | [] => return { out with
-      episode := { out.episode with
-        complaints := out.episode.complaints ++ [task.id ++ ": visible search exhausted; incomplete"]
-      }
-    }
+      return loop scent ctx params task fuel { out with stack := rest, route, unsuccessful := out.unsuccessful + 1 }
+    | [] => return loop scent ctx params task fuel (askForHelp ctx params task out "visible-frontier-exhausted")
 structure Gap where
   task : String
   clicks : Int
@@ -366,11 +472,12 @@ structure Result extends DayResult where
   expertTravelUnits : List (String × Nat)
   learnability : List Gap
   observations : List Observation
+  assistance : List HelpRequest
   deriving ToJson
 /-- Explicit memory in/out prevents counterfactual evaluations training an actor. -/
 def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
     (factsFor : Task → Facts) (seed : Nat) (memory : Memory := {})
-    (scent : Scent := lexicalScent) : Result := Id.run do
+    (scent : Scent := lexicalScent) (guide : Discovery.Guide := Discovery.helpDesk) : Result := Id.run do
   let expert := Ehr.Sim.simulate sp prog params schedule factsFor seed
   let prog := if schedule.tasks.any (fun t => (factsFor t).patientDirectory?.isSome)
     then { prog with patientSelection? := some true } else prog
@@ -387,6 +494,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
   }
   let mut efforts := []
   let mut observations := []
+  let mut assistance := []
   let mut receipts : List (String × List Receipt) := []
   for task in schedule.tasks do
     let raw := factsFor task
@@ -415,6 +523,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         lastDevice := none
       },
       memory,
+      guide,
       effort := { task := task.id }
     }
     let mut complete := !eps.isEmpty
@@ -428,8 +537,14 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         visited := [],
         stack := [],
         recalled := [],
+        guided := [],
+        helpFailed := false,
+        unsuccessful := 0,
+        scanned := [],
+        seenScreens := [],
         episode := { r.episode with
-          state := { (if Workspace.enabled prog && idx == 0 then Workspace.init prog else           { init sp prog f user with patientContext? := r.episode.state.patientContext? }) with
+          state := {
+            (if Workspace.enabled prog && idx == 0 then Workspace.init prog else           { init sp prog f user with patientContext? := r.episode.state.patientContext? }) with
             clock := r.episode.elapsedMs / 100
           },
           complaints := r.episode.complaints ++ g.problems.map (fun p => task.id ++ ": " ++ p)
@@ -445,11 +560,12 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
           }
         }
       else
-        r := loop scent ctx params task (200 + 32 * prog.screens.length) r
+        r := loop scent ctx params task (Discovery.fuel ctx) r
       complete := complete && ctx.done r.episode.state
     receipts := (task.patientId, r.episode.state.receipts) :: receipts.filter (·.1 != task.patientId)
     memory := r.memory
     efforts := efforts ++ [r.effort]
+    assistance := assistance ++ r.help.map (fun h => { h with traceIndex := day.trace.length + h.traceIndex })
     observations := observations ++ r.observations.map (fun o => { o with traceIndex := day.trace.length + o.traceIndex })
     day := { day with
       trace := day.trace ++ r.episode.trace,
@@ -479,7 +595,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     effort := efforts,
     expertTravelUnits := expertTravel,
     learnability := gaps,
-    observations
+    observations,
+    assistance
   }
 structure RecentDay where
   usedTags : List String

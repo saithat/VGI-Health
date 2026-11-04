@@ -228,28 +228,53 @@ location is recorded in an observation; a guaranteed-absent ID goes through the
 interpreter and is ignored, rather than activating an unrelated clinical action.
 
 Unknown controls incur a serial scan through the shown items preceding the
-control (180 ms/item). Navigation ranks visible controls by deterministic lexical
-scent, explores with finite fuel, and backtracks using real UI events. It does
-not use the BFS planner or inspect hidden descendants for relevance. Tabs expose
-their declared indices. `Bounded.Scent := String → Component → Nat` is the pure,
-replaceable scoring interface for a future decision model. Expert recall uses
-logarithmic choice time and a diminishing square-root practice term. The
+control (180 ms/item). Episode-local visual working memory retains labels
+already scanned, so switching a tab or backtracking does not reread unchanged
+chrome. Persistent placement confidence still strengthens only on use. Navigation
+starts with lexical scent, then prefers unvisited screens/views when scent
+stalls. The patience budget is logarithmic in screen count; a separate hard fuel
+bound scales with component count and the number of clinical goals. These
+mechanics and budgets are simulation assumptions.
+
+A clinician who still cannot find a goal types a query into a shown search box,
+if available, and asks for help. `Ehr.Sim.Discovery.Guide` is a pure assistance
+boundary (`Context → State → Option (List Event)`). The default simulated help
+desk knows the deployed layout and uses the existing BFS navigation solver to
+return one route. The unassisted clinician never gets that layout map. Help
+costs the actual search activation/typing, one `waitMs` (60 seconds), one
+`mentalMs` for the reply, instruction-reading time, and every guided UI event.
+The help wait is an uncalibrated simulation assumption. A failed provider reports
+an obstruction; it cannot supply captures, interpreter state, commits, or a guard
+exemption. Help answers are recorded separately from unassisted discoveries.
+
+Tabs expose their declared indices. `Bounded.Scent := String → Component → Nat`
+is the pure, replaceable scoring interface for a future decision model. Recall
+uses logarithmic choice time and a diminishing square-root practice term. The
 architecture follows Cockburn, Gutwin & Greenberg, CHI 2007,
 [doi:10.1145/1240624.1240723](https://doi.org/10.1145/1240624.1240723);
-the coefficients and memory law are explicitly simulation assumptions. All
-clinical events, including failed attempts, pass through the existing guarded
-interpreter. There are no new clinical rules or proof assumptions.
+the coefficients and memory law remain explicitly simulation assumptions.
+[CogTool's KLM tutorial](https://www.cogtool.org/tutorial/) describes skilled
+execution, not a general novice/expert multiplier. Cockburn's menu calibration
+also does not establish a whole-EHR ratio. Cost reports separate search/help
+contributions and retain all timing coefficients rather than tuning to a desired
+ratio. Every clinical event, including failed attempts and guided actions, uses
+the existing guarded interpreter. There are no new clinical rules or proof
+assumptions.
 
 Bounded results retain the original `tasks`, `trace`, `floor` and `complaints`.
 `expert` contains an independent unchanged BFS-policy run on the same inputs and
 seed: the expert comparison, not a newly proved minimum (persona noise can make
 its cost exceed the bounded run). `floor` remains the ideal-interface clinical
 floor. `effort` adds per-task misses, visual searches, scanned items, backtracks,
-synthetic ordinal mouse travel and cognitive milliseconds. `expertTravelUnits` reports the same ordinal proxy for the expert trace;
+synthetic ordinal mouse travel, cognitive milliseconds and `helpRequests`.
+`expertTravelUnits` reports the same ordinal proxy for the expert trace;
 `learnability` contains signed per-task gaps in clicks, scrolls, keystrokes,
 time and travel. `observations` links
-search/recall/miss decisions to trace indices and old locations. Task time
-includes cognitive time as well as trace KLM operators; visual searches are not
+search/recall/miss decisions to trace indices and old locations. `assistance`
+records the task, request reason/query, hinted screen/control/caption, route, and
+caption-only `labelMatch` against the actual target's clinical intent. Zero
+lexical overlap is a named model finding, not proof of human undiscoverability.
+Task time includes cognitive time as well as trace KLM operators; visual searches are not
 search-box activations. Travel is an ordinal-layout proxy, not browser pixels.
 Report completion alongside costs; an incomplete task's lower cost is not an
 improvement. Signed bounded-minus-expert differences measure learnability cost.
@@ -294,12 +319,13 @@ How users are simulated and how the agent changes the interface are the two
 weakest parts.
 
 - **User models need empirical calibration.** The historical BFS policy still
-  knows the layout. The optional bounded policy below measures discovery and
+  knows the layout. The optional bounded policy measures discovery and
   stale-location errors, but its search, memory, timing and preference parameters
   are simulation assumptions, not estimates from clinician observations. Its
-  lexical navigation can fail where the expert succeeds; incompletion is
-  reported rather than repaired with an omniscient planner. Patient-directory
-  selection still uses the shared fixed policy. The stability budget remains
+  lexical navigation can fail; the bounded clinician now escalates to explicit
+  paid assistance. Completion parity is a regression requirement on the sampled
+  and full persona workdays, not a theorem for arbitrary programs or timed
+  obligations. Patient-directory selection still uses the shared fixed policy. The stability budget remains
   an independent checker constraint.
 - **The agent changes the interface on its own, in small greedy steps.** Each
   night it reads one clinician's traces and proposes 3–5 patches. It deploys
