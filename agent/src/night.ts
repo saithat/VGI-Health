@@ -2,7 +2,7 @@ import { retryInfrastructure } from './infrastructure.js';
 import { retryScreens } from './retry-boundaries.js';
 import { ReplayDivergedError, ReplayMissingError } from './backends/replay.js';
 import {InfrastructureError} from './errors.js';
-import { calibrationPartition, validationSeed } from './protocol.js';
+import { calibrationPartition, validationSeed, trainEstimateWindow } from './protocol.js';
 import { expandProgram } from './composites.js';
 import { compilePresentations } from './presentation-compiler.js';
 import path from 'node:path';
@@ -35,9 +35,10 @@ import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './se
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
 import type { RunStore } from './store.js';
 import { errorMessage, hash32, pad2, rng } from './util.js';
+import { withQueries, type QueryBundle } from './quality-queries.js';
+import { withQuality, type QualityContext } from './quality-context.js';
 
 export const MAX_REPAIRS = 3;
-const TRAIN_ESTIMATE_DAYS = 2;
 
 /** Opaque access to the past validation partition. Returns aggregates only; never feeds a prompt. */
 export interface Holdout {
@@ -118,7 +119,7 @@ export class TrainEstimator {
   constructor(private readonly deps: LoopDeps, private readonly input: NightInput, private readonly specVersion: string) {}
 
   private days(): readonly TrainDay[] {
-    return this.input.train.slice(-TRAIN_ESTIMATE_DAYS);
+    return trainEstimateWindow(this.input.train);
   }
 
   private async run(program: Program, day: TrainDay): Promise<DayResult> {
@@ -349,7 +350,8 @@ function compatible(a: Candidate, b: Candidate): boolean {
 }
 
 // ---------------------------------------------------------------- the nightly loop
-export async function runNight(deps: LoopDeps, input: NightInput): Promise<NightResult> {
+export async function runNight(deps: LoopDeps, input: NightInput, options: { offline?: boolean; quality?: QualityContext; queryBundle?:QueryBundle } = {}): Promise<NightResult> {
+  if(options.queryBundle&&(!options.offline||!options.quality))throw new Error('Queries require offline arm C with train-only quality context');
   const { night, persona, release, current } = input;
   const specVersion = release.specVersion;
   const gate: Gate = { specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
@@ -367,7 +369,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     note();
     rec.llmCalls = calls;
     rec.backend = backendInfo(deps.agent, calls);
-    await deps.store.writeDecision(rec);
+    if (!options.offline) await deps.store.writeDecision(rec);
     return { record: rec, deployed };
   };
 
@@ -376,7 +378,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   try {
     proposal = await deps.agent.proposeCandidates({
       callId: callId(night, persona.id, 'propose-0'), purpose: 'propose', source: 'llm',
-      parts: nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }),
+      parts: withQueries(withQuality(nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }), options.quality),options.queryBundle),
     });
   } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
@@ -421,7 +423,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   try {
     const choice = await deps.agent.chooseCandidates({
       callId: callId(night, persona.id, 'choose-0'),
-      parts: choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }),
+      parts: withQueries(withQuality(choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }), options.quality),options.queryBundle),
     });
     calls.push(choice.call);
     const byId = new Map(eligible.map((e) => [e.candidate.id, e.candidate]));
@@ -473,7 +475,7 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
     try {
       repair = await deps.agent.proposeCandidates({
         callId: callId(night, persona.id, `repair-${r}`), purpose: 'repair', source: 'repair',
-        parts: repairPrompt({ night, persona, spec: release.spec, program: current, attempt: r, maxAttempts: MAX_REPAIRS, failedSummaries: failed.ids, failedPatch: failed.patch, check: failed.check }),
+        parts: withQueries(withQuality(repairPrompt({ night, persona, spec: release.spec, program: current, attempt: r, maxAttempts: MAX_REPAIRS, failedSummaries: failed.ids, failedPatch: failed.patch, check: failed.check }), options.quality),options.queryBundle),
       });
     } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
@@ -528,6 +530,12 @@ export async function runNight(deps: LoopDeps, input: NightInput): Promise<Night
   }
   rec.validation.accepted = true;
   rec.validation.reason = `validation day ${replay.day}: ${replay.saving.clicks} clicks, ${replay.saving.scrolls} scrolls, ${replay.saving.scrollPx??"unavailable"}px scroll, ${replay.saving.mouseTravelPx??"unavailable"}px mouse (keys secondary: ${replay.saving.keystrokes})`;
+
+  if (options.offline) {
+    rec.outcome = 'validation-accepted';
+    rec.flags.push('offline, screen check skipped, simulator only; no user offer or deployment');
+    return finish(null);
+  }
 
   // 8. Simulated user response.
   rec.userResponse = userResponse(deps, night, persona.id, moved);

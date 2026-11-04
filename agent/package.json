@@ -5,6 +5,8 @@
   "type": "module",
   "description": "Overnight agent loop: proposes UI-program changes, gates them through the Lean checker, records decisions.",
   "scripts": {
+    "proposal-quality": "tsx src/cli.ts proposal-quality",
+    "proposal-quality-report": "tsx src/cli.ts proposal-quality-report",
     "run-days": "tsx src/cli.ts run-days",
     "night": "tsx src/cli.ts night",
     "try-to-break-it": "tsx src/cli.ts try-to-break-it",
@@ -18,7 +20,8 @@
     "rebind": "tsx src/rebind.ts",
     "verify-resume": "tsx src/verify-resume.ts",
     "verify-determinism": "tsx src/verify-determinism.ts",
-    "verify-crash-resume": "tsx test/crash-resume-harness.ts"
+    "verify-crash-resume": "tsx test/crash-resume-harness.ts",
+    "proposal-quality-compare": "tsx src/cli.ts proposal-quality-compare"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.3.0",

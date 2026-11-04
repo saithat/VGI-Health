@@ -1,3 +1,4 @@
+import { compareSanityRuns } from './quality-compare.js';
 import { auditedOperation } from './operation-manifest.js';
 import { retryEhr,retryScreens } from './retry-boundaries.js';
 /**
@@ -40,6 +41,9 @@ import { createScreenChecker } from './screencheck.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, readJson, resolveUserPath } from './util.js';
 import { loadWorld } from './world.js';
+import { evaluateQuality, historicalDecisions } from './quality.js';
+import type { QualityArm } from './quality-report.js';
+import { offlineRecordSchema, refreshSanityRepetitions, writeQualityReport } from './quality-report.js';
 
 function backendArg(v: string | undefined): BackendChoice {
   const b = BACKENDS.find((x) => x === v);
@@ -186,6 +190,33 @@ async function cmdFakeWorld(argv: string[]): Promise<void> {
 }
 
 const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
+  'proposal-quality-compare': async argv => {
+    const {values}=parseArgs({args:argv,options:{before:{type:'string'},after:{type:'string'}}});
+    if(!values.before||!values.after)throw new Error('--before and --after sanity runs are required');
+    const comparison=await compareSanityRuns(resolveUserPath(values.before),resolveUserPath(values.after));
+    console.log(JSON.stringify({label:comparison.label,decisions:comparison.decisions,measured:comparison.measured,countDifferences:comparison.countDifferences,changed:comparison.changed.length,signChanged:comparison.signChanged.length}));
+  },
+  'proposal-quality-report': async argv => {
+    const {values}=parseArgs({args:argv,options:{run:{type:'string'}}});
+    if(!values.run)throw new Error('--run is required');
+    const dir=resolveUserPath(values.run);
+    const manifest=await readJson(path.join(dir,'manifest.json'),z.object({status:z.literal('completed')}));
+    if(manifest.status==='completed'){
+      const records=await readJson(path.join(dir,'records.json'),z.array(offlineRecordSchema));
+      const rows=records.every(r=>r.arm==='sanity')?refreshSanityRepetitions(records,await historicalDecisions(path.join(dir,'inputs'))):records;
+      await writeQualityReport(dir,rows);
+    }
+  },
+  'proposal-quality': async argv => {
+    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'}}});
+    if(!values.run||!values.out)throw new Error('--run and --out are required');
+    const backend=values.backend??'replay';if(backend!=='replay'&&backend!=='codex')throw new Error('--backend must be replay or codex');
+    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='sanity')return a;throw new Error('--arms must contain A, B, C or sanity');});
+    await evaluateQuality({runDir:resolveUserPath(values.run),outDir:resolveUserPath(values.out),arms,samples:intArg(values.samples,'samples',1),backend,workers:intArg(values.workers,'workers',1),
+      ...(values['ledger-from']?{ledgerFrom:resolveUserPath(values['ledger-from'])}:{}),...(values.resume?{resume:true}:{}),...(values.decisions?{decisions:values.decisions.split(',')}:{}),...(values.world?{worldDir:resolveUserPath(values.world)}:{}),
+      ...(values.model?{model:values.model}:{}),...(values['reasoning-effort']?{reasoningEffort:values['reasoning-effort']}:{}),...(values['service-tier']?{serviceTier:values['service-tier']}:{}),
+    });
+  },
   'run-days': cmdRunDays,
   'try-to-break-it': cmdTryToBreakIt,
   night: cmdNight,
