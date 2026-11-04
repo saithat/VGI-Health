@@ -236,8 +236,9 @@ stalls. The patience budget is logarithmic in screen count; a separate hard fuel
 bound scales with component count and the number of clinical goals. These
 mechanics and budgets are simulation assumptions.
 
-A clinician who still cannot find a goal types a query into a shown search box,
-if available, and asks for help. `Ehr.Sim.Discovery.Guide` is a pure assistance
+A clinician who still cannot find a goal types its clinical rulebook label into
+a shown search box, if available, and asks for help. Internal intent keys and
+scent-expansion terms are not typed or charged as human query keystrokes. `Ehr.Sim.Discovery.Guide` is a pure assistance
 boundary (`Context → State → Option (List Event)`). The default simulated help
 desk knows the deployed layout and uses the existing BFS navigation solver to
 return one route. The unassisted clinician never gets that layout map. Help

@@ -32,6 +32,7 @@ def noHelper := Bounded.simulate fixtureSpec misleading params oneTask (fun _ =>
 def check (b : Bool) (msg : String) : IO Unit := unless b do throw (IO.userError msg)
 #eval do
   check (helped.tasks.all (·.completed)) "opaque labels still complete through paid assistance"
+  check (helped.assistance.all (·.query == "Acknowledge")) "search types the clinical goal label, never implementation keys"
   check (helped.effort.any (·.helpRequests > 0)) "help counted"
   check (helped.observations.any (fun o => o.kind == "help" && o.ms == waitMs + mentalMs)) "help wait/read charge retained"
   check (helped.trace.any (fun t => match t.event with | .search _ => true | _ => false)) "real search query typed"

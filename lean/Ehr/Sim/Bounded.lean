@@ -245,6 +245,19 @@ def localKey (ctx : Context) (s : State) : String :=
   encodeJson (s.screen, sortStrings (s.expanded.filter ids.contains),
     sortStrings ((s.tabSel.filter (fun x => ids.contains x.1)).map encodeJson), s.currentSlot)
 def edgeKey (s : State) (e : Event) : String := navKey s ++ encodeJson e
+/-- Text a clinician can type into search; internal intent keys are retained
+only for scent/memory diagnostics, never charged as human query keystrokes. -/
+def goalLabel (ctx : Context) (s : State) : String :=
+  let intent := (intentions ctx s).head?.getD ""
+  let label := if intent.startsWith "field:" then
+      ((ctx.sp.element? (String.ofList (intent.toList.drop 6))).map (·.label)).getD ""
+    else if intent.startsWith "review:" then
+      ((ctx.sp.info? (String.ofList (intent.toList.drop 7))).map (·.label)).getD ""
+    else if intent.startsWith "commit:" then
+      ((ctx.sp.commit? (String.ofList (intent.toList.drop 7))).map (·.label)).getD ""
+    else ""
+  if label.isEmpty then "Find the next required control" else label
+
 /-- Clinical vocabulary, not a layout map; simulation assumption. A layout can
 use misleading labels and defeat it. Only the first unmet intention is scented. -/
 def goalText (ctx : Context) (s : State) : String :=
@@ -288,7 +301,7 @@ waitMs (60 s) plus mentalMs is an uncalibrated simulation assumption for help,
 in addition to actual search-box activation/typing and each guided UI event. -/
 def askForHelp (ctx : Context) (params : PersonaParams) (task : Task)
     (r : Runner) (reason : String) : Runner := Id.run do
-  let query := goalText ctx r.episode.state
+  let query := goalLabel ctx r.episode.state
   let mut out := r
   if searchShown ctx.sp ctx.prog ctx.facts out.episode.state then
     out := act ctx params task out (.search query) false
