@@ -179,7 +179,8 @@ calibration days' train partitions only; archive scores are refreshed against
 the deployed layout on the latest two train days. It retains every proposal,
 including unchosen alternatives, failures and historical estimates, in atomic
 `<run>/archives/clinicians/<scope-hash>/night-N.json` snapshots. Only designs
-passing `ehr check`, the independent identity movement budget and the existing
+passing `ehr check`, the independent identity movement budget (screen, parent
+and tab, including renamed tags or existing IDs claiming `copyOf`) and the existing
 whole-version screen gate enter elite cells. The archive reuses `explore/`'s
 niches, generators, operators' feedback envelope and search/archive machinery.
 One deterministic admitted layout/density/input variant is explored per night

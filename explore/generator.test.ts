@@ -52,3 +52,12 @@ test('realized descriptors and refreshed niches reuse the offline archive', asyn
   });
   assert.equal(archiveFrom(entries).cells.size,4);
 });
+
+test('tab moves count by identity even when tags and copyOf claims change',()=>{
+  const candidate=generate(defaultPoint,['W3'],baseline,spec);
+  let changed=0;
+  for(const screen of candidate.program.screens)for(const component of screen.components){
+    if(changed++<=spec.design.stabilityBudget){component.tab++;component.tag=`renamed-${component.id}`;component.copyOf=component.id;}
+  }
+  assert.throws(()=>validateCandidate(candidate,baseline,spec),/Identity movement budget/);
+});

@@ -59,14 +59,14 @@ export function validateCandidate(c: Candidate, baseline: Program, spec: Spec): 
   for (const key of ['id','owner','role','specVersion','patientSelection'] as const) {
     if (c.program[key] !== baseline[key]) throw Error(`Immutable metadata: ${key}`);
   }
-  const old = new Map(baseline.screens.flatMap(s => s.components.map(x => [x.id, {screen:s.id,parent:x.parent}] as const)));
+  const old = new Map(baseline.screens.flatMap(s => s.components.map(x => [x.id, {screen:s.id,parent:x.parent,tab:x.tab}] as const)));
   let moved = 0;
   const ids = new Set<string>();
   for (const s of c.program.screens) for (const x of s.components) {
     if (ids.has(x.id)) throw Error(`Duplicate component: ${x.id}`);
     ids.add(x.id);
     const previous = old.get(x.id);
-    if (previous && (previous.screen !== s.id || previous.parent !== x.parent)) moved++;
+    if (previous && (previous.screen !== s.id || previous.parent !== x.parent || previous.tab !== x.tab)) moved++;
     const el = fieldElement(x);
     if (el && !spec.elements.some(e => e.id === el)) throw Error(`Unknown element: ${el}`);
   }
