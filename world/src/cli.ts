@@ -1,6 +1,7 @@
 /**
  * pnpm --filter world gen --seed 1 --days 10 [--fixtures <index.json>] [--out <dir>]
  *
+ * Optional: --policy bounded --hidden-preferences (default remains expert).
  * Defaults to runs/world/2 (world revision, independent of seed); writes
  * state-day-<d>.json, day-<d>-<persona>.json
  * (DaySchedule, validated against src/schema.ts) and manifest.json.
@@ -11,7 +12,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { SIM_START_DATE } from "./calendar";
 import { loadPopulation } from "./patients";
-import { PERSONA_PARAMS } from "./personas";
+import { personaParams } from "./personas";
 import { DayScheduleSchema, PERSONAS } from "./schema";
 import { dayFacts, dayTable } from "./summary";
 import { generateWorld } from "./world";
@@ -53,6 +54,8 @@ function main(): void {
   const root = repoRoot();
   const seed = intArg(args, "seed", 1);
   const days = intArg(args, "days", 10);
+  const policy = arg(args, "policy") ?? "expert";
+  if (policy !== "expert" && policy !== "bounded") throw new Error("--policy must be expert or bounded");
   const fixtures = resolve(arg(args, "fixtures") ?? defaultFixtures(root));
   const outDir = resolve(arg(args, "out") ?? join(root, "runs", "world", "2"));
 
@@ -72,7 +75,7 @@ function main(): void {
   files.push("world.json");
   for (const p of PERSONAS) {
     const name = `personas/${p}.json`;
-    write(name, PERSONA_PARAMS[p]);
+    write(name, personaParams(p, seed, policy, args.includes("--hidden-preferences")));
     files.push(name);
   }
   write("state-day-0.json", run.initial);

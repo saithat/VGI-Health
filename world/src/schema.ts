@@ -119,7 +119,7 @@ export const DayScheduleSchema = z.strictObject({
 });
 export type DaySchedule = z.infer<typeof DayScheduleSchema>;
 
-/** `structure PersonaParams` (behavior, not clinical choices). Not emitted by the world yet. */
+/** Persona behavior JSON; optional bounded supplements are parsed separately from Lean Core. */
 export const PersonaParamsSchema = z.strictObject({
   id: z.string().min(1),
   role: RoleSchema,
@@ -129,6 +129,11 @@ export const PersonaParamsSchema = z.strictObject({
   backtrackRate: Nat,
   searchWhenBuried: z.boolean(),
   overrideRate: Nat,
+  policy: z.enum(["expert", "bounded"]).exactOptional(),
+  hiddenPreferences: z.object({
+    placements: z.array(z.object({tag:z.string(),nearTag:z.string(),weight:Nat})),
+    changeSensitivity: Nat,
+  }).exactOptional(),
 });
 export type PersonaParams = z.infer<typeof PersonaParamsSchema>;
 

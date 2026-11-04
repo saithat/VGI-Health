@@ -268,6 +268,15 @@ Positive score chooses after; ties keep before. `seededPreferences seed actor`
 provides optional deterministic tastes. These preferences do not alter clinical
 goals or the historical default policy.
 
+World generation accepts `--policy bounded` and optional `--hidden-preferences`;
+its taste seed matches Lean's `seededPreferences`. Without these options the
+persona JSON stays unchanged. The agent adapter accepts optional `policy` and
+`memory` on `SimulateInput` and preserves the bounded result fields. `run-days`
+loads the prior committed day's memory, including on resume. Canonical baselines
+and vendor-only controls retain independent actor memories. Train estimates
+compare both programs from the same training-day memory snapshot and discard
+counterfactual updates; validation without an explicit snapshot is a cold run.
+
 ## Open problems
 
 How users are simulated and how the agent changes the interface are the two

@@ -1,0 +1,48 @@
+import {describe,expect,it} from 'vitest';
+import {dayResultSchema,personaParamsSchema,userMemorySchema} from '../src/schema.js';
+import {FAKE_PERSONAS} from '../src/fake/world.js';
+const memory={actor:'P1',entries:[{key:'sign',intent:'commit:signVisit',control:'new-id',place:{screen:'orders',parent:'',tab:0,position:4},route:[{click:{comp:'open'}}],exposures:8,lastDay:2}]};
+describe('bounded native formats',()=>{
+  it('retains explicit persona options and persisted memory while accepting archived results',()=>{
+    const p=personaParamsSchema.parse({...FAKE_PERSONAS[0],policy:'bounded',hiddenPreferences:{placements:[],changeSensitivity:100}});
+    expect(p.policy).toBe('bounded');
+    expect(userMemorySchema.parse(memory)).toEqual(memory);
+    const expert={day:1,persona:'P1',programVersion:0,trace:[],tasks:[],floor:[],complaints:[]};
+    expect(dayResultSchema.parse(expert)).toEqual(expert);
+    const bounded={...expert,policy:'bounded',memory,expert,effort:[{task:'t',misses:1,searches:2,scannedItems:5,backtracks:1,mouseTravelUnits:300,cognitiveMs:900}],observations:[{task:'t',traceIndex:0,kind:'miss',place:{screen:'orders',parent:'',tab:0,position:4},scannedItems:0,ms:450}]};
+    expect(dayResultSchema.parse(bounded)).toEqual(bounded);
+  });
+});
+
+import {existsSync} from 'node:fs';
+import path from 'node:path';
+import {tinySpec,tinyFacts,sampleDay} from '../../lean/generated/ehr-samples.js';
+import {createEhr,DEFAULT_EHR_BIN} from '../src/ehr.js';
+import {dryFixture} from '../src/dry-fixture.js';
+import {tmp} from './helpers.js';
+import {writeJson} from '../src/util.js';
+it.skipIf(!existsSync(DEFAULT_EHR_BIN))('native adapter round trips actor memory without changing the default policy',async()=>{
+  const dir=await tmp('bounded-native');
+  const specVersion=path.join(dir,'spec.json');
+  await writeJson(specVersion,tinySpec);
+  await writeJson(path.join(dir,'facts',`${tinyFacts.patientId}.json`),tinyFacts);
+  const params=FAKE_PERSONAS[0];
+  if(!params)throw new Error('fixture persona');
+  const schedule={...sampleDay,tasks:sampleDay.tasks.map(t=>({...t,todayResources:[]}))};
+  const input={specVersion,program:dryFixture(),persona:params,schedule,worldDir:dir,seed:7};
+  const ehr=createEhr({fake:false});
+  const defaultResult=await ehr.simulate(input);
+  expect(await ehr.simulate({...input,policy:'expert'})).toEqual(defaultResult);
+  const bounded=await ehr.simulate({...input,policy:'bounded'});
+  expect(bounded.tasks.every(t=>t.completed)).toBe(true);
+  expect(bounded.expert).toEqual(defaultResult);
+  expect(bounded.learnability?.length).toBe(bounded.tasks.length);
+  expect(bounded.expertTravelUnits?.length).toBe(bounded.tasks.length);
+  const memory=bounded.memory;
+  if(!memory)throw new Error('native result omitted memory');
+  expect(memory.actor).toBe(input.program.owner);
+  const warmed=await ehr.simulate({...input,persona:{...params,policy:'bounded'},memory});
+  expect(await ehr.simulate({...input,persona:{...params,policy:'bounded'},memory})).toEqual(warmed);
+  expect(warmed.memory?.entries.some(m=>m.exposures>1)).toBe(true);
+  await expect(ehr.simulate({...input,policy:'bounded',memory:{...memory,actor:'different'}})).rejects.toThrow('different actor');
+});

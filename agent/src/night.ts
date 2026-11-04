@@ -129,6 +129,8 @@ export class TrainEstimator {
     const res = await this.deps.ehr.simulate({
       specVersion: this.specVersion, program, persona, schedule: day.schedule, worldDir: this.deps.worldDir,
       seed: daySeed(this.deps.worldSeed, day.schedule.day),
+      // Both candidates start from the same experienced actor snapshot.
+      ...(persona.policy === 'bounded' && day.result.memory ? {memory:day.result.memory} : {}),
     });
     return res;
   }
