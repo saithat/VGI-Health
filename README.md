@@ -4,8 +4,8 @@ A research system for clinical software that can safely change itself. It has
 three parts:
 
 1. **A realistic EHR simulator.** A hospital and clinic electronic health
-   record (EHR) built on the conventions of the dominant commercial systems,
-   Epic and Oracle Health (Cerner). It includes a patient banner and
+   record (EHR) built on the conventions of real-world commercial EHR
+   systems. It includes a patient banner and
    storyboard, in-basket, chart review, ED track board, MAR and flowsheets,
    order entry with preference lists, interruptive and passive alerts, and
    vendor releases that change the rules. It runs on synthetic FHIR patients.
@@ -32,7 +32,7 @@ problems](#open-problems) describes the weakest parts: how users are simulated
 and how the agent makes its changes.
 
 The same Lean interpreter runs natively and in the browser as WebAssembly. The
-project is not affiliated with Epic or Oracle.
+project is not affiliated with any EHR vendor.
 
 | Primary care order entry | ED track board | Inpatient MAR |
 |---|---|---|
