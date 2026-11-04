@@ -8,7 +8,7 @@ import type { DecisionModel } from './decision.js';
 import { write } from './evaluate.js';
 export async function search(opts:{baseline:Program;spec:Spec;workflows:Workflow[];operator?:LlmOperator;
   evaluate:(c:Candidate,id:string)=>Promise<Evaluation>;out:string;iterations:number;decision:DecisionModel;context:unknown;lookahead?:number}){
-  const archive=new Archive(),evaluations:Evaluation[]=[],events:unknown[]=[];
+  const archive=archiveFrom([]),evaluations:Evaluation[]=[],events:unknown[]=[];
   const seeds=seedPoints(),lookahead=opts.lookahead??1;
   if(!Number.isInteger(lookahead)||lookahead<1||lookahead>8)throw Error('Lookahead must be 1–8');
   const flush=()=>write(path.join(opts.out,'report.json'),{schemaVersion:1,context:opts.context,
@@ -54,4 +54,11 @@ export async function search(opts:{baseline:Program;spec:Spec;workflows:Workflow
     }
   }
   await flush();return archive;
+}
+
+/** Rebuild niches after refreshing estimates on a changed workload/baseline. */
+export function archiveFrom(evaluations: readonly Evaluation[]): Archive {
+  const archive = new Archive();
+  for (const evaluation of evaluations) archive.insert(evaluation);
+  return archive;
 }

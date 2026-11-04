@@ -1,3 +1,4 @@
+import { CADENCE_PROTOCOL, autoApprove, cadenceSchema, type ReleaseCadence, type ReviewGate, type SwitchCost } from './cadence.js';
 import { ReplayLlm } from './backends/replay.js';
 import { armCrashHook } from './crash-hook.js';
 import { retryEhr } from './retry-boundaries.js';
@@ -7,7 +8,7 @@ import {geometryEhr,type GeometryProvider} from './geometry.js';
 import {InfrastructureError} from './night.js';
 import {noAgentDay} from './no-agent.js';
 import { assertCertified } from './certification.js';
-import { fileHash,runFingerprints } from './fingerprints.js';
+import { fileHash,runFingerprints,treeHash } from './fingerprints.js';
 import { calibrationDay, calibrationPartition, isMeasurementDay, measurementProtocol } from './protocol.js';
 import { auditRunTranscripts } from './backends/isolation.js';
 /**
@@ -46,6 +47,14 @@ import { loadWorld } from './world.js';
 import { REPO_ROOT, readJson, writeJson } from './util.js';
 
 export interface RunOptions {
+  /** Omit for the historical nightly protocol. Cadence runs have a separate name. */
+  protocol?: 'core-10day-live' | typeof CADENCE_PROTOCOL;
+  cadence?: ReleaseCadence;
+  departments?: Record<string, string>;
+  reviewGate?: ReviewGate;
+  switchCost?: SwitchCost;
+  /** Stable identity for a supplied switch-cost implementation (resume provenance). */
+  switchCostModel?: string;
   /** Explicit synthetic fixture for the native determinism harness; never a live run. */
   verificationRelease?: Release;
   days: number;
@@ -116,6 +125,16 @@ async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(item:T)
 }
 
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
+  const archiveMode = opts.protocol === CADENCE_PROTOCOL;
+  if (!archiveMode && (opts.cadence || opts.departments || opts.reviewGate || opts.switchCost || opts.switchCostModel))
+    throw Error(`Archive options require protocol ${CADENCE_PROTOCOL}`);
+  if (opts.switchCost && !opts.switchCostModel?.trim()) throw Error('Custom switch cost requires switchCostModel');
+  const releasePolicy = archiveMode ? {
+    protocol: CADENCE_PROTOCOL, cadence: cadenceSchema.parse(opts.cadence ?? { kind: 'nightly' }),
+    departments: opts.departments ?? {}, reviewGate: (opts.reviewGate ?? autoApprove).id,
+    switchCostModel: opts.switchCostModel ?? 'usage-weighted-movement-v1',
+    vendorReleases: 'Mandatory recertification/migration bypasses discretionary cadence and review; archive candidates from older specs cannot ship',
+  } : null;
   armCrashHook(opts.llm.name);
   if(opts.verificationRelease&&opts.llm.name!=='scripted'&&opts.llm.name!=='replay')throw new Error('Verification release refuses live models');
   const log = opts.log ?? (() => undefined);
@@ -148,9 +167,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed,
   };
-  const fingerprints = {...await runFingerprints(ehr, world.dir),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
+  const fingerprints = {...await runFingerprints(ehr, world.dir),...(archiveMode?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    releasePolicy:z.unknown().optional(),
     infrastructureRetries:z.array(z.custom<InfrastructureRetry>()).optional(), replayAllowDrift:z.boolean().optional(),driftedCallIds:z.array(z.string()).optional(),
     fingerprints: z.unknown(),parallel:z.boolean().optional(),
     releaseIds: z.object({ base: z.string(), feature: z.string(), migration: z.string() }).optional(),
@@ -163,6 +183,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if (stableStringify(previous.releasePolicy ?? null) !== stableStringify(releasePolicy)) throw Error('Resume release cadence/department/review/switch-cost policy must match');
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
     if((previous.parallel??false)!==(opts.parallel??false))throw new Error('Resume parallel mode must match the recorded run');
@@ -174,6 +195,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
+    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day-live', releasePolicy,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
     replayAllowDrift:opts.llm instanceof ReplayLlm?opts.llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],
@@ -294,7 +316,11 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       programs.get(id)?.set(program.version, program);
       const recorded = opts.resume && existsSync(store.dayPath(day, id));
       if (!recorded) assertCertified(program, certificate, inForce.specVersion, ehr.mode);
-      const result = recorded ? await readJson(store.dayPath(day, id), dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+      // Read the prior committed day on every invocation: resume and crashes
+      // preserve actor memory; speculative evaluations never write this state.
+      const memory = view.params.policy === 'bounded' && day > 1
+        ? (await readJson(store.dayPath(day - 1, id), dayResultSchema)).memory : undefined;
+      const result = recorded ? await readJson(store.dayPath(day, id), dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(memory ? {memory} : {}) });
       if (!recorded) await store.writeDay(result);
       const resultProgram = await store.readProgram(id, result.programVersion);
       const recordedCert = await readJson(store.certPath(id, result.programVersion), (await import('./schema.js')).certificateSchema);
@@ -302,7 +328,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       if (!isMeasurementDay(day)) {
         const trainingSchedule = calibrationPartition(schedule, 'train');
         const trainingFile = path.join(dir,'training',`day-${day}`,`${id}.json`);
-        const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+        const trainingResult = existsSync(trainingFile) ? await readJson(trainingFile, dayResultSchema) : await ehr.simulate({ specVersion: inForce.specVersion, program: resultProgram, persona: view.params, schedule: trainingSchedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(memory ? {memory} : {}) });
         if (!existsSync(trainingFile)) await writeJson(trainingFile, trainingResult);
         train.get(id)?.push({ result: trainingResult, schedule: trainingSchedule });
       }
@@ -312,7 +338,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         const canonical = personalize(roleRelease.canonical, view.params, view.userId);
         const verdict = await ehr.check({ specVersion: inForce.specVersion, program: canonical, prev: canonical, canonical: roleRelease.canonical });
         if (verdict !== 'ok') throw new Error(`Uncertified canonical baseline ${id}/${day}`);
-        const baseline = await ehr.simulate({ specVersion: inForce.specVersion, program: canonical, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
+        const priorBaseline = view.params.policy === 'bounded' && day > 1
+          ? await readJson(path.join(dir, 'baselines', `day-${String(day-1).padStart(2,'0')}`, `${id}.json`), dayResultSchema) : undefined;
+        const baseline = await ehr.simulate({ specVersion: inForce.specVersion, program: canonical, persona: view.params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day), ...(priorBaseline?.memory ? {memory:priorBaseline.memory} : {}) });
         await writeJson(baselineFile.replace('.json','.program.json'), canonical);
         await writeJson(baselineFile, baseline);
       }
@@ -347,7 +375,11 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         res = { record, deployed: record.deployed ? programs.get(id)?.get(record.versionAfter) ?? null : null };
       } else if (next?.id === RELEASE_IDS.feature) res = await runSurfaceFeature(deps, { ...nightInput, next });
       else if (next) res = await runMigration(deps, { ...nightInput, next });
-      else res = await runNight(deps, nightInput);
+      else res = await runNight(deps, nightInput, releasePolicy ? { cadence: {
+        cadence: releasePolicy.cadence, department: releasePolicy.departments[id] ?? 'unspecified',
+        ...(opts.reviewGate ? { reviewGate: opts.reviewGate } : {}),
+        ...(opts.switchCost ? { switchCost: opts.switchCost } : {}),
+      } } : {});
       const r = res.record;
       records.push(r);
       const streak = r.outcome === 'llm-error' ? (failures.get(id) ?? 0) + 1 : 0;

@@ -1,7 +1,7 @@
 import ts from 'typescript';
 import { RELEASE_MODULES } from './release-config.js';
 /** Generated from the checked-in formal sources; never reads simulation holdouts. */
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 import { sha256 } from './program.js';
@@ -68,7 +68,7 @@ export function programVocabulary(): string {
 export function capabilitiesManual(): string {
   const examples: string[] = [];
   const dir = path.join(REPO_ROOT, 'runs/run1-P3/decisions');
-  for (const night of readdirSync(dir).sort()) {
+  for (const night of existsSync(dir) ? readdirSync(dir).sort() : []) {
     const record = z.object({ candidates: z.array(z.object({ candidate: z.object({ summary: z.string(), patch: z.unknown() }), check: z.object({ status: z.string(), property: z.string().nullable(), message: z.string().nullable() }) })) }).parse(JSON.parse(read(`runs/run1-P3/decisions/${night}/P3.json`)));
     for (const candidate of record.candidates) {
       const outcome = candidate.check.status === 'pass' ? 'accepted by checker' : 'rejected';

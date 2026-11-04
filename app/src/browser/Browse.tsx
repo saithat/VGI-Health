@@ -1,3 +1,4 @@
+import { SessionReview } from "./SessionReview";
 import { RevisionDetails } from "./RevisionDetails";
 import { useEffect, useMemo, useState } from "react";
 import type { KeyboardEvent } from "react";
@@ -451,6 +452,11 @@ function Timeline({
 }
 
 export function Browse() {
+  const session = new URLSearchParams(window.location.search).get("session");
+  return session ? <SessionReview path={session} /> : <BrowseCatalog />;
+}
+
+function BrowseCatalog() {
   const query = new URLSearchParams(window.location.search);
   const [catalog, setCatalog] = useState<Catalog>();
   const [runId, setRunId] = useState(query.get("run") ?? "");

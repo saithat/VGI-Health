@@ -1,16 +1,18 @@
+import { CADENCE_PROTOCOL } from './cadence.js';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {readFile} from 'node:fs/promises';
 import {z} from 'zod';
-import {runFingerprints} from './fingerprints.js';
+import {runFingerprints,treeHash} from './fingerprints.js';
 import {installedBuild} from './build-binding.js';
 import {stableStringify} from './program.js';
 import {createEhr} from './ehr.js';
 import {REPO_ROOT} from './util.js';
 export async function verifyResume(dir:string,root=REPO_ROOT) {
- const manifest=z.object({world:z.string(),fingerprints:z.unknown(),ehr:z.object({mode:z.literal('real'),binary:z.string()})}).parse(JSON.parse(await readFile(path.join(dir,'manifest.json'),'utf8')));
+ const manifest=z.object({protocol:z.string().optional(),world:z.string(),fingerprints:z.unknown(),ehr:z.object({mode:z.literal('real'),binary:z.string()})}).parse(JSON.parse(await readFile(path.join(dir,'manifest.json'),'utf8')));
  await installedBuild(root,manifest.ehr.binary);
- const fingerprints=await runFingerprints({...createEhr({fake:false}),binary:manifest.ehr.binary},manifest.world,root);
+ const fingerprints={...await runFingerprints({...createEhr({fake:false}),binary:manifest.ehr.binary},manifest.world,root),
+   ...(manifest.protocol===CADENCE_PROTOCOL?{explore:await treeHash(path.join(root,'explore'))}:{})};
  if(stableStringify(manifest.fingerprints)!==stableStringify(fingerprints))throw new Error('Resume refused: build/source/gate/world/fixture fingerprints changed');
  return fingerprints;
 }

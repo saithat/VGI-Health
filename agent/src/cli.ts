@@ -1,3 +1,4 @@
+import { CADENCE_PROTOCOL, parseCadence } from './cadence.js';
 import { compareSanityRuns } from './quality-compare.js';
 import { auditedOperation } from './operation-manifest.js';
 import { retryEhr,retryScreens } from './retry-boundaries.js';
@@ -71,13 +72,19 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
+      protocol: { type: 'string' }, cadence: { type: 'string' }, departments: { type: 'string' },
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false},
       'run-id': { type: 'string' }, parallel:{type:'boolean',default:false},resume: { type: 'boolean', default: false }, personas: { type: 'string' }, 'seed-policy': { type: 'string' }, 'runs-root': { type: 'string' },
       model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' }, 'v3-day': { type: 'string' }, 'v2-day': { type: 'string' }, 'feature-day': { type: 'string' }, 'migration-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
+  if (values.protocol && values.protocol !== 'core-10day-live' && values.protocol !== CADENCE_PROTOCOL) throw Error('Unknown release protocol');
+  const useArchive = values.protocol === CADENCE_PROTOCOL || (!values.protocol && Boolean(values.cadence));
   const llm = createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const summary = await runDays({
+    ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
+    ...(values.cadence ? { cadence: parseCadence(values.cadence) } : {}),
+    ...(values.departments ? { departments: z.record(z.string(), z.string().trim().min(1)).parse(JSON.parse(values.departments)) } : {}),
     days: intArg(values.days, 'days', 10),
     resume: values.resume,parallel:values.parallel,
     llm,
@@ -190,6 +197,13 @@ async function cmdFakeWorld(argv: string[]): Promise<void> {
 }
 
 const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
+  'cadence-fake': async argv => {
+    const { values } = parseArgs({ args: argv, options: { out: { type: 'string' }, days: { type: 'string' } } });
+    if (!values.out) throw Error('--out is required (synthetic artifacts only)');
+    const { runFakeCadence } = await import('./fake/cadence.js');
+    const { summary } = await runFakeCadence(resolveUserPath(values.out), { days: intArg(values.days, 'days', 9) });
+    console.log(JSON.stringify({ warning: 'FAKE: no clinical certification or live model calls', ...summary }, null, 2));
+  },
   'proposal-quality-compare': async argv => {
     const {values}=parseArgs({args:argv,options:{before:{type:'string'},after:{type:'string'}}});
     if(!values.before||!values.after)throw new Error('--before and --after sanity runs are required');

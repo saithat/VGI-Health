@@ -1,4 +1,4 @@
-import Ehr.Sim.Policy
+import Ehr.Sim.Bounded
 import Ehr.Sim.TaskMinimum
 import Ehr.Render.Fhir
 
@@ -10,6 +10,8 @@ VERSION resolves to releases/VERSION/spec.json; explicit JSON paths also work.
 World manifests may point at fixture indices. Patient bundles are merged with
 resources up to the task, by (resourceType,id), before render's FHIR parser.
 Precomputed patient Facts JSON is a fallback only, never preferred over FHIR.
+Simulation additionally accepts --policy expert|bounded and --memory-in/out.
+Persona policy is optional and defaults to the unchanged historical policy.
 -/
 namespace Ehr.Cli.Sim
 open Ehr Ehr.Sim Lean
@@ -238,7 +240,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -265,7 +267,22 @@ def command (mode : String) (args : List String) : IO UInt32 := do
       if params.id != schedule.persona then throw (IO.userError "persona does not match the schedule")
       let seedStr := (fs.lookup "--seed").getD "0"
       let seed ← ioExcept (optionExcept seedStr.toNat? "--seed must be a nonnegative integer")
-      IO.println (encodeJson (simulate sp prog params schedule factsFor seed))
+      let options ← readAs Bounded.Options (← required fs "--persona")
+      let policy := (fs.lookup "--policy").getD options.policy
+      if !["expert", "bounded"].contains policy then throw (IO.userError "--policy must be expert or bounded")
+      if policy == "bounded" then
+        let memory ← match fs.lookup "--memory-in" with
+          | some path => readAs Bounded.Memory path
+          | none => pure {}
+        if !memory.actor.isEmpty && memory.actor != prog.owner then
+          throw (IO.userError "layout memory belongs to a different actor")
+        let result := Bounded.simulate sp prog params schedule factsFor seed memory
+        if let some path := fs.lookup "--memory-out" then IO.FS.writeFile path (encodeJson result.memory)
+        IO.println (encodeJson result)
+      else
+        if (fs.lookup "--memory-in").isSome || (fs.lookup "--memory-out").isSome then
+          throw (IO.userError "layout memory requires --policy bounded")
+        IO.println (encodeJson (simulate sp prog params schedule factsFor seed))
     else
       let bound ← ioExcept (optionExcept ((fs.lookup "--bound").getD "20000").toNat? "--bound must be a natural number")
       let space ← match (fs.lookup "--space").getD "auto" with

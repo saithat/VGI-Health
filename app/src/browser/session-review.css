@@ -1,0 +1,135 @@
+.session-review {
+  max-width: 1600px;
+  padding: 24px 32px;
+  margin: auto;
+  color: #1d3043;
+  background: #f5f7fa;
+  min-height: 100vh;
+  font:
+    15px/1.5 "Noto Sans",
+    sans-serif;
+}
+.session-review h1 {
+  font-size: 30px;
+  margin: 8px 0;
+}
+.session-review h2 {
+  font-size: 19px;
+  margin: 8px 0;
+}
+.session-review p {
+  margin: 8px 0;
+}
+.session-review a {
+  color: #125c91;
+}
+.session-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}
+.session-decision {
+  padding: 12px 18px;
+  border-left: 4px solid #1c674e;
+  background: #e6f3ed;
+  margin: 18px 0;
+}
+.session-case-picker {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.session-review select,
+.session-review button {
+  font: inherit;
+  padding: 7px 10px;
+  border: 1px solid #9eacb9;
+  border-radius: 4px;
+  background: white;
+  color: #20364a;
+}
+.session-options {
+  display: grid;
+  gap: 14px;
+  align-items: start;
+  margin: 20px 0;
+}
+.session-options > article {
+  min-width: 0;
+  padding: 14px;
+  background: white;
+  border: 1px solid #b9c6d2;
+  border-radius: 7px;
+}
+.session-options > .session-chosen {
+  border: 2px solid #1c674e;
+  padding: 13px;
+}
+.session-savings {
+  font-weight: 700;
+}
+.session-case {
+  border-top: 1px solid #dce3e9;
+  margin-top: 14px;
+  padding-top: 6px;
+}
+.session-case input {
+  display: block;
+  width: 100%;
+  accent-color: #145c90;
+}
+.session-replay-buttons {
+  display: flex;
+  gap: 8px;
+}
+.session-review button:disabled {
+  opacity: 0.5;
+}
+.session-event {
+  min-height: 70px;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+}
+.session-layout {
+  height: 290px;
+  overflow: auto;
+  border: 1px solid #d4dce4;
+  padding: 8px;
+  background: #f6f8fb;
+}
+.session-layout h4 {
+  margin: 0;
+}
+.session-layout > p {
+  font-size: 11px;
+}
+.session-layout > div {
+  margin: 5px 0;
+  padding: 6px 8px;
+  border: 1px solid #d4dce4;
+  background: white;
+  overflow-wrap: anywhere;
+}
+.session-layout small {
+  display: block;
+  color: #52677a;
+}
+.session-layout > .session-target {
+  border: 2px solid #125c91;
+  background: #e3f1ff;
+}
+.session-review details {
+  margin-top: 12px;
+}
+.session-review summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.session-review li {
+  overflow-wrap: anywhere;
+  margin: 10px 0;
+}
+
+.session-option-summary {
+  min-height: 152px;
+}

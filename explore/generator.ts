@@ -32,6 +32,7 @@ export function generate(point: DesignPoint, workflows: Workflow[], baseline: Pr
       const clinical = !/\.(nav|chart|storyboard|contextPanels)(\.|$)/.test(c.id);
       const layout = point.taskLayouts[c.id] ?? point.layout;
       if (clinical && kindTag(c.kind) === 'group' && screen.components.some(x => x.parent === c.id)) {
+        c.tag = c.tag.replace(/(?:\.layout\.(?:columns|timeline|datedTimeline))+$/, '');
         if (layout === 'columns' || layout === 'timeline') c.tag += `.layout.${layout}`;
         if (layout === 'timeline' && point.temporalView === 'aligned') c.tag += '.layout.datedTimeline';
       }
@@ -58,14 +59,14 @@ export function validateCandidate(c: Candidate, baseline: Program, spec: Spec): 
   for (const key of ['id','owner','role','specVersion','patientSelection'] as const) {
     if (c.program[key] !== baseline[key]) throw Error(`Immutable metadata: ${key}`);
   }
-  const old = new Map(baseline.screens.flatMap(s => s.components.map(x => [x.id, {screen:s.id,parent:x.parent}] as const)));
+  const old = new Map(baseline.screens.flatMap(s => s.components.map(x => [x.id, {screen:s.id,parent:x.parent,tab:x.tab}] as const)));
   let moved = 0;
   const ids = new Set<string>();
   for (const s of c.program.screens) for (const x of s.components) {
     if (ids.has(x.id)) throw Error(`Duplicate component: ${x.id}`);
     ids.add(x.id);
     const previous = old.get(x.id);
-    if (previous && (previous.screen !== s.id || previous.parent !== x.parent)) moved++;
+    if (previous && (previous.screen !== s.id || previous.parent !== x.parent || previous.tab !== x.tab)) moved++;
     const el = fieldElement(x);
     if (el && !spec.elements.some(e => e.id === el)) throw Error(`Unknown element: ${el}`);
   }
@@ -75,4 +76,19 @@ export function validateCandidate(c: Candidate, baseline: Program, spec: Spec): 
   const signature = c.point.layout;
   if (['columns','timeline'].includes(signature) && !cs.some(x => x.tag.endsWith(`.layout.${signature}`) || signature==='timeline' && c.point.temporalView==='aligned' && x.tag.endsWith('.layout.datedTimeline'))) throw Error('Missing realized layout');
   if (signature === 'document' && !cs.some(x => x.tag === 'layout.document' && infoOf(x))) throw Error('Missing document realization');
+}
+
+/** Describe an existing patched program using realized, admitted descriptors.
+ * Mixed layouts use a deterministic priority; task overrides remain explicit. */
+export function describeProgram(program: Program, workflows: Workflow[]): Candidate {
+  const cs = program.screens.filter(s => workflows.includes(s.workflow as Workflow)).flatMap(s => s.components);
+  const clinicalGroups = cs.filter(c => kindTag(c.kind) === 'group' && !/\.(nav|chart|storyboard|contextPanels)(\.|$)/.test(c.id));
+  const layout = clinicalGroups.some(c => c.tag.endsWith('.layout.timeline') || c.tag.endsWith('.layout.datedTimeline')) ? 'timeline' :
+    clinicalGroups.some(c => c.tag.endsWith('.layout.columns')) ? 'columns' :
+    cs.some(c => c.tag === 'layout.document' && infoOf(c)) ? 'document' : 'stack';
+  const point: DesignPoint = { tier: 'proved', navigation: 'list', layout,
+    input: cs.some(c => gotoOf(c) && c.hotkey) ? 'keyboard' : 'mouse', alertChannel: 'spec',
+    density: cs.some(c => kindTag(c.kind) === 'field' && c.size === 'compact') ? 'compact' : 'normal',
+    patientScope: 'single', temporalView: cs.some(c => c.tag.endsWith('.layout.datedTimeline')) ? 'aligned' : layout === 'timeline' ? 'longitudinal' : 'encounter', taskLayouts: {} };
+  return { point, program, workflows, taskMapping: bindTasks(program, workflows, point), sandbox: null };
 }
