@@ -156,7 +156,7 @@ sequenceDiagram
 |---|---|
 | `lean/` | Rulebook, interpreter, checker, renderer, simulator and all proofs. |
 | `app/` | React app: clinical painter, live and replay modes, dashboard. |
-| `agent/` | Nightly discovery, certified design archives, configurable release cadence and a typed review gate. Historical nightly protocols remain available. The offline `proposal-quality` harness compares recorded prompt variants without deploying. |
+| `agent/` | Nightly discovery, certified design archives, configurable release cadence and a typed review gate; simulator-only off-shift tailoring sessions (`session*.ts`). Historical nightly protocols remain available. The offline `proposal-quality` harness compares recorded prompt variants without deploying. |
 | `services/commit/` | Postgres commit authority for MAR and ADT, driven by the native Lean binary. |
 | `wasm/` | Lean → C → Emscripten build. |
 | `world/` | Generator of simulated clinical days (patients, tasks, schedules). |
@@ -425,9 +425,94 @@ weakest parts.
   archive, preserves unchosen train estimates and known duds, and ships through
   a configurable schedule and review hook. Its switch cost is still a
   usage-weighted movement proxy; it does not yet use the bounded clinician's
-  relearning cost. The default review hook auto-approves: clinicians cannot yet
-  request changes or try and reject alternatives. No live cadence experiment
-  has validated these choices.
+  relearning cost. The default review hook auto-approves. A simulator-only
+  tailoring-session protocol (below) lets a simulated clinician choose among
+  2–3 certified options or keep the current layout, but it is not yet wired
+  into the cadence review hook, its chooser is a seeded stand-in for the
+  bounded clinician, and there is no in-app control. No live cadence
+  experiment has validated these choices.
+
+## Offline tailoring sessions (simulator only)
+
+`agent/src/session.ts` prepares an off-shift, weekly or monthly review from a
+`SessionArchive` of whole candidate bundles. It verifies the certificate's
+program hash/spec, rechecks each candidate against the current program and
+canonical reference (including the current stability budget), removes duplicate
+expanded layouts (ignoring unused definitions and version numbers), and selects 2–3 options by farthest-first diversity over component
+changes and locations. Fewer than two eligible, replay-complete options leaves
+the current layout in place by failing preparation; no option is invented or
+deployed. `phase: "offShift"` is required. Cadence is review metadata here;
+the archive/release lane remains responsible for scheduling and release gates.
+
+Evidence reuses `EhrClient.simulate` on the same clinician's supplied recent
+schedules, world and paired seeds for current versus each option. Future days,
+foreign schedules and incomplete/mismatched task replays are rejected. Totals
+report clicks, keystrokes and scrolls saved, with negative savings retained.
+`layoutChanges` expands composites and records additions, removals, edits and
+old→new screen, parent, tab and list position. Relearning is an explicitly
+unvalidated simulator heuristic: 0.5 minutes per moved component plus 0.25 per
+other component change. It is not a measured learning or clinical time benefit.
+These replays still use the existing simulator's knowledge of the whole layout.
+
+`SessionChooser` accepts the prepared record and returns one option ID or
+`null` (keep current), a reason and optional per-option reasons. The temporary
+`seededSessionChooser` keeps seeded preference weights private in a closure,
+compares savings against estimated relearning, and can reject every option.
+It is the adapter boundary for the bounded-knowledge user-model lane, not a
+human study. `answerSession` validates the choice and exports winner-versus-each
+alternative comparisons, including current, program hashes and change features;
+it infers no ranking among rejected options. `chosenSessionBundle` returns the
+whole selected bundle for a later cadence gate. None of these functions deploys
+or edits a program. The AI remains the author of every candidate.
+
+`agent/src/session-schema.ts` reexports the shared review wire schema from
+`app/src/browser/session-schema.ts` (inside the review-only hash boundary).
+It defines optional typed friction entries alongside interaction
+entries in `SessionTraceEntry`: `slowHere` or a bounded free-text `wish`, with
+clinician, program hash, day, task, time, screen and optional component. They
+are feedback metadata, not Lean interpreter events. `flagFriction` appends the
+annotation without an interpreter call or clinical-state mutation;
+`traceFriction` extracts it. `sessionGeneratorInput` scopes flags and recorded
+pairwise comparisons to this clinician and past days, and marks wishes/reasons
+as untrusted data. A generator passes this result as the optional
+`NightlyContext.tailoring` prompt input. Existing nightly callers are unchanged.
+There is no in-app flag control; a future control would enqueue this annotation
+without interrupting work or changing screens during a shift.
+
+`recordSession` writes one immutable JSON record to `runs/sessions/<id>.json`
+(options, full programs/certificates, recent schedules and simulated traces,
+evidence, choice/reasons and comparisons). These files are gitignored data.
+The offline harness runs without an LLM or deployment:
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp \
+EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr \
+pnpm --filter agent exec tsx src/session-cli.ts /absolute/path/to/session-input.json
+```
+
+The input shape is `inputSchema` in `agent/src/session-cli.ts`: current and
+canonical programs, persona, nonempty recent schedules, world directory,
+archive candidates with certificates, session metadata, seed and optional flags.
+Use absolute input/world paths; output defaults to this repo's `runs/`. The
+harness always uses the simulated chooser. Fake backend evidence is permitted
+only in tests and certifies nothing.
+
+Open `/browse?session=/runs/sessions/<id>.json` for the desktop review. Current
+and candidate layouts appear side by side for the same selectable recent case,
+with independently scrubbed recorded event sequences and highlighted targets
+in a component layout map. This map shows recorded screen/order/target, not
+clinical values or a full clinical painter replay. Savings, old→new locations,
+heuristic relearning, flags, the choice and reasons are shown explicitly. The
+page is read-only, simulator-only, and covered at 1440×900. App changes stay
+inside `app/src/browser`; the certified clinical app hash is unchanged.
+
+Validation for this module uses the fake backend and no LLM calls:
+
+```sh
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/session.test.ts
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app build
+TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
+```
 
 ## Data sources
 
