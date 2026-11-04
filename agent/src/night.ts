@@ -704,7 +704,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
         observation.screen = await retryScreens(deps.screens).check({ specVersion: release.specVersion, program });
         if (observation.screen.status === 'pass') {
           observation.trainEstimate = await estimator.estimate(program);
-          const cost = await (options.switchCost ?? usageWeightedSwitchCost)(current, program, context);
+          const cost = await (options.switchCost ?? usageWeightedSwitchCost)(structuredClone(current), structuredClone(program), structuredClone(context));
           if (!Number.isFinite(cost.cost) || cost.cost < 0) throw Error('Switch cost must be finite and nonnegative');
           observation.switchCost = cost;
         }

@@ -146,6 +146,19 @@ it('a weekly veto retains candidates until the next slot and cannot mutate certi
   expect((await decision(fixture.summary.dir,14)).outcome).toBe('deployed');
 });
 
+it('isolates switch-cost callback mutations from certified programs and training context', async () => {
+  const fixture = await runFakeCadence(await tmp('cadence-cost-mutation'), {
+    switchCost: (prev,next,context) => {
+      prev.screens = []; next.screens = [];
+      const first = context.train[0]; if (first) first.schedule.tasks = [];
+      return { cost: 0, model: 'mutation-test', assumption: 'simulation assumption: test' };
+    }, switchCostModel: 'mutation-test',
+  });
+  expect((await decision(fixture.summary.dir,7)).outcome).toBe('deployed');
+  const snapshot = await archiveStore(fixture.summary.dir).before(8,'fake');
+  expect(snapshot.entries.every(e => !e.program || e.program.screens.length > 0)).toBe(true);
+});
+
 it('switch cost can remove every offer before review', async () => {
   const review = vi.fn(autoApprove.review);
   const fixture = await runFakeCadence(await tmp('cadence-cost'), {

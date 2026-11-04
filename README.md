@@ -220,8 +220,8 @@ Before release, `ReviewGate.review` receives 1–3 positive-scoring niche winner
 and movement counts). It returns an offered bundle ID or `null`, with a reason;
 `auto-approve-v1` chooses the highest score. `RunOptions.reviewGate` is the
 integration hook for tailoring sessions; `RunOptions.switchCost` and
-`switchCostModel` supply a replacement cost model. Hooks receive cloned data
-and cannot mutate certified program bytes. Selection is followed by the
+`switchCostModel` supply a replacement cost model. Both review and switch-cost hooks receive cloned inputs
+and cannot mutate certified program bytes or the loop’s train context. Selection is followed by the
 existing past-calibration validation, simulated user response, whole-version
 screen check and atomic certified deployment. Mandatory vendor recertification
 and migration retain their existing schedule and bypass discretionary cadence
