@@ -204,23 +204,80 @@ product.
 | **Regulatory updates** | Vendor releases v1 → v2 → v3 that add rules, migrated per clinician and re-certified. | Real vendor upgrade tooling. |
 | **Data and storage** | FHIR R4 on Medplum: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Postgres event streams with version checks and live updates for MAR and ADT. | HL7v2 interfaces, master patient index, production audit logging, high availability. |
 | **Identity** | Keycloak single sign-on (PKCE) for MAR and bed management; development password login elsewhere. | Production identity, break-the-glass access. |
-| **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. They plan the shortest path through the current screens. | Real clinicians; no user study. Visual search, learning, forgetting and relearning after a change (see [Open problems](#open-problems)). |
+| **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. The default policy plans through the current screens; an optional bounded policy learns locations and searches visible controls. | Real clinicians; no user study. Search, practice, forgetting and hidden tastes use uncalibrated simulation assumptions. |
+
+## Bounded clinician simulation
+
+`Ehr.Sim.Policy.simulate` and its historical JSON output are unchanged. Select
+`ehr simulate ... --policy bounded` (or `"policy":"bounded"` in the persona).
+`expert` is the default; an explicit CLI policy overrides the persona. Pass
+`--memory-in FILE --memory-out FILE` to carry one actor's layout knowledge
+across days and program revisions. The result also contains `memory`; an actor
+mismatch is rejected. Do not share memory between clinicians or counterfactual
+arms. Empty memory represents an unfamiliar interface.
+
+`lean/Ehr/Sim/Bounded.lean` owns the policy. Memory is keyed by stable component
+`tag`, falling back to `id`; it records screen, parent, tab, ordinal position,
+experienced navigation route, last-use day and exposure count. Strength is
+`1000 * sqrt(exposures / (1 + ageDays))`, rounded down, with confidence at 1400.
+Using a newly discovered location resets its practice count; deploying a program
+never refreshes memory. Recall follows experienced events. A stale location
+causes a charged pointing/click attempt and then visual search. The attempted
+location is recorded in an observation; a guaranteed-absent ID goes through the
+interpreter and is ignored, rather than activating an unrelated clinical action.
+
+Unknown controls incur a serial scan through the shown items preceding the
+control (180 ms/item). Navigation ranks visible controls by deterministic lexical
+scent, explores with finite fuel, and backtracks using real UI events. It does
+not use the BFS planner or inspect hidden descendants for relevance. Tabs expose
+their declared indices. `Bounded.Scent := String → Component → Nat` is the pure,
+replaceable scoring interface for a future decision model. Expert recall uses
+logarithmic choice time and a diminishing square-root practice term. The
+architecture follows Cockburn, Gutwin & Greenberg, CHI 2007,
+[doi:10.1145/1240624.1240723](https://doi.org/10.1145/1240624.1240723);
+the coefficients and memory law are explicitly simulation assumptions. All
+clinical events, including failed attempts, pass through the existing guarded
+interpreter. There are no new clinical rules or proof assumptions.
+
+Bounded results retain the original `tasks`, `trace`, `floor` and `complaints`.
+`expert` contains an independent unchanged BFS-policy run on the same inputs and
+seed: the expert comparison, not a newly proved minimum (persona noise can make
+its cost exceed the bounded run). `floor` remains the ideal-interface clinical
+floor. `effort` adds per-task misses, visual searches, scanned items, backtracks,
+synthetic ordinal mouse travel and cognitive milliseconds. `observations` links
+search/recall/miss decisions to trace indices and old locations. Task time
+includes cognitive time as well as trace KLM operators; visual searches are not
+search-box activations. Travel is an ordinal-layout proxy, not browser pixels.
+Report completion alongside costs; an incomplete task's lower cost is not an
+improvement. Signed bounded-minus-expert differences measure learnability cost.
+`Bounded.relearningCost firstDays steadyDays : Int` computes summed first-k-day
+cost minus k times mean steady cost; use matched workloads and report k and the
+steady-state sampling protocol, retaining negative results.
+
+Hidden persona preferences are optional `hiddenPreferences` with `placements`
+(`tag`, `nearTag`, `weight`) and `changeSensitivity` (zero is neutral). The pure
+boundary for the tailoring lane is
+`Bounded.ratePrograms (prefs : HiddenPreferences) (before after : Program)
+(recent : List RecentDay) : Rating`. Recent days contain `usedTags` and `costMs`;
+the current assumption-based rating uses use frequency to weight disruption,
+placement distances to score preferences, and reserves costMs for later fitting.
+Positive score chooses after; ties keep before. `seededPreferences seed actor`
+provides optional deterministic tastes. These preferences do not alter clinical
+goals or the historical default policy.
 
 ## Open problems
 
 How users are simulated and how the agent changes the interface are the two
 weakest parts.
 
-- **Simulated clinicians already know the interface.** A simulated clinician
-  takes its goals from the rulebook. It then plans the shortest path to them
-  through the whole current layout, by breadth-first search over real
-  interpreter steps (`lean/Ehr/Sim/Interaction.lean`). Seeded noise adds
-  detours, backtracking, search, keyboard use and interruptions. Even so, the
-  clinician never has to hunt for a control, never reaches for where a control
-  used to be, and never makes the slips the rules exist to catch. A
-  rearranged layout therefore costs nothing on its first day. Learning,
-  relearning and discoverability are not measured. The stability budget (at
-  most N components moved per version, checked in Lean) stands in for them.
+- **User models need empirical calibration.** The historical BFS policy still
+  knows the layout. The optional bounded policy below measures discovery and
+  stale-location errors, but its search, memory, timing and preference parameters
+  are simulation assumptions, not estimates from clinician observations. Its
+  lexical navigation can fail where the expert succeeds; incompletion is
+  reported rather than repaired with an omniscient planner. Patient-directory
+  selection still uses the shared fixed policy. The stability budget remains
+  an independent checker constraint.
 - **The agent changes the interface on its own, in small greedy steps.** Each
   night it reads one clinician's traces and proposes 3–5 patches. It deploys
   the best passing patch, or a few that touch different components. It does
