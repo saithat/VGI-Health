@@ -60,13 +60,16 @@ async function files(dir) {
 }
 export async function rewriteLocalData(directories, sourceCatalog = new Map()) {
   const paths=(await Promise.all(directories.map(files))).flat();
-  const catalog=new Map(sourceCatalog), values=new Map(), changedDigests=new Map(), modified=new Set();
-  for(const file of paths) {
+  const catalog=new Map(sourceCatalog), originals=new Map(), changedDigests=new Map(), modified=new Set();
+  // Two passes keep memory bounded by the largest file: the first builds the
+  // identity catalog, the second re-reads and rewrites one file at a time.
+  const load=async file=>{
     const bytes=await readFile(file), source=(file.endsWith('.gz')?gunzipSync(bytes):bytes).toString();
-    const value=file.endsWith('.jsonl')?source.trim().split('\n').filter(Boolean).map(line=>JSON.parse(line)):JSON.parse(source);
-    identityCatalog(value,catalog);values.set(file,{value,bytes});
-  }
-  for(const [file,{value,bytes}] of values) {
+    return {bytes,value:file.endsWith('.jsonl')?source.trim().split('\n').filter(Boolean).map(line=>JSON.parse(line)):JSON.parse(source)};
+  };
+  for(const file of paths)identityCatalog((await load(file)).value,catalog);
+  for(const file of paths) {
+    const {value,bytes}=await load(file);originals.set(file,sha(bytes));
     const updated=fictionalize(migrateTerms(value),catalog);
     if(JSON.stringify(updated)===JSON.stringify(value))continue;
     const text=file.endsWith('.jsonl')?updated.map(v=>JSON.stringify(v)).join('\n')+'\n':JSON.stringify(updated,null,2)+'\n';
@@ -80,7 +83,7 @@ export async function rewriteLocalData(directories, sourceCatalog = new Map()) {
     const before=await readFile(file),index=JSON.parse(before),original=JSON.stringify(index);
     for(const patient of index.patients){const bytes=await readFile(join(directory,patient.file));patient.bytes=bytes.length;patient.sha256=sha(bytes);}
     index.totalBytes=index.patients.reduce((n,p)=>n+p.bytes,0);
-    if(JSON.stringify(index)!==original){await write(file,index);const after=await readFile(file);changedDigests.set(sha(before),sha(after));if(values.has(file))changedDigests.set(sha(values.get(file).bytes),sha(after));modified.add(file);}
+    if(JSON.stringify(index)!==original){await write(file,index);const after=await readFile(file);changedDigests.set(sha(before),sha(after));if(originals.has(file))changedDigests.set(originals.get(file),sha(after));modified.add(file);}
   }
   // Refresh file-hash references bottom-up, without retaining old digest claims.
   for(let pass=0;pass<4;pass++) {
