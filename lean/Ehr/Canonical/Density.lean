@@ -38,7 +38,7 @@ def cards : List (String × String × String × String) :=
 
 def chartNav (s : ScreenId) : List Component :=
   [{ group s "chartWorkspace" "Chart workspace" (collapsible := false) with tag := "nav" }] ++
-  ([ ("chartSummary", "Summary"), ("chartReview", "Chart Review") ].filter (·.1 != s)).map fun (target, label) =>
+  ([ ("chartSummary", "Summary"), ("chartHistory", "Chart History") ].filter (·.1 != s)).map fun (target, label) =>
     goto s ("chartWorkspace." ++ target) target label (parent := some "chartWorkspace")
 
 def summary : Screen :=
@@ -51,29 +51,29 @@ def summary : Screen :=
       [{ group s ("card." ++ info) label (parent := some "chartIndex") (collapsible := false) with tag },
        { table s ("card." ++ info ++ ".data") info label (parent := some ("card." ++ info)) with tag := tag ++ ".present." ++ kind }]) ++
     [{ group s "patientCare" "Patient care" (collapsible := false) with tag := "nav" }] ++
-    ([("w1Rooming", "Visit Navigator"), ("w2Inbasket", "Result Review"),
-      ("w3Triage", "ED Navigator"), ("w4Mar", "MAR"), ("w5Rooming", "Child Health Navigator"),
-      ("w6PreOp", "Surgical Navigator"), ("w6Rounding", "Rounding"), ("w7Queue", "Refill Review")].map fun (target, label) =>
+    ([("w1Rooming", "Visit workflow"), ("w2Inbox", "Result Review"),
+      ("w3Triage", "ED workflow"), ("w4Mar", "MAR"), ("w5Rooming", "Pediatric workflow"),
+      ("w6PreOp", "Surgical workflow"), ("w6Rounding", "Rounding"), ("w7Queue", "Refill Review")].map fun (target, label) =>
         goto s ("patientCare." ++ target) target label (parent := some "patientCare")) }
 
 def review : Screen :=
-  let s := "chartReview"
-  { id := s, title := "Chart Review", workflow := "chart", components :=
+  let s := "chartHistory"
+  { id := s, title := "Chart History", workflow := "chart", components :=
     [banner s, searchC s "chartSearch" "chart" "Search chart"] ++
-    tabStrip s "recordTabs" "Chart Review records" reviewBlocks }
+    tabStrip s "recordTabs" "Chart History records" reviewBlocks }
 
-def storyboard (s : ScreenId) : List Component :=
-  [{ group s "storyboard" "Patient Storyboard" (collapsible := false) with tag := "layout.overview.storyboard.sidebar" }] ++
+def patientSidebar (s : ScreenId) : List Component :=
+  [{ group s "patientSidebar" "Patient sidebar" (collapsible := false) with tag := "layout.overview.patientSidebar.sidebar" }] ++
   ([ ("storyIdentity", "Patient"), ("storyPrecautions", "Code Status / Precautions"),
      ("allergyList", "Allergies"), ("storyTeam", "PCP / Attending / Care Team"),
      ("storyEncounter", "Encounter / Location / LOS"), ("storyWeight", "Weight (kg)"),
      ("vitals", "Recent Vitals"), ("storyMedCount", "Active Medications"),
      ("problemList", "Active Problems"), ("storyLastNote", "Last Note"),
      ("storyPharmacy", "Pharmacy"), ("chartReports", "Reports") ] : List (String × String)).map fun (info, label) =>
-      panel s ("storyboard." ++ info) info label (parent := some "storyboard")
+      panel s ("patientSidebar." ++ info) info label (parent := some "patientSidebar")
 
 def contextBlocks (s : Screen) : List (String × String) :=
-  if s.id == "chartSummary" || s.id == "chartReview" || s.id == "home" then [] else
+  if s.id == "chartSummary" || s.id == "chartHistory" || s.id == "home" then [] else
   if s.id.endsWith "Orders" || s.id.endsWith "Labs" || s.id.endsWith "Sign" then
     [("chartOrders", "Active Orders"), ("chartRecentResults", "Recent Results"),
      ("allergyList", "Allergies"), ("storyWeight", "Measured Weight")]
@@ -89,7 +89,7 @@ def contextBlocks (s : Screen) : List (String × String) :=
 
 def augment (s : Screen) : Screen :=
   let blocks := contextBlocks s
-  { s with components := s.components ++ chartNav s.id ++ storyboard s.id ++
+  { s with components := s.components ++ chartNav s.id ++ patientSidebar s.id ++
     [{ panel s.id "workspaceStatus" "chartStatus" "Workspace status" with tag := "layout.statusBar" }] ++
     (if blocks.isEmpty then [] else
       [{ group s.id "contextPanels" "Clinical Context" (collapsible := false) with tag := "contextPanels.layout.columns" }] ++
@@ -97,7 +97,7 @@ def augment (s : Screen) : Screen :=
         [group s.id ("contextPanels.card." ++ info) label (parent := some "contextPanels") (collapsible := false),
          { table s.id ("contextPanels.data." ++ info) info label (parent := some ("contextPanels.card." ++ info)) with tag := "present.table" }]) }
 
-/-- Context and storyboard additions retain every original clinical component. -/
+/-- Context and patientSidebar additions retain every original clinical component. -/
 theorem augment_keeps (s : Screen) (c : Component) (h : c ∈ s.components) :
     c ∈ (augment s).components := by simp [augment, h]
 

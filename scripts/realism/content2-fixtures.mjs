@@ -19,7 +19,7 @@ const cases = [
   ['p1-schedule', 'P1', 1, 'W1', 'home'], ['p2-track-board', 'P2', 1, 'W3', 'w3TrackBoard'],
   ['p3-census', 'P3', 1, 'W4', 'w4Worklist'], ['p5-or-schedule', 'P5', 2, 'W6', 'w6Schedule'],
   ['p5-rounding', 'P5', 1, 'W6', 'w6Rounding'], ['p4-rooming', 'P4', 1, 'W5', 'w5Rooming'],
-  ['problem-list', 'P1', 1, 'W1', 'w1Rooming'], ['in-basket', 'P1', 1, 'W2', 'w2Inbasket'],
+  ['problem-list', 'P1', 1, 'W1', 'w1Rooming'], ['inbox', 'P1', 1, 'W2', 'w2Inbox'],
   ['p5-chole-op-note', 'P5', 2, 'W6', 'w6OpNote'],
   ['refill', 'P1', 1, 'W7', 'w7Queue'], ['p5-consults', 'P5', 2, 'W6', 'w6Consults'],
 ];
@@ -56,7 +56,7 @@ for (const [name, persona, day, workflow, screen] of cases) {
   const base = {spec, program, user, facts: projection.facts};
   let state = native('init', base);
   const landing = { 'p1-schedule': 'scheduleTasks', 'p2-track-board': 'edTrackBoard', 'p3-census': 'shiftWorklist',
-    'p5-or-schedule': 'orSchedule', 'in-basket': 'inBasketResults', 'refill': 'inBasketRxRequests', 'p5-consults': 'consultList' }[name];
+    'p5-or-schedule': 'orSchedule', 'inbox': 'inboxResults', 'refill': 'inboxRxRequests', 'p5-consults': 'consultList' }[name];
   if (program.patientSelection) {
     if (landing) {
       if (state.patientContext.activity !== landing)
@@ -106,7 +106,7 @@ for (const [name, persona, day, workflow, screen] of cases) {
     if(name==='p3-census')assert.equal(projection.facts.infoPayloads.find(p=>p.info==='unitCensus').rows.length,12);
     if(name==='p5-rounding')assert.ok(!ui.banner.some(([k,v])=>v==='Preoperative chart review'));
     if(name==='p5-chole-op-note'){assert.ok(nodes.some(n=>n.info?.rows.some(row=>row.some(([,value])=>/cholecystectomy/i.test(value)))));assert.ok(nodes.filter(n=>n.button).every(n=>!/appendectomy/i.test(n.button.label)));}
-    if(name==='in-basket'){assert.ok(projection.facts.infoPayloads.find(p=>p.info==='inBasketFolders').rows.every(r=>Number(new Map(r.fields).get('Count'))>=2));assert.ok(rows.some(r=>r.info==='inBasketResults'&&r.rows>=3));assert.ok(rows.some(r=>r.info==='inBasketFolders'&&r.rows===3));}
+    if(name==='inbox'){assert.ok(projection.facts.infoPayloads.find(p=>p.info==='inboxFolders').rows.every(r=>Number(new Map(r.fields).get('Count'))>=2));assert.ok(rows.some(r=>r.info==='inboxResults'&&r.rows>=3));assert.ok(rows.some(r=>r.info==='inboxFolders'&&r.rows===3));}
   }
   console.log(`${name}: ${rows.map(r=>`${r.info}=${r.rows}`).join(', ')}`);
 }

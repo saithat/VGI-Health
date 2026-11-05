@@ -692,7 +692,7 @@ structure UiScreen where
   /-- Signed-in clinical role, supplied by the same Lean user as permissions. -/
   viewer? : Option String := none
   nav : List (String × List (String × String))
-  /-- The declared navigator component that opens the current screen, if any. -/
+  /-- The declared workflow component that opens the current screen, if any. -/
   activeNav? : Option CompId := none
   /-- Readable labels for prefill sources; raw provenance remains on each field. -/
   sourceLabels? : Option (List (String × String)) := none

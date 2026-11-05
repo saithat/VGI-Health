@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Materialize a world day as real FHIR worklists. Existing resources are never overwritten.
+import { fictionalize } from '../../scripts/fictional-identities.mjs';
 import { MedplumClient } from '@medplum/core';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -93,7 +94,7 @@ export function buildResources(data, patients, practitioners) {
   const schedules = Object.fromEntries(Object.entries(data.schedules).map(([p, s]) => [p, { ...s, tasks: [...s.tasks] }]));
   // Schedules contain work handled that day. The queue also needs the world's unhandled
   // backlog, including abnormal results and refills on busy/urgent-care days.
-  for (const item of state.inBasketBacklog) {
+  for (const item of state.inboxBacklog) {
     const p = item.lab?.recipient ?? 'P1';
     const todayResources = [];
     const observation = (id, lab, value, interpretation, effectiveDay, text) => {
@@ -272,7 +273,7 @@ export function buildResources(data, patients, practitioners) {
           priority: abnormal ? 'urgent' : 'routine', code: concept(INFRA, 'result-review', 'Review result'),
           description: abnormal ? 'Review new abnormal result' : 'Review new result',
           for: patient(task.patientId), owner: practitioner(p), focus: report, authoredOn: start,
-          input: observations.map((o) => ({ type: { text: 'Result Observation' }, valueReference: imported.get(`source-Observation-${o.id}`) })) }, `${p}-inbasket`);
+          input: observations.map((o) => ({ type: { text: 'Result Observation' }, valueReference: imported.get(`source-Observation-${o.id}`) })) }, `${p}-inbox`);
       }
       if (p === 'P5' && ['rounding', 'discharge'].includes(task.choices.w6Step)) {
         add(`surgery-task-${task.id}`, { resourceType: 'Task', status: 'requested', intent: 'order',
@@ -315,7 +316,7 @@ export function buildResources(data, patients, practitioners) {
         owner: practitioner('P5'), requester: practitioner('P2'), focus: request, authoredOn: time(data, c.consultClock) }, 'P5-consult-tasks');
     }
   }
-  return [...entries.values()];
+  return fictionalize([...entries.values()]);
 }
 
 function medication(o, subject, encounter, requester, authoredOn, data, patientId) {

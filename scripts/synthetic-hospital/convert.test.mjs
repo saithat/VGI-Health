@@ -1,3 +1,4 @@
+import { fictionalIdentity } from '../fictional-identities.mjs';
 import { dataReason } from '../test-data.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -57,7 +58,7 @@ test('shifts all encounter dates by one offset, preserves spacing, order, and so
   assert.equal(notes[0].type.coding[0].code, '11506-3');
   assert.equal(notes[1].type.coding[0].code, '34117-2');
   assert.equal(Buffer.from(notes[1].content[0].attachment.data, 'base64').toString('utf8'), row.encounters[0].note_text);
-  assert.equal(notes[1].author[0].display, 'Dr. Demo');
+  assert.equal(notes[1].author[0].display, fictionalIdentity('Practitioner', 'Dr. Demo').name);
   assert.equal(notes[1].context.encounter[0].reference, bundle.entry.find((e) => e.resource === encounters[1]).fullUrl);
 });
 test('exact DB codes only, deduplicated diagnoses, missing codes explained', () => {

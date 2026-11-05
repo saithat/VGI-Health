@@ -109,7 +109,7 @@ def w1Close : State := more (finish w1 "w1Sign" "signOrders")
 /-- W2 abnormal result: the patient message is mandatory. -/
 def resultFacts : Facts := { adult with abnormalResult := true }
 /-- W2 before sending the message. -/
-def w2Missing : State := run [.click "home.work.w2Inbasket", .click "w2Inbasket.openResult",
+def w2Missing : State := run [.click "home.work.w2Inbox", .click "w2Inbox.openResult",
   .enter "w2Result.resultAction" (.code "repeat")] (f := resultFacts)
 #guard reason (one w2Missing (.click "w2Result.commit.ackResult") (f := resultFacts)).2 ==
   "entry required: patientMessage"

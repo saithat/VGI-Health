@@ -1,287 +1,523 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w6Schedule.chartSearch"}},
-  {"presentation":
-   {"kind": "orSchedule",
-    "children":
-    [{"section":
-      {"title": "Surgical cases",
-       "id": "w6Schedule.caseList",
-       "children":
-       [{"presentation":
-         {"kind": "orSchedule",
-          "children":
-          [{"info":
-            {"rows":
-             [[["Room", "Operating room 1"],
-               ["Start", "Nov 3, 2026 09:04"],
-               ["Procedure", "laparoscopic cholecystectomy"],
-               ["Indication", "Symptomatic cholelithiasis"],
-               ["Patient", "Mitchell, Destiny Wendolyn"],
-               ["Surgeon", "Whitaker, James"],
-               ["Status", "active"]]],
-             "label": "Scheduled cases — request status",
-             "infoId": "scheduleTasks",
-             "display": "table",
-             "comp": "w6Schedule.cases"}}]}},
-        {"rowAction":
-         {"target": "w6Schedule.cases",
-          "row": 0,
-          "children":
-          [{"button":
-            {"role": "nav",
-             "label": "Open selected case",
-             "hotkey": null,
-             "enabled": true,
-             "comp": "w6Schedule.openCase",
-             "blockedReason": null}}]}}]}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.home",
-    "blockedReason": null}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Encounters",
-     "Notes",
-     "Results",
-     "Medications",
-     "Problems",
-     "Allergies",
-     "Imaging",
-     "Surgical history"],
-    "id": "w6Schedule.chart",
-    "body":
-    [{"presentation":
-      {"kind": "table",
-       "children":
-       [{"info":
-         {"rows":
-          [[["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 19, 2026 02:18"],
-            ["End", "Oct 19, 2026 02:54"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "Hospital admission (procedure)"],
-            ["Class", "IMP"],
-            ["Start", "Jul 6, 2026 03:17"],
-            ["End", "Jul 9, 2026 03:35"],
-            ["Reason",
-             "Acute non-ST segment elevation myocardial infarction (disorder)"],
-            ["Provider", "Dr. Gabriel Reilly"],
-            ["Location", "Fitchburg Outpatient Clinic"]],
-           [["Encounter", "Emergency room admission (procedure)"],
-            ["Class", "EMER"],
-            ["Start", "Jul 6, 2026 02:18"],
-            ["End", "Jul 6, 2026 03:18"],
-            ["Reason", "Myocardial infarction (disorder)"],
-            ["Provider", "Dr. Gabriel Reilly"],
-            ["Location", "Fitchburg Outpatient Clinic"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 13, 2025 02:18"],
-            ["End", "Oct 13, 2025 03:02"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 7, 2024 02:18"],
-            ["End", "Oct 7, 2024 02:51"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 2, 2023 02:18"],
-            ["End", "Oct 2, 2023 03:17"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Sep 26, 2022 02:18"],
-            ["End", "Sep 26, 2022 03:14"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "Admission to hospice (procedure)"],
-            ["Class", "HH"],
-            ["Start", "Mar 7, 2022 01:18"],
-            ["End", "Apr 1, 2022 02:33"],
-            ["Reason", "Overlapping malignant neoplasm of colon (disorder)"],
-            ["Provider", "Dr. Jorge Harvey"],
-            ["Location", "COMPASSUS - GREATER WESTERN MASSACHUSETTS"]]],
-          "label": "Encounters",
-          "infoId": "encounterHistory",
-          "display": "table",
-          "comp": "w6Schedule.chart.encounterHistory"}}]}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Consults",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.consults",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Surgical clinic",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.clinic",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "In Basket: Results",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.results",
-    "blockedReason": null}}],
- "viewer": "Whitaker, James · General surgeon",
- "title": "OR Schedule",
- "side":
- [{"section":
-   {"title": "Surgical case",
-    "id": "w6Schedule.caseSummary",
-    "children":
-    [{"info":
-      {"rows":
-       [[["Room", "Operating room 1"],
-         ["Start", "Nov 3, 2026 09:04"],
-         ["Procedure", "laparoscopic cholecystectomy"],
-         ["Indication", "Symptomatic cholelithiasis"],
-         ["Patient", "Mitchell, Destiny Wendolyn"],
-         ["Surgeon", "Whitaker, James"],
-         ["Status", "active"]]],
-       "label": "Case request",
-       "infoId": "scheduleTasks",
-       "display": "list",
-       "comp": "w6Schedule.caseSummary.procedure"}}]}},
-  {"info":
-   {"rows": [],
-    "label": "Allergies",
-    "infoId": "allergyList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Ibuprofen 400 MG Oral Tablet [Ibu] — Take as needed."]],
-     [["Record", "amLODIPine 2.5 MG Oral Tablet — 1, 1x per 1 d"]],
-     [["Record", "atorvastatin — atorvastatin 10 mg PO daily"]],
-     [["Record", "aspirin 81 MG Oral Tablet"]],
-     [["Record",
-       "24 HR metoprolol succinate 25 MG Extended Release Oral Tablet — Take as needed."]],
-     [["Record", "atorvastatin 10 MG Oral Tablet — Take as needed."]],
-     [["Record", "lisinopril 20 MG Oral Tablet — Take as needed."]],
-     [["Record", "prasugrel 10 MG Oral Tablet"]],
-     [["Record", "Clopidogrel 75 MG Oral Tablet"]],
-     [["Record", "Simvastatin 20 MG Oral Tablet"]],
-     [["Record",
-       "24 HR metoprolol succinate 100 MG Extended Release Oral Tablet"]],
-     [["Record", "Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray"]]],
-    "label": "Active medications",
-    "infoId": "currentMeds",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Full-time employment (finding) (active)"]],
-     [["Record", "History of myocardial infarction (situation) (active)"]],
-     [["Record",
-       "Acute non-ST segment elevation myocardial infarction (disorder) (active)"]],
-     [["Record", "Gingivitis (disorder) (active)"]],
-     [["Record", "Chronic pain (finding) (active)"]],
-     [["Record", "Chronic low back pain (finding) (active)"]],
-     [["Record", "Chronic neck pain (finding) (active)"]],
-     [["Record", "Recurrent rectal polyp (disorder) (active)"]],
-     [["Record", "Polyp of colon (disorder) (active)"]],
-     [["Record",
-       "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"]],
-     [["Record", "Ischemic heart disease (disorder) (active)"]],
-     [["Record", "Essential hypertension (disorder) (active)"]],
-     [["Record", "Metabolic syndrome X (disorder) (active)"]],
-     [["Record", "Past pregnancy history of miscarriage (situation) (active)"]],
-     [["Record", "Prediabetes (finding) (active)"]],
-     [["Record", "Anemia (disorder) (active)"]],
-     [["Record", "Transport problem (finding) (active)"]],
-     [["Record", "Body mass index 30+ - obesity (finding) (active)"]],
-     [["Record", "Educated to high school level (finding) (active)"]],
-     [["Record", "Lack of access to transportation (finding) (active)"]],
-     [["Record", "Risk activity involvement (finding) (active)"]]],
-    "label": "Problems",
-    "infoId": "problemList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Body weight 74.1 kg (today)"]],
-     [["Record", "Body Height 158.1 cm (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Body mass index (BMI) [Ratio] 29.25 kg/m2 (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Blood pressure panel with all children optional 119/75 mm[Hg] (Oct 19, 2026 02:18)"]],
-     [["Record", "Heart rate 90 /min (Oct 19, 2026 02:18)"]],
-     [["Record", "Respiratory rate 15 /min (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Natriuretic peptide.B prohormone N-Terminal [Mass/volume] in Blood by Immunoassay 1.721 pg/mL (Jul 6, 2026 02:37)"]]],
-    "label": "Recent vitals",
-    "infoId": "vitals",
-    "display": "list",
-    "comp": ""}}],
- "screen": "w6Schedule",
- "nav":
- [["Surgical navigator",
-   [["w6Schedule.nav.w6Schedule", "Case list"],
-    ["w6Schedule.nav.w6Consults", "Consult list"],
-    ["w6Schedule.nav.w6Consult", "Consult note"],
-    ["w6Schedule.nav.w6ConsultClose", "Sign Consult"],
-    ["w6Schedule.nav.w6PreOp", "Preprocedure"],
-    ["w6Schedule.nav.w6Orders", "Orders"],
-    ["w6Schedule.nav.w6Sign", "Sign Orders"],
-    ["w6Schedule.nav.w6OpNote", "Brief Op Note"],
-    ["w6Schedule.nav.w6PostOp", "Postprocedure Orders"],
-    ["w6Schedule.nav.w6Rounding", "Rounding"],
-    ["w6Schedule.nav.w6Discharge", "Discharge"]]]],
- "modal": null,
- "fieldSources": [],
- "banner":
- [["Patient", "Mitchell, Destiny Wendolyn"],
-  ["DOB", "Mar 3, 1947"],
-  ["MRN", "38529840"],
-  ["Age / sex", "79 / F"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Last encounter", "AMB"],
-  ["Last provider", "Dr. Debra Predovic"],
-  ["Last location", "WEST BROOKFIELD FAMILY PRACTICE"],
-  ["Encounter context", "Preoperative chart review"],
-  ["Planned OR", "Operating room 1"],
-  ["Surgeon", "Whitaker, James"],
-  ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"],
-  ["Weight", "74.1 kg · Nov 3, 2026 08:04"],
-  ["Isolation", "Not recorded"]],
- "activeNav": "w6Schedule.nav.w6Schedule"}
+{
+  "banner": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|consultList",
+          "Consults"
+        ],
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ]
+      ]
+    ]
+  ],
+  "screen": "workspace:orSchedule",
+  "side": [],
+  "title": "OR Schedule",
+  "viewer": "General surgeon",
+  "workspace": [
+    {
+      "field": {
+        "comp": "workspace.search",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Patient search by name or MRN",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "workspace.list",
+              "display": "table",
+              "infoId": "orSchedule",
+              "label": "OR Schedule",
+              "rows": [
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T07:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic cholecystectomy"
+                  ],
+                  [
+                    "Patient",
+                    "Rowan Bennett"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Complete – PACU"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T09:15:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic inguinal hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Jordan Sullivan"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "In room"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T11:00:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "excision of soft tissue mass"
+                  ],
+                  [
+                    "Patient",
+                    "Casey Ellis"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Pre-op ready"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T12:45:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic ventral hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Casey Foster"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T14:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "umbilical hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Morgan Torres"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T07:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic cholecystectomy"
+                  ],
+                  [
+                    "Patient",
+                    "Rowan Brooks"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Complete – PACU"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T09:15:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic inguinal hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Robin Holloway"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "In room"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T11:00:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "excision of soft tissue mass"
+                  ],
+                  [
+                    "Patient",
+                    "Sage Bennett"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Pre-op ready"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T12:45:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic ventral hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Quinn Hayes"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T14:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "umbilical hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Riley Ellis"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-2e73ee92-6008-533a-a14a-46b45cdca19d|0|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Bennett, Rowan (MRN SH00002691)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 0,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-289a9a16-ba12-5c37-a692-390a7238900a|1|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Sullivan, Jordan (MRN SH00002120)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 1,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-db5ed5e4-b8bf-5e36-a154-17e5200dd279|2|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Ellis, Casey (MRN SH00001725)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 2,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-9c555c19-59c9-5397-a0d4-4bac7926853b|3|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Foster, Casey (MRN SH00001794)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 3,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-59311b19-cd42-535b-a87e-c44021f63ca5|4|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Torres, Morgan (MRN SH00002232)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 4,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-ca68414a-0aeb-5b44-accb-811e97c080cd|5|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Brooks, Rowan (MRN SH00002872)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 5,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-f01a69cd-cca9-5429-ac10-98fdf85d68b4|6|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Holloway, Robin (MRN SH00002171)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 6,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-a3efd7ae-09bf-5e1a-ae6f-f7ccc1723271|7|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Bennett, Sage (MRN SH00001984)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 7,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-4d4df538-8363-5307-a137-7d6cd7b4ef64|8|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Hayes, Quinn (MRN SH00002236)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 8,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d|9|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Ellis, Riley (MRN SH00001675)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 9,
+              "target": "workspace.list"
+            }
+          }
+        ],
+        "kind": "orSchedule"
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "summary",
+        "infoId": "chartReports",
+        "label": "Reports",
+        "rows": [
+          [
+            [
+              "Department snapshot",
+              "Schedule, census and case lists are available in Activities."
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

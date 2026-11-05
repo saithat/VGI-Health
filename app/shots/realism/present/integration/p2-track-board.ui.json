@@ -1,570 +1,1439 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w3TrackBoard.chartSearch"}},
-  {"info":
-   {"rows": [],
-    "label": "Department",
-    "infoId": "edTrackBoard",
-    "display": "table",
-    "comp": "w3TrackBoard.board"}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3TrackBoard.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3TrackBoard.home",
-    "blockedReason": null}},
-  {"tabs":
-   {"selected": 0,
-    "labels": ["Results", "Imaging", "Notes", "Encounters"],
-    "id": "w3TrackBoard.chart",
-    "body":
-    [{"presentation":
-      {"kind": "results",
-       "children":
-       [{"info":
-         {"rows":
-          [[["Test", "Hemoglobin A1c"],
-            ["Value", "5.84"],
-            ["Unit", "%"],
-            ["Flag", "H"],
-            ["Range", "4–5.6"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Glucose [Mass/volume] in Blood"],
-            ["Value", "86.89"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "70–99"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Urea nitrogen [Mass/volume] in Blood"],
-            ["Value", "19.03"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "7–20"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Creatinine [Mass/volume] in Blood"],
-            ["Value", "1.07"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "0.6–1.3"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Calcium [Mass/volume] in Blood"],
-            ["Value", "9.63"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "8.5–10.2"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Sodium [Moles/volume] in Blood"],
-            ["Value", "142.86"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "136–145"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Potassium [Moles/volume] in Blood"],
-            ["Value", "4.01"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "3.5–5.1"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Chloride [Moles/volume] in Blood"],
-            ["Value", "108.5"],
-            ["Unit", "mmol/L"],
-            ["Flag", "H"],
-            ["Range", "98–107"],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Carbon dioxide, total [Moles/volume] in Blood"],
-            ["Value", "25.19"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 11, 2026 05:12"],
-            ["Status", "final"]],
-           [["Test", "Hemoglobin A1c"],
-            ["Value", "6.02"],
-            ["Unit", "%"],
-            ["Flag", "H"],
-            ["Range", "4–5.6"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Glucose [Mass/volume] in Blood"],
-            ["Value", "88.16"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "70–99"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Urea nitrogen [Mass/volume] in Blood"],
-            ["Value", "9.37"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "7–20"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Creatinine [Mass/volume] in Blood"],
-            ["Value", "0.9"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "0.6–1.3"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Calcium [Mass/volume] in Blood"],
-            ["Value", "9"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "8.5–10.2"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Sodium [Moles/volume] in Blood"],
-            ["Value", "137.25"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "136–145"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Potassium [Moles/volume] in Blood"],
-            ["Value", "3.83"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "3.5–5.1"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Chloride [Moles/volume] in Blood"],
-            ["Value", "104.47"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "98–107"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Carbon dioxide, total [Moles/volume] in Blood"],
-            ["Value", "21.5"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Leukocytes [#/volume] in Blood by Automated count"],
-            ["Value", "7.9906"],
-            ["Unit", "10*3/uL"],
-            ["Flag", ""],
-            ["Range", "4.5–11"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Erythrocytes [#/volume] in Blood by Automated count"],
-            ["Value", "3.9851"],
-            ["Unit", "10*6/uL"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Hemoglobin"],
-            ["Value", "15.859"],
-            ["Unit", "g/dL"],
-            ["Flag", ""],
-            ["Range", "12–17.5"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test",
-             "Hematocrit [Volume Fraction] of Blood by Automated count"],
-            ["Value", "37.546"],
-            ["Unit", "%"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test",
-             "MCV [Entitic mean volume] in Red Blood Cells by Automated count"],
-            ["Value", "90.579"],
-            ["Unit", "fL"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "MCH [Entitic mass] by Automated count"],
-            ["Value", "29.463"],
-            ["Unit", "pg"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test",
-             "MCHC [Entitic Mass/volume] in Red Blood Cells by Automated count"],
-            ["Value", "35.585"],
-            ["Unit", "g/dL"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Erythrocyte [DistWidth] in Blood by Automated count"],
-            ["Value", "44.388"],
-            ["Unit", "fL"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Platelets [#/volume] in Blood by Automated count"],
-            ["Value", "195.64"],
-            ["Unit", "10*3/uL"],
-            ["Flag", ""],
-            ["Range", "150–450"],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test",
-             "Platelet distribution width [Entitic volume] in Blood by Automated count"],
-            ["Value", "490.47"],
-            ["Unit", "fL"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test",
-             "Platelet [Entitic mean volume] in Blood by Automated count"],
-            ["Value", "12.215"],
-            ["Unit", "fL"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Feb 5, 2025 05:12"],
-            ["Status", "final"]],
-           [["Test", "Hemoglobin A1c"],
-            ["Value", "6.15"],
-            ["Unit", "%"],
-            ["Flag", "H"],
-            ["Range", "4–5.6"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Glucose [Mass/volume] in Blood"],
-            ["Value", "88.07"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "70–99"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Urea nitrogen [Mass/volume] in Blood"],
-            ["Value", "15.53"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "7–20"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Creatinine [Mass/volume] in Blood"],
-            ["Value", "0.89"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "0.6–1.3"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Calcium [Mass/volume] in Blood"],
-            ["Value", "9.28"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "8.5–10.2"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Sodium [Moles/volume] in Blood"],
-            ["Value", "138.34"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "136–145"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Potassium [Moles/volume] in Blood"],
-            ["Value", "4.75"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "3.5–5.1"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Chloride [Moles/volume] in Blood"],
-            ["Value", "109.73"],
-            ["Unit", "mmol/L"],
-            ["Flag", "H"],
-            ["Range", "98–107"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Carbon dioxide, total [Moles/volume] in Blood"],
-            ["Value", "20.99"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Cholesterol [Mass/volume] in Serum or Plasma"],
-            ["Value", "159.76"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "0–199"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Triglyceride [Mass/volume] in Serum or Plasma"],
-            ["Value", "131.82"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "0–149"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test",
-             "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"],
-            ["Value", "80.35"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "0–99"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Cholesterol in HDL [Mass/volume] in Serum or Plasma"],
-            ["Value", "53.04"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "40–1000"],
-            ["Recorded", "Jan 31, 2024 05:12"],
-            ["Status", "final"]],
-           [["Test", "Hemoglobin A1c"],
-            ["Value", "6.3"],
-            ["Unit", "%"],
-            ["Flag", "H"],
-            ["Range", "4–5.6"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Glucose [Mass/volume] in Blood"],
-            ["Value", "78.5"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "70–99"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Urea nitrogen [Mass/volume] in Blood"],
-            ["Value", "7.91"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "7–20"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Creatinine [Mass/volume] in Blood"],
-            ["Value", "1.52"],
-            ["Unit", "mg/dL"],
-            ["Flag", "H"],
-            ["Range", "0.6–1.3"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Calcium [Mass/volume] in Blood"],
-            ["Value", "8.75"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "8.5–10.2"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Sodium [Moles/volume] in Blood"],
-            ["Value", "141.82"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "136–145"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Potassium [Moles/volume] in Blood"],
-            ["Value", "4.78"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "3.5–5.1"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Chloride [Moles/volume] in Blood"],
-            ["Value", "108.84"],
-            ["Unit", "mmol/L"],
-            ["Flag", "H"],
-            ["Range", "98–107"],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Carbon dioxide, total [Moles/volume] in Blood"],
-            ["Value", "23.9"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Jan 25, 2023 05:12"],
-            ["Status", "final"]],
-           [["Test", "Hemoglobin A1c"],
-            ["Value", "6.14"],
-            ["Unit", "%"],
-            ["Flag", "H"],
-            ["Range", "4–5.6"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Glucose [Mass/volume] in Blood"],
-            ["Value", "64.03"],
-            ["Unit", "mg/dL"],
-            ["Flag", "L"],
-            ["Range", "70–99"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Urea nitrogen [Mass/volume] in Blood"],
-            ["Value", "15.94"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "7–20"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Creatinine [Mass/volume] in Blood"],
-            ["Value", "0.92"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "0.6–1.3"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Calcium [Mass/volume] in Blood"],
-            ["Value", "9.41"],
-            ["Unit", "mg/dL"],
-            ["Flag", ""],
-            ["Range", "8.5–10.2"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Sodium [Moles/volume] in Blood"],
-            ["Value", "140.78"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "136–145"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Potassium [Moles/volume] in Blood"],
-            ["Value", "3.81"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", "3.5–5.1"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Chloride [Moles/volume] in Blood"],
-            ["Value", "110.48"],
-            ["Unit", "mmol/L"],
-            ["Flag", "H"],
-            ["Range", "98–107"],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]],
-           [["Test", "Carbon dioxide, total [Moles/volume] in Blood"],
-            ["Value", "27.76"],
-            ["Unit", "mmol/L"],
-            ["Flag", ""],
-            ["Range", ""],
-            ["Recorded", "Jan 19, 2022 05:12"],
-            ["Status", "final"]]],
-          "label": "Results",
-          "infoId": "labResults",
-          "display": "table",
-          "comp": "w3TrackBoard.chart.labResults"}}]}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Open patient",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3TrackBoard.open",
-    "blockedReason": null}}],
- "viewer": "Physician",
- "title": "ED Track Board",
- "side":
- [{"info":
-   {"rows":
-    [[["Record", "Allergic disposition (finding)"]],
-     [["Record", "Bee venom (substance) — Eruption of skin (disorder)"]],
-     [["Record", "Mold (organism)"]],
-     [["Record", "House dust mite (organism)"]],
-     [["Record",
-       "Animal dander (substance) — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"]],
-     [["Record", "Grass pollen (substance)"]],
-     [["Record", "Tree pollen (substance)"]],
-     [["Record", "Penicillin V"]],
-     [["Record", "Cow's milk (substance) — Wheezing (finding)"]],
-     [["Record", "Eggs (edible) (substance) — Wheal (finding)"]]],
-    "label": "Allergies",
-    "infoId": "allergyList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record",
-       "{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Errin 28 Day]"]],
-     [["Record",
-       "60 ACTUAT budesonide 0.09 MG/ACTUAT Dry Powder Inhaler [Pulmicort] — Take as needed."]],
-     [["Record",
-       "NDA021457 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [ProAir] — Take as needed."]],
-     [["Record", "doxycycline hyclate 100 MG"]],
-     [["Record", "Terfenadine 60 MG Oral Tablet — Take as needed."]],
-     [["Record",
-       "NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector — Take as needed."]]],
-    "label": "Active medications",
-    "infoId": "currentMeds",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Body mass index 30+ - obesity (finding) (active)"]],
-     [["Record", "Full-time employment (finding) (active)"]],
-     [["Record", "Limited social contact (finding) (active)"]],
-     [["Record", "Anemia (disorder) (active)"]],
-     [["Record", "Asthma (disorder) (active)"]],
-     [["Record", "Prediabetes (finding) (active)"]],
-     [["Record", "Past pregnancy history of miscarriage (situation) (active)"]],
-     [["Record", "Received higher education (finding) (active)"]]],
-    "label": "Problems",
-    "infoId": "problemList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Body weight 164 lb (today)"]],
-     [["Record", "Body Height 156.6 cm (Feb 11, 2026 05:12)"]],
-     [["Record",
-       "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Feb 11, 2026 05:12)"]],
-     [["Record",
-       "Body mass index (BMI) [Ratio] 30.3 kg/m2 (Feb 11, 2026 05:12)"]],
-     [["Record",
-       "Blood pressure panel with all children optional 134/72 mm[Hg] (Feb 11, 2026 05:12)"]],
-     [["Record", "Heart rate 83 /min (Feb 11, 2026 05:12)"]],
-     [["Record", "Respiratory rate 14 /min (Feb 11, 2026 05:12)"]]],
-    "label": "Recent vitals",
-    "infoId": "vitals",
-    "display": "list",
-    "comp": ""}}],
- "screen": "w3TrackBoard",
- "nav":
- [["Navigator",
-   [["w3TrackBoard.nav.w3Triage", "Triage"],
-    ["w3TrackBoard.nav.w3Provider", "Provider note"],
-    ["w3TrackBoard.nav.w3OrderSets", "Order sets"],
-    ["w3TrackBoard.nav.w3Orders", "Orders"],
-    ["w3TrackBoard.nav.w3Disposition", "Disposition"]]]],
- "modal": null,
- "fieldSources": [],
- "banner":
- [["Patient", "Mann, Lorena"],
-  ["DOB", "Oct 14, 1987"],
-  ["MRN", "14486708"],
-  ["Age / sex", "39 / F"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Last encounter", "EMER"],
-  ["Last provider", ""],
-  ["Last location", ""],
-  ["Allergies",
-   "Allergic disposition (finding); Bee venom (substance); Mold (organism); House dust mite (organism); Animal dander (substance); Grass pollen (substance); Tree pollen (substance); Penicillin V; Cow's milk (substance); Eggs (edible) (substance)"],
-  ["Code status", "Not recorded"],
-  ["Weight", "74.4 kg (from 164.0 lb) · Nov 2, 2026 07:15"],
-  ["Isolation", "Not recorded"]]}
+{
+  "banner": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ]
+      ]
+    ]
+  ],
+  "screen": "workspace:edTrackBoard",
+  "side": [],
+  "title": "Track Board",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "workspace.search",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Patient search by name or MRN",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "workspace.list",
+              "display": "table",
+              "infoId": "edTrackBoard",
+              "label": "Track Board",
+              "rows": [
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 13cd46e28f"
+                  ],
+                  [
+                    "Patient",
+                    "Jamar Donnelly"
+                  ],
+                  [
+                    "Age/sex",
+                    "83 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Ankle pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T07:14:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Ankle X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 0ccc893e3f"
+                  ],
+                  [
+                    "Patient",
+                    "Krysta Shanna Wolff"
+                  ],
+                  [
+                    "Age/sex",
+                    "66 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Chest pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 2"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T08:46:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, troponin pending"
+                  ],
+                  [
+                    "Imaging",
+                    "Chest X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Admit"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 7dcdbb3486"
+                  ],
+                  [
+                    "Patient",
+                    "Hans Donn Kovacek"
+                  ],
+                  [
+                    "Age/sex",
+                    "45 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Abdominal pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T09:37:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "CT abdomen and pelvis with IV contrast pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site b5e2ddcd33"
+                  ],
+                  [
+                    "Patient",
+                    "Trinidad Luke Pacocha"
+                  ],
+                  [
+                    "Age/sex",
+                    "25 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Chest pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 2"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T09:51:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, troponin pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Admit"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site ada8de3134"
+                  ],
+                  [
+                    "Patient",
+                    "Shelly Antonetta Parker"
+                  ],
+                  [
+                    "Age/sex",
+                    "66 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Flare of chronic back pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:12:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site a8fabdcca2"
+                  ],
+                  [
+                    "Patient",
+                    "Trinidad Towne"
+                  ],
+                  [
+                    "Age/sex",
+                    "45 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Severe headache"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:23:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 6e2925dbea"
+                  ],
+                  [
+                    "Patient",
+                    "Joshua Dominique Goldner"
+                  ],
+                  [
+                    "Age/sex",
+                    "50 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Chest pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 2"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:24:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, troponin pending"
+                  ],
+                  [
+                    "Imaging",
+                    "Chest X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 70591c30de"
+                  ],
+                  [
+                    "Patient",
+                    "Reita Raynor"
+                  ],
+                  [
+                    "Age/sex",
+                    "25 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Right lower quadrant pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:33:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Surgical consultation"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site b965d60823"
+                  ],
+                  [
+                    "Patient",
+                    "Nakia Sammy Morissette"
+                  ],
+                  [
+                    "Age/sex",
+                    "83 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Ankle pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 5"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:58:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Ankle X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site e6581e2b28"
+                  ],
+                  [
+                    "Patient",
+                    "Fredericka Grady"
+                  ],
+                  [
+                    "Age/sex",
+                    "78 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Abdominal pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:59:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP pending"
+                  ],
+                  [
+                    "Imaging",
+                    "CT abdomen and pelvis with IV contrast pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 69b59fa4ff"
+                  ],
+                  [
+                    "Patient",
+                    "Ardath Lorenza Pacocha"
+                  ],
+                  [
+                    "Age/sex",
+                    "53 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Forearm pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T11:10:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Forearm X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 2bf1c658be"
+                  ],
+                  [
+                    "Patient",
+                    "Zulma Tricia Carter"
+                  ],
+                  [
+                    "Age/sex",
+                    "83 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Abdominal pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:13:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 8b9f2409d0"
+                  ],
+                  [
+                    "Patient",
+                    "Tristan Charlie Gutkowski"
+                  ],
+                  [
+                    "Age/sex",
+                    "73 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:24:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 24fce6650e"
+                  ],
+                  [
+                    "Patient",
+                    "Abe Collins"
+                  ],
+                  [
+                    "Age/sex",
+                    "29 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:49:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 7c092c5a7a"
+                  ],
+                  [
+                    "Patient",
+                    "Numbers Newton Thompson"
+                  ],
+                  [
+                    "Age/sex",
+                    "62 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Cough and shortness of breath"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:52:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Chest X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1e82fb5bbf"
+                  ],
+                  [
+                    "Patient",
+                    "Lorenzo Terrell Kemmer"
+                  ],
+                  [
+                    "Age/sex",
+                    "51 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Flank pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T13:13:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, urinalysis pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1497ec6201"
+                  ],
+                  [
+                    "Patient",
+                    "Dia Peggie Blanda"
+                  ],
+                  [
+                    "Age/sex",
+                    "66 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T13:20:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site a019aa089a"
+                  ],
+                  [
+                    "Patient",
+                    "Brianna Zetta Schumm"
+                  ],
+                  [
+                    "Age/sex",
+                    "61 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T13:53:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 280c3b1efb"
+                  ],
+                  [
+                    "Patient",
+                    "Walter Dwight Luettgen"
+                  ],
+                  [
+                    "Age/sex",
+                    "80 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Forearm pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T14:00:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Forearm X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1b3709cbd1"
+                  ],
+                  [
+                    "Patient",
+                    "Leandro Simonis"
+                  ],
+                  [
+                    "Age/sex",
+                    "54 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and flank pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T14:19:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, urinalysis pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|650cabe6-d224-6352-5197-88dd380ed64f|0|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Donnelly, Jamar (MRN 73854169)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 0,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|73d75aac-59f7-d17b-b4e6-ef6626715faa|1|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Wolff, Krysta Shanna (MRN 24631430)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 1,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|542ced6f-56ea-59dd-2657-8df20f617d6c|2|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Kovacek, Hans Donn (MRN 81444627)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 2,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|7295032f-0d3f-f22a-08e5-cfbe08fd8d4b|3|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Pacocha, Trinidad Luke (MRN 58641005)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 3,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|d7660483-ff02-676d-d04d-08e8e2720959|4|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Parker, Shelly Antonetta (MRN 75771932)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 4,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|0020904a-d5d8-14d0-a77e-441d15e62596|5|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Towne, Trinidad (MRN 37888344)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 5,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|0af8f496-feec-f5d2-ba6e-ce85e2b2d3b9|6|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Goldner, Joshua Dominique (MRN 89482638)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 6,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|d38c253f-b722-a4a0-75ff-3c71689cd57c|7|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Raynor, Reita (MRN 76890873)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 7,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|9f7444b4-37df-2e80-61b4-55e3750b0be4|8|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Morissette, Nakia Sammy (MRN 44009263)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 8,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|fb36e38a-ec57-64d9-8d60-d1ab13bc9159|9|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Grady, Fredericka (MRN 60878417)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 9,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|f867832d-aa2c-6d0c-88d1-f964df220934|10|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Pacocha, Ardath Lorenza (MRN 12403557)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 10,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|2ab83e2b-38d9-fa35-e2b0-dfbfae463454|11|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Carter, Zulma Tricia (MRN 13761514)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 11,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|fbb60ed5-daa2-f785-f2bc-9b77447e7620|12|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Gutkowski, Tristan Charlie (MRN 29266780)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 12,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|835e97c7-2fc6-e004-680b-835360a6371b|13|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Collins, Abe (MRN 13136503)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 13,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|03746a88-d6dc-b6f1-f2e1-5f7487b91ec0|14|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Thompson, Numbers Newton (MRN 25016543)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 14,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|133ff30c-3b00-b94f-0483-cc71afc0d8dc|15|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Kemmer, Lorenzo Terrell (MRN 90761508)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 15,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|df321cbd-c86d-a784-e7b5-a54f04024125|16|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Blanda, Dia Peggie (MRN 81715217)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 16,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|08d99813-0175-6b7f-201b-38f9c047e4d5|17|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Schumm, Brianna Zetta (MRN 91159738)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 17,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|885e52d8-1f69-a952-4496-bfc7ce610292|18|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Luettgen, Walter Dwight (MRN 63573053)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 18,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|6a17f89c-1abb-945b-1d2c-39204cc9f73b|19|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Simonis, Leandro (MRN 26689942)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 19,
+              "target": "workspace.list"
+            }
+          }
+        ],
+        "kind": "trackBoard"
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "summary",
+        "infoId": "chartReports",
+        "label": "Reports",
+        "rows": [
+          [
+            [
+              "Department snapshot",
+              "Schedule, census and case lists are available in Activities."
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

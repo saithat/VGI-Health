@@ -1,533 +1,1885 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w6OpNote.chartSearch"}},
-  {"presentation":
-   {"kind": "table",
-    "children":
-    [{"info":
-      {"rows": [],
-       "label": "Before leaving the OR",
-       "infoId": "surgicalChecklist",
-       "display": "table",
-       "comp": "w6OpNote.phases"}}]}},
-  {"info":
-   {"rows": [],
-    "label": "Intra-op record",
-    "infoId": "intraopRecord",
-    "display": "list",
-    "comp": "w6OpNote.intraop"}},
-  {"button":
-   {"role": "macro",
-    "label": "Template: laparoscopic appendectomy",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6OpNote.template",
-    "blockedReason": null}},
-  {"section":
-   {"title": "Diagnoses and procedure",
-    "id": "w6OpNote.note",
-    "children":
-    [{"valueSet":
-      {"options":
-       [{"label": "I10 — Essential (primary) hypertension", "code": "I10"},
-        {"label": "E11.9 — Type 2 diabetes mellitus without complications",
-         "code": "E11.9"},
-        {"label": "E78.5 — Hyperlipidemia, unspecified", "code": "E78.5"},
-        {"label": "J06.9 — Acute upper respiratory infection, unspecified",
-         "code": "J06.9"},
-        {"label": "H66.90 — Otitis media, unspecified, unspecified ear",
-         "code": "H66.90"},
-        {"label": "J02.9 — Acute pharyngitis, unspecified", "code": "J02.9"},
-        {"label":
-         "Z00.00 — Encounter for general adult medical examination without abnormal findings",
-         "code": "Z00.00"},
-        {"label":
-         "Z00.129 — Encounter for routine child health examination without abnormal findings",
-         "code": "Z00.129"},
-        {"label": "R05.9 — Cough, unspecified", "code": "R05.9"},
-        {"label": "R50.9 — Fever, unspecified", "code": "R50.9"},
-        {"label": "R10.9 — Unspecified abdominal pain", "code": "R10.9"},
-        {"label": "M54.50 — Low back pain, unspecified", "code": "M54.50"},
-        {"label": "F41.9 — Anxiety disorder, unspecified", "code": "F41.9"},
-        {"label": "F32.A — Depression, unspecified", "code": "F32.A"},
-        {"label": "N39.0 — Urinary tract infection, site not specified",
-         "code": "N39.0"},
-        {"label": "R51.9 — Headache, unspecified", "code": "R51.9"},
-        {"label": "J45.909 — Unspecified asthma, uncomplicated",
-         "code": "J45.909"},
-        {"label":
-         "K21.9 — Gastro-esophageal reflux disease without esophagitis",
-         "code": "K21.9"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "Pre-op diagnosis (ICD-10-CM)",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w6OpNote.opPreopDiagnosis"}}],
-       "allowCustom": true}},
-     {"valueSet":
-      {"options":
-       [{"label": "I10 — Essential (primary) hypertension", "code": "I10"},
-        {"label": "E11.9 — Type 2 diabetes mellitus without complications",
-         "code": "E11.9"},
-        {"label": "E78.5 — Hyperlipidemia, unspecified", "code": "E78.5"},
-        {"label": "J06.9 — Acute upper respiratory infection, unspecified",
-         "code": "J06.9"},
-        {"label": "H66.90 — Otitis media, unspecified, unspecified ear",
-         "code": "H66.90"},
-        {"label": "J02.9 — Acute pharyngitis, unspecified", "code": "J02.9"},
-        {"label":
-         "Z00.00 — Encounter for general adult medical examination without abnormal findings",
-         "code": "Z00.00"},
-        {"label":
-         "Z00.129 — Encounter for routine child health examination without abnormal findings",
-         "code": "Z00.129"},
-        {"label": "R05.9 — Cough, unspecified", "code": "R05.9"},
-        {"label": "R50.9 — Fever, unspecified", "code": "R50.9"},
-        {"label": "R10.9 — Unspecified abdominal pain", "code": "R10.9"},
-        {"label": "M54.50 — Low back pain, unspecified", "code": "M54.50"},
-        {"label": "F41.9 — Anxiety disorder, unspecified", "code": "F41.9"},
-        {"label": "F32.A — Depression, unspecified", "code": "F32.A"},
-        {"label": "N39.0 — Urinary tract infection, site not specified",
-         "code": "N39.0"},
-        {"label": "R51.9 — Headache, unspecified", "code": "R51.9"},
-        {"label": "J45.909 — Unspecified asthma, uncomplicated",
-         "code": "J45.909"},
-        {"label":
-         "K21.9 — Gastro-esophageal reflux disease without esophagitis",
-         "code": "K21.9"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "Post-op diagnosis (ICD-10-CM)",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w6OpNote.opPostopDiagnosis"}}],
-       "allowCustom": true}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Procedure (CPT)",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w6OpNote.opProcedure"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Surgeon / assistants",
-       "kind": "text",
-       "humanOnly": false,
-       "comp": "w6OpNote.opSurgeons"}}]}},
-  {"section":
-   {"title": "Anesthesia and blood loss",
-    "id": "w6OpNote.anesthesia",
-    "children":
-    [{"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Anesthesia",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w6OpNote.opAnesthesia"}},
-     {"field":
-      {"value": null,
-       "unit": "mL",
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Estimated blood loss (mL)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w6OpNote.opEbl"}}]}},
-  {"section":
-   {"title": "Operative findings",
-    "id": "w6OpNote.findings",
-    "children":
-    [{"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Findings / operative details",
-       "kind": "textarea",
-       "humanOnly": false,
-       "comp": "w6OpNote.opFindings"}}]}},
-  {"section":
-   {"title": "Specimens, drains and implants",
-    "id": "w6OpNote.devices",
-    "children":
-    [{"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Specimens to pathology",
-       "kind": "textarea",
-       "humanOnly": false,
-       "comp": "w6OpNote.opSpecimens"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Drains",
-       "kind": "text",
-       "humanOnly": false,
-       "comp": "w6OpNote.opDrains"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Implants",
-       "kind": "text",
-       "humanOnly": false,
-       "comp": "w6OpNote.opImplants"}}]}},
-  {"section":
-   {"title": "Complications and disposition",
-    "id": "w6OpNote.outcome",
-    "children":
-    [{"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Complications",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w6OpNote.opComplications"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Condition on transfer",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w6OpNote.opCondition"}}]}},
-  {"button":
-   {"role": "primary",
-    "label": "Sign op note",
-    "hotkey": "Ctrl+Enter",
-    "enabled": false,
-    "comp": "w6OpNote.commit.signOpNote",
-    "blockedReason": "entry required: Pre-op diagnosis"}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6OpNote.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6OpNote.home",
-    "blockedReason": null}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Encounters",
-     "Notes",
-     "Results",
-     "Medications",
-     "Problems",
-     "Allergies",
-     "Imaging",
-     "Surgical history"],
-    "id": "w6OpNote.chart",
-    "body":
-    [{"presentation":
-      {"kind": "table",
-       "children":
-       [{"info":
-         {"rows":
-          [[["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 19, 2026 02:18"],
-            ["End", "Oct 19, 2026 02:54"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "Hospital admission (procedure)"],
-            ["Class", "IMP"],
-            ["Start", "Jul 6, 2026 03:17"],
-            ["End", "Jul 9, 2026 03:35"],
-            ["Reason",
-             "Acute non-ST segment elevation myocardial infarction (disorder)"],
-            ["Provider", "Dr. Gabriel Reilly"],
-            ["Location", "Fitchburg Outpatient Clinic"]],
-           [["Encounter", "Emergency room admission (procedure)"],
-            ["Class", "EMER"],
-            ["Start", "Jul 6, 2026 02:18"],
-            ["End", "Jul 6, 2026 03:18"],
-            ["Reason", "Myocardial infarction (disorder)"],
-            ["Provider", "Dr. Gabriel Reilly"],
-            ["Location", "Fitchburg Outpatient Clinic"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 13, 2025 02:18"],
-            ["End", "Oct 13, 2025 03:02"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 7, 2024 02:18"],
-            ["End", "Oct 7, 2024 02:51"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 2, 2023 02:18"],
-            ["End", "Oct 2, 2023 03:17"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Sep 26, 2022 02:18"],
-            ["End", "Sep 26, 2022 03:14"],
-            ["Reason", ""],
-            ["Provider", "Dr. Debra Predovic"],
-            ["Location", "WEST BROOKFIELD FAMILY PRACTICE"]],
-           [["Encounter", "Admission to hospice (procedure)"],
-            ["Class", "HH"],
-            ["Start", "Mar 7, 2022 01:18"],
-            ["End", "Apr 1, 2022 02:33"],
-            ["Reason", "Overlapping malignant neoplasm of colon (disorder)"],
-            ["Provider", "Dr. Jorge Harvey"],
-            ["Location", "COMPASSUS - GREATER WESTERN MASSACHUSETTS"]]],
-          "label": "Encounters",
-          "infoId": "encounterHistory",
-          "display": "table",
-          "comp": "w6OpNote.chart.encounterHistory"}}]}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Postprocedure orders",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6OpNote.next",
-    "blockedReason": null}}],
- "viewer": "Whitaker, James · General surgeon",
- "title": "Brief Op Note",
- "side":
- [{"section":
-   {"title": "Surgical case",
-    "id": "w6OpNote.caseSummary",
-    "children":
-    [{"info":
-      {"rows":
-       [[["Room", "Operating room 1"],
-         ["Start", "Nov 3, 2026 09:04"],
-         ["Procedure", "laparoscopic cholecystectomy"],
-         ["Indication", "Symptomatic cholelithiasis"],
-         ["Patient", "Mitchell, Destiny Wendolyn"],
-         ["Surgeon", "Whitaker, James"],
-         ["Status", "active"]]],
-       "label": "Case request",
-       "infoId": "scheduleTasks",
-       "display": "list",
-       "comp": "w6OpNote.caseSummary.procedure"}}]}},
-  {"info":
-   {"rows": [],
-    "label": "Allergies",
-    "infoId": "allergyList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Ibuprofen 400 MG Oral Tablet [Ibu] — Take as needed."]],
-     [["Record", "amLODIPine 2.5 MG Oral Tablet — 1, 1x per 1 d"]],
-     [["Record", "atorvastatin — atorvastatin 10 mg PO daily"]],
-     [["Record", "aspirin 81 MG Oral Tablet"]],
-     [["Record",
-       "24 HR metoprolol succinate 25 MG Extended Release Oral Tablet — Take as needed."]],
-     [["Record", "atorvastatin 10 MG Oral Tablet — Take as needed."]],
-     [["Record", "lisinopril 20 MG Oral Tablet — Take as needed."]],
-     [["Record", "prasugrel 10 MG Oral Tablet"]],
-     [["Record", "Clopidogrel 75 MG Oral Tablet"]],
-     [["Record", "Simvastatin 20 MG Oral Tablet"]],
-     [["Record",
-       "24 HR metoprolol succinate 100 MG Extended Release Oral Tablet"]],
-     [["Record", "Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray"]]],
-    "label": "Active medications",
-    "infoId": "currentMeds",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Full-time employment (finding) (active)"]],
-     [["Record", "History of myocardial infarction (situation) (active)"]],
-     [["Record",
-       "Acute non-ST segment elevation myocardial infarction (disorder) (active)"]],
-     [["Record", "Gingivitis (disorder) (active)"]],
-     [["Record", "Chronic pain (finding) (active)"]],
-     [["Record", "Chronic low back pain (finding) (active)"]],
-     [["Record", "Chronic neck pain (finding) (active)"]],
-     [["Record", "Recurrent rectal polyp (disorder) (active)"]],
-     [["Record", "Polyp of colon (disorder) (active)"]],
-     [["Record",
-       "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"]],
-     [["Record", "Ischemic heart disease (disorder) (active)"]],
-     [["Record", "Essential hypertension (disorder) (active)"]],
-     [["Record", "Metabolic syndrome X (disorder) (active)"]],
-     [["Record", "Past pregnancy history of miscarriage (situation) (active)"]],
-     [["Record", "Prediabetes (finding) (active)"]],
-     [["Record", "Anemia (disorder) (active)"]],
-     [["Record", "Transport problem (finding) (active)"]],
-     [["Record", "Body mass index 30+ - obesity (finding) (active)"]],
-     [["Record", "Educated to high school level (finding) (active)"]],
-     [["Record", "Lack of access to transportation (finding) (active)"]],
-     [["Record", "Risk activity involvement (finding) (active)"]]],
-    "label": "Problems",
-    "infoId": "problemList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Body weight 74.1 kg (today)"]],
-     [["Record", "Body Height 158.1 cm (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Pain severity - 0-10 verbal numeric rating [Score] - Reported 1 {score} (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Body mass index (BMI) [Ratio] 29.25 kg/m2 (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Blood pressure panel with all children optional 119/75 mm[Hg] (Oct 19, 2026 02:18)"]],
-     [["Record", "Heart rate 90 /min (Oct 19, 2026 02:18)"]],
-     [["Record", "Respiratory rate 15 /min (Oct 19, 2026 02:18)"]],
-     [["Record",
-       "Natriuretic peptide.B prohormone N-Terminal [Mass/volume] in Blood by Immunoassay 1.721 pg/mL (Jul 6, 2026 02:37)"]]],
-    "label": "Recent vitals",
-    "infoId": "vitals",
-    "display": "list",
-    "comp": ""}}],
- "screen": "w6OpNote",
- "nav":
- [["Surgical navigator",
-   [["w6OpNote.nav.w6Schedule", "Case list"],
-    ["w6OpNote.nav.w6Consults", "Consult list"],
-    ["w6OpNote.nav.w6Consult", "Consult note"],
-    ["w6OpNote.nav.w6ConsultClose", "Sign Consult"],
-    ["w6OpNote.nav.w6PreOp", "Preprocedure"],
-    ["w6OpNote.nav.w6Orders", "Orders"],
-    ["w6OpNote.nav.w6Sign", "Sign Orders"],
-    ["w6OpNote.nav.w6OpNote", "Brief Op Note"],
-    ["w6OpNote.nav.w6PostOp", "Postprocedure Orders"],
-    ["w6OpNote.nav.w6Rounding", "Rounding"],
-    ["w6OpNote.nav.w6Discharge", "Discharge"]]]],
- "modal": null,
- "fieldSources": [],
- "fieldChoices":
- [["w6OpNote.opPreopDiagnosis",
-   {"showCode": true,
-    "options":
-    [["K35.80", "Acute appendicitis, unspecified"],
-     ["K80.00", "Gallbladder stones with acute cholecystitis, no obstruction"],
-     ["K80.20", "Gallbladder stones, no cholecystitis or obstruction"],
-     ["K81.0", "Acute cholecystitis"],
-     ["K40.90",
-      "Unilateral inguinal hernia, no obstruction or gangrene; not specified as recurrent"],
-     ["K42.9", "Umbilical hernia, no obstruction or gangrene"],
-     ["R10.11", "Pain, right upper abdomen"],
-     ["R10.13", "Epigastric pain"],
-     ["R10.31", "Pain, right lower abdomen"],
-     ["R10.9", "Abdominal pain, unspecified"],
-     ["Z48.815", "Surgical aftercare, digestive system"],
-     ["Z48.89", "Surgical aftercare, other specified"],
-     ["Z09", "Follow-up after completed treatment, nonmalignant condition"],
-     ["I10", "Primary hypertension"],
-     ["E11.9", "Type 2 diabetes, without complications"]],
-    "allowOther": true}],
-  ["w6OpNote.opPostopDiagnosis",
-   {"showCode": true,
-    "options":
-    [["K35.80", "Acute appendicitis, unspecified"],
-     ["K80.00", "Gallbladder stones with acute cholecystitis, no obstruction"],
-     ["K80.20", "Gallbladder stones, no cholecystitis or obstruction"],
-     ["K81.0", "Acute cholecystitis"],
-     ["K40.90",
-      "Unilateral inguinal hernia, no obstruction or gangrene; not specified as recurrent"],
-     ["K42.9", "Umbilical hernia, no obstruction or gangrene"],
-     ["R10.11", "Pain, right upper abdomen"],
-     ["R10.13", "Epigastric pain"],
-     ["R10.31", "Pain, right lower abdomen"],
-     ["R10.9", "Abdominal pain, unspecified"],
-     ["Z48.815", "Surgical aftercare, digestive system"],
-     ["Z48.89", "Surgical aftercare, other specified"],
-     ["Z09", "Follow-up after completed treatment, nonmalignant condition"],
-     ["I10", "Primary hypertension"],
-     ["E11.9", "Type 2 diabetes, without complications"]],
-    "allowOther": true}],
-  ["w6OpNote.opProcedure",
-   {"showCode": true,
-    "options":
-    [["44970", "Laparoscopic appendectomy"],
-     ["47562", "Laparoscopic cholecystectomy"],
-     ["49650", "Laparoscopic inguinal hernia repair"]],
-    "allowOther": true}],
-  ["w6OpNote.opAnesthesia",
-   {"showCode": false,
-    "options":
-    [["general", "General anesthesia"],
-     ["regional", "Regional anesthesia"],
-     ["spinal", "Spinal anesthesia"],
-     ["epidural", "Epidural anesthesia"],
-     ["local", "Local anesthesia"],
-     ["mac", "Monitored anesthesia care"],
-     ["other", "Other anesthesia"]],
-    "allowOther": true}]],
- "banner":
- [["Patient", "Mitchell, Destiny Wendolyn"],
-  ["DOB", "Mar 3, 1947"],
-  ["MRN", "38529840"],
-  ["Age / sex", "79 / F"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Last encounter", "AMB"],
-  ["Last provider", "Dr. Debra Predovic"],
-  ["Last location", "WEST BROOKFIELD FAMILY PRACTICE"],
-  ["Encounter context", "Preoperative chart review"],
-  ["Planned OR", "Operating room 1"],
-  ["Surgeon", "Whitaker, James"],
-  ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"],
-  ["Weight", "74.1 kg · Nov 3, 2026 08:04"],
-  ["Isolation", "Not recorded"]],
- "activeNav": "w6OpNote.nav.w6OpNote"}
+{
+  "activeNav": "w6OpNote.nav.w6OpNote",
+  "banner": [
+    [
+      "Patient",
+      "Runte, Sol Jerrold"
+    ],
+    [
+      "DOB",
+      "Jun 10, 1961"
+    ],
+    [
+      "MRN",
+      "84974903"
+    ],
+    [
+      "Age / sex",
+      "65 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Fictional Clinician 9ababdd2e1"
+    ],
+    [
+      "Coverage",
+      "Fictional Health Services e277448254"
+    ],
+    [
+      "Encounter",
+      "Inpatient"
+    ],
+    [
+      "Attending",
+      "Fictional Clinician ea087f491c"
+    ],
+    [
+      "Location",
+      "Fictional Care Site 62c658f3c1"
+    ],
+    [
+      "Encounter type",
+      "Inpatient Stay – Fictional Care Site 7f969d1e61"
+    ],
+    [
+      "Department",
+      "Fictional Care Site 7f969d1e61"
+    ],
+    [
+      "Postoperative day",
+      "POD #3"
+    ],
+    [
+      "Allergies",
+      "Sulfamethoxazole / Trimethoprim — Wheal (finding), Eruption of skin (disorder) (moderate); Penicillin V — Rash (moderate)"
+    ],
+    [
+      "Code status",
+      "Full Code"
+    ],
+    [
+      "Weight",
+      "82.9 kg · Sep 5, 2026 08:00"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "fieldChoices": [
+    [
+      "w6OpNote.opPreopDiagnosis",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "K35.80",
+            "Acute appendicitis, unspecified"
+          ],
+          [
+            "K80.00",
+            "Gallbladder stones with acute cholecystitis, no obstruction"
+          ],
+          [
+            "K80.20",
+            "Gallbladder stones, no cholecystitis or obstruction"
+          ],
+          [
+            "K81.0",
+            "Acute cholecystitis"
+          ],
+          [
+            "K40.90",
+            "Unilateral inguinal hernia, no obstruction or gangrene; not specified as recurrent"
+          ],
+          [
+            "K42.9",
+            "Umbilical hernia, no obstruction or gangrene"
+          ],
+          [
+            "R10.11",
+            "Pain, right upper abdomen"
+          ],
+          [
+            "R10.13",
+            "Epigastric pain"
+          ],
+          [
+            "R10.31",
+            "Pain, right lower abdomen"
+          ],
+          [
+            "R10.9",
+            "Abdominal pain, unspecified"
+          ],
+          [
+            "Z48.815",
+            "Surgical aftercare, digestive system"
+          ],
+          [
+            "Z48.89",
+            "Surgical aftercare, other specified"
+          ],
+          [
+            "Z09",
+            "Follow-up after completed treatment, nonmalignant condition"
+          ],
+          [
+            "I10",
+            "Primary hypertension"
+          ],
+          [
+            "E11.9",
+            "Type 2 diabetes, without complications"
+          ]
+        ],
+        "showCode": true
+      }
+    ],
+    [
+      "w6OpNote.opPostopDiagnosis",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "K35.80",
+            "Acute appendicitis, unspecified"
+          ],
+          [
+            "K80.00",
+            "Gallbladder stones with acute cholecystitis, no obstruction"
+          ],
+          [
+            "K80.20",
+            "Gallbladder stones, no cholecystitis or obstruction"
+          ],
+          [
+            "K81.0",
+            "Acute cholecystitis"
+          ],
+          [
+            "K40.90",
+            "Unilateral inguinal hernia, no obstruction or gangrene; not specified as recurrent"
+          ],
+          [
+            "K42.9",
+            "Umbilical hernia, no obstruction or gangrene"
+          ],
+          [
+            "R10.11",
+            "Pain, right upper abdomen"
+          ],
+          [
+            "R10.13",
+            "Epigastric pain"
+          ],
+          [
+            "R10.31",
+            "Pain, right lower abdomen"
+          ],
+          [
+            "R10.9",
+            "Abdominal pain, unspecified"
+          ],
+          [
+            "Z48.815",
+            "Surgical aftercare, digestive system"
+          ],
+          [
+            "Z48.89",
+            "Surgical aftercare, other specified"
+          ],
+          [
+            "Z09",
+            "Follow-up after completed treatment, nonmalignant condition"
+          ],
+          [
+            "I10",
+            "Primary hypertension"
+          ],
+          [
+            "E11.9",
+            "Type 2 diabetes, without complications"
+          ]
+        ],
+        "showCode": true
+      }
+    ],
+    [
+      "w6OpNote.opProcedure",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "44970",
+            "Laparoscopic appendectomy"
+          ],
+          [
+            "47562",
+            "Laparoscopic cholecystectomy"
+          ],
+          [
+            "49650",
+            "Laparoscopic inguinal hernia repair"
+          ]
+        ],
+        "showCode": true
+      }
+    ],
+    [
+      "w6OpNote.opAnesthesia",
+      {
+        "allowOther": true,
+        "options": [
+          [
+            "general",
+            "General anesthesia"
+          ],
+          [
+            "regional",
+            "Regional anesthesia"
+          ],
+          [
+            "spinal",
+            "Spinal anesthesia"
+          ],
+          [
+            "epidural",
+            "Epidural anesthesia"
+          ],
+          [
+            "local",
+            "Local anesthesia"
+          ],
+          [
+            "mac",
+            "Monitored anesthesia care"
+          ],
+          [
+            "other",
+            "Other anesthesia"
+          ]
+        ],
+        "showCode": false
+      }
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|orSchedule",
+          "OR Schedule"
+        ],
+        [
+          "workspace.activity|consultList",
+          "Consults"
+        ],
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to OR Schedule"
+        ]
+      ]
+    ],
+    [
+      "Surgical workflow",
+      [
+        [
+          "w6OpNote.nav.w6Schedule",
+          "Case list"
+        ],
+        [
+          "w6OpNote.nav.w6Consults",
+          "Consult list"
+        ],
+        [
+          "w6OpNote.nav.w6Consult",
+          "Consult note"
+        ],
+        [
+          "w6OpNote.nav.w6ConsultClose",
+          "Sign Consult"
+        ],
+        [
+          "w6OpNote.nav.w6PreOp",
+          "Preprocedure"
+        ],
+        [
+          "w6OpNote.nav.w6Orders",
+          "Orders"
+        ],
+        [
+          "w6OpNote.nav.w6Sign",
+          "Sign Orders"
+        ],
+        [
+          "w6OpNote.nav.w6OpNote",
+          "Brief Op Note"
+        ],
+        [
+          "w6OpNote.nav.w6PostOp",
+          "Postprocedure Orders"
+        ],
+        [
+          "w6OpNote.nav.w6Rounding",
+          "Rounding"
+        ],
+        [
+          "w6OpNote.nav.w6Discharge",
+          "Discharge"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w6OpNote.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w6OpNote.chartWorkspace.chartHistory",
+          "Chart History"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w6OpNote",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w6OpNote.caseSummary.procedure",
+              "display": "list",
+              "infoId": "scheduleTasks",
+              "label": "Case request",
+              "rows": []
+            }
+          }
+        ],
+        "id": "w6OpNote.caseSummary",
+        "title": "Surgical case"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Runte, Sol Jerrold"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 65 / M"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 84974903"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Jun 10, 1961"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Full Code"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · No isolation"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Sulfamethoxazole / Trimethoprim — Wheal (finding), Eruption of skin (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Penicillin V — Rash (moderate)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Fictional Clinician 9ababdd2e1"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ea087f491c"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ea087f491c"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Registered nurse · Fictional Clinician 920d783abe"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Inpatient Stay – Fictional Care Site 7f969d1e61"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Fictional Care Site 7f969d1e61"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Fictional Care Site 62c658f3c1"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Oct 30, 2026 15:00"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · 2d 11h (snapshot)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 82.9 kg · 2026-09-05T08:00:15-07:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body Height 174.5 cm (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Weight 82.9 kg (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 27.22 kg/m2 (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 120/65 mm[Hg] (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 72 /min (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 15 /min (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body temperature 37.74 Cel (Aug 15, 2026 09:00)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 1"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Hyperlipidemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Ischemic heart disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "History of myocardial infarction (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Acute non-ST segment elevation myocardial infarction (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Obstructive sleep apnea syndrome (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Sleep disorder (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Cerebral palsy (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Spasticity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Osteoporosis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Intellectual disability (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gastroesophageal reflux disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pneumonia (disorder) (active)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Sep 20, 2026 08:00 · History and physical note · Fictional Clinician 34eba7a0a7 · Unknown · \n2026-09-20\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w6OpNote.patientSidebar.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w6OpNote.patientSidebar",
+        "title": "Patient sidebar"
+      }
+    }
+  ],
+  "title": "Brief Op Note",
+  "viewer": "General surgeon",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w6OpNote.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "w6OpNote.phases",
+              "display": "table",
+              "infoId": "surgicalChecklist",
+              "label": "Before leaving the OR",
+              "rows": []
+            }
+          }
+        ],
+        "kind": "table"
+      }
+    },
+    {
+      "info": {
+        "comp": "w6OpNote.intraop",
+        "display": "list",
+        "infoId": "intraopRecord",
+        "label": "Intra-op record",
+        "rows": []
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.template",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Brief operative note",
+        "role": "macro"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w6OpNote.opPreopDiagnosis",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Pre-op diagnosis (ICD-10-CM)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "I10",
+                  "label": "I10 — Essential (primary) hypertension"
+                },
+                {
+                  "code": "E11.9",
+                  "label": "E11.9 — Type 2 diabetes mellitus without complications"
+                },
+                {
+                  "code": "E78.5",
+                  "label": "E78.5 — Hyperlipidemia, unspecified"
+                },
+                {
+                  "code": "J06.9",
+                  "label": "J06.9 — Acute upper respiratory infection, unspecified"
+                },
+                {
+                  "code": "H66.90",
+                  "label": "H66.90 — Otitis media, unspecified, unspecified ear"
+                },
+                {
+                  "code": "J02.9",
+                  "label": "J02.9 — Acute pharyngitis, unspecified"
+                },
+                {
+                  "code": "Z00.00",
+                  "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings"
+                },
+                {
+                  "code": "Z00.129",
+                  "label": "Z00.129 — Encounter for routine child health examination without abnormal findings"
+                },
+                {
+                  "code": "R05.9",
+                  "label": "R05.9 — Cough, unspecified"
+                },
+                {
+                  "code": "R50.9",
+                  "label": "R50.9 — Fever, unspecified"
+                },
+                {
+                  "code": "R10.9",
+                  "label": "R10.9 — Unspecified abdominal pain"
+                },
+                {
+                  "code": "M54.50",
+                  "label": "M54.50 — Low back pain, unspecified"
+                },
+                {
+                  "code": "F41.9",
+                  "label": "F41.9 — Anxiety disorder, unspecified"
+                },
+                {
+                  "code": "F32.A",
+                  "label": "F32.A — Depression, unspecified"
+                },
+                {
+                  "code": "N39.0",
+                  "label": "N39.0 — Urinary tract infection, site not specified"
+                },
+                {
+                  "code": "R51.9",
+                  "label": "R51.9 — Headache, unspecified"
+                },
+                {
+                  "code": "J45.909",
+                  "label": "J45.909 — Unspecified asthma, uncomplicated"
+                },
+                {
+                  "code": "K21.9",
+                  "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w6OpNote.opPostopDiagnosis",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Post-op diagnosis (ICD-10-CM)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "I10",
+                  "label": "I10 — Essential (primary) hypertension"
+                },
+                {
+                  "code": "E11.9",
+                  "label": "E11.9 — Type 2 diabetes mellitus without complications"
+                },
+                {
+                  "code": "E78.5",
+                  "label": "E78.5 — Hyperlipidemia, unspecified"
+                },
+                {
+                  "code": "J06.9",
+                  "label": "J06.9 — Acute upper respiratory infection, unspecified"
+                },
+                {
+                  "code": "H66.90",
+                  "label": "H66.90 — Otitis media, unspecified, unspecified ear"
+                },
+                {
+                  "code": "J02.9",
+                  "label": "J02.9 — Acute pharyngitis, unspecified"
+                },
+                {
+                  "code": "Z00.00",
+                  "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings"
+                },
+                {
+                  "code": "Z00.129",
+                  "label": "Z00.129 — Encounter for routine child health examination without abnormal findings"
+                },
+                {
+                  "code": "R05.9",
+                  "label": "R05.9 — Cough, unspecified"
+                },
+                {
+                  "code": "R50.9",
+                  "label": "R50.9 — Fever, unspecified"
+                },
+                {
+                  "code": "R10.9",
+                  "label": "R10.9 — Unspecified abdominal pain"
+                },
+                {
+                  "code": "M54.50",
+                  "label": "M54.50 — Low back pain, unspecified"
+                },
+                {
+                  "code": "F41.9",
+                  "label": "F41.9 — Anxiety disorder, unspecified"
+                },
+                {
+                  "code": "F32.A",
+                  "label": "F32.A — Depression, unspecified"
+                },
+                {
+                  "code": "N39.0",
+                  "label": "N39.0 — Urinary tract infection, site not specified"
+                },
+                {
+                  "code": "R51.9",
+                  "label": "R51.9 — Headache, unspecified"
+                },
+                {
+                  "code": "J45.909",
+                  "label": "J45.909 — Unspecified asthma, uncomplicated"
+                },
+                {
+                  "code": "K21.9",
+                  "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis"
+                }
+              ]
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opProcedure",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Procedure (CPT)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opSurgeons",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Surgeon / assistants",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.note",
+        "title": "Diagnoses and procedure"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opAnesthesia",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Anesthesia",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opEbl",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Estimated blood loss (mL)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": "mL",
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.anesthesia",
+        "title": "Anesthesia and blood loss"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opFindings",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Findings / operative details",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.findings",
+        "title": "Operative findings"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opSpecimens",
+              "humanOnly": false,
+              "kind": "textarea",
+              "label": "Specimens to pathology",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opDrains",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Drains",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opImplants",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Implants",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.devices",
+        "title": "Specimens, drains and implants"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w6OpNote.opComplications",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Complications",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w6OpNote.opCondition",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Condition on transfer",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w6OpNote.outcome",
+        "title": "Complications and disposition"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": "entry required: Pre-op diagnosis",
+        "comp": "w6OpNote.commit.signOpNote",
+        "enabled": false,
+        "hotkey": "Ctrl+Enter",
+        "label": "Sign op note",
+        "role": "primary"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "presentation": {
+              "children": [
+                {
+                  "info": {
+                    "comp": "w6OpNote.chart.encounterHistory",
+                    "display": "table",
+                    "infoId": "encounterHistory",
+                    "label": "Encounters",
+                    "rows": [
+                      [
+                        [
+                          "Encounter",
+                          "Inpatient Stay – Fictional Care Site 7f969d1e61"
+                        ],
+                        [
+                          "Class",
+                          "Inpatient"
+                        ],
+                        [
+                          "Start",
+                          "Oct 30, 2026 15:00"
+                        ],
+                        [
+                          "End",
+                          ""
+                        ],
+                        [
+                          "Reason",
+                          "s/p laparoscopic cholecystectomy – POD 3"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician ea087f491c"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 62c658f3c1"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 20, 2026 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 20, 2026 08:15"
+                        ],
+                        [
+                          "Reason",
+                          "Hyperlipidemia (disorder)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 19, 2026 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 19, 2026 08:24"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 5, 2026 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 5, 2026 08:31"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 15, 2026 09:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 15, 2026 09:15"
+                        ],
+                        [
+                          "Reason",
+                          "Acute viral pharyngitis (disorder)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Jun 17, 2026 09:54"
+                        ],
+                        [
+                          "End",
+                          "Jun 17, 2026 10:33"
+                        ],
+                        [
+                          "Reason",
+                          "Screening for malignant neoplasm of colon (procedure)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 20, 2025 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 20, 2025 08:15"
+                        ],
+                        [
+                          "Reason",
+                          "Hyperlipidemia (disorder)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 30, 2025 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 30, 2025 08:34"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 7, 2024 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 7, 2024 08:25"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 24, 2024 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 24, 2024 08:37"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 2, 2023 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 2, 2023 08:20"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 19, 2023 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 19, 2023 08:58"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Emergency Visit – Emergency Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Emergency"
+                        ],
+                        [
+                          "Start",
+                          "Aug 28, 2022 08:37"
+                        ],
+                        [
+                          "End",
+                          "Aug 28, 2022 09:37"
+                        ],
+                        [
+                          "Reason",
+                          "Laceration - injury (disorder)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician f97d0cd1c2"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site c4d21d5cf0"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 27, 2022 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 27, 2022 09:12"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 13, 2022 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 13, 2022 08:48"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "kind": "table"
+            }
+          }
+        ],
+        "id": "w6OpNote.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Medications",
+          "Problems",
+          "Allergies",
+          "Imaging",
+          "Surgical history"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w6OpNote.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Postprocedure orders",
+        "role": "nav"
+      }
+    },
+    {
+      "info": {
+        "comp": "w6OpNote.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Inpatient Stay – Fictional Care Site 7f969d1e61"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Fictional Care Site 7f969d1e61"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "in-progress"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w6OpNote.contextPanels.data.chartRecentResults",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w6OpNote.contextPanels.card.chartRecentResults",
+                    "title": "Recent Results"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w6OpNote.contextPanels.data.chartCareGaps",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w6OpNote.contextPanels.card.chartCareGaps",
+                    "title": "Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w6OpNote.contextPanels.data.storyLastNote",
+                                "display": "table",
+                                "infoId": "storyLastNote",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Sep 20, 2026 08:00"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-09-20\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w6OpNote.contextPanels.card.storyLastNote",
+                    "title": "Last Note"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w6OpNote.contextPanels",
+        "title": "Clinical Context"
+      }
+    }
+  ]
+}

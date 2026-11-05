@@ -3,7 +3,7 @@
  *
  * `state-day-d` is the world at the END of day d: what happened today
  * (`today`), plus everything carried into day d+1 (census, appointments,
- * pending labs, in-basket backlog, surgical cases, pediatric growth). Day d+1
+ * pending labs, inbox backlog, surgical cases, pediatric growth). Day d+1
  * is a pure function of (seed, d+1, state-day-d). This format is owned by the
  * world lane (it is not a Lean type).
  */
@@ -108,7 +108,7 @@ export interface RefillRequest {
   lastFilledDaysAgo: number;
 }
 
-export interface InBasketItem {
+export interface InboxItem {
   id: string;
   kind: "result" | "refill";
   patientId: string;
@@ -221,7 +221,7 @@ export interface WorldState {
       discharges: string[];
     };
     clinics: { P1: ClinicDay; P4: ClinicDay; P5: ClinicDay };
-    inBasket: { P1: { arrived: number; handled: number; backlogAfter: number }; P5: { arrived: number; handled: number } };
+    inbox: { P1: { arrived: number; handled: number; backlogAfter: number }; P5: { arrived: number; handled: number } };
     surgery: { consults: string[]; casesOperated: string[] };
     taskCounts: Record<Persona, Partial<Record<Workflow, number>>>;
     events: string[];
@@ -229,7 +229,7 @@ export interface WorldState {
   inpatients: Inpatient[];
   appointments: Appointment[];
   pendingLabs: PendingLab[];
-  inBasketBacklog: InBasketItem[];
+  inboxBacklog: InboxItem[];
   peds: PedsChild[];
   surgicalCases: SurgicalCase[];
   p1Panel: string[];

@@ -36,13 +36,13 @@ def target (p : Program) (info : String) : Option ScreenId :=
     | "shiftWorklist" | "unitCensus" => ["w4Mar"]
     | "orSchedule" => ["w6PreOp"]
     | "consultList" => ["w6Consult"]
-    | "inBasketResults" => ["w2Result"]
-    | "inBasketRxRequests" => ["w7Review", "w7Request", "w7Decision"]
+    | "inboxResults" => ["w2Result"]
+    | "inboxRxRequests" => ["w7Review", "w7Request", "w7Decision"]
     | _ => if p.role == Role.np then ["w5Rooming"] else ["w1Rooming"]
   let workflow := match info with
     | "edTrackBoard" => "W3" | "shiftWorklist" | "unitCensus" => "W4"
-    | "orSchedule" | "consultList" => "W6" | "inBasketResults" => "W2"
-    | "inBasketRxRequests" => "W7" | _ => if p.role == .np then "W5" else "W1"
+    | "orSchedule" | "consultList" => "W6" | "inboxResults" => "W2"
+    | "inboxRxRequests" => "W7" | _ => if p.role == .np then "W5" else "W1"
   (candidates.find? (fun id => (p.screen? id).isSome)).orElse fun _ =>
     ((p.screens.find? (·.workflow == workflow)).orElse fun _ =>
       p.screens.find? (fun screen => screen.workflow != "shell" && screen.workflow != "chart")).map (·.id)
@@ -93,10 +93,10 @@ def openControls (p : Program) (f : Facts) (s : State) : List Control :=
         label := "Open chart: " ++ patient.name ++ (if patient.mrn == "" then "" else " (MRN " ++ patient.mrn ++ ")")
         action := .openPatient patient.id target, row? := some index }
 
-/-- Application activities and Patient Lookup are semantic navigation actions. -/
+/-- Activities and Patient Lookup are semantic navigation actions. -/
 def navigation (p : Program) (f : Facts) (s : State) : List Control :=
   let controls : List Control := (activities p f).map (fun a =>
-    { id := "workspace.activity|" ++ a.info, label := a.title ++ (if a.info.startsWith "inBasket" then " (" ++ toString a.rows.length ++ ")" else ""), action := .showList a.info }) ++
+    { id := "workspace.activity|" ++ a.info, label := a.title ++ (if a.info.startsWith "inbox" then " (" ++ toString a.rows.length ++ ")" else ""), action := .showList a.info }) ++
   [{ id := "workspace.lookup", label := "Patient Lookup", action := .showList "lookup" },
    { id := "workspace.return", label := "Return to " ++ (((activities p f).find? (·.info == primary p)).map (·.title)).getD "patient list"
      action := .showList (primary p) }]

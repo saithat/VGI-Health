@@ -1,7 +1,7 @@
 import Ehr.Canonical.Builders
 
 /-!
-W2: results in-basket, result review, patient message and acknowledgment.
+W2: results inbox, result review, patient message and acknowledgment.
 The baseline puts the message on a separate screen and prior records in tabs.
 The result and any required abnormal-result trend remain at acknowledgment.
 -/
@@ -10,11 +10,11 @@ namespace Ehr.Canonical.W2
 
 open Ehr.Canonical
 
-/-- The W2 navigator. -/
+/-- The W2 workflow. -/
 def nav : List (ScreenId × String) :=
-  [("w2Inbasket", "Results"), ("w7Queue", "Rx Requests")]
+  [("w2Inbox", "Results"), ("w7Queue", "Rx Requests")]
 
-/-- The chart-review tabs on W2 screens. -/
+/-- The chart-history tabs on W2 screens. -/
 def chart : List Block :=
   [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
    (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
@@ -22,18 +22,18 @@ def chart : List Block :=
    (.table, "imaging", "Imaging")]
 
 /-- The shell for a W2 screen. -/
-def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart "In Basket"
+def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart "Inbox"
 
-/-- The in-basket: results, messages, and refill requests in one list. -/
-def inbasket : Screen :=
-  let s := "w2Inbasket"
-  { id := s, title := "In Basket: Results", workflow := "W2"
-    components := ambulatoryInBasketShell s nav chart ++ [
-      { table s "folders" "inBasketFolders" "In Basket folders" (parent := some "encounterNavigator") with tag := "present.folderList" },
-      { clinicalSection s "messages" "Results messages" (parent := some "inBasketColumns") with tag := "present.messages" },
-      { searchC s "basketSearch" "inbasket" "Search In Basket" with parent? := some (cid s "messages") },
-      { table s "items" "inBasketResults" "Results" (parent := some "messages") with tag := "present.messages" },
-      { table s "patientMessages" "inBasketMessages" "Patient Messages" (parent := some "messages") with tag := "present.messages" },
+/-- The inbox: results, messages, and refill requests in one list. -/
+def inbox : Screen :=
+  let s := "w2Inbox"
+  { id := s, title := "Inbox: Results", workflow := "W2"
+    components := ambulatoryInboxShell s nav chart ++ [
+      { table s "folders" "inboxFolders" "Inbox folders" (parent := some "encounterWorkflow") with tag := "present.folderList" },
+      { clinicalSection s "messages" "Results messages" (parent := some "inboxColumns") with tag := "present.messages" },
+      { searchC s "basketSearch" "inbox" "Search Inbox" with parent? := some (cid s "messages") },
+      { table s "items" "inboxResults" "Results" (parent := some "messages") with tag := "present.messages" },
+      { table s "patientMessages" "inboxMessages" "Patient Messages" (parent := some "messages") with tag := "present.messages" },
       clinicalSection s "selected" "Selected result message" (parent := some "messages"),
       panel s "preview" "messagePreview" "Message details" (parent := some "selected"),
       { goto s "openResult" "w2Result" "Review result" (parent := some "messages") with
@@ -80,6 +80,6 @@ def macros : List Macro := [
 ]
 
 /-- The W2 screens. -/
-def screens : List Screen := [inbasket, result, message]
+def screens : List Screen := [inbox, result, message]
 
 end Ehr.Canonical.W2

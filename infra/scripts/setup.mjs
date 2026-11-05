@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { fictionalIdentity } from '../../scripts/fictional-identities.mjs';
 // Idempotent first-boot setup for the local Medplum stack.
 //
 //   node infra/scripts/setup.mjs        (or: make setup)
@@ -117,7 +118,7 @@ function personaEmail(p) {
 }
 
 function buildPractitioner(p) {
-  const nameText = [p.prefix?.join(' '), p.given.join(' '), p.family].filter(Boolean).join(' ') + `, ${p.suffix.join(', ')}`;
+  const nameText = fictionalIdentity('Practitioner', p.code).name;
   return {
     resourceType: 'Practitioner',
     identifier: [{ system: PERSONA_SYSTEM, value: p.code }],
@@ -126,8 +127,8 @@ function buildPractitioner(p) {
       {
         use: 'official',
         text: nameText,
-        family: p.family,
-        given: p.given,
+        family: nameText.split(' ').at(-1),
+        given: ['Fictional', 'Clinician'],
         ...(p.prefix ? { prefix: p.prefix } : {}),
         suffix: p.suffix,
       },

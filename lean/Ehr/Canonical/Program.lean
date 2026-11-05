@@ -15,7 +15,7 @@ import Ehr.Canonical.W7Refills
 # The canonical EHR program, version 1
 
 The shared vendor baseline for spec v1 and workflows W1–W7. It starts from the
-department workspace and includes shared Chart Summary and Chart Review screens.
+department workspace and includes shared Chart Summary and Chart History screens.
 Role presets select each clinician's view before agent personalization.
 Fields, reviews and alert controls come from the hospital rulebook.
 -/
@@ -23,13 +23,13 @@ Fields, reviews and alert controls come from the hospital rulebook.
 namespace Ehr.Canonical
 
 /-- The patient workspace: the start screen. It has the banner, chart search,
-the sidebar, a chart-review tab strip, and one button per workflow entry. -/
+the sidebar, a chart-history tab strip, and one button per workflow entry. -/
 def home : Screen :=
   let s := "home"
   { id := s, title := "Patient workspace", workflow := "shell"
     components := [banner s, searchC s "chartSearch" "chart" "Search chart"] ++
       sidebar s clinicSidebar ++
-      tabStrip s "chart" "Chart review"
+      tabStrip s "chart" "Chart History"
         [(.table, "problemList", "Problem list"), (.table, "labResults", "Results"),
          (.panel, "encounterNotes", "Notes"), (.table, "currentMeds", "Medications"),
          (.panel, "allergyList", "Allergies"), (.table, "encounterHistory", "Encounters"),
@@ -38,8 +38,8 @@ def home : Screen :=
        table s "openOrders" "openOrders" "Open orders",
        group s "work" "Activities" (collapsible := false)] ++
       ([("w1Rooming", "Schedule"),
-        ("w2Inbasket", "In Basket: Results"),
-        ("w7Queue", "In Basket: Rx Requests"),
+        ("w2Inbox", "Inbox: Results"),
+        ("w7Queue", "Inbox: Rx Requests"),
         ("w3TrackBoard", "ED Track Board"),
         ("w4Worklist", "Unit Census & MAR"),
         ("w5Rooming", "Child Health"),

@@ -1,9 +1,11 @@
 {
-  "case": "Confirmed linked dosing weight can retain a superseded source",
-  "binarySha256": "a8d7b3d83142d8e719e247868dc1d888690f606d0a016d7a38fc7bac53ba925d",
+  "case": "Correcting weight to 20 kg refreshes or invalidates an earlier 70 kg link; mismatched values cannot be signed",
+  "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
+  "binarySha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
   "programPath": "releases/v3/personas/P1.json",
   "specPath": "releases/v3/spec.json",
-  "programSha256": "1d79b4e87f13a4fb9078f4da795a9621a55039c89c3ca9a449724cab483f2dd9",
+  "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a",
+  "specSha256": "c3f27179fb6aa5d3fc9624fba6542194745d48a09a0ed8e0e3fd94c2021da732",
   "facts": {
     "patientId": "heldout-A",
     "identity": {
@@ -34,14 +36,210 @@
         "preferredPharmacy",
         "community"
       ]
-    ]
+    ],
+    "sourcePatientId": "heldout-A",
+    "patientDirectory": {
+      "patients": [
+        {
+          "id": "heldout-A",
+          "name": "Heldout heldout-A",
+          "mrn": "heldout-A"
+        }
+      ],
+      "activities": [
+        {
+          "info": "scheduleTasks",
+          "title": "Schedule",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "info": "edTrackBoard",
+          "title": "Track Board",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "info": "shiftWorklist",
+          "title": "Unit Census",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "info": "unitCensus",
+          "title": "Unit Census",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "info": "orSchedule",
+          "title": "OR Schedule",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "info": "consultList",
+          "title": "Consults",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "info": "inboxResults",
+          "title": "Inbox",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "info": "inboxRxRequests",
+          "title": "Rx Requests",
+          "rows": [
+            {
+              "patient": "heldout-A",
+              "fields": [
+                [
+                  "Patient",
+                  "Heldout heldout-A"
+                ],
+                [
+                  "MRN",
+                  "heldout-A"
+                ],
+                [
+                  "Context",
+                  "Held-out scheduled encounter"
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
   },
   "trace": [
     {
       "intent": "navigate toward element visitDiagnosis",
       "event": {
         "click": {
-          "comp": "home.work.w1Rooming"
+          "comp": "chartSummary.patientCare.w1Rooming"
         }
       },
       "result": "ok",
@@ -162,6 +360,30 @@
       "popup": null
     },
     {
+      "intent": "navigate toward linked dosing weight before correction",
+      "event": {
+        "click": {
+          "comp": "w1Rooming.nav.w1Orders"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Orders",
+      "commits": [],
+      "popup": null
+    },
+    {
+      "intent": "navigate toward element weight",
+      "event": {
+        "click": {
+          "comp": "w1Orders.nav.w1Rooming"
+        }
+      },
+      "result": "ok",
+      "screen": "w1Rooming",
+      "commits": [],
+      "popup": null
+    },
+    {
       "intent": "enter weight",
       "event": {
         "enter": {
@@ -180,7 +402,7 @@
       "popup": null
     },
     {
-      "intent": "navigate toward linked dosing weight",
+      "intent": "navigate toward linked dosing weight after source correction",
       "event": {
         "click": {
           "comp": "w1Rooming.nav.w1Orders"
@@ -192,7 +414,7 @@
       "popup": null
     },
     {
-      "intent": "confirm the already-linked dosing weight after source correction",
+      "intent": "try confirming the existing dosing-weight copy",
       "event": {
         "confirm": {
           "comp": "w1Orders.dosingWeight"
@@ -286,7 +508,7 @@
       "popup": null
     },
     {
-      "intent": "navigate toward linked element dosingWeight",
+      "intent": "navigate toward element drug",
       "event": {
         "click": {
           "comp": "w1Sign.nav.w1Orders"
@@ -561,19 +783,6 @@
       {
         "byHuman": false,
         "confirmed": true,
-        "element": "dosingWeight",
-        "provenance": "linked:weight",
-        "slot": 0,
-        "value": {
-          "qty": {
-            "tenths": 700,
-            "unit": "kg"
-          }
-        }
-      },
-      {
-        "byHuman": false,
-        "confirmed": true,
         "element": "orderDiagnosis",
         "provenance": "linked:visitDiagnosis",
         "slot": 0,
@@ -587,6 +796,20 @@
         "byHuman": true,
         "confirmed": true,
         "element": "weight",
+        "provenance": "linked-source-changed",
+        "slot": 0,
+        "value": {
+          "qty": {
+            "tenths": 200,
+            "unit": "kg"
+          }
+        }
+      },
+      {
+        "byHuman": false,
+        "confirmed": true,
+        "element": "dosingWeight",
+        "provenance": "linked:weight",
         "slot": 0,
         "value": {
           "qty": {
@@ -761,54 +984,169 @@
     "expanded": [
       "home.activityTabs",
       "home.work",
-      "w1Rooming.encounterNavigator",
+      "home.chartWorkspace",
+      "home.patientSidebar",
+      "w1Rooming.encounterWorkflow",
       "w1Rooming.reason",
       "w1Rooming.vitalsGroup",
       "w1Rooming.allergyGroup",
       "w1Rooming.intake",
       "w1Rooming.phq",
-      "w1MedRec.encounterNavigator",
+      "w1Rooming.chartWorkspace",
+      "w1Rooming.patientSidebar",
+      "w1Rooming.contextPanels",
+      "w1Rooming.contextPanels.card.chartRecentResults",
+      "w1Rooming.contextPanels.card.chartCareGaps",
+      "w1Rooming.contextPanels.card.storyLastNote",
+      "w1MedRec.encounterWorkflow",
       "w1MedRec.rows",
-      "w1Hpi.encounterNavigator",
+      "w1MedRec.chartWorkspace",
+      "w1MedRec.patientSidebar",
+      "w1MedRec.contextPanels",
+      "w1MedRec.contextPanels.card.chartRecentResults",
+      "w1MedRec.contextPanels.card.chartCareGaps",
+      "w1MedRec.contextPanels.card.storyLastNote",
+      "w1Hpi.encounterWorkflow",
       "w1Hpi.noteTools",
       "w1Hpi.historyNote",
       "w1Hpi.systems",
-      "w1Exam.encounterNavigator",
+      "w1Hpi.chartWorkspace",
+      "w1Hpi.patientSidebar",
+      "w1Hpi.contextPanels",
+      "w1Hpi.contextPanels.card.chartRecentResults",
+      "w1Hpi.contextPanels.card.chartCareGaps",
+      "w1Hpi.contextPanels.card.storyLastNote",
+      "w1Exam.encounterWorkflow",
       "w1Exam.physical",
       "w1Exam.assessment",
-      "w1Orders.encounterNavigator",
-      "w1Orders.prefList",
+      "w1Exam.chartWorkspace",
+      "w1Exam.patientSidebar",
+      "w1Exam.contextPanels",
+      "w1Exam.contextPanels.card.chartRecentResults",
+      "w1Exam.contextPanels.card.chartCareGaps",
+      "w1Exam.contextPanels.card.storyLastNote",
+      "w1Orders.encounterWorkflow",
+      "w1Orders.orderFavorites",
       "w1Orders.dosing",
       "w1Orders.medication",
       "w1Orders.dispense",
       "w1Orders.dx",
       "w1Orders.controlled",
+      "w1Orders.chartWorkspace",
+      "w1Orders.patientSidebar",
+      "w1Orders.contextPanels",
+      "w1Orders.contextPanels.card.chartOrders",
+      "w1Orders.contextPanels.card.chartRecentResults",
+      "w1Orders.contextPanels.card.allergyList",
+      "w1Orders.contextPanels.card.storyWeight",
       "w1Labs.servicePriorAuth",
-      "w1Labs.encounterNavigator",
+      "w1Labs.encounterWorkflow",
       "w1Labs.labOrder",
-      "w1Verify.encounterNavigator",
-      "w1Sign.encounterNavigator",
+      "w1Labs.chartWorkspace",
+      "w1Labs.patientSidebar",
+      "w1Labs.contextPanels",
+      "w1Labs.contextPanels.card.chartOrders",
+      "w1Labs.contextPanels.card.chartRecentResults",
+      "w1Labs.contextPanels.card.allergyList",
+      "w1Labs.contextPanels.card.storyWeight",
+      "w1Verify.encounterWorkflow",
+      "w1Verify.chartWorkspace",
+      "w1Verify.patientSidebar",
+      "w1Verify.contextPanels",
+      "w1Verify.contextPanels.card.chartRecentResults",
+      "w1Verify.contextPanels.card.chartCareGaps",
+      "w1Verify.contextPanels.card.storyLastNote",
+      "w1Sign.encounterWorkflow",
       "w1Sign.signature.signOrders",
-      "w1Close.encounterNavigator",
+      "w1Sign.chartWorkspace",
+      "w1Sign.patientSidebar",
+      "w1Sign.contextPanels",
+      "w1Sign.contextPanels.card.chartOrders",
+      "w1Sign.contextPanels.card.chartRecentResults",
+      "w1Sign.contextPanels.card.allergyList",
+      "w1Sign.contextPanels.card.storyWeight",
+      "w1Close.encounterWorkflow",
       "w1Close.billing",
       "w1Close.followup",
       "w1Close.avs",
-      "w2Inbasket.inBasketColumns",
-      "w2Inbasket.encounterNavigator",
-      "w2Inbasket.messages",
-      "w2Inbasket.selected",
-      "w2Result.encounterNavigator",
+      "w1Close.chartWorkspace",
+      "w1Close.patientSidebar",
+      "w1Close.contextPanels",
+      "w1Close.contextPanels.card.chartQuickView",
+      "w1Close.contextPanels.card.problemList",
+      "w1Close.contextPanels.card.chartOrders",
+      "w1Close.contextPanels.card.chartCarePlan",
+      "w2Inbox.inboxColumns",
+      "w2Inbox.encounterWorkflow",
+      "w2Inbox.messages",
+      "w2Inbox.selected",
+      "w2Inbox.chartWorkspace",
+      "w2Inbox.patientSidebar",
+      "w2Inbox.contextPanels",
+      "w2Inbox.contextPanels.card.chartRecentResults",
+      "w2Inbox.contextPanels.card.chartCareGaps",
+      "w2Inbox.contextPanels.card.storyLastNote",
+      "w2Result.encounterWorkflow",
       "w2Result.followup",
-      "w2Message.encounterNavigator",
+      "w2Result.chartWorkspace",
+      "w2Result.patientSidebar",
+      "w2Result.contextPanels",
+      "w2Result.contextPanels.card.chartRecentResults",
+      "w2Result.contextPanels.card.chartCareGaps",
+      "w2Result.contextPanels.card.storyLastNote",
+      "w2Message.encounterWorkflow",
       "w2Message.templates",
       "w2Message.draft",
-      "w7Queue.inBasketColumns",
-      "w7Queue.encounterNavigator",
+      "w2Message.chartWorkspace",
+      "w2Message.patientSidebar",
+      "w2Message.contextPanels",
+      "w2Message.contextPanels.card.chartRecentResults",
+      "w2Message.contextPanels.card.chartCareGaps",
+      "w2Message.contextPanels.card.storyLastNote",
+      "w7Queue.inboxColumns",
+      "w7Queue.encounterWorkflow",
       "w7Queue.messages",
       "w7Queue.selected",
-      "w7Review.encounterNavigator",
-      "w7Decision.encounterNavigator",
-      "w7Decision.decisionGroup"
+      "w7Queue.chartWorkspace",
+      "w7Queue.patientSidebar",
+      "w7Queue.contextPanels",
+      "w7Queue.contextPanels.card.chartRecentResults",
+      "w7Queue.contextPanels.card.chartCareGaps",
+      "w7Queue.contextPanels.card.storyLastNote",
+      "w7Review.encounterWorkflow",
+      "w7Review.chartWorkspace",
+      "w7Review.patientSidebar",
+      "w7Review.contextPanels",
+      "w7Review.contextPanels.card.chartRecentResults",
+      "w7Review.contextPanels.card.chartCareGaps",
+      "w7Review.contextPanels.card.storyLastNote",
+      "w7Decision.encounterWorkflow",
+      "w7Decision.decisionGroup",
+      "w7Decision.chartWorkspace",
+      "w7Decision.patientSidebar",
+      "w7Decision.contextPanels",
+      "w7Decision.contextPanels.card.chartRecentResults",
+      "w7Decision.contextPanels.card.chartCareGaps",
+      "w7Decision.contextPanels.card.storyLastNote",
+      "chartSummary.chartIndex",
+      "chartSummary.card.chartQuickView",
+      "chartSummary.card.chartProblems",
+      "chartSummary.card.chartMeds",
+      "chartSummary.card.allergyList",
+      "chartSummary.card.chartRecentResults",
+      "chartSummary.card.chartVitals",
+      "chartSummary.card.chartCareGaps",
+      "chartSummary.card.chartImmunizations",
+      "chartSummary.card.chartNotes",
+      "chartSummary.card.chartOrders",
+      "chartSummary.card.chartImaging",
+      "chartSummary.card.chartSocial",
+      "chartSummary.card.chartEncounters",
+      "chartSummary.patientCare",
+      "chartSummary.chartWorkspace",
+      "chartSummary.patientSidebar",
+      "chartHistory.chartWorkspace",
+      "chartHistory.patientSidebar"
     ],
     "history": [
       "w1Verify",
@@ -819,41 +1157,25 @@
       "w1Exam",
       "w1Orders",
       "w1Rooming",
+      "w1Orders",
+      "w1Rooming",
       "w1Sign",
       "w1Verify",
       "w1Orders",
       "w1Exam",
       "w1Rooming",
+      "chartSummary",
       "home"
     ],
+    "patientContext": {
+      "activity": "scheduleTasks",
+      "bound": "heldout-A",
+      "patient": "heldout-A",
+      "query": "",
+      "target": "w1Rooming"
+    },
     "receipts": [],
     "screen": "w1Sign",
     "tabSel": []
-  },
-  "sourceWeight": {
-    "byHuman": true,
-    "confirmed": true,
-    "element": "weight",
-    "slot": 0,
-    "value": {
-      "qty": {
-        "tenths": 200,
-        "unit": "kg"
-      }
-    }
-  },
-  "linkedDosingWeight": {
-    "byHuman": false,
-    "confirmed": true,
-    "element": "dosingWeight",
-    "provenance": "linked:weight",
-    "slot": 0,
-    "value": {
-      "qty": {
-        "tenths": 700,
-        "unit": "kg"
-      }
-    }
-  },
-  "checker": "Original canonical accepted in certifications.json; no program or spec mutation"
+  }
 }

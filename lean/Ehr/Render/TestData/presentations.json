@@ -30,7 +30,7 @@
         ],
         "generalPractitioner": [
           {
-            "display": "Maya Brooks, MD"
+            "display": "Fictional Clinician 97e51328aa, MD"
           }
         ]
       }
@@ -63,7 +63,7 @@
         ],
         "generalPractitioner": [
           {
-            "display": "Maya Brooks, MD"
+            "display": "Fictional Clinician 97e51328aa, MD"
           }
         ]
       }
@@ -96,7 +96,7 @@
         ],
         "generalPractitioner": [
           {
-            "display": "Maya Brooks, MD"
+            "display": "Fictional Clinician 97e51328aa, MD"
           }
         ]
       }
@@ -129,7 +129,7 @@
         ],
         "generalPractitioner": [
           {
-            "display": "Maya Brooks, MD"
+            "display": "Fictional Clinician 97e51328aa, MD"
           }
         ]
       }
@@ -162,7 +162,7 @@
         ],
         "generalPractitioner": [
           {
-            "display": "Maya Brooks, MD"
+            "display": "Fictional Clinician 97e51328aa, MD"
           }
         ]
       }
@@ -195,7 +195,7 @@
         ],
         "generalPractitioner": [
           {
-            "display": "Maya Brooks, MD"
+            "display": "Fictional Clinician 97e51328aa, MD"
           }
         ]
       }
@@ -206,9 +206,11 @@
         "id": "dr",
         "name": [
           {
-            "family": "Brooks",
+            "text": "Fictional Clinician 97e51328aa",
+            "family": "97e51328aa",
             "given": [
-              "Maya"
+              "Fictional",
+              "Clinician"
             ]
           }
         ]
@@ -218,7 +220,7 @@
       "resource": {
         "resourceType": "Location",
         "id": "clinic",
-        "name": "Family Medicine \u2022 West Pavilion"
+        "name": "Fictional Care Site a3696fdeb2"
       }
     },
     {
@@ -724,14 +726,14 @@
         "location": [
           {
             "location": {
-              "display": "5 West \u2022 512B"
+              "display": "5 West • 512B"
             }
           }
         ],
         "participant": [
           {
             "individual": {
-              "display": "Daniel Park, MD"
+              "display": "Fictional Clinician de057b3177"
             }
           }
         ]
@@ -994,7 +996,7 @@
         },
         "valueQuantity": {
           "value": 37.3,
-          "unit": "\u00b0C",
+          "unit": "°C",
           "code": "Cel",
           "system": "http://unitsofmeasure.org"
         },
@@ -1028,7 +1030,7 @@
         },
         "valueQuantity": {
           "value": 37.1,
-          "unit": "\u00b0C",
+          "unit": "°C",
           "code": "Cel",
           "system": "http://unitsofmeasure.org"
         },
@@ -1061,8 +1063,8 @@
           ]
         },
         "valueQuantity": {
-          "value": 37.0,
-          "unit": "\u00b0C",
+          "value": 37,
+          "unit": "°C",
           "code": "Cel",
           "system": "http://unitsofmeasure.org"
         },
@@ -2241,7 +2243,7 @@
         },
         "effectiveDateTime": "2026-10-31T06:30:00-07:00",
         "valueQuantity": {
-          "value": 4.0,
+          "value": 4,
           "unit": "mmol/L",
           "code": "mmol/L",
           "system": "http://unitsofmeasure.org"
@@ -2541,7 +2543,7 @@
         },
         "effectiveDateTime": "2026-10-31T06:30:00-07:00",
         "valueQuantity": {
-          "value": 1.0,
+          "value": 1,
           "unit": "mg/dL",
           "code": "mg/dL",
           "system": "http://unitsofmeasure.org"
@@ -3044,16 +3046,16 @@
         "type": {
           "text": "Progress note"
         },
-        "description": "General Surgery \u2022 Daily Progress",
+        "description": "General Surgery • Daily Progress",
         "author": [
           {
-            "display": "Daniel Park, MD"
+            "display": "Fictional Clinician de057b3177"
           }
         ],
         "context": {
           "encounter": [
             {
-              "display": "Inpatient \u2022 General Surgery"
+              "display": "Inpatient • General Surgery"
             }
           ]
         },

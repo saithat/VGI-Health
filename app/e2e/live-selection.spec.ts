@@ -10,7 +10,7 @@ test.beforeEach(async () => {
 
 for (const [persona, activity, caption] of [
   ["P1", "scheduleTasks", "Schedule"],
-  ["P1", "inBasketResults", "In Basket Results"],
+  ["P1", "inboxResults", "Inbox Results"],
   ["P2", "edTrackBoard", "Track Board"],
   ["P3", "unitCensus", "Unit Census"],
   ["P3", "shiftWorklist", "MAR"],
@@ -50,8 +50,8 @@ for (const [persona, activity, caption] of [
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
       activity === "shiftWorklist"
         ? "My Patients / MAR"
-        : caption === "In Basket Results"
-          ? "In Basket · Results"
+        : caption === "Inbox Results"
+          ? "Inbox · Results"
           : caption,
     );
     if (activity === "lookup")

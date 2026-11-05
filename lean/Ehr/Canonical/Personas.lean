@@ -13,7 +13,7 @@ def roleComponentAllowed (sp : Spec) (role : Role) (c : Component) : Bool :=
   | _ => true
 
 /-- Clinic presets place the existing encounter opener in the selected schedule
-row. In Basket remains a separate activity; no destination or event is added. -/
+row. Inbox remains a separate activity; no destination or event is added. -/
 def clinicLandingLayout (owner : String) (screen : Screen) : Screen :=
   if screen.id != "home" then screen else
   let screen := { screen with components := screen.components.filter fun c =>
@@ -64,7 +64,7 @@ def presetProgram (owner : String) (p : Program) : Program :=
                title := if s.id == "home" then
                  if ["P2", "P3"].contains owner then "Patient workspace"
                  else ((presetLandings owner).head?).map (·.2) |>.getD s.title
-               else (navigatorNames s).2
+               else (workflowNames s).2
                components := s.components.filterMap fun c =>
                  match c.kind with
                  | .button (.goto target) =>

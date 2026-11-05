@@ -30,7 +30,7 @@ export async function enterPatientChart(
   return true;
 }
 
-/** Follow real declared goto edges, including a Summary before the navigator. */
+/** Follow real declared goto edges, including a Summary before the workflow. */
 export async function navigateClinicalScreen(
   page: Page,
   destination: string,

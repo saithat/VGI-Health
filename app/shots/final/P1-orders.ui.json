@@ -2,19 +2,19 @@
   "banner": [
     [
       "Patient",
-      "Carter, Zulma Tricia"
+      "Gutkowski, Alva"
     ],
     [
       "DOB",
-      "Mar 4, 1943"
+      "Apr 5, 1996"
     ],
     [
       "MRN",
-      "13761514"
+      "46914471"
     ],
     [
       "Age / sex",
-      "83 / F"
+      "30 / M"
     ],
     [
       "Language",
@@ -22,15 +22,15 @@
     ],
     [
       "PCP",
-      "Dr. Amir Hassan, Internal Medicine"
+      "Fictional Clinician 9ababdd2e1"
     ],
     [
       "Coverage",
-      "VGI Medicare Advantage"
+      "Fictional Health Services 462e7f940b"
     ],
     [
       "Last encounter",
-      "AMB"
+      ""
     ],
     [
       "Last provider",
@@ -38,15 +38,15 @@
     ],
     [
       "Last location",
-      "Mass General Brigham Urgent Care LLC"
+      ""
     ],
     [
       "Encounter type",
-      "Office Visit – Internal Medicine"
+      "Emergency Visit – Emergency Medicine"
     ],
     [
       "Department",
-      "Internal Medicine"
+      "Emergency Medicine"
     ],
     [
       "Allergies",
@@ -58,7 +58,7 @@
     ],
     [
       "Weight",
-      "80.9 kg · Oct 22, 2026 01:46"
+      "65.5 kg · Feb 14, 2025 13:45"
     ],
     [
       "Isolation",
@@ -69,23 +69,23 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
           "workspace.activity|scheduleTasks",
           "Schedule"
         ],
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (5)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (7)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (21)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (16)"
         ],
         [
           "workspace.lookup",
@@ -98,7 +98,7 @@
       ]
     ],
     [
-      "Visit navigator",
+      "Visit workflow",
       [
         [
           "w1Orders.nav.w1Rooming",
@@ -134,8 +134,8 @@
           "Summary"
         ],
         [
-          "w1Orders.chartWorkspace.chartReview",
-          "Chart Review"
+          "w1Orders.chartWorkspace.chartHistory",
+          "Chart History"
         ]
       ]
     ]
@@ -147,7 +147,7 @@
         "children": [
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyIdentity",
+              "comp": "w1Orders.patientSidebar.storyIdentity",
               "display": "list",
               "infoId": "storyIdentity",
               "label": "Patient",
@@ -155,25 +155,25 @@
                 [
                   [
                     "Record",
-                    "Name · Carter, Zulma Tricia"
+                    "Name · Gutkowski, Alva"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Age / sex · 83 / F"
+                    "Age / sex · 30 / M"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "MRN · 13761514"
+                    "MRN · 46914471"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "DOB · Mar 4, 1943"
+                    "DOB · Apr 5, 1996"
                   ]
                 ]
               ]
@@ -181,7 +181,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyPrecautions",
+              "comp": "w1Orders.patientSidebar.storyPrecautions",
               "display": "list",
               "infoId": "storyPrecautions",
               "label": "Code Status / Precautions",
@@ -203,7 +203,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.allergyList",
+              "comp": "w1Orders.patientSidebar.allergyList",
               "display": "list",
               "infoId": "allergyList",
               "label": "Allergies",
@@ -219,7 +219,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyTeam",
+              "comp": "w1Orders.patientSidebar.storyTeam",
               "display": "list",
               "infoId": "storyTeam",
               "label": "PCP / Attending / Care Team",
@@ -227,7 +227,7 @@
                 [
                   [
                     "Record",
-                    "PCP · Dr. Amir Hassan, Internal Medicine"
+                    "PCP · Fictional Clinician 9ababdd2e1"
                   ]
                 ],
                 [
@@ -239,7 +239,7 @@
                 [
                   [
                     "Record",
-                    "primary performer · Dr. Tracy Wilderman"
+                    "primary performer · Fictional Clinician 9ab77356a1"
                   ]
                 ]
               ]
@@ -247,7 +247,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyEncounter",
+              "comp": "w1Orders.patientSidebar.storyEncounter",
               "display": "list",
               "infoId": "storyEncounter",
               "label": "Encounter / Location / LOS",
@@ -255,31 +255,31 @@
                 [
                   [
                     "Record",
-                    "Encounter · Office Visit – Internal Medicine"
+                    "Encounter · Emergency Visit – Emergency Medicine"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Department · Internal Medicine"
+                    "Department · Emergency Medicine"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Location · Mass General Brigham Urgent Care LLC"
+                    "Location · Fictional Health Services 1c1a16f00b"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Admitted / start · Oct 22, 2026 01:46"
+                    "Admitted / start · Jun 13, 2026 14:45"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "LOS · 0d 0h (recorded stay)"
+                    "LOS · 0d 1h (recorded stay)"
                   ]
                 ],
                 [
@@ -293,7 +293,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyWeight",
+              "comp": "w1Orders.patientSidebar.storyWeight",
               "display": "list",
               "infoId": "storyWeight",
               "label": "Weight (kg)",
@@ -301,7 +301,7 @@
                 [
                   [
                     "Record",
-                    "Measured weight · 80.9 kg · 2026-10-22T01:46:32-07:00"
+                    "Measured weight · 65.5 kg · 2025-02-14T13:45:36-08:00"
                   ]
                 ]
               ]
@@ -309,7 +309,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.vitals",
+              "comp": "w1Orders.patientSidebar.vitals",
               "display": "list",
               "infoId": "vitals",
               "label": "Recent Vitals",
@@ -317,43 +317,43 @@
                 [
                   [
                     "Record",
-                    "Body Height 157.9 cm (Oct 22, 2026 01:46)"
+                    "Body Height 163.3 cm (Feb 14, 2025 13:45)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} (Oct 22, 2026 01:46)"
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} (Feb 14, 2025 13:45)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body Weight 80.9 kg (Oct 22, 2026 01:46)"
+                    "Body Weight 65.5 kg (Feb 14, 2025 13:45)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body mass index (BMI) [Ratio] 32.45 kg/m2 (Oct 22, 2026 01:46)"
+                    "Body mass index (BMI) [Ratio] 24.58 kg/m2 (Feb 14, 2025 13:45)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Blood pressure panel with all children optional 101/69 mm[Hg] (Oct 22, 2026 01:46)"
+                    "Blood pressure panel with all children optional 112/69 mm[Hg] (Feb 14, 2025 13:45)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Heart rate 67 /min (Oct 22, 2026 01:46)"
+                    "Heart rate 63 /min (Feb 14, 2025 13:45)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Respiratory rate 12 /min (Oct 22, 2026 01:46)"
+                    "Respiratory rate 13 /min (Feb 14, 2025 13:45)"
                   ]
                 ]
               ]
@@ -361,7 +361,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyMedCount",
+              "comp": "w1Orders.patientSidebar.storyMedCount",
               "display": "list",
               "infoId": "storyMedCount",
               "label": "Active Medications",
@@ -369,7 +369,7 @@
                 [
                   [
                     "Record",
-                    "Active/on-hold orders · 9"
+                    "Active/on-hold orders · 0"
                   ]
                 ]
               ]
@@ -377,161 +377,16 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.problemList",
+              "comp": "w1Orders.patientSidebar.problemList",
               "display": "list",
               "infoId": "problemList",
               "label": "Active Problems",
-              "rows": [
-                [
-                  [
-                    "Record",
-                    "Chronic congestive heart failure (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Chronic kidney disease stage 2 (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Microalbuminuria due to type 2 diabetes mellitus (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Atrial fibrillation (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "History of myocardial infarction (situation) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Acute ST segment elevation myocardial infarction (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Chronic kidney disease stage 1 (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Disorder of kidney due to diabetes mellitus (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Chronic pain (finding) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Chronic low back pain (finding) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Chronic neck pain (finding) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Osteoporosis (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Dependent drug abuse (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "History of coronary artery bypass grafting (situation) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Ischemic heart disease (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Gingivitis (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Hyperlipidemia (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Metabolic syndrome X (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Essential hypertension (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Anemia (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Prediabetes (finding) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Past pregnancy history of miscarriage (situation) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Body mass index 30+ - obesity (finding) (active)"
-                  ]
-                ]
-              ]
+              "rows": []
             }
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyLastNote",
+              "comp": "w1Orders.patientSidebar.storyLastNote",
               "display": "list",
               "infoId": "storyLastNote",
               "label": "Last Note",
@@ -539,7 +394,7 @@
                 [
                   [
                     "Record",
-                    "Oct 22, 2026 01:46 · History and physical note · Dr. Tracy Wilderman · Unknown · \n2026-10-22\n\n# Chief Complaint\n- Hunger\n- Fatigue\n- Thirst\n\n\n# History of Present Illness\nZulma is a 83 year-old nonhispanic white female. Patient has a history of overdose (disorder), encounter for antineoplastic radiation therapy, fracture of ankle (disorder), medication review… (excerpt; full note in Chart Review) · current"
+                    "Jun 13, 2026 14:45 · History and physical note · Fictional Clinician 9ab77356a1 · Unknown · \n2026-06-13\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 30 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History) · current"
                   ]
                 ]
               ]
@@ -547,7 +402,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.storyPharmacy",
+              "comp": "w1Orders.patientSidebar.storyPharmacy",
               "display": "list",
               "infoId": "storyPharmacy",
               "label": "Pharmacy",
@@ -556,7 +411,7 @@
           },
           {
             "info": {
-              "comp": "w1Orders.storyboard.chartReports",
+              "comp": "w1Orders.patientSidebar.chartReports",
               "display": "list",
               "infoId": "chartReports",
               "label": "Reports",
@@ -571,8 +426,8 @@
             }
           }
         ],
-        "id": "w1Orders.storyboard",
-        "title": "Patient Storyboard"
+        "id": "w1Orders.patientSidebar",
+        "title": "Patient sidebar"
       }
     }
   ],
@@ -611,7 +466,7 @@
           {
             "button": {
               "blockedReason": null,
-              "comp": "w1Orders.prefList",
+              "comp": "w1Orders.orderFavorites",
               "enabled": true,
               "hotkey": null,
               "label": "Collapse section",
@@ -689,8 +544,8 @@
             }
           }
         ],
-        "id": "w1Orders.prefList",
-        "title": "Preference list"
+        "id": "w1Orders.orderFavorites",
+        "title": "Order favorites"
       }
     },
     {
@@ -1274,206 +1129,7 @@
               "display": "table",
               "infoId": "currentMeds",
               "label": "Current meds",
-              "rows": [
-                [
-                  [
-                    "Medication",
-                    "insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"
-                  ],
-                  [
-                    "Instructions",
-                    ""
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "Digoxin 0.125 MG Oral Tablet"
-                  ],
-                  [
-                    "Instructions",
-                    ""
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet [Percocet]"
-                  ],
-                  [
-                    "Instructions",
-                    "Every six hours (qualifier value)"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "Furosemide 40 MG Oral Tablet"
-                  ],
-                  [
-                    "Instructions",
-                    "Take as needed."
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "Warfarin Sodium 5 MG Oral Tablet"
-                  ],
-                  [
-                    "Instructions",
-                    ""
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "Alendronic acid 10 MG Oral Tablet"
-                  ],
-                  [
-                    "Instructions",
-                    ""
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "verapamil hydrochloride 80 MG Oral Tablet [Calan]"
-                  ],
-                  [
-                    "Instructions",
-                    "Take verapamil hydrochloride 80 MG Oral Tablet [Calan] by mouth daily."
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "lisinopril 10 MG Oral Tablet"
-                  ],
-                  [
-                    "Instructions",
-                    "Take lisinopril 10 MG Oral Tablet by mouth daily."
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Tracy Wilderman"
-                  ]
-                ],
-                [
-                  [
-                    "Medication",
-                    "Simvastatin 10 MG Oral Tablet"
-                  ],
-                  [
-                    "Instructions",
-                    "Take Simvastatin 10 MG Oral Tablet by mouth daily."
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Authored",
-                    "Dec 12, 2025 00:46"
-                  ],
-                  [
-                    "Prescriber",
-                    "Dr. Nicholas Greenfelder"
-                  ]
-                ]
-              ]
+              "rows": []
             }
           }
         ],
@@ -1557,6 +1213,36 @@
                 [
                   [
                     "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Jun 13, 2026 14:45"
+                  ],
+                  [
+                    "End",
+                    "Jun 13, 2026 15:45"
+                  ],
+                  [
+                    "Reason",
+                    "Laceration - injury (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 9ab77356a1"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 1c1a16f00b"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
                     "Office Visit – Internal Medicine"
                   ],
                   [
@@ -1565,11 +1251,11 @@
                   ],
                   [
                     "Start",
-                    "Oct 22, 2026 01:46"
+                    "Feb 14, 2025 13:45"
                   ],
                   [
                     "End",
-                    "Oct 22, 2026 02:44"
+                    "Feb 14, 2025 14:42"
                   ],
                   [
                     "Reason",
@@ -1577,11 +1263,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Tracy Wilderman"
+                    "Fictional Clinician 002b15f222"
                   ],
                   [
                     "Location",
-                    "Mass General Brigham Urgent Care LLC"
+                    "Fictional Care Site e9d1df14b4"
                   ]
                 ],
                 [
@@ -1595,11 +1281,41 @@
                   ],
                   [
                     "Start",
-                    "Oct 1, 2026 01:46"
+                    "Feb 5, 2025 07:45"
                   ],
                   [
                     "End",
-                    "Oct 1, 2026 02:46"
+                    "Feb 5, 2025 08:00"
+                  ],
+                  [
+                    "Reason",
+                    "Acute bronchitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 002b15f222"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site e9d1df14b4"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 21, 2024 14:45"
+                  ],
+                  [
+                    "End",
+                    "Jun 21, 2024 15:31"
                   ],
                   [
                     "Reason",
@@ -1607,11 +1323,41 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Margarite Koepp"
+                    "Fictional Clinician 24dac8c00e"
                   ],
                   [
                     "Location",
-                    "Cambridge Public Health Commission"
+                    "Fictional Care Site bc16b42584"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "May 15, 2023 14:45"
+                  ],
+                  [
+                    "End",
+                    "May 15, 2023 15:45"
+                  ],
+                  [
+                    "Reason",
+                    "Sprain (morphologic abnormality)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 9ab77356a1"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 1c1a16f00b"
                   ]
                 ],
                 [
@@ -1625,683 +1371,23 @@
                   ],
                   [
                     "Start",
-                    "Sep 17, 2026 01:46"
+                    "May 23, 2022 06:45"
                   ],
                   [
                     "End",
-                    "Sep 17, 2026 02:20"
+                    "May 23, 2022 07:00"
                   ],
                   [
                     "Reason",
-                    ""
+                    "Viral sinusitis (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Nicholas Greenfelder"
+                    "Fictional Clinician 002b15f222"
                   ],
                   [
                     "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Sep 10, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Sep 10, 2026 02:39"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Aug 27, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 27, 2026 02:20"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Tracy Wilderman"
-                  ],
-                  [
-                    "Location",
-                    "Mass General Brigham Urgent Care LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Aug 9, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 9, 2026 02:16"
-                  ],
-                  [
-                    "Reason",
-                    "Chronic congestive heart failure (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Gabriel Reilly"
-                  ],
-                  [
-                    "Location",
-                    "Fitchburg Outpatient Clinic"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Jun 11, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Jun 11, 2026 02:21"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "May 28, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "May 28, 2026 02:38"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Tracy Wilderman"
-                  ],
-                  [
-                    "Location",
-                    "Mass General Brigham Urgent Care LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "May 14, 2026 02:21"
-                  ],
-                  [
-                    "End",
-                    "May 14, 2026 03:53"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "May 7, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "May 7, 2026 02:32"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Inpatient Stay – Hospital Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Inpatient"
-                  ],
-                  [
-                    "Start",
-                    "Apr 17, 2026 09:10"
-                  ],
-                  [
-                    "End",
-                    "Apr 23, 2026 09:10"
-                  ],
-                  [
-                    "Reason",
-                    "Dependent drug abuse (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Apr 9, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Apr 9, 2026 02:21"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Mar 26, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Mar 26, 2026 02:28"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 12, 2026 00:46"
-                  ],
-                  [
-                    "End",
-                    "Feb 12, 2026 01:10"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 10, 2026 00:46"
-                  ],
-                  [
-                    "End",
-                    "Feb 10, 2026 01:16"
-                  ],
-                  [
-                    "Reason",
-                    "Chronic congestive heart failure (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Gabriel Reilly"
-                  ],
-                  [
-                    "Location",
-                    "Fitchburg Outpatient Clinic"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Jan 29, 2026 00:46"
-                  ],
-                  [
-                    "End",
-                    "Jan 29, 2026 01:29"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Dec 12, 2025 00:46"
-                  ],
-                  [
-                    "End",
-                    "Dec 12, 2025 01:01"
-                  ],
-                  [
-                    "Reason",
-                    "Hyperlipidemia (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Dec 11, 2025 00:46"
-                  ],
-                  [
-                    "End",
-                    "Dec 11, 2025 01:21"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Nov 27, 2025 00:46"
-                  ],
-                  [
-                    "End",
-                    "Nov 27, 2025 01:19"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Tracy Wilderman"
-                  ],
-                  [
-                    "Location",
-                    "Mass General Brigham Urgent Care LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Oct 30, 2025 01:46"
-                  ],
-                  [
-                    "End",
-                    "Oct 30, 2025 02:42"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Sep 4, 2025 01:46"
-                  ],
-                  [
-                    "End",
-                    "Sep 4, 2025 02:17"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Aug 20, 2025 07:40"
-                  ],
-                  [
-                    "End",
-                    "Aug 20, 2025 09:10"
-                  ],
-                  [
-                    "Reason",
-                    "Dependent drug abuse (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Aug 29, 2024 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 29, 2024 02:34"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Aug 24, 2023 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 24, 2023 02:36"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Aug 18, 2022 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 18, 2022 02:37"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
+                    "Fictional Care Site e9d1df14b4"
                   ]
                 ]
               ]
@@ -2342,6 +1428,14 @@
       }
     },
     {
+      "alert": {
+        "alertId": "careGapsInline",
+        "comp": "w1Orders.workflowAlert.careGapsInline",
+        "label": "Care gaps due",
+        "severity": "passive"
+      }
+    },
+    {
       "info": {
         "comp": "w1Orders.workspaceStatus",
         "display": "list",
@@ -2365,7 +1459,7 @@
             ],
             [
               "Value",
-              "Office Visit – Internal Medicine"
+              "Emergency Visit – Emergency Medicine"
             ]
           ],
           [
@@ -2375,7 +1469,7 @@
             ],
             [
               "Value",
-              "Internal Medicine"
+              "Emergency Medicine"
             ]
           ],
           [
@@ -2409,170 +1503,7 @@
                                 "display": "table",
                                 "infoId": "chartOrders",
                                 "label": "Records",
-                                "rows": [
-                                  [
-                                    [
-                                      "Order",
-                                      "insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"
-                                    ],
-                                    [
-                                      "Directions",
-                                      ""
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "Digoxin 0.125 MG Oral Tablet"
-                                    ],
-                                    [
-                                      "Directions",
-                                      ""
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet [Percocet]"
-                                    ],
-                                    [
-                                      "Directions",
-                                      "Every six hours (qualifier value)"
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "Furosemide 40 MG Oral Tablet"
-                                    ],
-                                    [
-                                      "Directions",
-                                      "Take as needed."
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "Warfarin Sodium 5 MG Oral Tablet"
-                                    ],
-                                    [
-                                      "Directions",
-                                      ""
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "Alendronic acid 10 MG Oral Tablet"
-                                    ],
-                                    [
-                                      "Directions",
-                                      ""
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "verapamil hydrochloride 80 MG Oral Tablet [Calan]"
-                                    ],
-                                    [
-                                      "Directions",
-                                      "Take verapamil hydrochloride 80 MG Oral Tablet [Calan] by mouth daily."
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "lisinopril 10 MG Oral Tablet"
-                                    ],
-                                    [
-                                      "Directions",
-                                      "Take lisinopril 10 MG Oral Tablet by mouth daily."
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Oct 22, 2026 01:46"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Order",
-                                      "Simvastatin 10 MG Oral Tablet"
-                                    ],
-                                    [
-                                      "Directions",
-                                      "Take Simvastatin 10 MG Oral Tablet by mouth daily."
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ],
-                                    [
-                                      "Ordered",
-                                      "Dec 12, 2025 00:46"
-                                    ]
-                                  ]
-                                ]
+                                "rows": []
                               }
                             }
                           ],
@@ -2679,7 +1610,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "80.9 kg · 2026-10-22T01:46:32-07:00"
+                                      "65.5 kg · 2025-02-14T13:45:36-08:00"
                                     ]
                                   ]
                                 ]

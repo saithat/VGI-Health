@@ -38539,11 +38539,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-id-no-room",
         "index": 0
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-id-no-room",
-        "index": 0
       }
     ],
     "fit": "core-feature:structured-display",
@@ -38616,11 +38611,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-specimen-bedside",
         "index": 1
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-specimen-bedside",
-        "index": 1
       }
     ],
     "fit": "out-of-scope",
@@ -38682,11 +38672,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-critical-recipient",
         "index": 2
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-critical-recipient",
-        "index": 2
       }
     ],
     "fit": "core-feature:qualified-authorization",
@@ -38739,11 +38724,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-suicide-screen",
-        "index": 3
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-suicide-screen",
         "index": 3
       }
@@ -38815,11 +38795,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-suicide-intent",
         "index": 4
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-suicide-intent",
-        "index": 4
       }
     ],
     "fit": "core-feature:patient-predicate",
@@ -38887,11 +38862,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-suicide-risk-level",
-        "index": 5
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-suicide-risk-level",
         "index": 5
       }
@@ -39024,11 +38994,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-suicide-mitigation",
         "index": 6
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-suicide-mitigation",
-        "index": 6
       }
     ],
     "fit": "spec-data",
@@ -39159,11 +39124,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-label-name",
         "index": 7
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-label-name",
-        "index": 7
       }
     ],
     "fit": "out-of-scope",
@@ -39216,11 +39176,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-label-strength",
-        "index": 8
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-label-strength",
         "index": 8
       }
@@ -39277,11 +39232,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-label-diluent-name",
         "index": 9
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-label-diluent-name",
-        "index": 9
       }
     ],
     "fit": "out-of-scope",
@@ -39334,11 +39284,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-label-diluent-volume",
-        "index": 10
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-label-diluent-volume",
         "index": 10
       }
@@ -39395,11 +39340,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-label-expiry-date",
         "index": 11
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-label-expiry-date",
-        "index": 11
       }
     ],
     "fit": "out-of-scope",
@@ -39452,11 +39392,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-label-expiry-time",
-        "index": 12
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-label-expiry-time",
         "index": 12
       }
@@ -39515,11 +39450,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-anticoag-reversal",
-        "index": 13
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-anticoag-reversal",
         "index": 13
       }
@@ -39582,11 +39512,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-medrec-written",
         "index": 14
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-medrec-written",
-        "index": 14
       }
     ],
     "fit": "out-of-scope",
@@ -39639,11 +39564,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-timeout-team-agreement",
-        "index": 15
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-timeout-team-agreement",
         "index": 15
       }
@@ -39715,11 +39635,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-timeout-performer-change",
         "index": 16
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-timeout-performer-change",
-        "index": 16
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -39784,11 +39699,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-timeout-site-agreement",
         "index": 17
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-timeout-site-agreement",
-        "index": 17
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -39851,11 +39761,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-timeout-procedure-agreement",
-        "index": 18
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-timeout-procedure-agreement",
         "index": 18
       }
@@ -39932,11 +39837,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-two-identifiers",
         "index": 19
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-two-identifiers",
-        "index": 19
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -40004,11 +39904,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-site-mark-before-procedure",
-        "index": 20
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-site-mark-before-procedure",
         "index": 20
       }
@@ -40079,11 +39974,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-npg-medrec-resolve-discrepancies",
         "index": 21
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-npg-medrec-resolve-discrepancies",
-        "index": 21
       }
     ],
     "fit": "core-feature:record-level-completeness",
@@ -40142,11 +40032,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-weight-metric",
-        "index": 22
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-weight-metric",
         "index": 22
       }
@@ -40215,11 +40100,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-weight-measured",
-        "index": 23
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-weight-measured",
         "index": 23
       }
@@ -40297,11 +40177,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-weight-not-historical",
         "index": 24
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-weight-not-historical",
-        "index": 24
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -40364,11 +40239,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-who-oximeter",
-        "index": 25
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-who-oximeter",
         "index": 25
       }
@@ -40440,11 +40310,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-who-allergy",
         "index": 26
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-who-allergy",
-        "index": 26
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -40507,11 +40372,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-who-airway",
-        "index": 27
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-who-airway",
         "index": 27
       }
@@ -40578,11 +40438,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-who-blood-loss",
         "index": 28
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-who-blood-loss",
-        "index": 28
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -40645,11 +40500,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-who-antibiotic",
-        "index": 29
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-who-antibiotic",
         "index": 29
       }
@@ -40716,11 +40566,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-who-team",
         "index": 30
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-who-team",
-        "index": 30
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -40783,11 +40628,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-who-sterility",
-        "index": 31
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-who-sterility",
         "index": 31
       }
@@ -40854,11 +40694,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-who-imaging",
         "index": 32
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-who-imaging",
-        "index": 32
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -40921,11 +40756,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-who-counts",
-        "index": 33
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-who-counts",
         "index": 33
       }
@@ -40992,11 +40822,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-who-specimen",
         "index": 34
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-who-specimen",
-        "index": 34
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -41059,11 +40884,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-who-sponge-count",
-        "index": 35
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-who-sponge-count",
         "index": 35
       }
@@ -41130,11 +40950,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-who-needle-count",
         "index": 36
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-who-needle-count",
-        "index": 36
       }
     ],
     "fit": "core-feature:event-time-window",
@@ -41199,11 +41014,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-mtx-teachback",
-        "index": 37
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-mtx-teachback",
         "index": 37
       }
@@ -41337,11 +41147,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-layer-safeguards",
         "index": 38
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-layer-safeguards",
-        "index": 38
       }
     ],
     "fit": "out-of-scope",
@@ -41401,11 +41206,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-weight-on-prescription",
-        "index": 39
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-weight-on-prescription",
         "index": 39
       }
@@ -41468,11 +41268,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-weight-discharge-summary",
         "index": 40
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-weight-discharge-summary",
-        "index": 40
       }
     ],
     "fit": "out-of-scope",
@@ -41527,11 +41322,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-weight-growth-outlier",
-        "index": 41
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-weight-growth-outlier",
         "index": 41
       }
@@ -41600,11 +41390,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-weight-change-alert",
-        "index": 42
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-weight-change-alert",
         "index": 42
       }
@@ -41677,11 +41462,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-dosing-weight-category",
         "index": 43
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-dosing-weight-category",
-        "index": 43
       }
     ],
     "fit": "core-feature:value-validation",
@@ -41738,11 +41518,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-npg-pain-intervention-response",
-        "index": 44
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-npg-pain-intervention-response",
         "index": 44
       }
@@ -41820,11 +41595,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-tjc-pain-reassessment-criteria",
         "index": 45
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-tjc-pain-reassessment-criteria",
-        "index": 45
       }
     ],
     "fit": "out-of-scope",
@@ -41883,11 +41653,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-tjc-pain-alternative-tools",
-        "index": 46
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-tjc-pain-alternative-tools",
         "index": 46
       }
@@ -41961,11 +41726,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-tjc-opioid-high-risk-monitoring",
-        "index": 47
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-tjc-opioid-high-risk-monitoring",
         "index": 47
       }
@@ -42044,11 +41804,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-result-escalation",
         "index": 48
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-result-escalation",
-        "index": 48
       }
     ],
     "fit": "out-of-scope",
@@ -42103,11 +41858,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-result-normal-notify",
-        "index": 49
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-result-normal-notify",
         "index": 49
       }
@@ -42168,11 +41918,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-result-ordering-clinician",
         "index": 50
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-result-ordering-clinician",
-        "index": 50
       }
     ],
     "fit": "core-feature:record-level-completeness",
@@ -42231,11 +41976,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-result-amendment-notification",
         "index": 51
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-result-amendment-notification",
-        "index": 51
       }
     ],
     "fit": "out-of-scope",
@@ -42292,11 +42032,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-result-abnormal-flag",
-        "index": 52
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-result-abnormal-flag",
         "index": 52
       }
@@ -42407,7 +42142,7 @@
       "encoding": "design",
       "specMapping": {
         "element": null,
-        "info": "inbasketItems",
+        "info": "inboxItems",
         "when": "always",
         "prefill": null,
         "friction": "safety",
@@ -42423,11 +42158,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-result-surrogate",
-        "index": 53
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-result-surrogate",
         "index": 53
       }
@@ -42486,11 +42216,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-result-components-together",
-        "index": 54
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-result-components-together",
         "index": 54
       }
@@ -42571,11 +42296,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-patient-list-identifiers",
         "index": 55
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-patient-list-identifiers",
-        "index": 55
       }
     ],
     "fit": "core-feature:structured-display",
@@ -42652,11 +42372,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-patient-list-selection",
-        "index": 56
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-patient-list-selection",
         "index": 56
       }
@@ -42737,11 +42452,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-patient-name-collision",
         "index": 57
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-patient-name-collision",
-        "index": 57
       }
     ],
     "fit": "core-feature:structured-display",
@@ -42818,11 +42528,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-patient-photo-banner",
-        "index": 58
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-patient-photo-banner",
         "index": 58
       }
@@ -42903,11 +42608,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-patient-photo-mobile",
         "index": 59
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-patient-photo-mobile",
-        "index": 59
       }
     ],
     "fit": "core-feature:structured-display",
@@ -42981,11 +42681,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-printed-patient-identifiers",
         "index": 60
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-printed-patient-identifiers",
-        "index": 60
       }
     ],
     "fit": "out-of-scope",
@@ -43044,11 +42739,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-patient-reentry-fallback",
-        "index": 61
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-patient-reentry-fallback",
         "index": 61
       }
@@ -43117,11 +42807,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-leapfrog-cpoe-85",
         "index": 62
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-leapfrog-cpoe-85",
-        "index": 62
       }
     ],
     "fit": "out-of-scope",
@@ -43178,11 +42863,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-leapfrog-cpoe-test-60",
-        "index": 63
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-leapfrog-cpoe-test-60",
         "index": 63
       }
@@ -43243,11 +42923,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-leapfrog-bcma-unit-coverage",
         "index": 64
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-leapfrog-bcma-unit-coverage",
-        "index": 64
       }
     ],
     "fit": "out-of-scope",
@@ -43306,11 +42981,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-leapfrog-bcma-scan-compliance",
         "index": 65
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-leapfrog-bcma-scan-compliance",
-        "index": 65
       }
     ],
     "fit": "out-of-scope",
@@ -43363,11 +43033,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-leapfrog-bcma-scan-patient",
-        "index": 66
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-leapfrog-bcma-scan-patient",
         "index": 66
       }
@@ -43432,11 +43097,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-leapfrog-bcma-scan-medication",
         "index": 67
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-leapfrog-bcma-scan-medication",
-        "index": 67
       }
     ],
     "fit": "existing",
@@ -43497,11 +43157,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-leapfrog-bcma-wrong-patient",
-        "index": 68
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-leapfrog-bcma-wrong-patient",
         "index": 68
       }
@@ -43566,11 +43221,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-leapfrog-bcma-wrong-medication",
         "index": 69
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-leapfrog-bcma-wrong-medication",
-        "index": 69
       }
     ],
     "fit": "existing",
@@ -43633,11 +43283,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-leapfrog-bcma-wrong-dose",
         "index": 70
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-leapfrog-bcma-wrong-dose",
-        "index": 70
       }
     ],
     "fit": "core-feature:value-validation",
@@ -43690,11 +43335,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-leapfrog-bcma-wrong-time",
-        "index": 71
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-leapfrog-bcma-wrong-time",
         "index": 71
       }
@@ -43759,11 +43399,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-leapfrog-bcma-second-nurse",
-        "index": 72
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-leapfrog-bcma-second-nurse",
         "index": 72
       }
@@ -43835,11 +43470,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-mtx-weekly",
-        "index": 73
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-mtx-weekly",
         "index": 73
       }
@@ -43924,11 +43554,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-mtx-daily-indication",
         "index": 74
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-mtx-daily-indication",
-        "index": 74
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44003,11 +43628,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-select-doublechecks",
         "index": 75
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-select-doublechecks",
-        "index": 75
       }
     ],
     "fit": "out-of-scope",
@@ -44067,11 +43687,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-tjc-prohibited-list",
-        "index": 76
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-tjc-prohibited-list",
         "index": 76
       }
@@ -44137,11 +43752,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-abbrev-iu",
         "index": 77
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-abbrev-iu",
-        "index": 77
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44203,11 +43813,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-abbrev-qd",
-        "index": 78
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-abbrev-qd",
         "index": 78
       }
@@ -44273,11 +43878,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-abbrev-qod",
         "index": 79
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-abbrev-qod",
-        "index": 79
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44339,11 +43939,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-abbrev-cc",
-        "index": 80
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-abbrev-cc",
         "index": 80
       }
@@ -44409,11 +44004,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-abbrev-microgram",
         "index": 81
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-abbrev-microgram",
-        "index": 81
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44475,11 +44065,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-abbrev-dc",
-        "index": 82
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-abbrev-dc",
         "index": 82
       }
@@ -44545,11 +44130,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-abbrev-units",
         "index": 83
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-abbrev-units",
-        "index": 83
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44611,11 +44191,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-abbrev-leading-zero",
-        "index": 84
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-abbrev-leading-zero",
         "index": 84
       }
@@ -44697,11 +44272,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-abbrev-trailing-zero",
         "index": 85
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-abbrev-trailing-zero",
-        "index": 85
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44781,11 +44351,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-abbrev-ms",
         "index": 86
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-abbrev-ms",
-        "index": 86
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44847,11 +44412,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-ismp-abbrev-mso4",
-        "index": 87
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-ismp-abbrev-mso4",
         "index": 87
       }
@@ -44917,11 +44477,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-ismp-abbrev-mgso4",
         "index": 88
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-ismp-abbrev-mgso4",
-        "index": 88
       }
     ],
     "fit": "core-feature:value-validation",
@@ -44981,11 +44536,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-allergy-synonyms",
-        "index": 89
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-allergy-synonyms",
         "index": 89
       }
@@ -45049,11 +44599,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-environmental-allergy",
         "index": 90
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-environmental-allergy",
-        "index": 90
       }
     ],
     "fit": "core-feature:value-validation",
@@ -45113,11 +44658,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-alert-tiers",
-        "index": 91
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-alert-tiers",
         "index": 91
       }
@@ -45181,11 +44721,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-reverse-allergy",
         "index": 92
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-reverse-allergy",
-        "index": 92
       }
     ],
     "fit": "core-feature:record-level-completeness",
@@ -45245,11 +44780,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-visible-weight",
-        "index": 93
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-visible-weight",
         "index": 93
       }
@@ -45346,11 +44876,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-pediatric-calculator",
         "index": 94
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-pediatric-calculator",
-        "index": 94
       }
     ],
     "fit": "core-feature:value-validation",
@@ -45440,11 +44965,6 @@
         "file": "docs/rules/entrenched.json",
         "id": "entrenched-safer-pediatric-dose-rounding",
         "index": 95
-      },
-      {
-        "file": "docs/rules/guidance.json",
-        "id": "entrenched-safer-pediatric-dose-rounding",
-        "index": 95
       }
     ],
     "fit": "core-feature:value-validation",
@@ -45499,11 +45019,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-pediatric-concentration",
-        "index": 96
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-pediatric-concentration",
         "index": 96
       }
@@ -45565,11 +45080,6 @@
     "sourceLocations": [
       {
         "file": "docs/rules/entrenched.json",
-        "id": "entrenched-safer-maximum-daily-dose",
-        "index": 97
-      },
-      {
-        "file": "docs/rules/guidance.json",
         "id": "entrenched-safer-maximum-daily-dose",
         "index": 97
       }

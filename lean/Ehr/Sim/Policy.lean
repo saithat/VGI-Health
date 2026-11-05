@@ -132,8 +132,8 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
 identical activations, typing, scrolls and pointer operations for every UI version. -/
 def selectionActivity (task : Task) : String :=
   match task.workflow with
-  | .W1 | .W5 => "scheduleTasks" | .W2 => "inBasketResults"
-  | .W3 => "edTrackBoard" | .W4 => "shiftWorklist" | .W7 => "inBasketRxRequests"
+  | .W1 | .W5 => "scheduleTasks" | .W2 => "inboxResults"
+  | .W3 => "edTrackBoard" | .W4 => "shiftWorklist" | .W7 => "inboxRxRequests"
   | .W6 => if task.choices.w6Step? == some .consult then "consultList" else "orSchedule"
 
 /-- Execute the same semantic row/lookup controls that the app receives. -/

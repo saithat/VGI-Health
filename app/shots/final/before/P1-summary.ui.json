@@ -2,19 +2,19 @@
   "banner": [
     [
       "Patient",
-      "Carter, Zulma Tricia"
+      "Gutkowski, Alva"
     ],
     [
       "DOB",
-      "Mar 4, 1943"
+      "Apr 5, 1996"
     ],
     [
       "MRN",
-      "13761514"
+      "46914471"
     ],
     [
       "Age / sex",
-      "83 / F"
+      "30 / M"
     ],
     [
       "Language",
@@ -22,31 +22,31 @@
     ],
     [
       "PCP",
-      "Dr. Amir Hassan, Internal Medicine"
+      "Fictional Clinician 9ababdd2e1"
     ],
     [
       "Coverage",
-      "VGI Medicare Advantage"
+      "Fictional Health Services 462e7f940b"
     ],
     [
       "Last encounter",
-      "AMB"
+      ""
     ],
     [
       "Last provider",
-      "Dr. Tracy Wilderman"
+      ""
     ],
     [
       "Last location",
-      "Mass General Brigham Urgent Care LLC"
+      ""
     ],
     [
-      "Encounter",
-      "Office Visit – Internal Medicine"
+      "Encounter type",
+      "Emergency Visit – Emergency Medicine"
     ],
     [
       "Department",
-      "Internal Medicine"
+      "Emergency Medicine"
     ],
     [
       "Allergies",
@@ -58,7 +58,7 @@
     ],
     [
       "Weight",
-      "80.9 kg · Oct 22, 2026 01:46"
+      "65.5 kg · Feb 14, 2025 13:45"
     ],
     [
       "Isolation",
@@ -69,23 +69,23 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
           "workspace.activity|scheduleTasks",
           "Schedule"
         ],
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (5)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (7)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (21)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (16)"
         ],
         [
           "workspace.lookup",
@@ -98,43 +98,329 @@
       ]
     ],
     [
-      "Visit navigator",
+      "Patient care",
       [
         [
-          "w1Rooming.nav.w1MedRec",
-          "Medications"
+          "chartSummary.patientCare.w1Rooming",
+          "Visit workflow"
         ],
         [
-          "w1Rooming.nav.w1Hpi",
-          "History / ROS"
+          "chartSummary.patientCare.w2Inbox",
+          "Result Review"
         ],
         [
-          "w1Rooming.nav.w1Exam",
-          "Exam / Assessment & Plan"
-        ],
+          "chartSummary.patientCare.w7Queue",
+          "Refill Review"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
         [
-          "w1Rooming.nav.w1Orders",
-          "Orders"
-        ],
-        [
-          "w1Rooming.nav.w1Labs",
-          "Lab Orders"
-        ],
-        [
-          "w1Rooming.nav.w1Close",
-          "Sign Visit"
+          "chartSummary.chartWorkspace.chartHistory",
+          "Chart History"
         ]
       ]
     ]
   ],
-  "screen": "w1Rooming",
-  "side": [],
-  "title": "Rooming",
+  "screen": "chartSummary",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Gutkowski, Alva"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 30 / M"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 46914471"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Apr 5, 1996"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · Not recorded"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "No Known Allergies"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Fictional Clinician 9ababdd2e1"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "primary performer · Fictional Clinician 9ab77356a1"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Emergency Visit – Emergency Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Emergency Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Fictional Health Services 1c1a16f00b"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Jun 13, 2026 14:45"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · 0d 1h (recorded stay)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · finished"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 65.5 kg · 2025-02-14T13:45:36-08:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body Height 163.3 cm (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Weight 65.5 kg (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 24.58 kg/m2 (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 112/69 mm[Hg] (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 63 /min (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 13 /min (Feb 14, 2025 13:45)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 0"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Jun 13, 2026 14:45 · History and physical note · Fictional Clinician 9ab77356a1 · Unknown · \n2026-06-13\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 30 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "chartSummary.patientSidebar",
+        "title": "Patient sidebar"
+      }
+    }
+  ],
+  "title": "Chart Summary",
   "viewer": "Physician",
   "workspace": [
     {
       "field": {
-        "comp": "w1Rooming.chartSearch",
+        "comp": "chartSummary.chartSearch",
         "humanOnly": false,
         "kind": "search",
         "label": "Search chart",
@@ -149,1303 +435,1244 @@
       "section": {
         "children": [
           {
-            "button": {
-              "blockedReason": null,
-              "comp": "w1Rooming.chart.includeResolved",
-              "enabled": true,
-              "hotkey": null,
-              "label": "Expand section",
-              "role": "toggle"
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartQuickView.data",
+                                "display": "table",
+                                "infoId": "chartQuickView",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Detail",
+                                      "Name"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Gutkowski, Alva"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Age / sex"
+                                    ],
+                                    [
+                                      "Value",
+                                      "30 / M"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "MRN"
+                                    ],
+                                    [
+                                      "Value",
+                                      "46914471"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "DOB"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Apr 5, 1996"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Encounter"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Emergency Visit – Emergency Medicine"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Department"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Emergency Medicine"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Location"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Health Services 1c1a16f00b"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Admitted / start"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Jun 13, 2026 14:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "LOS"
+                                    ],
+                                    [
+                                      "Value",
+                                      "0d 1h (recorded stay)"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Status"
+                                    ],
+                                    [
+                                      "Value",
+                                      "finished"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "PCP"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Clinician 9ababdd2e1"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Attending"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Not recorded"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "primary performer"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Clinician 9ab77356a1"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartQuickView",
+                    "title": "Quick View"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartProblems.data",
+                                "display": "table",
+                                "infoId": "chartProblems",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartProblems",
+                    "title": "Active Problems · latest 8"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartMeds.data",
+                                "display": "table",
+                                "infoId": "chartMeds",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartMeds",
+                    "title": "Active Medications · latest 8"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.allergyList.data",
+                                "display": "table",
+                                "infoId": "allergyList",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Substance",
+                                      "No Known Allergies"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      ""
+                                    ],
+                                    [
+                                      "Severity",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Nov 2, 2026"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.allergyList",
+                    "title": "Allergies"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartRecentResults.data",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "results"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartRecentResults",
+                    "title": "Recent Results · 72 hours, latest 15"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartVitals.data",
+                                "display": "table",
+                                "infoId": "chartVitals",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Systolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "112"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 21, 2024 14:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Diastolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "71"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 21, 2024 14:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional"
+                                    ],
+                                    [
+                                      "Value",
+                                      "112/71"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 21, 2024 14:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body mass index (BMI) [Ratio]"
+                                    ],
+                                    [
+                                      "Value",
+                                      "24.58"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg/m2"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 21, 2024 14:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Weight"
+                                    ],
+                                    [
+                                      "Value",
+                                      "65.5"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 21, 2024 14:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Height"
+                                    ],
+                                    [
+                                      "Value",
+                                      "163.3"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "cm"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 21, 2024 14:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Respiratory rate"
+                                    ],
+                                    [
+                                      "Value",
+                                      "13"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "/min"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Heart rate"
+                                    ],
+                                    [
+                                      "Value",
+                                      "63"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "/min"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Systolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "112"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Diastolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "69"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional"
+                                    ],
+                                    [
+                                      "Value",
+                                      "112/69"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body mass index (BMI) [Ratio]"
+                                    ],
+                                    [
+                                      "Value",
+                                      "24.58"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg/m2"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Weight"
+                                    ],
+                                    [
+                                      "Value",
+                                      "65.5"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+                                    ],
+                                    [
+                                      "Value",
+                                      "2"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "{score}"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Height"
+                                    ],
+                                    [
+                                      "Value",
+                                      "163.3"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "cm"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Feb 14, 2025 13:45"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "trend"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartVitals",
+                    "title": "Vitals · recent observations"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartCareGaps.data",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Task",
+                                      "Influenza vaccination review"
+                                    ],
+                                    [
+                                      "Status",
+                                      "Chart reminder"
+                                    ],
+                                    [
+                                      "Due",
+                                      "Verify source / eligibility"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "worklist"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartCareGaps",
+                    "title": "Care Gaps / Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartImmunizations.data",
+                                "display": "table",
+                                "infoId": "chartImmunizations",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Feb 14, 2025 13:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 21, 2024 14:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 18, 2021 14:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5mL dose or 50 mcg/0.25mL dose"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Apr 23, 2021 14:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5mL dose or 50 mcg/0.25mL dose"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Mar 26, 2021 14:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 15, 2018 14:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Td (adult), 5 Lf tetanus toxoid, preservative free, adsorbed"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 15, 2018 14:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Hep B, adult"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 15, 2018 14:45"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartImmunizations",
+                    "title": "Recent Immunizations"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartNotes.data",
+                                "display": "table",
+                                "infoId": "chartNotes",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Jun 13, 2026 14:45"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 9ab77356a1"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-06-13\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 30 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "Feb 14, 2025 13:45"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 002b15f222"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2025-02-14\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 28 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "Feb 5, 2025 07:45"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 002b15f222"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2025-02-05\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 28 year-old nonhispanic black male. Patient has a history of dental caries, sprain (morphologic abnormality), medication review due (situation), reports of violence in the environment (finding),… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "Jun 21, 2024 14:45"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 24dac8c00e"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2024-06-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 28 year-old nonhispanic black male. Patient has a history of dental caries, sprain (morphologic abnormality), medication review due (situation), sprain of wrist (disorder), viral sinusitis (diso… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "May 15, 2023 14:45"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 9ab77356a1"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2023-05-15\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 27 year-old nonhispanic black male. Patient has a history of dental caries, medication review due (situation), viral sinusitis (disorder), gingivitis (disorder), stress (finding).\n\n# Social Hist… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "notes"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartNotes",
+                    "title": "Recent Notes · latest 5 excerpts"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartOrders.data",
+                                "display": "table",
+                                "infoId": "chartOrders",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartOrders",
+                    "title": "Active Orders · latest 12"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartImaging.data",
+                                "display": "table",
+                                "infoId": "chartImaging",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartImaging",
+                    "title": "Recent Imaging"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartSocial.data",
+                                "display": "table",
+                                "infoId": "chartSocial",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Finding",
+                                      "Received higher education (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 224299000; recorded: 2014-06-06T15:31:48-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Full-time employment (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 160903007; recorded: 2014-06-06T15:31:48-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Medication review due (situation)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 314529007; recorded: 2025-02-14T13:45:36-08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Social isolation (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 422650009; recorded: 2025-02-14T14:42:02-08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Tobacco smoking status"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "Never smoked tobacco (finding); date: 2025-02-14T13:45:36-08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartSocial",
+                    "title": "Social / SDOH"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartEncounters.data",
+                                "display": "table",
+                                "infoId": "chartEncounters",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Emergency Visit – Emergency Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 13, 2026 14:45"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Laceration - injury (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 9ab77356a1"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Feb 14, 2025 13:45"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 002b15f222"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Feb 5, 2025 07:45"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Acute bronchitis (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 002b15f222"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 21, 2024 14:45"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 24dac8c00e"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Emergency Visit – Emergency Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "May 15, 2023 14:45"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Sprain (morphologic abnormality)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 9ab77356a1"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "May 23, 2022 06:45"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Viral sinusitis (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 002b15f222"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartEncounters",
+                    "title": "Recent Encounters"
+                  }
+                }
+              ]
             }
           }
         ],
-        "id": "w1Rooming.chart.includeResolved",
-        "title": "Include resolved problems"
-      }
-    },
-    {
-      "section": {
-        "children": [
-          {
-            "field": {
-              "comp": "w1Rooming.chiefComplaint",
-              "humanOnly": false,
-              "kind": "text",
-              "label": "Chief complaint",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
-            }
-          }
-        ],
-        "id": "w1Rooming.reason",
-        "title": "Reason for visit"
-      }
-    },
-    {
-      "section": {
-        "children": [
-          {
-            "field": {
-              "comp": "w1Rooming.weight",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "Weight (kg)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": "kg",
-              "value": null
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.height",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "Height (cm)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": false,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.bpSystolic",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "Systolic BP (mmHg)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.bpDiastolic",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "Diastolic BP (mmHg)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.heartRate",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "Pulse (beats/min)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.respRate",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "Respirations (/min)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.temperature",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "Temperature (°C)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.spo2",
-              "humanOnly": false,
-              "kind": "qty",
-              "label": "SpO₂ (%)",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": true,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "valueSet": {
-              "allowCustom": true,
-              "children": [
-                {
-                  "field": {
-                    "comp": "w1Rooming.painScore",
-                    "humanOnly": true,
-                    "kind": "code",
-                    "label": "Pain (0–10)",
-                    "pendingConfirm": false,
-                    "provenance": null,
-                    "required": false,
-                    "unit": null,
-                    "value": null
-                  }
-                }
-              ],
-              "options": [
-                {
-                  "code": "0",
-                  "label": "0"
-                },
-                {
-                  "code": "1",
-                  "label": "1"
-                },
-                {
-                  "code": "2",
-                  "label": "2"
-                },
-                {
-                  "code": "3",
-                  "label": "3"
-                },
-                {
-                  "code": "4",
-                  "label": "4"
-                },
-                {
-                  "code": "5",
-                  "label": "5"
-                },
-                {
-                  "code": "6",
-                  "label": "6"
-                },
-                {
-                  "code": "7",
-                  "label": "7"
-                },
-                {
-                  "code": "8",
-                  "label": "8"
-                },
-                {
-                  "code": "9",
-                  "label": "9"
-                },
-                {
-                  "code": "10",
-                  "label": "10"
-                }
-              ]
-            }
-          }
-        ],
-        "id": "w1Rooming.vitalsGroup",
-        "title": "Vitals"
-      }
-    },
-    {
-      "section": {
-        "children": [
-          {
-            "info": {
-              "comp": "w1Rooming.allergies",
-              "display": "table",
-              "infoId": "allergyList",
-              "label": "Allergy review",
-              "rows": [
-                [
-                  [
-                    "Substance",
-                    "No Known Allergies"
-                  ],
-                  [
-                    "Reaction",
-                    ""
-                  ],
-                  [
-                    "Severity",
-                    ""
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Nov 2, 2026"
-                  ]
-                ]
-              ]
-            }
-          },
-          {
-            "button": {
-              "blockedReason": null,
-              "comp": "w1Rooming.review.allergyList",
-              "enabled": true,
-              "hotkey": null,
-              "label": "Mark allergies reviewed",
-              "role": "secondary"
-            }
-          }
-        ],
-        "id": "w1Rooming.allergyGroup",
-        "title": "Allergies"
-      }
-    },
-    {
-      "section": {
-        "children": [
-          {
-            "valueSet": {
-              "allowCustom": true,
-              "children": [
-                {
-                  "field": {
-                    "comp": "w1Rooming.tobaccoUse",
-                    "humanOnly": false,
-                    "kind": "code",
-                    "label": "Tobacco use",
-                    "pendingConfirm": false,
-                    "provenance": null,
-                    "required": false,
-                    "unit": null,
-                    "value": null
-                  }
-                }
-              ],
-              "options": [
-                {
-                  "code": "never",
-                  "label": "Never"
-                },
-                {
-                  "code": "former",
-                  "label": "Former"
-                },
-                {
-                  "code": "current",
-                  "label": "Current"
-                }
-              ]
-            }
-          },
-          {
-            "valueSet": {
-              "allowCustom": true,
-              "children": [
-                {
-                  "field": {
-                    "comp": "w1Rooming.fallRiskScreen",
-                    "humanOnly": false,
-                    "kind": "code",
-                    "label": "Fall in the past year?",
-                    "pendingConfirm": false,
-                    "provenance": null,
-                    "required": false,
-                    "unit": null,
-                    "value": null
-                  }
-                }
-              ],
-              "options": [
-                {
-                  "code": "yes",
-                  "label": "Yes"
-                },
-                {
-                  "code": "no",
-                  "label": "No"
-                }
-              ]
-            }
-          },
-          {
-            "valueSet": {
-              "allowCustom": true,
-              "children": [
-                {
-                  "field": {
-                    "comp": "w1Rooming.travelScreen",
-                    "humanOnly": false,
-                    "kind": "code",
-                    "label": "Travel in the past 30 days?",
-                    "pendingConfirm": false,
-                    "provenance": null,
-                    "required": false,
-                    "unit": null,
-                    "value": null
-                  }
-                }
-              ],
-              "options": [
-                {
-                  "code": "yes",
-                  "label": "Yes"
-                },
-                {
-                  "code": "no",
-                  "label": "No"
-                }
-              ]
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.advanceDirectiveAsked",
-              "humanOnly": false,
-              "kind": "flag",
-              "label": "Advance directive discussed",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": false,
-              "unit": null,
-              "value": null
-            }
-          },
-          {
-            "valueSet": {
-              "allowCustom": true,
-              "children": [
-                {
-                  "field": {
-                    "comp": "w1Rooming.interpreterNeeded",
-                    "humanOnly": false,
-                    "kind": "code",
-                    "label": "Interpreter needed?",
-                    "pendingConfirm": false,
-                    "provenance": null,
-                    "required": false,
-                    "unit": null,
-                    "value": null
-                  }
-                }
-              ],
-              "options": [
-                {
-                  "code": "yes",
-                  "label": "Yes"
-                },
-                {
-                  "code": "no",
-                  "label": "No"
-                }
-              ]
-            }
-          },
-          {
-            "field": {
-              "comp": "w1Rooming.pharmacyConfirmedRooming",
-              "humanOnly": false,
-              "kind": "flag",
-              "label": "Preferred pharmacy confirmed",
-              "pendingConfirm": false,
-              "provenance": null,
-              "required": false,
-              "unit": null,
-              "value": null
-            }
-          }
-        ],
-        "id": "w1Rooming.intake",
-        "title": "Screenings and pharmacy"
-      }
-    },
-    {
-      "section": {
-        "children": [
-          {
-            "valueSet": {
-              "allowCustom": true,
-              "children": [
-                {
-                  "field": {
-                    "comp": "w1Rooming.depressionScreen",
-                    "humanOnly": false,
-                    "kind": "code",
-                    "label": "PHQ-2 score",
-                    "pendingConfirm": false,
-                    "provenance": null,
-                    "required": false,
-                    "unit": null,
-                    "value": null
-                  }
-                }
-              ],
-              "options": [
-                {
-                  "code": "0",
-                  "label": "0"
-                },
-                {
-                  "code": "1",
-                  "label": "1"
-                },
-                {
-                  "code": "2",
-                  "label": "2"
-                },
-                {
-                  "code": "3",
-                  "label": "3"
-                },
-                {
-                  "code": "4",
-                  "label": "4"
-                },
-                {
-                  "code": "5",
-                  "label": "5"
-                },
-                {
-                  "code": "6",
-                  "label": "6"
-                }
-              ]
-            }
-          }
-        ],
-        "id": "w1Rooming.phq",
-        "title": "Depression screening"
+        "id": "chartSummary.chartIndex",
+        "title": "Index"
       }
     },
     {
       "info": {
-        "comp": "w1Rooming.healthMaintenance",
-        "display": "table",
-        "infoId": "careGapList",
-        "label": "Health maintenance",
-        "rows": []
-      }
-    },
-    {
-      "tabs": {
-        "body": [
-          {
-            "info": {
-              "comp": "w1Rooming.chart.encounterHistory",
-              "display": "table",
-              "infoId": "encounterHistory",
-              "label": "Encounters",
-              "rows": [
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Oct 22, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Oct 22, 2026 02:44"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Tracy Wilderman"
-                  ],
-                  [
-                    "Location",
-                    "Mass General Brigham Urgent Care LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Oct 1, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Oct 1, 2026 02:46"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Sep 17, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Sep 17, 2026 02:20"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Sep 10, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Sep 10, 2026 02:39"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Aug 27, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 27, 2026 02:20"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Tracy Wilderman"
-                  ],
-                  [
-                    "Location",
-                    "Mass General Brigham Urgent Care LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Aug 9, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 9, 2026 02:16"
-                  ],
-                  [
-                    "Reason",
-                    "Chronic congestive heart failure (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Gabriel Reilly"
-                  ],
-                  [
-                    "Location",
-                    "Fitchburg Outpatient Clinic"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Jun 11, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Jun 11, 2026 02:21"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "May 28, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "May 28, 2026 02:38"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Tracy Wilderman"
-                  ],
-                  [
-                    "Location",
-                    "Mass General Brigham Urgent Care LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "May 14, 2026 02:21"
-                  ],
-                  [
-                    "End",
-                    "May 14, 2026 03:53"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "May 7, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "May 7, 2026 02:32"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Inpatient Stay – Hospital Medicine"
-                  ],
-                  [
-                    "Class",
-                    "IMP"
-                  ],
-                  [
-                    "Start",
-                    "Apr 17, 2026 09:10"
-                  ],
-                  [
-                    "End",
-                    "Apr 23, 2026 09:10"
-                  ],
-                  [
-                    "Reason",
-                    "Dependent drug abuse (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Apr 9, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Apr 9, 2026 02:21"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Mar 26, 2026 01:46"
-                  ],
-                  [
-                    "End",
-                    "Mar 26, 2026 02:28"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Feb 12, 2026 00:46"
-                  ],
-                  [
-                    "End",
-                    "Feb 12, 2026 01:10"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Feb 10, 2026 00:46"
-                  ],
-                  [
-                    "End",
-                    "Feb 10, 2026 01:16"
-                  ],
-                  [
-                    "Reason",
-                    "Chronic congestive heart failure (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Gabriel Reilly"
-                  ],
-                  [
-                    "Location",
-                    "Fitchburg Outpatient Clinic"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Jan 29, 2026 00:46"
-                  ],
-                  [
-                    "End",
-                    "Jan 29, 2026 01:29"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Dec 12, 2025 00:46"
-                  ],
-                  [
-                    "End",
-                    "Dec 12, 2025 01:01"
-                  ],
-                  [
-                    "Reason",
-                    "Hyperlipidemia (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Dec 11, 2025 00:46"
-                  ],
-                  [
-                    "End",
-                    "Dec 11, 2025 01:21"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Nov 27, 2025 00:46"
-                  ],
-                  [
-                    "End",
-                    "Nov 27, 2025 01:19"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Tracy Wilderman"
-                  ],
-                  [
-                    "Location",
-                    "Mass General Brigham Urgent Care LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Oct 30, 2025 01:46"
-                  ],
-                  [
-                    "End",
-                    "Oct 30, 2025 02:42"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Margarite Koepp"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Sep 4, 2025 01:46"
-                  ],
-                  [
-                    "End",
-                    "Sep 4, 2025 02:17"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Aug 20, 2025 07:40"
-                  ],
-                  [
-                    "End",
-                    "Aug 20, 2025 09:10"
-                  ],
-                  [
-                    "Reason",
-                    "Dependent drug abuse (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Nicholas Greenfelder"
-                  ],
-                  [
-                    "Location",
-                    "Cambridge Public Health Commission"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Aug 29, 2024 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 29, 2024 02:34"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Aug 24, 2023 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 24, 2023 02:36"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "AMB"
-                  ],
-                  [
-                    "Start",
-                    "Aug 18, 2022 01:46"
-                  ],
-                  [
-                    "End",
-                    "Aug 18, 2022 02:37"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Vito Barton"
-                  ],
-                  [
-                    "Location",
-                    "Davis Square Family Practice"
-                  ]
-                ]
-              ]
-            }
-          }
-        ],
-        "id": "w1Rooming.chart",
-        "labels": [
-          "Encounters",
-          "Notes",
-          "Results",
-          "Medications",
-          "Problems",
-          "Allergies",
-          "Imaging"
-        ],
-        "selected": 0
-      }
-    },
-    {
-      "button": {
-        "blockedReason": null,
-        "comp": "w1Rooming.next",
-        "enabled": true,
-        "hotkey": null,
-        "label": "Review medications",
-        "role": "nav"
-      }
-    },
-    {
-      "button": {
-        "blockedReason": null,
-        "comp": "w1Rooming.back",
-        "enabled": true,
-        "hotkey": null,
-        "label": "Back",
-        "role": "nav"
-      }
-    },
-    {
-      "button": {
-        "blockedReason": null,
-        "comp": "w1Rooming.home",
-        "enabled": true,
-        "hotkey": null,
-        "label": "Patient workspace",
-        "role": "nav"
+        "comp": "chartSummary.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Emergency Visit – Emergency Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Emergency Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "finished"
+            ]
+          ]
+        ]
       }
     }
   ]

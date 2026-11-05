@@ -145,9 +145,9 @@ const orders: Component[] = [
     "Search orders",
   ),
   component(
-    "preference-list",
+    "order-favorites",
     { macro: { id: "diabetes-followup" } },
-    "Diabetes follow-up preference list",
+    "Diabetes follow-up order favorites",
   ),
   component(
     "med-order",
@@ -240,7 +240,7 @@ const screenInputs = [
 ];
 // Navigation itself is also a program action, so the shell emits click events.
 export const activityLinks = [
-  ["rooming", "Chart Review"],
+  ["rooming", "Chart History"],
   ["results", "Results"],
   ["medications", "Medications"],
   ["problems", "Problem List"],
@@ -407,7 +407,7 @@ export const mockViews: ScreenView[] = mockProgram.screens.map((screen) =>
             "sign-note",
             "review-allergies",
             "note-template",
-            "preference-list",
+            "order-favorites",
           ].includes(comp.id),
       )
       .map((comp) => comp.id),
@@ -418,7 +418,7 @@ export const mockViews: ScreenView[] = mockProgram.screens.map((screen) =>
           "sign-note",
           "review-allergies",
           "note-template",
-          "preference-list",
+          "order-favorites",
         ].includes(comp.id),
       )
       .map((comp) => [

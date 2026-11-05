@@ -77,7 +77,7 @@ const patientReference = (resource: Resource) => {
   return undefined;
 };
 const titles: Record<string, string> = {
-  P1: "Today's clinic · In-basket · Refills",
+  P1: "Today's clinic · Inbox · Refills",
   P2: "Emergency department track board",
   P3: "Ward census · Medication worklist",
   RN2: "Ward census · Independent checks",
@@ -539,7 +539,7 @@ function SelectEncounter({
           </select>
         </label>
         <label>
-          In Basket / refill request{" "}
+          Inbox / refill request{" "}
           <select
             value={taskId}
             onChange={(e) => setTask(e.currentTarget.value)}

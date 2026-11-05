@@ -1,7 +1,49 @@
 {
   "program": "P1 v3 copy with only curesReport panels removed",
   "command": "ehr check --spec releases/v3/spec.json --program <copy> --canonical releases/v3/personas/P1.json",
-  "exitCode": 0,
-  "verdict": "ok",
+  "binarySha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
+  "programSha256": "387edadd074348252b363292c0663bf7c744fbcc823b26fc8261d01924c86832",
+  "specSha256": "c3f27179fb6aa5d3fc9624fba6542194745d48a09a0ed8e0e3fd94c2021da732",
+  "exitCode": 1,
+  "verdict": {
+    "violation": {
+      "screens": [
+        "home",
+        "w1Rooming",
+        "w1Orders",
+        "w1Verify",
+        "w1Sign"
+      ],
+      "property": "completable",
+      "message": "commit signOrders: curesReport is not shown on screen w1Sign and the user cannot reach a field to enter its waiver",
+      "counterexample": [
+        {
+          "click": {
+            "comp": "home.work.w1Rooming"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Rooming.nav.w1Orders"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Orders.toSign"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Verify.continue"
+          }
+        },
+        {
+          "click": {
+            "comp": "w1Sign.commit.signOrders"
+          }
+        }
+      ]
+    }
+  },
   "purpose": "Separate audit, not consulted by behavioral suite"
 }

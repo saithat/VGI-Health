@@ -58,13 +58,13 @@ test("resolved-problem controls respond within the unchanged deadline", async ({
 }) => {
   for (const [persona, target] of [
     ["P1", "w7Review"],
-    ["P4", "w2Inbasket"],
+    ["P4", "w2Inbox"],
   ]) {
     await page.goto(
       `/ehr?mode=replay&audit=buttons&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`,
     );
     await enterPatientChart(page);
-    const activity = page.locator(`[data-comp-id="workspace.activity|${target === "w7Review" ? "inBasketRxRequests" : "inBasketResults"}"]`);
+    const activity = page.locator(`[data-comp-id="workspace.activity|${target === "w7Review" ? "inboxRxRequests" : "inboxResults"}"]`);
     if (await activity.count()) { await activity.click(); await enterPatientChart(page); }
     const program = z
       .object({

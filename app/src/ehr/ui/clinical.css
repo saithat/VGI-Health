@@ -906,11 +906,11 @@
   width: 15%;
 }
 
-/* A program without semantic navigator entries has one storyboard column. */
+/* A program without semantic workflow entries has one patient sidebar column. */
 .clinical-shell.without-nav {
   grid-template-columns: minmax(0, 1fr);
 }
-.clinical-app .empty-navigator {
+.clinical-app .empty-workflow {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -920,11 +920,11 @@
   border-right: 0;
   border-bottom: 1px solid var(--clinical-border);
 }
-.empty-navigator .nav-eyebrow {
+.empty-workflow .nav-eyebrow {
   margin: 0;
   padding: 2px 0;
 }
-.empty-navigator .nav-footer {
+.empty-workflow .nav-footer {
   border: 0;
   margin: 0 0 0 auto;
   padding: 2px 0;

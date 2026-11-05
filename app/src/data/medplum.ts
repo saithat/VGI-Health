@@ -399,7 +399,7 @@ export async function loadListContext(
         ),
       ],
       [
-        "inbasket",
+        "inbox",
         members.filter(
           (r) =>
             r.resourceType === "Task" || r.resourceType === "Communication",

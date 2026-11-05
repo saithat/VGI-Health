@@ -2,19 +2,19 @@
   "banner": [
     [
       "Patient",
-      "Mann, Lorena"
+      "Donnelly, Jamar"
     ],
     [
       "DOB",
-      "Oct 14, 1987"
+      "May 14, 1943"
     ],
     [
       "MRN",
-      "14486708"
+      "73854169"
     ],
     [
       "Age / sex",
-      "39 / F"
+      "83 / M"
     ],
     [
       "Language",
@@ -22,11 +22,11 @@
     ],
     [
       "PCP",
-      "Dr. Lena Wilson, Internal Medicine"
+      "Fictional Clinician dd90f9a148"
     ],
     [
       "Coverage",
-      "VGI Community Health Plan"
+      "Fictional Health Services e277448254"
     ],
     [
       "Encounter",
@@ -34,41 +34,35 @@
     ],
     [
       "Attending",
-      "Dr. Marcus Okafor, MD"
+      "Fictional Clinician ab34563451"
     ],
     [
       "Location",
-      "ED 01"
+      "Fictional Care Site 13cd46e28f"
     ],
     [
       "Encounter type",
-      "Emergency Visit – Emergency Medicine"
+      "Emergency Visit – Fictional Care Site f06249cfe5"
     ],
     [
       "Department",
-      "Emergency Medicine"
+      "Fictional Care Site f06249cfe5"
     ],
     [
       "Allergies",
-      "Bee venom — Eruption of skin (disorder) (moderate); Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Penicillin V — Rash (moderate); Cow's milk — Wheezing (finding) (moderate); Egg — Wheal (finding) (moderate)"
+      "amoxicillin — hives (reported at triage) (moderate)"
     ],
     [
       "Code status",
-      "Full Code"
+      "Not recorded"
     ],
     [
       "Weight",
-      "74.4 kg (from 164.0 lb) · Nov 2, 2026 07:15"
+      "77.2 kg · Nov 2, 2026 07:14"
     ],
     [
       "Isolation",
       "No isolation"
-    ]
-  ],
-  "entryHints": [
-    [
-      "w3Triage.weight",
-      "Recorded value: 164.0 lb. Enter the weight in kg."
     ]
   ],
   "fieldSources": [
@@ -80,23 +74,23 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
           "workspace.activity|edTrackBoard",
           "Track Board"
         ],
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (2)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (2)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
         ],
         [
           "workspace.lookup",
@@ -109,7 +103,7 @@
       ]
     ],
     [
-      "ED Navigator",
+      "ED workflow",
       [
         [
           "w3Triage.nav.w3TrackBoard",
@@ -141,8 +135,8 @@
           "Summary"
         ],
         [
-          "w3Triage.chartWorkspace.chartReview",
-          "Chart Review"
+          "w3Triage.chartWorkspace.chartHistory",
+          "Chart History"
         ]
       ]
     ]
@@ -154,7 +148,7 @@
         "children": [
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyIdentity",
+              "comp": "w3Triage.patientSidebar.storyIdentity",
               "display": "list",
               "infoId": "storyIdentity",
               "label": "Patient",
@@ -162,25 +156,25 @@
                 [
                   [
                     "Record",
-                    "Name · Mann, Lorena"
+                    "Name · Donnelly, Jamar"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Age / sex · 39 / F"
+                    "Age / sex · 83 / M"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "MRN · 14486708"
+                    "MRN · 73854169"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "DOB · Oct 14, 1987"
+                    "DOB · May 14, 1943"
                   ]
                 ]
               ]
@@ -188,7 +182,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyPrecautions",
+              "comp": "w3Triage.patientSidebar.storyPrecautions",
               "display": "list",
               "infoId": "storyPrecautions",
               "label": "Code Status / Precautions",
@@ -196,7 +190,7 @@
                 [
                   [
                     "Record",
-                    "Code status · Full Code"
+                    "Code status · Not recorded"
                   ]
                 ],
                 [
@@ -210,7 +204,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.allergyList",
+              "comp": "w3Triage.patientSidebar.allergyList",
               "display": "list",
               "infoId": "allergyList",
               "label": "Allergies",
@@ -218,55 +212,7 @@
                 [
                   [
                     "Record",
-                    "Bee venom — Eruption of skin (disorder) (moderate)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Mold — Sneezing and itchy eyes (mild)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Dust mites — Sneezing and itchy eyes (mild)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Grass pollen — Sneezing and itchy eyes (mild)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Tree pollen — Sneezing and itchy eyes (mild)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Penicillin V — Rash (moderate)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Cow's milk — Wheezing (finding) (moderate)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Egg — Wheal (finding) (moderate)"
+                    "amoxicillin — hives (reported at triage) (moderate)"
                   ]
                 ]
               ]
@@ -274,7 +220,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyTeam",
+              "comp": "w3Triage.patientSidebar.storyTeam",
               "display": "list",
               "infoId": "storyTeam",
               "label": "PCP / Attending / Care Team",
@@ -282,25 +228,25 @@
                 [
                   [
                     "Record",
-                    "PCP · Dr. Lena Wilson, Internal Medicine"
+                    "PCP · Fictional Clinician dd90f9a148"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Attending · Dr. Marcus Okafor, MD"
+                    "Attending · Fictional Clinician ab34563451"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Attending · Dr. Marcus Okafor, MD"
+                    "Attending · Fictional Clinician ab34563451"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Registered nurse · Ethan Park, RN"
+                    "Registered nurse · Fictional Clinician 920d783abe"
                   ]
                 ]
               ]
@@ -308,7 +254,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyEncounter",
+              "comp": "w3Triage.patientSidebar.storyEncounter",
               "display": "list",
               "infoId": "storyEncounter",
               "label": "Encounter / Location / LOS",
@@ -316,25 +262,25 @@
                 [
                   [
                     "Record",
-                    "Encounter · Emergency Visit – Emergency Medicine"
+                    "Encounter · Emergency Visit – Fictional Care Site f06249cfe5"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Department · Emergency Medicine"
+                    "Department · Fictional Care Site f06249cfe5"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Location · ED 01"
+                    "Location · Fictional Care Site 13cd46e28f"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Admitted / start · Nov 2, 2026 07:15"
+                    "Admitted / start · Nov 2, 2026 07:14"
                   ]
                 ],
                 [
@@ -354,7 +300,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyWeight",
+              "comp": "w3Triage.patientSidebar.storyWeight",
               "display": "list",
               "infoId": "storyWeight",
               "label": "Weight (kg)",
@@ -362,7 +308,7 @@
                 [
                   [
                     "Record",
-                    "Measured weight · 74.4 kg · 2026-11-02T07:15:00-08:00"
+                    "Measured weight · 77.2 kg · 2026-11-02T07:14:00-08:00"
                   ]
                 ]
               ]
@@ -370,7 +316,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.vitals",
+              "comp": "w3Triage.patientSidebar.vitals",
               "display": "list",
               "infoId": "vitals",
               "label": "Recent Vitals",
@@ -378,43 +324,43 @@
                 [
                   [
                     "Record",
-                    "Body weight 164 lb (today)"
+                    "Body weight 77.2 kg (today)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body Height 156.6 cm (Feb 11, 2026 05:12)"
+                    "Body Height 167.2 cm (Nov 14, 2025 17:22)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Feb 11, 2026 05:12)"
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} (Nov 14, 2025 17:22)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body mass index (BMI) [Ratio] 30.3 kg/m2 (Feb 11, 2026 05:12)"
+                    "Body mass index (BMI) [Ratio] 27.79 kg/m2 (Nov 14, 2025 17:22)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Blood pressure panel with all children optional 134/72 mm[Hg] (Feb 11, 2026 05:12)"
+                    "Blood pressure panel with all children optional 109/63 mm[Hg] (Nov 14, 2025 17:22)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Heart rate 83 /min (Feb 11, 2026 05:12)"
+                    "Heart rate 79 /min (Nov 14, 2025 17:22)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Respiratory rate 14 /min (Feb 11, 2026 05:12)"
+                    "Respiratory rate 13 /min (Nov 14, 2025 17:22)"
                   ]
                 ]
               ]
@@ -422,7 +368,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyMedCount",
+              "comp": "w3Triage.patientSidebar.storyMedCount",
               "display": "list",
               "infoId": "storyMedCount",
               "label": "Active Medications",
@@ -438,7 +384,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.problemList",
+              "comp": "w3Triage.patientSidebar.problemList",
               "display": "list",
               "infoId": "problemList",
               "label": "Active Problems",
@@ -446,19 +392,67 @@
                 [
                   [
                     "Record",
-                    "Body mass index 30+ - obesity (finding) (active)"
+                    "History of coronary artery bypass grafting (situation) (active)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Anemia (disorder) (active)"
+                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Asthma (disorder) (active)"
+                    "Ischemic heart disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Metabolic syndrome X (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Essential hypertension (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Hyperlipidemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dependent drug abuse (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Impacted molars (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic intractable migraine without aura (disorder) (active)"
                   ]
                 ],
                 [
@@ -470,7 +464,19 @@
                 [
                   [
                     "Record",
-                    "Past pregnancy history of miscarriage (situation) (active)"
+                    "Anemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index 30+ - obesity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic sinusitis (disorder) (active)"
                   ]
                 ]
               ]
@@ -478,7 +484,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyLastNote",
+              "comp": "w3Triage.patientSidebar.storyLastNote",
               "display": "list",
               "infoId": "storyLastNote",
               "label": "Last Note",
@@ -486,7 +492,7 @@
                 [
                   [
                     "Record",
-                    "Oct 15, 2026 06:12 · History and physical note · Dr. Leontine Schmeler · Unknown · \n2026-10-15\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 39 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart Review) · current"
+                    "Oct 21, 2026 19:57 · History and physical note · Fictional Clinician eff8b458b9 · Unknown · \n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History) · current"
                   ]
                 ]
               ]
@@ -494,7 +500,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.storyPharmacy",
+              "comp": "w3Triage.patientSidebar.storyPharmacy",
               "display": "list",
               "infoId": "storyPharmacy",
               "label": "Pharmacy",
@@ -503,7 +509,7 @@
           },
           {
             "info": {
-              "comp": "w3Triage.storyboard.chartReports",
+              "comp": "w3Triage.patientSidebar.chartReports",
               "display": "list",
               "infoId": "chartReports",
               "label": "Reports",
@@ -518,8 +524,8 @@
             }
           }
         ],
-        "id": "w3Triage.storyboard",
-        "title": "Patient Storyboard"
+        "id": "w3Triage.patientSidebar",
+        "title": "Patient sidebar"
       }
     }
   ],
@@ -605,7 +611,7 @@
               "provenance": "record:weightToday",
               "required": true,
               "unit": "kg",
-              "value": null
+              "value": "77.2"
             }
           },
           {
@@ -801,11 +807,11 @@
                 [
                   [
                     "Substance",
-                    "Bee venom"
+                    "amoxicillin"
                   ],
                   [
                     "Reaction",
-                    "Eruption of skin (disorder)"
+                    "hives (reported at triage)"
                   ],
                   [
                     "Severity",
@@ -817,219 +823,11 @@
                   ],
                   [
                     "Verification",
-                    "confirmed"
+                    "unconfirmed"
                   ],
                   [
                     "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Mold"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Dust mites"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Animal dander"
-                  ],
-                  [
-                    "Reaction",
-                    "Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Grass pollen"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Tree pollen"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Penicillin V"
-                  ],
-                  [
-                    "Reaction",
-                    "Rash"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Cow's milk"
-                  ],
-                  [
-                    "Reaction",
-                    "Wheezing (finding)"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Egg"
-                  ],
-                  [
-                    "Reaction",
-                    "Wheal (finding)"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
+                    "Nov 2, 2026 07:14"
                   ]
                 ]
               ]
@@ -1083,7 +881,7 @@
                 [
                   [
                     "Encounter",
-                    "Emergency Visit – Emergency Medicine"
+                    "Emergency Visit – Fictional Care Site f06249cfe5"
                   ],
                   [
                     "Class",
@@ -1091,7 +889,7 @@
                   ],
                   [
                     "Start",
-                    "Nov 2, 2026 07:15"
+                    "Nov 2, 2026 07:14"
                   ],
                   [
                     "End",
@@ -1099,15 +897,15 @@
                   ],
                   [
                     "Reason",
-                    "Cough and shortness of breath"
+                    "Ankle pain after fall"
                   ],
                   [
                     "Provider",
-                    "Dr. Marcus Okafor, MD"
+                    "Fictional Clinician ab34563451"
                   ],
                   [
                     "Location",
-                    "ED 01"
+                    "Fictional Care Site 13cd46e28f"
                   ]
                 ],
                 [
@@ -1121,23 +919,23 @@
                   ],
                   [
                     "Start",
-                    "Oct 15, 2026 06:12"
+                    "Oct 21, 2026 19:57"
                   ],
                   [
                     "End",
-                    "Oct 15, 2026 06:27"
+                    "Oct 21, 2026 21:16"
                   ],
                   [
                     "Reason",
-                    "Contraception care (regime/therapy)"
+                    "Dependent drug abuse (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Leontine Schmeler"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Brockton Hospital, Inc."
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1151,23 +949,23 @@
                   ],
                   [
                     "Start",
-                    "Aug 18, 2026 15:12"
+                    "Sep 21, 2026 18:45"
                   ],
                   [
                     "End",
-                    "Aug 18, 2026 15:27"
+                    "Sep 21, 2026 19:57"
                   ],
                   [
                     "Reason",
-                    "Asthma (disorder)"
+                    "Dependent drug abuse (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Leontine Schmeler"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Brockton Hospital, Inc."
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1181,53 +979,23 @@
                   ],
                   [
                     "Start",
-                    "Feb 25, 2026 05:12"
+                    "Aug 22, 2026 17:23"
                   ],
                   [
                     "End",
-                    "Feb 25, 2026 05:27"
+                    "Aug 22, 2026 18:45"
                   ],
                   [
                     "Reason",
-                    "Gingivitis (disorder)"
+                    "Dependent drug abuse (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Leontine Schmeler"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 19, 2026 14:12"
-                  ],
-                  [
-                    "End",
-                    "Feb 19, 2026 14:27"
-                  ],
-                  [
-                    "Reason",
-                    "Asthma (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1241,23 +1009,23 @@
                   ],
                   [
                     "Start",
-                    "Feb 18, 2026 05:12"
+                    "Aug 1, 2026 03:23"
                   ],
                   [
                     "End",
-                    "Feb 18, 2026 06:12"
+                    "Aug 1, 2026 17:23"
                   ],
                   [
                     "Reason",
-                    "Asthma (disorder)"
+                    "Overdose (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Juana Zambrano"
+                    "Fictional Clinician abf8d10f3e"
                   ],
                   [
                     "Location",
-                    "Hospice Services Of Massachusetts"
+                    "Fictional Care Site 8d461e143e"
                   ]
                 ],
                 [
@@ -1271,11 +1039,11 @@
                   ],
                   [
                     "Start",
-                    "Feb 11, 2026 05:12"
+                    "Nov 28, 2025 17:22"
                   ],
                   [
                     "End",
-                    "Feb 11, 2026 05:49"
+                    "Nov 28, 2025 18:31"
                   ],
                   [
                     "Reason",
@@ -1283,11 +1051,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Georgeanna Schulist"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Savard & Moskos Eye Health Care, LLC"
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1301,23 +1069,23 @@
                   ],
                   [
                     "Start",
-                    "Oct 20, 2025 06:12"
+                    "Nov 21, 2025 17:22"
                   ],
                   [
                     "End",
-                    "Oct 20, 2025 06:27"
+                    "Nov 21, 2025 17:37"
                   ],
                   [
                     "Reason",
-                    "Contraception care (regime/therapy)"
+                    "Hyperlipidemia (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Leontine Schmeler"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Brockton Hospital, Inc."
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1331,41 +1099,11 @@
                   ],
                   [
                     "Start",
-                    "Feb 19, 2025 05:12"
+                    "Nov 14, 2025 17:22"
                   ],
                   [
                     "End",
-                    "Feb 19, 2025 05:45"
-                  ],
-                  [
-                    "Reason",
-                    "Patient referral for dental care (procedure)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 5, 2025 05:12"
-                  ],
-                  [
-                    "End",
-                    "Feb 5, 2025 05:59"
+                    "Nov 14, 2025 18:18"
                   ],
                   [
                     "Reason",
@@ -1373,11 +1111,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Georgeanna Schulist"
+                    "Fictional Clinician d823a5fa8e"
                   ],
                   [
                     "Location",
-                    "Savard & Moskos Eye Health Care, LLC"
+                    "Fictional Care Site 4f7d5fa818"
                   ]
                 ],
                 [
@@ -1391,23 +1129,23 @@
                   ],
                   [
                     "Start",
-                    "Oct 25, 2024 06:12"
+                    "Apr 17, 2025 02:17"
                   ],
                   [
                     "End",
-                    "Oct 25, 2024 06:27"
+                    "Apr 17, 2025 03:23"
                   ],
                   [
                     "Reason",
-                    "Contraception care (regime/therapy)"
+                    "Dependent drug abuse (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Leontine Schmeler"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Brockton Hospital, Inc."
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1421,29 +1159,29 @@
                   ],
                   [
                     "Start",
-                    "Jan 31, 2024 05:12"
+                    "Mar 18, 2025 01:02"
                   ],
                   [
                     "End",
-                    "Jan 31, 2024 06:08"
+                    "Mar 18, 2025 02:17"
                   ],
                   [
                     "Reason",
-                    ""
+                    "Dependent drug abuse (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Georgeanna Schulist"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Savard & Moskos Eye Health Care, LLC"
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
                   [
                     "Encounter",
-                    "Prenatal Visit – Obstetrics"
+                    "Office Visit – Internal Medicine"
                   ],
                   [
                     "Class",
@@ -1451,11 +1189,71 @@
                   ],
                   [
                     "Start",
-                    "Oct 4, 2023 06:12"
+                    "Feb 15, 2025 22:39"
                   ],
                   [
                     "End",
-                    "Oct 4, 2023 06:27"
+                    "Feb 16, 2025 00:02"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 9, 2024 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 9, 2024 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 8, 2024 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 8, 2024 18:00"
                   ],
                   [
                     "Reason",
@@ -1463,11 +1261,161 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Leontine Schmeler"
+                    "Fictional Clinician d823a5fa8e"
                   ],
                   [
                     "Location",
-                    "Brockton Hospital, Inc."
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 12, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Apr 12, 2024 18:37"
+                  ],
+                  [
+                    "Reason",
+                    "Viral sinusitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 5, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Apr 5, 2024 18:51"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 29, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Mar 29, 2024 18:37"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 22, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Mar 22, 2024 18:55"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 00d40819c0"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3a4bf7abdd"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 15, 2024 21:16"
+                  ],
+                  [
+                    "End",
+                    "Feb 15, 2024 22:39"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1481,23 +1429,143 @@
                   ],
                   [
                     "Start",
-                    "Sep 9, 2023 06:36"
+                    "Feb 8, 2024 20:16"
                   ],
                   [
                     "End",
-                    "Sep 9, 2023 07:36"
+                    "Feb 8, 2024 21:16"
                   ],
                   [
                     "Reason",
-                    "Injury of neck (disorder)"
+                    "Overdose (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Juana Zambrano"
+                    "Fictional Clinician abf8d10f3e"
                   ],
                   [
                     "Location",
-                    "Hospice Services Of Massachusetts"
+                    "Fictional Care Site 8d461e143e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 17, 2023 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 17, 2023 17:53"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 10, 2023 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 10, 2023 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 3, 2023 18:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 3, 2023 19:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 4, 2023 20:15"
+                  ],
+                  [
+                    "End",
+                    "Jul 4, 2023 21:16"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1511,203 +1579,23 @@
                   ],
                   [
                     "Start",
-                    "Sep 9, 2023 06:36"
+                    "Dec 25, 2022 19:15"
                   ],
                   [
                     "End",
-                    "Sep 30, 2023 06:51"
+                    "Dec 27, 2022 19:15"
                   ],
                   [
                     "Reason",
-                    "Patient transfer to skilled nursing facility (procedure)"
+                    "Dependent drug abuse (disorder)"
                   ],
                   [
                     "Provider",
-                    "Dr. Dusty Lynch"
+                    "Fictional Clinician eff8b458b9"
                   ],
                   [
                     "Location",
-                    "Life Care Center Of Raynham"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Emergency Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Emergency"
-                  ],
-                  [
-                    "Start",
-                    "Aug 2, 2023 06:12"
-                  ],
-                  [
-                    "End",
-                    "Aug 2, 2023 07:12"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Juana Zambrano"
-                  ],
-                  [
-                    "Location",
-                    "Hospice Services Of Massachusetts"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Prenatal Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Jul 5, 2023 06:12"
-                  ],
-                  [
-                    "End",
-                    "Jul 5, 2023 06:27"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Prenatal Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Jun 7, 2023 06:12"
-                  ],
-                  [
-                    "End",
-                    "Jun 7, 2023 06:27"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Prenatal Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "May 10, 2023 06:12"
-                  ],
-                  [
-                    "End",
-                    "May 10, 2023 06:27"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Prenatal Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Apr 12, 2023 06:12"
-                  ],
-                  [
-                    "End",
-                    "Apr 12, 2023 06:27"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Prenatal Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Mar 15, 2023 06:12"
-                  ],
-                  [
-                    "End",
-                    "Mar 15, 2023 06:27"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
+                    "Fictional Health Services 57af6ab623"
                   ]
                 ],
                 [
@@ -1721,71 +1609,11 @@
                   ],
                   [
                     "Start",
-                    "Feb 25, 2023 17:12"
+                    "Oct 28, 2022 18:22"
                   ],
                   [
                     "End",
-                    "Feb 25, 2023 17:27"
-                  ],
-                  [
-                    "Reason",
-                    "Asthma (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Prenatal Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 15, 2023 05:12"
-                  ],
-                  [
-                    "End",
-                    "Feb 15, 2023 05:27"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Jan 25, 2023 05:12"
-                  ],
-                  [
-                    "End",
-                    "Jan 25, 2023 05:54"
+                    "Oct 28, 2022 18:58"
                   ],
                   [
                     "Reason",
@@ -1793,71 +1621,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Georgeanna Schulist"
+                    "Fictional Clinician d823a5fa8e"
                   ],
                   [
                     "Location",
-                    "Savard & Moskos Eye Health Care, LLC"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Prenatal Visit – Obstetrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Jan 18, 2023 05:12"
-                  ],
-                  [
-                    "End",
-                    "Jan 18, 2023 05:27"
-                  ],
-                  [
-                    "Reason",
-                    "Normal pregnancy (finding)"
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Leontine Schmeler"
-                  ],
-                  [
-                    "Location",
-                    "Brockton Hospital, Inc."
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Internal Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Jan 19, 2022 05:12"
-                  ],
-                  [
-                    "End",
-                    "Jan 19, 2022 05:59"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Dr. Georgeanna Schulist"
-                  ],
-                  [
-                    "Location",
-                    "Savard & Moskos Eye Health Care, LLC"
+                    "Fictional Care Site 4f7d5fa818"
                   ]
                 ]
               ]
@@ -1911,7 +1679,7 @@
             ],
             [
               "Value",
-              "Emergency Visit – Emergency Medicine"
+              "Emergency Visit – Fictional Care Site f06249cfe5"
             ]
           ],
           [
@@ -1921,7 +1689,7 @@
             ],
             [
               "Value",
-              "Emergency Medicine"
+              "Fictional Care Site f06249cfe5"
             ]
           ],
           [
@@ -2007,7 +1775,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Oct 15, 2026 06:12"
+                                      "Oct 21, 2026 19:57"
                                     ],
                                     [
                                       "Type",
@@ -2015,7 +1783,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Dr. Leontine Schmeler"
+                                      "Fictional Clinician eff8b458b9"
                                     ],
                                     [
                                       "Title",
@@ -2023,7 +1791,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2026-10-15\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 39 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart Review)"
+                                      "\n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",

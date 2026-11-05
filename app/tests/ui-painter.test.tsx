@@ -43,7 +43,7 @@ beforeAll(() => {
 });
 afterEach(cleanup);
 
-it("dispatches the exact Lean component ID from a clinical navigator link", () => {
+it("dispatches the exact Lean component ID from a clinical workflow link", () => {
   const onEvent = vi.fn();
   const value: UiScreen = {
     banner: [
@@ -51,7 +51,7 @@ it("dispatches the exact Lean component ID from a clinical navigator link", () =
       ["MRN", "123456"],
     ],
     title: "Rooming",
-    nav: [["Visit navigator", [["rooming.nav.note", "Visit Note"]]]],
+    nav: [["Visit workflow", [["rooming.nav.note", "Visit Note"]]]],
     workspace: [],
     side: [],
     modal: null,
@@ -457,7 +457,7 @@ describe("semantic EHR painter", () => {
         <UiScreenView
           screen={{
             ...view,
-            nav: [["Surgical navigator", [["case.open", "Open case"]]]],
+            nav: [["Surgical workflow", [["case.open", "Open case"]]]],
             activeNav: "case.open",
           }}
           onEvent={onEvent}
@@ -472,7 +472,7 @@ describe("semantic EHR painter", () => {
         .getAttribute("aria-current"),
     ).toBe("page");
     expect(
-      screen.getByRole("list", { name: "Surgical navigator screens" }),
+      screen.getByRole("list", { name: "Surgical workflow screens" }),
     ).toBeTruthy();
   });
   it("preserves multiline narrative as an ordinary human text entry", () => {
@@ -560,7 +560,7 @@ describe("semantic EHR painter", () => {
       banner: [],
       title: "Chart",
       nav: [
-        ["Navigator", [["actual.goto.component", "Open rooming"]]],
+        ["Workflow", [["actual.goto.component", "Open rooming"]]],
         ["Empty group", []],
       ],
       workspace: [],
@@ -577,9 +577,9 @@ describe("semantic EHR painter", () => {
       [{ click: { comp: "actual.goto.component" } }],
     ]);
     expect(screen.queryByText("Empty group")).toBeNull();
-    expect(screen.getByRole("heading", { name: "Navigator" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Workflow" })).toBeTruthy();
     expect(screen.getAllByRole("button")).toHaveLength(1);
-    expect(screen.queryByRole("button", { name: "Navigator" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Workflow" })).toBeNull();
   });
 
   it("renders every UiNode constructor and all supplied records", () => {
@@ -1656,14 +1656,14 @@ it("keeps multiline narrative entry and prefill confirmation as separate human e
   );
   expect(emit).toHaveBeenLastCalledWith({ confirm: { comp: "entry" } });
 });
-it("draws each semantic navigator destination as its exact declared click", () => {
+it("draws each semantic workflow destination as its exact declared click", () => {
   const emit = vi.fn();
   render(
     <MantineProvider theme={clinicalTheme}>
       <UiScreenView
         screen={{
           ...uiScreenSchema.parse(rooming),
-          nav: [["ED Navigator", [["visit.to.orders", "Orders"]]]],
+          nav: [["ED workflow", [["visit.to.orders", "Orders"]]]],
           workspace: [],
           side: [],
           modal: null,
@@ -1676,7 +1676,7 @@ it("draws each semantic navigator destination as its exact declared click", () =
   expect(emit).toHaveBeenLastCalledWith({
     click: { comp: "visit.to.orders" },
   });
-  expect(screen.queryByRole("button", { name: "ED Navigator" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "ED workflow" })).toBeNull();
 });
 
 it("timeline forwards exact child events and retains complete source cells", async () => {

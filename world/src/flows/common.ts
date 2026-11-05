@@ -198,7 +198,7 @@ export function p1FollowupDay(rng: Rng, day: number): number {
 /**
  * Discharge an inpatient: records it and creates its follow-ups (always a P1
  * visit; a P5 post-op visit for surgical patients) and, for medical
- * patients, pending labs that land in P1's in-basket on later days.
+ * patients, pending labs that land in P1's inbox on later days.
  */
 export function dischargeInpatient(b: DayBuild, ip: Inpatient, clock: number, taskId: string | null, rng: Rng): DischargeRecord {
   ip.plannedDischargeDay = b.day;

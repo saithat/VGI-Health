@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-04T18:44:16.227Z",
+  "execution": "One complete sequential pair; no overlapping full audits",
+  "nativeSha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
+  "appSha256": "78c10e358678328a9288eda27a0b5aa965e1026c358a7f9fa618bb3df15457c3",
+  "wasmSha256": "f629107f930abe31595053b8ddb935622ae3d363a10f6cdf9c485b1bb8a94b00",
+  "semanticInputs": "Fresh final-data regeneration matches all 4813 template and 3619 persona exports byte-for-byte; the screen-check entry and certified painter hash are unchanged",
+  "audits": [
+    {
+      "scope": "templates",
+      "status": "pass",
+      "elapsedMs": 2238330,
+      "exportedStates": 4813,
+      "distinctStates": 1826,
+      "checkedStates": 1826,
+      "measurements": 16434,
+      "findings": 0,
+      "rawResultSha256": "299ae76946a14f2dcf47aba324433bae254cd137ea9c0feaa03919cf0d9b3861",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-neutral/lean/.lake/build/bin/ehr EHR_SCREEN_WORKERS=4 node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/neutral-audit-templates"
+    },
+    {
+      "scope": "personas",
+      "status": "pass",
+      "elapsedMs": 1287150,
+      "exportedStates": 3619,
+      "distinctStates": 1296,
+      "checkedStates": 1296,
+      "measurements": 11664,
+      "findings": 0,
+      "rawResultSha256": "c59e5cad4f6727b5bb1471836478ca0ffdfb128269285d39175c2311c544cc23",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-neutral/lean/.lake/build/bin/ehr EHR_SCREEN_WORKERS=4 node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/neutral-audit-personas --personas"
+    }
+  ],
+  "finalExportCounts": {
+    "templates": 4813,
+    "personas": 3619
+  }
+}

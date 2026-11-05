@@ -49,7 +49,7 @@ describe("meaningful clinical palette", () => {
     ]);
     expect(["Rejected", "Overdue"].map(statusTone)).toEqual(["red", "red"]);
     expect(["Draft", "Cancelled"].map(statusTone)).toEqual(["gray", "gray"]);
-    expect(["In Basket", "Cosign required"].map(statusTone)).toEqual([
+    expect(["Inbox", "Cosign required"].map(statusTone)).toEqual([
       "violet",
       "violet",
     ]);
@@ -81,7 +81,7 @@ describe("meaningful clinical palette", () => {
         "ED Track Board",
         "Unit Census",
         "OR Schedule",
-        "In Basket",
+        "Inbox",
       ].map(sectionTone),
     ).toEqual(["blue", "orange", "green", "yellow", "violet"]);
   });

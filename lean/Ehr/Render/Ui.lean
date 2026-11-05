@@ -26,7 +26,7 @@ def uiSourceText (cx : Ctx) (source : String) : String :=
     let key := (source.drop 7).toString
     let name := ((cx.sp.element? key).map (·.label)).getD ""
     "Linked value" ++ (if name == "" then "" else " — " ++ name)
-  else if source == "macro" then "From template / preference list"
+  else if source == "macro" then "From template / order favorites"
   else if source == "default" then "Default value"
   else "Prefilled value"
 
@@ -143,16 +143,16 @@ def uiClinicalBanner (facts : Facts) (d : Display) : List (String × String) :=
      ("Weight", uiBannerWeight facts d),
      ("Isolation", uiLabel ((facts.record.lookup "isolation").getD "") "Not recorded")]
 
-/-- Overview uses public activities and navigator sections, retaining every screen. -/
+/-- Overview uses public activities and workflow sections, retaining every screen. -/
 def uiOverviewNav (prog : Program) : List (String × List (String × String)) :=
-  ((prog.screens.map (fun sc => (navigatorNames sc).1)).eraseDups).map fun activity =>
-    (activity, (prog.screens.filter (fun sc => (navigatorNames sc).1 == activity)).map fun sc =>
-      (sc.id, uiLabel (navigatorNames sc).2 "Untitled screen"))
+  ((prog.screens.map (fun sc => (workflowNames sc).1)).eraseDups).map fun activity =>
+    (activity, (prog.screens.filter (fun sc => (workflowNames sc).1 == activity)).map fun sc =>
+      (sc.id, uiLabel (workflowNames sc).2 "Untitled screen"))
 
 def uiSteps (cx : Ctx) : List (String × String) :=
   let workflow := ((cx.prog.screen? cx.s.screen).map (·.workflow)).getD ""
   (cx.prog.screens.filter (·.workflow == workflow)).map fun sc =>
-    (sc.id, uiLabel (navigatorNames sc).2 "Untitled screen")
+    (sc.id, uiLabel (workflowNames sc).2 "Untitled screen")
 
 /-- Fixed-point results retain their two decimal places (e.g. 4.05, not 4.5). -/
 def uiHundredths (n : Nat) : String :=
@@ -358,7 +358,7 @@ def uiSideAt (cx : Ctx) (id : CompId) : Bool :=
 
 def uiNavGroup (it : ItemView) : Bool :=
   match it.comp.kind with
-  | .group false _ => uiTagIs it.comp.tag "nav" || uiTagIs it.comp.tag "navigator"
+  | .group false _ => uiTagIs it.comp.tag "nav" || uiTagIs it.comp.tag "workflow"
   | _ => false
 
 /-- The pair-only nav wire format can represent enabled, ordinary click buttons.
@@ -372,12 +372,12 @@ def uiNavButton (cx : Ctx) (it : ItemView) : Bool :=
   | _ => false
 
 def uiNavTitle (cx : Ctx) (it : ItemView) : String :=
-  uiLabel ((cx.v.items.find? (fun parent => uiNavGroup parent && it.comp.parent? == some parent.comp.id)).map (·.comp.label) |>.getD "") "Navigator"
+  uiLabel ((cx.v.items.find? (fun parent => uiNavGroup parent && it.comp.parent? == some parent.comp.id)).map (·.comp.label) |>.getD "") "Workflow"
 
 def uiNav (cx : Ctx) : List (String × List (String × String)) :=
   let items := cx.v.items.filter (fun it => it.shown && uiNavButton cx it)
   let groups := (cx.v.items.filter (fun it => it.shown && uiNavGroup it)).map
-    (fun it => uiLabel it.comp.label "Navigator")
+    (fun it => uiLabel it.comp.label "Workflow")
   ((groups ++ items.map (uiNavTitle cx)).eraseDups).map fun title =>
     (title, (items.filter (fun it => uiNavTitle cx it == title)).map fun it =>
       (it.comp.id, uiLabel it.comp.label "Action"))
@@ -441,8 +441,8 @@ def uiSearchLabs (cx : Ctx) : List (List (String × String)) :=
 def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) :=
   if scope == "formulary" then
     formulary.map fun drug => [("Medication", drug.name), ("RxNorm", ", ".intercalate drug.rxnorm)]
-  else if scope == "inbasket" then
-    uiRows cx "inBasketResults" ++ uiRows cx "inBasketRxRequests"
+  else if scope == "inbox" then
+    uiRows cx "inboxResults" ++ uiRows cx "inboxRxRequests"
   else if scope == "loinc" then
     commonLabChoices.map (fun term => [("Test", term.label), ("LOINC", term.code)]) ++
     (cx.facts.codeTables?.getD []).flatMap (fun table =>
@@ -457,7 +457,7 @@ def uiSearchSource (cx : Ctx) (scope : String) : List (List (String × String)) 
       | _ => []
 
 /-- A bounded excerpt is centered near the matching text. Ellipses mark omitted
-text; the full note remains in Chart Review and required review panels. -/
+text; the full note remains in Chart History and required review panels. -/
 def uiSearchExcerpt (text query : String) : String :=
   let before := ((text.toLower.splitOn query.toLower).headD "").length
   let start := before - 60
@@ -516,7 +516,7 @@ def uiQueueRowTag (cx : Ctx) (tag : String) : String :=
     | none => tag
     | some it => match it.comp.kind with
       | .table info | .panel info =>
-        if !["scheduleTasks", "orSchedule", "edTrackBoard", "shiftWorklist", "consultList", "inBasketResults", "inBasketRxRequests"].contains info then tag
+        if !["scheduleTasks", "orSchedule", "edTrackBoard", "shiftWorklist", "consultList", "inboxResults", "inboxRxRequests"].contains info then tag
         else
           let payload := infoPayload cx.facts info
           let selected := if payload.any (fun p => p.artifactKey.startsWith "world:") then
@@ -638,7 +638,7 @@ def uiMissingReviews (cx : Ctx) : List UiNode :=
   ((uiRequiredReviews cx).filter fun r => !uiFullInfoShown cx r.info).map fun r =>
     uiInfo cx "" (infoLabel cx r.info) r.info "list"
 
-/-- Clinical activity frames use their real navigator/row actions. The optional
+/-- Clinical activity frames use their real workflow/row actions. The optional
 read-only progress overview remains available to other source programs. -/
 def uiProgress (cx : Ctx) : List UiNode :=
   let steps := uiSteps cx

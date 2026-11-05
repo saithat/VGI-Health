@@ -1,6 +1,6 @@
 import Ehr.Render.UiData
 
-/-! Vendor preference lists for ordinary coded fields. These are choices,
+/-! Vendor order favorites for ordinary coded fields. These are choices,
 not clinical defaults, new validation rules, or a complete terminology service. -/
 namespace Ehr.Render
 
@@ -24,7 +24,7 @@ def commonDiagnosisChoices : List UiCodeChoice :=
    ("K21.9", "Gastro-esophageal reflux disease without esophagitis")].map fun (code, title) =>
     { code, label := code ++ " — " ++ title }
 
-/-- A small laboratory preference list, not an inferred test or order.
+/-- A small laboratory order favorites, not an inferred test or order.
 Public term definitions: https://loinc.org/24323-8, /57021-8 and /4548-4. -/
 def commonLabChoices : List UiCodeChoice :=
   [{ code := "24323-8", label := "Comprehensive metabolic panel — 24323-8" },

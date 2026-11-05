@@ -2567,7 +2567,7 @@ export interface UiScreen {
   viewer?: string;
   nav: [string, [string, string][]][];
   /**
-   * The declared navigator component that opens the current screen, if any.
+   * The declared workflow component that opens the current screen, if any.
    */
   activeNav?: CompId;
   /**

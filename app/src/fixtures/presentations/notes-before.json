@@ -4,7 +4,7 @@
    {"rows":
     [[["Date", "Nov 1, 2026 09:20"],
       ["Type", "Progress note"],
-      ["Author", "Daniel Park, MD"],
+      ["Author", "Fictional Clinician de057b3177"],
       ["Encounter", "Inpatient • General Surgery"],
       ["Title", "General Surgery • Daily Progress"],
       ["Text",
@@ -64,7 +64,7 @@
   ["MRN", "00451892"],
   ["Age / sex", "52 / M"],
   ["Language", ""],
-  ["PCP", "Maya Brooks, MD"],
+  ["PCP", "Fictional Clinician 97e51328aa, MD"],
   ["Coverage", ""],
   ["Last encounter", "IMP"],
   ["Last provider", ""],

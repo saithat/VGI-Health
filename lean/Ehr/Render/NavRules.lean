@@ -5,7 +5,7 @@ namespace Ehr.Render
 
 /-- D5 is a checker obligation: navigation has unique group and within-group
 labels, at most twelve groups and twelve entries per group, and no orphan screen.
-The predicate checks the activity/navigator overview, without renaming duplicates.
+The predicate checks the activity/workflow overview, without renaming duplicates.
 Interactive shell nav now uses actual goto comp IDs; this overview diagnostic
 is not a certificate for that projection. Owning checker/content integration remains open.
 The spec argument keeps the checker's uniform spec/program interface. -/

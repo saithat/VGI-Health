@@ -3,23 +3,23 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
           "workspace.activity|unitCensus",
           "Unit Census"
         ],
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (2)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (2)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
         ],
         [
           "workspace.lookup",
@@ -59,7 +59,7 @@
                 [
                   [
                     "Room",
-                    "4W-01-A"
+                    "Fictional Care Site b2e4732fd6"
                   ],
                   [
                     "Patient",
@@ -79,15 +79,15 @@
                   ],
                   [
                     "RN",
-                    "Rosa Delgado, RN"
+                    "Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Attending",
-                    "Dr. Maya Chen, MD"
+                    "Fictional Clinician 72a4c784c7"
                   ],
                   [
                     "Assignment",
-                    "Assigned to Rosa Delgado, RN"
+                    "Assigned to Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Status",
@@ -97,7 +97,7 @@
                 [
                   [
                     "Room",
-                    "4W-02-A"
+                    "Fictional Care Site 51b95dafe8"
                   ],
                   [
                     "Patient",
@@ -117,15 +117,15 @@
                   ],
                   [
                     "RN",
-                    "Rosa Delgado, RN"
+                    "Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Attending",
-                    "Dr. Maya Chen, MD"
+                    "Fictional Clinician 72a4c784c7"
                   ],
                   [
                     "Assignment",
-                    "Assigned to Rosa Delgado, RN"
+                    "Assigned to Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Status",
@@ -135,7 +135,7 @@
                 [
                   [
                     "Room",
-                    "4W-03-A"
+                    "Fictional Care Site 36846b688f"
                   ],
                   [
                     "Patient",
@@ -155,15 +155,15 @@
                   ],
                   [
                     "RN",
-                    "Rosa Delgado, RN"
+                    "Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Attending",
-                    "Dr. Maya Chen, MD"
+                    "Fictional Clinician 72a4c784c7"
                   ],
                   [
                     "Assignment",
-                    "Assigned to Rosa Delgado, RN"
+                    "Assigned to Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Status",
@@ -173,7 +173,7 @@
                 [
                   [
                     "Room",
-                    "4W-04-A"
+                    "Fictional Care Site 09defb5b49"
                   ],
                   [
                     "Patient",
@@ -193,15 +193,15 @@
                   ],
                   [
                     "RN",
-                    "Rosa Delgado, RN"
+                    "Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Attending",
-                    "Dr. Maya Chen, MD"
+                    "Fictional Clinician 72a4c784c7"
                   ],
                   [
                     "Assignment",
-                    "Assigned to Rosa Delgado, RN"
+                    "Assigned to Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Status",
@@ -211,7 +211,7 @@
                 [
                   [
                     "Room",
-                    "4W-05-A"
+                    "Fictional Care Site 71d503d588"
                   ],
                   [
                     "Patient",
@@ -231,15 +231,15 @@
                   ],
                   [
                     "RN",
-                    "Rosa Delgado, RN"
+                    "Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Attending",
-                    "Dr. Maya Chen, MD"
+                    "Fictional Clinician 72a4c784c7"
                   ],
                   [
                     "Assignment",
-                    "Assigned to Rosa Delgado, RN"
+                    "Assigned to Fictional Clinician cb30b6a1ce"
                   ],
                   [
                     "Status",
@@ -353,7 +353,7 @@
           [
             [
               "Department snapshot",
-              "Schedule, census and case lists are available in Application activities."
+              "Schedule, census and case lists are available in Activities."
             ]
           ]
         ]

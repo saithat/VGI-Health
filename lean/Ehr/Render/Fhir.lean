@@ -1334,7 +1334,7 @@ def prescriptionPharmacy (rs : List Json) (r : Json) : String :=
 
 /-- Latest dated observations per coded analyte, retaining same-time records,
 components and records whose date or identity is unknown. Full history remains
-in Chart Review and the selected-analyte trend. -/
+in Chart History and the selected-analyte trend. -/
 def latestResultSources (rs : List Json) : List Json :=
   let labs := rs.filter isLab
   let key := fun r =>
@@ -1419,7 +1419,7 @@ def resolveReference (rs : List Json) (reference : String) : Option Json :=
       reference == "urn:uuid:" ++ id)
 
 /-- The selected result Task owns its report/Observation references. Older
-unrelated analytes remain in Chart Review, not the selected-result report. -/
+unrelated analytes remain in Chart History, not the selected-result report. -/
 def selectedResultSources (rs : List Json) (p : Json) : List Json :=
   match (patientTasks rs p).find? (fun task => taskFolder task == "Results") with
   | none => rs.filter isLab
@@ -1493,19 +1493,19 @@ def payloads (ctx : FactsContext) (rs : List Json) (p : Json) : List InfoPayload
      ("Last encounter", (priorVisit.map (fun r => str (field r "period") "start")).getD "Not recorded"),
      ("Request", str task "description"), ("Status", str task "status")]
   let views : List (InfoId × List (List (String × String))) :=
-    [("inBasketFolders", if tasks.isEmpty then [] else ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
+    [("inboxFolders", if tasks.isEmpty then [] else ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
         [("Folder", folder), ("Count", toString (messages.filter (·.folder == folder)).length)]),
      ("scheduleTasks", (scheduleRows ctx rs p).map fun row =>
         [("time", row.time), ("patient", row.patient), ("Age / sex", row.ageSex),
          ("Visit type", row.visitType), ("status", row.status), ("Chief complaint", row.complaint),
          ("Provider", row.provider), ("Location", row.location)]),
-     ("inbasketItems", messages.map fun row =>
+     ("inboxItems", messages.map fun row =>
         [("received", row.received), ("patient", row.patient), ("subject", row.subject),
          ("sender", row.sender), ("priority", row.priority), ("status", row.status), ("Folder", row.folder)]),
-     ("inBasketResults", (messages.filter (·.folder == "Results")).map fun row =>
+     ("inboxResults", (messages.filter (·.folder == "Results")).map fun row =>
         [("received", row.received), ("patient", row.patient), ("subject", row.subject),
          ("sender", row.sender), ("priority", row.priority), ("status", row.status)]),
-     ("inBasketRxRequests", (messages.filter (·.folder == "Rx Requests")).map fun row =>
+     ("inboxRxRequests", (messages.filter (·.folder == "Rx Requests")).map fun row =>
         [("received", row.received), ("patient", row.patient), ("subject", row.subject),
          ("sender", row.sender), ("priority", row.priority), ("status", row.status)]),
      ("messagePreview", (messages.filter (·.folder == "Results")).take 1 |>.map fun row =>
@@ -2529,7 +2529,7 @@ def chartRecent (ctx : FactsContext) (date : String) : Bool :=
 #guard !chartRecent { today := "2026-11-02", now := 540 } "2026-11-02T09:01:00Z"
 #guard chartRecent { today := "2026-11-02", now := 540 } "2026-11-02T14:30:00+05:30"
 
-/-- Labeled source summaries and role context for the chart Index and storyboard. -/
+/-- Labeled source summaries and role context for the chart Index and patientSidebar. -/
 def chartPayloads (ctx : FactsContext) (rs : List Json) (p : Json) (f : Facts) (d : Display) : List InfoPayload :=
   let enc := (latestEncounter (encounterRecords ctx rs p)).getD .null
   let present := fun value => if value == "" then "Not recorded" else value
@@ -2553,7 +2553,7 @@ def chartPayloads (ctx : FactsContext) (rs : List Json) (p : Json) (f : Facts) (
     pair "Location" encounter.location, pair "Admitted / start" encounter.start, pair "LOS" los, pair "Status" (str enc "status")]
   let notes := (newestFirst (·.date) d.notes).take 5 |>.map fun r =>
     [("Date", r.date), ("Type", r.noteType), ("Author", r.author), ("Title", r.title),
-     ("Text", sub r.text 0 280 ++ if r.text.length > 280 then "… (excerpt; full note in Chart Review)" else ""), ("Status", r.status)]
+     ("Text", sub r.text 0 280 ++ if r.text.length > 280 then "… (excerpt; full note in Chart History)" else ""), ("Status", r.status)]
   let meds := d.meds.take 8 |>.map fun r => [("Medication", r.name), ("Directions", r.sig), ("Status", r.status), ("Prescriber", r.prescriber)]
   let problems := (d.problems.filter fun r => r.status != "resolved" && r.status != "inactive" && r.abatement == "").take 8 |>.map fun r =>
     [("Problem", r.name), ("Onset", r.onset), ("Status", r.status)]
@@ -2688,7 +2688,7 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
   let unit := worldList ctx rs "unit-census"
   let cases := worldList ctx rs "or-schedule"
   let consults := worldList ctx rs "consults"
-  let basket := worldList ctx rs "inbasket"
+  let basket := worldList ctx rs "inbox"
   let scheduleCells := fun r =>
     let row := scheduleRow ctx.today rs r
     [("Time", row.time), ("Patient", row.patient), ("Age/sex", row.ageSex),
@@ -2732,15 +2732,15 @@ def worldQueuePayloads (ctx : FactsContext) (rs : List Json) (p : Json) : List I
        [("Received", str r "authoredOn"), ("Patient", humanRef rs (field r "subject")),
         ("Reason", ccText (first r "reasonCode")), ("Priority", str r "priority"),
         ("Requester", humanRef rs (field r "requester")), ("Location", humanRef rs (first r "locationReference")), ("Status", str r "status")])),
-     ("inBasketFolders", basket.map fun _ => ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
+     ("inboxFolders", basket.map fun _ => ["Results", "Rx Requests", "Patient Messages"].map fun folder =>
        [("Folder", folder), ("Count", toString ((messages.map messageCells).filter (fun cells => cells.lookup "Folder" == some folder)).length)]),
-     ("inbasketItems", basket.map fun _ => messages.map messageCells),
-     ("inBasketMessages", basket.map fun _ => (messages.filter (fun r => resourceType r == "Communication")).map messageCells),
-     ("inBasketResults", basket.map fun _ => results.map messageCells),
-     ("inBasketRxRequests", basket.map fun _ => refills.map messageCells)]
+     ("inboxItems", basket.map fun _ => messages.map messageCells),
+     ("inboxMessages", basket.map fun _ => (messages.filter (fun r => resourceType r == "Communication")).map messageCells),
+     ("inboxResults", basket.map fun _ => results.map messageCells),
+     ("inboxRxRequests", basket.map fun _ => refills.map messageCells)]
   let sources := [("scheduleTasks", clinic.getD []), ("orSchedule", cases.getD []),
     ("edTrackBoard", ed.getD []), ("shiftWorklist", mine.getD []), ("unitCensus", unit.getD []),
-    ("consultList", consults.getD []), ("inBasketResults", results), ("inBasketRxRequests", refills)]
+    ("consultList", consults.getD []), ("inboxResults", results), ("inboxRxRequests", refills)]
   views.filterMap fun (info, rows) => rows.bind fun rows => do
     let payload ← Ambulatory.payload p rs info rows true
     let hasSelected := ((sources.lookup info).getD []).any (worldRowMatches p)
@@ -2764,13 +2764,13 @@ def patientDirectory (ctx : FactsContext) (rs : List Json) (extra : List Patient
      ("unitCensus", (worldList ctx rs "unit-census").getD []),
      ("orSchedule", (worldList ctx rs "or-schedule").getD []),
      ("consultList", (worldList ctx rs "consults").getD []),
-     ("inBasketResults", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Results")),
-     ("inBasketMessages", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Communication")),
-     ("inBasketRxRequests", ((worldList ctx rs "inbasket").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Rx Requests"))]
+     ("inboxResults", ((worldList ctx rs "inbox").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Results")),
+     ("inboxMessages", ((worldList ctx rs "inbox").getD []).filter (fun r => resourceType r == "Communication")),
+     ("inboxRxRequests", ((worldList ctx rs "inbox").getD []).filter (fun r => resourceType r == "Task" && Ambulatory.taskFolder r == "Rx Requests"))]
   let titles := [("scheduleTasks", "Schedule"), ("edTrackBoard", "Track Board"),
     ("shiftWorklist", "My Patients / MAR"), ("unitCensus", "Unit Census"),
     ("orSchedule", "OR Schedule"), ("consultList", "Consults"),
-    ("inBasketMessages", "In Basket · Patient Messages"), ("inBasketResults", "In Basket · Results"), ("inBasketRxRequests", "In Basket · Rx Requests")]
+    ("inboxMessages", "Inbox · Patient Messages"), ("inboxResults", "Inbox · Results"), ("inboxRxRequests", "Inbox · Rx Requests")]
   let activities := sources.filterMap fun (key, source) => do
     let payload ← payloads.find? (·.info == key)
     let rows := (source.zip payload.rows).map fun (r, row) =>

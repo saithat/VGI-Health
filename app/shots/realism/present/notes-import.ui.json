@@ -241,10 +241,10 @@
           {
             "button": {
               "blockedReason": null,
-              "comp": "home.work.w2Inbasket",
+              "comp": "home.work.w2Inbox",
               "enabled": true,
               "hotkey": null,
-              "label": "In Basket: Results",
+              "label": "Inbox: Results",
               "role": "nav"
             }
           },
@@ -254,7 +254,7 @@
               "comp": "home.work.w7Queue",
               "enabled": true,
               "hotkey": null,
-              "label": "In Basket: Rx Requests",
+              "label": "Inbox: Rx Requests",
               "role": "nav"
             }
           }

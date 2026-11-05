@@ -81,7 +81,7 @@ const clinical=read(resolve(ROOT,'fixtures/clinical/overrides.json'));
     }
     dnr+=resources.filter(r=>codes(r).includes('dnr')).length;
     for(const p of ['P1','P2','P3','P4','P5']) {
-      const inbox=find(p,'inbasket').entry.map(e=>byKey.get(e.item.reference));
+      const inbox=find(p,'inbox').entry.map(e=>byKey.get(e.item.reference));
       assert.ok(inbox.filter(r=>r.resourceType==='Communication').length>=2);
       assert.ok(inbox.filter(r=>codes(r).includes('result-review')).length>=2);
       for(const r of inbox.filter(r=>codes(r).includes('result-review'))) assert.ok(r.requester?.reference&&r.requester.display&&r.description.includes(':'));

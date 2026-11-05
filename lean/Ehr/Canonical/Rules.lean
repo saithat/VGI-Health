@@ -128,7 +128,7 @@ def newScreen (id workflow : String) : Screen :=
 
 /-- New artifacts and cross-service links are reachable from the original
 workflow. Ordinary same-workflow navigation is preserved, including W7's
-single chart-review-to-decision route used by the permanent bad seed. Back
+single chart-history-to-decision route used by the permanent bad seed. Back
 returns to the originating workflow without changing the patient/episode. -/
 def screens (base : List Screen) : List Screen :=
   let ids : List (ScreenId × String) := ((Rules.actions.map (fun x => (x.1, x.2.1))) ++

@@ -30,8 +30,8 @@ for(const id of ['d01-P2-W3-001','d01-P2-W3-002','d02-P2-W3-001','d02-P2-W3-002'
  const input={spec,program,facts,display:projected.display,user:{id:program.owner,role:'physician'}};
  input.state=boundInitial(call,input);
  // Exercise the actual W3 laboratory tab, rather than claiming sources behind
- // an initially collapsed storyboard or an unselected tab are visible.
- input.state={...input.state,screen:'chartReview',tabSel:[['chartReview.recordTabs',2]]};
+ // an initially collapsed patientSidebar or an unselected tab are visible.
+ input.state={...input.state,screen:'chartHistory',tabSel:[['chartHistory.recordTabs',2]]};
  const request={op:'dated',render:input},result=call('ehr_exotic',request);
  assert.deepEqual(result,JSON.parse(execFileSync('lean/.lake/build/bin/exotic-api',[],{input:JSON.stringify(request),encoding:'utf8'})));
  const ordinary=call('ehr_exotic',{op:'render',render:input}).screen;

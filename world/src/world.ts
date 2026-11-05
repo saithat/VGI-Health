@@ -7,7 +7,7 @@ import { archivedReleaseEventId } from "../../scripts/historical-releases.mjs";
  * Within a day the subsystems run in a fixed order:
  *   census snapshot -> medical discharges -> ED (admits, consults)
  *   -> surgery (rounds, OR, discharges, clinic) -> ward med passes
- *   -> P1 clinic and in-basket -> pediatric clinic -> carry-over.
+ *   -> P1 clinic and inbox -> pediatric clinic -> carry-over.
  */
 import { DayBuild, type PopIndex, indexPopulation } from "./build";
 import { SHIFTS, dateOf } from "./calendar";
@@ -34,7 +34,7 @@ function emptyToday(): WorldState["today"] {
     ed: { arrivals: [], peakCensus: 0, boardersAtShiftStart: 0 },
     ward: { censusAtShiftStart: [], admissions: [], discharges: [] },
     clinics: { P1: clinic(), P4: clinic(), P5: clinic() },
-    inBasket: { P1: { arrived: 0, handled: 0, backlogAfter: 0 }, P5: { arrived: 0, handled: 0 } },
+    inbox: { P1: { arrived: 0, handled: 0, backlogAfter: 0 }, P5: { arrived: 0, handled: 0 } },
     surgery: { consults: [], casesOperated: [] },
     taskCounts: perPersona(() => ({})),
     events: [],
@@ -61,7 +61,7 @@ export function initialState(seed: number, pop: PopIndex): WorldState {
     inpatients: [],
     appointments: [],
     pendingLabs: [],
-    inBasketBacklog: [],
+    inboxBacklog: [],
     peds: pop.peds.map(initPedsChild),
     surgicalCases: [],
     p1Panel: [],
@@ -167,13 +167,13 @@ export function initialState(seed: number, pop: PopIndex): WorldState {
     addPendingLab(b, { patientId: p.id, lab, resultDay: 1 + (i % 3), recipient: "P1", source: "before simulation", result: labValue(r, lab, r.chance(0.35)) });
   });
 
-  // In-basket backlog carried in from the previous week.
+  // Inbox backlog carried in from the previous week.
   rng.shuffle(pop.adults.filter((p) => panel.has(p.id))).slice(0, 4).forEach((p, i) => {
     const r = rng.fork(`init-backlog-${i}`);
     const med = p.homeMeds.find((m) => !m.prn);
     if (i % 2 === 0 && med !== undefined) {
       const d = decideRefill(med, r, false);
-      st.inBasketBacklog.push({
+      st.inboxBacklog.push({
         id: b.nextId("item"),
         kind: "refill",
         patientId: p.id,
@@ -185,7 +185,7 @@ export function initialState(seed: number, pop: PopIndex): WorldState {
     } else {
       const lab = r.pick(labKeys);
       const res = labValue(r, lab, r.chance(0.3));
-      st.inBasketBacklog.push({
+      st.inboxBacklog.push({
         id: b.nextId("item"),
         kind: "result",
         patientId: p.id,

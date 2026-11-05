@@ -290,8 +290,8 @@ export function App() {
               throw new Error("Patient is not in the offline fixture catalog");
             const raw = await readArtifact(`/${chosen.bundlePath}`);
             const activityWorkflows: Record<string, string> = {
-              inBasketResults: "W2",
-              inBasketRxRequests: "W7",
+              inboxResults: "W2",
+              inboxRxRequests: "W7",
               edTrackBoard: "W3",
               shiftWorklist: "W4",
               unitCensus: "W4",

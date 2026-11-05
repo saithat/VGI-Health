@@ -1,3 +1,4 @@
+import { isDayResultFile } from "../browser/run-files";
 import { readArtifact } from "../browser/data";
 import { checkResultSchema, jsonPatchSchema } from "../../../agent/src/schema";
 import {
@@ -141,11 +142,11 @@ export async function loadRun(
         if (record.runId !== id || !manifest.personas.includes(record.persona))
           throw new Error("Decision belongs to another run or persona");
         run.records.push(record);
-      } else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
+      } else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
         run.days.push(dayResultSchema.parse(await get(file)));
-      else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file))
+      else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
         run.noAgentDays?.push(dayResultSchema.parse(await get(file)));
-      else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file))
+      else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
         run.baselines?.push(dayResultSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))
         run.programs.set(file, programSchema.parse(await get(file)));

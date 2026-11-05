@@ -1,798 +1,1657 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w1Orders.chartSearch"}},
-  {"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Find orders",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w1Orders.orderSearch"}},
-  {"section":
-   {"title": "Preference list",
-    "id": "w1Orders.prefList",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Collapse section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefList",
-       "blockedReason": null}},
-     {"button":
-      {"role": "macro",
-       "label": "Lisinopril 10 mg daily",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefLisinopril",
-       "blockedReason": null}},
-     {"button":
-      {"role": "macro",
-       "label": "Atorvastatin 40 mg daily",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefAtorvastatin",
-       "blockedReason": null}},
-     {"button":
-      {"role": "macro",
-       "label": "Metformin 500 mg BID",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefMetformin",
-       "blockedReason": null}},
-     {"button":
-      {"role": "macro",
-       "label": "Amoxicillin 1 g TID × 10 days",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefAmoxicillin",
-       "blockedReason": null}},
-     {"button":
-      {"role": "macro",
-       "label": "Azithromycin 500 mg daily × 5 days",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefAzithromycin",
-       "blockedReason": null}},
-     {"button":
-      {"role": "macro",
-       "label": "Ibuprofen 600 mg TID",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefIbuprofen",
-       "blockedReason": null}},
-     {"button":
-      {"role": "macro",
-       "label": "Oxycodone 10 mg q6h PRN × 5 days",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.prefOxycodone",
-       "blockedReason": null}}]}},
-  {"section":
-   {"title": "Dosing",
-    "id": "w1Orders.dosing",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Collapse section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.dosing",
-       "blockedReason": null}},
-     {"field":
-      {"value": null,
-       "unit": "kg",
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Dosing weight (kg)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w1Orders.dosingWeight"}}]}},
-  {"section":
-   {"title": "Medication",
-    "id": "w1Orders.medication",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Collapse section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.medication",
-       "blockedReason": null}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Enter Medication",
-       "kind":
-       "code:amoxicillin|cefazolin|ceftriaxone|azithromycin|vancomycin|lisinopril|metformin|atorvastatin|warfarin|apixaban|enoxaparin|heparin|insulin glargine|insulin lispro|morphine|hydromorphone|oxycodone|hydrocodone-acetaminophen|tramadol|lorazepam|alprazolam|ondansetron|acetaminophen|ibuprofen|albuterol",
-       "humanOnly": false,
-       "comp": "w1Orders.drug"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Antibiotic indication (required for antibiotics)",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w1Orders.abxIndication"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Dose",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w1Orders.dose"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Dose unit",
-       "kind": "code:",
-       "humanOnly": false,
-       "comp": "w1Orders.doseUnit"}},
-     {"valueSet":
-      {"options":
-       [{"label": "Oral (PO)", "code": "PO"},
-        {"label": "Intravenous (IV)", "code": "IV"},
-        {"label": "Intramuscular (IM)", "code": "IM"},
-        {"label": "Subcutaneous (SC)", "code": "SC"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "Route",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w1Orders.route"}}],
-       "allowCustom": true}},
-     {"valueSet":
-      {"options":
-       [{"label": "Daily", "code": "daily"},
-        {"label": "Twice daily (BID)", "code": "bid"},
-        {"label": "Three times daily (TID)", "code": "tid"},
-        {"label": "Four times daily (QID)", "code": "qid"},
-        {"label": "Every 4 hours", "code": "q4h"},
-        {"label": "Every 6 hours", "code": "q6h"},
-        {"label": "Every 8 hours", "code": "q8h"},
-        {"label": "Every 12 hours", "code": "q12h"},
-        {"label": "Once", "code": "once"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "Frequency",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w1Orders.freq"}}],
-       "allowCustom": true}},
-     {"valueSet":
-      {"options":
-       [{"label": "Yes", "code": "true"}, {"label": "No", "code": "false"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "As needed (PRN)",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w1Orders.prn"}}],
-       "allowCustom": true}}]}},
-  {"section":
-   {"title": "Dispense",
-    "id": "w1Orders.dispense",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Collapse section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.dispense",
-       "blockedReason": null}},
-     {"valueSet":
-      {"options":
-       [{"label": "One dose", "code": "1 dose"},
-        {"label": "3 days", "code": "3 days"},
-        {"label": "5 days", "code": "5 days"},
-        {"label": "7 days", "code": "7 days"},
-        {"label": "10 days", "code": "10 days"},
-        {"label": "14 days", "code": "14 days"},
-        {"label": "30 days", "code": "30 days"},
-        {"label": "90 days", "code": "90 days"},
-        {"label": "Ongoing", "code": "ongoing"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "Duration",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w1Orders.duration"}}],
-       "allowCustom": true}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Dispense quantity",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w1Orders.quantity"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Refills",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w1Orders.refills"}},
-     {"valueSet":
-      {"options":
-       [{"label": "Yes", "code": "true"}, {"label": "No", "code": "false"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "Generic substitution allowed",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w1Orders.substitution"}}],
-       "allowCustom": true}}]}},
-  {"section":
-   {"title": "Pharmacy and diagnosis",
-    "id": "w1Orders.dx",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Collapse section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.dx",
-       "blockedReason": null}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Pharmacy",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w1Orders.pharmacy"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Indication",
-       "kind": "text",
-       "humanOnly": false,
-       "comp": "w1Orders.indication"}},
-     {"valueSet":
-      {"options":
-       [{"label": "I10 — Essential (primary) hypertension", "code": "I10"},
-        {"label": "E11.9 — Type 2 diabetes mellitus without complications",
-         "code": "E11.9"},
-        {"label": "E78.5 — Hyperlipidemia, unspecified", "code": "E78.5"},
-        {"label": "J06.9 — Acute upper respiratory infection, unspecified",
-         "code": "J06.9"},
-        {"label": "H66.90 — Otitis media, unspecified, unspecified ear",
-         "code": "H66.90"},
-        {"label": "J02.9 — Acute pharyngitis, unspecified", "code": "J02.9"},
-        {"label":
-         "Z00.00 — Encounter for general adult medical examination without abnormal findings",
-         "code": "Z00.00"},
-        {"label":
-         "Z00.129 — Encounter for routine child health examination without abnormal findings",
-         "code": "Z00.129"},
-        {"label": "R05.9 — Cough, unspecified", "code": "R05.9"},
-        {"label": "R50.9 — Fever, unspecified", "code": "R50.9"},
-        {"label": "R10.9 — Unspecified abdominal pain", "code": "R10.9"},
-        {"label": "M54.50 — Low back pain, unspecified", "code": "M54.50"},
-        {"label": "F41.9 — Anxiety disorder, unspecified", "code": "F41.9"},
-        {"label": "F32.A — Depression, unspecified", "code": "F32.A"},
-        {"label": "N39.0 — Urinary tract infection, site not specified",
-         "code": "N39.0"},
-        {"label": "R51.9 — Headache, unspecified", "code": "R51.9"},
-        {"label": "J45.909 — Unspecified asthma, uncomplicated",
-         "code": "J45.909"},
-        {"label":
-         "K21.9 — Gastro-esophageal reflux disease without esophagitis",
-         "code": "K21.9"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label": "Associated diagnosis (ICD-10)",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w1Orders.orderDiagnosis"}}],
-       "allowCustom": true}}]}},
-  {"section":
-   {"title": "Controlled substances (CURES / naloxone)",
-    "id": "w1Orders.controlled",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Collapse section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.controlled",
-       "blockedReason": null}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "CURES not checked: exemption",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w1Orders.curesExemptionReason"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Naloxone offered",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w1Orders.naloxoneOffer"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Overdose and naloxone education given",
-       "kind": "flag",
-       "humanOnly": false,
-       "comp": "w1Orders.naloxoneEducation"}}]}},
-  {"section":
-   {"title": "Additional",
-    "id": "w1Orders.more",
-    "children":
-    [{"button":
-      {"role": "toggle",
-       "label": "Expand section",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w1Orders.more",
-       "blockedReason": null}}]}},
-  {"tabs":
-   {"selected": 0,
-    "labels": ["Current meds", "CURES report", "Recent labs"],
-    "id": "w1Orders.orderInfo",
-    "body":
-    [{"info":
-      {"rows":
-       [[["Medication",
-          "insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication", "verapamil hydrochloride 80 MG Oral Tablet [Calan]"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication", "Digoxin 0.125 MG Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication",
-          "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet [Percocet]"],
-         ["Instructions", "Every six hours (qualifier value)"],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication", "Furosemide 40 MG Oral Tablet"],
-         ["Instructions", "Take as needed."],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication", "Warfarin Sodium 5 MG Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication", "lisinopril 10 MG Oral Tablet"],
-         ["Instructions", "1, 1x per 1 d"],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication", "Alendronic acid 10 MG Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Oct 22, 2026 01:46"],
-         ["Prescriber", "Dr. Tracy Wilderman"]],
-        [["Medication", "Simvastatin 10 MG Oral Tablet"],
-         ["Instructions", "1, 1x per 1 d"],
-         ["Status", "active"],
-         ["Authored", "Dec 12, 2025 00:46"],
-         ["Prescriber", "Dr. Nicholas Greenfelder"]],
-        [["Medication", "aspirin 81 MG Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Jul 12, 2021 03:32"],
-         ["Prescriber", "Dr. Gabriel Reilly"]],
-        [["Medication",
-          "24 HR metoprolol succinate 50 MG Extended Release Oral Tablet"],
-         ["Instructions", "Take as needed."],
-         ["Status", "active"],
-         ["Authored", "Jul 12, 2021 03:32"],
-         ["Prescriber", "Dr. Gabriel Reilly"]],
-        [["Medication", "pravastatin sodium 40 MG Oral Tablet"],
-         ["Instructions", "Take as needed."],
-         ["Status", "active"],
-         ["Authored", "Jul 12, 2021 03:32"],
-         ["Prescriber", "Dr. Gabriel Reilly"]],
-        [["Medication",
-          "hydrochlorothiazide 25 MG / losartan potassium 100 MG Oral Tablet"],
-         ["Instructions", "Take as needed."],
-         ["Status", "active"],
-         ["Authored", "Jul 12, 2021 03:32"],
-         ["Prescriber", "Dr. Gabriel Reilly"]],
-        [["Medication", "prasugrel 10 MG Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Jul 12, 2021 03:32"],
-         ["Prescriber", "Dr. Gabriel Reilly"]],
-        [["Medication", "Clopidogrel 75 MG Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Jun 28, 2012 01:46"],
-         ["Prescriber", "Dr. Vito Barton"]],
-        [["Medication", "Simvastatin 20 MG Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Jun 28, 2012 01:46"],
-         ["Prescriber", "Dr. Vito Barton"]],
-        [["Medication",
-          "24 HR metoprolol succinate 100 MG Extended Release Oral Tablet"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Jun 28, 2012 01:46"],
-         ["Prescriber", "Dr. Vito Barton"]],
-        [["Medication", "Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray"],
-         ["Instructions", ""],
-         ["Status", "active"],
-         ["Authored", "Jun 28, 2012 01:46"],
-         ["Prescriber", "Dr. Vito Barton"]]],
-       "label": "Current meds",
-       "infoId": "currentMeds",
-       "display": "table",
-       "comp": "w1Orders.orderInfo.currentMeds"}}]}},
-  {"info":
-   {"rows": [],
-    "label": "Pending orders",
-    "infoId": "orderSummary",
-    "display": "table",
-    "comp": "w1Orders.pending"}},
-  {"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Request authorization (human entry)",
-    "kind": "flag",
-    "humanOnly": false,
-    "comp": "w1Orders.priorAuthRequest"}},
-  {"info":
-   {"rows": [[["Prior authorization", "Not requested"]]],
-    "label": "Prior-auth status",
-    "infoId": "priorAuthStatus",
-    "display": "list",
-    "comp": "w1Orders.priorAuthStatus"}},
-  {"button":
-   {"role": "secondary",
-    "label": "Request prior authorization",
-    "hotkey": null,
-    "enabled": false,
-    "comp": "w1Orders.requestPriorAuth",
-    "blockedReason": "no order on this line"}},
-  {"button":
-   {"role": "secondary",
-    "label": "Accept and add another order",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Orders.newLine",
-    "blockedReason": null}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Encounters",
-     "Notes",
-     "Results",
-     "Medications",
-     "Problems",
-     "Allergies",
-     "Imaging"],
-    "id": "w1Orders.chart",
-    "body":
-    [{"info":
-      {"rows":
-       [[["Encounter", "Urgent care clinic (environment)"],
-         ["Class", "AMB"],
-         ["Start", "Oct 22, 2026 01:46"],
-         ["End", "Oct 22, 2026 02:44"],
-         ["Reason", ""],
-         ["Provider", "Dr. Tracy Wilderman"],
-         ["Location", "MASS GENERAL BRIGHAM URGENT CARE LLC"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Oct 1, 2026 01:46"],
-         ["End", "Oct 1, 2026 02:46"],
-         ["Reason", ""],
-         ["Provider", "Dr. Margarite Koepp"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Sep 17, 2026 01:46"],
-         ["End", "Sep 17, 2026 02:20"],
-         ["Reason", ""],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Sep 10, 2026 01:46"],
-         ["End", "Sep 10, 2026 02:39"],
-         ["Reason", ""],
-         ["Provider", "Dr. Vito Barton"],
-         ["Location", "DAVIS SQUARE FAMILY PRACTICE"]],
-        [["Encounter", "Urgent care clinic (environment)"],
-         ["Class", "AMB"],
-         ["Start", "Aug 27, 2026 01:46"],
-         ["End", "Aug 27, 2026 02:20"],
-         ["Reason", ""],
-         ["Provider", "Dr. Tracy Wilderman"],
-         ["Location", "MASS GENERAL BRIGHAM URGENT CARE LLC"]],
-        [["Encounter", "Encounter for problem (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Aug 9, 2026 01:46"],
-         ["End", "Aug 9, 2026 02:16"],
-         ["Reason", "Chronic congestive heart failure (disorder)"],
-         ["Provider", "Dr. Gabriel Reilly"],
-         ["Location", "Fitchburg Outpatient Clinic"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Jun 11, 2026 01:46"],
-         ["End", "Jun 11, 2026 02:21"],
-         ["Reason", ""],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Urgent care clinic (environment)"],
-         ["Class", "AMB"],
-         ["Start", "May 28, 2026 01:46"],
-         ["End", "May 28, 2026 02:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Tracy Wilderman"],
-         ["Location", "MASS GENERAL BRIGHAM URGENT CARE LLC"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "May 14, 2026 02:21"],
-         ["End", "May 14, 2026 03:53"],
-         ["Reason", ""],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "May 7, 2026 01:46"],
-         ["End", "May 7, 2026 02:32"],
-         ["Reason", ""],
-         ["Provider", "Dr. Margarite Koepp"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter",
-          "Drug rehabilitation and detoxification (regime/therapy)"],
-         ["Class", "IMP"],
-         ["Start", "Apr 17, 2026 09:10"],
-         ["End", "Apr 23, 2026 09:10"],
-         ["Reason", "Dependent drug abuse (disorder)"],
-         ["Provider", "Dr. Margarite Koepp"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Apr 9, 2026 01:46"],
-         ["End", "Apr 9, 2026 02:21"],
-         ["Reason", ""],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Mar 26, 2026 01:46"],
-         ["End", "Mar 26, 2026 02:28"],
-         ["Reason", ""],
-         ["Provider", "Dr. Margarite Koepp"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Feb 12, 2026 00:46"],
-         ["End", "Feb 12, 2026 01:10"],
-         ["Reason", ""],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Encounter for problem (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Feb 10, 2026 00:46"],
-         ["End", "Feb 10, 2026 01:16"],
-         ["Reason", "Chronic congestive heart failure (disorder)"],
-         ["Provider", "Dr. Gabriel Reilly"],
-         ["Location", "Fitchburg Outpatient Clinic"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Jan 29, 2026 00:46"],
-         ["End", "Jan 29, 2026 01:29"],
-         ["Reason", ""],
-         ["Provider", "Dr. Margarite Koepp"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Follow-up encounter (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Dec 12, 2025 00:46"],
-         ["End", "Dec 12, 2025 01:01"],
-         ["Reason", "Hyperlipidemia (disorder)"],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Dec 11, 2025 00:46"],
-         ["End", "Dec 11, 2025 01:21"],
-         ["Reason", ""],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "Urgent care clinic (environment)"],
-         ["Class", "AMB"],
-         ["Start", "Nov 27, 2025 00:46"],
-         ["End", "Nov 27, 2025 01:19"],
-         ["Reason", ""],
-         ["Provider", "Dr. Tracy Wilderman"],
-         ["Location", "MASS GENERAL BRIGHAM URGENT CARE LLC"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Oct 30, 2025 01:46"],
-         ["End", "Oct 30, 2025 02:42"],
-         ["Reason", ""],
-         ["Provider", "Dr. Margarite Koepp"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Sep 4, 2025 01:46"],
-         ["End", "Sep 4, 2025 02:17"],
-         ["Reason", ""],
-         ["Provider", "Dr. Vito Barton"],
-         ["Location", "DAVIS SQUARE FAMILY PRACTICE"]],
-        [["Encounter", "Encounter for problem (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Aug 20, 2025 07:40"],
-         ["End", "Aug 20, 2025 09:10"],
-         ["Reason", "Dependent drug abuse (disorder)"],
-         ["Provider", "Dr. Nicholas Greenfelder"],
-         ["Location", "CAMBRIDGE PUBLIC HEALTH COMMISSION"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Aug 29, 2024 01:46"],
-         ["End", "Aug 29, 2024 02:34"],
-         ["Reason", ""],
-         ["Provider", "Dr. Vito Barton"],
-         ["Location", "DAVIS SQUARE FAMILY PRACTICE"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Aug 24, 2023 01:46"],
-         ["End", "Aug 24, 2023 02:36"],
-         ["Reason", ""],
-         ["Provider", "Dr. Vito Barton"],
-         ["Location", "DAVIS SQUARE FAMILY PRACTICE"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Aug 18, 2022 01:46"],
-         ["End", "Aug 18, 2022 02:37"],
-         ["Reason", ""],
-         ["Provider", "Dr. Vito Barton"],
-         ["Location", "DAVIS SQUARE FAMILY PRACTICE"]]],
-       "label": "Encounters",
-       "infoId": "encounterHistory",
-       "display": "table",
-       "comp": "w1Orders.chart.encounterHistory"}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Review and sign",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Orders.toSign",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Lab orders",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Orders.to.w1Labs",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Orders.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w1Orders.home",
-    "blockedReason": null}}],
- "viewer": "Physician",
- "title": "Orders",
- "side": [],
- "screen": "w1Orders",
- "nav":
- [["Visit navigator",
-   [["w1Orders.nav.w1Rooming", "Rooming"],
-    ["w1Orders.nav.w1MedRec", "Medications"],
-    ["w1Orders.nav.w1Hpi", "History / ROS"],
-    ["w1Orders.nav.w1Exam", "Exam / Assessment & Plan"],
-    ["w1Orders.nav.w1Labs", "Lab Orders"],
-    ["w1Orders.nav.w1Close", "Sign Visit"]]]],
- "modal": null,
- "fieldSources": [],
- "banner":
- [["Patient", "Carter, Zulma Tricia"],
-  ["DOB", "Mar 4, 1943"],
-  ["MRN", "13761514"],
-  ["Age / sex", "83 / F"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Last encounter", "AMB"],
-  ["Last provider", "Dr. Tracy Wilderman"],
-  ["Last location", "MASS GENERAL BRIGHAM URGENT CARE LLC"],
-  ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"],
-  ["Weight", "80.9 kg · Oct 22, 2026 01:46"],
-  ["Isolation", "Not recorded"]]}
+{
+  "banner": [
+    [
+      "Patient",
+      "Gutkowski, Alva"
+    ],
+    [
+      "DOB",
+      "Apr 5, 1996"
+    ],
+    [
+      "MRN",
+      "46914471"
+    ],
+    [
+      "Age / sex",
+      "30 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Fictional Clinician 9ababdd2e1"
+    ],
+    [
+      "Coverage",
+      "Fictional Health Services 462e7f940b"
+    ],
+    [
+      "Last encounter",
+      ""
+    ],
+    [
+      "Last provider",
+      ""
+    ],
+    [
+      "Last location",
+      ""
+    ],
+    [
+      "Encounter type",
+      "Emergency Visit – Emergency Medicine"
+    ],
+    [
+      "Department",
+      "Emergency Medicine"
+    ],
+    [
+      "Allergies",
+      "No Known Allergies"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "65.5 kg · Feb 14, 2025 13:45"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|scheduleTasks",
+          "Schedule"
+        ],
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (7)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (16)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Schedule"
+        ]
+      ]
+    ],
+    [
+      "Visit workflow",
+      [
+        [
+          "w1Orders.nav.w1Rooming",
+          "Rooming"
+        ],
+        [
+          "w1Orders.nav.w1MedRec",
+          "Medications"
+        ],
+        [
+          "w1Orders.nav.w1Hpi",
+          "History / ROS"
+        ],
+        [
+          "w1Orders.nav.w1Exam",
+          "Exam / Assessment & Plan"
+        ],
+        [
+          "w1Orders.nav.w1Labs",
+          "Lab Orders"
+        ],
+        [
+          "w1Orders.nav.w1Close",
+          "Sign Visit"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w1Orders.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w1Orders.chartWorkspace.chartHistory",
+          "Chart History"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w1Orders",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Gutkowski, Alva"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 30 / M"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 46914471"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Apr 5, 1996"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · Not recorded"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "No Known Allergies"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Fictional Clinician 9ababdd2e1"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "primary performer · Fictional Clinician 9ab77356a1"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Emergency Visit – Emergency Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Emergency Medicine"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Fictional Health Services 1c1a16f00b"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Jun 13, 2026 14:45"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · 0d 1h (recorded stay)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · finished"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 65.5 kg · 2025-02-14T13:45:36-08:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body Height 163.3 cm (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Weight 65.5 kg (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 24.58 kg/m2 (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 112/69 mm[Hg] (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 63 /min (Feb 14, 2025 13:45)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 13 /min (Feb 14, 2025 13:45)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 0"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Jun 13, 2026 14:45 · History and physical note · Fictional Clinician 9ab77356a1 · Unknown · \n2026-06-13\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 30 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w1Orders.patientSidebar.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.patientSidebar",
+        "title": "Patient sidebar"
+      }
+    }
+  ],
+  "title": "Orders",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w1Orders.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "field": {
+        "comp": "w1Orders.orderSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Find orders",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.orderFavorites",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefLisinopril",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Lisinopril 10 mg daily",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefAtorvastatin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Atorvastatin 40 mg daily",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefMetformin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Metformin 500 mg BID",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefAmoxicillin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Amoxicillin 1 g TID × 10 days",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefAzithromycin",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Azithromycin 500 mg daily × 5 days",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefIbuprofen",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Ibuprofen 600 mg TID",
+              "role": "macro"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.prefOxycodone",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Oxycodone 10 mg q6h PRN × 5 days",
+              "role": "macro"
+            }
+          }
+        ],
+        "id": "w1Orders.orderFavorites",
+        "title": "Order favorites"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.dosing",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.dosingWeight",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Dosing weight (kg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": "kg",
+              "value": null
+            }
+          }
+        ],
+        "id": "w1Orders.dosing",
+        "title": "Dosing"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.medication",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.drug",
+              "humanOnly": false,
+              "kind": "code:amoxicillin|cefazolin|ceftriaxone|azithromycin|vancomycin|lisinopril|metformin|atorvastatin|warfarin|apixaban|enoxaparin|heparin|insulin glargine|insulin lispro|morphine|hydromorphone|oxycodone|hydrocodone-acetaminophen|tramadol|lorazepam|alprazolam|ondansetron|acetaminophen|ibuprofen|albuterol",
+              "label": "Enter Medication",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.abxIndication",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Antibiotic indication (required for antibiotics)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.dose",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Dose",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.doseUnit",
+              "humanOnly": false,
+              "kind": "code:",
+              "label": "Dose unit",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.route",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Route",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "PO",
+                  "label": "Oral (PO)"
+                },
+                {
+                  "code": "IV",
+                  "label": "Intravenous (IV)"
+                },
+                {
+                  "code": "IM",
+                  "label": "Intramuscular (IM)"
+                },
+                {
+                  "code": "SC",
+                  "label": "Subcutaneous (SC)"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.freq",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Frequency",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "daily",
+                  "label": "Daily"
+                },
+                {
+                  "code": "bid",
+                  "label": "Twice daily (BID)"
+                },
+                {
+                  "code": "tid",
+                  "label": "Three times daily (TID)"
+                },
+                {
+                  "code": "qid",
+                  "label": "Four times daily (QID)"
+                },
+                {
+                  "code": "q4h",
+                  "label": "Every 4 hours"
+                },
+                {
+                  "code": "q6h",
+                  "label": "Every 6 hours"
+                },
+                {
+                  "code": "q8h",
+                  "label": "Every 8 hours"
+                },
+                {
+                  "code": "q12h",
+                  "label": "Every 12 hours"
+                },
+                {
+                  "code": "once",
+                  "label": "Once"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.prn",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "As needed (PRN)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "true",
+                  "label": "Yes"
+                },
+                {
+                  "code": "false",
+                  "label": "No"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.medication",
+        "title": "Medication"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.dispense",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.duration",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Duration",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "1 dose",
+                  "label": "One dose"
+                },
+                {
+                  "code": "3 days",
+                  "label": "3 days"
+                },
+                {
+                  "code": "5 days",
+                  "label": "5 days"
+                },
+                {
+                  "code": "7 days",
+                  "label": "7 days"
+                },
+                {
+                  "code": "10 days",
+                  "label": "10 days"
+                },
+                {
+                  "code": "14 days",
+                  "label": "14 days"
+                },
+                {
+                  "code": "30 days",
+                  "label": "30 days"
+                },
+                {
+                  "code": "90 days",
+                  "label": "90 days"
+                },
+                {
+                  "code": "ongoing",
+                  "label": "Ongoing"
+                }
+              ]
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.quantity",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Dispense quantity",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.refills",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Refills",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.substitution",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Generic substitution allowed",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "true",
+                  "label": "Yes"
+                },
+                {
+                  "code": "false",
+                  "label": "No"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.dispense",
+        "title": "Dispense"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.dx",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.pharmacy",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Pharmacy",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.indication",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Indication",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w1Orders.orderDiagnosis",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Associated diagnosis (ICD-10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "I10",
+                  "label": "I10 — Essential (primary) hypertension"
+                },
+                {
+                  "code": "E11.9",
+                  "label": "E11.9 — Type 2 diabetes mellitus without complications"
+                },
+                {
+                  "code": "E78.5",
+                  "label": "E78.5 — Hyperlipidemia, unspecified"
+                },
+                {
+                  "code": "J06.9",
+                  "label": "J06.9 — Acute upper respiratory infection, unspecified"
+                },
+                {
+                  "code": "H66.90",
+                  "label": "H66.90 — Otitis media, unspecified, unspecified ear"
+                },
+                {
+                  "code": "J02.9",
+                  "label": "J02.9 — Acute pharyngitis, unspecified"
+                },
+                {
+                  "code": "Z00.00",
+                  "label": "Z00.00 — Encounter for general adult medical examination without abnormal findings"
+                },
+                {
+                  "code": "Z00.129",
+                  "label": "Z00.129 — Encounter for routine child health examination without abnormal findings"
+                },
+                {
+                  "code": "R05.9",
+                  "label": "R05.9 — Cough, unspecified"
+                },
+                {
+                  "code": "R50.9",
+                  "label": "R50.9 — Fever, unspecified"
+                },
+                {
+                  "code": "R10.9",
+                  "label": "R10.9 — Unspecified abdominal pain"
+                },
+                {
+                  "code": "M54.50",
+                  "label": "M54.50 — Low back pain, unspecified"
+                },
+                {
+                  "code": "F41.9",
+                  "label": "F41.9 — Anxiety disorder, unspecified"
+                },
+                {
+                  "code": "F32.A",
+                  "label": "F32.A — Depression, unspecified"
+                },
+                {
+                  "code": "N39.0",
+                  "label": "N39.0 — Urinary tract infection, site not specified"
+                },
+                {
+                  "code": "R51.9",
+                  "label": "R51.9 — Headache, unspecified"
+                },
+                {
+                  "code": "J45.909",
+                  "label": "J45.909 — Unspecified asthma, uncomplicated"
+                },
+                {
+                  "code": "K21.9",
+                  "label": "K21.9 — Gastro-esophageal reflux disease without esophagitis"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.dx",
+        "title": "Pharmacy and diagnosis"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.controlled",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Collapse section",
+              "role": "toggle"
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.curesExemptionReason",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "CURES not checked: exemption",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.naloxoneOffer",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Naloxone offered",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w1Orders.naloxoneEducation",
+              "humanOnly": false,
+              "kind": "flag",
+              "label": "Overdose and naloxone education given",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w1Orders.controlled",
+        "title": "Controlled substances (CURES / naloxone)"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w1Orders.more",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Expand section",
+              "role": "toggle"
+            }
+          }
+        ],
+        "id": "w1Orders.more",
+        "title": "Additional"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w1Orders.orderInfo.currentMeds",
+              "display": "table",
+              "infoId": "currentMeds",
+              "label": "Current meds",
+              "rows": []
+            }
+          }
+        ],
+        "id": "w1Orders.orderInfo",
+        "labels": [
+          "Current meds",
+          "CURES report",
+          "Recent labs"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "info": {
+        "comp": "w1Orders.pending",
+        "display": "table",
+        "infoId": "orderSummary",
+        "label": "Pending orders",
+        "rows": []
+      }
+    },
+    {
+      "field": {
+        "comp": "w1Orders.priorAuthRequest",
+        "humanOnly": false,
+        "kind": "flag",
+        "label": "Request authorization (human entry)",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "info": {
+        "comp": "w1Orders.priorAuthStatus",
+        "display": "list",
+        "infoId": "priorAuthStatus",
+        "label": "Prior-auth status",
+        "rows": [
+          [
+            [
+              "Prior authorization",
+              "Not requested"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "button": {
+        "blockedReason": "no order on this line",
+        "comp": "w1Orders.requestPriorAuth",
+        "enabled": false,
+        "hotkey": null,
+        "label": "Request prior authorization",
+        "role": "secondary"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.newLine",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Accept and add another order",
+        "role": "secondary"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w1Orders.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Jun 13, 2026 14:45"
+                  ],
+                  [
+                    "End",
+                    "Jun 13, 2026 15:45"
+                  ],
+                  [
+                    "Reason",
+                    "Laceration - injury (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 9ab77356a1"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 1c1a16f00b"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 14, 2025 13:45"
+                  ],
+                  [
+                    "End",
+                    "Feb 14, 2025 14:42"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 002b15f222"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site e9d1df14b4"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 5, 2025 07:45"
+                  ],
+                  [
+                    "End",
+                    "Feb 5, 2025 08:00"
+                  ],
+                  [
+                    "Reason",
+                    "Acute bronchitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 002b15f222"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site e9d1df14b4"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jun 21, 2024 14:45"
+                  ],
+                  [
+                    "End",
+                    "Jun 21, 2024 15:31"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 24dac8c00e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site bc16b42584"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "May 15, 2023 14:45"
+                  ],
+                  [
+                    "End",
+                    "May 15, 2023 15:45"
+                  ],
+                  [
+                    "Reason",
+                    "Sprain (morphologic abnormality)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 9ab77356a1"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 1c1a16f00b"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "May 23, 2022 06:45"
+                  ],
+                  [
+                    "End",
+                    "May 23, 2022 07:00"
+                  ],
+                  [
+                    "Reason",
+                    "Viral sinusitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 002b15f222"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site e9d1df14b4"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Medications",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.toSign",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Review and sign",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.to.w1Labs",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Lab orders",
+        "role": "nav"
+      }
+    },
+    {
+      "alert": {
+        "alertId": "careGapsInline",
+        "comp": "w1Orders.workflowAlert.careGapsInline",
+        "label": "Care gaps due",
+        "severity": "passive"
+      }
+    },
+    {
+      "info": {
+        "comp": "w1Orders.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Emergency Visit – Emergency Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Emergency Medicine"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "finished"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w1Orders.contextPanels.data.chartOrders",
+                                "display": "table",
+                                "infoId": "chartOrders",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w1Orders.contextPanels.card.chartOrders",
+                    "title": "Active Orders"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w1Orders.contextPanels.data.chartRecentResults",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w1Orders.contextPanels.card.chartRecentResults",
+                    "title": "Recent Results"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w1Orders.contextPanels.data.allergyList",
+                                "display": "table",
+                                "infoId": "allergyList",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Substance",
+                                      "No Known Allergies"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      ""
+                                    ],
+                                    [
+                                      "Severity",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Nov 2, 2026"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w1Orders.contextPanels.card.allergyList",
+                    "title": "Allergies"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w1Orders.contextPanels.data.storyWeight",
+                                "display": "table",
+                                "infoId": "storyWeight",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Detail",
+                                      "Measured weight"
+                                    ],
+                                    [
+                                      "Value",
+                                      "65.5 kg · 2025-02-14T13:45:36-08:00"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w1Orders.contextPanels.card.storyWeight",
+                    "title": "Measured Weight"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w1Orders.contextPanels",
+        "title": "Clinical Context"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w1Orders.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    }
+  ]
+}

@@ -12,13 +12,13 @@ namespace Ehr.Canonical.W3
 
 open Ehr.Canonical
 
-/-- The W3 navigator (the sign screen is reached from the composer or the
+/-- The W3 workflow (the sign screen is reached from the composer or the
 order sets). -/
 def nav : List (ScreenId × String) :=
   [("w3TrackBoard", "ED Track Board"), ("w3Triage", "Triage summary"), ("w3Provider", "ED Provider Note"),
    ("w3Orders", "Orders"), ("w3OrderSets", "Order sets"), ("w3Disposition", "Disposition")]
 
-/-- The chart-review tabs on W3 screens. -/
+/-- The chart-history tabs on W3 screens. -/
 def chart : List Block :=
   [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
    (.table, "labResults", "Results"), (.table, "currentMeds", "Meds"),
@@ -28,7 +28,7 @@ def chart : List Block :=
 /-- The shell for a W3 screen. -/
 def frame (s : ScreenId) : List Component :=
   (shell s nav hospitalSidebar chart).map fun c =>
-    if c.id == cid s "nav" then activityNavigator { c with label := "ED Navigator" }
+    if c.id == cid s "nav" then activityWorkflow { c with label := "ED workflow" }
     else if c.id == cid s "chart.labResults" then
       presentation "results" { c with kind := .table "resultTrend" }
     else if c.id == cid s "chart.imaging" then presentation "notes" c
@@ -185,7 +185,7 @@ def edLine (drug dose route freq indication diagnosis : String) (prn : Bool := f
   { drug, dose, route, freq, duration := "1 day", quantity := "1", indication
     pharmacy := "ED pharmacy", prn, diagnosis }
 
-/-- The W3 macros: order sets and the preference list. -/
+/-- The W3 macros: order sets and the order favorites. -/
 def macros : List Macro := [
   orderSet "w3SepsisSet" "Sepsis (adult)" "w3OrderSets"
     [edLine "ceftriaxone" "2000" "IV" "daily" "sepsis" "A41.9",

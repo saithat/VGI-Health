@@ -25,6 +25,6 @@ export function personaParams(id: Persona, seed: number, policy: "expert" | "bou
   n ^= n >> 31n;
   return PersonaParamsSchema.parse({...PERSONA_PARAMS[id],
     ...(policy === "bounded" ? {policy} : {}),
-    ...(hidden ? {hiddenPreferences:{placements:[{tag:"w1Orders.storyboard.allergyList",nearTag:"w1Orders.dose",weight:1+Number(n%3n)}],changeSensitivity:100+Number(n%801n)}} : {}),
+    ...(hidden ? {hiddenPreferences:{placements:[{tag:"w1Orders.patientSidebar.allergyList",nearTag:"w1Orders.dose",weight:1+Number(n%3n)}],changeSensitivity:100+Number(n%801n)}} : {}),
   });
 }

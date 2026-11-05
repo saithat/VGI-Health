@@ -1,3 +1,4 @@
+import { isDayResultFile } from "../src/browser/run-files";
 import { readdir, readFile } from "node:fs/promises";
 import { resolve, relative, sep } from "node:path";
 import type { Plugin } from "vite";
@@ -166,11 +167,11 @@ export function runsPlugin(): Plugin {
           for (const file of entry.files) {
             if (/^(decisions|break)\/.+\.json$/.test(file))
               records.push(await get(file));
-            else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file))
+            else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
               days.push({ ...(await get(file)), trace: [] });
-            else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file))
+            else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
               baselines.push({ ...(await get(file)), trace: [] });
-            else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file))
+            else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
               noAgentDays.push({ ...(await get(file)), trace: [] });
             else if (file === "complexity.json") complexity = await get(file);
             else if (/^certs\/P[1-5]\/v\d+\.json$/.test(file))

@@ -38,7 +38,7 @@ export function AppHeader({
           {children ?? "Synthetic training environment"}
         </div>
       </header>
-      <nav className="app-activities" aria-label="Application activities">
+      <nav className="app-activities" aria-label="Activities">
         {(
           [
             ["live", "/", "Live EHR"],

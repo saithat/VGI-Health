@@ -501,7 +501,7 @@ A prescription has one order line per drug. Most of these are required on
 every line (see `orderSigningEntries`). -/
 
 /-- Law: 22 CCR 70263(g), (h)(4).
-The drug (formulary name). Order sets and preference lists may fill it in,
+The drug (formulary name). Order sets and order favorites may fill it in,
 and a human confirms it.
 Catalog: federal-rx-1306-12-zero-refills. The scoped refill/issuance entries
 reuse this element without changing its kind, permissions or friction. -/
@@ -807,7 +807,7 @@ def labFasting : ElementSpec where
   friction := .accidental
   fhirTarget := "ServiceRequest.patientInstruction"
 
-/-! ## Data elements: results in-basket (W2) -/
+/-! ## Data elements: results inbox (W2) -/
 
 /-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
 What the clinician decides to do about a result (no action, repeat, refer,
@@ -1560,7 +1560,7 @@ def elements : List ElementSpec := [
   curesExemptionReason, naloxoneOffer, naloxoneEducation,
   -- lab orders
   labTest, labDiagnosis, labPriority, labFasting,
-  -- results in-basket
+  -- results inbox
   resultAction, patientMessage, resultFollowUpOrder,
   -- emergency department
   triageAcuity, arrivalMode, isolationScreen, dispositionChoice, dispositionCondition,
@@ -1656,8 +1656,8 @@ def upcomingAppointments : InfoSpec := { id := "upcomingAppointments", label := 
 def openOrders : InfoSpec := { id := "openOrders", label := "Open orders", version := "" }
 /-- The refill request: drug, dose, last fill, pharmacy, who asked. -/
 def refillRequest : InfoSpec := { id := "refillRequest", label := "Refill request", version := "" }
-/-- The in-basket list (results, messages, refill requests). -/
-def inbasketItems : InfoSpec := { id := "inbasketItems", label := "In-basket", version := "" }
+/-- The inbox list (results, messages, refill requests). -/
+def inboxItems : InfoSpec := { id := "inboxItems", label := "Inbox", version := "" }
 /-- The triage summary (acuity, vitals, complaint). -/
 def triageSummary : InfoSpec := { id := "triageSummary", label := "Triage summary", version := "" }
 /-- The consult request from the ED. -/
@@ -1692,7 +1692,7 @@ def infos : List InfoSpec := [
   imaging, labResults, overnightEvents, problemList, immunizationHistory, marSchedule,
   marDoseDetails, glucoseTrend, coagLabs, shiftWorklist, newOrders, handoffSummary,
   intraopRecord, priorNotes, encounterHistory, upcomingAppointments, openOrders,
-  refillRequest, inbasketItems, triageSummary, consultRequest, consentDocument,
+  refillRequest, inboxItems, triageSummary, consultRequest, consentDocument,
   socialHistory, familyHistory, surgicalHistory, coverage, prnHistory, pendingResults,
   edTrackBoard, careGapList, curesReport
 ] ++ ChartInfo.infos
@@ -1713,7 +1713,7 @@ def signOrders : CommitSpec :=
     encounterRoles? := some [preopSigningRoles] }
 /-- Sign a visit or consult note. -/
 def signNote : CommitSpec := { id := "signNote", label := "Sign note", roles := prescribers }
-/-- Acknowledge a result in the in-basket. -/
+/-- Acknowledge a result in the inbox. -/
 def ackResult : CommitSpec := { id := "ackResult", label := "Acknowledge result", roles := prescribers }
 /-- Approve (or deny, or modify) a refill request. -/
 def approveRefill : CommitSpec := { id := "approveRefill", label := "Approve refill", roles := [.physician, .np] }

@@ -69,11 +69,11 @@ CASES.forEach(({ seed, index }) => {
     expect(seen).toBeGreaterThan(0);
   });
 
-  it("discharge labs land in P1's in-basket on a later day (or wait in the backlog)", () => {
+  it("discharge labs land in P1's inbox on a later day (or wait in the backlog)", () => {
     const final = stateOf(r, DAYS);
     const handled = new Set<string>();
     for (let d = 1; d <= DAYS; d++) for (const t of schedule(r, d, "P1").tasks) for (const res of t.todayResources) if (typeof res === "object" && res !== null && !Array.isArray(res) && typeof res["id"] === "string") handled.add(res["id"]);
-    const backlog = new Set(final.inBasketBacklog.map((i) => i.lab?.id));
+    const backlog = new Set(final.inboxBacklog.map((i) => i.lab?.id));
     let checked = 0;
     for (const dc of final.discharges) {
       for (const labId of dc.pendingLabs) {
@@ -154,9 +154,9 @@ CASES.forEach(({ seed, index }) => {
     const uc = schedule(r, 5, "P1").tasks;
     expect(uc.filter((t) => t.workflow === "W1").every((t) => t.choices.noteSections.includes("urgentCareTriage"))).toBe(true);
     expect(uc.filter((t) => t.workflow !== "W1").every((t) => t.startMin >= 600)).toBe(true);
-    // The in-basket mostly waits on the urgent-care day: at most 5 items handled, the rest carried over.
-    const ib4 = stateOf(r, 4).today.inBasket.P1;
-    const ib5 = stateOf(r, 5).today.inBasket.P1;
+    // The inbox mostly waits on the urgent-care day: at most 5 items handled, the rest carried over.
+    const ib4 = stateOf(r, 4).today.inbox.P1;
+    const ib5 = stateOf(r, 5).today.inbox.P1;
     expect(ib5.handled).toBeLessThanOrEqual(5);
     expect(ib5.backlogAfter).toBe(ib4.backlogAfter + ib5.arrived - ib5.handled);
   });

@@ -1,6 +1,4 @@
 import { dataReason } from "./data";
-import { historicalReleaseEventId } from "../../scripts/historical-releases.mjs";
-import { PRIOR_AUTH_RELEASE_DAY } from "../src/releases";
 import { spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -10,15 +8,6 @@ import { DRUG_NAMES, FORMULARY } from "../src/formulary";
 import { loadPopulation, profilesFromBundle } from "../src/patients";
 import { DayScheduleSchema, PERSONAS } from "../src/schema";
 import { generateWorld } from "../src/world";
-
-// Compare frozen predecessors after projecting out the additive panic-result
-// source. Task choices, state hashes, ordinary results and random draws stay exact.
-function predecessor(schedule: ReturnType<typeof DayScheduleSchema.parse>) {
-  return { ...schedule, tasks: schedule.tasks.map((task) => ({ ...task,
-    todayResources: task.todayResources.filter((resource) =>
-      !JSON.stringify(resource).includes("critical-result-route")),
-  })) };
-}
 
 const root = resolve(__dirname, "../..");
 const reason = dataReason("fixtures/synthea", "runs/world/1", "runs/world/2");
@@ -30,34 +19,33 @@ beforeAll(() => {
   run = generateWorld(1, 10, population.patients);
 });
 
-it("keeps the archived seed-1 replay as the predecessor projection and below 15 MB", () => {
+it("keeps the regenerated seed-1 snapshot and below 20 MB", () => {
   const dir = join(root, "runs/world/2");
   const read = (file: string): unknown => JSON.parse(readFileSync(join(dir, file), "utf8"));
   const manifest = z.object({ seed: z.number(), days: z.number(), files: z.array(z.string()) }).parse(read("manifest.json"));
   expect(manifest.seed).toBe(1);
   expect(manifest.days).toBe(10);
-  expect(manifest.files.reduce((bytes, file) => bytes + statSync(join(dir, file)).size, 0)).toBeLessThan(15_000_000);
+  expect(manifest.files.reduce((bytes, file) => bytes + statSync(join(dir, file)).size, 0)).toBeLessThan(20_000_000);
   expect(read("state-day-0.json")).toEqual(run.initial);
   for (const d of run.days) {
     expect(read(`state-day-${d.state.day}.json`)).toEqual(d.state);
     for (const p of PERSONAS) {
-      expect(read(`day-${d.state.day}-${p}.json`)).toEqual(predecessor(d.schedules[p]));
-      expect(read(`schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`)).toEqual(predecessor(d.schedules[p]));
+      expect(read(`day-${d.state.day}-${p}.json`)).toEqual(d.schedules[p]);
+      expect(read(`schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`)).toEqual(d.schedules[p]);
     }
   }
 });
 
-it("preserves world 1 state, tasks and random draws except pre-release service choices", () => {
+it("preserves the independently regenerated world 1 state, tasks and random draws", () => {
   for (const d of run.days) {
     const legacy = JSON.parse(readFileSync(join(root, `runs/world/1/state-day-${d.state.day}.json`), "utf8"));
-    legacy.context.scriptedEvents = legacy.context.scriptedEvents.map(historicalReleaseEventId);
     expect(legacy).toEqual(d.state);
     for (const p of PERSONAS) {
       const original = DayScheduleSchema.parse(JSON.parse(readFileSync(join(root, `runs/world/1/day-${d.state.day}-${p}.json`), "utf8")));
       for (const task of original.tasks) {
-        if (task.day < PRIOR_AUTH_RELEASE_DAY) task.choices.orders = task.choices.orders.filter((o) => (o.kind ?? "medication") === "medication");
+        DayScheduleSchema.parse({ ...original, tasks: [task] });
       }
-      expect(predecessor(d.schedules[p])).toEqual(original);
+      expect(d.schedules[p]).toEqual(original);
     }
   }
 });

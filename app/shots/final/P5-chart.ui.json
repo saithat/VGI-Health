@@ -3,55 +3,59 @@
   "banner": [
     [
       "Patient",
-      "Bennett, Rowan"
+      "Runte, Sol Jerrold"
     ],
     [
       "DOB",
-      "Oct 31, 1999"
+      "Jun 10, 1961"
     ],
     [
       "MRN",
-      "SH00002691"
+      "84974903"
     ],
     [
       "Age / sex",
-      "27 / M"
+      "65 / M"
     ],
     [
       "Language",
-      ""
+      "English (United States)"
     ],
     [
       "PCP",
-      "Dr. Lena Wilson, Internal Medicine"
+      "Fictional Clinician 9ababdd2e1"
     ],
     [
       "Coverage",
-      "Employer-sponsored health insurance (Aetna)"
+      "Fictional Health Services e277448254"
     ],
     [
-      "Last encounter",
-      "SS"
+      "Encounter",
+      "Inpatient"
     ],
     [
-      "Last provider",
-      "Dr. Taylor Morgan"
+      "Attending",
+      "Fictional Clinician ea087f491c"
     ],
     [
-      "Last location",
-      "Operating Room 1"
+      "Location",
+      "Fictional Care Site 62c658f3c1"
     ],
     [
       "Encounter type",
-      "Surgical Visit – General Surgery"
+      "Inpatient Stay – Fictional Care Site 7f969d1e61"
     ],
     [
       "Department",
-      "General Surgery"
+      "Fictional Care Site 7f969d1e61"
+    ],
+    [
+      "Postoperative day",
+      "POD #3"
     ],
     [
       "Allergies",
-      "Penicillin (rash) — Rash (moderate); Dust mites — Sneezing and itchy eyes (mild); Ragweed pollen — Sneezing and itchy eyes (mild)"
+      "Sulfamethoxazole / Trimethoprim — Wheal (finding), Eruption of skin (disorder) (moderate); Penicillin V — Rash (moderate)"
     ],
     [
       "Code status",
@@ -59,7 +63,7 @@
     ],
     [
       "Weight",
-      "Not recorded"
+      "82.9 kg · Sep 5, 2026 08:00"
     ],
     [
       "Isolation",
@@ -268,7 +272,7 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
           "workspace.activity|orSchedule",
@@ -279,16 +283,16 @@
           "Consults"
         ],
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (2)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (2)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
         ],
         [
           "workspace.lookup",
@@ -301,7 +305,7 @@
       ]
     ],
     [
-      "Surgical navigator",
+      "Surgical workflow",
       [
         [
           "w6OpNote.nav.w6Schedule",
@@ -357,8 +361,8 @@
           "Summary"
         ],
         [
-          "w6OpNote.chartWorkspace.chartReview",
-          "Chart Review"
+          "w6OpNote.chartWorkspace.chartHistory",
+          "Chart History"
         ]
       ]
     ]
@@ -374,38 +378,7 @@
               "display": "list",
               "infoId": "scheduleTasks",
               "label": "Case request",
-              "rows": [
-                [
-                  [
-                    "Room",
-                    "Operating Room 1"
-                  ],
-                  [
-                    "Start",
-                    "Nov 2, 2026 07:30"
-                  ],
-                  [
-                    "Procedure",
-                    "laparoscopic cholecystectomy"
-                  ],
-                  [
-                    "Indication",
-                    "Unknown"
-                  ],
-                  [
-                    "Patient",
-                    "Bennett, Rowan"
-                  ],
-                  [
-                    "Surgeon",
-                    "Dr. Taylor Morgan"
-                  ],
-                  [
-                    "Status",
-                    "completed"
-                  ]
-                ]
-              ]
+              "rows": []
             }
           }
         ],
@@ -418,7 +391,7 @@
         "children": [
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyIdentity",
+              "comp": "w6OpNote.patientSidebar.storyIdentity",
               "display": "list",
               "infoId": "storyIdentity",
               "label": "Patient",
@@ -426,25 +399,25 @@
                 [
                   [
                     "Record",
-                    "Name · Bennett, Rowan"
+                    "Name · Runte, Sol Jerrold"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Age / sex · 27 / M"
+                    "Age / sex · 65 / M"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "MRN · SH00002691"
+                    "MRN · 84974903"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "DOB · Oct 31, 1999"
+                    "DOB · Jun 10, 1961"
                   ]
                 ]
               ]
@@ -452,7 +425,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyPrecautions",
+              "comp": "w6OpNote.patientSidebar.storyPrecautions",
               "display": "list",
               "infoId": "storyPrecautions",
               "label": "Code Status / Precautions",
@@ -474,7 +447,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.allergyList",
+              "comp": "w6OpNote.patientSidebar.allergyList",
               "display": "list",
               "infoId": "allergyList",
               "label": "Allergies",
@@ -482,19 +455,13 @@
                 [
                   [
                     "Record",
-                    "Penicillin (rash) — Rash (moderate)"
+                    "Sulfamethoxazole / Trimethoprim — Wheal (finding), Eruption of skin (disorder) (moderate)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Dust mites — Sneezing and itchy eyes (mild)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Ragweed pollen — Sneezing and itchy eyes (mild)"
+                    "Penicillin V — Rash (moderate)"
                   ]
                 ]
               ]
@@ -502,7 +469,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyTeam",
+              "comp": "w6OpNote.patientSidebar.storyTeam",
               "display": "list",
               "infoId": "storyTeam",
               "label": "PCP / Attending / Care Team",
@@ -510,25 +477,25 @@
                 [
                   [
                     "Record",
-                    "PCP · Dr. Lena Wilson, Internal Medicine"
+                    "PCP · Fictional Clinician 9ababdd2e1"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Attending · Dr. Taylor Morgan"
+                    "Attending · Fictional Clinician ea087f491c"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Attending · Dr. Taylor Morgan"
+                    "Attending · Fictional Clinician ea087f491c"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Registered nurse · Ethan Park, RN"
+                    "Registered nurse · Fictional Clinician 920d783abe"
                   ]
                 ]
               ]
@@ -536,7 +503,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyEncounter",
+              "comp": "w6OpNote.patientSidebar.storyEncounter",
               "display": "list",
               "infoId": "storyEncounter",
               "label": "Encounter / Location / LOS",
@@ -544,31 +511,31 @@
                 [
                   [
                     "Record",
-                    "Encounter · Surgical Visit – General Surgery"
+                    "Encounter · Inpatient Stay – Fictional Care Site 7f969d1e61"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Department · General Surgery"
+                    "Department · Fictional Care Site 7f969d1e61"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Location · Operating Room 1"
+                    "Location · Fictional Care Site 62c658f3c1"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Admitted / start · Nov 2, 2026 06:30"
+                    "Admitted / start · Oct 30, 2026 15:00"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "LOS · Not recorded"
+                    "LOS · 2d 11h (snapshot)"
                   ]
                 ],
                 [
@@ -582,7 +549,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyWeight",
+              "comp": "w6OpNote.patientSidebar.storyWeight",
               "display": "list",
               "infoId": "storyWeight",
               "label": "Weight (kg)",
@@ -590,7 +557,7 @@
                 [
                   [
                     "Record",
-                    "Measured weight · Not recorded"
+                    "Measured weight · 82.9 kg · 2026-09-05T08:00:15-07:00"
                   ]
                 ]
               ]
@@ -598,16 +565,65 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.vitals",
+              "comp": "w6OpNote.patientSidebar.vitals",
               "display": "list",
               "infoId": "vitals",
               "label": "Recent Vitals",
-              "rows": []
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body Height 174.5 cm (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Weight 82.9 kg (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 27.22 kg/m2 (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 120/65 mm[Hg] (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 72 /min (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 15 /min (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body temperature 37.74 Cel (Aug 15, 2026 09:00)"
+                  ]
+                ]
+              ]
             }
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyMedCount",
+              "comp": "w6OpNote.patientSidebar.storyMedCount",
               "display": "list",
               "infoId": "storyMedCount",
               "label": "Active Medications",
@@ -615,7 +631,7 @@
                 [
                   [
                     "Record",
-                    "Active/on-hold orders · 0"
+                    "Active/on-hold orders · 1"
                   ]
                 ]
               ]
@@ -623,7 +639,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.problemList",
+              "comp": "w6OpNote.patientSidebar.problemList",
               "display": "list",
               "infoId": "problemList",
               "label": "Active Problems",
@@ -631,25 +647,91 @@
                 [
                   [
                     "Record",
-                    "Asthma, mild intermittent (active)"
+                    "Hyperlipidemia (disorder) (active)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Allergic rhinitis, seasonal (active)"
+                    "Ischemic heart disease (disorder) (active)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Migraine without aura (active)"
+                    "History of myocardial infarction (situation) (active)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Carbon monoxide poisoning"
+                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Acute non-ST segment elevation myocardial infarction (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Obstructive sleep apnea syndrome (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Sleep disorder (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Cerebral palsy (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Spasticity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Osteoporosis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Intellectual disability (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gastroesophageal reflux disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pneumonia (disorder) (active)"
                   ]
                 ]
               ]
@@ -657,7 +739,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyLastNote",
+              "comp": "w6OpNote.patientSidebar.storyLastNote",
               "display": "list",
               "infoId": "storyLastNote",
               "label": "Last Note",
@@ -665,7 +747,7 @@
                 [
                   [
                     "Record",
-                    "Apr 6, 2026 12:00 · Progress note · Dr. Marcus Johnson · Emergency Medicine: Found unconscious in garage with car engine running. Source date 2021-01-15; structured dates shifted 1907 days. Note text retained verbatim. · Attachment 1: ed · 2021-01-15\nENCOUNTER NOTE\nDate: 2021-01-15\nProvider: Dr. Marcus Johnson, MD\nDepartment: Emergency Medicine\nVisit Type: ed\n\nCHIEF COMPLAINT:\nFound unconscious in garage with car engine running\n\nHISTORY OF PRESENT ILLNESS:\n28-year-old man with asthma, allergic rh… (excerpt; full note in Chart Review) · current / final"
+                    "Sep 20, 2026 08:00 · History and physical note · Fictional Clinician 34eba7a0a7 · Unknown · \n2026-09-20\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History) · current"
                   ]
                 ]
               ]
@@ -673,7 +755,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.storyPharmacy",
+              "comp": "w6OpNote.patientSidebar.storyPharmacy",
               "display": "list",
               "infoId": "storyPharmacy",
               "label": "Pharmacy",
@@ -682,7 +764,7 @@
           },
           {
             "info": {
-              "comp": "w6OpNote.storyboard.chartReports",
+              "comp": "w6OpNote.patientSidebar.chartReports",
               "display": "list",
               "infoId": "chartReports",
               "label": "Reports",
@@ -697,8 +779,8 @@
             }
           }
         ],
-        "id": "w6OpNote.storyboard",
-        "title": "Patient Storyboard"
+        "id": "w6OpNote.patientSidebar",
+        "title": "Patient sidebar"
       }
     }
   ],
@@ -740,38 +822,7 @@
         "display": "list",
         "infoId": "intraopRecord",
         "label": "Intra-op record",
-        "rows": [
-          [
-            [
-              "Procedure",
-              "laparoscopic cholecystectomy"
-            ],
-            [
-              "Status",
-              "completed"
-            ],
-            [
-              "Start",
-              "Nov 2, 2026 07:30"
-            ],
-            [
-              "End",
-              "Nov 2, 2026 08:45"
-            ],
-            [
-              "Location",
-              "Operating Room 1"
-            ],
-            [
-              "Team",
-              "Dr. Taylor Morgan"
-            ],
-            [
-              "Recorded findings",
-              ""
-            ]
-          ]
-        ]
+        "rows": []
       }
     },
     {
@@ -1188,15 +1239,15 @@
                       [
                         [
                           "Encounter",
-                          "Surgical Visit – General Surgery"
+                          "Inpatient Stay – Fictional Care Site 7f969d1e61"
                         ],
                         [
                           "Class",
-                          "Short stay"
+                          "Inpatient"
                         ],
                         [
                           "Start",
-                          "Nov 2, 2026 06:30"
+                          "Oct 30, 2026 15:00"
                         ],
                         [
                           "End",
@@ -1204,15 +1255,345 @@
                         ],
                         [
                           "Reason",
-                          "laparoscopic cholecystectomy"
+                          "s/p laparoscopic cholecystectomy – POD 3"
                         ],
                         [
                           "Provider",
-                          "Dr. Taylor Morgan"
+                          "Fictional Clinician ea087f491c"
                         ],
                         [
                           "Location",
-                          "Operating Room 1"
+                          "Fictional Care Site 62c658f3c1"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 20, 2026 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 20, 2026 08:15"
+                        ],
+                        [
+                          "Reason",
+                          "Hyperlipidemia (disorder)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 19, 2026 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 19, 2026 08:24"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 5, 2026 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 5, 2026 08:31"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 15, 2026 09:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 15, 2026 09:15"
+                        ],
+                        [
+                          "Reason",
+                          "Acute viral pharyngitis (disorder)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Jun 17, 2026 09:54"
+                        ],
+                        [
+                          "End",
+                          "Jun 17, 2026 10:33"
+                        ],
+                        [
+                          "Reason",
+                          "Screening for malignant neoplasm of colon (procedure)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 20, 2025 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 20, 2025 08:15"
+                        ],
+                        [
+                          "Reason",
+                          "Hyperlipidemia (disorder)"
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 30, 2025 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 30, 2025 08:34"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 7, 2024 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 7, 2024 08:25"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 24, 2024 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 24, 2024 08:37"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Sep 2, 2023 08:00"
+                        ],
+                        [
+                          "End",
+                          "Sep 2, 2023 08:20"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 34eba7a0a7"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 19, 2023 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 19, 2023 08:58"
+                        ],
+                        [
+                          "Reason",
+                          ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
                         ]
                       ],
                       [
@@ -1226,53 +1607,83 @@
                         ],
                         [
                           "Start",
-                          "Apr 6, 2026"
+                          "Aug 28, 2022 08:37"
                         ],
                         [
                           "End",
-                          "Apr 6, 2026"
+                          "Aug 28, 2022 09:37"
                         ],
                         [
                           "Reason",
-                          "Found unconscious in garage with car engine running"
+                          "Laceration - injury (disorder)"
                         ],
                         [
                           "Provider",
-                          "Dr. Marcus Johnson"
+                          "Fictional Clinician f97d0cd1c2"
                         ],
                         [
                           "Location",
-                          ""
+                          "Fictional Care Site c4d21d5cf0"
                         ]
                       ],
                       [
                         [
                           "Encounter",
-                          "Emergency Visit – Emergency Medicine"
+                          "Office Visit – Internal Medicine"
                         ],
                         [
                           "Class",
-                          "Emergency"
+                          "Ambulatory"
                         ],
                         [
                           "Start",
-                          "Apr 5, 2025"
+                          "Aug 27, 2022 08:00"
                         ],
                         [
                           "End",
-                          "Apr 5, 2025"
+                          "Aug 27, 2022 09:12"
                         ],
                         [
                           "Reason",
-                          "Found unconscious in his apartment in midwinter; roommate reports dog lethargic since morning"
+                          ""
                         ],
                         [
                           "Provider",
-                          "Dr. Sarah Chen"
+                          "Fictional Clinician 34eba7a0a7"
                         ],
                         [
                           "Location",
+                          "Fictional Health Services 4f4d2751bd"
+                        ]
+                      ],
+                      [
+                        [
+                          "Encounter",
+                          "Office Visit – Internal Medicine"
+                        ],
+                        [
+                          "Class",
+                          "Ambulatory"
+                        ],
+                        [
+                          "Start",
+                          "Aug 13, 2022 08:00"
+                        ],
+                        [
+                          "End",
+                          "Aug 13, 2022 08:48"
+                        ],
+                        [
+                          "Reason",
                           ""
+                        ],
+                        [
+                          "Provider",
+                          "Fictional Clinician 0d067a3f7b"
+                        ],
+                        [
+                          "Location",
+                          "Fictional Care Site 8f61aa4f26"
                         ]
                       ]
                     ]
@@ -1331,7 +1742,7 @@
             ],
             [
               "Value",
-              "Surgical Visit – General Surgery"
+              "Inpatient Stay – Fictional Care Site 7f969d1e61"
             ]
           ],
           [
@@ -1341,7 +1752,7 @@
             ],
             [
               "Value",
-              "General Surgery"
+              "Fictional Care Site 7f969d1e61"
             ]
           ],
           [
@@ -1399,22 +1810,7 @@
                                 "display": "table",
                                 "infoId": "chartCareGaps",
                                 "label": "Records",
-                                "rows": [
-                                  [
-                                    [
-                                      "Task",
-                                      "Influenza vaccination review"
-                                    ],
-                                    [
-                                      "Status",
-                                      "Chart reminder"
-                                    ],
-                                    [
-                                      "Due",
-                                      "Verify source / eligibility"
-                                    ]
-                                  ]
-                                ]
+                                "rows": []
                               }
                             }
                           ],
@@ -1442,27 +1838,27 @@
                                   [
                                     [
                                       "Date",
-                                      "Apr 6, 2026 12:00"
+                                      "Sep 20, 2026 08:00"
                                     ],
                                     [
                                       "Type",
-                                      "Progress note"
+                                      "History and physical note"
                                     ],
                                     [
                                       "Author",
-                                      "Dr. Marcus Johnson"
+                                      "Fictional Clinician 34eba7a0a7"
                                     ],
                                     [
                                       "Title",
-                                      "Emergency Medicine: Found unconscious in garage with car engine running. Source date 2021-01-15; structured dates shifted 1907 days. Note text retained verbatim."
+                                      "Unknown"
                                     ],
                                     [
                                       "Text",
-                                      "Attachment 1: ed · 2021-01-15\nENCOUNTER NOTE\nDate: 2021-01-15\nProvider: Dr. Marcus Johnson, MD\nDepartment: Emergency Medicine\nVisit Type: ed\n\nCHIEF COMPLAINT:\nFound unconscious in garage with car engine running\n\nHISTORY OF PRESENT ILLNESS:\n28-year-old man with asthma, allergic rh… (excerpt; full note in Chart Review)"
+                                      "\n2026-09-20\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
-                                      "current / final"
+                                      "current"
                                     ]
                                   ]
                                 ]

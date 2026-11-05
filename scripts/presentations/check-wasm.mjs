@@ -39,7 +39,7 @@ for (const [kind, input] of corpus) {
     assert.ok(rows.some(row => has(row, 'Date', 'Nov 1, 2024') && has(row, 'Height (cm)', '123.2')));
     assert.ok(rows.some(row => has(row, 'Date', 'Nov 1, 2026') && has(row, 'Weight (kg)', '30.4')));
   }
-  if (kind === 'inBasket') {
+  if (kind === 'inbox') {
     const panes = result.workspace[1].section.children[0].columns.children;
     assert.deepEqual(panes.map(node => node.presentation.kind), ['folderList', 'messages']);
     assert.ok(panes.every(node => node.presentation.children.some(child => child.info)));

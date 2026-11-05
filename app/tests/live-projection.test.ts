@@ -25,7 +25,7 @@ it("retains Lean queue data and gives explicit version-bound context precedence"
     entry: [{ resource: patient }, { resource: encounter }],
   };
   const payload: InfoPayload = {
-    info: "inbasketItems",
+    info: "inboxItems",
     patient: "patient",
     artifactKey: "ambulatory:messages",
     artifact: "source-version",
@@ -67,7 +67,7 @@ it("retains Lean queue data and gives explicit version-bound context precedence"
     { patient, encounter },
   );
   expect(
-    projected.facts.infoPayloads?.find((item) => item.info === "inbasketItems"),
+    projected.facts.infoPayloads?.find((item) => item.info === "inboxItems"),
   ).toEqual(payload);
   expect(
     projected.facts.infoPayloads?.filter(

@@ -83,7 +83,7 @@ def demographics : State := run (navigate Bad.invalidBirthDate "home" "feature.u
   "feature.signOralMethotrexate" "signOralMethotrexate").commits == ["signOralMethotrexate"]
 
 /- Old summaries do not replace grouped component rows, or an exact signing label. -/
-#guard (finish (run [.click "home.work.w2Inbasket", .click "w2Inbasket.openResult",
+#guard (finish (run [.click "home.work.w2Inbox", .click "w2Inbox.openResult",
   .enter "w2Result.resultAction" (.code "repeat"), .click "w2Result.message",
   .enter "w2Message.patientMessage" (.text "Repeat potassium tomorrow"), .click "w2Message.return"]
   Bad.hiddenResultComponents resultFacts) "w2Result" "ackResult" Bad.hiddenResultComponents resultFacts).commits == []

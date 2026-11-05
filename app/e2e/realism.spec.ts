@@ -65,14 +65,14 @@ test("shared shell and browser visual review", async ({ page }) => {
         .locator(`[data-comp-id="home.work.${entry}"][data-event]`)
         .click();
     if (process.env.REALISM_SHOTS !== "before") {
-      const navigator = page.getByRole("navigation", {
+      const workflow = page.getByRole("navigation", {
         name: "Clinical navigation",
       });
       await expect(
-        navigator.locator("button[data-comp-id]").first(),
+        workflow.locator("button[data-comp-id]").first(),
       ).toBeVisible();
 
-      await expect(navigator).not.toHaveClass(/empty-navigator/);
+      await expect(workflow).not.toHaveClass(/empty-workflow/);
     }
     await navigateClinicalScreen(page, screen);
     await expect(page.getByRole("heading", { level: 1 })).not.toHaveText(
@@ -115,7 +115,7 @@ test("shared shell and browser visual review", async ({ page }) => {
           "chartSummary",
       )
     )
-      await navigateClinicalScreen(page, "chartReview");
+      await navigateClinicalScreen(page, "chartHistory");
     await page.getByRole("tab", { name: "Notes", exact: true }).click();
     const note = page
       .locator(

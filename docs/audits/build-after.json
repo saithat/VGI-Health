@@ -1,8 +1,10 @@
 {
-  "elapsedSeconds": 7.57,
-  "maxRssKiB": 769040,
-  "revision": "715cff784d56b32a3818b2e2a10ec8e4248306f6",
-  "mainRevision": "924425f70600fd6019ad20a6a7460b4d849b2562",
-  "leanHash": "412471a4f4bc61c71e4205af41e8c3905bb9cacffa2aaed6b2c9393a7c061ef1",
-  "builtAt": "2026-11-01T10:42:14.595Z"
+  "elapsedSeconds": 10.59,
+  "maxRssKiB": 918916,
+  "revision": "4ecd1821205d0cd65d5beebea932c2324be69eb5",
+  "mainRevision": "4ccbe36d8efcf2fe9c8dbffdb5da8713709198e4",
+  "leanHash": "554ea92af92e6eb346bfb29ea1a31fbd7d3585a9e74712e7372ecc8d82260f48",
+  "builtAt": "2026-11-04T18:46:06.316Z",
+  "schemaVersion": 1,
+  "appSha256": "78c10e358678328a9288eda27a0b5aa965e1026c358a7f9fa618bb3df15457c3"
 }

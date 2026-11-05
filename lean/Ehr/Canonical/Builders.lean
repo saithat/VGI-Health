@@ -52,14 +52,14 @@ def table (s : ScreenId) (name : String) (info : InfoId) (label : String)
 
 
 
-/-- Use actual navigator sections in place of an additional numbered progress strip. -/
-def activityNavigator (c : Component) : Component :=
+/-- Use actual workflow sections in place of an additional numbered progress strip. -/
+def activityWorkflow (c : Component) : Component :=
   { c with tag := c.tag ++ ".layout.activities.nav" }
 
-/-- The layout hint retains the authored navigator and its identifier. -/
-def activityNavigatorExample := activityNavigator (mk "example" "nav" (.group false false) "Navigator")
-#guard activityNavigatorExample.id == "example.nav"
-#guard activityNavigatorExample.kind == .group false false
+/-- The layout hint retains the authored workflow and its identifier. -/
+def activityWorkflowExample := activityWorkflow (mk "example" "nav" (.group false false) "Workflow")
+#guard activityWorkflowExample.id == "example.nav"
+#guard activityWorkflowExample.kind == .group false false
 
 /-- Keep a selected work item's real navigation action beside its clinical context. -/
 def primaryNavigation (c : Component) : Component :=
@@ -189,46 +189,46 @@ def tabStrip (s : ScreenId) (name : String) (label : String) (blocks : List Bloc
          (startCollapsed := true) (parent := some name) (tab := index)]
      | none => [])
 
-/-- A visit navigator: one button per screen of the workflow, except `s` itself. -/
-def navigator (s : ScreenId) (steps : List (ScreenId × String)) : List Component :=
-  group s "nav" "Navigator" (collapsible := false) ::
+/-- A visit workflow: one button per screen of the workflow, except `s` itself. -/
+def workflow (s : ScreenId) (steps : List (ScreenId × String)) : List Component :=
+  group s "nav" "Workflow" (collapsible := false) ::
     (steps.filter (·.1 != s)).map fun (target, label) =>
       goto s ("nav." ++ target) target label (parent := some "nav")
 
-/-- The chart shell: banner, chart search, Back, Home, the visit navigator, the
-sidebar, and a chart-review tab strip. Every canonical screen starts with it. -/
+/-- The chart shell: banner, chart search, Back, Home, the visit workflow, the
+sidebar, and a chart-history tab strip. Every canonical screen starts with it. -/
 def shell (s : ScreenId) (nav : List (ScreenId × String)) (side : List Block)
     (chart : List Block) : List Component :=
   [banner s, searchC s "chartSearch" "chart" "Search chart",
    button s "back" .back "Back", goto s "home" "home" "Patient workspace"] ++
-  navigator s nav ++ sidebar s side ++ tabStrip s "chart" "Chart review" chart
+  workflow s nav ++ sidebar s side ++ tabStrip s "chart" "Chart History" chart
 
 /-- Ambulatory encounters keep their section list as real navigation through
 blueprint migration. Chart review stays in the workspace, so a second full chart
 rail does not compete with the encounter editor. Component IDs stay stable. -/
 def ambulatoryShell (s : ScreenId) (nav : List (ScreenId × String))
-    (chart : List Block) (navTitle : String := "Visit navigator") : List Component :=
+    (chart : List Block) (navTitle : String := "Visit workflow") : List Component :=
   ((shell s nav [] chart).filter (fun c => c.id != cid s "sidebar")).map fun c =>
     if c.kind == .banner then { c with tag := "layout.clinicalActivity" }
     else if c.id == cid s "nav" then
-      { c with id := cid s "encounterNavigator", tag := "navigator", label := navTitle }
+      { c with id := cid s "encounterWorkflow", tag := "workflow", label := navTitle }
     else if c.parent? == some (cid s "nav") then
-      { c with parent? := some (cid s "encounterNavigator") }
+      { c with parent? := some (cid s "encounterWorkflow") }
     else if c.id == cid s "chart" then
       { c with tag := "layout.focusedWorkspace" }
     else if c.id == cid s "back" || c.id == cid s "home" then
       { c with tag := c.tag ++ ".layout.footer" }
     else c
 
-/-- In Basket landing views put their original folder actions beside the
+/-- Inbox landing views put their original folder actions beside the
 message list. Row tags place the same buttons; they never infer a destination. -/
-def ambulatoryInBasketShell (s : ScreenId) (nav : List (ScreenId × String))
+def ambulatoryInboxShell (s : ScreenId) (nav : List (ScreenId × String))
     (chart : List Block) : List Component :=
-  (ambulatoryShell s nav chart "In Basket").flatMap fun c =>
-    if c.id == cid s "encounterNavigator" then
-      [{ group s "inBasketColumns" "In Basket" (collapsible := false) with tag := "layout.columns" },
-       { c with tag := "present.folderList", label := "Folders", parent? := some (cid s "inBasketColumns") }]
-    else if c.parent? == some (cid s "encounterNavigator") then
+  (ambulatoryShell s nav chart "Inbox").flatMap fun c =>
+    if c.id == cid s "encounterWorkflow" then
+      [{ group s "inboxColumns" "Inbox" (collapsible := false) with tag := "layout.columns" },
+       { c with tag := "present.folderList", label := "Folders", parent? := some (cid s "inboxColumns") }]
+    else if c.parent? == some (cid s "encounterWorkflow") then
       let row := match c.kind with
         | .button (.goto "w7Queue") => "1"
         | _ => "0"
@@ -285,7 +285,7 @@ def controlledFields (s : ScreenId) : List Component :=
 
 /-- Options for one order composer. -/
 structure ComposerOptions where
-  /-- Preference-list buttons: local name, macro id, label. -/
+  /-- Order-favorites buttons: local name, macro id, label. -/
   prefs : List (String × MacroId × String) := []
   /-- Show the mg/kg field and a dose-check preview (pediatrics). -/
   weightBased : Bool := false
@@ -305,7 +305,7 @@ structure ComposerOptions where
   extraNav : List (ScreenId × String) := []
 
 /-- The medication order composer for the current order line. It is long on
-purpose, like a production composer: a preference list, the dosing weight,
+purpose, like a production composer: a order favorites, the dosing weight,
 the order line (medication, dispense, pharmacy and diagnosis), the
 controlled-substance section, a collapsed "additional" section, an order-info
 tab strip whose second tab holds the CURES report, the pending-orders list, and
@@ -313,8 +313,8 @@ the buttons. -/
 def orderComposer (s : ScreenId) (o : ComposerOptions) : List Component :=
   [searchC s "orderSearch" "formulary" "Find orders"] ++
   o.inlineAlerts.map (fun (n, a, l) => alertC s n a l (popup := false)) ++
-  [group s "prefList" "Preference list"] ++
-  o.prefs.map (fun (n, m, l) => macroBtn s n m l (parent := some "prefList")) ++
+  [group s "orderFavorites" "Order favorites"] ++
+  o.prefs.map (fun (n, m, l) => macroBtn s n m l (parent := some "orderFavorites")) ++
   (if o.askWeight || o.askDosingWeight || o.weightBased then [group s "dosing" "Dosing"] else []) ++
   (if o.askWeight then [field s "weight" "weight" "Weight today (kg)" (parent := some "dosing")]
    else []) ++
@@ -357,7 +357,7 @@ def orderSetRows (s : ScreenId) (lines : List Nat) : List Component :=
 
 /-! ## Macros that fill order lines -/
 
-/-- One complete order line, as an order set or preference list fills it.
+/-- One complete order line, as an order set or order favorites fills it.
 Numbers are in the element's unit (mg for the dose). Frequencies use the codes
 the interpreter understands (`daily`, `bid`, `tid`, `qid`, `q4h`, `q6h`,
 `q8h`, `q12h`). -/
@@ -396,7 +396,7 @@ def orderSet (id : MacroId) (label : String) (s : ScreenId) (lines : List OrderL
     steps := [.goto s] ++ extra ++
       (((List.range lines.length).zip lines).flatMap fun (i, o) => fillLine s (rowPrefix (10 + i)) o) }
 
-/-- A preference-list macro: fills the clinical part of the current line in the
+/-- A order-favorites macro: fills the clinical part of the current line in the
 composer on screen `s` (drug, dose, unit, route, frequency, duration, quantity,
 refills). The clinician confirms these and fills the rest. -/
 def preference (id : MacroId) (label : String) (s : ScreenId) (o : OrderLine) : Macro :=

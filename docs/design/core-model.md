@@ -632,7 +632,7 @@ preserve legacy JSON behavior. A clinic NP sees “Pre-op orders are signed by a
 physician or surgeon”. No co-signature replaces consentVerified, hpUpdate or
 medsToHold; their entry permissions remain unchanged. Completableness excludes
 only encounters where that role cannot commit. Both worlds route surgical-day
-steps exclusively to P5. Production cosign is a non-blocking In Basket
+steps exclusively to P5. Production cosign is a non-blocking Inbox
 follow-up; not modeled.
 
 ### Medication dose units

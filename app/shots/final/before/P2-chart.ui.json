@@ -2,19 +2,19 @@
   "banner": [
     [
       "Patient",
-      "Mann, Lorena"
+      "Donnelly, Jamar"
     ],
     [
       "DOB",
-      "Oct 14, 1987"
+      "May 14, 1943"
     ],
     [
       "MRN",
-      "14486708"
+      "73854169"
     ],
     [
       "Age / sex",
-      "39 / F"
+      "83 / M"
     ],
     [
       "Language",
@@ -22,53 +22,47 @@
     ],
     [
       "PCP",
-      "Dr. Lena Wilson, Internal Medicine"
+      "Fictional Clinician dd90f9a148"
     ],
     [
       "Coverage",
-      "VGI Community Health Plan"
-    ],
-    [
-      "Last encounter",
-      "EMER"
-    ],
-    [
-      "Last provider",
-      "Dr. Marcus Okafor, MD"
-    ],
-    [
-      "Last location",
-      "ED 01"
+      "Fictional Health Services e277448254"
     ],
     [
       "Encounter",
-      "Emergency Visit – Emergency Medicine"
+      "Emergency"
+    ],
+    [
+      "Attending",
+      "Fictional Clinician ab34563451"
+    ],
+    [
+      "Location",
+      "Fictional Care Site 13cd46e28f"
+    ],
+    [
+      "Encounter type",
+      "Emergency Visit – Fictional Care Site f06249cfe5"
     ],
     [
       "Department",
-      "Emergency Medicine"
+      "Fictional Care Site f06249cfe5"
     ],
     [
       "Allergies",
-      "Bee venom — Eruption of skin (disorder) (moderate); Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Penicillin V — Rash (moderate); Cow's milk — Wheezing (finding) (moderate); Egg — Wheal (finding) (moderate)"
+      "amoxicillin — hives (reported at triage) (moderate)"
     ],
     [
       "Code status",
-      "Full Code"
+      "Not recorded"
     ],
     [
       "Weight",
-      "74.4 kg (from 164.0 lb) · Nov 2, 2026 07:15"
+      "77.2 kg · Nov 2, 2026 07:14"
     ],
     [
       "Isolation",
       "No isolation"
-    ]
-  ],
-  "entryHints": [
-    [
-      "w3Triage.weight",
-      "Recorded value: 164.0 lb. Enter the weight in kg."
     ]
   ],
   "fieldSources": [
@@ -80,23 +74,23 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
           "workspace.activity|edTrackBoard",
           "Track Board"
         ],
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (2)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (2)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
         ],
         [
           "workspace.lookup",
@@ -109,27 +103,40 @@
       ]
     ],
     [
-      "Navigator",
+      "ED workflow",
       [
         [
           "w3Triage.nav.w3TrackBoard",
-          "Track board"
+          "ED Track Board"
         ],
         [
           "w3Triage.nav.w3Provider",
-          "Provider note"
-        ],
-        [
-          "w3Triage.nav.w3OrderSets",
-          "Order sets"
+          "ED Provider Note"
         ],
         [
           "w3Triage.nav.w3Orders",
           "Orders"
         ],
         [
+          "w3Triage.nav.w3OrderSets",
+          "Order sets"
+        ],
+        [
           "w3Triage.nav.w3Disposition",
           "Disposition"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w3Triage.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w3Triage.chartWorkspace.chartHistory",
+          "Chart History"
         ]
       ]
     ]
@@ -137,187 +144,388 @@
   "screen": "w3Triage",
   "side": [
     {
-      "info": {
-        "comp": "",
-        "display": "list",
-        "infoId": "allergyList",
-        "label": "Allergies",
-        "rows": [
-          [
-            [
-              "Record",
-              "Bee venom — Eruption of skin (disorder) (moderate)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Mold — Sneezing and itchy eyes (mild)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Dust mites — Sneezing and itchy eyes (mild)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Grass pollen — Sneezing and itchy eyes (mild)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Tree pollen — Sneezing and itchy eyes (mild)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Penicillin V — Rash (moderate)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Cow's milk — Wheezing (finding) (moderate)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Egg — Wheal (finding) (moderate)"
-            ]
-          ]
-        ]
-      }
-    },
-    {
-      "info": {
-        "comp": "",
-        "display": "list",
-        "infoId": "currentMeds",
-        "label": "Active medications",
-        "rows": [
-          [
-            [
-              "Record",
-              "{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Errin 28 Day]"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "60 ACTUAT budesonide 0.09 MG/ACTUAT Dry Powder Inhaler [Pulmicort] — Take as needed."
-            ]
-          ],
-          [
-            [
-              "Record",
-              "NDA021457 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [ProAir] — Take as needed."
-            ]
-          ]
-        ]
-      }
-    },
-    {
-      "info": {
-        "comp": "",
-        "display": "list",
-        "infoId": "problemList",
-        "label": "Problems",
-        "rows": [
-          [
-            [
-              "Record",
-              "Body mass index 30+ - obesity (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Anemia (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Asthma (disorder) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Prediabetes (finding) (active)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Past pregnancy history of miscarriage (situation) (active)"
-            ]
-          ]
-        ]
-      }
-    },
-    {
-      "info": {
-        "comp": "",
-        "display": "list",
-        "infoId": "vitals",
-        "label": "Recent vitals",
-        "rows": [
-          [
-            [
-              "Record",
-              "Body weight 164 lb (today)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body Height 156.6 cm (Feb 11, 2026 05:12)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Feb 11, 2026 05:12)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Body mass index (BMI) [Ratio] 30.3 kg/m2 (Feb 11, 2026 05:12)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Blood pressure panel with all children optional 134/72 mm[Hg] (Feb 11, 2026 05:12)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Heart rate 83 /min (Feb 11, 2026 05:12)"
-            ]
-          ],
-          [
-            [
-              "Record",
-              "Respiratory rate 14 /min (Feb 11, 2026 05:12)"
-            ]
-          ]
-        ]
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Donnelly, Jamar"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 83 / M"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 73854169"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · May 14, 1943"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · No isolation"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "amoxicillin — hives (reported at triage) (moderate)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Fictional Clinician dd90f9a148"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ab34563451"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ab34563451"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Registered nurse · Fictional Clinician 920d783abe"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Emergency Visit – Fictional Care Site f06249cfe5"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Fictional Care Site f06249cfe5"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Fictional Care Site 13cd46e28f"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Nov 2, 2026 07:14"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 77.2 kg · 2026-11-02T07:14:00-08:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body weight 77.2 kg (today)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Height 167.2 cm (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 27.79 kg/m2 (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 109/63 mm[Hg] (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 79 /min (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 13 /min (Nov 14, 2025 17:22)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 3"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "History of coronary artery bypass grafting (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Ischemic heart disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Metabolic syndrome X (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Essential hypertension (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Hyperlipidemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dependent drug abuse (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Impacted molars (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic intractable migraine without aura (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Prediabetes (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Anemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index 30+ - obesity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic sinusitis (disorder) (active)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Oct 21, 2026 19:57 · History and physical note · Fictional Clinician eff8b458b9 · Unknown · \n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.patientSidebar",
+        "title": "Patient sidebar"
       }
     }
   ],
@@ -327,7 +535,7 @@
       "From chart — Weight (kg)"
     ]
   ],
-  "title": "Triage",
+  "title": "Triage summary",
   "viewer": "Physician",
   "workspace": [
     {
@@ -347,15 +555,52 @@
       "section": {
         "children": [
           {
-            "button": {
-              "blockedReason": null,
-              "comp": "w3Triage.vitalsGroup",
-              "enabled": true,
-              "hotkey": null,
-              "label": "Collapse section",
-              "role": "toggle"
+            "field": {
+              "comp": "w3Triage.chiefComplaint",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Chief complaint",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
             }
           },
+          {
+            "field": {
+              "comp": "w3Triage.triageAcuity",
+              "humanOnly": false,
+              "kind": "code:1|2|3|4|5",
+              "label": "ESI acuity (1–5)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.arrivalMode",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Arrival mode",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w3Triage.arrival",
+        "title": "Arrival and presenting complaint"
+      }
+    },
+    {
+      "section": {
+        "children": [
           {
             "field": {
               "comp": "w3Triage.weight",
@@ -366,7 +611,7 @@
               "provenance": "record:weightToday",
               "required": true,
               "unit": "kg",
-              "value": null
+              "value": "77.2"
             }
           },
           {
@@ -384,7 +629,7 @@
               "comp": "w3Triage.bpSystolic",
               "humanOnly": false,
               "kind": "qty",
-              "label": "BP systolic",
+              "label": "BP systolic (mmHg)",
               "pendingConfirm": false,
               "provenance": null,
               "required": true,
@@ -397,7 +642,7 @@
               "comp": "w3Triage.bpDiastolic",
               "humanOnly": false,
               "kind": "qty",
-              "label": "BP diastolic",
+              "label": "BP diastolic (mmHg)",
               "pendingConfirm": false,
               "provenance": null,
               "required": true,
@@ -410,7 +655,7 @@
               "comp": "w3Triage.heartRate",
               "humanOnly": false,
               "kind": "qty",
-              "label": "Heart rate",
+              "label": "Heart rate (/min)",
               "pendingConfirm": false,
               "provenance": null,
               "required": true,
@@ -423,7 +668,7 @@
               "comp": "w3Triage.respRate",
               "humanOnly": false,
               "kind": "qty",
-              "label": "Respiratory rate",
+              "label": "Respiratory rate (/min)",
               "pendingConfirm": false,
               "provenance": null,
               "required": true,
@@ -436,7 +681,7 @@
               "comp": "w3Triage.temperature",
               "humanOnly": false,
               "kind": "qty",
-              "label": "Temperature",
+              "label": "Temperature (°C)",
               "pendingConfirm": false,
               "provenance": null,
               "required": true,
@@ -449,7 +694,7 @@
               "comp": "w3Triage.spo2",
               "humanOnly": false,
               "kind": "qty",
-              "label": "SpO₂",
+              "label": "SpO₂ (%)",
               "pendingConfirm": false,
               "provenance": null,
               "required": true,
@@ -465,7 +710,7 @@
                   "field": {
                     "comp": "w3Triage.painScore",
                     "humanOnly": true,
-                    "kind": "code",
+                    "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
                     "label": "Pain (0–10)",
                     "pendingConfirm": false,
                     "provenance": null,
@@ -529,85 +774,44 @@
       }
     },
     {
-      "field": {
-        "comp": "w3Triage.triageAcuity",
-        "humanOnly": false,
-        "kind": "code",
-        "label": "Acuity (ESI)",
-        "pendingConfirm": false,
-        "provenance": null,
-        "required": false,
-        "unit": null,
-        "value": null
-      }
-    },
-    {
-      "field": {
-        "comp": "w3Triage.arrivalMode",
-        "humanOnly": false,
-        "kind": "code",
-        "label": "Arrival mode",
-        "pendingConfirm": false,
-        "provenance": null,
-        "required": false,
-        "unit": null,
-        "value": null
-      }
-    },
-    {
-      "field": {
-        "comp": "w3Triage.chiefComplaint",
-        "humanOnly": false,
-        "kind": "text",
-        "label": "Chief complaint",
-        "pendingConfirm": false,
-        "provenance": null,
-        "required": true,
-        "unit": null,
-        "value": null
-      }
-    },
-    {
-      "field": {
-        "comp": "w3Triage.isolationScreen",
-        "humanOnly": false,
-        "kind": "code",
-        "label": "Isolation screen",
-        "pendingConfirm": false,
-        "provenance": null,
-        "required": false,
-        "unit": null,
-        "value": null
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w3Triage.isolationScreen",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Isolation screening",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w3Triage.screening",
+        "title": "Infection prevention"
       }
     },
     {
       "section": {
         "children": [
           {
-            "button": {
-              "blockedReason": null,
-              "comp": "w3Triage.allergyGroup",
-              "enabled": true,
-              "hotkey": null,
-              "label": "Collapse section",
-              "role": "toggle"
-            }
-          },
-          {
             "info": {
               "comp": "w3Triage.allergies",
               "display": "list",
               "infoId": "allergyList",
-              "label": "Records",
+              "label": "Allergies",
               "rows": [
                 [
                   [
                     "Substance",
-                    "Bee venom"
+                    "amoxicillin"
                   ],
                   [
                     "Reaction",
-                    "Eruption of skin (disorder)"
+                    "hives (reported at triage)"
                   ],
                   [
                     "Severity",
@@ -619,219 +823,11 @@
                   ],
                   [
                     "Verification",
-                    "confirmed"
+                    "unconfirmed"
                   ],
                   [
                     "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Mold"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Dust mites"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Animal dander"
-                  ],
-                  [
-                    "Reaction",
-                    "Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Grass pollen"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Tree pollen"
-                  ],
-                  [
-                    "Reaction",
-                    "Sneezing and itchy eyes"
-                  ],
-                  [
-                    "Severity",
-                    "mild"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Penicillin V"
-                  ],
-                  [
-                    "Reaction",
-                    "Rash"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Cow's milk"
-                  ],
-                  [
-                    "Reaction",
-                    "Wheezing (finding)"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
-                  ]
-                ],
-                [
-                  [
-                    "Substance",
-                    "Egg"
-                  ],
-                  [
-                    "Reaction",
-                    "Wheal (finding)"
-                  ],
-                  [
-                    "Severity",
-                    "moderate"
-                  ],
-                  [
-                    "Status",
-                    "active"
-                  ],
-                  [
-                    "Verification",
-                    "confirmed"
-                  ],
-                  [
-                    "Recorded",
-                    "Oct 24, 1988 20:12"
+                    "Nov 2, 2026 07:14"
                   ]
                 ]
               ]
@@ -849,7 +845,7 @@
           }
         ],
         "id": "w3Triage.allergyGroup",
-        "title": "Allergies"
+        "title": "Allergy review"
       }
     },
     {
@@ -876,1829 +872,775 @@
       "tabs": {
         "body": [
           {
-            "presentation": {
-              "children": [
-                {
-                  "info": {
-                    "comp": "w3Triage.chart.labResults",
-                    "display": "table",
-                    "infoId": "labResults",
-                    "label": "Results",
-                    "rows": [
-                      [
-                        [
-                          "Test",
-                          "Hemoglobin A1c"
-                        ],
-                        [
-                          "Value",
-                          "5.84"
-                        ],
-                        [
-                          "Unit",
-                          "%"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "4–5.6"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Glucose [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "86.89"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "70–99"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Urea nitrogen [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "19.03"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "7–20"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Creatinine [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "1.07"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "0.6–1.3"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Calcium [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "9.63"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "8.5–10.2"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Sodium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "142.86"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "136–145"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Potassium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "4.01"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "3.5–5.1"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Chloride [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "108.5"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "98–107"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Carbon dioxide, total [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "25.19"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 11, 2026 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Hemoglobin A1c"
-                        ],
-                        [
-                          "Value",
-                          "6.02"
-                        ],
-                        [
-                          "Unit",
-                          "%"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "4–5.6"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Glucose [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "88.16"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "70–99"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Urea nitrogen [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "9.37"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "7–20"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Creatinine [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "0.9"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "0.6–1.3"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Calcium [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "9"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "8.5–10.2"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Sodium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "137.25"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "136–145"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Potassium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "3.83"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "3.5–5.1"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Chloride [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "104.47"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "98–107"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Carbon dioxide, total [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "21.5"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Leukocytes [#/volume] in Blood by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "7.9906"
-                        ],
-                        [
-                          "Unit",
-                          "10*3/uL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "4.5–11"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Erythrocytes [#/volume] in Blood by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "3.9851"
-                        ],
-                        [
-                          "Unit",
-                          "10*6/uL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Hemoglobin"
-                        ],
-                        [
-                          "Value",
-                          "15.859"
-                        ],
-                        [
-                          "Unit",
-                          "g/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "12–17.5"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Hematocrit [Volume Fraction] of Blood by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "37.546"
-                        ],
-                        [
-                          "Unit",
-                          "%"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "MCV [Entitic mean volume] in Red Blood Cells by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "90.579"
-                        ],
-                        [
-                          "Unit",
-                          "fL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "MCH [Entitic mass] by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "29.463"
-                        ],
-                        [
-                          "Unit",
-                          "pg"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "MCHC [Entitic Mass/volume] in Red Blood Cells by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "35.585"
-                        ],
-                        [
-                          "Unit",
-                          "g/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Erythrocyte [DistWidth] in Blood by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "44.388"
-                        ],
-                        [
-                          "Unit",
-                          "fL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Platelets [#/volume] in Blood by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "195.64"
-                        ],
-                        [
-                          "Unit",
-                          "10*3/uL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "150–450"
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Platelet distribution width [Entitic volume] in Blood by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "490.47"
-                        ],
-                        [
-                          "Unit",
-                          "fL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Platelet [Entitic mean volume] in Blood by Automated count"
-                        ],
-                        [
-                          "Value",
-                          "12.215"
-                        ],
-                        [
-                          "Unit",
-                          "fL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Feb 5, 2025 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Hemoglobin A1c"
-                        ],
-                        [
-                          "Value",
-                          "6.15"
-                        ],
-                        [
-                          "Unit",
-                          "%"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "4–5.6"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Glucose [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "88.07"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "70–99"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Urea nitrogen [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "15.53"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "7–20"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Creatinine [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "0.89"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "0.6–1.3"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Calcium [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "9.28"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "8.5–10.2"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Sodium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "138.34"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "136–145"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Potassium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "4.75"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "3.5–5.1"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Chloride [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "109.73"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "98–107"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Carbon dioxide, total [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "20.99"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Cholesterol [Mass/volume] in Serum or Plasma"
-                        ],
-                        [
-                          "Value",
-                          "159.76"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "0–199"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Triglyceride [Mass/volume] in Serum or Plasma"
-                        ],
-                        [
-                          "Value",
-                          "131.82"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "0–149"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Cholesterol in LDL [Mass/volume] in Serum or Plasma by Direct assay"
-                        ],
-                        [
-                          "Value",
-                          "80.35"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "0–99"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Cholesterol in HDL [Mass/volume] in Serum or Plasma"
-                        ],
-                        [
-                          "Value",
-                          "53.04"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "40–1000"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 31, 2024 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Hemoglobin A1c"
-                        ],
-                        [
-                          "Value",
-                          "6.3"
-                        ],
-                        [
-                          "Unit",
-                          "%"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "4–5.6"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Glucose [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "78.5"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "70–99"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Urea nitrogen [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "7.91"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "7–20"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Creatinine [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "1.52"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "0.6–1.3"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Calcium [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "8.75"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "8.5–10.2"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Sodium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "141.82"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "136–145"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Potassium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "4.78"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "3.5–5.1"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Chloride [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "108.84"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "98–107"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Carbon dioxide, total [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "23.9"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 25, 2023 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Hemoglobin A1c"
-                        ],
-                        [
-                          "Value",
-                          "6.14"
-                        ],
-                        [
-                          "Unit",
-                          "%"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "4–5.6"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Glucose [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "64.03"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          "L"
-                        ],
-                        [
-                          "Range",
-                          "70–99"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Urea nitrogen [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "15.94"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "7–20"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Creatinine [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "0.92"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "0.6–1.3"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Calcium [Mass/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "9.41"
-                        ],
-                        [
-                          "Unit",
-                          "mg/dL"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "8.5–10.2"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Sodium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "140.78"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "136–145"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Potassium [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "3.81"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          "3.5–5.1"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Chloride [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "110.48"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          "H"
-                        ],
-                        [
-                          "Range",
-                          "98–107"
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ],
-                      [
-                        [
-                          "Test",
-                          "Carbon dioxide, total [Moles/volume] in Blood"
-                        ],
-                        [
-                          "Value",
-                          "27.76"
-                        ],
-                        [
-                          "Unit",
-                          "mmol/L"
-                        ],
-                        [
-                          "Flag",
-                          ""
-                        ],
-                        [
-                          "Range",
-                          ""
-                        ],
-                        [
-                          "Recorded",
-                          "Jan 19, 2022 05:12"
-                        ],
-                        [
-                          "Status",
-                          "final"
-                        ]
-                      ]
-                    ]
-                  }
-                }
-              ],
-              "kind": "results"
+            "info": {
+              "comp": "w3Triage.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Fictional Care Site f06249cfe5"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Nov 2, 2026 07:14"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Ankle pain after fall"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 13cd46e28f"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 21, 2026 19:57"
+                  ],
+                  [
+                    "End",
+                    "Oct 21, 2026 21:16"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 21, 2026 18:45"
+                  ],
+                  [
+                    "End",
+                    "Sep 21, 2026 19:57"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Aug 22, 2026 17:23"
+                  ],
+                  [
+                    "End",
+                    "Aug 22, 2026 18:45"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Aug 1, 2026 03:23"
+                  ],
+                  [
+                    "End",
+                    "Aug 1, 2026 17:23"
+                  ],
+                  [
+                    "Reason",
+                    "Overdose (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician abf8d10f3e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 8d461e143e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 28, 2025 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 28, 2025 18:31"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 21, 2025 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 21, 2025 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 14, 2025 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 14, 2025 18:18"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 17, 2025 02:17"
+                  ],
+                  [
+                    "End",
+                    "Apr 17, 2025 03:23"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 18, 2025 01:02"
+                  ],
+                  [
+                    "End",
+                    "Mar 18, 2025 02:17"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 15, 2025 22:39"
+                  ],
+                  [
+                    "End",
+                    "Feb 16, 2025 00:02"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 9, 2024 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 9, 2024 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 8, 2024 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 8, 2024 18:00"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 12, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Apr 12, 2024 18:37"
+                  ],
+                  [
+                    "Reason",
+                    "Viral sinusitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 5, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Apr 5, 2024 18:51"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 29, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Mar 29, 2024 18:37"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 22, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Mar 22, 2024 18:55"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 00d40819c0"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3a4bf7abdd"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 15, 2024 21:16"
+                  ],
+                  [
+                    "End",
+                    "Feb 15, 2024 22:39"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Feb 8, 2024 20:16"
+                  ],
+                  [
+                    "End",
+                    "Feb 8, 2024 21:16"
+                  ],
+                  [
+                    "Reason",
+                    "Overdose (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician abf8d10f3e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 8d461e143e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 17, 2023 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 17, 2023 17:53"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 10, 2023 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 10, 2023 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 3, 2023 18:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 3, 2023 19:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 4, 2023 20:15"
+                  ],
+                  [
+                    "End",
+                    "Jul 4, 2023 21:16"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Dec 25, 2022 19:15"
+                  ],
+                  [
+                    "End",
+                    "Dec 27, 2022 19:15"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 28, 2022 18:22"
+                  ],
+                  [
+                    "End",
+                    "Oct 28, 2022 18:58"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ]
+              ]
             }
           }
         ],
         "id": "w3Triage.chart",
         "labels": [
-          "Results",
-          "Imaging",
+          "Encounters",
           "Notes",
-          "Encounters"
+          "Results",
+          "Meds",
+          "Problems",
+          "Allergies",
+          "Imaging"
         ],
         "selected": 0
       }
@@ -2709,8 +1651,171 @@
         "comp": "w3Triage.next",
         "enabled": true,
         "hotkey": null,
-        "label": "Next: provider evaluation",
+        "label": "ED Provider Note",
         "role": "nav"
+      }
+    },
+    {
+      "info": {
+        "comp": "w3Triage.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Emergency Visit – Fictional Care Site f06249cfe5"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Fictional Care Site f06249cfe5"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "in-progress"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.chartRecentResults",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.chartRecentResults",
+                    "title": "Recent Results"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.chartCareGaps",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.chartCareGaps",
+                    "title": "Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.storyLastNote",
+                                "display": "table",
+                                "infoId": "storyLastNote",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Oct 21, 2026 19:57"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician eff8b458b9"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.storyLastNote",
+                    "title": "Last Note"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.contextPanels",
+        "title": "Clinical Context"
       }
     }
   ]

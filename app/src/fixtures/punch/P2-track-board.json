@@ -1,291 +1,1439 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w3TrackBoard.chartSearch"}},
-  {"presentation":
-   {"kind": "trackBoard",
-    "children":
-    [{"info":
-      {"rows":
-       [[["Room", "ED · A04"],
-         ["Patient", "Ankunding, Aaron Bruno"],
-         ["Age/sex", "58 / M"],
-         ["Chief complaint", "Shortness of breath and fever"],
-         ["Acuity", "ESI 2"],
-         ["Arrival", "Nov 2, 2026 07:15"],
-         ["LOS", "165 min"],
-         ["RN", "Jordan Lee, RN"],
-         ["Provider", "Morgan Patel, MD"],
-         ["Labs", "Results available"],
-         ["Imaging", "Report available"],
-         ["Disposition", ""],
-         ["Status", "in-progress"]]],
-       "label": "Emergency department patients",
-       "infoId": "edTrackBoard",
-       "display": "table",
-       "comp": "w3TrackBoard.board"}}]}},
-  {"section":
-   {"title": "Selected encounter",
-    "id": "w3TrackBoard.selectedActivity",
-    "children":
-    [{"button":
-      {"role": "nav",
-       "label": "Open selected encounter",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w3TrackBoard.open",
-       "blockedReason": null}},
-     {"info":
-      {"rows":
-       [[["Chief complaint", "Shortness of breath and fever"],
-         ["Acuity", "ESI 2"],
-         ["Arrival", "Nov 2, 2026 07:15"],
-         ["Arrival mode", "Ambulance"],
-         ["Location", "ED · A04"]],
-        [["Vital sign", "Weight"],
-         ["Value", "93.4"],
-         ["Unit", "kg"],
-         ["Recorded", "Nov 2, 2026 07:30"]],
-        [["Vital sign", "Systolic BP"],
-         ["Value", "136"],
-         ["Unit", "mmHg"],
-         ["Recorded", "Nov 2, 2026 07:30"]],
-        [["Vital sign", "Diastolic BP"],
-         ["Value", "82"],
-         ["Unit", "mmHg"],
-         ["Recorded", "Nov 2, 2026 07:30"]],
-        [["Vital sign", "Heart rate"],
-         ["Value", "82"],
-         ["Unit", "/min"],
-         ["Recorded", "Nov 2, 2026 07:30"]],
-        [["Vital sign", "Respiratory rate"],
-         ["Value", "18"],
-         ["Unit", "/min"],
-         ["Recorded", "Nov 2, 2026 07:30"]],
-        [["Vital sign", "Temperature"],
-         ["Value", "37.4"],
-         ["Unit", "°C"],
-         ["Recorded", "Nov 2, 2026 07:30"]],
-        [["Vital sign", "SpO2"],
-         ["Value", "96"],
-         ["Unit", "%"],
-         ["Recorded", "Nov 2, 2026 07:30"]],
-        [["Vital sign", "Pain score"],
-         ["Value", "4"],
-         ["Unit", "score"],
-         ["Recorded", "Nov 2, 2026 07:30"]]],
-       "label": "Triage summary",
-       "infoId": "triageSummary",
-       "display": "list",
-       "comp": "w3TrackBoard.selected"}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3TrackBoard.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3TrackBoard.home",
-    "blockedReason": null}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Encounters",
-     "Notes",
-     "Results",
-     "Meds",
-     "Problems",
-     "Allergies",
-     "Imaging"],
-    "id": "w3TrackBoard.chart",
-    "body":
-    [{"info":
-      {"rows":
-       [[["Encounter", ""],
-         ["Class", "Emergency"],
-         ["Start", "Nov 2, 2026 07:15"],
-         ["End", ""],
-         ["Reason", "Shortness of breath and fever"],
-         ["Provider", "Morgan Patel, MD"],
-         ["Location", "ED · A04"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "May 6, 2026 13:28"],
-         ["End", "May 6, 2026 15:00"],
-         ["Reason", ""],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 22, 2026 13:28"],
-         ["End", "Apr 22, 2026 14:18"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 30, 2025 13:28"],
-         ["End", "Apr 30, 2025 15:09"],
-         ["Reason", ""],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 23, 2025 13:28"],
-         ["End", "Apr 23, 2025 13:43"],
-         ["Reason", "Acute viral pharyngitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 16, 2025 13:28"],
-         ["End", "Apr 16, 2025 14:09"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Follow-up visit (procedure)"],
-         ["Class", "Inpatient"],
-         ["Start", "Jul 4, 2024 15:10"],
-         ["End", "Jul 5, 2024 15:10"],
-         ["Reason", "Sleep disorder (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jun 27, 2024 14:24"],
-         ["End", "Jun 27, 2024 15:10"],
-         ["Reason", "Sleep disorder (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jun 19, 2024 13:28"],
-         ["End", "Jun 19, 2024 14:24"],
-         ["Reason", "Sleep disorder (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 10, 2024 13:28"],
-         ["End", "Apr 10, 2024 14:17"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jul 19, 2023 13:28"],
-         ["End", "Jul 19, 2023 14:14"],
-         ["Reason", "Gingivitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jul 5, 2023 13:28"],
-         ["End", "Jul 5, 2023 14:09"],
-         ["Reason", ""],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jun 25, 2023 20:28"],
-         ["End", "Jun 25, 2023 20:49"],
-         ["Reason", "Acute bronchitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 5, 2023 13:28"],
-         ["End", "Apr 5, 2023 14:01"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Emergency room admission (procedure)"],
-         ["Class", "Emergency"],
-         ["Start", "Aug 6, 2022 16:13"],
-         ["End", "Aug 6, 2022 17:13"],
-         ["Reason", "Injury of neck (disorder)"],
-         ["Provider", "Dr. Troy Carter"],
-         ["Location", "OAKS, THE"]],
-        [["Encounter", "Hospital admission (procedure)"],
-         ["Class", "Inpatient"],
-         ["Start", "Aug 6, 2022 16:13"],
-         ["End", "Aug 9, 2022 16:28"],
-         ["Reason", "Patient transfer to skilled nursing facility (procedure)"],
-         ["Provider", "Dr. Chung Collins"],
-         ["Location", "221 FITZGERALD DRIVE OPERATING COMPANY, LLC"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 13, 2022 13:28"],
-         ["End", "Apr 13, 2022 14:08"],
-         ["Reason", "Gingivitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Mar 30, 2022 13:28"],
-         ["End", "Mar 30, 2022 14:06"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Mar 23, 2022 04:28"],
-         ["End", "Mar 23, 2022 04:43"],
-         ["Reason", "Acute viral pharyngitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Follow-up encounter (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jan 29, 2022 12:28"],
-         ["End", "Jan 29, 2022 12:43"],
-         ["Reason", "Essential hypertension (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Follow-up encounter (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Nov 30, 2021 12:28"],
-         ["End", "Nov 30, 2021 12:43"],
-         ["Reason", "Essential hypertension (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]]],
-       "label": "Encounters",
-       "infoId": "encounterHistory",
-       "display": "table",
-       "comp": "w3TrackBoard.chart.encounterHistory"}}]}}],
- "title": "ED Track Board",
- "side": [],
- "nav":
- [["ED Navigator",
-   [["w3TrackBoard.nav.w3Triage", "Triage summary"],
-    ["w3TrackBoard.nav.w3Provider", "ED Provider Note"],
-    ["w3TrackBoard.nav.w3Orders", "Orders"],
-    ["w3TrackBoard.nav.w3OrderSets", "Order sets"],
-    ["w3TrackBoard.nav.w3Disposition", "Disposition"]]]],
- "modal": null,
- "banner":
- [["Patient", "Ankunding, Aaron Bruno"],
-  ["DOB", "Jul 3, 1968"],
-  ["MRN", "47839287"],
-  ["Age / sex", "58 / M"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Encounter", "Emergency"],
-  ["Attending", "Morgan Patel, MD"],
-  ["Location", "ED · A04"],
-  ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"],
-  ["Weight", "93.4 kg · Nov 2, 2026 07:30"],
-  ["Isolation", "Not recorded"]]}
+{
+  "banner": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ]
+      ]
+    ]
+  ],
+  "screen": "workspace:edTrackBoard",
+  "side": [],
+  "title": "Track Board",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "workspace.search",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Patient search by name or MRN",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "workspace.list",
+              "display": "table",
+              "infoId": "edTrackBoard",
+              "label": "Track Board",
+              "rows": [
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 13cd46e28f"
+                  ],
+                  [
+                    "Patient",
+                    "Jamar Donnelly"
+                  ],
+                  [
+                    "Age/sex",
+                    "83 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Ankle pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T07:14:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Ankle X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 0ccc893e3f"
+                  ],
+                  [
+                    "Patient",
+                    "Krysta Shanna Wolff"
+                  ],
+                  [
+                    "Age/sex",
+                    "66 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Chest pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 2"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T08:46:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, troponin pending"
+                  ],
+                  [
+                    "Imaging",
+                    "Chest X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Admit"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 7dcdbb3486"
+                  ],
+                  [
+                    "Patient",
+                    "Hans Donn Kovacek"
+                  ],
+                  [
+                    "Age/sex",
+                    "45 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Abdominal pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T09:37:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "CT abdomen and pelvis with IV contrast pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site b5e2ddcd33"
+                  ],
+                  [
+                    "Patient",
+                    "Trinidad Luke Pacocha"
+                  ],
+                  [
+                    "Age/sex",
+                    "25 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Chest pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 2"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T09:51:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, troponin pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Admit"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site ada8de3134"
+                  ],
+                  [
+                    "Patient",
+                    "Shelly Antonetta Parker"
+                  ],
+                  [
+                    "Age/sex",
+                    "66 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Flare of chronic back pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:12:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site a8fabdcca2"
+                  ],
+                  [
+                    "Patient",
+                    "Trinidad Towne"
+                  ],
+                  [
+                    "Age/sex",
+                    "45 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Severe headache"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:23:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 6e2925dbea"
+                  ],
+                  [
+                    "Patient",
+                    "Joshua Dominique Goldner"
+                  ],
+                  [
+                    "Age/sex",
+                    "50 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Chest pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 2"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:24:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, troponin pending"
+                  ],
+                  [
+                    "Imaging",
+                    "Chest X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 70591c30de"
+                  ],
+                  [
+                    "Patient",
+                    "Reita Raynor"
+                  ],
+                  [
+                    "Age/sex",
+                    "25 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Right lower quadrant pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:33:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Surgical consultation"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site b965d60823"
+                  ],
+                  [
+                    "Patient",
+                    "Nakia Sammy Morissette"
+                  ],
+                  [
+                    "Age/sex",
+                    "83 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Ankle pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 5"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:58:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Ankle X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site e6581e2b28"
+                  ],
+                  [
+                    "Patient",
+                    "Fredericka Grady"
+                  ],
+                  [
+                    "Age/sex",
+                    "78 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Abdominal pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T10:59:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP pending"
+                  ],
+                  [
+                    "Imaging",
+                    "CT abdomen and pelvis with IV contrast pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 69b59fa4ff"
+                  ],
+                  [
+                    "Patient",
+                    "Ardath Lorenza Pacocha"
+                  ],
+                  [
+                    "Age/sex",
+                    "53 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Forearm pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T11:10:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Forearm X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 2bf1c658be"
+                  ],
+                  [
+                    "Patient",
+                    "Zulma Tricia Carter"
+                  ],
+                  [
+                    "Age/sex",
+                    "83 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Abdominal pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:13:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 8b9f2409d0"
+                  ],
+                  [
+                    "Patient",
+                    "Tristan Charlie Gutkowski"
+                  ],
+                  [
+                    "Age/sex",
+                    "73 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:24:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 24fce6650e"
+                  ],
+                  [
+                    "Patient",
+                    "Abe Collins"
+                  ],
+                  [
+                    "Age/sex",
+                    "29 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:49:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 7c092c5a7a"
+                  ],
+                  [
+                    "Patient",
+                    "Numbers Newton Thompson"
+                  ],
+                  [
+                    "Age/sex",
+                    "62 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Cough and shortness of breath"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T12:52:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Chest X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1e82fb5bbf"
+                  ],
+                  [
+                    "Patient",
+                    "Lorenzo Terrell Kemmer"
+                  ],
+                  [
+                    "Age/sex",
+                    "51 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Flank pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T13:13:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, urinalysis pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1497ec6201"
+                  ],
+                  [
+                    "Patient",
+                    "Dia Peggie Blanda"
+                  ],
+                  [
+                    "Age/sex",
+                    "66 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T13:20:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site a019aa089a"
+                  ],
+                  [
+                    "Patient",
+                    "Brianna Zetta Schumm"
+                  ],
+                  [
+                    "Age/sex",
+                    "61 / F"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and cough – influenza-like illness"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 4"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T13:53:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 280c3b1efb"
+                  ],
+                  [
+                    "Patient",
+                    "Walter Dwight Luettgen"
+                  ],
+                  [
+                    "Age/sex",
+                    "80 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Forearm pain after fall"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T14:00:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "No pending labs"
+                  ],
+                  [
+                    "Imaging",
+                    "Forearm X-ray pending"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1b3709cbd1"
+                  ],
+                  [
+                    "Patient",
+                    "Leandro Simonis"
+                  ],
+                  [
+                    "Age/sex",
+                    "54 / M"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Fever and flank pain"
+                  ],
+                  [
+                    "Acuity",
+                    "ESI 3"
+                  ],
+                  [
+                    "Arrival",
+                    "2026-11-02T14:19:00-08:00"
+                  ],
+                  [
+                    "RN",
+                    "Fictional Clinician 920d783abe"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Labs",
+                    "CBC, BMP, urinalysis pending"
+                  ],
+                  [
+                    "Imaging",
+                    "No pending imaging"
+                  ],
+                  [
+                    "Disposition",
+                    "Discharge after reassessment"
+                  ],
+                  [
+                    "Status",
+                    "in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|650cabe6-d224-6352-5197-88dd380ed64f|0|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Donnelly, Jamar (MRN 73854169)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 0,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|73d75aac-59f7-d17b-b4e6-ef6626715faa|1|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Wolff, Krysta Shanna (MRN 24631430)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 1,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|542ced6f-56ea-59dd-2657-8df20f617d6c|2|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Kovacek, Hans Donn (MRN 81444627)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 2,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|7295032f-0d3f-f22a-08e5-cfbe08fd8d4b|3|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Pacocha, Trinidad Luke (MRN 58641005)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 3,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|d7660483-ff02-676d-d04d-08e8e2720959|4|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Parker, Shelly Antonetta (MRN 75771932)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 4,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|0020904a-d5d8-14d0-a77e-441d15e62596|5|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Towne, Trinidad (MRN 37888344)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 5,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|0af8f496-feec-f5d2-ba6e-ce85e2b2d3b9|6|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Goldner, Joshua Dominique (MRN 89482638)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 6,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|d38c253f-b722-a4a0-75ff-3c71689cd57c|7|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Raynor, Reita (MRN 76890873)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 7,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|9f7444b4-37df-2e80-61b4-55e3750b0be4|8|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Morissette, Nakia Sammy (MRN 44009263)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 8,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|fb36e38a-ec57-64d9-8d60-d1ab13bc9159|9|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Grady, Fredericka (MRN 60878417)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 9,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|f867832d-aa2c-6d0c-88d1-f964df220934|10|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Pacocha, Ardath Lorenza (MRN 12403557)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 10,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|2ab83e2b-38d9-fa35-e2b0-dfbfae463454|11|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Carter, Zulma Tricia (MRN 13761514)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 11,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|fbb60ed5-daa2-f785-f2bc-9b77447e7620|12|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Gutkowski, Tristan Charlie (MRN 29266780)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 12,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|835e97c7-2fc6-e004-680b-835360a6371b|13|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Collins, Abe (MRN 13136503)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 13,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|03746a88-d6dc-b6f1-f2e1-5f7487b91ec0|14|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Thompson, Numbers Newton (MRN 25016543)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 14,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|133ff30c-3b00-b94f-0483-cc71afc0d8dc|15|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Kemmer, Lorenzo Terrell (MRN 90761508)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 15,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|df321cbd-c86d-a784-e7b5-a54f04024125|16|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Blanda, Dia Peggie (MRN 81715217)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 16,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|08d99813-0175-6b7f-201b-38f9c047e4d5|17|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Schumm, Brianna Zetta (MRN 91159738)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 17,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|885e52d8-1f69-a952-4496-bfc7ce610292|18|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Luettgen, Walter Dwight (MRN 63573053)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 18,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|6a17f89c-1abb-945b-1d2c-39204cc9f73b|19|edTrackBoard",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Simonis, Leandro (MRN 26689942)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 19,
+              "target": "workspace.list"
+            }
+          }
+        ],
+        "kind": "trackBoard"
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "summary",
+        "infoId": "chartReports",
+        "label": "Reports",
+        "rows": [
+          [
+            [
+              "Department snapshot",
+              "Schedule, census and case lists are available in Activities."
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

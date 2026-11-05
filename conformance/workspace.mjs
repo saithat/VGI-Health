@@ -4,7 +4,7 @@ export const activities = [
   ['scheduleTasks', 'Schedule'], ['edTrackBoard', 'Track Board'],
   ['shiftWorklist', 'Unit Census'], ['unitCensus', 'Unit Census'],
   ['orSchedule', 'OR Schedule'], ['consultList', 'Consults'],
-  ['inBasketResults', 'In Basket'], ['inBasketRxRequests', 'Rx Requests'],
+  ['inboxResults', 'Inbox'], ['inboxRxRequests', 'Rx Requests'],
 ];
 export function directory(patients) {
   return { patients, activities: activities.map(([info, title]) => ({ info, title,

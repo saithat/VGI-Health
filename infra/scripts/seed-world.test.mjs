@@ -42,10 +42,10 @@ test('all ten world days have complete references, unique identifiers, and real 
 
 test('day 1 preserves world worklists, abnormal results, triage pounds, MAR and future OR dates', { skip }, () => {
   const entries = resources();
-  assert.equal(worklist(entries, 'P1-appointments').length, 20);
-  assert.equal(worklist(entries, 'P1-inbasket').length, 5); // three scheduled reviews + two carried items
-  assert.equal(worklist(entries, 'P1-inbasket').filter((r) => r.priority === 'urgent').length, 1);
-  assert.equal(worklist(entries, 'P1-refills').length, 19);
+  assert.equal(worklist(entries, 'P1-appointments').length, 19);
+  assert.equal(worklist(entries, 'P1-inbox').length, 5); // three scheduled reviews + two carried items
+  assert.equal(worklist(entries, 'P1-inbox').filter((r) => r.priority === 'urgent').length, 1);
+  assert.equal(worklist(entries, 'P1-refills').length, 14);
   assert.ok(worklist(entries, 'P1-refills').every((r) => r.owner.reference === practitioners.P1 && r.focus.reference.startsWith('urn:')));
   assert.equal(worklist(entries, 'P2-ed').length, 22);
   assert.ok(worklist(entries, 'P2-ed').every((r) => r.class.code === 'EMER' && r.priority && r.statusHistory.some((h) => h.status === 'triaged')));
@@ -59,7 +59,7 @@ test('day 1 preserves world worklists, abnormal results, triage pounds, MAR and 
   assert.equal(worklist(entries, 'P4-appointments').length, 22);
   assert.equal(worklist(entries, 'P4-facts').filter((r) => r.code.coding?.some((c) => c.code === '29463-7')).length, 22);
   const or = worklist(entries, 'P5-or');
-  assert.equal(or.length, 9);
+  assert.equal(or.length, 11);
   assert.ok(or.every((r) => r.occurrenceDateTime > '2026-11-02'));
   assert.equal(worklist(entries, 'P5-consults').length, 1);
   assert.equal(worklist(entries, 'RN2-role').length, 1);
@@ -112,9 +112,9 @@ test('invalid day/flags fail before writes', () => {
 test('busy days retain unhandled abnormal results and refill requests', { skip }, () => {
   const data = loadWorld({ world, day: 5 });
   const entries = resources(5);
-  const backlogResults = data.state.inBasketBacklog.filter((i) => i.kind === 'result').length;
-  const backlogRefills = data.state.inBasketBacklog.filter((i) => i.kind === 'refill').length;
-  assert.equal(worklist(entries, 'P1-inbasket').length,
+  const backlogResults = data.state.inboxBacklog.filter((i) => i.kind === 'result').length;
+  const backlogRefills = data.state.inboxBacklog.filter((i) => i.kind === 'refill').length;
+  assert.equal(worklist(entries, 'P1-inbox').length,
     data.schedules.P1.tasks.filter((t) => t.workflow === 'W2').length + backlogResults);
   assert.equal(worklist(entries, 'P1-refills').length,
     data.schedules.P1.tasks.filter((t) => t.workflow === 'W7').length + backlogRefills);

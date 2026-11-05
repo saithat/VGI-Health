@@ -23,14 +23,14 @@ def nav : List (ScreenId × String) :=
    ("w6PostOp", "Postprocedure Orders"), ("w6Rounding", "Rounding"),
    ("w6Discharge", "Discharge")]
 
-/-- The chart-review tabs on W6 screens. -/
+/-- The chart-history tabs on W6 screens. -/
 def chart : List Block :=
   [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
    (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
    (.table, "problemList", "Problems"), (.panel, "allergyList", "Allergies"),
    (.table, "imaging", "Imaging"), (.panel, "surgicalHistory", "Surgical history")]
 
-/-- A real navigator group survives blueprint cleanup, so case links are not
+/-- A real workflow group survives blueprint cleanup, so case links are not
 repeated as an unlabeled bank of footer buttons. -/
 def frame (s : ScreenId) : List Component :=
   let consultation := ["w6Consults", "w6Consult", "w6ConsultClose"].contains s
@@ -39,8 +39,8 @@ def frame (s : ScreenId) : List Component :=
         tag := cid s "perioperative.sidebar" },
      panel s "caseSummary.procedure" (if consultation then "consultRequest" else "scheduleTasks")
        (if consultation then "Request" else "Case request") (parent := some "caseSummary")] ++
-    [{ group s "caseNavigation" "Surgical navigator" (collapsible := false) with
-        tag := cid s "navigator" }] ++
+    [{ group s "caseNavigation" "Surgical workflow" (collapsible := false) with
+        tag := cid s "workflow" }] ++
     nav.map (fun (target, label) =>
       goto s ("nav." ++ target) target label (parent := some "caseNavigation"))
 
@@ -57,7 +57,7 @@ def schedule : Screen :=
         tag := "present.row|" ++ cid s "cases" ++ "|0" },
       goto s "consults" "w6Consults" "Consults",
       goto s "clinic" "w1Rooming" "Surgical clinic",
-      goto s "results" "w2Inbasket" "In Basket: Results"] }
+      goto s "results" "w2Inbox" "Inbox: Results"] }
 
 /-- Surgical consultation requests are a work queue, separate from the note. -/
 def consultList : Screen :=
@@ -289,7 +289,7 @@ def inpatientLine (drug dose route freq quantity indication : String) (prn : Boo
   { drug, dose, route, freq, duration := "3 days", quantity, indication
     pharmacy := "Inpatient pharmacy", prn, diagnosis }
 
-/-- The W6 macros: the post-op order set, the preference list, and templates. -/
+/-- The W6 macros: the post-op order set, the order favorites, and templates. -/
 def macros : List Macro := [
   orderSet "w6AppendectomySet" "General surgery post-op order set" "w6PostOp"
     [inpatientLine "acetaminophen" "1000" "PO" "q6h" "12" "post-op pain" ,
@@ -341,8 +341,8 @@ def clinicView (sc : Screen) : Screen :=
     [panel sc.id "chart.surgicalHistory" "surgicalHistory" "Surgical history"
       (parent := some "chart") (tab := (chartItems.map (·.tab)).foldl max 0 + 1)]
   { sc with components :=
-      [{ group sc.id "visitNavigation" "Visit navigator" (collapsible := false) with
-          tag := cid sc.id "navigator" }] ++
+      [{ group sc.id "visitNavigation" "Visit workflow" (collapsible := false) with
+          tag := cid sc.id "workflow" }] ++
       entries.map (fun (target, label) =>
         goto sc.id ("nav." ++ target) target label (parent := some "visitNavigation")) ++
       (sc.components.filter (fun c => !c.id.startsWith (cid sc.id "nav."))).map (fun c => match c.kind with
@@ -376,7 +376,7 @@ def workspaceView (sc : Screen) : Screen :=
            parent? := some (cid sc.id "caseList") },
          { goto sc.id "openSelectedCase" "w6PreOp" "Open selected case" (parent := some "caseList") with
            tag := "present.row|" ++ cid sc.id "schedule" ++ "|0" }]
-      else if c.id == cid sc.id "work" then [{ c with tag := cid sc.id "navigator" }]
+      else if c.id == cid sc.id "work" then [{ c with tag := cid sc.id "workflow" }]
       else [c] }
 
 end Ehr.Canonical.W6

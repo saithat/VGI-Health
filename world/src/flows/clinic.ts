@@ -3,9 +3,9 @@
  * new, follow-ups after discharges and ED visits, same-day add-ons; minus
  * no-shows), plus W2 results and W7 refill requests in bursts before clinic,
  * at lunch, and after clinic. Day 5 is the scripted urgent-care day: walk-in
- * acute visits, mostly new patients, and the in-basket mostly waits.
+ * acute visits, mostly new patients, and the inbox mostly waits.
  *
- * The in-basket backlog is world-determined (a fixed handling capacity per
+ * The inbox backlog is world-determined (a fixed handling capacity per
  * burst), so it does not depend on how fast the UI lets P1 work.
  */
 import { type DayBuild, isPcnAllergic } from "../build";
@@ -17,7 +17,7 @@ import type { HomeMed, PatientProfile } from "../patients";
 import { homeMed } from "../patients";
 import type { Rng } from "../rng";
 import type { Json, OrderChoice } from "../schema";
-import type { InBasketItem, PendingLab, RefillRequest } from "../state";
+import type { InboxItem, PendingLab, RefillRequest } from "../state";
 import { addPendingLab, isInpatient, labValue, warfarinInr } from "./common";
 
 interface VisitPlan {
@@ -217,7 +217,7 @@ type Visit = { patient: PatientProfile; kind: "established" | "new" | "post-disc
 export function runP1(b: DayBuild): void {
   if (b.ctx.urgentCareDay) runUrgentCare(b);
   else runClinic(b);
-  runInBasket(b);
+  runInbox(b);
 }
 
 function runClinic(b: DayBuild): void {
@@ -324,10 +324,10 @@ function runUrgentCare(b: DayBuild): void {
     seenIds.push(p.id);
   }
   b.state.today.clinics.P1 = { booked: 0, seen: seenIds.length, noShows: [], addOns: seenIds, newPatients };
-  b.log(`P1 covers urgent care: ${seenIds.length} walk-ins, in-basket deferred`);
+  b.log(`P1 covers urgent care: ${seenIds.length} walk-ins, inbox deferred`);
 }
 
-// ---------- in-basket: results (W2) and refill requests (W7) ----------
+// ---------- inbox: results (W2) and refill requests (W7) ----------
 
 const REFILLABLE = new Set(["lisinopril", "metformin", "atorvastatin", "warfarin", "apixaban", "albuterol", "insulin glargine", "oxycodone", "hydrocodone-acetaminophen", "tramadol", "lorazepam", "alprazolam"]);
 
@@ -401,17 +401,17 @@ export function decideRefill(m: HomeMed, rng: Rng, early: boolean): Pick<RefillR
   }
 }
 
-function generateRefills(b: DayBuild, rng: Rng): InBasketItem[] {
+function generateRefills(b: DayBuild, rng: Rng): InboxItem[] {
   const vol = b.ctx.personaVolume.P1;
   const n = Math.max(2, Math.min(12, rng.poisson(5 * vol * (b.ctx.monday ? 1.6 : 1))));
-  const pending = new Set(b.state.inBasketBacklog.filter((i) => i.refill !== null).map((i) => `${i.patientId}|${i.refill?.current.drug ?? ""}`));
+  const pending = new Set(b.state.inboxBacklog.filter((i) => i.refill !== null).map((i) => `${i.patientId}|${i.refill?.current.drug ?? ""}`));
   const pairs: { p: PatientProfile; m: HomeMed }[] = [];
   for (const id of b.state.p1Panel) {
     const p = b.pop.byId.get(id);
     if (p === undefined || isInpatient(b, id)) continue;
     for (const m of p.homeMeds) if (REFILLABLE.has(m.drug) && !pending.has(`${id}|${m.drug}`)) pairs.push({ p, m });
   }
-  const items: InBasketItem[] = [];
+  const items: InboxItem[] = [];
   const make = (p: PatientProfile, m: HomeMed, early: boolean, r: Rng): void => {
     const d = decideRefill(m, r, early);
     const req: RefillRequest = {
@@ -479,13 +479,13 @@ function refillTaskFor(b: DayBuild, req: RefillRequest, start: number, rng: Rng)
   }, resources, b.interruptions("P1", rng, 0.5));
 }
 
-function runInBasket(b: DayBuild): void {
-  const rng = b.rng("p1-inbasket");
+function runInbox(b: DayBuild): void {
+  const rng = b.rng("p1-inbox");
   const arrivedLabs = b.state.pendingLabs.filter((l) => l.recipient === "P1" && l.resultDay <= b.day);
   b.state.pendingLabs = b.state.pendingLabs.filter((l) => !arrivedLabs.includes(l));
-  const newItems: InBasketItem[] = arrivedLabs.map((lab) => ({ id: b.nextId("item"), kind: "result", patientId: lab.patientId, arrivedDay: b.day, priority: lab.interpretation === "N" ? 2 : 0, lab, refill: null }));
+  const newItems: InboxItem[] = arrivedLabs.map((lab) => ({ id: b.nextId("item"), kind: "result", patientId: lab.patientId, arrivedDay: b.day, priority: lab.interpretation === "N" ? 2 : 0, lab, refill: null }));
   newItems.push(...generateRefills(b, rng.fork("refills")));
-  const queue = [...b.state.inBasketBacklog, ...newItems].sort((x, y) => x.priority - y.priority || x.arrivedDay - y.arrivedDay || (x.id < y.id ? -1 : 1));
+  const queue = [...b.state.inboxBacklog, ...newItems].sort((x, y) => x.priority - y.priority || x.arrivedDay - y.arrivedDay || (x.id < y.id ? -1 : 1));
 
   const bursts: { start: number; cap: number }[] = b.ctx.urgentCareDay
     ? [{ start: 630, cap: 5 }]
@@ -505,7 +505,7 @@ function runInBasket(b: DayBuild): void {
       else if (item.refill !== null) refillTaskFor(b, item.refill, start, ir);
     }
   }
-  b.state.inBasketBacklog = queue.slice(qi);
-  b.state.today.inBasket.P1 = { arrived: newItems.length, handled: qi, backlogAfter: b.state.inBasketBacklog.length };
+  b.state.inboxBacklog = queue.slice(qi);
+  b.state.today.inbox.P1 = { arrived: newItems.length, handled: qi, backlogAfter: b.state.inboxBacklog.length };
 }
 

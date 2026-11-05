@@ -1,387 +1,523 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w6Schedule.chartSearch"}},
-  {"presentation":
-   {"kind": "orSchedule",
-    "children":
-    [{"section":
-      {"title": "Surgical cases",
-       "id": "w6Schedule.caseList",
-       "children":
-       [{"presentation":
-         {"kind": "orSchedule",
-          "children":
-          [{"info":
-            {"rows":
-             [[["Room", "Operating room 1"],
-               ["Start", "Nov 3, 2026 07:30"],
-               ["Procedure", "laparoscopic appendectomy"],
-               ["Indication", "Appendicitis"],
-               ["Patient", "Wolff, Providencia Karena"],
-               ["Surgeon", "Not recorded"],
-               ["Status", "active"]]],
-             "label": "Scheduled cases — request status",
-             "infoId": "scheduleTasks",
-             "display": "table",
-             "comp": "w6Schedule.cases"}}]}},
-        {"rowAction":
-         {"target": "w6Schedule.cases",
-          "row": 0,
-          "children":
-          [{"button":
-            {"role": "nav",
-             "label": "Open selected case",
-             "hotkey": null,
-             "enabled": true,
-             "comp": "w6Schedule.openCase",
-             "blockedReason": null}}]}}]}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.home",
-    "blockedReason": null}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Encounters",
-     "Notes",
-     "Results",
-     "Medications",
-     "Problems",
-     "Allergies",
-     "Imaging",
-     "Surgical history"],
-    "id": "w6Schedule.chart",
-    "body":
-    [{"presentation":
-      {"kind": "table",
-       "children":
-       [{"info":
-         {"rows":
-          [[["Encounter", ""],
-            ["Class", "IMP"],
-            ["Start", "Nov 2, 2026 13:15"],
-            ["End", ""],
-            ["Reason", "acute appendicitis"],
-            ["Provider", ""],
-            ["Location", ""]],
-           [["Encounter", "Consultation for treatment (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Sep 22, 2026 09:10"],
-            ["End", "Sep 22, 2026 09:25"],
-            ["Reason", "Contraception care (regime/therapy)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Postnatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Sep 7, 2026 08:26"],
-            ["End", "Sep 7, 2026 08:41"],
-            ["Reason", ""],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Obstetric emergency hospital admission (procedure)"],
-            ["Class", "EMER"],
-            ["Start", "Jul 27, 2026 08:26"],
-            ["End", "Jul 27, 2026 09:26"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Rupert Walker"],
-            ["Location", "CHELSEA JEWISH HOSPICE AND PALLIATIVE CARE"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Jul 20, 2026 08:26"],
-            ["End", "Jul 20, 2026 08:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Jul 13, 2026 08:26"],
-            ["End", "Jul 13, 2026 08:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Jul 6, 2026 08:26"],
-            ["End", "Jul 6, 2026 08:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Jun 29, 2026 08:26"],
-            ["End", "Jun 29, 2026 09:20"],
-            ["Reason", ""],
-            ["Provider", "Dr. Delena Robel"],
-            ["Location", "CHAE INTERNAL MEDICINE LLC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Jun 22, 2026 08:26"],
-            ["End", "Jun 22, 2026 08:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "May 25, 2026 08:26"],
-            ["End", "May 25, 2026 08:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Apr 27, 2026 08:26"],
-            ["End", "Apr 27, 2026 08:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Mar 30, 2026 08:26"],
-            ["End", "Mar 30, 2026 08:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Mar 2, 2026 07:26"],
-            ["End", "Mar 2, 2026 07:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Feb 2, 2026 07:26"],
-            ["End", "Feb 2, 2026 07:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Jan 5, 2026 07:26"],
-            ["End", "Jan 5, 2026 07:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Prenatal initial visit (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Dec 8, 2025 07:26"],
-            ["End", "Dec 8, 2025 07:41"],
-            ["Reason", "Normal pregnancy (finding)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Patient encounter procedure (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Oct 20, 2025 08:26"],
-            ["End", "Oct 20, 2025 08:48"],
-            ["Reason", "Contraception care (regime/therapy)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Asthma follow-up (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Jul 13, 2025 03:26"],
-            ["End", "Jul 13, 2025 03:41"],
-            ["Reason", "Asthma (disorder)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Jun 23, 2025 08:26"],
-            ["End", "Jun 23, 2025 09:14"],
-            ["Reason", ""],
-            ["Provider", "Dr. Delena Robel"],
-            ["Location", "CHAE INTERNAL MEDICINE LLC"]],
-           [["Encounter", "Encounter for symptom (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Mar 10, 2025 08:26"],
-            ["End", "Mar 10, 2025 08:41"],
-            ["Reason", "Acute bronchitis (disorder)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Encounter for check up (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Mar 3, 2025 07:26"],
-            ["End", "Mar 3, 2025 07:41"],
-            ["Reason", ""],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "Urgent care clinic (environment)"],
-            ["Class", "AMB"],
-            ["Start", "Feb 24, 2025 07:26"],
-            ["End", "Feb 24, 2025 07:59"],
-            ["Reason", ""],
-            ["Provider", "Dr. Karla Cummerata"],
-            ["Location", "LYNN URGENT CARE LLC"]],
-           [["Encounter", "Asthma follow-up (regime/therapy)"],
-            ["Class", "AMB"],
-            ["Start", "Jan 14, 2025 02:26"],
-            ["End", "Jan 14, 2025 02:41"],
-            ["Reason", "Asthma (disorder)"],
-            ["Provider", "Dr. Jose Dicki"],
-            ["Location", "TUFTS MEDICAL CENTER, INC"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Jun 17, 2024 08:26"],
-            ["End", "Jun 17, 2024 08:59"],
-            ["Reason", ""],
-            ["Provider", "Dr. Delena Robel"],
-            ["Location", "CHAE INTERNAL MEDICINE LLC"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Jun 12, 2023 08:26"],
-            ["End", "Jun 12, 2023 09:07"],
-            ["Reason", ""],
-            ["Provider", "Dr. Delena Robel"],
-            ["Location", "CHAE INTERNAL MEDICINE LLC"]],
-           [["Encounter", "General examination of patient (procedure)"],
-            ["Class", "AMB"],
-            ["Start", "Jun 6, 2022 08:26"],
-            ["End", "Jun 6, 2022 09:19"],
-            ["Reason", ""],
-            ["Provider", "Dr. Delena Robel"],
-            ["Location", "CHAE INTERNAL MEDICINE LLC"]]],
-          "label": "Encounters",
-          "infoId": "encounterHistory",
-          "display": "table",
-          "comp": "w6Schedule.chart.encounterHistory"}}]}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Consults",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.consults",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Surgical clinic",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.clinic",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "In Basket: Results",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w6Schedule.results",
-    "blockedReason": null}}],
- "viewer": "General surgeon",
- "title": "OR Schedule",
- "side":
- [{"section":
-   {"title": "Surgical case",
-    "id": "w6Schedule.caseSummary",
-    "children":
-    [{"info":
-      {"rows":
-       [[["Room", "Operating room 1"],
-         ["Start", "Nov 3, 2026 07:30"],
-         ["Procedure", "laparoscopic appendectomy"],
-         ["Indication", "Appendicitis"],
-         ["Patient", "Wolff, Providencia Karena"],
-         ["Surgeon", "Not recorded"],
-         ["Status", "active"]]],
-       "label": "Case request",
-       "infoId": "scheduleTasks",
-       "display": "list",
-       "comp": "w6Schedule.caseSummary.procedure"}}]}},
-  {"info":
-   {"rows": [],
-    "label": "Allergies",
-    "infoId": "allergyList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "morphine — morphine 4 mg IV q4h PRN"]],
-     [["Record", "ondansetron — ondansetron 4 mg IV q6h PRN"]],
-     [["Record", "acetaminophen — acetaminophen 650 mg PO q6h PRN"]],
-     [["Record", "heparin — heparin 5000 units SC q8h"]],
-     [["Record", "albuterol — albuterol 2.5 mg INH q4h PRN"]],
-     [["Record",
-       "{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Jolivette 28 Day]"]],
-     [["Record",
-       "NDA020983 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [Ventolin] — Take as needed."]],
-     [["Record",
-       "budesonide 0.125 MG/ML Inhalation Suspension [Pulmicort] — Take as needed."]]],
-    "label": "Active medications",
-    "infoId": "currentMeds",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Full-time employment (finding) (active)"]],
-     [["Record", "Social isolation (finding) (active)"]],
-     [["Record", "Body mass index 30+ - obesity (finding) (active)"]],
-     [["Record", "Medication review due (situation) (active)"]],
-     [["Record", "Housing unsatisfactory (finding) (active)"]],
-     [["Record", "Received higher education (finding) (active)"]]],
-    "label": "Problems",
-    "infoId": "problemList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Body weight 82.9 kg (today)"]],
-     [["Record", "Body Height 165 cm (Jun 29, 2026 08:26)"]],
-     [["Record",
-       "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Jun 29, 2026 08:26)"]],
-     [["Record",
-       "Body mass index (BMI) [Ratio] 30.45 kg/m2 (Jun 29, 2026 08:26)"]],
-     [["Record",
-       "Blood pressure panel with all children optional 103/65 mm[Hg] (Jun 29, 2026 08:26)"]],
-     [["Record", "Heart rate 69 /min (Jun 29, 2026 08:26)"]],
-     [["Record", "Respiratory rate 13 /min (Jun 29, 2026 08:26)"]]],
-    "label": "Recent vitals",
-    "infoId": "vitals",
-    "display": "list",
-    "comp": ""}}],
- "screen": "w6Schedule",
- "nav":
- [["Surgical navigator",
-   [["w6Schedule.nav.w6Schedule", "Case list"],
-    ["w6Schedule.nav.w6Consults", "Consult list"],
-    ["w6Schedule.nav.w6Consult", "Consult note"],
-    ["w6Schedule.nav.w6ConsultClose", "Sign Consult"],
-    ["w6Schedule.nav.w6PreOp", "Preprocedure"],
-    ["w6Schedule.nav.w6Orders", "Orders"],
-    ["w6Schedule.nav.w6Sign", "Sign Orders"],
-    ["w6Schedule.nav.w6OpNote", "Brief Op Note"],
-    ["w6Schedule.nav.w6PostOp", "Postprocedure Orders"],
-    ["w6Schedule.nav.w6Rounding", "Rounding"],
-    ["w6Schedule.nav.w6Discharge", "Discharge"]]]],
- "modal": null,
- "fieldSources": [],
- "banner":
- [["Patient", "Wolff, Providencia Karena"],
-  ["DOB", "Jan 22, 1990"],
-  ["MRN", "93017203"],
-  ["Age / sex", "36 / F"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Last encounter", "IMP"],
-  ["Last provider", ""],
-  ["Last location", ""],
-  ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"],
-  ["Weight", "82.9 kg · Nov 3, 2026 06:30"],
-  ["Isolation", "Not recorded"]],
- "activeNav": "w6Schedule.nav.w6Schedule"}
+{
+  "banner": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|consultList",
+          "Consults"
+        ],
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ]
+      ]
+    ]
+  ],
+  "screen": "workspace:orSchedule",
+  "side": [],
+  "title": "OR Schedule",
+  "viewer": "General surgeon",
+  "workspace": [
+    {
+      "field": {
+        "comp": "workspace.search",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Patient search by name or MRN",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "workspace.list",
+              "display": "table",
+              "infoId": "orSchedule",
+              "label": "OR Schedule",
+              "rows": [
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T07:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic cholecystectomy"
+                  ],
+                  [
+                    "Patient",
+                    "Rowan Bennett"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Complete – PACU"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T09:15:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic inguinal hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Jordan Sullivan"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "In room"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T11:00:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "excision of soft tissue mass"
+                  ],
+                  [
+                    "Patient",
+                    "Casey Ellis"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Pre-op ready"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T12:45:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic ventral hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Casey Foster"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site 1987c28e6d"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T14:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "umbilical hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Morgan Torres"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician 77df62c336"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T07:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic cholecystectomy"
+                  ],
+                  [
+                    "Patient",
+                    "Rowan Brooks"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Complete – PACU"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T09:15:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic inguinal hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Robin Holloway"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "In room"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T11:00:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "excision of soft tissue mass"
+                  ],
+                  [
+                    "Patient",
+                    "Sage Bennett"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Pre-op ready"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T12:45:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "laparoscopic ventral hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Quinn Hayes"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ],
+                [
+                  [
+                    "Room",
+                    "Fictional Care Site cc2c4410d8"
+                  ],
+                  [
+                    "Start",
+                    "2026-11-02T14:30:00-08:00"
+                  ],
+                  [
+                    "Procedure",
+                    "umbilical hernia repair"
+                  ],
+                  [
+                    "Patient",
+                    "Riley Ellis"
+                  ],
+                  [
+                    "Surgeon",
+                    "Fictional Clinician e94a207793"
+                  ],
+                  [
+                    "Status",
+                    "Scheduled"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-2e73ee92-6008-533a-a14a-46b45cdca19d|0|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Bennett, Rowan (MRN SH00002691)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 0,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-289a9a16-ba12-5c37-a692-390a7238900a|1|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Sullivan, Jordan (MRN SH00002120)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 1,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-db5ed5e4-b8bf-5e36-a154-17e5200dd279|2|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Ellis, Casey (MRN SH00001725)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 2,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-9c555c19-59c9-5397-a0d4-4bac7926853b|3|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Foster, Casey (MRN SH00001794)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 3,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-59311b19-cd42-535b-a87e-c44021f63ca5|4|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Torres, Morgan (MRN SH00002232)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 4,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-ca68414a-0aeb-5b44-accb-811e97c080cd|5|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Brooks, Rowan (MRN SH00002872)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 5,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-f01a69cd-cca9-5429-ac10-98fdf85d68b4|6|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Holloway, Robin (MRN SH00002171)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 6,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-a3efd7ae-09bf-5e1a-ae6f-f7ccc1723271|7|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Bennett, Sage (MRN SH00001984)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 7,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-4d4df538-8363-5307-a137-7d6cd7b4ef64|8|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Hayes, Quinn (MRN SH00002236)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 8,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|sh-f55e5d3f-2686-5180-a2a5-e17365fdb89d|9|orSchedule",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Ellis, Riley (MRN SH00001675)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 9,
+              "target": "workspace.list"
+            }
+          }
+        ],
+        "kind": "orSchedule"
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "summary",
+        "infoId": "chartReports",
+        "label": "Reports",
+        "rows": [
+          [
+            [
+              "Department snapshot",
+              "Schedule, census and case lists are available in Activities."
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

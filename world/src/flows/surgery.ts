@@ -245,7 +245,7 @@ function dischargeTask(b: DayBuild, ip: Inpatient, startMin: number, rng: Rng): 
   }
 }
 
-/** P5's day: rounds, OR cases, discharges, clinic, light in-basket. Must run after the ED flow. */
+/** P5's day: rounds, OR cases, discharges, clinic, light inbox. Must run after the ED flow. */
 export function runSurgery(b: DayBuild): void {
   const rng = b.rng("surgery");
   const isOr = b.ctx.p5DayType === "or";
@@ -406,7 +406,7 @@ export function runSurgery(b: DayBuild): void {
   if (!isOr) runP5Clinic(b, Math.max(90, toMin(lastCaseEnd) + 20), rng.fork("clinic"));
   else b.state.today.clinics.P5 = { booked: 0, seen: 0, noShows: [], addOns: [], newPatients: 0 };
 
-  // 6. Light in-basket: pathology results.
+  // 6. Light inbox: pathology results.
   const arrived = b.state.pendingLabs.filter((l) => l.recipient === "P5" && l.resultDay <= b.day);
   let m = SHIFTS.P5.lengthMin - 45;
   for (const lab of arrived) {
@@ -422,7 +422,7 @@ export function runSurgery(b: DayBuild): void {
     m += 6;
   }
   b.state.pendingLabs = b.state.pendingLabs.filter((l) => !arrived.includes(l));
-  b.state.today.inBasket.P5 = { arrived: arrived.length, handled: arrived.length };
+  b.state.today.inbox.P5 = { arrived: arrived.length, handled: arrived.length };
 }
 
 function runP5Clinic(b: DayBuild, startMin: number, rng: Rng): void {

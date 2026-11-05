@@ -58,7 +58,7 @@ instance : FromJson Options where
 def seededPreferences (seed : Nat) (actor : String) : HiddenPreferences :=
   let n := (random (taskSeed seed actor)).1.toNat
   {
-    placements := [{ tag := "w1Orders.storyboard.allergyList", nearTag := "w1Orders.dose", weight := 1 + n % 3 }],
+    placements := [{ tag := "w1Orders.patientSidebar.allergyList", nearTag := "w1Orders.dose", weight := 1 + n % 3 }],
     changeSensitivity := 100 + n % 801
   }
 def semanticKey (c : Component) : String := if c.tag.isEmpty then c.id else c.tag

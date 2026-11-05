@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { fictionalize } from '../fictional-identities.mjs';
 import { readFile, mkdir, writeFile, readdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -75,7 +76,7 @@ export function selectCohort(rows, count = 150, referenceDate) {
     .map((row) => ({ row, selectedFor: assigned[row.patient_id] }));
 }
 export function readFormulary(leanSource) {
-  const entries = [...leanSource.matchAll(/\{ name := "([^"]+)", rxnorm := \["([^"]+)"/g)];
+  const entries = [...leanSource.matchAll(/\{ name := "([^"]+)"[^\n]*?rxnorm := \["([^"]+)"/g)];
   if (entries.length !== 25) throw new Error('Formulary changed: review exact-name RxNorm mapping before exporting');
   return Object.fromEntries(entries.map((m) => [m[1], m[2]]));
 }
@@ -211,7 +212,7 @@ export function convertPatient(row, { referenceDate, formulary, lookup = () => u
     agent: [{ who: { display: 'VGI Health Synthetic Hospital converter v1' } }],
     entity: [{ role: 'source', what: { identifier: { system: source.repository, value: source.commit },
       display: `${source.repository}/tree/${source.commit} — ${source.citation}` } }] });
-  return { bundle: { resourceType: 'Bundle', type: 'transaction', meta: { tag: [SOURCE_TAG] }, entry: entries },
+  return { bundle: fictionalize({ resourceType: 'Bundle', type: 'transaction', meta: { tag: [SOURCE_TAG] }, entry: entries }),
     patient: { id: patientResource.id, sourceId: row.patient_id, identifier: `${SYSTEM}|${row.patient_id}`, name, birthDate,
       mrn: `SH${String(row.patient_id).padStart(8, '0')}`, age: row.age, sex: row.sex,
       encounterClass: encounterClass(ordered.at(-1).encounter_type),

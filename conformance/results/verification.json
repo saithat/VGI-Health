@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-11-01T18:11:50.417Z",
+  "generatedAt": "2026-11-04T19:32:45.226Z",
   "summary": {
-    "targets": 23,
+    "targets": 16,
     "scenarios": 200,
-    "passed": 1922,
-    "failed": 0,
-    "notApplicable": 2678
+    "passed": 1618,
+    "failed": 3,
+    "notApplicable": 1579
   },
   "canonical": {
     "targets": 15,
     "scenarios": 200,
-    "passed": 1575,
-    "failed": 0,
+    "passed": 1572,
+    "failed": 3,
     "notApplicable": 1425
   },
-  "nativeSha256": "4e2d607a1de22de6c81422f3af4bcd919232d02c17aa0132caa84984bb886d10",
+  "nativeSha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
   "inputBindings": [
     {
       "target": "canonical/v1/P1",
@@ -92,44 +92,9 @@
       "selectionMode": "in-ui-selection"
     },
     {
-      "target": "run1-P3/P3/v0",
+      "target": "neutral-recorded-day1/P3/v0",
       "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
-    },
-    {
-      "target": "run1-P3/P3/v1",
-      "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
-    },
-    {
-      "target": "run1-P3/P3/v2",
-      "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
-    },
-    {
-      "target": "run1-P3/P3/v3",
-      "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
-    },
-    {
-      "target": "run1-P3/P3/v4",
-      "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
-    },
-    {
-      "target": "run1-P3/P3/v5",
-      "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
-    },
-    {
-      "target": "run1-P3/P3/v6",
-      "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
-    },
-    {
-      "target": "run1-P3/P3/v7",
-      "programAndSpecMatch": true,
-      "selectionMode": "legacy-preselected"
+      "selectionMode": "in-ui-selection"
     }
   ],
   "caseCoverage": "200 unique scenarios per input; original program/spec bindings verified",
@@ -144,10 +109,12 @@
       "weight.linked-source-refresh",
       "refill.denial-via-approval-action"
     ],
-    "passed": 83,
+    "passed": 76,
     "failed": 0,
-    "notApplicable": 78
+    "notApplicable": 36
   },
   "positiveScenarioFailures": 0,
-  "failureScenarios": {}
+  "failureScenarios": {
+    "alert.removable.minorInteractionPopup": 3
+  }
 }

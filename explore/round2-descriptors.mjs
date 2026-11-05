@@ -1,5 +1,5 @@
 /** Classify the actual painter, independently of proposal names or outcomes.
-Spatial and dated layouts retain the ordinary navigator. No metric or selection
+Spatial and dated layouts retain the ordinary workflow. No metric or selection
 changes; the frozen archive's selected IDs must remain exactly the same. */
 import path from 'node:path';
 import assert from 'node:assert/strict';

@@ -11,7 +11,7 @@ def cases : List (UiPresentationKind × InfoId × String) :=
   [(.schedule, "schedule", "Today's schedule"), (.trackBoard, "trackBoard", "Emergency Department"),
    (.orSchedule, "orSchedule", "Operating Room Schedule"), (.worklist, "worklist", "My Worklist"),
    (.timeGrid, "mar", "Medication Administration Record"), (.flowsheet, "flowsheet", "Adult Assessment • Vitals and I&O"),
-   (.folderList, "inBasketFolders", "My Messages"), (.messages, "inBasketMessages", "Results • In Basket"),
+   (.folderList, "inboxFolders", "My Messages"), (.messages, "inboxMessages", "Results • Inbox"),
    (.results, "labResults", "Laboratory Results"), (.trend, "resultTrend", "Result Trends"),
    (.growth, "growthChart", "Growth Chart"), (.notes, "encounterNotes", "Notes"),
    (.table, "currentMeds", "Medication Review")]
@@ -25,15 +25,15 @@ def program (kind : UiPresentationKind) (info title : String) : Program :=
          { id := "records", kind := .table info, label := title,
            tag := (if [.schedule, .trackBoard, .orSchedule, .messages].contains kind then "layout.overview." else "") ++ "present." ++ kind.tag }] }] }
 
-/-- A normal source group supplies both panes of an In Basket screen. -/
-def inBasketProgram : Program :=
+/-- A normal source group supplies both panes of an Inbox screen. -/
+def inboxProgram : Program :=
   { Examples.Tiny.program with
-    id := "in-basket-example", start := "example", screens :=
-      [{ id := "example", title := "In Basket", workflow := "W2", components :=
+    id := "inbox-example", start := "example", screens :=
+      [{ id := "example", title := "Inbox", workflow := "W2", components :=
         [{ id := "banner", kind := .banner, tag := "banner" },
-         { id := "basket", kind := .group false false, label := "In Basket", tag := "layout.overview.layout.columns" },
-         { id := "folders", parent? := some "basket", kind := .panel "inBasketFolders", label := "My Messages", tag := "present.folderList" },
-         { id := "messages", parent? := some "basket", kind := .table "inBasketMessages", label := "Results • In Basket", tag := "present.messages" }] }] }
+         { id := "basket", kind := .group false false, label := "Inbox", tag := "layout.overview.layout.columns" },
+         { id := "folders", parent? := some "basket", kind := .panel "inboxFolders", label := "My Messages", tag := "present.folderList" },
+         { id := "messages", parent? := some "basket", kind := .table "inboxMessages", label := "Results • Inbox", tag := "present.messages" }] }] }
 
 /-- Each source row has a real chart-navigation control with its original event. -/
 def rowActionsProgram : Program :=
@@ -121,11 +121,11 @@ def main (args : List String) : IO Unit := do
     IO.FS.writeFile (out / (kind.tag ++ ".json")) (toJson screen).pretty
     IO.FS.writeFile (out / (kind.tag ++ "-before.json")) (toJson { screen with workspace := unstyledList screen.workspace }).pretty
   if let some (_, base) := inputs.getLast? then
-    let input := { base with program := inBasketProgram, state := init base.spec inBasketProgram base.facts base.user }
-    inputs := inputs ++ [("inBasket", input)]
+    let input := { base with program := inboxProgram, state := init base.spec inboxProgram base.facts base.user }
+    inputs := inputs ++ [("inbox", input)]
     let screen := runRenderUi input
-    IO.FS.writeFile (out / "inBasket.json") (toJson screen).pretty
-    IO.FS.writeFile (out / "inBasket-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
+    IO.FS.writeFile (out / "inbox.json") (toJson screen).pretty
+    IO.FS.writeFile (out / "inbox-before.json") (toJson { screen with workspace := unstyledList screen.workspace }).pretty
     let user := { base.user with role := .rn }
     let input := { base with program := rowActionsProgram, user, state := init base.spec rowActionsProgram base.facts user }
     inputs := inputs ++ [("rowActions", input)]

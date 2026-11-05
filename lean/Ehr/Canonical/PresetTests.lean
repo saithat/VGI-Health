@@ -2,7 +2,7 @@ import Ehr.Canonical.Personas
 import Ehr.Render.Ui
 
 namespace Ehr.Canonical
-/-- Clinical categories stay internal; visible text uses activity/navigator names. -/
+/-- Clinical categories stay internal; visible text uses activity/workflow names. -/
 def presetLabelValid (label : String) : Bool :=
   !["Clinic visit", "Outpatient visit", "Inpatient MAR", "Pediatric visit",
     "Surgical day", "Surgery:", "Workflows"].any (fun name => (label.splitOn name).length > 1) &&

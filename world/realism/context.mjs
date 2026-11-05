@@ -1,3 +1,4 @@
+import { fictionalize } from '../../scripts/fictional-identities.mjs';
 import { cc, ref, id, tag, text, title, stamp, calendarAgo, SYSTEM, EXT, SNOMED } from './common.mjs';
 
 const ACT = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
@@ -229,7 +230,7 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
         inbox.push(add(enrichRefill(base,{date,pharmacy,owner:ref(providers[p])}),p));
       } else inbox.push(make('Communication',`${p}-portal-${i}`,{status:'completed',category:[cc('patient-message','Patient message')],subject:patient(pid),sender:patient(pid),recipient:[ref(providers[p])],sent:stamp(date,650+i*12),payload:[{contentString:i===4?'Please clarify when my next follow-up visit should be scheduled.':'Requesting a return call about home blood pressure readings.'}]},p));
     }
-    list(p,'inbasket',`${LABELS[p]} In Basket`,inbox);
+    list(p,'inbox',`${LABELS[p]} Inbox`,inbox);
   }
   // Include demographics for every listed patient. Full chart overlays stay in fixtures/clinical.
   const used = new Set();
@@ -239,5 +240,5 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
     const source=charts.get(pid)?.bundle.entry.find(e=>e.resource.resourceType==='Patient')?.resource;
     if(source) add(structuredClone(source),undefined,'patient-context');
   }
-  return {resourceType:'Bundle',id:id(seed,day,'context'),type:'collection',entry:[...entries.values()].map(resource=>({fullUrl:`${resource.resourceType}/${resource.id}`,resource}))};
+  return fictionalize({resourceType:'Bundle',id:id(seed,day,'context'),type:'collection',entry:[...entries.values()].map(resource=>({fullUrl:`${resource.resourceType}/${resource.id}`,resource}))});
 }

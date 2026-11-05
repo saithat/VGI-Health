@@ -719,26 +719,14 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
     for (const persona of selectedPersonas) {
       console.log(`Auditing ${persona}`);
       audit.persona = persona;
-      await freshGoto("/?audit=buttons&inspect=1");
-      await page.evaluate(() => {
-        localStorage.clear();
-        sessionStorage.clear();
-      });
-      await page.reload();
       if (canonicalBaseline) {
-        await page
-          .getByLabel("Baseline clinician", { exact: true })
-          .selectOption(persona);
-        await page
-          .getByRole("button", {
-            name: "Original canonical EHR (baseline)",
-            exact: true,
-          })
-          .click();
+        // Canonical replay audits need no live service or persona credentials.
+        await freshGoto(`/ehr?mode=replay&audit=buttons&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`);
       } else {
-        await page
-          .getByRole("button", { name: new RegExp(`^${persona} ·`) })
-          .click();
+        await freshGoto("/?audit=buttons&inspect=1");
+        await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
+        await page.reload();
+        await page.getByRole("button", { name: new RegExp(`^${persona} ·`) }).click();
       }
       await Promise.race([
         page
@@ -926,7 +914,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         seenScreens.add(variant);
         audit.screen = screen;
         // A progress stepper is a noninteractive list in the semantic tree.
-        // Inventory only labels painted as navigator entries without controls.
+        // Inventory only labels painted as workflow entries without controls.
         if (!seenScreens.has(`static:${screen}`)) {
           seenScreens.add(`static:${screen}`);
           const staticEntries = await page

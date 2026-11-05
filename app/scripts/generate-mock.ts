@@ -163,7 +163,7 @@ for (const [i, p] of personas.entries()) {
     screens: [
       {
         id: "chart",
-        title: "Chart review",
+        title: "Chart History",
         workflow: p.id === "P3" ? "W4" : "W1",
         components: [
           comp("banner", "banner", "Patient"),

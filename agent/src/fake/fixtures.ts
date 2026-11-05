@@ -120,7 +120,7 @@ function canonicalV1(): Program {
   const screens: Screen[] = [
     screen('home', 'Worklist', 'W0', [
       goto('home-go-w1', 'w1-rooming', 'Clinic visit'),
-      goto('home-go-w2', 'w2-inbox', 'In-basket result'),
+      goto('home-go-w2', 'w2-inbox', 'Inbox result'),
       goto('home-go-w7', 'w7-refill', 'Refill request'),
       goto('home-go-w3', 'w3-triage', 'ED patient'),
       goto('home-go-w4', 'w4-worklist', 'Med pass'),
@@ -160,7 +160,7 @@ function canonicalV1(): Program {
       field('w1-idreentry', 'patientIdReentry'),
       commit('w1-sign-orders', 'signOrders', 'Sign orders'),
     ]),
-    // W2 results in-basket
+    // W2 results inbox
     screen('w2-inbox', 'Result', 'W2', [
       panel('w2-result', 'orderSummary', { tag: 'resultDetail' }),
       c('w2-trend', { trend: { info: 'resultTrend' } }, { tag: 'resultTrend' }),

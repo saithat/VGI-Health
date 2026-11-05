@@ -1,431 +1,1822 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w3Triage.chartSearch"}},
-  {"section":
-   {"title": "Arrival and presenting complaint",
-    "id": "w3Triage.arrival",
-    "children":
-    [{"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Chief complaint",
-       "kind": "text",
-       "humanOnly": false,
-       "comp": "w3Triage.chiefComplaint"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "ESI acuity (1–5)",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w3Triage.triageAcuity"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Arrival mode",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w3Triage.arrivalMode"}}]}},
-  {"section":
-   {"title": "Triage vital signs",
-    "id": "w3Triage.vitalsGroup",
-    "children":
-    [{"field":
-      {"value": "93.4",
-       "unit": "kg",
-       "required": true,
-       "provenance": "record:weightToday",
-       "pendingConfirm": true,
-       "label": "Weight (kg)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w3Triage.weight"}},
-     {"button":
-      {"role": "confirm",
-       "label": "Confirm prefilled value",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w3Triage.weight",
-       "blockedReason": null}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "BP systolic (mmHg)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w3Triage.bpSystolic"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "BP diastolic (mmHg)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w3Triage.bpDiastolic"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Heart rate (/min)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w3Triage.heartRate"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Respiratory rate (/min)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w3Triage.respRate"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Temperature (°C)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w3Triage.temperature"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "SpO₂ (%)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w3Triage.spo2"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Pain (0–10)",
-       "kind": "code",
-       "humanOnly": true,
-       "comp": "w3Triage.painScore"}}]}},
-  {"section":
-   {"title": "Infection prevention",
-    "id": "w3Triage.screening",
-    "children":
-    [{"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Isolation screening",
-       "kind": "code",
-       "humanOnly": false,
-       "comp": "w3Triage.isolationScreen"}}]}},
-  {"section":
-   {"title": "Allergy review",
-    "id": "w3Triage.allergyGroup",
-    "children":
-    [{"info":
-      {"rows": [],
-       "label": "Allergies",
-       "infoId": "allergyList",
-       "display": "list",
-       "comp": "w3Triage.allergies"}},
-     {"button":
-      {"role": "secondary",
-       "label": "Mark allergies reviewed",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w3Triage.review.allergyList",
-       "blockedReason": null}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3Triage.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3Triage.home",
-    "blockedReason": null}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Encounters",
-     "Notes",
-     "Results",
-     "Meds",
-     "Problems",
-     "Allergies",
-     "Imaging"],
-    "id": "w3Triage.chart",
-    "body":
-    [{"info":
-      {"rows":
-       [[["Encounter", ""],
-         ["Class", "Emergency"],
-         ["Start", "Nov 2, 2026 07:15"],
-         ["End", ""],
-         ["Reason", "Shortness of breath and fever"],
-         ["Provider", "Morgan Patel, MD"],
-         ["Location", "ED · A04"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "May 6, 2026 13:28"],
-         ["End", "May 6, 2026 15:00"],
-         ["Reason", ""],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 22, 2026 13:28"],
-         ["End", "Apr 22, 2026 14:18"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 30, 2025 13:28"],
-         ["End", "Apr 30, 2025 15:09"],
-         ["Reason", ""],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 23, 2025 13:28"],
-         ["End", "Apr 23, 2025 13:43"],
-         ["Reason", "Acute viral pharyngitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 16, 2025 13:28"],
-         ["End", "Apr 16, 2025 14:09"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Follow-up visit (procedure)"],
-         ["Class", "Inpatient"],
-         ["Start", "Jul 4, 2024 15:10"],
-         ["End", "Jul 5, 2024 15:10"],
-         ["Reason", "Sleep disorder (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jun 27, 2024 14:24"],
-         ["End", "Jun 27, 2024 15:10"],
-         ["Reason", "Sleep disorder (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jun 19, 2024 13:28"],
-         ["End", "Jun 19, 2024 14:24"],
-         ["Reason", "Sleep disorder (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 10, 2024 13:28"],
-         ["End", "Apr 10, 2024 14:17"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jul 19, 2023 13:28"],
-         ["End", "Jul 19, 2023 14:14"],
-         ["Reason", "Gingivitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jul 5, 2023 13:28"],
-         ["End", "Jul 5, 2023 14:09"],
-         ["Reason", ""],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jun 25, 2023 20:28"],
-         ["End", "Jun 25, 2023 20:49"],
-         ["Reason", "Acute bronchitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 5, 2023 13:28"],
-         ["End", "Apr 5, 2023 14:01"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Emergency room admission (procedure)"],
-         ["Class", "Emergency"],
-         ["Start", "Aug 6, 2022 16:13"],
-         ["End", "Aug 6, 2022 17:13"],
-         ["Reason", "Injury of neck (disorder)"],
-         ["Provider", "Dr. Troy Carter"],
-         ["Location", "OAKS, THE"]],
-        [["Encounter", "Hospital admission (procedure)"],
-         ["Class", "Inpatient"],
-         ["Start", "Aug 6, 2022 16:13"],
-         ["End", "Aug 9, 2022 16:28"],
-         ["Reason", "Patient transfer to skilled nursing facility (procedure)"],
-         ["Provider", "Dr. Chung Collins"],
-         ["Location", "221 FITZGERALD DRIVE OPERATING COMPANY, LLC"]],
-        [["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Apr 13, 2022 13:28"],
-         ["End", "Apr 13, 2022 14:08"],
-         ["Reason", "Gingivitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "General examination of patient (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Mar 30, 2022 13:28"],
-         ["End", "Mar 30, 2022 14:06"],
-         ["Reason", ""],
-         ["Provider", "Dr. Taylor Haley"],
-         ["Location", "CHILD & FAMILY SERVICES, INC."]],
-        [["Encounter", "Encounter for symptom (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Mar 23, 2022 04:28"],
-         ["End", "Mar 23, 2022 04:43"],
-         ["Reason", "Acute viral pharyngitis (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Follow-up encounter (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Jan 29, 2022 12:28"],
-         ["End", "Jan 29, 2022 12:43"],
-         ["Reason", "Essential hypertension (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]],
-        [["Encounter", "Follow-up encounter (procedure)"],
-         ["Class", "Ambulatory"],
-         ["Start", "Nov 30, 2021 12:28"],
-         ["End", "Nov 30, 2021 12:43"],
-         ["Reason", "Essential hypertension (disorder)"],
-         ["Provider", "Dr. Laurena Anderson"],
-         ["Location", "NORTHEAST BEHAVIORAL HEALTH LLC"]]],
-       "label": "Encounters",
-       "infoId": "encounterHistory",
-       "display": "table",
-       "comp": "w3Triage.chart.encounterHistory"}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "ED Provider Note",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w3Triage.next",
-    "blockedReason": null}}],
- "title": "Triage summary",
- "side":
- [{"info":
-   {"rows": [],
-    "label": "Allergies",
-    "infoId": "allergyList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record",
-       "Acetaminophen 325 MG Oral Tablet [Tylenol] — Every four to six hours (qualifier value)"]],
-     [["Record", "lisinopril 10 MG Oral Tablet — 1, 1x per 1 d"]]],
-    "label": "Active medications",
-    "infoId": "currentMeds",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Full-time employment (finding) (active)"]],
-     [["Record", "Gingivitis (disorder) (active)"]],
-     [["Record", "Stress (finding) (active)"]],
-     [["Record", "Sleep apnea (disorder) (active)"]],
-     [["Record", "Sleep disorder (disorder) (active)"]],
-     [["Record", "Medication review due (situation) (active)"]],
-     [["Record", "Essential hypertension (disorder) (active)"]],
-     [["Record", "Chronic pain (finding) (active)"]],
-     [["Record", "Chronic low back pain (finding) (active)"]],
-     [["Record", "Anemia (disorder) (active)"]],
-     [["Record", "Prediabetes (finding) (active)"]],
-     [["Record", "Impacted molars (disorder) (active)"]],
-     [["Record", "Housing unsatisfactory (finding) (active)"]],
-     [["Record", "Educated to high school level (finding) (active)"]]],
-    "label": "Problems",
-    "infoId": "problemList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Weight 93.4 kg (today)"]],
-     [["Record", "Systolic BP 136 mmHg (today)"]],
-     [["Record", "Diastolic BP 82 mmHg (today)"]],
-     [["Record", "Heart rate 82 /min (today)"]],
-     [["Record", "Respiratory rate 18 /min (today)"]],
-     [["Record", "Temperature 37.4 °C (today)"]],
-     [["Record", "SpO2 96 % (today)"]],
-     [["Record", "Pain score 4 score (today)"]],
-     [["Record", "Body Height 183.4 cm (Apr 22, 2026 13:28)"]],
-     [["Record",
-       "Body mass index (BMI) [Ratio] 27.77 kg/m2 (Apr 22, 2026 13:28)"]],
-     [["Record", "Blood pressure 136/95 mm[Hg] (Apr 22, 2026 13:28)"]]],
-    "label": "Recent vitals",
-    "infoId": "vitals",
-    "display": "list",
-    "comp": ""}}],
- "nav":
- [["ED Navigator",
-   [["w3Triage.nav.w3TrackBoard", "ED Track Board"],
-    ["w3Triage.nav.w3Provider", "ED Provider Note"],
-    ["w3Triage.nav.w3Orders", "Orders"],
-    ["w3Triage.nav.w3OrderSets", "Order sets"],
-    ["w3Triage.nav.w3Disposition", "Disposition"]]]],
- "modal": null,
- "banner":
- [["Patient", "Ankunding, Aaron Bruno"],
-  ["DOB", "Jul 3, 1968"],
-  ["MRN", "47839287"],
-  ["Age / sex", "58 / M"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Encounter", "Emergency"],
-  ["Attending", "Morgan Patel, MD"],
-  ["Location", "ED · A04"],
-  ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"],
-  ["Weight", "93.4 kg · Nov 2, 2026 07:30"],
-  ["Isolation", "Not recorded"]]}
+{
+  "banner": [
+    [
+      "Patient",
+      "Donnelly, Jamar"
+    ],
+    [
+      "DOB",
+      "May 14, 1943"
+    ],
+    [
+      "MRN",
+      "73854169"
+    ],
+    [
+      "Age / sex",
+      "83 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Fictional Clinician dd90f9a148"
+    ],
+    [
+      "Coverage",
+      "Fictional Health Services e277448254"
+    ],
+    [
+      "Encounter",
+      "Emergency"
+    ],
+    [
+      "Attending",
+      "Fictional Clinician ab34563451"
+    ],
+    [
+      "Location",
+      "Fictional Care Site 13cd46e28f"
+    ],
+    [
+      "Encounter type",
+      "Emergency Visit – Fictional Care Site f06249cfe5"
+    ],
+    [
+      "Department",
+      "Fictional Care Site f06249cfe5"
+    ],
+    [
+      "Allergies",
+      "amoxicillin — hives (reported at triage) (moderate)"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "77.2 kg · Nov 2, 2026 07:14"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "fieldSources": [
+    [
+      "w3Triage.weight",
+      "Source: Chart weight recorded today · chart as of 2026-11-02"
+    ]
+  ],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|edTrackBoard",
+          "Track Board"
+        ],
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Track Board"
+        ]
+      ]
+    ],
+    [
+      "ED workflow",
+      [
+        [
+          "w3Triage.nav.w3TrackBoard",
+          "ED Track Board"
+        ],
+        [
+          "w3Triage.nav.w3Provider",
+          "ED Provider Note"
+        ],
+        [
+          "w3Triage.nav.w3Orders",
+          "Orders"
+        ],
+        [
+          "w3Triage.nav.w3OrderSets",
+          "Order sets"
+        ],
+        [
+          "w3Triage.nav.w3Disposition",
+          "Disposition"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w3Triage.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w3Triage.chartWorkspace.chartHistory",
+          "Chart History"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w3Triage",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Donnelly, Jamar"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 83 / M"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 73854169"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · May 14, 1943"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · No isolation"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "amoxicillin — hives (reported at triage) (moderate)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Fictional Clinician dd90f9a148"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ab34563451"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ab34563451"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Registered nurse · Fictional Clinician 920d783abe"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Emergency Visit – Fictional Care Site f06249cfe5"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Fictional Care Site f06249cfe5"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Fictional Care Site 13cd46e28f"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Nov 2, 2026 07:14"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 77.2 kg · 2026-11-02T07:14:00-08:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body weight 77.2 kg (today)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Height 167.2 cm (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 27.79 kg/m2 (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 109/63 mm[Hg] (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 79 /min (Nov 14, 2025 17:22)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 13 /min (Nov 14, 2025 17:22)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 3"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "History of coronary artery bypass grafting (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Ischemic heart disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Metabolic syndrome X (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Essential hypertension (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Hyperlipidemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dependent drug abuse (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Impacted molars (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic intractable migraine without aura (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Prediabetes (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Anemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index 30+ - obesity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic sinusitis (disorder) (active)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Oct 21, 2026 19:57 · History and physical note · Fictional Clinician eff8b458b9 · Unknown · \n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w3Triage.patientSidebar.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.patientSidebar",
+        "title": "Patient sidebar"
+      }
+    }
+  ],
+  "sourceLabels": [
+    [
+      "record:weightToday",
+      "From chart — Weight (kg)"
+    ]
+  ],
+  "title": "Triage summary",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w3Triage.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w3Triage.chiefComplaint",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Chief complaint",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.triageAcuity",
+              "humanOnly": false,
+              "kind": "code:1|2|3|4|5",
+              "label": "ESI acuity (1–5)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.arrivalMode",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Arrival mode",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w3Triage.arrival",
+        "title": "Arrival and presenting complaint"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w3Triage.weight",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Weight (kg)",
+              "pendingConfirm": true,
+              "provenance": "record:weightToday",
+              "required": true,
+              "unit": "kg",
+              "value": "77.2"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.weight",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.bpSystolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP systolic (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.bpDiastolic",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "BP diastolic (mmHg)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.heartRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Heart rate (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.respRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Respiratory rate (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.temperature",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Temperature (°C)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w3Triage.spo2",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "SpO₂ (%)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w3Triage.painScore",
+                    "humanOnly": true,
+                    "kind": "code:0|1|2|3|4|5|6|7|8|9|10",
+                    "label": "Pain (0–10)",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": false,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "0",
+                  "label": "0"
+                },
+                {
+                  "code": "1",
+                  "label": "1"
+                },
+                {
+                  "code": "2",
+                  "label": "2"
+                },
+                {
+                  "code": "3",
+                  "label": "3"
+                },
+                {
+                  "code": "4",
+                  "label": "4"
+                },
+                {
+                  "code": "5",
+                  "label": "5"
+                },
+                {
+                  "code": "6",
+                  "label": "6"
+                },
+                {
+                  "code": "7",
+                  "label": "7"
+                },
+                {
+                  "code": "8",
+                  "label": "8"
+                },
+                {
+                  "code": "9",
+                  "label": "9"
+                },
+                {
+                  "code": "10",
+                  "label": "10"
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.vitalsGroup",
+        "title": "Triage vital signs"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w3Triage.isolationScreen",
+              "humanOnly": false,
+              "kind": "code",
+              "label": "Isolation screening",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w3Triage.screening",
+        "title": "Infection prevention"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w3Triage.allergies",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Substance",
+                    "amoxicillin"
+                  ],
+                  [
+                    "Reaction",
+                    "hives (reported at triage)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "unconfirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026 07:14"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w3Triage.review.allergyList",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Mark allergies reviewed",
+              "role": "secondary"
+            }
+          }
+        ],
+        "id": "w3Triage.allergyGroup",
+        "title": "Allergy review"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w3Triage.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Fictional Care Site f06249cfe5"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Nov 2, 2026 07:14"
+                  ],
+                  [
+                    "End",
+                    ""
+                  ],
+                  [
+                    "Reason",
+                    "Ankle pain after fall"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ab34563451"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 13cd46e28f"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 21, 2026 19:57"
+                  ],
+                  [
+                    "End",
+                    "Oct 21, 2026 21:16"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 21, 2026 18:45"
+                  ],
+                  [
+                    "End",
+                    "Sep 21, 2026 19:57"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Aug 22, 2026 17:23"
+                  ],
+                  [
+                    "End",
+                    "Aug 22, 2026 18:45"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Aug 1, 2026 03:23"
+                  ],
+                  [
+                    "End",
+                    "Aug 1, 2026 17:23"
+                  ],
+                  [
+                    "Reason",
+                    "Overdose (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician abf8d10f3e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 8d461e143e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 28, 2025 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 28, 2025 18:31"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 21, 2025 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 21, 2025 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 14, 2025 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 14, 2025 18:18"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 17, 2025 02:17"
+                  ],
+                  [
+                    "End",
+                    "Apr 17, 2025 03:23"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 18, 2025 01:02"
+                  ],
+                  [
+                    "End",
+                    "Mar 18, 2025 02:17"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 15, 2025 22:39"
+                  ],
+                  [
+                    "End",
+                    "Feb 16, 2025 00:02"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 9, 2024 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 9, 2024 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 8, 2024 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 8, 2024 18:00"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 12, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Apr 12, 2024 18:37"
+                  ],
+                  [
+                    "Reason",
+                    "Viral sinusitis (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 5, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Apr 5, 2024 18:51"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 29, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Mar 29, 2024 18:37"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Mar 22, 2024 18:22"
+                  ],
+                  [
+                    "End",
+                    "Mar 22, 2024 18:55"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 00d40819c0"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3a4bf7abdd"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 15, 2024 21:16"
+                  ],
+                  [
+                    "End",
+                    "Feb 15, 2024 22:39"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Feb 8, 2024 20:16"
+                  ],
+                  [
+                    "End",
+                    "Feb 8, 2024 21:16"
+                  ],
+                  [
+                    "Reason",
+                    "Overdose (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician abf8d10f3e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 8d461e143e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 17, 2023 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 17, 2023 17:53"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 10, 2023 17:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 10, 2023 17:37"
+                  ],
+                  [
+                    "Reason",
+                    "Hyperlipidemia (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 3, 2023 18:22"
+                  ],
+                  [
+                    "End",
+                    "Nov 3, 2023 19:17"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 4, 2023 20:15"
+                  ],
+                  [
+                    "End",
+                    "Jul 4, 2023 21:16"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Dec 25, 2022 19:15"
+                  ],
+                  [
+                    "End",
+                    "Dec 27, 2022 19:15"
+                  ],
+                  [
+                    "Reason",
+                    "Dependent drug abuse (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician eff8b458b9"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 57af6ab623"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Internal Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 28, 2022 18:22"
+                  ],
+                  [
+                    "End",
+                    "Oct 28, 2022 18:58"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician d823a5fa8e"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 4f7d5fa818"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Meds",
+          "Problems",
+          "Allergies",
+          "Imaging"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w3Triage.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "ED Provider Note",
+        "role": "nav"
+      }
+    },
+    {
+      "info": {
+        "comp": "w3Triage.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Emergency Visit – Fictional Care Site f06249cfe5"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Fictional Care Site f06249cfe5"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "in-progress"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.chartRecentResults",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.chartRecentResults",
+                    "title": "Recent Results"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.chartCareGaps",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.chartCareGaps",
+                    "title": "Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w3Triage.contextPanels.data.storyLastNote",
+                                "display": "table",
+                                "infoId": "storyLastNote",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Oct 21, 2026 19:57"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician eff8b458b9"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w3Triage.contextPanels.card.storyLastNote",
+                    "title": "Last Note"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w3Triage.contextPanels",
+        "title": "Clinical Context"
+      }
+    }
+  ]
+}

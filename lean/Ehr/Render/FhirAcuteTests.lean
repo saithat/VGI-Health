@@ -128,7 +128,7 @@ def currentVitalContext : Ctx := { latestVitalsContext with
 #guard (uiRows { latestVitalsContext with facts := factsOf context resources patient } "vitals").isEmpty
 #guard (uiRows { latestVitalsContext with facts := factsOf context resources patient } "labResults").isEmpty
 
-/-- Longitudinal Chart Review retains raw historical values, units and flags,
+/-- Longitudinal Chart History retains raw historical values, units and flags,
 while a current-encounter decision panel remains scoped to that encounter. -/
 def historicalGlucose : Json := Json.mkObj
   [("resourceType", .str "Observation"), ("id", .str "prior-glucose"),

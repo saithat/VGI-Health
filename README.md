@@ -6,8 +6,8 @@ three parts:
 1. **A realistic EHR simulator.** A hospital and clinic electronic health
    record (EHR) built on the conventions of real-world commercial EHR
    systems. It includes a patient banner and
-   storyboard, in-basket, chart review, ED track board, MAR and flowsheets,
-   order entry with preference lists, interruptive and passive alerts, and
+   patient sidebar, inbox, chart history, ED track board, MAR and flowsheets,
+   order entry with order favorites, interruptive and passive alerts, and
    vendor releases that change the rules. It runs on synthetic FHIR patients.
    Simulated clinicians work through generated clinical days in it, so any
    change to the screens can be measured in clicks, scrolls and mouse travel.
@@ -306,10 +306,10 @@ product.
 
 | Area | Replicated | Not replicated or simplified |
 |---|---|---|
-| **Workflows** | Seven end-to-end workflows: W1 adult clinic visit (rooming → history → exam → orders → sign → close), W2 results in-basket and patient messages, W3 emergency department (track board, triage, orders, disposition), W4 inpatient nursing (worklist, MAR, flowsheets, SBAR handoff), W5 pediatric visit (growth charts, vaccines), W6 surgery (consult, pre-op, operative note, post-op orders, OR schedule), W7 refill requests. | Pharmacy verification and dispensing, lab and radiology departments, scheduling engine, registration, billing and claims, patient portal. |
+| **Workflows** | Seven end-to-end workflows: W1 adult clinic visit (rooming → history → exam → orders → sign → close), W2 results inbox and patient messages, W3 emergency department (track board, triage, orders, disposition), W4 inpatient nursing (worklist, MAR, flowsheets, SBAR handoff), W5 pediatric visit (growth charts, vaccines), W6 surgery (consult, pre-op, operative note, post-op orders, OR schedule), W7 refill requests. | Pharmacy verification and dispensing, lab and radiology departments, scheduling engine, registration, billing and claims, patient portal. |
 | **Roles** | Physician, nurse practitioner, RN, surgeon; charge nurse, bed manager and admitting clerk for bed management. Five personas: primary care, ED, inpatient RN, pediatric NP, surgeon. | Pharmacists, technicians, residents with supervision chains, schedulers. |
-| **Chart** | Patient banner (name, DOB, MRN, allergies, code status, isolation, weight), storyboard sidebar, chart review tabs (encounters, notes, results, meds, problems, allergies, imaging), lab trends and flowsheets, WHO/CDC growth curves, chart search. | Imaging viewer (PACS), scanned media, outside-records exchange. |
-| **Orders** | Medication order composer with preference lists, formulary dose units, kg dosing weight, route, frequency, PRN, dispense and refills, pharmacy, indication and diagnosis; lab, imaging and procedure orders; prior authorization (release v2); coded antibiotic indication (release v3). | Real e-prescribing transmission, pharmacy interventions. |
+| **Chart** | Patient banner (name, DOB, MRN, allergies, code status, isolation, weight), patient sidebar, chart history tabs (encounters, notes, results, meds, problems, allergies, imaging), lab trends and flowsheets, WHO/CDC growth curves, chart search. | Imaging viewer (PACS), scanned media, outside-records exchange. |
+| **Orders** | Medication order composer with order favorites, formulary dose units, kg dosing weight, route, frequency, PRN, dispense and refills, pharmacy, indication and diagnosis; lab, imaging and procedure orders; prior authorization (release v2); coded antibiotic indication (release v3). | Real e-prescribing transmission, pharmacy interventions. |
 | **Safety checks** | Hard-stop sign guards; drug-allergy, interaction, duplicate-therapy, dose-range and high-alert alerts, interruptive (modal) or passive (inline); barcode patient and medication scan at administration; second-nurse cosign for high-alert drugs; patient-ID re-entry; review receipts that expire; critical-result escalation; California controlled-substance rules (CURES check, naloxone offer, Schedule II refills). | Real CURES/PDMP queries, barcode hardware, a full drug-knowledge base (a small formulary is built in). |
 | **Documentation** | Visit and operative notes, nursing assessments, vaccine administration, consent, SBAR handoff, administration records. | Note templates, dictation. |
 | **Bed management (ADT)** | Admit, assign, transfer, release, discharge and bed cleaning on a unit bed board, with exclusive beds and atomic transfers. | Enterprise patient flow, transport, multiple facilities. |
@@ -562,7 +562,6 @@ TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app build
 TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
 ```
 
-
 `run-days --protocol certified-cadence-archive-v1 --cadence weekly
 --bounded-costs --tailoring-sessions` enables the connected path. On a release
 slot, `sessionReviewGate` recertifies the archive's top three niche bundles in
@@ -685,6 +684,35 @@ native binaries. The standalone session CLI accepts `bounded: true` plus
 `memory` to select bounded evidence/choice; omitted fields retain its historical
 seeded chooser and labeled heuristic. No WASM rebuild is needed to run this
 native adapter; a stale source manifest is left for the merge session to refresh.
+
+## Terminology and fictional identities
+
+Screens use neutral clinical terms: Patient sidebar, Inbox, workflow, Chart
+History, Activities and Order favorites. Synthea and Synthetic Hospital keep
+their fictional patient identities and IDs; `scripts/fictional-identities.mjs`
+replaces every facility, location, practitioner, payer and contact detail with
+seeded fictional values in the fixture pipeline, and
+`scripts/fictional-identities.test.mjs` fails on any name outside that
+generator.
+
+Regenerating derived artifacts:
+
+- `node scripts/regenerate-full-fixture.mjs`: the mapper's full-profile v3
+  fixture.
+- `node scripts/refresh-clinical-fixtures.mjs`: the five painter samples and
+  saved clinical semantic screens, from the native interpreter and local world.
+- `node conformance/verify.mjs <run>` then `node conformance/refresh-evidence.mjs
+  <run>`: agreement of independent conformance runs, then the derived case
+  reports and checker probes.
+- `TMPDIR=/home/saithat/Projects/run-tmp node scripts/migrate-neutral-terms.mjs`
+  (after building Lean, WASM and the app): one-time rewrite of local `runs/`,
+  `programs/` and `fixtures/` to the current terms and fictional identities,
+  rebuilding digests, certificates and bindings and checking strict replay.
+  Recordings the current gates reject are listed in
+  `runs/neutral-migration-report.json` and cannot supply conformance targets or
+  deployment bindings.
+
+`AUDIT_RUN` selects the local recording for the performance audit.
 
 ## Data sources
 

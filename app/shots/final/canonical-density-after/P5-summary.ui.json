@@ -1,0 +1,2197 @@
+{
+  "banner": [
+    [
+      "Patient",
+      "Runte, Sol Jerrold"
+    ],
+    [
+      "DOB",
+      "Jun 10, 1961"
+    ],
+    [
+      "MRN",
+      "84974903"
+    ],
+    [
+      "Age / sex",
+      "65 / M"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Fictional Clinician 9ababdd2e1"
+    ],
+    [
+      "Coverage",
+      "Fictional Health Services e277448254"
+    ],
+    [
+      "Encounter",
+      "Inpatient"
+    ],
+    [
+      "Attending",
+      "Fictional Clinician ea087f491c"
+    ],
+    [
+      "Location",
+      "Fictional Care Site 62c658f3c1"
+    ],
+    [
+      "Encounter type",
+      "Inpatient Stay – Fictional Care Site 7f969d1e61"
+    ],
+    [
+      "Department",
+      "Fictional Care Site 7f969d1e61"
+    ],
+    [
+      "Postoperative day",
+      "POD #3"
+    ],
+    [
+      "Allergies",
+      "Sulfamethoxazole / Trimethoprim — Wheal (finding), Eruption of skin (disorder) (moderate); Penicillin V — Rash (moderate)"
+    ],
+    [
+      "Code status",
+      "Full Code"
+    ],
+    [
+      "Weight",
+      "82.9 kg · Sep 5, 2026 08:00"
+    ],
+    [
+      "Isolation",
+      "No isolation"
+    ]
+  ],
+  "fieldSources": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|orSchedule",
+          "OR Schedule"
+        ],
+        [
+          "workspace.activity|consultList",
+          "Consults"
+        ],
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to OR Schedule"
+        ]
+      ]
+    ],
+    [
+      "Patient care",
+      [
+        [
+          "chartSummary.patientCare.w1Rooming",
+          "Visit workflow"
+        ],
+        [
+          "chartSummary.patientCare.w2Inbox",
+          "Result Review"
+        ],
+        [
+          "chartSummary.patientCare.w6PreOp",
+          "Surgical workflow"
+        ],
+        [
+          "chartSummary.patientCare.w6Rounding",
+          "Rounding"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "chartSummary.chartWorkspace.chartHistory",
+          "Chart History"
+        ]
+      ]
+    ]
+  ],
+  "screen": "chartSummary",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Runte, Sol Jerrold"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 65 / M"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 84974903"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Jun 10, 1961"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Full Code"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · No isolation"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Sulfamethoxazole / Trimethoprim — Wheal (finding), Eruption of skin (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Penicillin V — Rash (moderate)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Fictional Clinician 9ababdd2e1"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ea087f491c"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Fictional Clinician ea087f491c"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Registered nurse · Fictional Clinician 920d783abe"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Inpatient Stay – Fictional Care Site 7f969d1e61"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Fictional Care Site 7f969d1e61"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Fictional Care Site 62c658f3c1"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Oct 30, 2026 15:00"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · 2d 11h (snapshot)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · in-progress"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 82.9 kg · 2026-09-05T08:00:15-07:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body Height 174.5 cm (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Weight 82.9 kg (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 27.22 kg/m2 (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 120/65 mm[Hg] (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 72 /min (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 15 /min (Sep 5, 2026 08:00)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body temperature 37.74 Cel (Aug 15, 2026 09:00)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 1"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Hyperlipidemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Ischemic heart disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "History of myocardial infarction (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Acute non-ST segment elevation myocardial infarction (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Obstructive sleep apnea syndrome (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Sleep disorder (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Cerebral palsy (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Spasticity (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Osteoporosis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Intellectual disability (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gastroesophageal reflux disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pneumonia (disorder) (active)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Sep 20, 2026 08:00 · History and physical note · Fictional Clinician 34eba7a0a7 · Unknown · \n2026-09-20\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "chartSummary.patientSidebar.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "chartSummary.patientSidebar",
+        "title": "Patient sidebar"
+      }
+    }
+  ],
+  "title": "Chart Summary",
+  "viewer": "General surgeon",
+  "workspace": [
+    {
+      "field": {
+        "comp": "chartSummary.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartQuickView.data",
+                                "display": "table",
+                                "infoId": "chartQuickView",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Detail",
+                                      "Name"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Runte, Sol Jerrold"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Age / sex"
+                                    ],
+                                    [
+                                      "Value",
+                                      "65 / M"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "MRN"
+                                    ],
+                                    [
+                                      "Value",
+                                      "84974903"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "DOB"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Jun 10, 1961"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Encounter"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Inpatient Stay – Fictional Care Site 7f969d1e61"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Department"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Care Site 7f969d1e61"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Location"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Care Site 62c658f3c1"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Admitted / start"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Oct 30, 2026 15:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "LOS"
+                                    ],
+                                    [
+                                      "Value",
+                                      "2d 11h (snapshot)"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Status"
+                                    ],
+                                    [
+                                      "Value",
+                                      "in-progress"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "PCP"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Clinician 9ababdd2e1"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Attending"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Clinician ea087f491c"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Attending"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Clinician ea087f491c"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Registered nurse"
+                                    ],
+                                    [
+                                      "Value",
+                                      "Fictional Clinician 920d783abe"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartQuickView",
+                    "title": "Quick View"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartProblems.data",
+                                "display": "table",
+                                "infoId": "chartProblems",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Problem",
+                                      "Hyperlipidemia (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Aug 30, 2025 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Ischemic heart disease (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Aug 7, 2021 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "History of myocardial infarction (situation)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "May 13, 2020 01:41"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Abnormal findings diagnostic imaging heart+coronary circulat (finding)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "May 7, 2020 10:25"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Acute non-ST segment elevation myocardial infarction (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "May 1, 2020 08:57"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Obstructive sleep apnea syndrome (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Jun 27, 1995 14:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Sleep disorder (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Jun 2, 1995 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Gingivitis (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Jun 7, 1969 08:25"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartProblems",
+                    "title": "Active Problems · latest 8"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartMeds.data",
+                                "display": "table",
+                                "infoId": "chartMeds",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Medication",
+                                      "Simvastatin 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take Simvastatin 10 MG Oral Tablet by mouth daily."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartMeds",
+                    "title": "Active Medications · latest 8"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.allergyList.data",
+                                "display": "table",
+                                "infoId": "allergyList",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Substance",
+                                      "Sulfamethoxazole / Trimethoprim"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Wheal (finding), Eruption of skin (disorder)"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "moderate"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 24, 1980 23:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Penicillin V"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Rash"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "moderate"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Jun 24, 1980 23:00"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.allergyList",
+                    "title": "Allergies"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartRecentResults.data",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "results"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartRecentResults",
+                    "title": "Recent Results · 72 hours, latest 15"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartVitals.data",
+                                "display": "table",
+                                "infoId": "chartVitals",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional"
+                                    ],
+                                    [
+                                      "Value",
+                                      "117/62"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Aug 30, 2025 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body mass index (BMI) [Ratio]"
+                                    ],
+                                    [
+                                      "Value",
+                                      "27.22"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg/m2"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Aug 30, 2025 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Weight"
+                                    ],
+                                    [
+                                      "Value",
+                                      "82.9"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Aug 30, 2025 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+                                    ],
+                                    [
+                                      "Value",
+                                      "1"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "{score}"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Aug 30, 2025 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Height"
+                                    ],
+                                    [
+                                      "Value",
+                                      "174.5"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "cm"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Aug 30, 2025 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body temperature"
+                                    ],
+                                    [
+                                      "Value",
+                                      "37.74"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "Cel"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Aug 15, 2026 09:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Respiratory rate"
+                                    ],
+                                    [
+                                      "Value",
+                                      "15"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "/min"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Heart rate"
+                                    ],
+                                    [
+                                      "Value",
+                                      "72"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "/min"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Systolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "120"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Diastolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "65"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional"
+                                    ],
+                                    [
+                                      "Value",
+                                      "120/65"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body mass index (BMI) [Ratio]"
+                                    ],
+                                    [
+                                      "Value",
+                                      "27.22"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg/m2"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Weight"
+                                    ],
+                                    [
+                                      "Value",
+                                      "82.9"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+                                    ],
+                                    [
+                                      "Value",
+                                      "4"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "{score}"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Height"
+                                    ],
+                                    [
+                                      "Value",
+                                      "174.5"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "cm"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 08:00"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "trend"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartVitals",
+                    "title": "Vitals · recent observations"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartCareGaps.data",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "worklist"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartCareGaps",
+                    "title": "Care Gaps / Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartImmunizations.data",
+                                "display": "table",
+                                "infoId": "chartImmunizations",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 5, 2026 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Pneumococcal conjugate PCV 13"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 5, 2026 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 30, 2025 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 24, 2024 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 19, 2023 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 13, 2022 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Td (adult), 5 Lf tetanus toxoid, preservative free, adsorbed"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 13, 2022 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 7, 2021 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartImmunizations",
+                    "title": "Recent Immunizations"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartNotes.data",
+                                "display": "table",
+                                "infoId": "chartNotes",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Sep 20, 2026 08:00"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-09-20\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "Sep 19, 2026 08:00"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-09-19\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "Sep 5, 2026 08:00"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 0d067a3f7b"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-09-05\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "Aug 15, 2026 09:00"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-08-15\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Date",
+                                      "Jun 17, 2026 09:54"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-06-17\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nSol is a 65 year-old nonhispanic white male. Patient has a history of medication review due (situation), developmental disorders of jaws, malignant neoplasm of bones of skull and face, cracked tooth, acut… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "superseded"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "notes"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartNotes",
+                    "title": "Recent Notes · latest 5 excerpts"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartOrders.data",
+                                "display": "table",
+                                "infoId": "chartOrders",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Order",
+                                      "Full Code"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 30, 2026 15:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "No isolation"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 30, 2026 15:00"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Simvastatin 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take Simvastatin 10 MG Oral Tablet by mouth daily."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Sep 20, 2026 08:00"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartOrders",
+                    "title": "Active Orders · latest 12"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartImaging.data",
+                                "display": "table",
+                                "infoId": "chartImaging",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartImaging",
+                    "title": "Recent Imaging"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartSocial.data",
+                                "display": "table",
+                                "infoId": "chartSocial",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Finding",
+                                      "Received higher education (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 224299000; recorded: 1979-08-04T08:53:58-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Has a criminal record (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 266948004; recorded: 1980-08-09T08:47:07-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Medication review due (situation)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 314529007; recorded: 2024-08-24T08:00:15-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Social isolation (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 422650009; recorded: 2025-08-30T08:34:21-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "resolved"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Full-time employment (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 160903007; recorded: 2026-09-05T08:31:58-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Stress (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 73595000; recorded: 2026-09-05T08:31:58-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Tobacco smoking status"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "Never smoked tobacco (finding); date: 2026-09-05T08:00:15-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartSocial",
+                    "title": "Social / SDOH"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartEncounters.data",
+                                "display": "table",
+                                "infoId": "chartEncounters",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Inpatient Stay – Fictional Care Site 7f969d1e61"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Oct 30, 2026 15:00"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "s/p laparoscopic cholecystectomy – POD 3"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician ea087f491c"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 20, 2026 08:00"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Hyperlipidemia (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 19, 2026 08:00"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 5, 2026 08:00"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 0d067a3f7b"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 15, 2026 09:00"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Acute viral pharyngitis (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 17, 2026 09:54"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Screening for malignant neoplasm of colon (procedure)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 20, 2025 08:00"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Hyperlipidemia (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 34eba7a0a7"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 30, 2025 08:00"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 0d067a3f7b"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartEncounters",
+                    "title": "Recent Encounters"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.chartProcedure.data",
+                                "display": "table",
+                                "infoId": "chartProcedure",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Procedure",
+                                      "extraction, erupted tooth or exposed root (elevation and/or forceps removal)"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 19, 2026 08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Procedure",
+                                      "Patient referral for dental care (procedure)"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 09:38"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Procedure",
+                                      "Depression screening (procedure)"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Sep 5, 2026 09:12"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Detail",
+                                      "Postoperative day"
+                                    ],
+                                    [
+                                      "Value",
+                                      "3"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.chartProcedure",
+                    "title": "Procedure / Case / POD"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.consentDocument.data",
+                                "display": "table",
+                                "infoId": "consentDocument",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.consentDocument",
+                    "title": "Pre-op Checklist Evidence"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "chartSummary.card.intraopRecord.data",
+                                "display": "table",
+                                "infoId": "intraopRecord",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "chartSummary.card.intraopRecord",
+                    "title": "Operative Record / Drains / EBL"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "chartSummary.chartIndex",
+        "title": "Index"
+      }
+    },
+    {
+      "info": {
+        "comp": "chartSummary.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Inpatient Stay – Fictional Care Site 7f969d1e61"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Fictional Care Site 7f969d1e61"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "in-progress"
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

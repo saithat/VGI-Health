@@ -22,11 +22,11 @@
     ],
     [
       "PCP",
-      "Dr. Amir Hassan, Internal Medicine"
+      "Fictional Clinician 9ababdd2e1"
     ],
     [
       "Coverage",
-      "VGI Community Health Plan"
+      "Fictional Health Services 462e7f940b"
     ],
     [
       "Encounter",
@@ -34,11 +34,11 @@
     ],
     [
       "Attending",
-      "Dr. Maya Chen, MD"
+      "Fictional Clinician 72a4c784c7"
     ],
     [
       "Location",
-      "4W-01-A"
+      "Fictional Care Site b2e4732fd6"
     ],
     [
       "Encounter type",
@@ -69,7 +69,7 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
           "workspace.activity|shiftWorklist",
@@ -80,16 +80,16 @@
           "Unit Census"
         ],
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (2)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (2)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
         ],
         [
           "workspace.lookup",
@@ -102,7 +102,7 @@
       ]
     ],
     [
-      "Nursing Navigator",
+      "Nursing workflow",
       [
         [
           "w4Mar.nav.w4Worklist",
@@ -126,8 +126,8 @@
           "Summary"
         ],
         [
-          "w4Mar.chartWorkspace.chartReview",
-          "Chart Review"
+          "w4Mar.chartWorkspace.chartHistory",
+          "Chart History"
         ]
       ]
     ]
@@ -139,7 +139,7 @@
         "children": [
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyIdentity",
+              "comp": "w4Mar.patientSidebar.storyIdentity",
               "display": "list",
               "infoId": "storyIdentity",
               "label": "Patient",
@@ -173,7 +173,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyPrecautions",
+              "comp": "w4Mar.patientSidebar.storyPrecautions",
               "display": "list",
               "infoId": "storyPrecautions",
               "label": "Code Status / Precautions",
@@ -195,7 +195,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.allergyList",
+              "comp": "w4Mar.patientSidebar.allergyList",
               "display": "list",
               "infoId": "allergyList",
               "label": "Allergies",
@@ -211,7 +211,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyTeam",
+              "comp": "w4Mar.patientSidebar.storyTeam",
               "display": "list",
               "infoId": "storyTeam",
               "label": "PCP / Attending / Care Team",
@@ -219,25 +219,25 @@
                 [
                   [
                     "Record",
-                    "PCP · Dr. Amir Hassan, Internal Medicine"
+                    "PCP · Fictional Clinician 9ababdd2e1"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Attending · Dr. Maya Chen, MD"
+                    "Attending · Fictional Clinician 72a4c784c7"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Attending · Dr. Maya Chen, MD"
+                    "Attending · Fictional Clinician 72a4c784c7"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Registered nurse · Rosa Delgado, RN"
+                    "Registered nurse · Fictional Clinician cb30b6a1ce"
                   ]
                 ]
               ]
@@ -245,7 +245,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyEncounter",
+              "comp": "w4Mar.patientSidebar.storyEncounter",
               "display": "list",
               "infoId": "storyEncounter",
               "label": "Encounter / Location / LOS",
@@ -265,7 +265,7 @@
                 [
                   [
                     "Record",
-                    "Location · 4W-01-A"
+                    "Location · Fictional Care Site b2e4732fd6"
                   ]
                 ],
                 [
@@ -277,7 +277,7 @@
                 [
                   [
                     "Record",
-                    "LOS · 3d 3h (snapshot)"
+                    "LOS · 3d 4h (snapshot)"
                   ]
                 ],
                 [
@@ -291,7 +291,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyWeight",
+              "comp": "w4Mar.patientSidebar.storyWeight",
               "display": "list",
               "infoId": "storyWeight",
               "label": "Weight (kg)",
@@ -307,7 +307,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.vitals",
+              "comp": "w4Mar.patientSidebar.vitals",
               "display": "list",
               "infoId": "vitals",
               "label": "Recent Vitals",
@@ -359,7 +359,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyMedCount",
+              "comp": "w4Mar.patientSidebar.storyMedCount",
               "display": "list",
               "infoId": "storyMedCount",
               "label": "Active Medications",
@@ -375,7 +375,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.problemList",
+              "comp": "w4Mar.patientSidebar.problemList",
               "display": "list",
               "infoId": "problemList",
               "label": "Active Problems",
@@ -463,7 +463,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyLastNote",
+              "comp": "w4Mar.patientSidebar.storyLastNote",
               "display": "list",
               "infoId": "storyLastNote",
               "label": "Last Note",
@@ -471,7 +471,7 @@
                 [
                   [
                     "Record",
-                    "Oct 17, 2026 00:31 · History and physical note · Dr. Chris Haag · Unknown · \n2026-10-17\n\n# Chief Complaint\n- Hunger\n- Frequent Urination\n- Thirst\n- Fatigue\n\n\n# History of Present Illness\nLeanne is a 53 year-old nonhispanic white female. Patient has a history of overdose (disorder), medication review due (situation), acute viral pharyngitis (disorder), vi… (excerpt; full note in Chart Review) · current"
+                    "Oct 17, 2026 00:31 · History and physical note · Fictional Clinician ebea885878 · Unknown · \n2026-10-17\n\n# Chief Complaint\n- Hunger\n- Frequent Urination\n- Thirst\n- Fatigue\n\n\n# History of Present Illness\nLeanne is a 53 year-old nonhispanic white female. Patient has a history of overdose (disorder), medication review due (situation), acute viral pharyngitis (disorder), vi… (excerpt; full note in Chart History) · current"
                   ]
                 ]
               ]
@@ -479,7 +479,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.storyPharmacy",
+              "comp": "w4Mar.patientSidebar.storyPharmacy",
               "display": "list",
               "infoId": "storyPharmacy",
               "label": "Pharmacy",
@@ -488,7 +488,7 @@
           },
           {
             "info": {
-              "comp": "w4Mar.storyboard.chartReports",
+              "comp": "w4Mar.patientSidebar.chartReports",
               "display": "list",
               "infoId": "chartReports",
               "label": "Reports",
@@ -503,8 +503,8 @@
             }
           }
         ],
-        "id": "w4Mar.storyboard",
-        "title": "Patient Storyboard"
+        "id": "w4Mar.patientSidebar",
+        "title": "Patient sidebar"
       }
     }
   ],
@@ -642,11 +642,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Maya Chen, MD"
+                    "Fictional Clinician 72a4c784c7"
                   ],
                   [
                     "Location",
-                    "4W-01-A"
+                    "Fictional Care Site b2e4732fd6"
                   ]
                 ],
                 [
@@ -672,11 +672,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Chris Haag"
+                    "Fictional Clinician ebea885878"
                   ],
                   [
                     "Location",
-                    "Greater Lowell Family Practice Pc"
+                    "Fictional Health Services 12a41f1ed7"
                   ]
                 ],
                 [
@@ -702,11 +702,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -732,11 +732,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -762,11 +762,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -792,11 +792,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -822,11 +822,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Tracy Wilderman"
+                    "Fictional Clinician 00d40819c0"
                   ],
                   [
                     "Location",
-                    "Mass General Brigham Urgent Care LLC"
+                    "Fictional Care Site 3a4bf7abdd"
                   ]
                 ],
                 [
@@ -852,11 +852,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -882,11 +882,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -912,11 +912,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -942,11 +942,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Chris Haag"
+                    "Fictional Clinician ebea885878"
                   ],
                   [
                     "Location",
-                    "Greater Lowell Family Practice Pc"
+                    "Fictional Health Services 12a41f1ed7"
                   ]
                 ],
                 [
@@ -972,11 +972,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1002,11 +1002,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1032,11 +1032,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1062,11 +1062,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1092,11 +1092,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1122,11 +1122,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1152,11 +1152,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1182,11 +1182,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Tracy Wilderman"
+                    "Fictional Clinician 00d40819c0"
                   ],
                   [
                     "Location",
-                    "Mass General Brigham Urgent Care LLC"
+                    "Fictional Care Site 3a4bf7abdd"
                   ]
                 ],
                 [
@@ -1212,11 +1212,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1242,11 +1242,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1272,11 +1272,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1302,11 +1302,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Chris Haag"
+                    "Fictional Clinician ebea885878"
                   ],
                   [
                     "Location",
-                    "Greater Lowell Family Practice Pc"
+                    "Fictional Health Services 12a41f1ed7"
                   ]
                 ],
                 [
@@ -1332,11 +1332,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Carlton Koch"
+                    "Fictional Clinician adf6d53fd7"
                   ],
                   [
                     "Location",
-                    "Tewksbury Hospital"
+                    "Fictional Care Site f2aa7b347b"
                   ]
                 ],
                 [
@@ -1362,11 +1362,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Chris Haag"
+                    "Fictional Clinician ebea885878"
                   ],
                   [
                     "Location",
-                    "Greater Lowell Family Practice Pc"
+                    "Fictional Health Services 12a41f1ed7"
                   ]
                 ],
                 [
@@ -1392,11 +1392,11 @@
                   ],
                   [
                     "Provider",
-                    "Dr. Chris Haag"
+                    "Fictional Clinician ebea885878"
                   ],
                   [
                     "Location",
-                    "Greater Lowell Family Practice Pc"
+                    "Fictional Health Services 12a41f1ed7"
                   ]
                 ]
               ]
@@ -1593,7 +1593,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "93.05"
+                                      "82"
                                     ],
                                     [
                                       "Unit",
@@ -1601,19 +1601,19 @@
                                     ],
                                     [
                                       "Flag",
-                                      ""
+                                      "N"
                                     ],
                                     [
                                       "Range",
-                                      ""
+                                      "70–99"
                                     ],
                                     [
                                       "Collected",
-                                      "Oct 17, 2026 00:31"
+                                      "Nov 2, 2026 07:15"
                                     ],
                                     [
                                       "Resulted",
-                                      ""
+                                      "Nov 2, 2026 08:15"
                                     ],
                                     [
                                       "Status",

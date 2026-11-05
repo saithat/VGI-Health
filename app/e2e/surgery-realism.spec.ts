@@ -63,7 +63,7 @@ test("surgeon opens a case, documents a note, loads orders and returns to clinic
   await expect(
     page.getByRole("button", { name: "Brief Op Note", exact: true }),
   ).toBeVisible();
-  // Every case-navigator destination is a real component click, including the queues.
+  // Every case-workflow destination is a real component click, including the queues.
   let current = "w6PreOp";
   for (const [target, title] of [
     ["w6Orders", "Orders"],

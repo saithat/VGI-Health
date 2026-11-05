@@ -11,11 +11,11 @@ namespace Ehr.Canonical.W7
 
 open Ehr.Canonical
 
-/-- The W7 navigator (the decision screen is reached from the review). -/
+/-- The W7 workflow (the decision screen is reached from the review). -/
 def nav : List (ScreenId × String) :=
-  [("w2Inbasket", "Results"), ("w7Queue", "Rx Requests")]
+  [("w2Inbox", "Results"), ("w7Queue", "Rx Requests")]
 
-/-- The chart-review tabs on W7 screens. -/
+/-- The chart-history tabs on W7 screens. -/
 def chart : List Block :=
   [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
    (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
@@ -23,16 +23,16 @@ def chart : List Block :=
    (.table, "imaging", "Imaging")]
 
 /-- The shell for a W7 screen. -/
-def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart "In Basket"
+def frame (s : ScreenId) : List Component := ambulatoryShell s nav chart "Inbox"
 
 /-- The refill-request folder. -/
 def queue : Screen :=
   let s := "w7Queue"
-  { id := s, title := "In Basket: Rx Requests", workflow := "W7"
-    components := ambulatoryInBasketShell s nav chart ++ [
-      { table s "folders" "inBasketFolders" "In Basket folders" (parent := some "encounterNavigator") with tag := "present.folderList" },
-      { clinicalSection s "messages" "Rx Requests" (parent := some "inBasketColumns") with tag := "present.messages" },
-      { table s "items" "inBasketRxRequests" "Requests" (parent := some "messages") with tag := "present.messages" },
+  { id := s, title := "Inbox: Rx Requests", workflow := "W7"
+    components := ambulatoryInboxShell s nav chart ++ [
+      { table s "folders" "inboxFolders" "Inbox folders" (parent := some "encounterWorkflow") with tag := "present.folderList" },
+      { clinicalSection s "messages" "Rx Requests" (parent := some "inboxColumns") with tag := "present.messages" },
+      { table s "items" "inboxRxRequests" "Requests" (parent := some "messages") with tag := "present.messages" },
       clinicalSection s "selected" "Selected refill request" (parent := some "messages"),
       panel s "request" "refillRequest" "Requested prescription" (parent := some "selected"),
       { goto s "open" "w7Review" "Review request" (parent := some "messages") with

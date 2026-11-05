@@ -35,7 +35,7 @@ def cases : List (Nat × Facts × User × List Event × String) :=
       path Bad.dailyMethotrexateDefault "feature.signOralMethotrexate" "signOralMethotrexate" hospital,
       "required default"),
    (31, resultFacts, physician,
-      [.click "home.work.w2Inbasket", .click "w2Inbasket.openResult",
+      [.click "home.work.w2Inbox", .click "w2Inbox.openResult",
        .enter "w2Result.resultAction" (.code "repeat"), .click "w2Result.message",
        .enter "w2Message.patientMessage" (.text "Repeat potassium tomorrow"), .click "w2Message.return",
        .click "w2Result.commit.ackResult"], "structured display or action label required"),

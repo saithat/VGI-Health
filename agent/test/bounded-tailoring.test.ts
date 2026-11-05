@@ -97,7 +97,7 @@ describe('bounded tailoring seams',()=>{
     const before=programSchema.parse(JSON.parse(await readFile(path.join(REPO_ROOT,'releases/v1/personas/P1.json'),'utf8')));
     const params=personaParamsSchema.parse(JSON.parse(await readFile(path.join(worldDir,'personas/P1.json'),'utf8')));
     const source=dayScheduleSchema.parse(JSON.parse(await readFile(path.join(worldDir,'schedules/day-01/P1.json'),'utf8')));
-    const task=source.tasks.find(t=>t.workflow==='W1');if(!task)throw Error('W1 task');
+    const task=source.tasks.find(t=>t.workflow==='W1'&&t.choices.orders.length>0);if(!task)throw Error('W1 task with an order');
     const schedule={...source,tasks:[task]};
     let practiced:UserMemory|undefined;
     let result;

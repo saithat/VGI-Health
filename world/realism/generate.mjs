@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // Pure output augmentation: imported fixtures and all simulator task inputs stay unchanged.
+import { fictionalize } from '../../scripts/fictional-identities.mjs';
 import { resolve, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync, readdirSync, rmSync, existsSync } from 'node:fs';
@@ -28,7 +29,7 @@ export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROO
       for(const e of result.bundle.entry) {
         const key=resourceKey(e),prior=old.get(key);
         if(!prior||JSON.stringify({...prior.resource,id:e.resource.id})!==JSON.stringify(e.resource)) {
-          overlays.push({source:relative(ROOT,file),sourceFullUrl:prior?.fullUrl??null,key,resource:e.resource,action:prior?'replace':'create'});
+          overlays.push({source:relative(ROOT,file),sourceFullUrl:prior?.fullUrl??null,key,resource:fictionalize(e.resource),action:prior?'replace':'create'});
           audit.changed[e.resource.resourceType]=(audit.changed[e.resource.resourceType]??0)+1;
         }
       }
@@ -43,7 +44,7 @@ export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROO
       }
       const nka=result.bundle.entry.find(e=>e.resource.resourceType==='AllergyIntolerance'&&e.resource.code?.coding?.some(c=>c.code==='716186003'));
       if(nka) {
-        const provenance={resourceType:'Provenance',id:id(pid,'allergy-review'),target:[ref(nka.resource)],recorded:'2026-11-02T07:00:00-08:00',activity:cc('allergy-review','Allergies reviewed'),agent:[{who:patient.generalPractitioner[0]}]};
+        const provenance={resourceType:'Provenance',id:id(pid,'allergy-review'),target:[ref(nka.resource)],recorded:'2026-11-02T07:00:00-08:00',activity:cc('allergy-review','Allergies reviewed'),agent:[{who:fictionalize(patient.generalPractitioner[0])}]};
         overlays.push({source:relative(ROOT,file),sourceFullUrl:null,key:`Provenance/${provenance.id}`,resource:provenance,action:'create'});
       }
       audit.sourceFiles.push({file:relative(ROOT,file),sha256:hash(bytes)});

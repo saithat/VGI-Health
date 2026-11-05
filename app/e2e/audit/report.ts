@@ -126,7 +126,7 @@ export function writeReport(rows: Control[], scope: string) {
           `| ${[`${r.route} · ${r.persona} · ${r.program}`, r.screen, r.label, r.comp ?? "—", `${r.kind} / ${r.owner}`, r.status, r.effect].map(escape).join(" | ")} |`,
       )
       .join("\n") +
-    "\n";
+    (controls.length ? "\n" : "");
   const baseline = existsSync(resolve(directory, "buttons-before-app.json"))
     ? JSON.parse(
         readFileSync(resolve(directory, "buttons-before-app.json"), "utf8"),
@@ -134,7 +134,7 @@ export function writeReport(rows: Control[], scope: string) {
     : [];
   const countRow = (label: string, rows: Control[]) =>
     `| ${label} | ${["works", "disabled-with-reason", "dead", "error"].map((status) => rows.filter((r) => r.status === status).length).join(" | ")} |`;
-  const comparison = `| Scope | Works | Disabled with reason | Dead | Error |\n|---|---:|---:|---:|---:|\n${countRow("App baseline", baseline)}\n${countRow(
+  const comparison = `| Scope | Works | Disabled with reason | Dead | Error |\n|---|---:|---:|---:|---:|\n${baseline.length ? countRow("App baseline", baseline) + "\n" : ""}${countRow(
     "App final",
     all.filter((r) => r.owner === "app"),
   )}\n${countRow(
@@ -143,11 +143,11 @@ export function writeReport(rows: Control[], scope: string) {
   )}\n`;
   writeFileSync(
     resolve(directory, "buttons.md"),
-    `# Button audit\n\nGenerated ${new Date().toISOString()}. Preview build; one Chromium worker.\n\n${comparison}\nApp coverage includes additional worklist and drawer controls after the baseline. A complete pre-fix Lean census was not retained; see README.md.\n\nEach sampled enabled control is clicked from an observed checkpoint. A changed input echo alone does not certify a Lean search. Selected navigation and reset controls must provide feedback or a disabled reason. Disabled commits are recorded with Lean's actual reason; the audit never fabricates safety evidence to enable a write.\n\n${table(all)}`,
+    `# Button audit\n\nGenerated ${new Date().toISOString()}. Preview build; one Chromium worker. State budget: ${process.env.AUDIT_MAX_STATES ?? 48} per persona.\n\n${comparison}\nThese are sampled controls under the recorded state budget. Historical comparisons require retained baseline inputs.\n\nEach sampled enabled control is clicked from an observed checkpoint. A changed input echo alone does not certify a Lean search. Selected navigation and reset controls must provide feedback or a disabled reason. Disabled commits are recorded with Lean's actual reason; the audit never fabricates safety evidence to enable a write.\n\n${table(all)}`,
   );
   writeFileSync(
     resolve(directory, "ehr-dead-controls.md"),
-    `# Lean-rendered dead controls\n\nContent lane: remove inert components or give them interpreter behavior. Render lane: emit click component metadata for nav/stepper destinations. Navigator entries without interpreter buttons are listed explicitly. A semantic progress stepper is a noninteractive list, not a button.\n\n${table(all.filter((r) => r.owner === "lean" && (r.status === "dead" || r.status === "error")))}`,
+    `# Lean-rendered dead controls\n\nContent lane: remove inert components or give them interpreter behavior. Render lane: emit click component metadata for nav/stepper destinations. Workflow entries without interpreter buttons are listed explicitly. A semantic progress stepper is a noninteractive list, not a button.\n\n${table(all.filter((r) => r.owner === "lean" && (r.status === "dead" || r.status === "error")))}`,
   );
 }
 

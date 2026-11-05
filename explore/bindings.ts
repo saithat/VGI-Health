@@ -5,7 +5,7 @@ import type { DesignPoint, TaskExpr, Workflow } from './design.js';
 /** Abstract task realization records; screen names describe allocation, never clinical prerequisites. */
 const screens:Record<Workflow,Record<string,string[]>>={
  W1:{select:['home'],room:['w1Rooming'],reconcile:['w1MedRec'],'history-exam-assessment':['w1Hpi','w1Exam'],orders:['w1Orders','w1Labs'],'review-sign-orders':['w1Verify','w1Sign'],'close-sign-note':['w1Close']},
- W2:{'select-result':['w2Inbasket'],'review-result-trend':['w2Result'],'action-message-followup':['w2Result','w2Message'],'ack-result':['w2Result']},
+ W2:{'select-result':['w2Inbox'],'review-result-trend':['w2Result'],'action-message-followup':['w2Result','w2Message'],'ack-result':['w2Result']},
  W3:{'select-track-board':['w3TrackBoard'],triage:['w3Triage'],'provider-documentation':['w3Provider'],'draft-order':['w3Orders','w3OrderSets'],'review-sign-orders':['w3Sign'],admit:['w3Disposition'],discharge:['w3Disposition'],transfer:['w3Disposition'],observe:['w3Disposition'],consult:['w3Disposition'],'finalize-note':['w3Provider']},
  W4:{'select-task':['w4Worklist'],mar:['w4Mar'],'scan-assess-independent-check':['w4Admin'],'record-administration':['w4Admin'],'flowsheet-sbar':['w4Flowsheet','w4Handoff']},
  W5:{'select-room':['home','w5Rooming'],growth:['w5Growth'],note:['w5Note'],'weight-based-orders':['w5Orders'],'review-sign-orders':['w5Sign'],vaccines:['w5Immunizations'],'close-sign-visit':['w5Close']},

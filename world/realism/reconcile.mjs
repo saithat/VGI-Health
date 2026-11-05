@@ -1,3 +1,4 @@
+import { fictionalize } from '../../scripts/fictional-identities.mjs';
 import { cc, ref, text, title, tag, id, SNOMED, calendarAgo, SYSTEM } from './common.mjs';
 
 const ALLERGENS = { '256355007':'Soy', '84489001':'Mold', '264287008':'Animal dander', '256277009':'Grass pollen', '260147004':'Dust mites', '782576004':'Tree pollen', '735029006':'Shellfish', '735971005':'Fish', '111088007':'Latex', '3718001':"Cow's milk", '288328004':'Bee venom', '442571000124108':'Tree nuts', '762952008':'Peanut', '412071004':'Wheat', '102263004':'Egg' };
@@ -113,5 +114,5 @@ export function reconcileBundle(source, { date = '2026-11-02' } = {}) {
   }
   for (const r of resources) if (['Location','Organization'].includes(r.resourceType)) r.name = title(r.name);
   // NKA assertions superseded by a new real allergy are withdrawn by the day seeder.
-  return { bundle, rejected };
+  return { bundle: fictionalize(bundle), rejected: fictionalize(rejected) };
 }

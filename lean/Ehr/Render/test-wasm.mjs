@@ -58,7 +58,14 @@ function checkUi(ui, view, program, display, name) {
   assert.deepEqual(ui.banner.slice(0, 3), [['Patient', display.banner.name], ['DOB', display.banner.dob ? new Date(display.banner.dob + 'T00:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''], ['MRN', display.banner.mrn]], name);
   assert.equal(ui.title, view.title);
   assert.deepEqual(ui.compact ?? [], view.items.filter(it => it.shown && it.comp.size === "compact").map(it => it.comp.id), `${name}: exact compact side table`);
-  for (const [group, entries] of ui.nav) {
+  // This corpus has one selected source patient and no department directory.
+  // Check the added workspace bar independently, retaining the exact clinical
+  // component multiset comparison below.
+  const clinicalNav = program.patientSelection ? ui.nav.slice(1) : ui.nav;
+  if (program.patientSelection) assert.deepEqual(ui.nav[0], ['Activities', [
+    ['workspace.lookup', 'Patient Lookup'], ['workspace.return', 'Return to patient list'],
+  ]], `${name}: exact selected-patient workspace controls`);
+  for (const [group, entries] of clinicalNav) {
     assert.ok(group.length);
     for (const [id, label] of entries) {
       assert.ok(view.items.some((it) => it.shown && it.comp.id === id && it.comp.kind?.button?.action?.goto), `${name}: nav must target a shown goto component`);
@@ -67,9 +74,9 @@ function checkUi(ui, view, program, display, name) {
     }
   }
   const screen = program.screens.find((sc) => sc.id === view.screen);
-  // A usable source navigator or an explicit clinical activity replaces the
+  // A usable source workflow or an explicit clinical activity replaces the
   // generated overview. Both cases retain their exact shown source controls.
-  const activityLayout = ui.nav.some(([, entries]) => entries.length) || view.items.some(item =>
+  const activityLayout = clinicalNav.some(([, entries]) => entries.length) || view.items.some(item =>
     item.shown && (item.comp.tag === 'layout.clinicalActivity' || item.comp.tag.endsWith('.layout.clinicalActivity')));
   if (activityLayout) {
     assert.ok(!ui.workspace.some(node => node.stepper), `${name}: clinical activity omits a redundant progress strip`);
@@ -92,10 +99,10 @@ function checkUi(ui, view, program, display, name) {
     if (!id || (tag === 'button' && ['toggle', 'confirm'].includes(props.role))) return [];
     return [`${id}:${tag}`];
   });
-  sourceKeys.push(...ui.nav.flatMap(([, entries]) => entries.map(([id]) => `${id}:button`)));
-  const shellGroup = (it) => it.comp.kind?.group?.collapsible === false && /(^|\.)(nav|navigator)$/.test(it.comp.tag);
+  sourceKeys.push(...clinicalNav.flatMap(([, entries]) => entries.map(([id]) => `${id}:button`)));
+  const shellGroup = (it) => it.comp.kind?.group?.collapsible === false && /(^|\.)(nav|workflow)$/.test(it.comp.tag);
   for (const item of view.items.filter((it) => it.shown && shellGroup(it))) {
-    assert.ok(ui.nav.some(([title]) => title === (item.comp.label || 'Navigator')), `${name}: navigator group heading retained`);
+    assert.ok(clinicalNav.some(([title]) => title === (item.comp.label || 'Workflow')), `${name}: workflow group heading retained`);
   }
   assert.deepEqual(sourceKeys.sort(), view.items.filter((it) => it.shown && it.comp.kind !== 'banner' && !shellGroup(it)).map((it) => `${it.comp.id}:${sourceKind(it.comp.kind)}`).sort(), `${name}: every shown component exactly once`);
   for (const node of nodes) {

@@ -1,402 +1,1359 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "w5Rooming.chartSearch"}},
-  {"section":
-   {"title": "Reason for visit",
-    "id": "w5Rooming.reason",
-    "children":
-    [{"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Chief complaint",
-       "kind": "text",
-       "humanOnly": false,
-       "comp": "w5Rooming.chiefComplaint"}}]}},
-  {"section":
-   {"title": "Vitals and growth measurements",
-    "id": "w5Rooming.measures",
-    "children":
-    [{"field":
-      {"value": "15.7",
-       "unit": "kg",
-       "required": true,
-       "provenance": "record:weightToday",
-       "pendingConfirm": true,
-       "label": "Weight today (kg)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w5Rooming.weight"}},
-     {"button":
-      {"role": "confirm",
-       "label": "Confirm prefilled value",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w5Rooming.weight",
-       "blockedReason": null}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Height (cm)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w5Rooming.height"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": false,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Head circumference (cm)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w5Rooming.headCircumference"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Temperature (°C)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w5Rooming.temperature"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Pulse (beats/min)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w5Rooming.heartRate"}},
-     {"field":
-      {"value": null,
-       "unit": null,
-       "required": true,
-       "provenance": null,
-       "pendingConfirm": false,
-       "label": "Respirations (/min)",
-       "kind": "qty",
-       "humanOnly": false,
-       "comp": "w5Rooming.respRate"}}]}},
-  {"section":
-   {"title": "Allergies",
-    "id": "w5Rooming.allergyGroup",
-    "children":
-    [{"info":
-      {"rows":
-       [[["Substance", "Allergic disposition (finding)"],
-         ["Reaction", ""],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "Mold (organism)"],
-         ["Reaction", ""],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "House dust mite (organism)"],
-         ["Reaction", ""],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "Animal dander (substance)"],
-         ["Reaction",
-          "Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "Grass pollen (substance)"],
-         ["Reaction", ""],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "Tree pollen (substance)"],
-         ["Reaction", ""],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "Cow's milk (substance)"],
-         ["Reaction", "Wheal (finding), Anaphylaxis (disorder)"],
-         ["Severity", "mild"],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "Glycine max (substance)"],
-         ["Reaction", ""],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]],
-        [["Substance", "Fish (substance)"],
-         ["Reaction",
-          "Dyspnea (finding), Eruption of skin (disorder), Rhinoconjunctivitis (disorder)"],
-         ["Severity", ""],
-         ["Status", "active"],
-         ["Verification", "confirmed"],
-         ["Recorded", "Sep 6, 2024 20:23"]]],
-       "label": "Allergy review",
-       "infoId": "allergyList",
-       "display": "table",
-       "comp": "w5Rooming.allergies"}},
-     {"button":
-      {"role": "secondary",
-       "label": "Mark allergies reviewed",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w5Rooming.review.allergyList",
-       "blockedReason": null}}]}},
-  {"section":
-   {"title": "Medication review",
-    "id": "w5Rooming.medRec",
-    "children":
-    [{"info":
-      {"rows":
-       [[["Medication", "Fexofenadine hydrochloride 30 MG Oral Tablet"],
-         ["Instructions", "Take as needed."],
-         ["Status", "active"],
-         ["Authored", "Sep 6, 2024 20:51"],
-         ["Prescriber", "Dr. Saundra Kuphal"]],
-        [["Medication", "NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector"],
-         ["Instructions", "Take as needed."],
-         ["Status", "active"],
-         ["Authored", "Sep 6, 2024 20:51"],
-         ["Prescriber", "Dr. Saundra Kuphal"]]],
-       "label": "Medications",
-       "infoId": "currentMeds",
-       "display": "table",
-       "comp": "w5Rooming.meds"}},
-     {"valueSet":
-      {"options":
-       [{"label": "Continue", "code": "continue"},
-        {"label": "Stop", "code": "stop"},
-        {"label": "Modify", "code": "modify"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label":
-          "Medication 1: continue / stop / modify — Fexofenadine hydrochloride 30 MG Oral Tablet",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w5Rooming.decision0"}}],
-       "allowCustom": true}},
-     {"valueSet":
-      {"options":
-       [{"label": "Continue", "code": "continue"},
-        {"label": "Stop", "code": "stop"},
-        {"label": "Modify", "code": "modify"}],
-       "children":
-       [{"field":
-         {"value": null,
-          "unit": null,
-          "required": true,
-          "provenance": null,
-          "pendingConfirm": false,
-          "label":
-          "Medication 2: continue / stop / modify — NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector",
-          "kind": "code",
-          "humanOnly": false,
-          "comp": "w5Rooming.decision1"}}],
-       "allowCustom": true}},
-     {"button":
-      {"role": "secondary",
-       "label": "Mark medications reviewed",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "w5Rooming.review.currentMeds",
-       "blockedReason": null}}]}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Encounters",
-     "Notes",
-     "Results",
-     "Medications",
-     "Problems",
-     "Allergies",
-     "Imaging",
-     "Immunizations"],
-    "id": "w5Rooming.chart",
-    "body":
-    [{"info":
-      {"rows":
-       [[["Encounter", "Encounter for check up (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Oct 14, 2026 22:23"],
-         ["End", "Oct 14, 2026 22:51"],
-         ["Reason", "Patient referral for dental care (procedure)"],
-         ["Provider", "Dr. Saundra Kuphal"],
-         ["Location", "COOLEY DICKINSON HOSPITAL INC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Oct 7, 2026 22:23"],
-         ["End", "Oct 7, 2026 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Apr 8, 2026 22:23"],
-         ["End", "Apr 8, 2026 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Oct 8, 2025 22:23"],
-         ["End", "Oct 8, 2025 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Apr 9, 2025 22:23"],
-         ["End", "Apr 9, 2025 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Jan 8, 2025 21:23"],
-         ["End", "Jan 8, 2025 21:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Oct 9, 2024 22:23"],
-         ["End", "Oct 9, 2024 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Encounter for problem (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Sep 6, 2024 20:23"],
-         ["End", "Sep 6, 2024 20:51"],
-         ["Reason", "Allergic disposition (finding)"],
-         ["Provider", "Dr. Saundra Kuphal"],
-         ["Location", "COOLEY DICKINSON HOSPITAL INC"]],
-        [["Encounter", "Encounter for problem (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Aug 22, 2024 01:23"],
-         ["End", "Aug 22, 2024 01:38"],
-         ["Reason", "Cow's milk (substance)"],
-         ["Provider", "Dr. Saundra Kuphal"],
-         ["Location", "COOLEY DICKINSON HOSPITAL INC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Jul 10, 2024 22:23"],
-         ["End", "Jul 10, 2024 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Apr 10, 2024 22:23"],
-         ["End", "Apr 10, 2024 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Feb 7, 2024 21:23"],
-         ["End", "Feb 7, 2024 21:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Dec 6, 2023 21:23"],
-         ["End", "Dec 6, 2023 21:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]],
-        [["Encounter", "Well child visit (procedure)"],
-         ["Class", "AMB"],
-         ["Start", "Nov 1, 2023 22:23"],
-         ["End", "Nov 1, 2023 22:38"],
-         ["Reason", ""],
-         ["Provider", "Dr. Dennis Effertz"],
-         ["Location", "NORTHAMPTON WELLNESS ASSOCIATES LLC"]]],
-       "label": "Encounters",
-       "infoId": "encounterHistory",
-       "display": "table",
-       "comp": "w5Rooming.chart.encounterHistory"}}]}},
-  {"button":
-   {"role": "nav",
-    "label": "Review growth",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w5Rooming.next",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Back",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w5Rooming.back",
-    "blockedReason": null}},
-  {"button":
-   {"role": "nav",
-    "label": "Patient workspace",
-    "hotkey": null,
-    "enabled": true,
-    "comp": "w5Rooming.home",
-    "blockedReason": null}}],
- "viewer": "Nurse practitioner",
- "title": "Rooming",
- "sourceLabels": [["record:weightToday", "From chart — Weight (kg)"]],
- "side": [],
- "screen": "w5Rooming",
- "nav":
- [["Visit navigator",
-   [["w5Rooming.nav.w5Growth", "Growth Charts"],
-    ["w5Rooming.nav.w5Note", "Visit Note"],
-    ["w5Rooming.nav.w5Orders", "Orders"],
-    ["w5Rooming.nav.w5Immunizations", "Immunizations"],
-    ["w5Rooming.nav.w5Close", "Sign Visit"]]]],
- "modal": null,
- "fieldSources":
- [["w5Rooming.weight",
-   "Source: Chart weight recorded today · chart as of 2026-11-02"]],
- "banner":
- [["Patient", "Schneider, Isidro Monte"],
-  ["DOB", "Nov 1, 2023"],
-  ["MRN", "57667085"],
-  ["Age / sex", "3 / M"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Last encounter", "AMB"],
-  ["Last provider", "Dr. Saundra Kuphal"],
-  ["Last location", "COOLEY DICKINSON HOSPITAL INC"],
-  ["Allergies",
-   "Allergic disposition (finding); Mold (organism); House dust mite (organism); Animal dander (substance); Grass pollen (substance); Tree pollen (substance); Cow's milk (substance); Glycine max (substance); Fish (substance)"],
-  ["Code status", "Not recorded"],
-  ["Weight", "15.7 kg · Nov 2, 2026 08:20"],
-  ["Isolation", "Not recorded"]]}
+{
+  "banner": [
+    [
+      "Patient",
+      "Kling, Tashia Corazon"
+    ],
+    [
+      "DOB",
+      "Feb 25, 2017"
+    ],
+    [
+      "MRN",
+      "23407288"
+    ],
+    [
+      "Age / sex",
+      "9 / F"
+    ],
+    [
+      "Language",
+      "English (United States)"
+    ],
+    [
+      "PCP",
+      "Fictional Clinician 5e2e1f6add"
+    ],
+    [
+      "Coverage",
+      "Fictional Health Services 462e7f940b"
+    ],
+    [
+      "Last encounter",
+      ""
+    ],
+    [
+      "Last provider",
+      ""
+    ],
+    [
+      "Last location",
+      ""
+    ],
+    [
+      "Encounter type",
+      "Office Visit – Pediatrics"
+    ],
+    [
+      "Department",
+      "Pediatrics"
+    ],
+    [
+      "Allergies",
+      "No Known Allergies"
+    ],
+    [
+      "Code status",
+      "Not recorded"
+    ],
+    [
+      "Weight",
+      "35.0 kg · Nov 2, 2026 08:00"
+    ],
+    [
+      "Isolation",
+      "Not recorded"
+    ]
+  ],
+  "fieldSources": [
+    [
+      "w5Rooming.weight",
+      "Source: Chart weight recorded today · chart as of 2026-11-02"
+    ]
+  ],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|scheduleTasks",
+          "Schedule"
+        ],
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ],
+        [
+          "workspace.return",
+          "Return to Schedule"
+        ]
+      ]
+    ],
+    [
+      "Visit workflow",
+      [
+        [
+          "w5Rooming.nav.w5Growth",
+          "Growth Charts"
+        ],
+        [
+          "w5Rooming.nav.w5Note",
+          "Visit Note"
+        ],
+        [
+          "w5Rooming.nav.w5Orders",
+          "Orders"
+        ],
+        [
+          "w5Rooming.nav.w5Immunizations",
+          "Immunizations"
+        ],
+        [
+          "w5Rooming.nav.w5Close",
+          "Sign Visit"
+        ]
+      ]
+    ],
+    [
+      "Chart workspace",
+      [
+        [
+          "w5Rooming.chartWorkspace.chartSummary",
+          "Summary"
+        ],
+        [
+          "w5Rooming.chartWorkspace.chartHistory",
+          "Chart History"
+        ]
+      ]
+    ]
+  ],
+  "screen": "w5Rooming",
+  "side": [
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyIdentity",
+              "display": "list",
+              "infoId": "storyIdentity",
+              "label": "Patient",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Name · Kling, Tashia Corazon"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Age / sex · 9 / F"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "MRN · 23407288"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "DOB · Feb 25, 2017"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyPrecautions",
+              "display": "list",
+              "infoId": "storyPrecautions",
+              "label": "Code Status / Precautions",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Code status · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Isolation · Not recorded"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.allergyList",
+              "display": "list",
+              "infoId": "allergyList",
+              "label": "Allergies",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "No Known Allergies"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyTeam",
+              "display": "list",
+              "infoId": "storyTeam",
+              "label": "PCP / Attending / Care Team",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "PCP · Fictional Clinician 5e2e1f6add"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Attending · Not recorded"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "primary performer · Fictional Clinician adf6d53fd7"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyEncounter",
+              "display": "list",
+              "infoId": "storyEncounter",
+              "label": "Encounter / Location / LOS",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Encounter · Office Visit – Pediatrics"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Department · Pediatrics"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Location · Fictional Health Services 00483c1853"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Admitted / start · Jul 2, 2026 02:04"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "LOS · 0d 0h (recorded stay)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Status · finished"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyWeight",
+              "display": "list",
+              "infoId": "storyWeight",
+              "label": "Weight (kg)",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Measured weight · 35.0 kg · 2026-11-02T08:00:00-08:00"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.vitals",
+              "display": "list",
+              "infoId": "vitals",
+              "label": "Recent Vitals",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Body weight 35 kg (today)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body Height 130.2 cm (Feb 28, 2026 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Feb 28, 2026 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Ratio] 19.75 kg/m2 (Feb 28, 2026 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index (BMI) [Percentile] Per age and sex 88.593 % (Feb 28, 2026 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Blood pressure panel with all children optional 105/87 mm[Hg] (Feb 28, 2026 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Heart rate 80 /min (Feb 28, 2026 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Respiratory rate 15 /min (Feb 28, 2026 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Weight-for-length Per age and sex 95.292 % (Jan 30, 2021 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Head Occipital-frontal circumference Percentile 34.98 % (Jan 30, 2021 00:28)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Head Occipital-frontal circumference 48.03 cm (Jan 30, 2021 00:28)"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyMedCount",
+              "display": "list",
+              "infoId": "storyMedCount",
+              "label": "Active Medications",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Active/on-hold orders · 0"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.problemList",
+              "display": "list",
+              "infoId": "problemList",
+              "label": "Active Problems",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyLastNote",
+              "display": "list",
+              "infoId": "storyLastNote",
+              "label": "Last Note",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Jul 2, 2026 02:04 · History and physical note · Fictional Clinician adf6d53fd7 · Unknown · \n2026-07-02\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nTashia is a 9 year-old nonhispanic asian female. Patient has a history of fracture of ankle (disorder), partial thickness burn (disorder), medication review due (situation), fracture of bone (disorder), o… (excerpt; full note in Chart History) · current"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.storyPharmacy",
+              "display": "list",
+              "infoId": "storyPharmacy",
+              "label": "Pharmacy",
+              "rows": []
+            }
+          },
+          {
+            "info": {
+              "comp": "w5Rooming.patientSidebar.chartReports",
+              "display": "list",
+              "infoId": "chartReports",
+              "label": "Reports",
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Department reports are informational in this offline demonstration. · Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w5Rooming.patientSidebar",
+        "title": "Patient sidebar"
+      }
+    }
+  ],
+  "sourceLabels": [
+    [
+      "record:weightToday",
+      "From chart — Weight (kg)"
+    ]
+  ],
+  "title": "Rooming",
+  "viewer": "Nurse practitioner",
+  "workspace": [
+    {
+      "field": {
+        "comp": "w5Rooming.chartSearch",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Search chart",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w5Rooming.chiefComplaint",
+              "humanOnly": false,
+              "kind": "text",
+              "label": "Chief complaint",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w5Rooming.reason",
+        "title": "Reason for visit"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "field": {
+              "comp": "w5Rooming.weight",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Weight today (kg)",
+              "pendingConfirm": true,
+              "provenance": "record:weightToday",
+              "required": true,
+              "unit": "kg",
+              "value": "35.0"
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w5Rooming.weight",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Confirm prefilled value",
+              "role": "confirm"
+            }
+          },
+          {
+            "field": {
+              "comp": "w5Rooming.height",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Height (cm)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w5Rooming.headCircumference",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Head circumference (cm)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": false,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w5Rooming.temperature",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Temperature (°C)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w5Rooming.heartRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Pulse (beats/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          },
+          {
+            "field": {
+              "comp": "w5Rooming.respRate",
+              "humanOnly": false,
+              "kind": "qty",
+              "label": "Respirations (/min)",
+              "pendingConfirm": false,
+              "provenance": null,
+              "required": true,
+              "unit": null,
+              "value": null
+            }
+          }
+        ],
+        "id": "w5Rooming.measures",
+        "title": "Vitals and growth measurements"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w5Rooming.allergies",
+              "display": "table",
+              "infoId": "allergyList",
+              "label": "Allergy review",
+              "rows": [
+                [
+                  [
+                    "Substance",
+                    "No Known Allergies"
+                  ],
+                  [
+                    "Reaction",
+                    ""
+                  ],
+                  [
+                    "Severity",
+                    ""
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Nov 2, 2026"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w5Rooming.review.allergyList",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Mark allergies reviewed",
+              "role": "secondary"
+            }
+          }
+        ],
+        "id": "w5Rooming.allergyGroup",
+        "title": "Allergies"
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "info": {
+              "comp": "w5Rooming.meds",
+              "display": "table",
+              "infoId": "currentMeds",
+              "label": "Medications",
+              "rows": []
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w5Rooming.decision0",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Medication 1: continue / stop / modify",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "continue",
+                  "label": "Continue"
+                },
+                {
+                  "code": "stop",
+                  "label": "Stop"
+                },
+                {
+                  "code": "modify",
+                  "label": "Modify"
+                }
+              ]
+            }
+          },
+          {
+            "valueSet": {
+              "allowCustom": true,
+              "children": [
+                {
+                  "field": {
+                    "comp": "w5Rooming.decision1",
+                    "humanOnly": false,
+                    "kind": "code",
+                    "label": "Medication 2: continue / stop / modify",
+                    "pendingConfirm": false,
+                    "provenance": null,
+                    "required": true,
+                    "unit": null,
+                    "value": null
+                  }
+                }
+              ],
+              "options": [
+                {
+                  "code": "continue",
+                  "label": "Continue"
+                },
+                {
+                  "code": "stop",
+                  "label": "Stop"
+                },
+                {
+                  "code": "modify",
+                  "label": "Modify"
+                }
+              ]
+            }
+          },
+          {
+            "button": {
+              "blockedReason": null,
+              "comp": "w5Rooming.review.currentMeds",
+              "enabled": true,
+              "hotkey": null,
+              "label": "Mark medications reviewed",
+              "role": "secondary"
+            }
+          }
+        ],
+        "id": "w5Rooming.medRec",
+        "title": "Medication review"
+      }
+    },
+    {
+      "tabs": {
+        "body": [
+          {
+            "info": {
+              "comp": "w5Rooming.chart.encounterHistory",
+              "display": "table",
+              "infoId": "encounterHistory",
+              "label": "Encounters",
+              "rows": [
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 2, 2026 02:04"
+                  ],
+                  [
+                    "End",
+                    "Jul 2, 2026 02:19"
+                  ],
+                  [
+                    "Reason",
+                    "Fracture of ankle (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician adf6d53fd7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 00483c1853"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Apr 21, 2026 01:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 21, 2026 02:28"
+                  ],
+                  [
+                    "Reason",
+                    "Fracture of bone (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician c53450af66"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site e758a56380"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 28, 2026 00:28"
+                  ],
+                  [
+                    "End",
+                    "Feb 28, 2026 00:43"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ebea885878"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3787ee4e5e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 1, 2026 00:28"
+                  ],
+                  [
+                    "End",
+                    "Feb 1, 2026 00:43"
+                  ],
+                  [
+                    "Reason",
+                    "Otitis media (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician adf6d53fd7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 00483c1853"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "May 6, 2025 01:28"
+                  ],
+                  [
+                    "End",
+                    "May 6, 2025 01:43"
+                  ],
+                  [
+                    "Reason",
+                    "Partial thickness burn (disorder)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician adf6d53fd7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 00483c1853"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Emergency Visit – Emergency Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Emergency"
+                  ],
+                  [
+                    "Start",
+                    "Mar 25, 2025 01:28"
+                  ],
+                  [
+                    "End",
+                    "Mar 25, 2025 02:28"
+                  ],
+                  [
+                    "Reason",
+                    "Burn injury (morphologic abnormality)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician c53450af66"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site e758a56380"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Mar 25, 2025 01:28"
+                  ],
+                  [
+                    "End",
+                    "Apr 4, 2025 01:43"
+                  ],
+                  [
+                    "Reason",
+                    "Patient transfer to skilled nursing facility (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 0e7e99c758"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 5e9f3ee754"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 22, 2025 00:28"
+                  ],
+                  [
+                    "End",
+                    "Feb 22, 2025 00:43"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ebea885878"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3787ee4e5e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 24, 2024 00:28"
+                  ],
+                  [
+                    "End",
+                    "Feb 24, 2024 01:01"
+                  ],
+                  [
+                    "Reason",
+                    "Patient referral for dental care (procedure)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician adf6d53fd7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 00483c1853"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 17, 2024 00:28"
+                  ],
+                  [
+                    "End",
+                    "Feb 17, 2024 00:43"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ebea885878"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3787ee4e5e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 11, 2023 00:28"
+                  ],
+                  [
+                    "End",
+                    "Feb 11, 2023 00:43"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ebea885878"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3787ee4e5e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 5, 2022 00:28"
+                  ],
+                  [
+                    "End",
+                    "Feb 5, 2022 00:43"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician ebea885878"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site 3787ee4e5e"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Inpatient Stay – Hospital Medicine"
+                  ],
+                  [
+                    "Class",
+                    "Inpatient"
+                  ],
+                  [
+                    "Start",
+                    "Jan 22, 2022 01:09"
+                  ],
+                  [
+                    "End",
+                    "Jan 23, 2022 01:09"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician adf6d53fd7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 00483c1853"
+                  ]
+                ]
+              ]
+            }
+          }
+        ],
+        "id": "w5Rooming.chart",
+        "labels": [
+          "Encounters",
+          "Notes",
+          "Results",
+          "Medications",
+          "Problems",
+          "Allergies",
+          "Imaging",
+          "Immunizations"
+        ],
+        "selected": 0
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w5Rooming.next",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Review growth",
+        "role": "nav"
+      }
+    },
+    {
+      "info": {
+        "comp": "w5Rooming.workspaceStatus",
+        "display": "list",
+        "infoId": "chartStatus",
+        "label": "Workspace status",
+        "rows": [
+          [
+            [
+              "Detail",
+              "Chart snapshot"
+            ],
+            [
+              "Value",
+              "Nov 2, 2026"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Encounter"
+            ],
+            [
+              "Value",
+              "Office Visit – Pediatrics"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Department"
+            ],
+            [
+              "Value",
+              "Pediatrics"
+            ]
+          ],
+          [
+            [
+              "Detail",
+              "Status"
+            ],
+            [
+              "Value",
+              "finished"
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "section": {
+        "children": [
+          {
+            "columns": {
+              "children": [
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w5Rooming.contextPanels.data.chartRecentResults",
+                                "display": "table",
+                                "infoId": "chartRecentResults",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w5Rooming.contextPanels.card.chartRecentResults",
+                    "title": "Recent Results"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w5Rooming.contextPanels.data.chartCareGaps",
+                                "display": "table",
+                                "infoId": "chartCareGaps",
+                                "label": "Records",
+                                "rows": []
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w5Rooming.contextPanels.card.chartCareGaps",
+                    "title": "Health Maintenance"
+                  }
+                },
+                {
+                  "section": {
+                    "children": [
+                      {
+                        "presentation": {
+                          "children": [
+                            {
+                              "info": {
+                                "comp": "w5Rooming.contextPanels.data.storyLastNote",
+                                "display": "table",
+                                "infoId": "storyLastNote",
+                                "label": "Records",
+                                "rows": [
+                                  [
+                                    [
+                                      "Date",
+                                      "Jul 2, 2026 02:04"
+                                    ],
+                                    [
+                                      "Type",
+                                      "History and physical note"
+                                    ],
+                                    [
+                                      "Author",
+                                      "Fictional Clinician adf6d53fd7"
+                                    ],
+                                    [
+                                      "Title",
+                                      "Unknown"
+                                    ],
+                                    [
+                                      "Text",
+                                      "\n2026-07-02\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nTashia is a 9 year-old nonhispanic asian female. Patient has a history of fracture of ankle (disorder), partial thickness burn (disorder), medication review due (situation), fracture of bone (disorder), o… (excerpt; full note in Chart History)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "current"
+                                    ]
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
+                          "kind": "table"
+                        }
+                      }
+                    ],
+                    "id": "w5Rooming.contextPanels.card.storyLastNote",
+                    "title": "Last Note"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "id": "w5Rooming.contextPanels",
+        "title": "Clinical Context"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w5Rooming.back",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Back",
+        "role": "nav"
+      }
+    },
+    {
+      "button": {
+        "blockedReason": null,
+        "comp": "w5Rooming.home",
+        "enabled": true,
+        "hotkey": null,
+        "label": "Patient workspace",
+        "role": "nav"
+      }
+    }
+  ]
+}

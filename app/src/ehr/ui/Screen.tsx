@@ -42,8 +42,8 @@ export function activityIcon(
   if (/schedule/i.test(label)) return "calendar";
   if (/track board|census/i.test(label)) return "bed";
   if (/worklist|sign|assessment|plan/i.test(label)) return "checklist";
-  if (/basket|message/i.test(label)) return "message";
-  if (/chart review|note|history/i.test(label)) return "document";
+  if (/inbox|message/i.test(label)) return "message";
+  if (/chart history|note|history/i.test(label)) return "document";
   return "user";
 }
 function modalTitle(node: UiNode): string | undefined {
@@ -242,7 +242,7 @@ export function WorkflowNav({
       component="nav"
       aria-label="Clinical navigation"
 
-      className={`clinical-navbar${available.length ? "" : " empty-navigator"}`}
+      className={`clinical-navbar${available.length ? "" : " empty-workflow"}`}
       p="sm"
     >
       <div className="workflow-groups">
@@ -261,7 +261,7 @@ export function WorkflowNav({
             <h2 className="nav-group-title">
               <ClinicalIcon
                 name={
-                  /basket|result|request/i.test(group)
+                  /inbox|result|request/i.test(group)
                     ? "message"
                     : /med|mar/i.test(group)
                       ? "pill"
@@ -419,7 +419,7 @@ function StockUiScreenView({
             {screen.side.length > 0 && (
               <aside aria-label="Clinical summary" className="clinical-side">
                 {screen.banner.length > 0 && (
-                  <div className="storyboard-avatar" aria-hidden="true">
+                  <div className="patient-sidebar-avatar" aria-hidden="true">
                     <ClinicalIcon name="user" size={32} />
                   </div>
                 )}

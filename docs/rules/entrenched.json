@@ -2071,7 +2071,7 @@
     "proposedRule": "Support assigning surrogates to receive test results during absences.",
     "specMapping": {
       "element": null,
-      "info": "inbasketItems",
+      "info": "inboxItems",
       "when": "always",
       "prefill": null,
       "friction": "safety",

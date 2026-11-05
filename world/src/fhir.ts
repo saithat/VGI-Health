@@ -164,7 +164,7 @@ function medicationRequestJson(id: string, patientId: string, o: OrderChoice, rx
   return mr;
 }
 
-/** An in-basket refill request: a FHIR Task whose focus is the (contained) prescription to renew. */
+/** An inbox refill request: a FHIR Task whose focus is the (contained) prescription to renew. */
 export function refillTask(id: string, patientId: string, day: number, clock: number, current: OrderChoice, rxnorm: string, lastFilledDaysAgo: number): Json {
   const contained = medicationRequestJson("current-rx", patientId, current, rxnorm, "active", dateTimeOf(day - lastFilledDaysAgo, 9 * 60));
   return {

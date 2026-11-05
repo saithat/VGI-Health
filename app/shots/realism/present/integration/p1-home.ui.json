@@ -1,410 +1,1015 @@
-{"workspace":
- [{"field":
-   {"value": null,
-    "unit": null,
-    "required": false,
-    "provenance": null,
-    "pendingConfirm": false,
-    "label": "Search chart",
-    "kind": "search",
-    "humanOnly": false,
-    "comp": "home.chartSearch"}},
-  {"section":
-   {"title": "Activities",
-    "id": "home.activityTabs",
-    "children":
-    [{"button":
-      {"role": "nav",
-       "label": "In Basket: Results",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "home.work.w2Inbasket",
-       "blockedReason": null}},
-     {"button":
-      {"role": "nav",
-       "label": "In Basket: Rx Requests",
-       "hotkey": null,
-       "enabled": true,
-       "comp": "home.work.w7Queue",
-       "blockedReason": null}}]}},
-  {"presentation":
-   {"kind": "schedule",
-    "children":
-    [{"section":
-      {"title": "Scheduled visits",
-       "id": "home.work",
-       "children":
-       [{"presentation":
-         {"kind": "schedule",
-          "children":
-          [{"info":
-            {"rows":
-             [[["Time", "Nov 2, 2026 08:00"],
-               ["Patient", "Carter, Zulma Tricia"],
-               ["Age / sex", "83 / F"],
-               ["Visit type", "Office visit"],
-               ["Status", "booked"],
-               ["Chief complaint", "Office visit"],
-               ["Provider", ""],
-               ["Location", ""]]],
-             "label": "Appointments",
-             "infoId": "scheduleTasks",
-             "display": "table",
-             "comp": "home.schedule"}}]}},
-        {"rowAction":
-         {"target": "home.schedule",
-          "row": 0,
-          "children":
-          [{"button":
-            {"role": "nav",
-             "label": "Open encounter",
-             "hotkey": null,
-             "enabled": true,
-             "comp": "home.work.w1Rooming",
-             "blockedReason": null}}]}}]}}]}},
-  {"info":
-   {"rows": [],
-    "label": "Open orders",
-    "infoId": "openOrders",
-    "display": "table",
-    "comp": "home.openOrders"}},
-  {"tabs":
-   {"selected": 0,
-    "labels":
-    ["Problem list",
-     "Results",
-     "Notes",
-     "Medications",
-     "Allergies",
-     "Encounters",
-     "Coverage",
-     "History"],
-    "id": "home.chart",
-    "body":
-    [{"info":
-      {"rows":
-       [[["Problem", "Full-time employment (finding)"],
-         ["Code", "160903007"],
-         ["Onset", "Oct 22, 2026 02:44"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Not in labor force (finding)"],
-         ["Code", "741062008"],
-         ["Onset", "Oct 1, 2026 02:46"],
-         ["Abatement", "Oct 22, 2026 02:44"],
-         ["Status", "resolved"]],
-        [["Problem", "Stress (finding)"],
-         ["Code", "73595000"],
-         ["Onset", "Oct 1, 2026 02:46"],
-         ["Abatement", "Oct 22, 2026 02:44"],
-         ["Status", "resolved"]],
-        [["Problem", "Medication review due (situation)"],
-         ["Code", "314529007"],
-         ["Onset", "Sep 10, 2026 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Full-time employment (finding)"],
-         ["Code", "160903007"],
-         ["Onset", "Aug 27, 2026 02:20"],
-         ["Abatement", "Oct 1, 2026 02:46"],
-         ["Status", "resolved"]],
-        [["Problem", "Social isolation (finding)"],
-         ["Code", "422650009"],
-         ["Onset", "Aug 27, 2026 02:20"],
-         ["Abatement", "Oct 22, 2026 02:44"],
-         ["Status", "resolved"]],
-        [["Problem", "Medication review due (situation)"],
-         ["Code", "314529007"],
-         ["Onset", "Aug 27, 2026 01:46"],
-         ["Abatement", "Aug 27, 2026 01:46"],
-         ["Status", "resolved"]],
-        [["Problem", "Not in labor force (finding)"],
-         ["Code", "741062008"],
-         ["Onset", "May 28, 2026 02:38"],
-         ["Abatement", "Aug 27, 2026 02:20"],
-         ["Status", "resolved"]],
-        [["Problem", "Limited social contact (finding)"],
-         ["Code", "423315002"],
-         ["Onset", "May 28, 2026 02:38"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Dental caries, unspecified"],
-         ["Code", "K02.9"],
-         ["Onset", "May 14, 2026 02:21"],
-         ["Abatement", "Sep 17, 2026 02:20"],
-         ["Status", "resolved"]],
-        [["Problem", "Part-time employment (finding)"],
-         ["Code", "160904001"],
-         ["Onset", "May 7, 2026 02:32"],
-         ["Abatement", "May 28, 2026 02:38"],
-         ["Status", "resolved"]],
-        [["Problem", "Impacted teeth"],
-         ["Code", "K01.1"],
-         ["Onset", "Apr 9, 2026 01:46"],
-         ["Abatement", "Sep 17, 2026 02:20"],
-         ["Status", "resolved"]],
-        [["Problem", "Stress (finding)"],
-         ["Code", "73595000"],
-         ["Onset", "Mar 26, 2026 02:28"],
-         ["Abatement", "May 7, 2026 02:32"],
-         ["Status", "resolved"]],
-        [["Problem", "Reports of violence in the environment (finding)"],
-         ["Code", "424393004"],
-         ["Onset", "Jan 29, 2026 01:29"],
-         ["Abatement", "Mar 26, 2026 02:28"],
-         ["Status", "resolved"]],
-        [["Problem", "Medication review due (situation)"],
-         ["Code", "314529007"],
-         ["Onset", "Oct 30, 2025 01:46"],
-         ["Abatement", "May 28, 2026 01:46"],
-         ["Status", "resolved"]],
-        [["Problem", "Chronic congestive heart failure (disorder)"],
-         ["Code", "88805009"],
-         ["Onset", "Jul 17, 2025 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Chronic kidney disease stage 2 (disorder)"],
-         ["Code", "431856006"],
-         ["Onset", "Aug 8, 2024 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem",
-          "Microalbuminuria due to type 2 diabetes mellitus (disorder)"],
-         ["Code", "90781000119102"],
-         ["Onset", "Aug 8, 2024 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Atrial fibrillation (disorder)"],
-         ["Code", "49436004"],
-         ["Onset", "Feb 8, 2024 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "History of myocardial infarction (situation)"],
-         ["Code", "399211009"],
-         ["Onset", "Jul 12, 2021 03:32"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem",
-          "Acute ST segment elevation myocardial infarction (disorder)"],
-         ["Code", "401303003"],
-         ["Onset", "Jul 12, 2021 02:11"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Chronic kidney disease stage 1 (disorder)"],
-         ["Code", "431855005"],
-         ["Onset", "Nov 8, 2018 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Disorder of kidney due to diabetes mellitus (disorder)"],
-         ["Code", "127013003"],
-         ["Onset", "Nov 8, 2018 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Chronic pain (finding)"],
-         ["Code", "82423001"],
-         ["Onset", "Feb 1, 2014 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Chronic low back pain (finding)"],
-         ["Code", "278860009"],
-         ["Onset", "Feb 1, 2014 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Chronic neck pain (finding)"],
-         ["Code", "1121000119107"],
-         ["Onset", "Feb 1, 2014 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Osteoporosis (disorder)"],
-         ["Code", "64859006"],
-         ["Onset", "Jun 27, 2013 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Dependent drug abuse (disorder)"],
-         ["Code", "6525002"],
-         ["Onset", "Mar 29, 2013 05:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "History of coronary artery bypass grafting (situation)"],
-         ["Code", "399261000"],
-         ["Onset", "Jul 12, 2012 03:27"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem",
-          "Abnormal findings diagnostic imaging heart+coronary circulat (finding)"],
-         ["Code", "274531002"],
-         ["Onset", "Jul 7, 2012 17:21"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Ischemic heart disease (disorder)"],
-         ["Code", "414545008"],
-         ["Onset", "Jun 21, 2012 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Gingivitis (disorder)"],
-         ["Code", "66383009"],
-         ["Onset", "Jun 4, 2009 04:08"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Has a criminal record (finding)"],
-         ["Code", "266948004"],
-         ["Onset", "May 6, 2004 02:24"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Hyperlipidemia (disorder)"],
-         ["Code", "55822004"],
-         ["Onset", "May 6, 2004 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Metabolic syndrome X (disorder)"],
-         ["Code", "237602007"],
-         ["Onset", "Apr 19, 2001 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Essential hypertension (disorder)"],
-         ["Code", "59621000"],
-         ["Onset", "Mar 16, 1995 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Anemia (disorder)"],
-         ["Code", "271737000"],
-         ["Onset", "Mar 16, 1995 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Prediabetes (finding)"],
-         ["Code", "714628002"],
-         ["Onset", "Mar 4, 1993 00:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Past pregnancy history of miscarriage (situation)"],
-         ["Code", "161744009"],
-         ["Onset", "Jun 20, 1973 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Body mass index 30+ - obesity (finding)"],
-         ["Code", "162864005"],
-         ["Onset", "Aug 22, 1963 01:46"],
-         ["Abatement", ""],
-         ["Status", "active"]],
-        [["Problem", "Received higher education (finding)"],
-         ["Code", "224299000"],
-         ["Onset", "Apr 27, 1961 01:39"],
-         ["Abatement", ""],
-         ["Status", "active"]]],
-       "label": "Problem list",
-       "infoId": "problemList",
-       "display": "table",
-       "comp": "home.chart.problemList"}}]}}],
- "viewer": "Physician",
- "title": "Schedule",
- "side":
- [{"info":
-   {"rows": [],
-    "label": "Allergies",
-    "infoId": "allergyList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record",
-       "insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"]],
-     [["Record", "verapamil hydrochloride 80 MG Oral Tablet [Calan]"]],
-     [["Record", "Digoxin 0.125 MG Oral Tablet"]],
-     [["Record",
-       "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet [Percocet] — Every six hours (qualifier value)"]],
-     [["Record", "Furosemide 40 MG Oral Tablet — Take as needed."]],
-     [["Record", "Warfarin Sodium 5 MG Oral Tablet"]],
-     [["Record", "lisinopril 10 MG Oral Tablet — 1, 1x per 1 d"]],
-     [["Record", "Alendronic acid 10 MG Oral Tablet"]],
-     [["Record", "Simvastatin 10 MG Oral Tablet — 1, 1x per 1 d"]],
-     [["Record", "aspirin 81 MG Oral Tablet"]],
-     [["Record",
-       "24 HR metoprolol succinate 50 MG Extended Release Oral Tablet — Take as needed."]],
-     [["Record", "pravastatin sodium 40 MG Oral Tablet — Take as needed."]],
-     [["Record",
-       "hydrochlorothiazide 25 MG / losartan potassium 100 MG Oral Tablet — Take as needed."]],
-     [["Record", "prasugrel 10 MG Oral Tablet"]],
-     [["Record", "Clopidogrel 75 MG Oral Tablet"]],
-     [["Record", "Simvastatin 20 MG Oral Tablet"]],
-     [["Record",
-       "24 HR metoprolol succinate 100 MG Extended Release Oral Tablet"]],
-     [["Record", "Nitroglycerin 0.4 MG/ACTUAT Mucosal Spray"]]],
-    "label": "Active medications",
-    "infoId": "currentMeds",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Full-time employment (finding) (active)"]],
-     [["Record", "Medication review due (situation) (active)"]],
-     [["Record", "Limited social contact (finding) (active)"]],
-     [["Record", "Chronic congestive heart failure (disorder) (active)"]],
-     [["Record", "Chronic kidney disease stage 2 (disorder) (active)"]],
-     [["Record",
-       "Microalbuminuria due to type 2 diabetes mellitus (disorder) (active)"]],
-     [["Record", "Atrial fibrillation (disorder) (active)"]],
-     [["Record", "History of myocardial infarction (situation) (active)"]],
-     [["Record",
-       "Acute ST segment elevation myocardial infarction (disorder) (active)"]],
-     [["Record", "Chronic kidney disease stage 1 (disorder) (active)"]],
-     [["Record",
-       "Disorder of kidney due to diabetes mellitus (disorder) (active)"]],
-     [["Record", "Chronic pain (finding) (active)"]],
-     [["Record", "Chronic low back pain (finding) (active)"]],
-     [["Record", "Chronic neck pain (finding) (active)"]],
-     [["Record", "Osteoporosis (disorder) (active)"]],
-     [["Record", "Dependent drug abuse (disorder) (active)"]],
-     [["Record",
-       "History of coronary artery bypass grafting (situation) (active)"]],
-     [["Record",
-       "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"]],
-     [["Record", "Ischemic heart disease (disorder) (active)"]],
-     [["Record", "Gingivitis (disorder) (active)"]],
-     [["Record", "Has a criminal record (finding) (active)"]],
-     [["Record", "Hyperlipidemia (disorder) (active)"]],
-     [["Record", "Metabolic syndrome X (disorder) (active)"]],
-     [["Record", "Essential hypertension (disorder) (active)"]],
-     [["Record", "Anemia (disorder) (active)"]],
-     [["Record", "Prediabetes (finding) (active)"]],
-     [["Record", "Past pregnancy history of miscarriage (situation) (active)"]],
-     [["Record", "Body mass index 30+ - obesity (finding) (active)"]],
-     [["Record", "Received higher education (finding) (active)"]]],
-    "label": "Problems",
-    "infoId": "problemList",
-    "display": "list",
-    "comp": ""}},
-  {"info":
-   {"rows":
-    [[["Record", "Body Height 157.9 cm (Oct 22, 2026 01:46)"]],
-     [["Record",
-       "Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} (Oct 22, 2026 01:46)"]],
-     [["Record", "Body Weight 80.9 kg (Oct 22, 2026 01:46)"]],
-     [["Record",
-       "Body mass index (BMI) [Ratio] 32.45 kg/m2 (Oct 22, 2026 01:46)"]],
-     [["Record",
-       "Blood pressure panel with all children optional 101/69 mm[Hg] (Oct 22, 2026 01:46)"]],
-     [["Record", "Heart rate 67 /min (Oct 22, 2026 01:46)"]],
-     [["Record", "Respiratory rate 12 /min (Oct 22, 2026 01:46)"]]],
-    "label": "Recent vitals",
-    "infoId": "vitals",
-    "display": "list",
-    "comp": ""}}],
- "screen": "home",
- "nav": [],
- "modal": null,
- "fieldSources": [],
- "banner":
- [["Patient", "Carter, Zulma Tricia"],
-  ["DOB", "Mar 4, 1943"],
-  ["MRN", "13761514"],
-  ["Age / sex", "83 / F"],
-  ["Language", "English (United States)"],
-  ["PCP", ""],
-  ["Coverage", ""],
-  ["Last encounter", "AMB"],
-  ["Last provider", "Dr. Tracy Wilderman"],
-  ["Last location", "MASS GENERAL BRIGHAM URGENT CARE LLC"],
-  ["Allergies", "No allergy records on file"],
-  ["Code status", "Not recorded"],
-  ["Weight", "80.9 kg · Oct 22, 2026 01:46"],
-  ["Isolation", "Not recorded"]]}
+{
+  "banner": [],
+  "modal": null,
+  "nav": [
+    [
+      "Activities",
+      [
+        [
+          "workspace.activity|inboxResults",
+          "Inbox · Results (7)"
+        ],
+        [
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
+        ],
+        [
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (16)"
+        ],
+        [
+          "workspace.lookup",
+          "Patient Lookup"
+        ]
+      ]
+    ]
+  ],
+  "screen": "workspace:scheduleTasks",
+  "side": [],
+  "title": "Schedule",
+  "viewer": "Physician",
+  "workspace": [
+    {
+      "field": {
+        "comp": "workspace.search",
+        "humanOnly": false,
+        "kind": "search",
+        "label": "Patient search by name or MRN",
+        "pendingConfirm": false,
+        "provenance": null,
+        "required": false,
+        "unit": null,
+        "value": null
+      }
+    },
+    {
+      "presentation": {
+        "children": [
+          {
+            "info": {
+              "comp": "workspace.list",
+              "display": "table",
+              "infoId": "scheduleTasks",
+              "label": "Schedule",
+              "rows": [
+                [
+                  [
+                    "Time",
+                    "2026-11-02T07:30:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Alva Gutkowski"
+                  ],
+                  [
+                    "Age/sex",
+                    "30 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Established Patient"
+                  ],
+                  [
+                    "Status",
+                    "fulfilled"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Established Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T07:55:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Jarrett Kelley Jast"
+                  ],
+                  [
+                    "Age/sex",
+                    "67 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Annual Wellness Visit"
+                  ],
+                  [
+                    "Status",
+                    "fulfilled"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Annual Wellness Visit – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T08:20:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Jermaine Palmer Koepp"
+                  ],
+                  [
+                    "Age/sex",
+                    "64 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "New Patient"
+                  ],
+                  [
+                    "Status",
+                    "fulfilled"
+                  ],
+                  [
+                    "Chief complaint",
+                    "New Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T08:45:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Roman Shawn Jacobs"
+                  ],
+                  [
+                    "Age/sex",
+                    "69 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Hospital Follow-up"
+                  ],
+                  [
+                    "Status",
+                    "fulfilled"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Hospital Follow-up – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T09:10:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Dee Jule Altenwerth"
+                  ],
+                  [
+                    "Age/sex",
+                    "74 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "Established Patient"
+                  ],
+                  [
+                    "Status",
+                    "arrived"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Established Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T09:35:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Lavelle Doyle"
+                  ],
+                  [
+                    "Age/sex",
+                    "48 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "Annual Wellness Visit"
+                  ],
+                  [
+                    "Status",
+                    "checked-in"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Annual Wellness Visit – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T10:00:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Jerlene Arnita Adams"
+                  ],
+                  [
+                    "Age/sex",
+                    "75 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "New Patient"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "New Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T10:25:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Leo Little"
+                  ],
+                  [
+                    "Age/sex",
+                    "29 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Hospital Follow-up"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Hospital Follow-up – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T11:35:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Mario Hernádez"
+                  ],
+                  [
+                    "Age/sex",
+                    "34 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Established Patient"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Established Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T12:00:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Arthur Gala Reynolds"
+                  ],
+                  [
+                    "Age/sex",
+                    "76 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "Annual Wellness Visit"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Annual Wellness Visit – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T12:25:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Shelton Nathanael Stoltenberg"
+                  ],
+                  [
+                    "Age/sex",
+                    "54 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "New Patient"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "New Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T12:50:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Harris Trenton Wisoky"
+                  ],
+                  [
+                    "Age/sex",
+                    "36 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Hospital Follow-up"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Hospital Follow-up – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T13:15:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Julia Longoria"
+                  ],
+                  [
+                    "Age/sex",
+                    "63 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "Established Patient"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Established Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T13:40:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Cheryll Margarite Jacobs"
+                  ],
+                  [
+                    "Age/sex",
+                    "45 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "Annual Wellness Visit"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Annual Wellness Visit – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T14:05:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Ashly Angeline Rippin"
+                  ],
+                  [
+                    "Age/sex",
+                    "60 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "New Patient"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "New Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T14:30:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Dorthea Abshire"
+                  ],
+                  [
+                    "Age/sex",
+                    "53 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "Hospital Follow-up"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Hospital Follow-up – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T14:55:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Maria Sandy Hodkiewicz"
+                  ],
+                  [
+                    "Age/sex",
+                    "83 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Established Patient"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Established Patient – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T15:20:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Silvia Ardelia Rippin"
+                  ],
+                  [
+                    "Age/sex",
+                    "41 / F"
+                  ],
+                  [
+                    "Visit type",
+                    "Annual Wellness Visit"
+                  ],
+                  [
+                    "Status",
+                    "booked"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Annual Wellness Visit – Fictional Care Site c0f06af90d"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 72a4c784c7"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site c0f06af90d"
+                  ]
+                ]
+              ]
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|9e937da7-1921-8752-9ee8-83a22ee5b4fd|0|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Gutkowski, Alva (MRN 46914471)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 0,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|05d394a8-31a1-a2ac-e9d7-5e7e9b1661c1|1|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Jast, Jarrett Kelley (MRN 95448501)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 1,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|99563ef9-3da8-fc34-be84-f5e6b7c39acc|2|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Koepp, Jermaine Palmer (MRN 82501903)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 2,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|13a729a9-d1af-6380-3d0d-fd4b78a27678|3|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Jacobs, Roman Shawn (MRN 61320063)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 3,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|71f7765f-adc9-3eb0-4ff8-60162d121cac|4|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Altenwerth, Dee Jule (MRN 24843575)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 4,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|114be8bf-c178-1c85-11c6-fa38a6f24403|5|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Doyle, Lavelle (MRN 36535063)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 5,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|2de88cde-f517-979f-28be-ed7f8fe51e88|6|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Adams, Jerlene Arnita (MRN 94425643)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 6,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|79710d56-b560-0ed4-83b5-7ab264a0fd69|7|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Little, Leo (MRN 59708430)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 7,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|d25a0360-5edb-4bc5-42a7-a07e67f50e63|8|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Hernádez, Mario (MRN 72621047)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 8,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|a9b473ca-5ad8-e161-3869-9c4b5f2e4831|9|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Reynolds, Arthur Gala (MRN 12355736)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 9,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|e4e9b21f-7954-3ef7-53aa-e188bbd8e5f1|10|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Stoltenberg, Shelton Nathanael (MRN 25018527)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 10,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|0cca5c96-48d0-e99e-cbe8-a6e0ead4bd7f|11|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Wisoky, Harris Trenton (MRN 32182703)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 11,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|0224280f-dca4-eb49-3edc-fee86927443a|12|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Longoria, Julia (MRN 23202548)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 12,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|84478aa5-be3c-9e30-8b91-6519e1c61fed|13|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Jacobs, Cheryll Margarite (MRN 21327783)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 13,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|149fcc1f-f736-95aa-fb60-380e1533e64c|14|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Rippin, Ashly Angeline (MRN 57359403)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 14,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|fd7a2929-3304-ab96-ea47-c8cc1b89c99d|15|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Abshire, Dorthea (MRN 23215949)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 15,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|5416064f-0ad9-68a0-6291-1585026dc101|16|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Hodkiewicz, Maria Sandy (MRN 54956658)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 16,
+              "target": "workspace.list"
+            }
+          },
+          {
+            "rowAction": {
+              "children": [
+                {
+                  "button": {
+                    "blockedReason": null,
+                    "comp": "workspace.open|90c116d0-3817-1d6e-f52e-49e7e6490cb8|17|scheduleTasks",
+                    "enabled": true,
+                    "hotkey": null,
+                    "label": "Open chart: Rippin, Silvia Ardelia (MRN 75726058)",
+                    "role": "nav"
+                  }
+                }
+              ],
+              "row": 17,
+              "target": "workspace.list"
+            }
+          }
+        ],
+        "kind": "schedule"
+      }
+    },
+    {
+      "info": {
+        "comp": "",
+        "display": "summary",
+        "infoId": "chartReports",
+        "label": "Reports",
+        "rows": [
+          [
+            [
+              "Department snapshot",
+              "Schedule, census and case lists are available in Activities."
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

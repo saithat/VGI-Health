@@ -3,19 +3,19 @@
   "modal": null,
   "nav": [
     [
-      "Application activities",
+      "Activities",
       [
         [
-          "workspace.activity|inBasketResults",
-          "In Basket · Results (2)"
+          "workspace.activity|inboxResults",
+          "Inbox · Results (2)"
         ],
         [
-          "workspace.activity|inBasketMessages",
-          "In Basket · Patient Messages (2)"
+          "workspace.activity|inboxMessages",
+          "Inbox · Patient Messages (2)"
         ],
         [
-          "workspace.activity|inBasketRxRequests",
-          "In Basket · Rx Requests (2)"
+          "workspace.activity|inboxRxRequests",
+          "Inbox · Rx Requests (2)"
         ],
         [
           "workspace.lookup",
@@ -59,11 +59,11 @@
                   ],
                   [
                     "Patient",
-                    "Isidro Monte Schneider"
+                    "Tashia Corazon Kling"
                   ],
                   [
                     "Age/sex",
-                    "3 / M"
+                    "9 / F"
                   ],
                   [
                     "Visit type",
@@ -75,15 +75,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Well Child Visit – Pediatrics"
+                    "Well Child Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -93,11 +93,11 @@
                   ],
                   [
                     "Patient",
-                    "Verda Domenica Dare"
+                    "Isidro Monte Schneider"
                   ],
                   [
                     "Age/sex",
-                    "8 / F"
+                    "3 / M"
                   ],
                   [
                     "Visit type",
@@ -109,15 +109,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Acute Visit – Pediatrics"
+                    "Acute Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -127,11 +127,11 @@
                   ],
                   [
                     "Patient",
-                    "Lilliana Hudson"
+                    "Oren Franklyn Wehner"
                   ],
                   [
                     "Age/sex",
-                    "15 / F"
+                    "3 / M"
                   ],
                   [
                     "Visit type",
@@ -143,21 +143,123 @@
                   ],
                   [
                     "Chief complaint",
-                    "Asthma Follow-up – Pediatrics"
+                    "Asthma Follow-up – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
                   [
                     "Time",
                     "2026-11-02T09:15:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Abe Bruen"
+                  ],
+                  [
+                    "Age/sex",
+                    "11 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Well Child Visit"
+                  ],
+                  [
+                    "Status",
+                    "fulfilled"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Well Child Visit – Fictional Care Site d17f9e5879"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician cb503322ad"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site d17f9e5879"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T09:40:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "John Dillon Schamberger"
+                  ],
+                  [
+                    "Age/sex",
+                    "10 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Acute Visit"
+                  ],
+                  [
+                    "Status",
+                    "arrived"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Acute Visit – Fictional Care Site d17f9e5879"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician cb503322ad"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site d17f9e5879"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T10:05:00-08:00"
+                  ],
+                  [
+                    "Patient",
+                    "Stevie Toney Osinski"
+                  ],
+                  [
+                    "Age/sex",
+                    "13 / M"
+                  ],
+                  [
+                    "Visit type",
+                    "Asthma Follow-up"
+                  ],
+                  [
+                    "Status",
+                    "checked-in"
+                  ],
+                  [
+                    "Chief complaint",
+                    "Asthma Follow-up – Fictional Care Site d17f9e5879"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician cb503322ad"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Care Site d17f9e5879"
+                  ]
+                ],
+                [
+                  [
+                    "Time",
+                    "2026-11-02T10:30:00-08:00"
                   ],
                   [
                     "Patient",
@@ -173,121 +275,19 @@
                   ],
                   [
                     "Status",
-                    "fulfilled"
-                  ],
-                  [
-                    "Chief complaint",
-                    "Well Child Visit – Pediatrics"
-                  ],
-                  [
-                    "Provider",
-                    "Priya Raman, MSN, CPNP"
-                  ],
-                  [
-                    "Location",
-                    "Pediatrics"
-                  ]
-                ],
-                [
-                  [
-                    "Time",
-                    "2026-11-02T09:40:00-08:00"
-                  ],
-                  [
-                    "Patient",
-                    "Abdul Bradford Sauer"
-                  ],
-                  [
-                    "Age/sex",
-                    "13 / M"
-                  ],
-                  [
-                    "Visit type",
-                    "Acute Visit"
-                  ],
-                  [
-                    "Status",
-                    "arrived"
-                  ],
-                  [
-                    "Chief complaint",
-                    "Acute Visit – Pediatrics"
-                  ],
-                  [
-                    "Provider",
-                    "Priya Raman, MSN, CPNP"
-                  ],
-                  [
-                    "Location",
-                    "Pediatrics"
-                  ]
-                ],
-                [
-                  [
-                    "Time",
-                    "2026-11-02T10:05:00-08:00"
-                  ],
-                  [
-                    "Patient",
-                    "Omar Torp"
-                  ],
-                  [
-                    "Age/sex",
-                    "11 / M"
-                  ],
-                  [
-                    "Visit type",
-                    "Asthma Follow-up"
-                  ],
-                  [
-                    "Status",
-                    "checked-in"
-                  ],
-                  [
-                    "Chief complaint",
-                    "Asthma Follow-up – Pediatrics"
-                  ],
-                  [
-                    "Provider",
-                    "Priya Raman, MSN, CPNP"
-                  ],
-                  [
-                    "Location",
-                    "Pediatrics"
-                  ]
-                ],
-                [
-                  [
-                    "Time",
-                    "2026-11-02T10:30:00-08:00"
-                  ],
-                  [
-                    "Patient",
-                    "Angelena Zulema Schamberger"
-                  ],
-                  [
-                    "Age/sex",
-                    "12 / F"
-                  ],
-                  [
-                    "Visit type",
-                    "Well Child Visit"
-                  ],
-                  [
-                    "Status",
                     "booked"
                   ],
                   [
                     "Chief complaint",
-                    "Well Child Visit – Pediatrics"
+                    "Well Child Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -297,11 +297,11 @@
                   ],
                   [
                     "Patient",
-                    "Glynda Carmel Sanford"
+                    "Shamika Towne"
                   ],
                   [
                     "Age/sex",
-                    "6 / F"
+                    "8 / F"
                   ],
                   [
                     "Visit type",
@@ -313,15 +313,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Acute Visit – Pediatrics"
+                    "Acute Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -331,11 +331,11 @@
                   ],
                   [
                     "Patient",
-                    "Christy Meghann Dicki"
+                    "Alfonzo Sebastian Kuphal"
                   ],
                   [
                     "Age/sex",
-                    "16 / F"
+                    "14 / M"
                   ],
                   [
                     "Visit type",
@@ -347,15 +347,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Asthma Follow-up – Pediatrics"
+                    "Asthma Follow-up – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -365,11 +365,11 @@
                   ],
                   [
                     "Patient",
-                    "Thanh Michael Pfeffer"
+                    "Renee Carletta Ledner"
                   ],
                   [
                     "Age/sex",
-                    "10 / M"
+                    "16 / F"
                   ],
                   [
                     "Visit type",
@@ -381,15 +381,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Well Child Visit – Pediatrics"
+                    "Well Child Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -399,11 +399,11 @@
                   ],
                   [
                     "Patient",
-                    "Nam Georgiann McClure"
+                    "Dominque Janae Keeling"
                   ],
                   [
                     "Age/sex",
-                    "4 / F"
+                    "13 / F"
                   ],
                   [
                     "Visit type",
@@ -415,15 +415,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Acute Visit – Pediatrics"
+                    "Acute Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -433,11 +433,11 @@
                   ],
                   [
                     "Patient",
-                    "Leesa Gearldine Barton"
+                    "Melida Tessa Frami"
                   ],
                   [
                     "Age/sex",
-                    "4 / F"
+                    "11 / F"
                   ],
                   [
                     "Visit type",
@@ -449,15 +449,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Asthma Follow-up – Pediatrics"
+                    "Asthma Follow-up – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -467,11 +467,11 @@
                   ],
                   [
                     "Patient",
-                    "Cedrick Grady Kuphal"
+                    "Claudio Luis Miguel Cortés"
                   ],
                   [
                     "Age/sex",
-                    "9 / M"
+                    "11 / M"
                   ],
                   [
                     "Visit type",
@@ -483,15 +483,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Well Child Visit – Pediatrics"
+                    "Well Child Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -501,11 +501,11 @@
                   ],
                   [
                     "Patient",
-                    "Edwardo Pablo Denesik"
+                    "Shirely Lashaun Lynch"
                   ],
                   [
                     "Age/sex",
-                    "15 / M"
+                    "14 / F"
                   ],
                   [
                     "Visit type",
@@ -517,15 +517,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Acute Visit – Pediatrics"
+                    "Acute Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -535,11 +535,11 @@
                   ],
                   [
                     "Patient",
-                    "Tashia Corazon Kling"
+                    "Bud Deandre Predovic"
                   ],
                   [
                     "Age/sex",
-                    "9 / F"
+                    "8 / M"
                   ],
                   [
                     "Visit type",
@@ -551,15 +551,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Asthma Follow-up – Pediatrics"
+                    "Asthma Follow-up – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -569,11 +569,11 @@
                   ],
                   [
                     "Patient",
-                    "Milan Schumm"
+                    "Mia Krystal Okuneva"
                   ],
                   [
                     "Age/sex",
-                    "16 / M"
+                    "6 / F"
                   ],
                   [
                     "Visit type",
@@ -585,15 +585,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Well Child Visit – Pediatrics"
+                    "Well Child Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -603,11 +603,11 @@
                   ],
                   [
                     "Patient",
-                    "Weston Johns"
+                    "Ward Freddy Walsh"
                   ],
                   [
                     "Age/sex",
-                    "3 / M"
+                    "5 / M"
                   ],
                   [
                     "Visit type",
@@ -619,15 +619,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Acute Visit – Pediatrics"
+                    "Acute Visit – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ],
                 [
@@ -637,11 +637,11 @@
                   ],
                   [
                     "Patient",
-                    "Mose Gleichner"
+                    "Pablo Hank Boyer"
                   ],
                   [
                     "Age/sex",
-                    "7 / M"
+                    "10 / M"
                   ],
                   [
                     "Visit type",
@@ -653,15 +653,15 @@
                   ],
                   [
                     "Chief complaint",
-                    "Asthma Follow-up – Pediatrics"
+                    "Asthma Follow-up – Fictional Care Site d17f9e5879"
                   ],
                   [
                     "Provider",
-                    "Priya Raman, MSN, CPNP"
+                    "Fictional Clinician cb503322ad"
                   ],
                   [
                     "Location",
-                    "Pediatrics"
+                    "Fictional Care Site d17f9e5879"
                   ]
                 ]
               ]
@@ -673,10 +673,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|54ba8038-9cf0-8916-1d86-a403c6cf96d0|0|scheduleTasks",
+                    "comp": "workspace.open|950d04ca-316d-bf36-a467-7c68b980ee26|0|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Schneider, Isidro Monte (MRN 57667085)",
+                    "label": "Open chart: Kling, Tashia Corazon (MRN 23407288)",
                     "role": "nav"
                   }
                 }
@@ -691,10 +691,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|68d3e7c1-50b0-e247-3ccc-e8e7cdbba611|1|scheduleTasks",
+                    "comp": "workspace.open|54ba8038-9cf0-8916-1d86-a403c6cf96d0|1|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Dare, Verda Domenica (MRN 37402830)",
+                    "label": "Open chart: Schneider, Isidro Monte (MRN 57667085)",
                     "role": "nav"
                   }
                 }
@@ -709,10 +709,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|ef0628cf-0f16-e65d-da8c-1b98da376563|2|scheduleTasks",
+                    "comp": "workspace.open|5ee912e4-9c64-bdd7-4150-e6d9e938d133|2|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Hudson, Lilliana (MRN 51443517)",
+                    "label": "Open chart: Wehner, Oren Franklyn (MRN 19457700)",
                     "role": "nav"
                   }
                 }
@@ -727,10 +727,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|7960bc32-fa4a-35a3-96a8-e6375b807ef8|3|scheduleTasks",
+                    "comp": "workspace.open|03a74d02-12a9-6ff0-5eb9-c44fff429559|3|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Hackett, Robert Fritz (MRN 26872402)",
+                    "label": "Open chart: Bruen, Abe (MRN 46220082)",
                     "role": "nav"
                   }
                 }
@@ -745,10 +745,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|d0fe99e5-c869-b0e2-1379-6ff2293e6704|4|scheduleTasks",
+                    "comp": "workspace.open|e04de6d5-b8ab-84f8-afae-0efcf2c7463d|4|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Sauer, Abdul Bradford (MRN 47466339)",
+                    "label": "Open chart: Schamberger, John Dillon (MRN 54770164)",
                     "role": "nav"
                   }
                 }
@@ -763,10 +763,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|5adcf85a-2b42-ee88-51db-ca33ef5b0184|5|scheduleTasks",
+                    "comp": "workspace.open|19aef58b-776f-0255-b606-708037bf51ce|5|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Torp, Omar (MRN 85507720)",
+                    "label": "Open chart: Osinski, Stevie Toney (MRN 38124945)",
                     "role": "nav"
                   }
                 }
@@ -781,10 +781,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|589e4eef-f44b-f5c2-28cc-066d28c80a23|6|scheduleTasks",
+                    "comp": "workspace.open|7960bc32-fa4a-35a3-96a8-e6375b807ef8|6|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Schamberger, Angelena Zulema (MRN 68188892)",
+                    "label": "Open chart: Hackett, Robert Fritz (MRN 26872402)",
                     "role": "nav"
                   }
                 }
@@ -799,10 +799,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|efd624f2-01c8-7c2b-9f81-07baf7f80c8d|7|scheduleTasks",
+                    "comp": "workspace.open|64d3e9bd-f24c-8905-a893-67211c298ddc|7|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Sanford, Glynda Carmel (MRN 41865510)",
+                    "label": "Open chart: Towne, Shamika (MRN 25929929)",
                     "role": "nav"
                   }
                 }
@@ -817,10 +817,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|9e3c3d02-f37d-9e4f-4f3f-3f98a9072bc6|8|scheduleTasks",
+                    "comp": "workspace.open|41ccbbe0-32fe-9d38-ef9d-9a8fbf725039|8|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Dicki, Christy Meghann (MRN 90090273)",
+                    "label": "Open chart: Kuphal, Alfonzo Sebastian (MRN 41654058)",
                     "role": "nav"
                   }
                 }
@@ -835,10 +835,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|0e684105-f597-8fa8-1b32-41519c5a5d8a|9|scheduleTasks",
+                    "comp": "workspace.open|4493cd72-f542-6f1e-bcf9-a3dbb56fef20|9|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Pfeffer, Thanh Michael (MRN 36792169)",
+                    "label": "Open chart: Ledner, Renee Carletta (MRN 85877423)",
                     "role": "nav"
                   }
                 }
@@ -853,10 +853,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|c42f0898-7eda-49d4-88ac-4efab54a8b98|10|scheduleTasks",
+                    "comp": "workspace.open|678f8081-d8f1-3793-e2b5-cdd3544a6fc6|10|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: McClure, Nam Georgiann (MRN 75379285)",
+                    "label": "Open chart: Keeling, Dominque Janae (MRN 27387126)",
                     "role": "nav"
                   }
                 }
@@ -871,10 +871,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|39258ce8-7129-7d68-f824-b60b8e4dbdc1|11|scheduleTasks",
+                    "comp": "workspace.open|f9c8dfc5-99f7-3616-6df9-89d494084281|11|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Barton, Leesa Gearldine (MRN 11152748)",
+                    "label": "Open chart: Frami, Melida Tessa (MRN 12391005)",
                     "role": "nav"
                   }
                 }
@@ -889,10 +889,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|dab56c22-150e-f3b1-da62-5e0aba622a0b|12|scheduleTasks",
+                    "comp": "workspace.open|0fd7a912-9473-bbc6-0ec9-3e36157433e6|12|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Kuphal, Cedrick Grady (MRN 61768975)",
+                    "label": "Open chart: Cortés, Claudio Luis Miguel (MRN 87776036)",
                     "role": "nav"
                   }
                 }
@@ -907,10 +907,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|15eb35fe-bb9e-ca79-6326-4c526728bced|13|scheduleTasks",
+                    "comp": "workspace.open|4a37d66f-4222-96db-a61c-8d7a6957c0ca|13|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Denesik, Edwardo Pablo (MRN 27834798)",
+                    "label": "Open chart: Lynch, Shirely Lashaun (MRN 53254234)",
                     "role": "nav"
                   }
                 }
@@ -925,10 +925,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|950d04ca-316d-bf36-a467-7c68b980ee26|14|scheduleTasks",
+                    "comp": "workspace.open|02c88137-a460-3766-6728-5c49a5478b17|14|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Kling, Tashia Corazon (MRN 23407288)",
+                    "label": "Open chart: Predovic, Bud Deandre (MRN 31620870)",
                     "role": "nav"
                   }
                 }
@@ -943,10 +943,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|80f6b5e5-e409-53d3-ba53-e058445ec514|15|scheduleTasks",
+                    "comp": "workspace.open|0b9efeee-649b-b167-10d7-611310ac6ba2|15|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Schumm, Milan (MRN 12292018)",
+                    "label": "Open chart: Okuneva, Mia Krystal (MRN 63771983)",
                     "role": "nav"
                   }
                 }
@@ -961,10 +961,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|7044d46f-7d3d-55bb-a8f5-867a53f16df4|16|scheduleTasks",
+                    "comp": "workspace.open|59704066-d244-1852-f285-13fb7407aa96|16|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Johns, Weston (MRN 37159000)",
+                    "label": "Open chart: Walsh, Ward Freddy (MRN 41261749)",
                     "role": "nav"
                   }
                 }
@@ -979,10 +979,10 @@
                 {
                   "button": {
                     "blockedReason": null,
-                    "comp": "workspace.open|24815c60-7d5c-7b96-f0de-922e5268d5f4|17|scheduleTasks",
+                    "comp": "workspace.open|8b97e96f-cbda-9ce1-92df-2b709b634b82|17|scheduleTasks",
                     "enabled": true,
                     "hotkey": null,
-                    "label": "Open chart: Gleichner, Mose (MRN 69690907)",
+                    "label": "Open chart: Boyer, Pablo Hank (MRN 78287024)",
                     "role": "nav"
                   }
                 }
@@ -1005,7 +1005,7 @@
           [
             [
               "Department snapshot",
-              "Schedule, census and case lists are available in Application activities."
+              "Schedule, census and case lists are available in Activities."
             ]
           ]
         ]

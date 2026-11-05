@@ -8,7 +8,10 @@ test("performance: cold dashboard and EHR round trip", async ({
   baseURL,
   request,
 }) => {
+  const run = encodeURIComponent(process.env.AUDIT_RUN ?? "run1-P3");
+  console.log(`Performance recording: ${decodeURIComponent(run)}`);
   if (process.env.AUDIT_PHASE !== "before") {
+    console.log("Checking compressed WASM response");
     const manifest = z
       .object({ leanSourceHash: z.string() })
       .parse(await (await request.get("/ehr/manifest.json")).json());
@@ -31,6 +34,7 @@ test("performance: cold dashboard and EHR round trip", async ({
     wasmRequests: number;
   }[] = [];
   for (const host of ["127.0.0.1", "vgi-audit.example.ts.net"]) {
+    console.log(`Measuring ${host}`);
     const context = await browser.newContext();
     // Route to loopback while sending a real non-localhost Host header.
     const origin = (baseURL ?? "").replace("127.0.0.1", host);
@@ -56,6 +60,7 @@ test("performance: cold dashboard and EHR round trip", async ({
       requests = 0;
       wasmRequests = 0;
       const start = Date.now();
+      console.log(`Starting ${label}`);
       await action();
       await page.locator(ready).first().waitFor({ timeout: 60000 });
       const interactiveMs = Date.now() - start;
@@ -71,12 +76,13 @@ test("performance: cold dashboard and EHR round trip", async ({
     };
     await measure(
       "cold dashboard",
-      () => page.goto(`${origin}/dashboard?run=run1-P3`),
+      () => page.goto(`${origin}/dashboard?run=${run}`),
       '[aria-label="Version history"]',
     );
     await page.close();
     const chart = await context.newPage();
     await chart.goto(`${origin}/ehr?mode=replay&persona=P3`);
+    console.log("Opened canonical EHR");
     await chart.locator(".clinical-app").waitFor({ timeout: 60000 });
     const timeOrigin = await chart.evaluate(() => performance.timeOrigin);
     const chartClient = await context.newCDPSession(chart);
@@ -88,26 +94,25 @@ test("performance: cold dashboard and EHR round trip", async ({
       requests++;
       if (event.request.url.includes(".wasm")) wasmRequests++;
     });
-    // Standard anchors exercise either document navigation (before) or the shell router (after).
+    // Activate a standard anchor through the document's navigation handler.
+    // No layout measurement is involved in this transport/cache audit.
     const switchTo = async (path: string, ready: string) => {
       bytes = 0;
       requests = 0;
       wasmRequests = 0;
       const start = Date.now();
+      console.log(`Switching to ${path}`);
       await chart.evaluate((path) => {
         const a = document.createElement("a");
         a.href = path;
-        a.id = "performance-route";
         a.textContent = "Route";
         document.body.append(a);
+        a.click();
+        a.remove();
       }, path);
-      await chart.locator("#performance-route").click();
       await chart.locator(ready).first().waitFor({ timeout: 60000 });
       const interactiveMs = Date.now() - start;
       await chart.waitForTimeout(250);
-      await chart
-        .locator("#performance-route")
-        .evaluateAll((nodes) => nodes.forEach((n) => n.remove()));
       result.push({
         host,
         label: path.startsWith("/dashboard")
@@ -119,7 +124,7 @@ test("performance: cold dashboard and EHR round trip", async ({
         wasmRequests,
       });
     };
-    await switchTo("/dashboard?run=run1-P3", '[aria-label="Version history"]');
+    await switchTo(`/dashboard?run=${run}`, '[aria-label="Version history"]');
     await switchTo("/ehr?mode=replay&persona=P3", ".clinical-app");
     await expect(chart.getByRole("alert")).toHaveCount(0);
     if (process.env.AUDIT_PHASE !== "before") {

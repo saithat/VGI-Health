@@ -29,7 +29,7 @@ export function generate(point: DesignPoint, workflows: Workflow[], baseline: Pr
     for (const c of screen.components) {
       if (point.density === 'compact' && kindTag(c.kind) === 'field') c.size = 'compact';
       // Navigation and context/sidebar groups keep their own structural contracts.
-      const clinical = !/\.(nav|chart|storyboard|contextPanels)(\.|$)/.test(c.id);
+      const clinical = !/\.(nav|chart|patientSidebar|contextPanels)(\.|$)/.test(c.id);
       const layout = point.taskLayouts[c.id] ?? point.layout;
       if (clinical && kindTag(c.kind) === 'group' && screen.components.some(x => x.parent === c.id)) {
         c.tag = c.tag.replace(/(?:\.layout\.(?:columns|timeline|datedTimeline))+$/, '');
@@ -82,7 +82,7 @@ export function validateCandidate(c: Candidate, baseline: Program, spec: Spec): 
  * Mixed layouts use a deterministic priority; task overrides remain explicit. */
 export function describeProgram(program: Program, workflows: Workflow[]): Candidate {
   const cs = program.screens.filter(s => workflows.includes(s.workflow as Workflow)).flatMap(s => s.components);
-  const clinicalGroups = cs.filter(c => kindTag(c.kind) === 'group' && !/\.(nav|chart|storyboard|contextPanels)(\.|$)/.test(c.id));
+  const clinicalGroups = cs.filter(c => kindTag(c.kind) === 'group' && !/\.(nav|chart|patientSidebar|contextPanels)(\.|$)/.test(c.id));
   const layout = clinicalGroups.some(c => c.tag.endsWith('.layout.timeline') || c.tag.endsWith('.layout.datedTimeline')) ? 'timeline' :
     clinicalGroups.some(c => c.tag.endsWith('.layout.columns')) ? 'columns' :
     cs.some(c => c.tag === 'layout.document' && infoOf(c)) ? 'document' : 'stack';

@@ -25,7 +25,7 @@ def chartClopidogrel : MedRow where
 def uiRoomCtx : Ctx := tinyFhirCtx
 #guard uiSourceText uiRoomCtx "record:unmappedInternalId" == "From chart"
 #guard uiSourceText uiRoomCtx "linked:unmappedInternalId" == "Linked value"
-#guard uiSourceText uiRoomCtx "macro" == "From template / preference list"
+#guard uiSourceText uiRoomCtx "macro" == "From template / order favorites"
 #guard uiSourceText uiRoomCtx "default" == "Default value"
 /-- A compact surgical request keeps field labels and every supplied value. -/
 def uiSurgicalCaseCtx : Ctx :=
@@ -228,7 +228,7 @@ def focusedClinicUi : UiScreen :=
   renderUi uiRoomCtx.sp focusedClinicProgram uiRoomCtx.facts uiRoomCtx.disp uiRoomCtx.user uiRoomCtx.s
 #guard focusedClinicUi.side.isEmpty
 
-/-- Ambulatory activities use their real navigator without a wizard progress strip. -/
+/-- Ambulatory activities use their real workflow without a wizard progress strip. -/
 def clinicalActivityProgram : Program :=
   { uiRoomCtx.prog with screens := uiRoomCtx.prog.screens.map fun screen =>
       { screen with components := screen.components.map fun c =>
@@ -453,7 +453,7 @@ def uiShellCtx : Ctx :=
     prog := { uiRoomCtx.prog with start := "shell", screens :=
       [{ id := "shell", title := "Shell regression", workflow := "W1", components :=
         [{ id := "shell.banner", kind := .banner, label := "Patient banner" },
-         { id := "shell.nav", kind := .group false false, tag := "navigator", label := "Visit" },
+         { id := "shell.nav", kind := .group false false, tag := "workflow", label := "Visit" },
          { id := "shell.nav.next", kind := .button (.goto "next"), parent? := some "shell.nav", label := "Next screen" },
          { id := "shell.sidebar", kind := .group true false, tag := "sidebar", label := "Clinical summary" },
          { id := "shell.side.problems", kind := .table "problemList", parent? := some "shell.sidebar", label := "Active problems" },
@@ -500,7 +500,7 @@ def uiNavSavedCollapsedCtx : Ctx :=
     [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.nav == [("Visit", [("shell.nav.next", "Next screen")])]
 #guard uiShellScreen.activeNav? == none
-/-- A selected navigator item follows its declared target, even when labels differ. -/
+/-- A selected workflow item follows its declared target, even when labels differ. -/
 def uiCurrentNavCtx : Ctx :=
   { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
     { sc with components := sc.components ++
@@ -509,13 +509,13 @@ def uiCurrentNavCtx : Ctx :=
 #guard uiActiveNav uiCurrentNavCtx == some "shell.nav.current"
 #guard (step uiShellCtx.sp uiShellCtx.prog uiShellCtx.facts uiShellCtx.user .human uiShellCtx.s (.click "shell.nav.next")).1.screen == "next"
 
-/-- An explicit activity navigator removes only the generated progress strip. -/
+/-- An explicit activity workflow removes only the generated progress strip. -/
 def uiActivityNavCtx : Ctx :=
   { uiShellCtx with viewCache := ⟨_, rfl⟩, prog := { uiShellCtx.prog with screens := uiShellCtx.prog.screens.map fun sc =>
     { sc with components := sc.components.map fun c =>
-      if c.id == "shell.nav" then { c with tag := "shell.layout.activities.navigator" } else c } } }
+      if c.id == "shell.nav" then { c with tag := "shell.layout.activities.workflow" } else c } } }
 
-/-- Render the actual source navigator with all its original controls. -/
+/-- Render the actual source workflow with all its original controls. -/
 def uiActivityNavScreen := renderUi uiActivityNavCtx.sp uiActivityNavCtx.prog uiActivityNavCtx.facts
   uiActivityNavCtx.disp uiActivityNavCtx.user uiActivityNavCtx.s
 
@@ -541,12 +541,12 @@ def uiFlatNavCtx : Ctx :=
 def uiFlatNavScreen : UiScreen := renderUi uiFlatNavCtx.sp uiFlatNavCtx.prog uiFlatNavCtx.facts
   uiFlatNavCtx.disp uiFlatNavCtx.user uiFlatNavCtx.s
 
-#guard uiFlatNavScreen.nav == [("Navigator", [("shell.nav.next", "Next screen")])]
+#guard uiFlatNavScreen.nav == [("Workflow", [("shell.nav.next", "Next screen")])]
 #guard !(uiAtomsList uiFlatNavScreen.workspace).any (fun n => match n with
   | .button "shell.nav.next" _ _ _ _ _ => true | _ => false)
 #guard (step uiFlatNavCtx.sp uiFlatNavCtx.prog uiFlatNavCtx.facts uiFlatNavCtx.user .human
     uiFlatNavCtx.s (.click "shell.nav.next")).1.screen == "next"
-/-- The actual enabled goto used by the flat navigator example. -/
+/-- The actual enabled goto used by the flat workflow example. -/
 def uiFlatNavItem : ItemView :=
   (uiFlatNavCtx.v.items.find? (·.comp.id == "shell.nav.next")).getD uiSignItem
 

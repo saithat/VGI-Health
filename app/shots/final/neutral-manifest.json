@@ -1,0 +1,439 @@
+{
+  "viewport": [
+    1440,
+    900
+  ],
+  "source": "current native semantic exports; fictional identity seed v1",
+  "captures": [
+    {
+      "path": "shots/final/P1-chart.png",
+      "source": "shots/final/P1-chart.ui.json",
+      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+    },
+    {
+      "path": "shots/final/P1-landing.png",
+      "source": "shots/final/P1-landing.ui.json",
+      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+    },
+    {
+      "path": "shots/final/P1-orders.png",
+      "source": "shots/final/P1-orders.ui.json",
+      "sha256": "9f08870683882efddef606ddb560d2ee8d8e93e698cd535d4470116c94f7ffe1"
+    },
+    {
+      "path": "shots/final/P1-summary.png",
+      "source": "shots/final/P1-summary.ui.json",
+      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+    },
+    {
+      "path": "shots/final/P2-chart.png",
+      "source": "shots/final/P2-chart.ui.json",
+      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+    },
+    {
+      "path": "shots/final/P2-landing.png",
+      "source": "shots/final/P2-landing.ui.json",
+      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+    },
+    {
+      "path": "shots/final/P2-track-board.png",
+      "source": "shots/final/P2-track-board.ui.json",
+      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+    },
+    {
+      "path": "shots/final/P3-MAR.png",
+      "source": "shots/final/P3-MAR.ui.json",
+      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+    },
+    {
+      "path": "shots/final/P3-chart.png",
+      "source": "shots/final/P3-chart.ui.json",
+      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+    },
+    {
+      "path": "shots/final/P3-landing.png",
+      "source": "shots/final/P3-landing.ui.json",
+      "sha256": "b53521c11728332d2208c89f96570ed03bac4ec427e9d18649b23cacfb9f0ef8"
+    },
+    {
+      "path": "shots/final/P4-chart.png",
+      "source": "shots/final/P4-chart.ui.json",
+      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+    },
+    {
+      "path": "shots/final/P4-growth.png",
+      "source": "shots/final/P4-growth.ui.json",
+      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+    },
+    {
+      "path": "shots/final/P4-landing.png",
+      "source": "shots/final/P4-landing.ui.json",
+      "sha256": "9dc19f98b536431d084c1d91f3fc17680edbee9d44cb8bd42d804c4c1d171beb"
+    },
+    {
+      "path": "shots/final/P5-OR.png",
+      "source": "shots/final/P5-OR.ui.json",
+      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956"
+    },
+    {
+      "path": "shots/final/P5-chart.png",
+      "source": "shots/final/P5-chart.ui.json",
+      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68"
+    },
+    {
+      "path": "shots/final/P5-landing.png",
+      "source": "shots/final/P5-landing.ui.json",
+      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956"
+    },
+    {
+      "path": "shots/final/P5-op-note.png",
+      "source": "shots/final/P5-op-note.ui.json",
+      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68"
+    },
+    {
+      "path": "shots/final/before/P1-orders.png",
+      "source": "shots/final/before/P1-orders.ui.json",
+      "sha256": "9f08870683882efddef606ddb560d2ee8d8e93e698cd535d4470116c94f7ffe1"
+    },
+    {
+      "path": "shots/final/before/P1-summary.png",
+      "source": "shots/final/before/P1-summary.ui.json",
+      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+    },
+    {
+      "path": "shots/final/before/P2-chart.png",
+      "source": "shots/final/before/P2-chart.ui.json",
+      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+    },
+    {
+      "path": "shots/final/before/P2-track-board.png",
+      "source": "shots/final/before/P2-track-board.ui.json",
+      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+    },
+    {
+      "path": "shots/final/before/P3-MAR.png",
+      "source": "shots/final/before/P3-MAR.ui.json",
+      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+    },
+    {
+      "path": "shots/final/before/P4-growth.png",
+      "source": "shots/final/before/P4-growth.ui.json",
+      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+    },
+    {
+      "path": "shots/final/before/P5-OR.png",
+      "source": "shots/final/before/P5-OR.ui.json",
+      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956"
+    },
+    {
+      "path": "shots/final/before/P5-op-note.png",
+      "source": "shots/final/before/P5-op-note.ui.json",
+      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68"
+    },
+    {
+      "path": "shots/final/canonical-density-before/P1-chart.png",
+      "source": "shots/final/before/P1-summary.ui.json",
+      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+    },
+    {
+      "path": "shots/final/canonical-density-before/P2-chart.png",
+      "source": "shots/final/before/P2-chart.ui.json",
+      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+    },
+    {
+      "path": "shots/final/canonical-density-before/P3-chart.png",
+      "source": "shots/final/before/P3-MAR.ui.json",
+      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+    },
+    {
+      "path": "shots/final/canonical-density-before/P4-chart.png",
+      "source": "shots/final/before/P4-growth.ui.json",
+      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+    },
+    {
+      "path": "shots/final/canonical-density-before/P5-chart.png",
+      "source": "shots/final/before/P5-op-note.ui.json",
+      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68"
+    },
+    {
+      "path": "shots/realism/live-select/P1-inboxResults-chart.png",
+      "source": "shots/realism/live-select/P1-inboxResults-chart.ui.json",
+      "sha256": "a35b651a08715a0ffd31904e2d653fa02915cd20b58fd2c5ccae4a8cc555d0c1"
+    },
+    {
+      "path": "shots/realism/live-select/P1-inboxResults-landing.png",
+      "source": "shots/realism/live-select/P1-inboxResults-landing.ui.json",
+      "sha256": "5e3817c5be6556f78bde692a46ee35407dc1170ffc82c546f78b6218b5b99dd3"
+    },
+    {
+      "path": "shots/realism/live-select/P1-lookup-chart.png",
+      "source": "shots/realism/live-select/P1-lookup-chart.ui.json",
+      "sha256": "a35b651a08715a0ffd31904e2d653fa02915cd20b58fd2c5ccae4a8cc555d0c1"
+    },
+    {
+      "path": "shots/realism/live-select/P1-lookup-landing.png",
+      "source": "shots/realism/live-select/P1-lookup-landing.ui.json",
+      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+    },
+    {
+      "path": "shots/realism/live-select/P1-scheduleTasks-chart.png",
+      "source": "shots/realism/live-select/P1-scheduleTasks-chart.ui.json",
+      "sha256": "a35b651a08715a0ffd31904e2d653fa02915cd20b58fd2c5ccae4a8cc555d0c1"
+    },
+    {
+      "path": "shots/realism/live-select/P1-scheduleTasks-landing.png",
+      "source": "shots/realism/live-select/P1-scheduleTasks-landing.ui.json",
+      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+    },
+    {
+      "path": "shots/realism/live-select/P2-edTrackBoard-chart.png",
+      "source": "shots/realism/live-select/P2-edTrackBoard-chart.ui.json",
+      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+    },
+    {
+      "path": "shots/realism/live-select/P2-edTrackBoard-landing.png",
+      "source": "shots/realism/live-select/P2-edTrackBoard-landing.ui.json",
+      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+    },
+    {
+      "path": "shots/realism/live-select/P3-shiftWorklist-chart.png",
+      "source": "shots/realism/live-select/P3-shiftWorklist-chart.ui.json",
+      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+    },
+    {
+      "path": "shots/realism/live-select/P3-shiftWorklist-landing.png",
+      "source": "shots/realism/live-select/P3-shiftWorklist-landing.ui.json",
+      "sha256": "b53521c11728332d2208c89f96570ed03bac4ec427e9d18649b23cacfb9f0ef8"
+    },
+    {
+      "path": "shots/realism/live-select/P3-unitCensus-chart.png",
+      "source": "shots/realism/live-select/P3-unitCensus-chart.ui.json",
+      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+    },
+    {
+      "path": "shots/realism/live-select/P3-unitCensus-landing.png",
+      "source": "shots/realism/live-select/P3-unitCensus-landing.ui.json",
+      "sha256": "0547d7f5cb8f652c0e8773d9a0cae34f0982bed2e888c45fab20cf0cead70c17"
+    },
+    {
+      "path": "shots/realism/live-select/P4-scheduleTasks-chart.png",
+      "source": "shots/realism/live-select/P4-scheduleTasks-chart.ui.json",
+      "sha256": "5401e6190f5d589e70edb4ad9257a5ee9b2dcf51985f8a7f0267c24e33bd1495"
+    },
+    {
+      "path": "shots/realism/live-select/P4-scheduleTasks-landing.png",
+      "source": "shots/realism/live-select/P4-scheduleTasks-landing.ui.json",
+      "sha256": "9dc19f98b536431d084c1d91f3fc17680edbee9d44cb8bd42d804c4c1d171beb"
+    },
+    {
+      "path": "shots/realism/live-select/P5-consultList-chart.png",
+      "source": "shots/realism/live-select/P5-consultList-chart.ui.json",
+      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684"
+    },
+    {
+      "path": "shots/realism/live-select/P5-consultList-landing.png",
+      "source": "shots/realism/live-select/P5-consultList-landing.ui.json",
+      "sha256": "a32863b1e41c367f2e3429141f47164d4ffe661a34bb3ec19921edda7d4b6521"
+    },
+    {
+      "path": "shots/realism/live-select/P5-orSchedule-chart.png",
+      "source": "shots/realism/live-select/P5-orSchedule-chart.ui.json",
+      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684"
+    },
+    {
+      "path": "shots/realism/live-select/P5-orSchedule-landing.png",
+      "source": "shots/realism/live-select/P5-orSchedule-landing.ui.json",
+      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956"
+    },
+    {
+      "path": "shots/realism/present/flowsheet-before.png",
+      "source": "src/fixtures/presentations/flowsheet-before.json",
+      "sha256": "791074de387b6342609a73439be05a857e7ad528c9a8850e5e0df049591375af"
+    },
+    {
+      "path": "shots/realism/present/flowsheet.png",
+      "source": "src/fixtures/presentations/flowsheet.json",
+      "sha256": "1957ce282bb8cd285437aa4a4e6a6b8402609f9e891effb755a590ba2da414d0"
+    },
+    {
+      "path": "shots/realism/present/folderList-before.png",
+      "source": "src/fixtures/presentations/folderList-before.json",
+      "sha256": "9184eff0dcb209b986b2c92d5777bd9e206c652474a2f6563b1b00ee39641aa7"
+    },
+    {
+      "path": "shots/realism/present/folderList.png",
+      "source": "src/fixtures/presentations/folderList.json",
+      "sha256": "a9a1569239efe7fc24a8b3bd92511aa36eb3ad90205e01009733ff9d299c1ea8"
+    },
+    {
+      "path": "shots/realism/present/growth-before.png",
+      "source": "src/fixtures/presentations/growth-before.json",
+      "sha256": "7aa1c0bb22d6e18f31476aabf5fe91def6fb3c4796221499f6ecae051e8ecd53"
+    },
+    {
+      "path": "shots/realism/present/growth.png",
+      "source": "src/fixtures/presentations/growth.json",
+      "sha256": "04b29d6cd6bea384b8ec560f3b46bd3fca575d0faa7d7bfe812b92e407c98cc1"
+    },
+    {
+      "path": "shots/realism/present/growthUnits-before.png",
+      "source": "src/fixtures/presentations/growthUnits-before.json",
+      "sha256": "cf457676ea7e159ab3740b3fdb1619aa0de13227ac7afac6f251f1bc10de4b96"
+    },
+    {
+      "path": "shots/realism/present/growthUnits.png",
+      "source": "src/fixtures/presentations/growthUnits.json",
+      "sha256": "08f501e4195500f0e34ffa612bd539744cc9dc802af415aa3cf9e713fc0eaf5b"
+    },
+    {
+      "path": "shots/realism/present/inbox-before.png",
+      "source": "src/fixtures/presentations/inbox-before.json",
+      "sha256": "99aa1f2a807b323fe5f7d905487e34adcb848f545c80c718af6658c7d6a6d1ac"
+    },
+    {
+      "path": "shots/realism/present/inbox.png",
+      "source": "src/fixtures/presentations/inbox.json",
+      "sha256": "81f1be138ccd9be7aaf6692b2f649c6cdbfc47661cf4794228d0ba4c85826ea8"
+    },
+    {
+      "path": "shots/realism/present/messages-before.png",
+      "source": "src/fixtures/presentations/messages-before.json",
+      "sha256": "54012aee312196c2ec1a90282f137be78901ea2f7f267da262081f8f1b6df432"
+    },
+    {
+      "path": "shots/realism/present/messages.png",
+      "source": "src/fixtures/presentations/messages.json",
+      "sha256": "8826a7ba3f34f6bd73632356590c933b9f632690958326f4b09bc8b5c5e72e15"
+    },
+    {
+      "path": "shots/realism/present/notes-before.png",
+      "source": "src/fixtures/presentations/notes-before.json",
+      "sha256": "a20b1a717c7d74bbb3bc2d169ccf4a0202d4b8159c129e7f5bf180f1b425ae98"
+    },
+    {
+      "path": "shots/realism/present/notes-import.png",
+      "source": "shots/realism/present/notes-import.ui.json",
+      "sha256": "2014c971ace35ac454510462954e596316abf7d1f2b510c6d1c7f10bb6f6cd8c"
+    },
+    {
+      "path": "shots/realism/present/notes.png",
+      "source": "src/fixtures/presentations/notes.json",
+      "sha256": "e8c0ff58fa794eb6ae27cc34d204852cc0f000a26ff1a99281226a45be939774"
+    },
+    {
+      "path": "shots/realism/present/orSchedule-before.png",
+      "source": "src/fixtures/presentations/orSchedule-before.json",
+      "sha256": "3adeb5e7e4c9c2803b5d7c93d8b09f7305c251dbc614dd6731e1b33522cb4ccd"
+    },
+    {
+      "path": "shots/realism/present/orSchedule.png",
+      "source": "src/fixtures/presentations/orSchedule.json",
+      "sha256": "e58e9fa956afcf123430ff17ee81a6b8e7e65fb24af54760a4b7271cf3a39311"
+    },
+    {
+      "path": "shots/realism/present/results-before.png",
+      "source": "src/fixtures/presentations/results-before.json",
+      "sha256": "0cead52cd9167885181edfbd235f27b9e06e6754470833f17ffe00f5a711d214"
+    },
+    {
+      "path": "shots/realism/present/results.png",
+      "source": "src/fixtures/presentations/results.json",
+      "sha256": "1bdc09cce06102fe010052056ac36956ca51f88f3d5377c859b7f66576f146c5"
+    },
+    {
+      "path": "shots/realism/present/rowActions-before.png",
+      "source": "src/fixtures/presentations/rowActions-before.json",
+      "sha256": "f0c6e1fb621ecee326ac9ad328478fc3437e4ecb3791a59ae8504de6c14654bd"
+    },
+    {
+      "path": "shots/realism/present/rowActions.png",
+      "source": "src/fixtures/presentations/rowActions.json",
+      "sha256": "a7bbe9467387fa70c1dcbc87e5e4dfc3f230bcff5d2762f40258ffe94b6ad377"
+    },
+    {
+      "path": "shots/realism/present/schedule-before.png",
+      "source": "src/fixtures/presentations/schedule-before.json",
+      "sha256": "857d4b83575904cbbdc4c9c24f90d333dd54998ebd5a072ef4f93b39102b9b58"
+    },
+    {
+      "path": "shots/realism/present/schedule.png",
+      "source": "src/fixtures/presentations/schedule.json",
+      "sha256": "f0a8018ff69864d7f500de0ae4867852bd0c68a4123b4c11408c5722b073183b"
+    },
+    {
+      "path": "shots/realism/present/table-before.png",
+      "source": "src/fixtures/presentations/table-before.json",
+      "sha256": "1c275f5f482b2fc61cb0345716da34a75ca2ca0d434b2e66273f39e7bc6dfe99"
+    },
+    {
+      "path": "shots/realism/present/table.png",
+      "source": "src/fixtures/presentations/table.json",
+      "sha256": "1c275f5f482b2fc61cb0345716da34a75ca2ca0d434b2e66273f39e7bc6dfe99"
+    },
+    {
+      "path": "shots/realism/present/timeGrid-before.png",
+      "source": "src/fixtures/presentations/timeGrid-before.json",
+      "sha256": "cacb7610aebcefc1c40b8a38d72bec340c85cde0c4b99cf14038e4f093f2f310"
+    },
+    {
+      "path": "shots/realism/present/timeGrid.png",
+      "source": "src/fixtures/presentations/timeGrid.json",
+      "sha256": "00a31ceff3b232989daf4ba9628668f10b90ebe0eb747cf967e650184fddb97c"
+    },
+    {
+      "path": "shots/realism/present/trackBoard-before.png",
+      "source": "src/fixtures/presentations/trackBoard-before.json",
+      "sha256": "cf950ca15d172134dd6090908a5607165af91c2508ff3dba13e98b1eea1abf34"
+    },
+    {
+      "path": "shots/realism/present/trackBoard.png",
+      "source": "src/fixtures/presentations/trackBoard.json",
+      "sha256": "2b4714e2ce38f17d3d945a2a069affbfeb62d13525ffca58be4ab1cf13b6ee8c"
+    },
+    {
+      "path": "shots/realism/present/trend-before.png",
+      "source": "src/fixtures/presentations/trend-before.json",
+      "sha256": "ea88aec6561013bc8aeaeda4a3e4d66dbb7e4c87d5653f66c12abeb90921d302"
+    },
+    {
+      "path": "shots/realism/present/trend.png",
+      "source": "src/fixtures/presentations/trend.json",
+      "sha256": "3ce8291e4ef0e606866eaafffe123d17524f389f200e1d6de4bb43986dae35e3"
+    },
+    {
+      "path": "shots/realism/present/worklist-before.png",
+      "source": "src/fixtures/presentations/worklist-before.json",
+      "sha256": "9a3cd75a910d18487a757858c01130afe2fd262fb07402e1f849ccaf3f02c32e"
+    },
+    {
+      "path": "shots/realism/present/worklist.png",
+      "source": "src/fixtures/presentations/worklist.json",
+      "sha256": "9a3cd75a910d18487a757858c01130afe2fd262fb07402e1f849ccaf3f02c32e"
+    },
+    {
+      "path": "shots/realism/present/integration/p1-home.png",
+      "source": "shots/realism/present/integration/p1-home.ui.json",
+      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+    },
+    {
+      "path": "shots/realism/present/integration/p2-track-board.png",
+      "source": "shots/realism/present/integration/p2-track-board.ui.json",
+      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+    },
+    {
+      "path": "shots/realism/present/integration/p3-mar.png",
+      "source": "shots/realism/present/integration/p3-mar.ui.json",
+      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+    },
+    {
+      "path": "shots/realism/present/integration/p4-growth.png",
+      "source": "shots/realism/present/integration/p4-growth.ui.json",
+      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+    },
+    {
+      "path": "shots/realism/present/integration/p5-or-schedule.png",
+      "source": "shots/realism/present/integration/p5-or-schedule.ui.json",
+      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956"
+    }
+  ]
+}

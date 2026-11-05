@@ -27,8 +27,8 @@ def presentationKind? (tag info : String) : Option UiPresentationKind :=
     | "worklist" => some .worklist
     | "mar" | "medicationAdministration" => some .timeGrid
     | "flowsheet" => some .flowsheet
-    | "inBasketFolders" => some .folderList
-    | "inBasketMessages" => some .messages
+    | "inboxFolders" => some .folderList
+    | "inboxMessages" => some .messages
     | "labs" | "labResults" => some .results
     | "resultTrend" => some .trend
     | "growthChart" => some .growth
@@ -172,7 +172,7 @@ def flowsheetCells (d : Display) : List (List (String × String)) :=
 A present empty payload stays empty; it does not silently fall back to chart data. -/
 def structuredRows? (cx : Ctx) (info : InfoId) : Option (List (List (String × String))) :=
   if !(["schedule", "appointmentSchedule", "trackBoard", "orSchedule", "worklist", "mar",
-    "medicationAdministration", "flowsheet", "inBasketFolders", "inBasketMessages"] : List String).contains info then none
+    "medicationAdministration", "flowsheet", "inboxFolders", "inboxMessages"] : List String).contains info then none
   else if (infoPayload cx.facts info).isSome then
     match infoPayload cx.facts info with
     | none => some []

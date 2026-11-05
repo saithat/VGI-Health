@@ -133,7 +133,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   await view.getByRole("button", { name: "Step", exact: true }).click();
   await expect(view.getByLabel("Replay position")).toContainText("2 /");
   // Scroll the recorded screen inside its iframe as well as the outer page.
-  // The complete narrow navigator can place the heading below the initial frame.
+  // The complete narrow workflow can place the heading below the initial frame.
   await frame.getByRole("heading", { level: 1 }).scrollIntoViewIfNeeded();
   await expect(frame.getByRole("heading", { level: 1 })).toBeInViewport();
   await page.screenshot({ path: "shots/trajectories.png", fullPage: true });

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-04T19:34:04.204343+00:00",
+  "build": {
+    "ehrSha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
+    "appSha256": "78c10e358678328a9288eda27a0b5aa965e1026c358a7f9fa618bb3df15457c3",
+    "wasmSha256": "f629107f930abe31595053b8ddb935622ae3d363a10f6cdf9c485b1bb8a94b00",
+    "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "sourceRewrite": {
+    "examinedFiles": 2419,
+    "modifiedFiles": 0,
+    "identities": 5375
+  },
+  "code": {
+    "tool": "scripts/migrate-neutral-terms.mjs",
+    "toolSha256": "e11c351bedce5eafa40636fb39e000ef43d1d39c25f198ab30582c3512a2ec01",
+    "identityGeneratorSha256": "b1a17c546856e7c2e33bbb6dc5a8d10dc81912e33d6fd99597d6e89888f61cc5",
+    "modelCalls": 0,
+    "recordedChoicesPreserved": true,
+    "status": "passed",
+    "currentMeasurementsRegenerated": true
+  },
+  "runs": [
+    {
+      "run": "neutral-recorded-day1",
+      "certifiedRevisions": 1,
+      "rejectedRevisions": [],
+      "strictReplay": {
+        "status": "passed",
+        "tasks": 38,
+        "events": 862,
+        "nativeEventsVerified": 862,
+        "wasmEventsVerified": 862,
+        "mismatches": []
+      },
+      "geometry": [
+        {
+          "day": 1,
+          "persona": "P3",
+          "source": "chromium",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          },
+          "missingTargets": []
+        }
+      ]
+    },
+    {
+      "run": "run1-P3",
+      "certifiedRevisions": 0,
+      "rejectedRevisions": [
+        {
+          "version": 0,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        },
+        {
+          "version": 1,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        },
+        {
+          "version": 2,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        },
+        {
+          "version": 3,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        },
+        {
+          "version": 4,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        },
+        {
+          "version": 5,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        },
+        {
+          "version": 6,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        },
+        {
+          "version": 7,
+          "property": "navigation",
+          "reason": "D5: navigation group Schedule has duplicate labels or 15 entries (maximum 12)"
+        }
+      ],
+      "strictReplay": {},
+      "geometry": []
+    }
+  ]
+}

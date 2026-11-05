@@ -104,7 +104,7 @@ export function statusTone(value: string): ClinicalTone | undefined {
   )
     return "blue";
   if (
-    /^(in basket|in-basket|cosign|cosign required|awaiting cosign|unread|refused|declined)(?:$|\s)/.test(
+    /^(inbox|cosign|cosign required|awaiting cosign|unread|refused|declined)(?:$|\s)/.test(
       status,
     )
   )
@@ -121,7 +121,7 @@ export function severityTone(severity: string): ClinicalTone {
   // The legacy wire supplies tiers here. Color is a presentation cue; it never
   // changes clinical severity text, modality, acknowledgment or enabled state.
   if (severity === "interruptive") return "red";
-  if (/^(removable|passive|fyi|notice|information|info|bpa)$/i.test(severity))
+  if (/^(removable|passive|fyi|notice|information|info|advisory)$/i.test(severity))
     return "yellow";
   if (/^(severe|critical|error|high|danger)$/.test(severity.toLowerCase()))
     return "red";
@@ -136,7 +136,7 @@ export function sectionTone(label: string): ClinicalTone {
   if (/precaution|isolation|fall risk/i.test(label)) return "orange";
   if (/allerg|critical|alert/i.test(label)) return "red";
   if (
-    /in basket|message|cosign|note|history|instruction|education/i.test(label)
+    /inbox|message|cosign|note|history|instruction|education/i.test(label)
   )
     return "violet";
   if (

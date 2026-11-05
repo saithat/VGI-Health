@@ -17,7 +17,7 @@ def nav : List (ScreenId × String) :=
    ("w5Orders", "Orders"),
    ("w5Immunizations", "Immunizations"), ("w5Close", "Sign Visit")]
 
-/-- The chart-review tabs on W5 screens. -/
+/-- The chart-history tabs on W5 screens. -/
 def chart : List Block :=
   [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
    (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),

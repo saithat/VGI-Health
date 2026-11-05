@@ -25,8 +25,8 @@ def presetScreen (owner : String) (screen : Screen) : Bool :=
   !["P1", "P2", "P3", "P4", "P5"].contains owner ||
     ["shell", "chart"].contains screen.workflow || (presetWorkflows owner).contains screen.workflow
 
-/-- Public activity and navigator names. Internal task categories never label the UI. -/
-def navigatorNames (s : Screen) : String × String :=
+/-- Public activity and workflow names. Internal task categories never label the UI. -/
+def workflowNames (s : Screen) : String × String :=
   let stepName := match s.id with
     | "w1Hpi" => "History / ROS" | "w1Exam" => "Exam / Assessment & Plan" | "w1Close" | "w5Close" => "Sign Visit"
     | "w3TrackBoard" => "ED Track Board" | "w4Worklist" => "Unit Census & MAR"
@@ -34,20 +34,20 @@ def navigatorNames (s : Screen) : String × String :=
     | "w6Consult" => "Consult note" | "w6ConsultClose" => "Sign Consult"
     | _ => s.title
   let activity := match s.workflow with
-    | "W1" => "Schedule" | "W2" => "In Basket: Results" | "W3" => "ED Track Board"
+    | "W1" => "Schedule" | "W2" => "Inbox: Results" | "W3" => "ED Track Board"
     | "W4" => "Unit Census & MAR" | "W5" => "Schedule"
     | "W6" => if ["w6Consults", "w6Consult", "w6ConsultClose"].contains s.id then "Consults" else "OR Schedule"
-    | "W7" => "In Basket: Rx Requests" | _ => "Chart Review"
+    | "W7" => "Inbox: Rx Requests" | _ => "Chart History"
   (activity, stepName)
 
-/-- Each activity opens its encounter navigator through an ordinary goto. -/
+/-- Each activity opens its encounter workflow through an ordinary goto. -/
 def presetLandings : String → List (ScreenId × String)
-  | "P1" => [("w1Rooming", "Schedule"), ("w2Inbasket", "In Basket: Results"), ("w7Queue", "In Basket: Rx Requests")]
+  | "P1" => [("w1Rooming", "Schedule"), ("w2Inbox", "Inbox: Results"), ("w7Queue", "Inbox: Rx Requests")]
   | "P2" => [("w3TrackBoard", "ED Track Board")]
   | "P3" => [("w4Worklist", "Unit Census & MAR")]
-  | "P4" => [("w5Rooming", "Schedule"), ("w2Inbasket", "In Basket: Results"), ("w7Queue", "In Basket: Rx Requests")]
+  | "P4" => [("w5Rooming", "Schedule"), ("w2Inbox", "Inbox: Results"), ("w7Queue", "Inbox: Rx Requests")]
   | "P5" => [("w6Schedule", "OR Schedule"), ("w6Consults", "Consults"),
-             ("w1Rooming", "Clinic Schedule"), ("w2Inbasket", "In Basket: Results")]
+             ("w1Rooming", "Clinic Schedule"), ("w2Inbox", "Inbox: Results")]
   | _ => []
 
 /-- ED and ward clinicians sign in to their department activity. Existing

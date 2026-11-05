@@ -166,7 +166,7 @@
   background: #edf3f6;
   border-radius: 0;
 }
-.clinical-app .storyboard-avatar {
+.clinical-app .patient-sidebar-avatar {
   display: grid;
   place-items: center;
   height: 48px;

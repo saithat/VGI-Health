@@ -115,7 +115,7 @@ def isShellCopy (s : Screen) (c : Component) : Bool :=
   c.id == cid s.id "sidebar" || c.parent? == some (cid s.id "sidebar") ||
   (c.id == cid s.id "nav" && !["W3", "W4"].contains s.workflow)
 
-/-- Acute navigator buttons retain their real group for semantic shell navigation.
+/-- Acute workflow buttons retain their real group for semantic shell navigation.
 Other workflows keep the existing top-level destinations until their migration. -/
 def clean (s : Screen) : List Component :=
   (s.components.filter fun c => !isShellCopy s c).map fun c =>

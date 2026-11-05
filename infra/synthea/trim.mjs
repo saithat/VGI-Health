@@ -32,6 +32,7 @@
 // Patients get a deterministic 8-digit MRN (Synthea's MRN is the UUID).
 //
 // Output bundles are FHIR R4 transaction bundles (POST + urn:uuid), one entry per line.
+import { fictionalize, identityCatalog } from '../../scripts/fictional-identities.mjs';
 import { createHash } from 'node:crypto';
 import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve } from 'node:path';
@@ -484,7 +485,11 @@ function serialize(entries) {
 }
 
 function main() {
-  const rawFiles = walkFiles(RAW)
+  const catalog = new Map();
+  const sourceFiles = walkFiles(RAW);
+  for (const file of sourceFiles.filter(f => /(?:hospitalInformation|practitionerInformation).*\.json$/.test(basename(f))))
+    identityCatalog(JSON.parse(readFileSync(file, 'utf8')), catalog);
+  const rawFiles = sourceFiles
     .filter((f) => f.endsWith('.json') && basename(dirname(f)) === 'fhir')
     .filter((f) => !/^(hospitalInformation|practitionerInformation)/.test(basename(f)))
     .sort();
@@ -502,7 +507,8 @@ function main() {
   const seen = new Set();
   for (const f of rawFiles) {
     const cohort = basename(dirname(dirname(f)));
-    const raw = JSON.parse(readFileSync(f, 'utf8'));
+    const original = JSON.parse(readFileSync(f, 'utf8'));
+    const raw = fictionalize(original, identityCatalog(original, catalog));
     const { entries, summary, rawCount } = trimBundle(raw, cohort);
     const patient = entries.find((e) => e.resource.resourceType === 'Patient').resource;
     if (seen.has(summary.id)) {

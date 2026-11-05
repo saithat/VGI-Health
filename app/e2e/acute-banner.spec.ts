@@ -65,7 +65,7 @@ for (const [persona, activity, target] of [
   ["P3", "w4Flowsheet", "w4Flowsheet.commit.chartAssessment"],
   ["P3", "w4Handoff", "w4Handoff.handoffRecommendation"],
 ] as const) {
-  test(`${persona}: navigator cannot cover patient identity during ${activity}`, async ({
+  test(`${persona}: workflow cannot cover patient identity during ${activity}`, async ({
     page,
   }) => {
     test.skip(

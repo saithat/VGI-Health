@@ -12,12 +12,12 @@ namespace Ehr.Canonical.W4
 
 open Ehr.Canonical
 
-/-- The W4 navigator (administration is reached from the MAR). -/
+/-- The W4 workflow (administration is reached from the MAR). -/
 def nav : List (ScreenId × String) :=
   [("w4Worklist", "Unit Census & MAR"), ("w4Mar", "MAR"), ("w4Flowsheet", "Flowsheets"),
    ("w4Handoff", "Handoff / SBAR")]
 
-/-- The chart-review tabs on W4 screens. -/
+/-- The chart-history tabs on W4 screens. -/
 def chart : List Block :=
   [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
    (.table, "labResults", "Results"), (.table, "currentMeds", "Meds"),
@@ -27,7 +27,7 @@ def chart : List Block :=
 /-- The shell for a W4 screen. -/
 def frame (s : ScreenId) : List Component :=
   (shell s nav hospitalSidebar chart).map fun c =>
-    if c.id == cid s "nav" then activityNavigator { c with label := "Nursing Navigator" }
+    if c.id == cid s "nav" then activityWorkflow { c with label := "Nursing workflow" }
     else if c.id == cid s "chart.labResults" then
       presentation "results" { c with kind := .table "resultTrend" }
     else if c.id == cid s "chart.imaging" then presentation "notes" c

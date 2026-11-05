@@ -18,7 +18,7 @@ def nav : List (ScreenId × String) :=
    ("w1Exam", "Exam / Assessment & Plan"), ("w1Orders", "Orders"), ("w1Labs", "Lab Orders"),
    ("w1Close", "Sign Visit")]
 
-/-- The chart-review tabs on W1 screens. -/
+/-- The chart-history tabs on W1 screens. -/
 def chart : List Block :=
   [(.table, "encounterHistory", "Encounters"), (.panel, "priorNotes", "Notes"),
    (.table, "labResults", "Results"), (.table, "currentMeds", "Medications"),
@@ -218,7 +218,7 @@ def copiedHpi : String :=
   "Taking medications as prescribed. No ED visits or hospitalizations. Diet and exercise " ++
   "discussed at the last visit. (Copied forward from the note of the last visit.)"
 
-/-- The W1 macros: copy-forward, templates, and the preference list. -/
+/-- The W1 macros: copy-forward, templates, and the order favorites. -/
 def macros : List Macro := [
   { id := "w1CopyForward", label := "Copy forward last note"
     steps := [.setValue (cid "w1Hpi" "hpi") copiedHpi,

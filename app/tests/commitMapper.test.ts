@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-// Frozen full-profile v3 spec (git 1123612:releases/v2/spec.json, before the
-// temporary core rule profile). The mapper must handle every catalog element,
-// so it stays tested while the release exports use core.
+// Current full-profile v3, exported by scripts/regenerate-full-fixture.mjs.
+// Mapper coverage remains independent of the production core profile.
 import spec from "./fixtures/spec-v3-full.json";
 import { mapCommit, systems, type CommitInput } from "../src/data/commitMapper";
 import type { Captured, Value } from "../../lean/generated/ehr-types";

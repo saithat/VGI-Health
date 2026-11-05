@@ -60,3 +60,12 @@ describe("default recorded demo", () => {
     );
   });
 });
+
+it("keeps generated day digests out of clinician result collections", async () => {
+  const { isDayResultFile } = await import("../src/browser/run-files");
+  for (const scope of ["days", "baselines", "no-agent/days"]) {
+    expect(isDayResultFile(`${scope}/day-01/P3.json`)).toBe(true);
+    expect(isDayResultFile(`${scope}/day-01/digest.json`)).toBe(false);
+  }
+  expect(isDayResultFile("manifest.json")).toBe(false);
+});
