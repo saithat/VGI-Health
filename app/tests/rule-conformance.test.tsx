@@ -2,7 +2,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import { it, expect, afterEach } from "vitest";
 import { RuleConformanceBadge } from "../src/dashboard/RuleConformance";
 import { ruleConformanceSchema } from "../src/dashboard/conformance-data";
-import { loadRunSummary } from "../src/dashboard/data";
+import { loadRunSummary, loadRunEvidence } from "../src/dashboard/data";
 afterEach(cleanup);
 
 const evidence = {
@@ -77,14 +77,12 @@ it("loads optional evidence separately from the recorded summary and rejects ano
   };
   const read = async (url: string) =>
     url.endsWith("summary.json") ? summary : evidence;
+  const run = await loadRunSummary("core-10day", read);
+  expect(run.ruleConformance).toBeNull();
   expect(
-    (await loadRunSummary("core-10day", read)).ruleConformance?.targets[0]?.failed,
+    (await loadRunEvidence(run, read)).ruleConformance?.targets[0]?.failed,
   ).toBe(1);
   await expect(
-    loadRunSummary("core-10day", async (url) =>
-      url.endsWith("summary.json")
-        ? summary
-        : { ...evidence, runId: "another-run" },
-    ),
+    loadRunEvidence(run, async () => ({ ...evidence, runId: "another-run" })),
   ).rejects.toThrow("another run");
 });

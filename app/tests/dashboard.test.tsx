@@ -37,11 +37,14 @@ withData("runs/mock").describe("archive-backed tests", () => {
 
   describe("recorded dashboard data", () => {
     it("loads the agent directory and validates every decision, day, program and certificate", () => {
-      expect(run.records).toHaveLength(26);
-      expect(run.days).toHaveLength(25);
+      expect(run.records).toHaveLength(46);
+      expect(run.days).toHaveLength(50);
       expect(run.programs.size).toBeGreaterThan(20);
       expect(run.certs.size).toBe(run.programs.size);
       expect(run.manifest.ehr.mode).toBe("fake");
+      const idle = run.records.filter((r) => r.outcome === "no-change");
+      expect(idle).toHaveLength(20);
+      expect(idle.every((r) => r.versionBefore === r.versionAfter && r.measured.test === null && r.candidates.length === 0)).toBe(true);
       expect(
         run.records.every((r) => decisionRecordSchema.safeParse(r).success),
       ).toBe(true);

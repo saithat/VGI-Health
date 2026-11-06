@@ -62,26 +62,40 @@ const problems = [
   "Misleading signing action label",
   "Macro attempts nurse practitioner preoperative signing",
 ];
-export async function buildCatalog() {
-  const programs = [];
+export async function completedCatalogRuns(directory) {
   const completed = new Map();
-  for (const entry of await readdir(resolve(root, "runs"), {
+  for (const entry of await readdir(directory, {
     withFileTypes: true,
   })) {
     if (!entry.isDirectory() || !/^[\w-]+$/.test(entry.name)) continue;
     try {
-      const prefix = await completedPrefix(resolve(root, "runs", entry.name));
-      if (prefix.manifest.runId === entry.name)
-        completed.set(entry.name, prefix);
+      const dir = resolve(directory, entry.name);
+      const manifest = JSON.parse(
+        await readFile(resolve(dir, "manifest.json"), "utf8"),
+      );
+      // Research outputs also use manifest.json; only recordings have this identity.
+      if (
+        manifest.runId !== entry.name ||
+        !["real", "fake"].includes(manifest.ehr?.mode)
+      )
+        continue;
+      completed.set(entry.name, await completedPrefix(dir));
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
   }
+  return completed;
+}
+export async function buildCatalog() {
+  const programs = [];
+  const completed = await completedCatalogRuns(resolve(root, "runs"));
   const [coreBad] = await readJson("lean/Ehr/Check/bad-program-profiles.json");
   for (const path of [
     ...(await jsonFiles("releases")),
     ...(await jsonFiles("programs")),
-    ...(await jsonFiles("runs")),
+    ...[...completed].flatMap(([id, prefix]) =>
+      prefix.files.map((file) => `runs/${id}/${file}`),
+    ),
   ]) {
     if (!/\/(?:canonical|P[1-5]|v\d+|\d\d-[\w-]+)\.json$/.test(path)) continue;
     if (path.startsWith("runs/")) {

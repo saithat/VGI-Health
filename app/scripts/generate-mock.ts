@@ -11,6 +11,7 @@ import {
   type DecisionRecord,
 } from "../../agent/src/schema";
 import { mockSpec, mockFacts } from "../src/mock/workflow";
+import { completeMock } from "./mock-completion";
 
 const root = resolve(import.meta.dirname, "../../runs/mock");
 await rm(root, { recursive: true, force: true });
@@ -728,6 +729,7 @@ await write("manifest.json", {
   runId: "mock",
   createdAt: stamp,
   days: 10,
+  completionProtocol: "atomic-prefix-v1",
   personas: personas.map((p) => p.id),
   worldIsFake: true,
   backend: "scripted",
@@ -769,3 +771,4 @@ await write(
     },
   }),
 );
+await completeMock(root);

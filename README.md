@@ -293,13 +293,15 @@ night/persona order from `runs/core-10day/decisions`; missing optional
 recordings omit examples while formal rule context remains required.
 The retired hackathon RN recording is preserved in the `hackathon-final` tag;
 its layouts exceed D5 and are excluded from current replay and audits. The browser audit script accepts `EHR_BIN` for a prebuilt native
-checker. Reserve the full pair for final verification on fully merged main;
-lane work uses targeted subsets. Run the template audit and then `--personas`
-sequentially, using `TMPDIR` on disk; neither builds Lean:
+checker. Run the template audit and then `--personas` sequentially under the
+shared browser lock, using disk-backed `TMPDIR`; neither builds Lean. Use targeted
+subsets during iteration:
 
 ```sh
-TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/cadence-audit-templates
-TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/cadence-audit-personas --personas
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true
+export EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr
+flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-templates"
+flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-personas" --personas
 ```
 
 The retained live recording supplies browser regression inputs and three same-task
@@ -436,6 +438,11 @@ author isolation, date expiry and target-version invalidation.
 stops. The dashboard, UI browser and trajectory player read that directory
 through the local Vite dev/preview data layer. There is no second recording
 or copy step. The retained recording is `core-10day`.
+Catalog discovery ignores unrelated research manifests under `runs/` and validates
+recordings before exposing their completed prefixes. The authored `mock` fixture
+uses the same day/night fences; conformance evidence loads separately from the summary.
+Its sparse scripted proposals retain their original measured examples; idle nights
+carry the current layout with no proposal or measurement and complete the calendar.
 
 New manifests declare `completionProtocol: atomic-prefix-v1`. After every
 clinician's shift, canonical baseline, no-agent control and calibration output
@@ -617,7 +624,7 @@ steady-state sampling protocol, retaining negative results.
 
 Hidden persona preferences are optional `hiddenPreferences` with `placements`
 (`tag`, `nearTag`, `weight`) and `changeSensitivity` (zero is neutral). The pure
-boundary for the tailoring lane is
+boundary for tailoring is
 `Bounded.ratePrograms (prefs : HiddenPreferences) (before after : Program)
 (recent : List RecentDay) : Rating`. Recent days contain `usedTags` and `costMs`;
 the current assumption-based rating uses use frequency to weight disruption,
@@ -696,7 +703,7 @@ expanded layouts (ignoring unused definitions and version numbers), and selects 
 changes and locations. Fewer than two eligible, replay-complete options leaves
 the current layout in place by failing preparation; no option is invented or
 deployed. `phase: "offShift"` is required. Cadence is review metadata here;
-the archive/release lane remains responsible for scheduling and release gates.
+the archive/release scheduler remains responsible for scheduling and release gates.
 
 Evidence reuses `EhrClient.simulate` on the same clinician's supplied recent
 schedules, world and paired seeds for current versus each option. Future days,
@@ -810,15 +817,10 @@ and the usual screen/validation gates, and labels manifests `OFFLINE`.
 Omitting the new flags preserves the historical protocols.
 
 `ColumnsNode` uses the group's container width: two columns from 48em and three
-from 75em, each capped by its child count. Viewport breakpoints previously kept
-nested order-set groups in columns after their available region became narrow;
-the recorded P2 candidate produced 16 SC 1.4.10 findings at 768px with doubled
-text. A narrow-region regression covers 768–1920px and doubled text alongside
-the unchanged physical screen matrix. The recorded candidate passes all 506
-exported page trees after the fix. Reproduce with `pnpm --filter agent exec tsx
-src/offline-columns-check.ts --comparison <comparison-directory> --out <scratch>`.
-This painter change changes the certified
-app hash; native program verdicts and clinical rules are unchanged.
+from 75em, each capped by its child count. Narrow-region regressions cover
+768–1920px and doubled text alongside the physical screen matrix. Recheck an
+offline candidate with `pnpm --filter agent exec tsx src/offline-columns-check.ts
+--comparison <comparison-directory> --out <scratch>`.
 
 Screen gates share `$TMPDIR/vgi-screen-check-cache`: `physical/` retains the
 existing atomic physical samples and `results/` holds checksummed per-tree
@@ -851,19 +853,19 @@ below consumes this batch gate when `--recertify-only` is selected and retains i
 existing certificate installation, remeasurement and strict replay checks.
 `core-10day` is the single retained recording.
 
-The final merged check owns timing and full browser validation. Use one shared
-lock, sequential commands and a fresh cache root for each cold experiment:
+Compare cold and warm certification with one shared lock, sequential commands
+and a fresh cache root for each cold experiment:
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=4
-export EHR_SCREEN_CACHE_DIR="$TMPDIR/screen-speed-final-recert-cache"
+export EHR_SCREEN_CACHE_DIR="$TMPDIR/screen-recert-cache"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
-  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-speed-final-recert-cold"
+  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-recert-cold"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
-  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-speed-final-recert-warm"
+  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-recert-warm"
 node scripts/compare-screen-results.mjs \
-  "$TMPDIR/screen-speed-final-recert-cold/recertification.json" \
-  "$TMPDIR/screen-speed-final-recert-warm/recertification.json"
+  "$TMPDIR/screen-recert-cold/recertification.json" \
+  "$TMPDIR/screen-recert-warm/recertification.json"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
   node --test scripts/screen-cache-browser.test.mjs
 ```
@@ -876,10 +878,7 @@ root for warm reports. Compare each output's `result.json` with
 `scripts/compare-screen-results.mjs`; `elapsedMs`, cache hits/misses and physical
 coverage are retained in reports. Compare a cache-disabled recording report too;
 optionally rebuild after one small painter change, confirm misses, and restore
-and rebuild before final certification. No lane timing claims are made: the owner
-deferred these measurements and full sweeps to the fully merged checkout.
-[Lane verification and merged-check commands](docs/audits/screen-speed-20261106.json)
-record the completed checks and remaining measurements.
+and rebuild before certificate installation.
 
 `node scripts/migrate-neutral-terms.mjs --recertify-only --runs
 core-10day` skips terminology/identity rewrites and selects only
@@ -894,26 +893,6 @@ use a new active `geometry/` namespace. The adapter still refuses mismatched
 program/component/build bindings. Status remains pending until measurement and
 regenerated replay verification finish.
 Rejected recertifications cannot supply conformance targets.
-
-The November 5–6 repair checked the same 33 revisions in both then-present
-copies (66 checks) and remeasured 100 clinician-days across those copies against app
-`718ad628861a2850c3073970f856d8583315903dff7e9b759ce9f28f5400ab6c`.
-Every day has Chromium geometry with zero missing targets. Each copy's regenerated
-1,284 tasks / 72,636 events agree in native and WASM replay; the live run also
-retains its three same-task controls / 79 events. The certification matrix stays
-15 accepted and 23 rejected. The second copy reused 6,080 newly captured
-coordinate files plus their capture-context record through unchanged
-renderer/browser/font/context keys;
-native simulations and replay checks were recomputed independently. Receipts
-preserve all 544 prior atlas files byte-for-byte in the two geometry histories.
-The repair evidence report retains that transfer's counts and input hashes.
-That repair's desktop/narrow regression set passed 28 tests (two opt-in
-screenshot cases skipped), followed by 86 native semantic screenshot captures. The full
-audit pair ran once, sequentially: templates covered 1,826 states / 16,434
-physical measurements and personas covered 1,296 states / 11,664 measurements,
-both with zero findings. [Repair evidence](docs/audits/main-repairs-20261105.json)
-records exact commands, results, input hashes and the comparison below; local
-run data and simulator journals remain outside git.
 
 The native offline A/B/C harness creates independent archives and memories for
 nightly auto-ship, weekly auto-ship, and weekly sessions. It fixes v1, uses the
@@ -959,65 +938,6 @@ clinical type before any performance measurement, preserves selected tasks,
 and an independent expert preflight must complete every selected goal before
 the multi-night run starts (`--preflight-only` stops after that check).
 
-The repair rerun used the declared role seeds above, two clinicians × eight
-days × two cases (32 tasks per arm), with no model calls or explicit
-`--reuse-evidence`. Its native binary is
-`8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246`;
-results are in
-`/home/saithat/Projects/run-tmp/wire-tailoring-placement-20261105/comparison.json`.
-All 96 bounded and 96 expert cases completed. An independent journal check
-matched native traces, expert outputs and timing for all 48 clinician-days;
-all geometry uses the current app with zero missing targets.
-
-| Arm | Bounded KLM seconds | Bounded actions | Expert-floor KLM seconds | Shipped changes | Session keeps | Preference recovery |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| A: nightly auto-ship | 22,836.9 | 8,357 | 8,920.5 | 2 | — | 0/2 |
-| B: weekly auto-ship | 22,893.0 | 8,596 | 8,905.2 | 2 | — | 1/2 |
-| C: weekly sessions | 22,898.8 | 8,617 | 8,901.1 | 1 | 0/2 | 1/2 |
-
-Both sessions selected an adjacent-placement option from three certified
-offers, producing six pairwise comparisons. P1's allergy/dose distance fell
-from 54 to one ordinal position in B and C. P2's session choice was refused by
-held-out release validation: KLM increased from 1,214.9 to 1,218.4 seconds despite
-six fewer normalized scrolls. It was a validation refusal, not a keep-current
-choice; the release gate and preference seeds were unchanged. P2's final
-distance remains 48 positions. This small simulation does not establish a
-preferred cadence. The earlier measurement below retains its original inputs,
-preferences, binary and reuse provenance.
-
-Measured on 2026-11-04 at `6ed7c8ad`: two clinicians × eight days × two cases,
-seed 1, fixed v1, three discovery nights and one weekly review slot. The native
-run completed in about 2h13m. Every arm completed all 32 bounded and 32 expert
-cases, with zero unresolved geometry targets and zero model calls. Native
-trace, expert output and timing matched the saved simulation journals for all
-48 clinician-days. Results are in the command's output `comparison.json`.
-
-| Arm | Bounded KLM seconds | Bounded actions | Expert-floor KLM seconds | Shipped changes | Session keeps |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| A: nightly auto-ship | 24,849.2 | 8,640 | 8,920.5 | 2 | — |
-| B: weekly auto-ship | 24,903.5 | 8,885 | 8,905.2 | 2 | — |
-| C: weekly sessions | 24,912.1 | 8,923 | 8,902.9 | 0 | 2/2 |
-
-A shipped both changes on night 1; B shipped both on night 7. C offered three
-options in each session, recorded six pairwise comparisons and kept current
-twice. All six options used bounded relearning evidence with expert comparisons;
-none used the heuristic fallback. No friction flags were supplied in this run;
-nonempty flags and their next-night train-only consumption are covered by tests.
-
-In that earlier comparison, no arm recovered either original placement target (0/2). P1's allergy-list/dose
-pair stayed 54 ordinal positions apart (2,160 preference-distance units); P2's
-seeded W1 pair is absent from its program. The earlier admitted generator did
-not move these preferred components, so that measured a limit of its candidate space,
-not evidence that sessions can infer unavailable placements. The small effort
-differences do not establish a preferred cadence. Review and hypothetical
-rehearsal duration remain unmodeled, and the window ends before another nightly
-generation after the session feedback.
-
-This measurement reused 10 prior exact screen reports and 96 geometry atlases
-from `11d11a4c`, through the identity checks below; actor state and simulations
-were recomputed. Its native binary SHA-256 was
-`948b1b6e68ebd27429b03a5a30a508ffde90a8969a0fa2b2c5b33e8e3c33de52`.
-
 Bounded action totals use browser-normalized scroll counts; the nested unchanged
 expert retains native scroll counts. Compare the reported KLM seconds for the
 time comparison. Those seconds retain native operator and cognitive timing;
@@ -1044,9 +964,6 @@ flock /home/saithat/Projects/run-tmp/vgi-browser-heavy.lock \
 pnpm --filter agent exec tsx src/offline-tailoring-compare.ts \
   --out /home/saithat/Projects/run-tmp/wire-tailoring-medication-comparison --days 8
 ```
-
-The measured invocation additionally passed
-`--reuse-evidence /home/saithat/Projects/run-tmp/wire-tailoring-release-comparison --reuse-source 11d11a4c`.
 
 `--world` defaults to this checkout's `runs/world/2`. The outer `flock`
 serializes this harness against full audits; agent-internal
@@ -1079,10 +996,7 @@ supplies behavioral expectations. Saved reports retain source-digested refresh
 provenance for the complete critical-result path and version-bound nursing
 fixture, alongside the independently rerun full-suite evidence. No clinical or
 design rule was changed.
-The final full `node conformance/index.mjs --canonical` run passed 1,584 cases,
-with zero failures and 1,431 inapplicable cases across 201 scenarios and 15
-targets. The independent recorded-run report agrees with that complete rerun;
-all 23 conformance unit tests pass with the native checker and zero skips.
+
 
 ## Terminology and fictional identities
 
