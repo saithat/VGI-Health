@@ -129,7 +129,7 @@ export async function compute({ root = defaultRoot, runDir, canonical, releaseDi
         return { workflow, metrics:aggregate(ts,'metrics',sum),floor:aggregate(ts,'floor',sum),coverage:coverage(ts) };
       });
       console.log(`${program.owner} v${version} (${specVersion}): ${aggregate(tasks,'metrics',sum).clicks??'not computed'} clicks · ${workflows.map(w => w.workflow).join(', ')}`);
-      return { version, label: `v${version}`, specVersion: archive ? releaseLabel(specVersion, 'run1-P3') : specVersion, day, night, source: sourcePath, programSha256: hash(JSON.stringify(program)), tasks, skipped, workflows,coverage:coverage(tasks),total:aggregate(tasks,'metrics',sum),floor:aggregate(tasks,'floor',sum) };
+      return { version, label: `v${version}`, specVersion: archive ? releaseLabel(specVersion, 'mock') : specVersion, day, night, source: sourcePath, programSha256: hash(JSON.stringify(program)), tasks, skipped, workflows,coverage:coverage(tasks),total:aggregate(tasks,'metrics',sum),floor:aggregate(tasks,'floor',sum) };
     }
     if (canonical) {
       const iterations = [];

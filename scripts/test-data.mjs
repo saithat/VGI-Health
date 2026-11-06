@@ -8,6 +8,6 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 export function dataReason(...paths) {
   const missing = paths.filter(path => !existsSync(resolve(root, path)));
   return missing.length
-    ? `needs ${missing.join(', ')}; extract with \`git archive hackathon-final runs fixtures programs verdicts.json | tar -x\``
+    ? `needs ${missing.join(', ')}; restore these local files with their matching frozen recording inputs`
     : undefined;
 }

@@ -160,7 +160,7 @@ sequenceDiagram
 | `services/commit/` | Postgres commit authority for MAR and ADT, driven by the native Lean binary. |
 | `wasm/` | Lean → C → Emscripten build. |
 | `world/` | Generator of simulated clinical days (patients, tasks, schedules). |
-| `conformance/` | 200 held-out rule scenarios run against every deployed revision. |
+| `conformance/` | 201 held-out rule scenarios run against every deployed revision. |
 | `releases/` | Vendor releases v1–v3 (rulebook + reference screens). |
 | `infra/` | Docker Compose for Medplum; setup and data loading. |
 | `explore/` | Quality-diversity archive, descriptors, admitted generators and search. The standalone research harness never deploys; `agent/` reuses these modules for cadence releases. |
@@ -266,9 +266,11 @@ TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/c
 ```
 
 It exercises accumulation, weekly shipping, cross-night bundles, review vetoes,
-switch-cost blocking, screen rejection, train-only feedback and resume. Missing
-optional `runs/run1-P3` manual examples are omitted; formal rule context remains
-required. The browser audit script accepts `EHR_BIN` for a prebuilt native
+switch-cost blocking, screen rejection, train-only feedback and resume. Manual examples select the first accepted and rejected candidates in sorted
+night/persona order from `runs/core-10day-live/decisions`; missing optional
+recordings omit examples while formal rule context remains required.
+The retired hackathon RN recording is preserved in the `hackathon-final` tag;
+its layouts exceed D5 and are excluded from current replay and audits. The browser audit script accepts `EHR_BIN` for a prebuilt native
 checker. Run the full template audit and then `--personas` sequentially, using
 `TMPDIR` on disk; neither builds Lean:
 
@@ -276,6 +278,26 @@ checker. Run the full template audit and then `--personas` sequentially, using
 TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/cadence-audit-templates
 TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/cadence-audit-personas --personas
 ```
+
+The retained live recording supplies browser regression inputs and three same-task
+canonical trajectory controls (days 1, 4 and 7 for P3). `scripts/export-replay.mjs` projects the
+first patient episode once per persona and natively simulates every revision
+against it; dashboard interpreter comparisons consume each context's matching
+trace rather than combining it with a different day's patient events.
+Clinical browser assertions first select and hydrate that patient and reach the
+relevant workflow; checker counterexample prefixes do not supply workspace
+patient selection.
+Recorded frames begin in the role's unselected workspace. A sequential scroll
+following asynchronous chart arrival is applied after the incoming chart DOM
+mounts, so it is not lost against the loading screen. Browser regressions check
+the workspace before selection, then patient banners and clinical alerts after
+hydration. Counterexample expectations follow the retained run's actual
+`reviewsBeforeCommit` refusal; the global proposal list is independent of the
+persona selected in Evolution. View-only playback changes remain inside
+`app/src/dashboard` and preserve the certified clinical app hash.
+
+Prompt golden hashes bind the current manual text, deterministic historical
+examples and all 35 retained nightly contexts.
 
 ## What is proved
 
@@ -461,9 +483,9 @@ weakest parts.
   tailoring sessions now connect that archive to the bounded clinician's
   relearning estimate and private choice function. Defaults retain the movement
   proxy and auto-approval. Sessions export train-only comparisons and friction
-  to later nightly prompts. The admitted generator currently changes layout
-  tags, density and shortcuts, not arbitrary preferred component placements;
-  participation cannot recover tastes outside that candidate space. There is
+  to later nightly prompts. The admitted generator changes layout tags, density and shortcuts and can
+  move review components or complete groups through the same certification gates.
+  Its finite public placement enumeration still bounds which tastes can be recovered. There is
   no live in-app choice/flag control, human calibration or live cadence study.
 
 ## Offline tailoring sessions (simulator only)
@@ -589,13 +611,62 @@ It stages custom artifacts under the run directory, uses native certification
 and the usual screen/validation gates, and labels manifests `OFFLINE`.
 Omitting the new flags preserves the historical protocols.
 
+`ColumnsNode` uses the group's container width: two columns from 48em and three
+from 75em, each capped by its child count. Viewport breakpoints previously kept
+nested order-set groups in columns after their available region became narrow;
+the recorded P2 candidate produced 16 SC 1.4.10 findings at 768px with doubled
+text. A narrow-region regression covers 768–1920px and doubled text alongside
+the unchanged physical screen matrix. The recorded candidate passes all 506
+exported page trees after the fix. Reproduce with `pnpm --filter agent exec tsx
+src/offline-columns-check.ts --comparison <comparison-directory> --out <scratch>`.
+This painter change changes the certified
+app hash; native program verdicts and clinical rules are unchanged.
+
+`node scripts/migrate-neutral-terms.mjs --recertify-only --runs
+core-10day,core-10day-live` skips terminology/identity rewrites and selects only
+those recordings. It retains frozen spec/canonical/previous inputs, applies
+native and whole-version screen gates, updates build bindings, remeasures the
+preserved schedules, regenerates trajectories (including existing same-task
+baseline controls), and verifies strict WASM replay. Results are written to
+`runs/recertification-report.json`; model choices remain recorded inputs.
+Before remeasurement, incompatible atlas generations are renamed intact into
+`migration/geometry-history/`, with byte-hash receipts; current measurements
+use a new active `geometry/` namespace. The adapter still refuses mismatched
+program/component/build bindings. Status remains pending until measurement and
+regenerated replay verification finish.
+Rejected recertifications cannot supply conformance targets.
+
+The November 5–6 repair re-certification passed all 66 retained revisions and
+remeasured 100 clinician-days against app
+`718ad628861a2850c3073970f856d8583315903dff7e9b759ce9f28f5400ab6c`.
+Every day has Chromium geometry with zero missing targets. Each run's regenerated
+1,284 tasks / 72,636 events agree in native and WASM replay; the live run also
+retains its three same-task controls / 79 events. The certification matrix stays
+15 accepted and 23 rejected. The second recording reused 6,080 newly captured
+coordinate files plus their capture-context record through unchanged
+renderer/browser/font/context keys;
+native simulations and replay checks were recomputed independently. Receipts
+preserve all 544 prior atlas files byte-for-byte in the two geometry histories.
+The transfer receipt is `runs/recertification-geometry-reuse.json`.
+The final desktop/narrow regression set passed 28 tests (two opt-in screenshot
+cases skipped), followed by 86 native semantic screenshot captures. The full
+audit pair ran once, sequentially: templates covered 1,826 states / 16,434
+physical measurements and personas covered 1,296 states / 11,664 measurements,
+both with zero findings. [Repair evidence](docs/audits/main-repairs-20261105.json)
+records exact commands, results, input hashes and the comparison below; local
+run data and simulator journals remain outside git.
+
 The native offline A/B/C harness creates independent archives and memories for
 nightly auto-ship, weekly auto-ship, and weekly sessions. It fixes v1, uses the
-same seed-1 world and P1/P2 seeded hidden preferences, and samples the first
+same seed-1 world and task-role-specific P1/P2 hidden preferences, and samples the first
 two v1-compatible W1 tasks for P1 and two W3 tasks for P2 on each of eight workdays (32 tasks
 per arm; one weekly slot, night 7). Discovery proposes one admitted variant on
-each of nights 1–3
-per clinician; nights 4–7 rescore the retained archive. All arms share the
+each of nights 1–3 per clinician. Every third-night cycle reserves its second
+night for public clinical placement proposals: move a review beside task entry,
+with admitted compact fields and keyboard navigation; other nights cycle layout
+variants. Complete-group reorderings follow review moves in the enumeration.
+All proposals retain the same native, identity-movement, screen, replay and release
+gates. Nights 4–7 rescore the retained archive. All arms share the
 existing exact-tree/context screen cache, without sharing actor memory or train
 scores. Discovery starts from each arm's active program, so the equal proposal
 budget can produce different candidate sets after a release. Total KLM seconds
@@ -607,11 +678,53 @@ ordinal position on the same screen. Missing tags count as unrecovered, not a
 neutral preference. This short experiment does not establish long-run cadence
 superiority or fit preference parameters.
 
+The new comparison declares `workflow-local-review-v1` before measurement
+(`agent/src/offline-preferences.ts`). Its **simulation assumption** is that a
+primary-care prescriber wants the W1 allergy context beside dose entry, and an
+emergency prescriber wants the analogous W3 context there. Seeded preference
+weights and disruption sensitivities are each 1–3 in the existing ordinal rating
+units; seed 1 gives P1 weight 3/sensitivity 2 and P2 weight 1/sensitivity 3.
+The previous universal W1 pair was absent from P2's program. The smaller declared
+disruption scale permits testing local placement choices under the existing
+40-units-per-ordinal cost; these are neither measured nor fitted preferences.
+Native rating, completion, applicability and release assertions are unchanged.
+Only the chooser receives these tastes. The generator uses public clinical
+structure and receives no hidden tags or weights. `explore/placements.ts` also
+supports explicit component/subtree moves across selected workflow screens,
+container regions, tabs and sibling positions; it rejects cycles, unknown
+anchors and movement-budget excess before the ordinary native gate.
+
 The fixed-v1 sample excludes W1 orders whose explicit kind is imaging or
 procedure: those require v2's `orderKind`/`orderCode` captures. Selection uses
 clinical type before any performance measurement, preserves selected tasks,
 and an independent expert preflight must complete every selected goal before
 the multi-night run starts (`--preflight-only` stops after that check).
+
+The repair rerun used the declared role seeds above, two clinicians × eight
+days × two cases (32 tasks per arm), with no model calls or explicit
+`--reuse-evidence`. Its native binary is
+`8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246`;
+results are in
+`/home/saithat/Projects/run-tmp/wire-tailoring-placement-20261105/comparison.json`.
+All 96 bounded and 96 expert cases completed. An independent journal check
+matched native traces, expert outputs and timing for all 48 clinician-days;
+all geometry uses the current app with zero missing targets.
+
+| Arm | Bounded KLM seconds | Bounded actions | Expert-floor KLM seconds | Shipped changes | Session keeps | Preference recovery |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| A: nightly auto-ship | 22,836.9 | 8,357 | 8,920.5 | 2 | — | 0/2 |
+| B: weekly auto-ship | 22,893.0 | 8,596 | 8,905.2 | 2 | — | 1/2 |
+| C: weekly sessions | 22,898.8 | 8,617 | 8,901.1 | 1 | 0/2 | 1/2 |
+
+Both sessions selected an adjacent-placement option from three certified
+offers, producing six pairwise comparisons. P1's allergy/dose distance fell
+from 54 to one ordinal position in B and C. P2's session choice was refused by
+held-out release validation: KLM increased from 1,214.9 to 1,218.4 seconds despite
+six fewer normalized scrolls. It was a validation refusal, not a keep-current
+choice; the release gate and preference seeds were unchanged. P2's final
+distance remains 48 positions. This small simulation does not establish a
+preferred cadence. The earlier measurement below retains its original inputs,
+preferences, binary and reuse provenance.
 
 Measured on 2026-11-04 at `6ed7c8ad`: two clinicians × eight days × two cases,
 seed 1, fixed v1, three discovery nights and one weekly review slot. The native
@@ -632,10 +745,10 @@ twice. All six options used bounded relearning evidence with expert comparisons;
 none used the heuristic fallback. No friction flags were supplied in this run;
 nonempty flags and their next-night train-only consumption are covered by tests.
 
-No arm recovered either seeded placement target (0/2). P1's allergy-list/dose
+In that earlier comparison, no arm recovered either original placement target (0/2). P1's allergy-list/dose
 pair stayed 54 ordinal positions apart (2,160 preference-distance units); P2's
-seeded W1 pair is absent from its program. The admitted generator does
-not move these preferred components, so this measures a limit of the candidate space,
+seeded W1 pair is absent from its program. The earlier admitted generator did
+not move these preferred components, so that measured a limit of its candidate space,
 not evidence that sessions can infer unavailable placements. The small effort
 differences do not establish a preferred cadence. Review and hypothetical
 rehearsal duration remain unmodeled, and the window ends before another nightly
@@ -683,7 +796,34 @@ certificates and `comparison.json` remain outside git. `--resume` resumes the sa
 native binaries. The standalone session CLI accepts `bounded: true` plus
 `memory` to select bounded evidence/choice; omitted fields retain its historical
 seeded chooser and labeled heuristic. No WASM rebuild is needed to run this
-native adapter; a stale source manifest is left for the merge session to refresh.
+native adapter. `node scripts/wasm-assets.mjs` verifies the installed source and
+asset manifest; Lean source changes require rebuilding WASM and that manifest.
+
+The held-out suite includes explicit source-labelled minor interaction evidence
+(`CriticalResults.followThrough`, `Core.Alerts.keys`): a current-medication class
+alone does not establish a minor interaction.
+The fixture selects class-interaction evidence for frozen specs using
+`V1.minorInteractionPopupAlert` (`cond = interaction`) and minor-only evidence
+for the successor. `Core.Alerts.keys` suppresses minor alerts under severe
+interaction evidence. Both contracts retain the same firing and completion
+assertions, without rewriting frozen rules or changing scenario applicability;
+native unit fixtures exercise both conditions. Native tests default to the
+checkout's built `ehr` before the optional cached binary.
+
+The critical-result case checks
+available/unresolved urgency, non-resolution by UI acknowledgment or inbox
+signing, and the separate receive/document/resolve path. The shared `chart`
+scope is part of every persona's workflow contract. The CURES-removal audit is
+bound to the current program/spec/binary and must fail `completable` when neither
+the report nor a reachable waiver is available; stored checker evidence never
+supplies behavioral expectations. Saved reports retain source-digested refresh
+provenance for the complete critical-result path and version-bound nursing
+fixture, alongside the independently rerun full-suite evidence. No clinical or
+design rule was changed.
+The final full `node conformance/index.mjs --canonical` run passed 1,584 cases,
+with zero failures and 1,431 inapplicable cases across 201 scenarios and 15
+targets. The independent recorded-run report agrees with that complete rerun;
+all 23 conformance unit tests pass with the native checker and zero skips.
 
 ## Terminology and fictional identities
 
@@ -695,12 +835,27 @@ seeded fictional values in the fixture pipeline, and
 `scripts/fictional-identities.test.mjs` fails on any name outside that
 generator.
 
+World generation preserves the frozen seed-serialization keys and inbox random
+stream internally (`world/src/seed-contract.ts`), so terminology changes do not
+redraw clinical cases. Persisted state uses neutral keys. Worlds 1/2 are immutable
+pre-critical-result inputs; exact snapshot tests construct the explicit additive
+critical-result successor, and world 1 also applies the documented service-order
+release gate and release-event display rename. The full current generator's
+critical-route tests remain active. Clinical overlay generation fictionalizes
+complete bundles once; per-resource repetition previously changed clinical
+specialty text. Reproducibility tests now use scratch copies and generation
+refreshes named context files without deleting recorded context directories.
+
 Regenerating derived artifacts:
 
 - `node scripts/regenerate-full-fixture.mjs`: the mapper's full-profile v3
   fixture.
 - `node scripts/refresh-clinical-fixtures.mjs`: the five painter samples and
   saved clinical semantic screens, from the native interpreter and local world.
+  `--live-selection-only` reconstructs the saved live-selection snapshot
+  sidecars without rewriting painter fixture inputs. These sidecars supply the
+  18 live-selection captures in the opt-in neutral screenshot refresh; images
+  alone do not satisfy its semantic-fidelity coverage check.
 - `node conformance/verify.mjs <run>` then `node conformance/refresh-evidence.mjs
   <run>`: agreement of independent conformance runs, then the derived case
   reports and checker probes.

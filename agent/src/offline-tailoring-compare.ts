@@ -18,7 +18,7 @@ import { createScreenChecker } from './screencheck.js';
 import { immutableScreenChecks } from './offline-screen-cache.js';
 import { primaryV1Schedule } from './offline-workload.js';
 import { reuseOfflineScreens } from './offline-screen-evidence.js';
-import { personaParams } from '../../world/src/personas.js';
+import { offlinePersonaParams, OFFLINE_PREFERENCE_ASSUMPTION, offlineRoleProfiles } from './offline-preferences.js';
 const {values}=parseArgs({options:{world:{type:'string'},out:{type:'string'},days:{type:'string'},resume:{type:'boolean',default:false},'preflight-only':{type:'boolean',default:false},'reuse-evidence':{type:'string'},'reuse-source':{type:'string'}}});
 const out=path.resolve(values.out??path.join(process.env['TMPDIR']??'', 'wire-comparison'));
 const source=path.resolve(values.world??path.join(REPO_ROOT,'runs/world/2'));
@@ -31,12 +31,16 @@ if(!existsSync(world)) {
   await copyFile(path.join(source,'manifest.json'),path.join(world,'manifest.json'));
   await writeJson(path.join(world,'world.json'),{seed,days,personas});
   for(const id of ['P1','P2'] as const) {
-    await writeJson(path.join(world,'personas',`${id}.json`),personaParams(id,seed,'bounded',true));
+    await writeJson(path.join(world,'personas',`${id}.json`),offlinePersonaParams(id,seed));
     for(let day=1;day<=days;day++) {
       const schedule=dayScheduleSchema.parse(JSON.parse(await readFile(path.join(source,'schedules',`day-${String(day).padStart(2,'0')}`,`${id}.json`),'utf8')));
       await writeJson(path.join(world,'schedules',`day-${String(day).padStart(2,'0')}`,`${id}.json`),primaryV1Schedule(schedule));
     }
   }
+}
+for (const id of ['P1','P2'] as const) {
+  const saved=JSON.parse(await readFile(path.join(world,'personas',`${id}.json`),'utf8'));
+  if(JSON.stringify(saved)!==JSON.stringify(offlinePersonaParams(id,seed)))throw Error('Offline persona seed differs from the declared assumption; use a new output directory');
 }
 const reports=[];
 const ehr=createEhr();
@@ -92,7 +96,7 @@ for(const arm of ['A','B','C'] as const) {
     sessions:sessions.length,reviewOpportunities:decisions.filter(d=>d.cadence?.review).length,
     keptCurrent:decisions.filter(d=>d.cadence?.review?.chosenBundle===null).length,preferences,
     outcomes:summary.timelines.map(t=>({clinician:t.persona,nights:t.nights.map(n=>({night:n.night,outcome:n.outcome}))})),modelCalls:modelCalls.length});
-  await writeJson(path.join(out,'comparison.json'),{seed,days,personas,discoveryNights:3,pointingAssumption:BOUNDED_POINT_ASSUMPTION,evidenceReuse:reused?.provenance??null,workload:'first two v1-compatible primary-workflow tasks per clinician/day (P1 W1 excludes non-medication orders; P2 W3); fixed v1; independent carried actor memories per arm; train odd days partitioned; native effort includes search/help/relearning',
+  await writeJson(path.join(out,'comparison.json'),{seed,days,personas,discoveryNights:3,preferenceAssumption:OFFLINE_PREFERENCE_ASSUMPTION,roleProfiles:offlineRoleProfiles,pointingAssumption:BOUNDED_POINT_ASSUMPTION,evidenceReuse:reused?.provenance??null,workload:'first two v1-compatible primary-workflow tasks per clinician/day (P1 W1 excludes non-medication orders; P2 W3); fixed v1; independent carried actor memories per arm; train odd days partitioned; native effort includes search/help/relearning',
     nativeSha256:await fileHash(process.env['EHR_BIN']??DEFAULT_EHR_BIN),reports});
   console.log(JSON.stringify(reports.at(-1)));
 }

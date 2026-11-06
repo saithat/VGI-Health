@@ -8,7 +8,7 @@ export function withData(...paths: string[]) {
     (path) => !existsSync(resolve(import.meta.dirname, "../..", path)),
   );
   const reason = missing.length
-    ? `needs ${missing.join(", ")}; extract with \`git archive hackathon-final runs fixtures programs verdicts.json | tar -x\``
+    ? `needs ${missing.join(", ")}; restore these local files with their matching frozen recording inputs`
     : null;
   const title = (name: string) => (reason ? `${name} (${reason})` : name);
   return {

@@ -1,0 +1,1117 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T13:01:24.986531+00:00",
+  "branch": "main",
+  "environment": {
+    "CI": "true",
+    "TMPDIR": "/home/saithat/Projects/run-tmp",
+    "EHR_BIN": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr",
+    "screenWorkers": 4,
+    "targetedPlaywrightWorkers": 1
+  },
+  "bindings": {
+    "nativeSha256": "8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246",
+    "appSha256": "718ad628861a2850c3073970f856d8583315903dff7e9b759ce9f28f5400ab6c",
+    "wasmSha256": "f629107f930abe31595053b8ddb935622ae3d363a10f6cdf9c485b1bb8a94b00",
+    "wasmSourceSha256": "50f2510c1ce4b0f9325ad48258c98e61a6ebe1d6ad873f096b3ed24c3cc37382"
+  },
+  "lean": {
+    "sourceChanged": false,
+    "protectedSpecificationDiff": "empty",
+    "newAxioms": false,
+    "editedTheorems": [],
+    "wasmRebuildRequired": false
+  },
+  "conformance": {
+    "targets": 15,
+    "scenarios": 201,
+    "passed": 1584,
+    "failed": 0,
+    "notApplicable": 1431
+  },
+  "recertification": [
+    {
+      "run": "core-10day",
+      "certifiedRevisions": 33,
+      "clinicianDays": 50,
+      "replay": {
+        "status": "passed",
+        "tasks": 1284,
+        "events": 72636,
+        "nativeEventsVerified": 72636,
+        "wasmEventsVerified": 72636,
+        "baselineTasks": 0,
+        "mismatches": []
+      }
+    },
+    {
+      "run": "core-10day-live",
+      "certifiedRevisions": 33,
+      "clinicianDays": 50,
+      "replay": {
+        "status": "passed",
+        "tasks": 1284,
+        "events": 72636,
+        "nativeEventsVerified": 72636,
+        "wasmEventsVerified": 72636,
+        "baselineTasks": 3,
+        "mismatches": []
+      }
+    }
+  ],
+  "geometryIntegrity": [
+    {
+      "run": "core-10day",
+      "archivedFilesVerified": 392,
+      "days": 50,
+      "currentAppChromiumDays": 50,
+      "missingTargets": 0
+    },
+    {
+      "run": "core-10day-live",
+      "archivedFilesVerified": 152,
+      "days": 50,
+      "currentAppChromiumDays": 50,
+      "missingTargets": 0
+    }
+  ],
+  "geometryTransfer": {
+    "coordinateFiles": 6080,
+    "contextRecords": 1,
+    "existingOverwrites": 0,
+    "identity": "unchanged exact semantic-tree, presentation, renderer, browser, font and capture-context keys; native simulation and replay independently recomputed"
+  },
+  "comparison": {
+    "seed": 1,
+    "days": 8,
+    "personas": [
+      "P1",
+      "P2"
+    ],
+    "discoveryNights": 3,
+    "preferenceAssumption": "workflow-local-review-v1",
+    "roleProfiles": {
+      "P1": {
+        "role": "primary-care-prescriber",
+        "screen": "w1Orders"
+      },
+      "P2": {
+        "role": "emergency-prescriber",
+        "screen": "w3Orders"
+      }
+    },
+    "pointingAssumption": "simulation assumption: ignored bounded clicks project the measured reveal point of the remembered ordinal slot onto the attempted viewport; no additional scroll or clinical event",
+    "evidenceReuse": null,
+    "workload": "first two v1-compatible primary-workflow tasks per clinician/day (P1 W1 excludes non-medication orders; P2 W3); fixed v1; independent carried actor memories per arm; train odd days partitioned; native effort includes search/help/relearning",
+    "nativeSha256": "8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246",
+    "reports": [
+      {
+        "arm": "A",
+        "bounded": {
+          "seconds": 22836.900000000005,
+          "actions": 8357
+        },
+        "expertFloor": {
+          "seconds": 8920.5,
+          "actions": 3339
+        },
+        "incomplete": [],
+        "completed": 32,
+        "tasks": 32,
+        "shippedChanges": 2,
+        "sessions": 0,
+        "reviewOpportunities": 2,
+        "keptCurrent": 0,
+        "preferences": [
+          {
+            "clinician": "P1",
+            "placements": [
+              {
+                "tag": "w1Orders.patientSidebar.allergyList",
+                "nearTag": "w1Orders.dose",
+                "initialDistance": 2160,
+                "finalDistance": 2160,
+                "recovered": false
+              }
+            ]
+          },
+          {
+            "clinician": "P2",
+            "placements": [
+              {
+                "tag": "w3Orders.patientSidebar.allergyList",
+                "nearTag": "w3Orders.dose",
+                "initialDistance": 1920,
+                "finalDistance": 1920,
+                "recovered": false
+              }
+            ]
+          }
+        ],
+        "outcomes": [
+          {
+            "clinician": "P1",
+            "nights": [
+              {
+                "night": 1,
+                "outcome": "deployed"
+              },
+              {
+                "night": 2,
+                "outcome": "archived"
+              },
+              {
+                "night": 3,
+                "outcome": "archived"
+              },
+              {
+                "night": 4,
+                "outcome": "archived"
+              },
+              {
+                "night": 5,
+                "outcome": "archived"
+              },
+              {
+                "night": 6,
+                "outcome": "archived"
+              },
+              {
+                "night": 7,
+                "outcome": "archived"
+              }
+            ]
+          },
+          {
+            "clinician": "P2",
+            "nights": [
+              {
+                "night": 1,
+                "outcome": "deployed"
+              },
+              {
+                "night": 2,
+                "outcome": "archived"
+              },
+              {
+                "night": 3,
+                "outcome": "archived"
+              },
+              {
+                "night": 4,
+                "outcome": "archived"
+              },
+              {
+                "night": 5,
+                "outcome": "archived"
+              },
+              {
+                "night": 6,
+                "outcome": "archived"
+              },
+              {
+                "night": 7,
+                "outcome": "archived"
+              }
+            ]
+          }
+        ],
+        "modelCalls": 0
+      },
+      {
+        "arm": "B",
+        "bounded": {
+          "seconds": 22893.000000000004,
+          "actions": 8596
+        },
+        "expertFloor": {
+          "seconds": 8905.199999999999,
+          "actions": 3319
+        },
+        "incomplete": [],
+        "completed": 32,
+        "tasks": 32,
+        "shippedChanges": 2,
+        "sessions": 0,
+        "reviewOpportunities": 2,
+        "keptCurrent": 0,
+        "preferences": [
+          {
+            "clinician": "P1",
+            "placements": [
+              {
+                "tag": "w1Orders.patientSidebar.allergyList",
+                "nearTag": "w1Orders.dose",
+                "initialDistance": 2160,
+                "finalDistance": 40,
+                "recovered": true
+              }
+            ]
+          },
+          {
+            "clinician": "P2",
+            "placements": [
+              {
+                "tag": "w3Orders.patientSidebar.allergyList",
+                "nearTag": "w3Orders.dose",
+                "initialDistance": 1920,
+                "finalDistance": 1920,
+                "recovered": false
+              }
+            ]
+          }
+        ],
+        "outcomes": [
+          {
+            "clinician": "P1",
+            "nights": [
+              {
+                "night": 1,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 2,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 3,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 4,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 5,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 6,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 7,
+                "outcome": "deployed"
+              }
+            ]
+          },
+          {
+            "clinician": "P2",
+            "nights": [
+              {
+                "night": 1,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 2,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 3,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 4,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 5,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 6,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 7,
+                "outcome": "deployed"
+              }
+            ]
+          }
+        ],
+        "modelCalls": 0
+      },
+      {
+        "arm": "C",
+        "bounded": {
+          "seconds": 22898.8,
+          "actions": 8617
+        },
+        "expertFloor": {
+          "seconds": 8901.099999999999,
+          "actions": 3313
+        },
+        "incomplete": [],
+        "completed": 32,
+        "tasks": 32,
+        "shippedChanges": 1,
+        "sessions": 2,
+        "reviewOpportunities": 2,
+        "keptCurrent": 0,
+        "preferences": [
+          {
+            "clinician": "P1",
+            "placements": [
+              {
+                "tag": "w1Orders.patientSidebar.allergyList",
+                "nearTag": "w1Orders.dose",
+                "initialDistance": 2160,
+                "finalDistance": 40,
+                "recovered": true
+              }
+            ]
+          },
+          {
+            "clinician": "P2",
+            "placements": [
+              {
+                "tag": "w3Orders.patientSidebar.allergyList",
+                "nearTag": "w3Orders.dose",
+                "initialDistance": 1920,
+                "finalDistance": 1920,
+                "recovered": false
+              }
+            ]
+          }
+        ],
+        "outcomes": [
+          {
+            "clinician": "P1",
+            "nights": [
+              {
+                "night": 1,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 2,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 3,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 4,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 5,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 6,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 7,
+                "outcome": "deployed"
+              }
+            ]
+          },
+          {
+            "clinician": "P2",
+            "nights": [
+              {
+                "night": 1,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 2,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 3,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 4,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 5,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 6,
+                "outcome": "release-deferred"
+              },
+              {
+                "night": 7,
+                "outcome": "validation-rejected"
+              }
+            ]
+          }
+        ],
+        "modelCalls": 0
+      }
+    ]
+  },
+  "comparisonVerification": {
+    "clinicianDays": 48,
+    "boundedTasks": 96,
+    "expertTasks": 96,
+    "nativeTraceExpertTimingAgreement": 48,
+    "geometryMissingTargets": 0,
+    "modelCalls": 0,
+    "appSha256": "718ad628861a2850c3073970f856d8583315903dff7e9b759ce9f28f5400ab6c",
+    "verified": [
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 1,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 2,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 3,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 4,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 5,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 6,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 7,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P1",
+        "day": 8,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 1,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 2,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 3,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 4,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 5,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 6,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 7,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "A",
+        "clinician": "P2",
+        "day": 8,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 1,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 2,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 3,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 4,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 5,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 6,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 7,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P1",
+        "day": 8,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 1,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 2,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 3,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 4,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 5,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 6,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 7,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "B",
+        "clinician": "P2",
+        "day": 8,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 1,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 2,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 3,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 4,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 5,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 6,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 7,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P1",
+        "day": 8,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 1,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 2,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 3,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 4,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 5,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 6,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 7,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      },
+      {
+        "arm": "C",
+        "clinician": "P2",
+        "day": 8,
+        "nativeTraceExpertTimingAgree": true,
+        "geometryMissingTargets": 0
+      }
+    ]
+  },
+  "sessionValidationVeto": {
+    "clinician": "P2",
+    "sessionChoseCurrent": false,
+    "chosenPlacementAvailable": true,
+    "validationKlmSecondsBefore": 1214.9,
+    "validationKlmSecondsAfter": 1218.4,
+    "fewerNormalizedScrolls": 6,
+    "reason": "Release validation did not improve",
+    "gateModified": false
+  },
+  "screenshots": {
+    "nativeSemanticCaptures": 86,
+    "fidelity": "exact expected/observed accessibility trees",
+    "visualReview": [
+      "app/shots/realism/live-select/P3-shiftWorklist-chart.png",
+      "app/shots/final/trajectory-playback.png"
+    ],
+    "liveSelectionSources": "generated with --live-selection-only; ignored sidecars remain local"
+  },
+  "audits": [
+    {
+      "mode": "templates",
+      "fullRuns": 1,
+      "exitCode": 0,
+      "physicalCoverage": {
+        "policyStatus": "APPROVED by the owner on 2026-11-02",
+        "elapsedMs": 1984224,
+        "expectedStates": 1826,
+        "states": 1826,
+        "measurements": 16434,
+        "findings": 0
+      },
+      "artifacts": {
+        "/home/saithat/Projects/run-tmp/main-repairs-audit-templates/exports.json": "0139944b10125e5c48ef48cf949425ffc2b2e5e2d95c246933e8fdcf74df2b37",
+        "/home/saithat/Projects/run-tmp/main-repairs-audit-templates/physical.json": "92ba42bf19b9ddc5cb2ff9395e3c20f8e60194e4dcb1fe981dc8330683dcc78a",
+        "/home/saithat/Projects/run-tmp/main-repairs-audit-templates/result.json": "9f4607e0da81ee5399f2caf43a140dec1fae00d47b288660c7102b56c696eff8"
+      }
+    },
+    {
+      "mode": "personas",
+      "fullRuns": 1,
+      "exitCode": 0,
+      "physicalCoverage": {
+        "policyStatus": "APPROVED by the owner on 2026-11-02",
+        "elapsedMs": 1123416,
+        "expectedStates": 1296,
+        "states": 1296,
+        "measurements": 11664,
+        "findings": 0
+      },
+      "artifacts": {
+        "/home/saithat/Projects/run-tmp/main-repairs-audit-personas/exports.json": "b8f03ed470868c71808b0e6483467c45a7e48bb23161d8b6c11a73b6d3a28be4",
+        "/home/saithat/Projects/run-tmp/main-repairs-audit-personas/physical.json": "3edfebae9950cc5758395b1e8ad9bcfc2f53e1cce02fdfafaeffef2bb7263b36",
+        "/home/saithat/Projects/run-tmp/main-repairs-audit-personas/result.json": "d6305efbe9ba995b5381a3e9c19223dced8ac05384c0f6b3cd7c2d1714328575"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "cwd": "lean",
+      "command": "LEAN_NUM_THREADS=6 lake build",
+      "exitCode": 0,
+      "result": "463 jobs; success",
+      "log": "/home/saithat/Projects/run-tmp/final-lean-build.log",
+      "logSha256": "3ccf8a49db745766ff32f9838e4f4d8972bfe32a3688de81493b873dcbdbf596"
+    },
+    {
+      "cwd": ".",
+      "command": "node scripts/wasm-assets.mjs",
+      "exitCode": 0,
+      "result": "source/asset manifest current; no Lean-source changes"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter agent test --maxWorkers=2",
+      "exitCode": 0,
+      "result": "190 passed",
+      "log": "/home/saithat/Projects/run-tmp/final-agent-tests2.log",
+      "logSha256": "b1a16025f71c168a70e9c3fd60abf27b6855cac61cb1343c9f27fb14691a7c73"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter app test --maxWorkers=2",
+      "exitCode": 0,
+      "result": "333 passed; 43 files",
+      "log": "/home/saithat/Projects/run-tmp/app-tests-replay-workspace-fix.log",
+      "logSha256": "8884432251cb63442114d113cdf34ac4a04103787ea732f1ca879bdee4914163"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter world exec vitest run --maxWorkers=2",
+      "exitCode": 0,
+      "result": "97 passed",
+      "log": "/home/saithat/Projects/run-tmp/final-world-vitest5.log",
+      "logSha256": "d5d9ef1c3e102b8f19068685ba8790d2119f7cf36d1ce776bf3ff1cc4010ba1a"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter agent lint",
+      "exitCode": 0,
+      "result": "passed; zero warnings",
+      "log": "/home/saithat/Projects/run-tmp/final-agent-lint2.log",
+      "logSha256": "960f1eb37ac4d28430af9bef2c98f32333254854ffde619330f53d373ce0f632"
+    },
+    {
+      "cwd": "agent",
+      "command": "tsc --noEmit",
+      "exitCode": 0,
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/final-agent-types2.log",
+      "logSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter world lint",
+      "exitCode": 0,
+      "result": "passed; zero warnings",
+      "log": "/home/saithat/Projects/run-tmp/final-world-lint.log",
+      "logSha256": "54486ba1823675f17b52873cc87c8e7ab78e045afa3075d4bf1272df0ee5ecd5"
+    },
+    {
+      "cwd": "world",
+      "command": "tsc --noEmit",
+      "exitCode": 0,
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/final-world-types3.log",
+      "logSha256": "8366207267355d3e3d5bf3bf6e8c94c5f93f6078c34f08973fa2b38cdda6cc92"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter app lint",
+      "exitCode": 0,
+      "result": "passed; zero warnings",
+      "log": "/home/saithat/Projects/run-tmp/app-lint-replay-final.log",
+      "logSha256": "960f1eb37ac4d28430af9bef2c98f32333254854ffde619330f53d373ce0f632"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter app exec tsc --noEmit",
+      "exitCode": 0,
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/app-types-replay-workspace-fix.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "cwd": ".",
+      "command": "node --test world/realism/*.test.mjs",
+      "exitCode": 0,
+      "result": "5 passed",
+      "log": "/home/saithat/Projects/run-tmp/final-world-realism4.log",
+      "logSha256": "7c5dfa2748f714d8777a0697c00bbd6c3347bd1b339de761c940efbc602d6b3a"
+    },
+    {
+      "cwd": ".",
+      "command": "node --test scripts/geometry-history.test.mjs scripts/fictional-identities.test.mjs scripts/migrate-neutral-terms.test.mjs",
+      "exitCode": 0,
+      "result": "11 passed; zero skips",
+      "log": "/home/saithat/Projects/run-tmp/recertification-history-tests.log",
+      "logSha256": "248e28902b73fd0c5e8371b2d23499007a42700a7e2d877b0c2f099df86443e8"
+    },
+    {
+      "cwd": ".",
+      "command": "node --import ./agent/node_modules/tsx/dist/loader.mjs --test explore/generator.test.ts explore/placements.test.ts explore/search.test.ts",
+      "exitCode": 0,
+      "result": "14 passed, including native placement certification",
+      "log": "/home/saithat/Projects/run-tmp/final-explore-tests.log",
+      "logSha256": "33280fd0e1956d3a8ab8b6882927483c45ea231a371a12d83b80536d39163507"
+    },
+    {
+      "cwd": ".",
+      "command": "node conformance/index.mjs --canonical",
+      "exitCode": 0,
+      "result": "1584 passed; 0 failed; 1431 not applicable",
+      "log": "/home/saithat/Projects/run-tmp/conformance-canonical-final-source.log",
+      "logSha256": "b6ed2f347ba14be2fdcfaa0f35c7834cb65960837702c72fed9580f4fd142eb8"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm test:conformance",
+      "exitCode": 0,
+      "result": "23 passed; zero skips",
+      "log": "/home/saithat/Projects/run-tmp/conformance-unit-final-source.log",
+      "logSha256": "6dce4455fdc85427c31b8bb336396723105366343b63ae8c380f523ba2d03e58"
+    },
+    {
+      "cwd": ".",
+      "command": "node conformance/verify.mjs neutral-recorded-day1",
+      "exitCode": 0,
+      "result": "all 16 input bindings and independent canonical rows agree; zero positive failures",
+      "log": "/home/saithat/Projects/run-tmp/conformance-verify-final-source.log",
+      "logSha256": "61fd7564c0c0183d2b19e0eec802c2a853f90e5765f15179c89a8857b8b8e91e"
+    },
+    {
+      "cwd": ".",
+      "command": "node conformance/refresh-evidence.mjs neutral-recorded-day1",
+      "exitCode": 0,
+      "result": "current program/spec/binary-bound artifacts regenerated",
+      "log": "/home/saithat/Projects/run-tmp/conformance-refresh-final-source.log",
+      "logSha256": "41a32eb8b38a6fb170a7e209a05f1716410cbbe9dd6d9c9a56d9f6f1d4ca1703"
+    },
+    {
+      "cwd": ".",
+      "command": "node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day,core-10day-live",
+      "exitCode": 0,
+      "result": "66 revisions, 100 clinician-days, two complete strict-replay checks; zero mismatches; native matrix 15 accepted / 23 rejected",
+      "log": "/home/saithat/Projects/run-tmp/recertify-runs.log",
+      "logSha256": "6d850a28247bc01cbfd512c0914d681e553a439cba1ba172717310d750d6ca0c"
+    },
+    {
+      "cwd": ".",
+      "command": "python3 lean/Ehr/Check/certify.py",
+      "exitCode": 0,
+      "result": "invoked by re-certification; 15 accepted / 23 rejected; three vendor references remain non-deployable",
+      "log": "/home/saithat/Projects/run-tmp/recertify-runs.log",
+      "logSha256": "6d850a28247bc01cbfd512c0914d681e553a439cba1ba172717310d750d6ca0c"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter agent exec tsx src/offline-columns-check.ts --comparison /home/saithat/Projects/VGI-Health/runs/wire-tailoring-20261104/wire-tailoring-medication-comparison --out /home/saithat/Projects/run-tmp/columns-maintained-repro",
+      "exitCode": 0,
+      "result": "original archived P2 columns candidate: native ok; all 506 exported page trees pass",
+      "log": "/home/saithat/Projects/run-tmp/columns-maintained-repro.log",
+      "logSha256": "5242f46602b33a23d02cf32a91a65d1ccc3ec3bd6939646836f0cabe767b0314"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter agent exec tsx src/offline-tailoring-compare.ts --out /home/saithat/Projects/run-tmp/wire-tailoring-placement-20261105 --days 8",
+      "exitCode": 0,
+      "result": "three completed arms; 32 bounded and 32 expert cases per arm; no explicit evidence reuse or model calls",
+      "log": "/home/saithat/Projects/run-tmp/offline-comparison.log",
+      "logSha256": "17814991170336b0d4337f28d5415ce11bd425429538179058591f1993190307"
+    },
+    {
+      "cwd": ".",
+      "command": "python3 /home/saithat/Projects/run-tmp/verify-offline-comparison.py",
+      "exitCode": 0,
+      "result": "independent 48-day native trace/expert/timing agreement; zero missing geometry targets",
+      "log": "/home/saithat/Projects/run-tmp/offline-comparison-verification.log",
+      "logSha256": "562dd7cc1c7e0d82649f96db6f25c28499222c2a3e933057b3b4af857463378d"
+    },
+    {
+      "cwd": ".",
+      "command": "node scripts/refresh-clinical-fixtures.mjs --live-selection-only",
+      "exitCode": 0,
+      "result": "18 native live-selection sidecars reconstructed; painter fixture inputs unchanged",
+      "log": "/home/saithat/Projects/run-tmp/refresh-live-selection-snapshots.log",
+      "logSha256": "95359999aa6f3e630591be7860c6d63bedf015b6d2c749db198e589308c46a58"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter app build",
+      "environment": {},
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/final-review-app-build.log",
+      "logSha256": "c12e1f974721dbbfb3d7c9d6b9c84360698cfc056e38717a64e36a27a3efdc63"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter app exec playwright test browse.spec.ts dashboard.spec.ts trajectories.spec.ts compare.spec.ts complexity.spec.ts columns.spec.ts --workers=1",
+      "environment": {
+        "APP_TEST_PREVIEW": "1",
+        "APP_TEST_PORT": "4188"
+      },
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/final-targeted-playwright.log",
+      "logSha256": "9d768ab73a96060ebe9a090da47e9cee401fb77c953d3fc1d810c9d1c556f6dd"
+    },
+    {
+      "cwd": ".",
+      "command": "pnpm --filter app exec playwright test neutral-shots.spec.ts --project=desktop --grep regenerate neutral clinical --workers=1",
+      "environment": {
+        "APP_TEST_PREVIEW": "1",
+        "APP_TEST_PORT": "4188",
+        "NEUTRAL_SHOTS": "1"
+      },
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/final-neutral-screenshots.log",
+      "logSha256": "0e17b6e32141ed2061265da4b589f17021c157d69fae9b73161ed6959e8e5f34"
+    },
+    {
+      "cwd": ".",
+      "command": "node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/main-repairs-audit-templates",
+      "environment": {},
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/final-audit-templates.log",
+      "logSha256": "38d407e283416990fb758aa7ab61f95d02b35224dfa8ade3fa3282a4a8bf61bf"
+    },
+    {
+      "cwd": ".",
+      "command": "node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/main-repairs-audit-personas --personas",
+      "environment": {},
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/final-audit-personas.log",
+      "logSha256": "83a1027ec7e807d2305e159bb5a4ee4d8690786463fbe3f4a4c00268480a74c2"
+    }
+  ],
+  "evidenceSha256": {
+    "/home/saithat/Projects/VGI-Health/runs/recertification-report.json": "005047657f58110c47dfda24590aa3c5081d08ca60d9fdfd97857cdcd0700ab5",
+    "/home/saithat/Projects/VGI-Health/runs/recertification-geometry-reuse.json": "132d4d110d9750eced9b6f5335068b83c77360e27e9ff3eda51bea6965aa6124",
+    "/home/saithat/Projects/VGI-Health/runs/recertification-integrity-summary.json": "632888ae2e607a7e48348b9e19401aec3266bf79342c07d74bbe1e4a6cfc3c53",
+    "/home/saithat/Projects/run-tmp/wire-tailoring-placement-20261105/comparison.json": "de2d918c741ee245ca63885847322b4132ceedf809eceec65bc76129d3251f7a",
+    "/home/saithat/Projects/run-tmp/offline-comparison-verification.json": "4b6e69d6cad8d4dc2beb233342dff47342cecc3959fca97e79b65b228d368887",
+    "/home/saithat/Projects/VGI-Health/conformance/results/canonical.json": "4641a266d8c0e0096740a159655f5d8d47c87f991baf30ab299dd34aa13a988a",
+    "/home/saithat/Projects/VGI-Health/conformance/results/verification.json": "61fd7564c0c0183d2b19e0eec802c2a853f90e5765f15179c89a8857b8b8e91e",
+    "/home/saithat/Projects/VGI-Health/conformance/results/certifications.json": "d9eec45faaedaa902c3a706b96568f78be8182a1e374297d8dda12be1a81b5a9",
+    "/home/saithat/Projects/VGI-Health/lean/Ehr/Check/certification-report.json": "37f19ba84c1eb7a1b93dc88ab3244c48eca71d44b6cb59a813b588369dddf82b",
+    "/home/saithat/Projects/VGI-Health/app/shots/final/neutral-manifest.json": "34325772896889e2c62a68e85f99e7df5a184e203ca55c7e73df2a44bddad9c6"
+  },
+  "dataEffects": {
+    "retiredDirectory": "runs/run1-P3",
+    "preservedTag": "hackathon-final",
+    "rawImportedFixturesChanged": false,
+    "backupAccessed": false,
+    "generatedClinicalOverlaysAndContextsRegenerated": true,
+    "realismTestSideEffect": "An existing test initially removed/rebuilt generated context data before isolation was corrected. Outputs were regenerated with the corrected single-pass identity generator; current tests use scratch copies.",
+    "oldGeometryPreservedByteForByte": 544,
+    "recordedModelChoicesRegenerated": false
+  },
+  "modelCalls": 0,
+  "pushed": false,
+  "openQuestions": []
+}

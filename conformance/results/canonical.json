@@ -2,14 +2,14 @@
   "schemaVersion": 1,
   "suite": "held-out-core-rule-conformance",
   "runId": null,
-  "generatedAt": "2026-11-04T19:08:50.943Z",
+  "generatedAt": "2026-11-06T08:51:28.224Z",
   "independentOfChecker": true,
   "deploymentGate": false,
   "boundary": "Native interpreter + FHIR projection + semantic in-UI patient selection. Does not exercise browser painter, persistence, or host networking.",
   "native": {
-    "binary": "/home/saithat/Projects/VGI-neutral/lean/.lake/build/bin/ehr",
-    "sha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
-    "calls": 23372,
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr",
+    "sha256": "8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246",
+    "calls": 23807,
     "jobs": 2
   },
   "scenarios": [
@@ -1122,6 +1122,17 @@
       "expected": "Firing passive alert shown inline on its declared W1/W5 workflow; clicking it never opens a popup"
     },
     {
+      "id": "alert.passive.criticalResult",
+      "rule": "CriticalResults.alert / AlertUrgency approved policy (2026-11-02)",
+      "expected": "Available unresolved critical result stays urgent inline after UI acknowledgment; future and resolved results do not fire",
+      "sources": [
+        "lean/Ehr/Specs/CriticalResults.lean:alert",
+        "lean/Ehr/Specs/AlertUrgency.lean:approvedAssignments",
+        "lean/Ehr/Core/Alerts.lean:keys",
+        "lean/Ehr/Multi/Critical.lean"
+      ]
+    },
+    {
       "id": "alerts.no-false-alarms",
       "rule": "A2 false alarms",
       "expected": "No allergy, interaction, care gap or dose trigger means no corresponding alert shown"
@@ -1493,7 +1504,7 @@
       "programSha256": "98f3e252f0b68f15678299747feb88640982fc5fb52482b8b5921f1753d8f060",
       "specSha256": "5e2153993c55ded0d5126cfa3487e5a03248eda201787ef68132205ee2258312",
       "selectionMode": "in-ui-selection",
-      "passed": 121,
+      "passed": 122,
       "failed": 0,
       "notApplicable": 79
     },
@@ -1511,7 +1522,7 @@
       "selectionMode": "in-ui-selection",
       "passed": 103,
       "failed": 0,
-      "notApplicable": 97
+      "notApplicable": 98
     },
     {
       "id": "canonical/v1/P3",
@@ -1525,9 +1536,9 @@
       "programSha256": "5e35e52c47a6d47ed3de19e6f49d1ef761fa96bf923f9251d4affb6287067d9e",
       "specSha256": "5e2153993c55ded0d5126cfa3487e5a03248eda201787ef68132205ee2258312",
       "selectionMode": "in-ui-selection",
-      "passed": 45,
-      "failed": 1,
-      "notApplicable": 154
+      "passed": 46,
+      "failed": 0,
+      "notApplicable": 155
     },
     {
       "id": "canonical/v1/P4",
@@ -1541,7 +1552,7 @@
       "programSha256": "e97b361ea37bec8758d872f45081e5867f96a1971981f2c428afaa5183c02f18",
       "specSha256": "5e2153993c55ded0d5126cfa3487e5a03248eda201787ef68132205ee2258312",
       "selectionMode": "in-ui-selection",
-      "passed": 119,
+      "passed": 120,
       "failed": 0,
       "notApplicable": 81
     },
@@ -1557,7 +1568,7 @@
       "programSha256": "5ff9a9436f52152eab6235619916ef62946a8562ec2345adce047813f9c0781a",
       "specSha256": "5e2153993c55ded0d5126cfa3487e5a03248eda201787ef68132205ee2258312",
       "selectionMode": "in-ui-selection",
-      "passed": 125,
+      "passed": 126,
       "failed": 0,
       "notApplicable": 75
     },
@@ -1573,7 +1584,7 @@
       "programSha256": "bdf4cf426ee2352bfc0b6dc71e416695d2a420bfd5cec3028af57a6d4a4d2784",
       "specSha256": "ac9f8577136facd4d9460d3e35513b79709574c2eb5b708acbfe1cee159f2e06",
       "selectionMode": "in-ui-selection",
-      "passed": 125,
+      "passed": 126,
       "failed": 0,
       "notApplicable": 75
     },
@@ -1591,7 +1602,7 @@
       "selectionMode": "in-ui-selection",
       "passed": 105,
       "failed": 0,
-      "notApplicable": 95
+      "notApplicable": 96
     },
     {
       "id": "canonical/v2/P3",
@@ -1605,9 +1616,9 @@
       "programSha256": "fd9a1052c497404c7e92653bd6eccf282db276e9fa98ab39a95d27c39cbf9b7f",
       "specSha256": "ac9f8577136facd4d9460d3e35513b79709574c2eb5b708acbfe1cee159f2e06",
       "selectionMode": "in-ui-selection",
-      "passed": 45,
-      "failed": 1,
-      "notApplicable": 154
+      "passed": 46,
+      "failed": 0,
+      "notApplicable": 155
     },
     {
       "id": "canonical/v2/P4",
@@ -1621,7 +1632,7 @@
       "programSha256": "29ad3852bd6ce312573e3154d60a7074442b2e8dcdf7733e97acd6beb1b17fcc",
       "specSha256": "ac9f8577136facd4d9460d3e35513b79709574c2eb5b708acbfe1cee159f2e06",
       "selectionMode": "in-ui-selection",
-      "passed": 121,
+      "passed": 122,
       "failed": 0,
       "notApplicable": 79
     },
@@ -1637,7 +1648,7 @@
       "programSha256": "c4d9458934b31bb58185bb97a348a18f41d3269d9871f9fd3a0e7d6fb7d97788",
       "specSha256": "ac9f8577136facd4d9460d3e35513b79709574c2eb5b708acbfe1cee159f2e06",
       "selectionMode": "in-ui-selection",
-      "passed": 129,
+      "passed": 130,
       "failed": 0,
       "notApplicable": 71
     },
@@ -1653,7 +1664,7 @@
       "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a",
       "specSha256": "c3f27179fb6aa5d3fc9624fba6542194745d48a09a0ed8e0e3fd94c2021da732",
       "selectionMode": "in-ui-selection",
-      "passed": 127,
+      "passed": 128,
       "failed": 0,
       "notApplicable": 73
     },
@@ -1671,7 +1682,7 @@
       "selectionMode": "in-ui-selection",
       "passed": 107,
       "failed": 0,
-      "notApplicable": 93
+      "notApplicable": 94
     },
     {
       "id": "canonical/v3/P3",
@@ -1685,9 +1696,9 @@
       "programSha256": "14b669e8048780bd002032cf99364884f70d5a9292a42ee77f99ae5d6f929c02",
       "specSha256": "c3f27179fb6aa5d3fc9624fba6542194745d48a09a0ed8e0e3fd94c2021da732",
       "selectionMode": "in-ui-selection",
-      "passed": 46,
-      "failed": 1,
-      "notApplicable": 153
+      "passed": 47,
+      "failed": 0,
+      "notApplicable": 154
     },
     {
       "id": "canonical/v3/P4",
@@ -1701,7 +1712,7 @@
       "programSha256": "6174174edd60a5f4643dd4141808f0248c039d2f02f593a531c206852a41adbc",
       "specSha256": "c3f27179fb6aa5d3fc9624fba6542194745d48a09a0ed8e0e3fd94c2021da732",
       "selectionMode": "in-ui-selection",
-      "passed": 123,
+      "passed": 124,
       "failed": 0,
       "notApplicable": 77
     },
@@ -1717,7 +1728,7 @@
       "programSha256": "201797186808411a6f9c5dae752757e0abe411a9f20e921be1304cc6d4791ae6",
       "specSha256": "c3f27179fb6aa5d3fc9624fba6542194745d48a09a0ed8e0e3fd94c2021da732",
       "selectionMode": "in-ui-selection",
-      "passed": 131,
+      "passed": 132,
       "failed": 0,
       "notApplicable": 69
     }
@@ -2971,6 +2982,17 @@
       "scenario": "alert.passive.immunizationsDueInline",
       "status": "not-applicable",
       "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P1",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "960304fcdee45a650bd28b37fd29835d1f0ffffad55b557588850a98cbd1ca40",
+      "steps": 11,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
     },
     {
       "target": "canonical/v1/P1",
@@ -4705,6 +4727,12 @@
     },
     {
       "target": "canonical/v1/P2",
+      "scenario": "alert.passive.criticalResult",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P2",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -6236,6 +6264,12 @@
     },
     {
       "target": "canonical/v1/P3",
+      "scenario": "alert.passive.criticalResult",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v1/P3",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -6584,515 +6618,13 @@
     {
       "target": "canonical/v1/P3",
       "scenario": "alert.removable.minorInteractionPopup",
-      "status": "fail",
-      "observed": "Workflow impossible: no reachable shown control for optional alert minorInteractionPopup",
-      "classification": "missing-control",
-      "scope": "exact-program",
-      "facts": {
-        "patientId": "heldout-A",
-        "identity": {
-          "initials": "HA",
-          "sex": "F",
-          "ageYears": 42
-        },
-        "allergyVersion": 3,
-        "allergyClasses": [],
-        "medsVersion": 4,
-        "notesVersion": 2,
-        "historyVersion": 1,
-        "currentMedClasses": [
-          "vitaminKAntagonist"
-        ],
-        "weightToday": [
-          700,
-          "kg"
-        ],
-        "careGaps": [],
-        "abnormalResult": false,
-        "now": 20000,
-        "receipts": [],
-        "record": [
-          [
-            "appointmentReason",
-            "Held-out visit"
-          ],
-          [
-            "preferredPharmacy",
-            "community"
-          ]
-        ],
-        "medToGive": "amoxicillin",
-        "sourcePatientId": "heldout-A",
-        "patientDirectory": {
-          "patients": [
-            {
-              "id": "heldout-A",
-              "name": "Heldout heldout-A",
-              "mrn": "heldout-A"
-            }
-          ],
-          "activities": [
-            {
-              "info": "scheduleTasks",
-              "title": "Schedule",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "edTrackBoard",
-              "title": "Track Board",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "shiftWorklist",
-              "title": "Unit Census",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "unitCensus",
-              "title": "Unit Census",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "orSchedule",
-              "title": "OR Schedule",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "consultList",
-              "title": "Consults",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "inboxResults",
-              "title": "Inbox",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "inboxRxRequests",
-              "title": "Rx Requests",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "user": {
-        "id": "P3",
-        "role": "rn"
-      },
-      "trace": [
-        {
-          "intent": "navigate toward element wristbandScan",
-          "event": {
-            "click": {
-              "comp": "chartSummary.patientCare.w4Mar"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Mar",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "navigate toward element wristbandScan",
-          "event": {
-            "click": {
-              "comp": "w4Mar.openDue"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter wristbandScan",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.wristbandScan",
-              "value": {
-                "code": {
-                  "c": "heldout-A"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter medScan",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.medScan",
-              "value": {
-                "code": {
-                  "c": "amoxicillin"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter adminStatus",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.adminStatus",
-              "value": {
-                "code": {
-                  "c": "given"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter adminReason",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.adminReason",
-              "value": {
-                "code": {
-                  "c": "scheduled"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "finalState": {
-        "acked": [],
-        "captured": [
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "wristbandScan",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "heldout-A"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "medScan",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "amoxicillin"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "adminStatus",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "given"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "adminReason",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "scheduled"
-              }
-            }
-          }
-        ],
-        "clock": 0,
-        "commits": [],
-        "currentSlot": 0,
-        "expanded": [
-          "home.work",
-          "home.chartWorkspace",
-          "home.patientSidebar",
-          "w4Worklist.nav",
-          "w4Worklist.census",
-          "w4Worklist.allergyGroup",
-          "w4Worklist.chartWorkspace",
-          "w4Worklist.patientSidebar",
-          "w4Worklist.contextPanels",
-          "w4Worklist.contextPanels.card.chartMarSchedule",
-          "w4Worklist.contextPanels.card.chartPRN",
-          "w4Worklist.contextPanels.card.relevantLabs",
-          "w4Worklist.contextPanels.card.chartIO",
-          "w4Mar.nav",
-          "w4Mar.doseActivity",
-          "w4Mar.chartWorkspace",
-          "w4Mar.patientSidebar",
-          "w4Mar.contextPanels",
-          "w4Mar.contextPanels.card.chartMarSchedule",
-          "w4Mar.contextPanels.card.chartPRN",
-          "w4Mar.contextPanels.card.relevantLabs",
-          "w4Mar.contextPanels.card.chartIO",
-          "w4Admin.nav",
-          "w4Admin.fiveRights",
-          "w4Admin.independentCheck",
-          "w4Admin.documentation",
-          "w4Admin.chartWorkspace",
-          "w4Admin.patientSidebar",
-          "w4Admin.contextPanels",
-          "w4Admin.contextPanels.card.chartMarSchedule",
-          "w4Admin.contextPanels.card.chartPRN",
-          "w4Admin.contextPanels.card.relevantLabs",
-          "w4Admin.contextPanels.card.chartIO",
-          "w4Flowsheet.nav",
-          "w4Flowsheet.vitalsGroup",
-          "w4Flowsheet.pain",
-          "w4Flowsheet.assessment",
-          "w4Flowsheet.chartWorkspace",
-          "w4Flowsheet.patientSidebar",
-          "w4Flowsheet.contextPanels",
-          "w4Flowsheet.contextPanels.card.chartMarSchedule",
-          "w4Flowsheet.contextPanels.card.chartPRN",
-          "w4Flowsheet.contextPanels.card.relevantLabs",
-          "w4Flowsheet.contextPanels.card.chartIO",
-          "w4Handoff.nav",
-          "w4Handoff.sbar",
-          "w4Handoff.chartWorkspace",
-          "w4Handoff.patientSidebar",
-          "w4Handoff.contextPanels",
-          "w4Handoff.contextPanels.card.chartMarSchedule",
-          "w4Handoff.contextPanels.card.chartPRN",
-          "w4Handoff.contextPanels.card.relevantLabs",
-          "w4Handoff.contextPanels.card.chartIO",
-          "chartSummary.chartIndex",
-          "chartSummary.card.chartQuickView",
-          "chartSummary.card.chartProblems",
-          "chartSummary.card.chartMeds",
-          "chartSummary.card.allergyList",
-          "chartSummary.card.chartRecentResults",
-          "chartSummary.card.chartVitals",
-          "chartSummary.card.chartCareGaps",
-          "chartSummary.card.chartImmunizations",
-          "chartSummary.card.chartNotes",
-          "chartSummary.card.chartOrders",
-          "chartSummary.card.chartImaging",
-          "chartSummary.card.chartSocial",
-          "chartSummary.card.chartEncounters",
-          "chartSummary.card.chartMarDue",
-          "chartSummary.card.chartIO",
-          "chartSummary.card.chartLines",
-          "chartSummary.patientCare",
-          "chartSummary.chartWorkspace",
-          "chartSummary.patientSidebar",
-          "chartHistory.chartWorkspace",
-          "chartHistory.patientSidebar"
-        ],
-        "history": [
-          "w4Mar",
-          "chartSummary",
-          "w4Worklist"
-        ],
-        "patientContext": {
-          "activity": "shiftWorklist",
-          "bound": "heldout-A",
-          "patient": "heldout-A",
-          "query": "",
-          "target": "w4Mar"
-        },
-        "receipts": [],
-        "screen": "w4Admin",
-        "tabSel": []
-      },
+      "status": "pass",
+      "observed": "minorInteractionPopup fired when configured; legitimate administerMed completed",
+      "testedProgramSha256": "ba62ecee48eb071575d947570906401dbb90b82ac3bc2bc9f8754e17346f8bda",
+      "steps": 9,
       "selectionMode": "in-ui-selection",
       "selectionSteps": 1,
-      "hydrationSteps": 1,
-      "selectionTrace": [
-        {
-          "intent": "open patient heldout-A",
-          "event": {
-            "click": {
-              "comp": "workspace.open|heldout-A|0|shiftWorklist"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Worklist",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "hydrationTrace": [
-        {
-          "intent": "host binds selected patient source",
-          "event": {
-            "scroll": {
-              "screen": "w4Worklist"
-            }
-          },
-          "result": "ignored",
-          "screen": "chartSummary",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "testedProgramSha256": "ba62ecee48eb071575d947570906401dbb90b82ac3bc2bc9f8754e17346f8bda"
+      "hydrationSteps": 1
     },
     {
       "target": "canonical/v1/P3",
@@ -8433,6 +7965,17 @@
       "observed": "immunizationsDueInline inline and never popup; legitimate workflow completed",
       "testedProgramSha256": "668b1b257f98893a7ff29d8aa2ca7ed79690c05983f1a4fdcba76244e6e1fb21",
       "steps": 12,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v1/P4",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "668b1b257f98893a7ff29d8aa2ca7ed79690c05983f1a4fdcba76244e6e1fb21",
+      "steps": 11,
       "selectionMode": "in-ui-selection",
       "selectionSteps": 1,
       "hydrationSteps": 1
@@ -10260,6 +9803,17 @@
     },
     {
       "target": "canonical/v1/P5",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "8b35f001727705ed24009cf35ecf94360196e169cb06cd4ff18de4c8311c02ed",
+      "steps": 11,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v1/P5",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -12061,6 +11615,17 @@
     },
     {
       "target": "canonical/v2/P1",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "8304de9efa1fff9c6b1d0cb2e556aa3826f9278ca650b203c6eeb300279d3fa1",
+      "steps": 11,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v2/P1",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -13802,6 +13367,12 @@
     },
     {
       "target": "canonical/v2/P2",
+      "scenario": "alert.passive.criticalResult",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P2",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -15343,6 +14914,12 @@
     },
     {
       "target": "canonical/v2/P3",
+      "scenario": "alert.passive.criticalResult",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v2/P3",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -15691,515 +15268,13 @@
     {
       "target": "canonical/v2/P3",
       "scenario": "alert.removable.minorInteractionPopup",
-      "status": "fail",
-      "observed": "Workflow impossible: no reachable shown control for optional alert minorInteractionPopup",
-      "classification": "missing-control",
-      "scope": "exact-program",
-      "facts": {
-        "patientId": "heldout-A",
-        "identity": {
-          "initials": "HA",
-          "sex": "F",
-          "ageYears": 42
-        },
-        "allergyVersion": 3,
-        "allergyClasses": [],
-        "medsVersion": 4,
-        "notesVersion": 2,
-        "historyVersion": 1,
-        "currentMedClasses": [
-          "vitaminKAntagonist"
-        ],
-        "weightToday": [
-          700,
-          "kg"
-        ],
-        "careGaps": [],
-        "abnormalResult": false,
-        "now": 20000,
-        "receipts": [],
-        "record": [
-          [
-            "appointmentReason",
-            "Held-out visit"
-          ],
-          [
-            "preferredPharmacy",
-            "community"
-          ]
-        ],
-        "medToGive": "amoxicillin",
-        "sourcePatientId": "heldout-A",
-        "patientDirectory": {
-          "patients": [
-            {
-              "id": "heldout-A",
-              "name": "Heldout heldout-A",
-              "mrn": "heldout-A"
-            }
-          ],
-          "activities": [
-            {
-              "info": "scheduleTasks",
-              "title": "Schedule",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "edTrackBoard",
-              "title": "Track Board",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "shiftWorklist",
-              "title": "Unit Census",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "unitCensus",
-              "title": "Unit Census",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "orSchedule",
-              "title": "OR Schedule",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "consultList",
-              "title": "Consults",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "inboxResults",
-              "title": "Inbox",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "inboxRxRequests",
-              "title": "Rx Requests",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "user": {
-        "id": "P3",
-        "role": "rn"
-      },
-      "trace": [
-        {
-          "intent": "navigate toward element wristbandScan",
-          "event": {
-            "click": {
-              "comp": "chartSummary.patientCare.w4Mar"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Mar",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "navigate toward element wristbandScan",
-          "event": {
-            "click": {
-              "comp": "w4Mar.openDue"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter wristbandScan",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.wristbandScan",
-              "value": {
-                "code": {
-                  "c": "heldout-A"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter medScan",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.medScan",
-              "value": {
-                "code": {
-                  "c": "amoxicillin"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter adminStatus",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.adminStatus",
-              "value": {
-                "code": {
-                  "c": "given"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter adminReason",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.adminReason",
-              "value": {
-                "code": {
-                  "c": "scheduled"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "finalState": {
-        "acked": [],
-        "captured": [
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "wristbandScan",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "heldout-A"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "medScan",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "amoxicillin"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "adminStatus",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "given"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "adminReason",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "scheduled"
-              }
-            }
-          }
-        ],
-        "clock": 0,
-        "commits": [],
-        "currentSlot": 0,
-        "expanded": [
-          "home.work",
-          "home.chartWorkspace",
-          "home.patientSidebar",
-          "w4Worklist.nav",
-          "w4Worklist.census",
-          "w4Worklist.allergyGroup",
-          "w4Worklist.chartWorkspace",
-          "w4Worklist.patientSidebar",
-          "w4Worklist.contextPanels",
-          "w4Worklist.contextPanels.card.chartMarSchedule",
-          "w4Worklist.contextPanels.card.chartPRN",
-          "w4Worklist.contextPanels.card.relevantLabs",
-          "w4Worklist.contextPanels.card.chartIO",
-          "w4Mar.nav",
-          "w4Mar.doseActivity",
-          "w4Mar.chartWorkspace",
-          "w4Mar.patientSidebar",
-          "w4Mar.contextPanels",
-          "w4Mar.contextPanels.card.chartMarSchedule",
-          "w4Mar.contextPanels.card.chartPRN",
-          "w4Mar.contextPanels.card.relevantLabs",
-          "w4Mar.contextPanels.card.chartIO",
-          "w4Admin.nav",
-          "w4Admin.fiveRights",
-          "w4Admin.independentCheck",
-          "w4Admin.documentation",
-          "w4Admin.chartWorkspace",
-          "w4Admin.patientSidebar",
-          "w4Admin.contextPanels",
-          "w4Admin.contextPanels.card.chartMarSchedule",
-          "w4Admin.contextPanels.card.chartPRN",
-          "w4Admin.contextPanels.card.relevantLabs",
-          "w4Admin.contextPanels.card.chartIO",
-          "w4Flowsheet.nav",
-          "w4Flowsheet.vitalsGroup",
-          "w4Flowsheet.pain",
-          "w4Flowsheet.assessment",
-          "w4Flowsheet.chartWorkspace",
-          "w4Flowsheet.patientSidebar",
-          "w4Flowsheet.contextPanels",
-          "w4Flowsheet.contextPanels.card.chartMarSchedule",
-          "w4Flowsheet.contextPanels.card.chartPRN",
-          "w4Flowsheet.contextPanels.card.relevantLabs",
-          "w4Flowsheet.contextPanels.card.chartIO",
-          "w4Handoff.nav",
-          "w4Handoff.sbar",
-          "w4Handoff.chartWorkspace",
-          "w4Handoff.patientSidebar",
-          "w4Handoff.contextPanels",
-          "w4Handoff.contextPanels.card.chartMarSchedule",
-          "w4Handoff.contextPanels.card.chartPRN",
-          "w4Handoff.contextPanels.card.relevantLabs",
-          "w4Handoff.contextPanels.card.chartIO",
-          "chartSummary.chartIndex",
-          "chartSummary.card.chartQuickView",
-          "chartSummary.card.chartProblems",
-          "chartSummary.card.chartMeds",
-          "chartSummary.card.allergyList",
-          "chartSummary.card.chartRecentResults",
-          "chartSummary.card.chartVitals",
-          "chartSummary.card.chartCareGaps",
-          "chartSummary.card.chartImmunizations",
-          "chartSummary.card.chartNotes",
-          "chartSummary.card.chartOrders",
-          "chartSummary.card.chartImaging",
-          "chartSummary.card.chartSocial",
-          "chartSummary.card.chartEncounters",
-          "chartSummary.card.chartMarDue",
-          "chartSummary.card.chartIO",
-          "chartSummary.card.chartLines",
-          "chartSummary.patientCare",
-          "chartSummary.chartWorkspace",
-          "chartSummary.patientSidebar",
-          "chartHistory.chartWorkspace",
-          "chartHistory.patientSidebar"
-        ],
-        "history": [
-          "w4Mar",
-          "chartSummary",
-          "w4Worklist"
-        ],
-        "patientContext": {
-          "activity": "shiftWorklist",
-          "bound": "heldout-A",
-          "patient": "heldout-A",
-          "query": "",
-          "target": "w4Mar"
-        },
-        "receipts": [],
-        "screen": "w4Admin",
-        "tabSel": []
-      },
+      "status": "pass",
+      "observed": "minorInteractionPopup fired when configured; legitimate administerMed completed",
+      "testedProgramSha256": "66a19cccbb054f6fc020c84ad903ea61268c0649fa39a66c83860b1df94557f2",
+      "steps": 9,
       "selectionMode": "in-ui-selection",
       "selectionSteps": 1,
-      "hydrationSteps": 1,
-      "selectionTrace": [
-        {
-          "intent": "open patient heldout-A",
-          "event": {
-            "click": {
-              "comp": "workspace.open|heldout-A|0|shiftWorklist"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Worklist",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "hydrationTrace": [
-        {
-          "intent": "host binds selected patient source",
-          "event": {
-            "scroll": {
-              "screen": "w4Worklist"
-            }
-          },
-          "result": "ignored",
-          "screen": "chartSummary",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "testedProgramSha256": "66a19cccbb054f6fc020c84ad903ea61268c0649fa39a66c83860b1df94557f2"
+      "hydrationSteps": 1
     },
     {
       "target": "canonical/v2/P3",
@@ -17540,6 +16615,17 @@
       "observed": "immunizationsDueInline inline and never popup; legitimate workflow completed",
       "testedProgramSha256": "4b958f4280f3c454709921267def45d7b6c2273e123bf264173e5b1c29940262",
       "steps": 12,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v2/P4",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "4b958f4280f3c454709921267def45d7b6c2273e123bf264173e5b1c29940262",
+      "steps": 11,
       "selectionMode": "in-ui-selection",
       "selectionSteps": 1,
       "hydrationSteps": 1
@@ -19387,6 +18473,17 @@
     },
     {
       "target": "canonical/v2/P5",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "6baa1ef5e0e49f8b8761f4ce22398005a79d632b48aa2006c93625ffb4af5663",
+      "steps": 11,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v2/P5",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -21203,6 +20300,17 @@
     },
     {
       "target": "canonical/v3/P1",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "c32f2cb760109bd886c7573a1f3b39f75d93ef6ce1312e2deab284f8f4f901bd",
+      "steps": 11,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v3/P1",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -22954,6 +22062,12 @@
     },
     {
       "target": "canonical/v3/P2",
+      "scenario": "alert.passive.criticalResult",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P2",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -24505,6 +23619,12 @@
     },
     {
       "target": "canonical/v3/P3",
+      "scenario": "alert.passive.criticalResult",
+      "status": "not-applicable",
+      "observed": "Outside this role/workflow/release or optional feature not surfaced"
+    },
+    {
+      "target": "canonical/v3/P3",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -24853,515 +23973,13 @@
     {
       "target": "canonical/v3/P3",
       "scenario": "alert.removable.minorInteractionPopup",
-      "status": "fail",
-      "observed": "Workflow impossible: no reachable shown control for optional alert minorInteractionPopup",
-      "classification": "missing-control",
-      "scope": "exact-program",
-      "facts": {
-        "patientId": "heldout-A",
-        "identity": {
-          "initials": "HA",
-          "sex": "F",
-          "ageYears": 42
-        },
-        "allergyVersion": 3,
-        "allergyClasses": [],
-        "medsVersion": 4,
-        "notesVersion": 2,
-        "historyVersion": 1,
-        "currentMedClasses": [
-          "vitaminKAntagonist"
-        ],
-        "weightToday": [
-          700,
-          "kg"
-        ],
-        "careGaps": [],
-        "abnormalResult": false,
-        "now": 20000,
-        "receipts": [],
-        "record": [
-          [
-            "appointmentReason",
-            "Held-out visit"
-          ],
-          [
-            "preferredPharmacy",
-            "community"
-          ]
-        ],
-        "medToGive": "amoxicillin",
-        "sourcePatientId": "heldout-A",
-        "patientDirectory": {
-          "patients": [
-            {
-              "id": "heldout-A",
-              "name": "Heldout heldout-A",
-              "mrn": "heldout-A"
-            }
-          ],
-          "activities": [
-            {
-              "info": "scheduleTasks",
-              "title": "Schedule",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "edTrackBoard",
-              "title": "Track Board",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "shiftWorklist",
-              "title": "Unit Census",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "unitCensus",
-              "title": "Unit Census",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "orSchedule",
-              "title": "OR Schedule",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "consultList",
-              "title": "Consults",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "inboxResults",
-              "title": "Inbox",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            },
-            {
-              "info": "inboxRxRequests",
-              "title": "Rx Requests",
-              "rows": [
-                {
-                  "patient": "heldout-A",
-                  "fields": [
-                    [
-                      "Patient",
-                      "Heldout heldout-A"
-                    ],
-                    [
-                      "MRN",
-                      "heldout-A"
-                    ],
-                    [
-                      "Context",
-                      "Held-out scheduled encounter"
-                    ]
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "user": {
-        "id": "P3",
-        "role": "rn"
-      },
-      "trace": [
-        {
-          "intent": "navigate toward element wristbandScan",
-          "event": {
-            "click": {
-              "comp": "chartSummary.patientCare.w4Mar"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Mar",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "navigate toward element wristbandScan",
-          "event": {
-            "click": {
-              "comp": "w4Mar.openDue"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter wristbandScan",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.wristbandScan",
-              "value": {
-                "code": {
-                  "c": "heldout-A"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter medScan",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.medScan",
-              "value": {
-                "code": {
-                  "c": "amoxicillin"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter adminStatus",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.adminStatus",
-              "value": {
-                "code": {
-                  "c": "given"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        },
-        {
-          "intent": "enter adminReason",
-          "event": {
-            "enter": {
-              "comp": "w4Admin.adminReason",
-              "value": {
-                "code": {
-                  "c": "scheduled"
-                }
-              }
-            }
-          },
-          "result": "ok",
-          "screen": "w4Admin",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "finalState": {
-        "acked": [],
-        "captured": [
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "wristbandScan",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "heldout-A"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "medScan",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "amoxicillin"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "adminStatus",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "given"
-              }
-            }
-          },
-          {
-            "byHuman": true,
-            "confirmed": true,
-            "element": "adminReason",
-            "slot": 0,
-            "value": {
-              "code": {
-                "c": "scheduled"
-              }
-            }
-          }
-        ],
-        "clock": 0,
-        "commits": [],
-        "currentSlot": 0,
-        "expanded": [
-          "home.work",
-          "home.chartWorkspace",
-          "home.patientSidebar",
-          "w4Worklist.nav",
-          "w4Worklist.census",
-          "w4Worklist.allergyGroup",
-          "w4Worklist.chartWorkspace",
-          "w4Worklist.patientSidebar",
-          "w4Worklist.contextPanels",
-          "w4Worklist.contextPanels.card.chartMarSchedule",
-          "w4Worklist.contextPanels.card.chartPRN",
-          "w4Worklist.contextPanels.card.relevantLabs",
-          "w4Worklist.contextPanels.card.chartIO",
-          "w4Mar.nav",
-          "w4Mar.doseActivity",
-          "w4Mar.chartWorkspace",
-          "w4Mar.patientSidebar",
-          "w4Mar.contextPanels",
-          "w4Mar.contextPanels.card.chartMarSchedule",
-          "w4Mar.contextPanels.card.chartPRN",
-          "w4Mar.contextPanels.card.relevantLabs",
-          "w4Mar.contextPanels.card.chartIO",
-          "w4Admin.nav",
-          "w4Admin.fiveRights",
-          "w4Admin.independentCheck",
-          "w4Admin.documentation",
-          "w4Admin.chartWorkspace",
-          "w4Admin.patientSidebar",
-          "w4Admin.contextPanels",
-          "w4Admin.contextPanels.card.chartMarSchedule",
-          "w4Admin.contextPanels.card.chartPRN",
-          "w4Admin.contextPanels.card.relevantLabs",
-          "w4Admin.contextPanels.card.chartIO",
-          "w4Flowsheet.nav",
-          "w4Flowsheet.vitalsGroup",
-          "w4Flowsheet.pain",
-          "w4Flowsheet.assessment",
-          "w4Flowsheet.chartWorkspace",
-          "w4Flowsheet.patientSidebar",
-          "w4Flowsheet.contextPanels",
-          "w4Flowsheet.contextPanels.card.chartMarSchedule",
-          "w4Flowsheet.contextPanels.card.chartPRN",
-          "w4Flowsheet.contextPanels.card.relevantLabs",
-          "w4Flowsheet.contextPanels.card.chartIO",
-          "w4Handoff.nav",
-          "w4Handoff.sbar",
-          "w4Handoff.chartWorkspace",
-          "w4Handoff.patientSidebar",
-          "w4Handoff.contextPanels",
-          "w4Handoff.contextPanels.card.chartMarSchedule",
-          "w4Handoff.contextPanels.card.chartPRN",
-          "w4Handoff.contextPanels.card.relevantLabs",
-          "w4Handoff.contextPanels.card.chartIO",
-          "chartSummary.chartIndex",
-          "chartSummary.card.chartQuickView",
-          "chartSummary.card.chartProblems",
-          "chartSummary.card.chartMeds",
-          "chartSummary.card.allergyList",
-          "chartSummary.card.chartRecentResults",
-          "chartSummary.card.chartVitals",
-          "chartSummary.card.chartCareGaps",
-          "chartSummary.card.chartImmunizations",
-          "chartSummary.card.chartNotes",
-          "chartSummary.card.chartOrders",
-          "chartSummary.card.chartImaging",
-          "chartSummary.card.chartSocial",
-          "chartSummary.card.chartEncounters",
-          "chartSummary.card.chartMarDue",
-          "chartSummary.card.chartIO",
-          "chartSummary.card.chartLines",
-          "chartSummary.patientCare",
-          "chartSummary.chartWorkspace",
-          "chartSummary.patientSidebar",
-          "chartHistory.chartWorkspace",
-          "chartHistory.patientSidebar"
-        ],
-        "history": [
-          "w4Mar",
-          "chartSummary",
-          "w4Worklist"
-        ],
-        "patientContext": {
-          "activity": "shiftWorklist",
-          "bound": "heldout-A",
-          "patient": "heldout-A",
-          "query": "",
-          "target": "w4Mar"
-        },
-        "receipts": [],
-        "screen": "w4Admin",
-        "tabSel": []
-      },
+      "status": "pass",
+      "observed": "minorInteractionPopup fired when configured; legitimate administerMed completed",
+      "testedProgramSha256": "5c4cdb69e3d75190846f27bada642893a81b12a43265d403415fd14da448dbd3",
+      "steps": 9,
       "selectionMode": "in-ui-selection",
       "selectionSteps": 1,
-      "hydrationSteps": 1,
-      "selectionTrace": [
-        {
-          "intent": "open patient heldout-A",
-          "event": {
-            "click": {
-              "comp": "workspace.open|heldout-A|0|shiftWorklist"
-            }
-          },
-          "result": "ok",
-          "screen": "w4Worklist",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "hydrationTrace": [
-        {
-          "intent": "host binds selected patient source",
-          "event": {
-            "scroll": {
-              "screen": "w4Worklist"
-            }
-          },
-          "result": "ignored",
-          "screen": "chartSummary",
-          "commits": [],
-          "popup": null
-        }
-      ],
-      "testedProgramSha256": "5c4cdb69e3d75190846f27bada642893a81b12a43265d403415fd14da448dbd3"
+      "hydrationSteps": 1
     },
     {
       "target": "canonical/v3/P3",
@@ -26707,6 +25325,17 @@
       "observed": "immunizationsDueInline inline and never popup; legitimate workflow completed",
       "testedProgramSha256": "29856163afe610552e3c59d96449015013a996bfea53109e7c465790ea08293b",
       "steps": 12,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v3/P4",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "29856163afe610552e3c59d96449015013a996bfea53109e7c465790ea08293b",
+      "steps": 11,
       "selectionMode": "in-ui-selection",
       "selectionSteps": 1,
       "hydrationSteps": 1
@@ -28564,6 +27193,17 @@
     },
     {
       "target": "canonical/v3/P5",
+      "scenario": "alert.passive.criticalResult",
+      "status": "pass",
+      "observed": "Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed",
+      "testedProgramSha256": "b26260bee5ea88f9bfe661d7c34c58f6e4ea24e6ce72cbde215a0ddda82bfe08",
+      "steps": 11,
+      "selectionMode": "in-ui-selection",
+      "selectionSteps": 1,
+      "hydrationSteps": 1
+    },
+    {
+      "target": "canonical/v3/P5",
       "scenario": "alerts.no-false-alarms",
       "status": "pass",
       "observed": "No nonfiring alert or unsolicited popup on reachable screens",
@@ -29122,10 +27762,10 @@
   ],
   "summary": {
     "targets": 15,
-    "scenarios": 200,
-    "passed": 1572,
-    "failed": 3,
-    "notApplicable": 1425
+    "scenarios": 201,
+    "passed": 1584,
+    "failed": 0,
+    "notApplicable": 1431
   },
   "scope": "Canonical references and selected run revisions"
 }

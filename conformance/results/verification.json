@@ -1,20 +1,20 @@
 {
-  "generatedAt": "2026-11-04T19:32:45.226Z",
+  "generatedAt": "2026-11-06T08:51:58.622Z",
   "summary": {
     "targets": 16,
-    "scenarios": 200,
-    "passed": 1618,
-    "failed": 3,
-    "notApplicable": 1579
+    "scenarios": 201,
+    "passed": 1630,
+    "failed": 0,
+    "notApplicable": 1586
   },
   "canonical": {
     "targets": 15,
-    "scenarios": 200,
-    "passed": 1572,
-    "failed": 3,
-    "notApplicable": 1425
+    "scenarios": 201,
+    "passed": 1584,
+    "failed": 0,
+    "notApplicable": 1431
   },
-  "nativeSha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
+  "nativeSha256": "8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246",
   "inputBindings": [
     {
       "target": "canonical/v1/P1",
@@ -97,7 +97,7 @@
       "selectionMode": "in-ui-selection"
     }
   ],
-  "caseCoverage": "200 unique scenarios per input; original program/spec bindings verified",
+  "caseCoverage": "201 unique scenarios per input; original program/spec bindings verified",
   "independentCanonicalRunsAgree": true,
   "previousFiveGapFamilies": {
     "scenarioIds": [
@@ -114,7 +114,5 @@
     "notApplicable": 36
   },
   "positiveScenarioFailures": 0,
-  "failureScenarios": {
-    "alert.removable.minorInteractionPopup": 3
-  }
+  "failureScenarios": {}
 }

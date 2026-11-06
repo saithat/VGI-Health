@@ -158,47 +158,47 @@
     {
       "path": "shots/realism/live-select/P1-inboxResults-chart.png",
       "source": "shots/realism/live-select/P1-inboxResults-chart.ui.json",
-      "sha256": "a35b651a08715a0ffd31904e2d653fa02915cd20b58fd2c5ccae4a8cc555d0c1"
+      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600"
     },
     {
       "path": "shots/realism/live-select/P1-inboxResults-landing.png",
       "source": "shots/realism/live-select/P1-inboxResults-landing.ui.json",
-      "sha256": "5e3817c5be6556f78bde692a46ee35407dc1170ffc82c546f78b6218b5b99dd3"
+      "sha256": "7b93957e064ebc67eb2ead653dcb4d19693fc1ee2749dd2cff0a8fc3fbcd93e0"
     },
     {
       "path": "shots/realism/live-select/P1-lookup-chart.png",
       "source": "shots/realism/live-select/P1-lookup-chart.ui.json",
-      "sha256": "a35b651a08715a0ffd31904e2d653fa02915cd20b58fd2c5ccae4a8cc555d0c1"
+      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600"
     },
     {
       "path": "shots/realism/live-select/P1-lookup-landing.png",
       "source": "shots/realism/live-select/P1-lookup-landing.ui.json",
-      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23"
     },
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-chart.ui.json",
-      "sha256": "a35b651a08715a0ffd31904e2d653fa02915cd20b58fd2c5ccae4a8cc555d0c1"
+      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600"
     },
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-landing.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-landing.ui.json",
-      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23"
     },
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-chart.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-chart.ui.json",
-      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae"
     },
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-landing.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-landing.ui.json",
-      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-chart.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-chart.ui.json",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-landing.png",
@@ -208,22 +208,22 @@
     {
       "path": "shots/realism/live-select/P3-unitCensus-chart.png",
       "source": "shots/realism/live-select/P3-unitCensus-chart.ui.json",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
     },
     {
       "path": "shots/realism/live-select/P3-unitCensus-landing.png",
       "source": "shots/realism/live-select/P3-unitCensus-landing.ui.json",
-      "sha256": "0547d7f5cb8f652c0e8773d9a0cae34f0982bed2e888c45fab20cf0cead70c17"
+      "sha256": "4375049da7db3c5ccf5df6abf911d90e2fcb24472331323080fcd9547d95f2e1"
     },
     {
       "path": "shots/realism/live-select/P4-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P4-scheduleTasks-chart.ui.json",
-      "sha256": "5401e6190f5d589e70edb4ad9257a5ee9b2dcf51985f8a7f0267c24e33bd1495"
+      "sha256": "1db313e95a004e4bfd31d8448ced2a868f7792319b9a0dd7f443e3b80f001b01"
     },
     {
       "path": "shots/realism/live-select/P4-scheduleTasks-landing.png",
       "source": "shots/realism/live-select/P4-scheduleTasks-landing.ui.json",
-      "sha256": "9dc19f98b536431d084c1d91f3fc17680edbee9d44cb8bd42d804c4c1d171beb"
+      "sha256": "c166bfd7d44a50200b55c86fd14bde33715baafa08df62e7cd8941f3cce09c10"
     },
     {
       "path": "shots/realism/live-select/P5-consultList-chart.png",
@@ -233,7 +233,7 @@
     {
       "path": "shots/realism/live-select/P5-consultList-landing.png",
       "source": "shots/realism/live-select/P5-consultList-landing.ui.json",
-      "sha256": "a32863b1e41c367f2e3429141f47164d4ffe661a34bb3ec19921edda7d4b6521"
+      "sha256": "cc463b440277f02b01d5ceee8ffeaa8898c02beb44bff8cc6d554795fb91d34a"
     },
     {
       "path": "shots/realism/live-select/P5-orSchedule-chart.png",
@@ -293,7 +293,7 @@
     {
       "path": "shots/realism/present/inbox.png",
       "source": "src/fixtures/presentations/inbox.json",
-      "sha256": "81f1be138ccd9be7aaf6692b2f649c6cdbfc47661cf4794228d0ba4c85826ea8"
+      "sha256": "5ebd3bbf7cc02f5866f0f120195eb9967042563e8f4817d6e6ef2c07f41eb190"
     },
     {
       "path": "shots/realism/present/messages-before.png",

@@ -2,14 +2,14 @@
   "schemaVersion": 1,
   "suite": "held-out-core-rule-conformance",
   "runId": "neutral-recorded-day1",
-  "generatedAt": "2026-11-04T19:32:42.475Z",
+  "generatedAt": "2026-11-05T20:07:57.853Z",
   "independentOfChecker": true,
   "deploymentGate": false,
   "boundary": "Native interpreter + FHIR projection + semantic in-UI patient selection. Does not exercise browser painter, persistence, or host networking.",
   "native": {
-    "binary": "/home/saithat/Projects/VGI-neutral/lean/.lake/build/bin/ehr",
-    "sha256": "4a1d122c87d1f5a3739464f156f4f069ea61e545c34b0aceebbc74e3b3e526aa",
-    "calls": 23733,
+    "binary": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr",
+    "sha256": "8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246",
+    "calls": 24671,
     "jobs": 2
   },
   "scenarios": [
@@ -336,7 +336,7 @@
         "programHash": "fnv1a64:dc8bcab93fe45200",
         "verdict": "ok",
         "checkerVersion": "check-1",
-        "time": "2026-11-04T16:53:25Z"
+        "time": "2026-11-04T19:27:37Z"
       },
       "certification": "recorded runs/neutral-recorded-day1/certs/P3/v0.json; not a new certification",
       "programPath": "runs/neutral-recorded-day1/programs/P3/v0.json",
@@ -1693,5 +1693,23 @@
     "notApplicable": 50
   },
   "scope": "Canonical references and selected run revisions",
+  "scenarioRefreshes": [
+    {
+      "scenarios": [
+        "alert.passive.criticalResult",
+        "alert.removable.minorInteractionPopup"
+      ],
+      "reason": "Re-executed the complete current critical-result receive/document/resolve path for every target. The optional nursing fixture selects the frozen V1 class-interaction trigger or the successor minor-only trigger according to the bound spec condition; Core.Alerts.keys suppresses minor alerts under severe evidence. Applicability and firing/completion assertions are unchanged. Original full-suite evidence is preserved separately.",
+      "command": "node conformance/index.mjs --run neutral-recorded-day1 --scenario alert.passive.criticalResult,alert.removable.minorInteractionPopup",
+      "generatedAt": "2026-11-05T20:07:53.135Z",
+      "nativeCalls": 507,
+      "sourceDigests": {
+        "conformance/scenarios.mjs": "3cb8dc08971315124ac04d916dd1435be29e85663621984315bea4de458e8969",
+        "conformance/driver.mjs": "e2cbe13bbf04c496784a3fb46f7ba7ddcfbc00d9526e38626671a52c479335da",
+        "conformance/native.mjs": "0e56b8e724d36ca06932e5df8360f3cc9b07a5becb696bd83b3378fa4ed62c94",
+        "conformance/index.mjs": "db7b6d14681e6d1c24016b5cf7d19fb2d15b7b2f85808cca2cc378e70100da9f"
+      }
+    }
+  ],
   "derivedFrom": "runs/neutral-recorded-day1/conformance.json"
 }

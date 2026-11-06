@@ -33,7 +33,7 @@ test("shared shell and browser visual review", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const [name, route] of [
     ["browse", "/browse"],
-    ["dashboard", "/dashboard?run=run1-P3"],
+    ["dashboard", "/dashboard?run=core-10day-live"],
   ] as const) {
     await page.goto(route);
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

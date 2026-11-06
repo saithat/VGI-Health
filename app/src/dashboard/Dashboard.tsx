@@ -500,8 +500,13 @@ function BeforeAfter({
   const [beforeEvents, setBeforeEvents] = useState(prefix);
   const [afterEvents, setAfterEvents] = useState(prefix);
   const [step, setStep] = useState(0);
-  // Replay day traces belonging to these exact versions; never reuse the final-version trace for an intermediate version.
+  // Exported traces are simulated against the exact projected patient context.
+  // Older authored mock data retains the per-version day-trace fallback.
   const traceFor = (version: number) => {
+    const context = run.replay?.contexts.find(
+      (c) => c.persona === persona && c.version === version,
+    );
+    if (context?.trace) return context.trace;
     const day = run.days.find(
       (d) => d.persona === persona && d.programVersion === version,
     );
@@ -514,11 +519,11 @@ function BeforeAfter({
   return (
     <div className="dash-review">
       <p>
-        Archived interpreter comparison: each pane uses its own recorded task
-        and may have different patient context. Navigation includes screens from
-        other personas. Next task event advances each available trace
-        independently; a pane with no further recorded events stays still. This
-        is not a synchronized clinical task comparison.
+        Interpreter comparison: exported traces use the same projected patient
+        and episode in both versions. Older authored examples can use different
+        recorded tasks. Next task event advances each available trace
+        independently; a pane with no further recorded events stays still.
+        Event positions do not align clinical milestones.
       </p>
       <div className="dash-controls">
         <button

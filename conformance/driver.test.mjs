@@ -10,9 +10,23 @@ import { context, prepare, code } from './clinical.mjs';
 import { fixtures, scenarioCatalog } from './scenarios.mjs';
 
 const root = path.resolve(import.meta.dirname, '..');
-const binary = process.env.EHR_BIN ?? path.join(root, '.cache/conformance/ehr');
+const binary = process.env.EHR_BIN ?? [path.join(root, 'lean/.lake/build/bin/ehr'), path.join(root, '.cache/conformance/ehr')].find(existsSync);
 const read = file => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
-test('semantic driver survives complete id renaming, reordered components, closed groups and non-default tabs', { skip: !existsSync(binary) }, () => {
+for (const condition of ['interaction', 'minorInteraction']) {
+  test(`optional nursing alert fixture triggers the ${condition} source contract`, { skip: !binary || !existsSync(binary) }, () => {
+    const program = read('releases/v1/personas/P3.json'), spec = read('releases/v1/spec.json');
+    // V1.minorInteractionPopupAlert uses .interaction; the additive
+    // CriticalResults.followThrough successor replaces only this condition.
+    spec.alerts.find(a => a.id === 'minorInteractionPopup').cond = condition;
+    const target = {program, spec, persona:'P3', semanticRelease:'v1'};
+    const scenario = scenarioCatalog.find(s => s.id === 'alert.removable.minorInteractionPopup');
+    assert.equal(scenario.applies(target), true);
+    const {d, observed} = scenario.run(fixtures(new Native(binary), target));
+    assert.ok(d.state.commits.includes('administerMed'));
+    assert.match(observed, /fired when configured/);
+  });
+}
+test('semantic driver survives complete id renaming, reordered components, closed groups and non-default tabs', { skip: !binary || !existsSync(binary) }, () => {
   const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
   const names = new Map(p.screens.flatMap(s => [[s.id, `screen-${s.id.length}-${s.id}`], ...s.components.map((c, i) => [c.id, `control-${s.id}-${i}`])]));
   p.start = names.get(p.start);
@@ -50,14 +64,14 @@ test('semantic driver survives complete id renaming, reordered components, close
     assert.deepEqual(lines.at(-1).state, clinical.state, 'run-batch must reproduce clinical init/step transcript');
   } finally { rmSync(work, { recursive: true, force: true }); }
 });
-test('removing a legitimate control is a conformance failure', { skip: !existsSync(binary) }, () => {
+test('removing a legitimate control is a conformance failure', { skip: !binary || !existsSync(binary) }, () => {
   const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
   for (const s of p.screens) s.components = s.components.filter(c => c.kind?.field?.element !== 'wristbandScan');
   const d = new Driver(new Native(binary), sp, p, context('administerMed').facts);
   assert.throws(() => prepare(d, context('administerMed')), /Workflow impossible.*wristbandScan/);
 });
 
-test('hand-written expectation catches a removed entry guard without consulting the checker', { skip: !existsSync(binary) }, () => {
+test('hand-written expectation catches a removed entry guard without consulting the checker', { skip: !binary || !existsSync(binary) }, () => {
   const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
   sp.entries = sp.entries.filter(r => !(r.commit === 'administerMed' && r.element === 'wristbandScan'));
   const target = { program: p, spec: sp, persona: 'P3', semanticRelease: 'v3' };
@@ -65,14 +79,14 @@ test('hand-written expectation catches a removed entry guard without consulting 
   assert.throws(() => scenario.run(fixtures(new Native(binary), target)), /Expected refusal naming wristbandScan/);
 });
 
-test('semantic entry targets the active order line rather than a nearby fixed order-set row', { skip: !existsSync(binary) }, () => {
+test('semantic entry targets the active order line rather than a nearby fixed order-set row', { skip: !binary || !existsSync(binary) }, () => {
   const p = read('releases/v3/personas/P2.json'), sp = read('releases/v3/spec.json');
   const d = new Driver(new Native(binary), sp, p, context('signOrders').facts);
   d.enter('drug', code('metformin'));
   assert.equal(d.capture('drug').slot, d.state.currentSlot);
 });
 
-test('a hidden shortcut cannot mask an available alternate navigation path', { skip: !existsSync(binary) }, () => {
+test('a hidden shortcut cannot mask an available alternate navigation path', { skip: !binary || !existsSync(binary) }, () => {
   const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
   const target = p.screens.find(s => s.components.some(c => c.kind?.field?.element === 'wristbandScan'));
   p.screens.find(s => s.id === p.start).components.unshift({ id: 'probe-hidden-shortcut',
@@ -83,7 +97,7 @@ test('a hidden shortcut cannot mask an available alternate navigation path', { s
   assert.ok(d.state.commits.includes('administerMed'));
 });
 
-test('semantic navigation supports a start screen whose navigation uses goto macros', { skip: !existsSync(binary) }, () => {
+test('semantic navigation supports a start screen whose navigation uses goto macros', { skip: !binary || !existsSync(binary) }, () => {
   const p = read('releases/v3/personas/P3.json'), sp = read('releases/v3/spec.json');
   for (const c of p.screens.find(s => s.id === p.start).components) {
     const destination = c.kind?.button?.action?.goto?.screen;

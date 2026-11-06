@@ -1,5 +1,6 @@
 import { Driver, Failure, assert, field, commit, info, alert } from './driver.mjs';
 import { refillDenialScenario } from './refill-denial.mjs';
+import { nodes } from './workspace.mjs';
 import { selectionScenarios } from './selection.mjs';
 import { entries, roles, personaCommits, personaWorkflows, reviews, linked, orderLine, facts, context, sample, prepare, fieldsFor, qty, code, text, flag, user } from './clinical.mjs';
 
@@ -300,6 +301,43 @@ for (const [id, cm, variant] of [
   d.finish(cm); return { d, observed: `${id} inline and never popup; legitimate workflow completed` };
 });
 
+// CriticalResults.alert and AlertUrgency.approvedAssignments: urgent inline,
+// available and unresolved only. UI acknowledgment is not clinical resolution.
+add('alert.passive.criticalResult', 'CriticalResults.alert / AlertUrgency approved policy (2026-11-02)',
+  'Available unresolved critical result stays urgent inline after UI acknowledgment; future and resolved results do not fire',
+  t => supports(t, 'ackResult'), f => {
+    const result = {id:'heldout-critical', patient:'heldout-A', label:'Critical potassium',
+      responsible:f.target.program.owner, covering:'heldout-covering', availableAt:19990, limit:30};
+    const ctx = context('ackResult', {facts:facts({abnormalResult:true, criticalResults:[{result, receivedBy:[], acknowledgedBy:[]}]})});
+    const d = f.prefix(ctx); d.atCommit('ackResult');
+    const urgent = () => nodes(d.render().urgent, 'alert').filter(a => a.alertId === 'criticalResult');
+    assert(urgent().length === 1 && urgent()[0].severity === 'passive', 'Critical result missing from urgent strip');
+    assert(!d.state.popup, 'Critical result opened a popup');
+    d.step({ack:{alert:'criticalResult'}}, 'UI acknowledgment cannot resolve a critical result');
+    assert(!(d.state.criticalResults ?? d.facts.criticalResults)[0].resolution && urgent().length === 1, 'UI ack cleared unresolved critical result');
+    d.finish('ackResult');
+    assert(!(d.state.criticalResults ?? d.facts.criticalResults)[0].resolution && urgent().length === 1, 'Result inbox commit silently resolved critical result');
+    const receive = nodes(d.render().workspace, 'button').find(b => b.label === 'Receive critical result');
+    assert(receive?.enabled, 'Responsible clinician cannot receive result');
+    assert(d.step({click:{comp:receive.comp}}, 'Receive critical result') === 'ok', 'Critical receipt refused');
+    const action = nodes(d.render().workspace, 'field').find(x => x.label === 'Clinical action taken');
+    assert(action, 'No clinical action field');
+    assert(d.step({enter:{comp:action.comp, value:text('Contacted patient; urgent treatment arranged')}}, 'Document clinical action') === 'ok', 'Critical action refused');
+    const resolve = nodes(d.render().workspace, 'button').find(b => b.label === 'Record action and resolve');
+    assert(resolve?.enabled, 'Documented action cannot resolve received result');
+    assert(d.step({click:{comp:resolve.comp}}, 'Resolve critical result') === 'ok', 'Critical resolution refused');
+    assert(d.state.criticalResults[0].resolution?.actor === result.responsible && urgent().length === 0, 'Documented resolution did not clear urgent warning');
+    for (const [name, ticket] of [
+      ['future', {result:{...result, availableAt:30000}}],
+      ['resolved', {result, resolution:{actor:result.responsible, recordedAt:20000, action:'Contacted patient; urgent treatment arranged'}}],
+    ]) {
+      const other = f.driver(context('ackResult', {facts:facts({criticalResults:[{receivedBy:[], acknowledgedBy:[], ...ticket}]})}));
+      other.atCommit('ackResult');
+      assert(!nodes(other.render(), 'alert').some(a => a.alertId === 'criticalResult'), `${name} critical result fired`);
+    }
+    return {d, observed:'Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed'};
+  }, {sources:['lean/Ehr/Specs/CriticalResults.lean:alert', 'lean/Ehr/Specs/AlertUrgency.lean:approvedAssignments', 'lean/Ehr/Core/Alerts.lean:keys', 'lean/Ehr/Multi/Critical.lean']});
+
 add('alerts.no-false-alarms', 'A2 false alarms', 'No allergy, interaction, care gap or dose trigger means no corresponding alert shown', () => true, f => {
   const ctx = context(supports(f.target, 'administerMed') ? 'administerMed' : 'signOrders', supports(f.target, 'administerMed') ? { facts: facts({ medToGive: 'metformin' }) } : {});
   const d = f.driver(ctx);
@@ -495,9 +533,17 @@ for (const [id, cm, variant] of [
   ['highAlertOrderNotice', 'signOrders', { drug: 'oxycodone', freq: 'q6h' }],
   ['activeRxPopup', 'approveRefill', { facts: facts({ medToGive: 'metformin', currentMedClasses: ['biguanide'] }) }],
   ['refillCareGapPopup', 'approveRefill', { facts: facts({ careGaps: ['screening-due'] }) }],
-  ['minorInteractionPopup', 'administerMed', { facts: facts({ medToGive: 'amoxicillin', currentMedClasses: ['vitaminKAntagonist'] }) }],
+  ['minorInteractionPopup', 'administerMed', { facts: facts({ medToGive: 'amoxicillin', interactions: [{key:'heldout-minor', severity:'minor'}] }) }],
 ]) add(`alert.removable.${id}`, `Core optional/removable alert ${id}`, 'May be removed or inline; if configured to interrupt, fires only for its trigger and legitimate completion remains possible', t => supports(t, cm), f => {
-  const ctx = context(cm, variant), d = f.driver(ctx);
+  // V1's frozen predecessor uses .interaction; CriticalResults.followThrough
+  // uses .minorInteraction, which explicitly suppresses firing under severe
+  // evidence. Choose the trigger for the bound spec, never rewrite its rule.
+  const declared = f.target.spec.alerts.find(a => a.id === id);
+  if (id === 'minorInteractionPopup') assert(['interaction', 'minorInteraction'].includes(declared?.cond), 'Unknown nursing interaction alert contract');
+  const trigger = id === 'minorInteractionPopup' && declared.cond === 'interaction'
+    ? {facts:facts({medToGive:'amoxicillin',currentMedClasses:['vitaminKAntagonist']})}
+    : variant;
+  const ctx = context(cm, trigger), d = f.driver(ctx);
   prepare(d, ctx, cm === 'administerMed' ? ['painScore', 'highAlertCosign'] : []);
   d.atCommit(cm);
   const present = d.program.screens.flatMap(s => s.components).some(alert(id));

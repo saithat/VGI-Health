@@ -157,6 +157,7 @@ export function TrajectorySurface({
   const [shown, setShown] = useState({ screen, count });
   const current = useRef(shown);
   const seek = useRef(true);
+  const deferredScroll = useRef<number | null>(null);
   const cursor = useRef<HTMLDivElement>(null);
   const ripple = useRef<HTMLDivElement>(null);
   const pointer = useRef({ x: 720, y: 450 });
@@ -197,6 +198,7 @@ export function TrajectorySurface({
     const previous = current.current;
     const sequential = count === previous.count + 1;
     const event = trace[count - 1];
+    deferredScroll.current = null;
     seek.current = !sequential;
     const finish = () => {
       restoreInput?.();
@@ -215,10 +217,16 @@ export function TrajectorySurface({
     if ("scroll" in event.event) {
       // Compact traces encode page-downs, not raw browser offsets. Use the same
       // first scroll container / one viewport rule as the geometry cost model.
-      const container = containers.find(
-        (item) => item.scrollHeight > item.clientHeight + 1,
-      );
-      if (container) container.scrollTop += container.clientHeight;
+      if (previous.screen.screen !== event.screen) {
+        // Facts can arrive between recorded events. The scroll then belongs to
+        // the incoming chart, while the DOM still contains its loading screen.
+        deferredScroll.current = count;
+      } else {
+        const container = containers.find(
+          (item) => item.scrollHeight > item.clientHeight + 1,
+        );
+        if (container) container.scrollTop += container.clientHeight;
+      }
     } else if (node) reveal(doc, node);
     const after = containers.map((container) => container.scrollTop);
     containers.forEach((container, index) => {
@@ -305,6 +313,13 @@ export function TrajectorySurface({
       scrollers(doc).forEach((container) => {
         container.scrollTop = 0;
       });
+    }
+    if (deferredScroll.current === shown.count) {
+      const container = scrollers(doc).find(
+        (item) => item.scrollHeight > item.clientHeight + 1,
+      );
+      if (container) container.scrollTop += container.clientHeight;
+      deferredScroll.current = null;
     }
     if (seek.current) {
       const containers = scrollers(doc);

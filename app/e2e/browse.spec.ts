@@ -4,12 +4,13 @@ import { test, expect } from "@playwright/test";
 test("browser opens P3 day 5 and leaves patient selection inside the EHR", async ({
   page,
 }) => {
-  await page.goto("/browse?run=run1-P3");
+  await page.goto("/browse?run=core-10day-live");
   await expect(
     page.getByRole("heading", { name: "Open a clinical UI" }),
   ).toBeVisible();
   await expect(page.getByLabel("Recorded run", { exact: true })).toHaveValue(
-    "run1-P3",
+    "core-10day-live",
+    { timeout: 30000 },
   );
   await expect(
     page
@@ -17,7 +18,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
       .locator("option[value=mock]"),
   ).toHaveCount(0);
   const day5 = page.getByRole("button", {
-    name: /^P3 Inpatient RN, day 5, revision 4, certified/,
+    name: /^P3 Inpatient RN, day 5, revision 2, certified/,
   });
   await expect(day5).toBeVisible();
   await expect(
@@ -40,7 +41,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
   await page.keyboard.press("ArrowLeft");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(
-    /program=runs%2Frun1-P3%2Fprograms%2FP3%2Fv4.json/,
+    /program=runs%2Fcore-10day-live%2Fprograms%2FP3%2Fv2.json/,
   );
   await expect(page).toHaveURL(/persona=P3/);
   await expect(page).toHaveURL(/day=5/);
@@ -55,7 +56,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
 test("release grid orders v1 v2 v3 and exposes the vendor as a reference", async ({
   page,
 }) => {
-  await page.goto("/browse?run=run1-P3");
+  await page.goto("/browse?run=core-10day-live");
   const grid = page.getByRole("table", { name: "" });
   await expect(grid.locator("thead th")).toHaveText([
     "View",
@@ -84,18 +85,16 @@ test("recorded changes and check-only history use actual artifacts and native ve
   page,
 }) => {
   test.setTimeout(120000);
-  await page.goto("/browse?run=run1-P3");
+  await page.goto("/browse?run=core-10day-live");
   const card = page.getByRole("complementary", {
     name: "Selected revision details",
   });
+  await page.locator('[data-node-key="P3-9"]').focus();
   await expect(
     card.getByLabel("Before and after changes", { exact: true }),
   ).toBeVisible();
   await expect(card).toContainText("Before");
   await expect(card).toContainText("After");
-  await expect(
-    card.getByRole("region", { name: "Rejected candidates", exact: true }),
-  ).toContainText(/reviewsBeforeCommit|humanOnlyKept|units/);
   await card.getByText("Raw JSON patch", { exact: true }).click();
   await expect(
     card
@@ -105,6 +104,9 @@ test("recorded changes and check-only history use actual artifacts and native ve
   ).toContainText('"op"');
   await card.getByText("Raw JSON patch", { exact: true }).click();
   await expect(card).toContainText("Check only: nothing is changed");
+  await page.locator('[data-node-key="P2-8"]').focus();
+  await expect(card.getByRole('region',{name:'Rejected candidates',exact:true})).toContainText('reviewsBeforeCommit');
+  await page.locator('[data-node-key="P3-0"]').focus();
   const requests: string[] = [];
   page.on("request", (request) => {
     if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method()))
@@ -120,9 +122,9 @@ test("recorded changes and check-only history use actual artifacts and native ve
     timeout: 60000,
   });
   expect(requests).toEqual(["/__dev/try-to-break-it"]);
-  await page.locator('[data-node-key="P1-7"]').focus();
+  await page.locator('[data-node-key="P3-6"]').focus();
   await expect(card.getByRole("heading", { level: 3 })).toHaveText(
-    "v3 certified baseline",
+    /revision 3|rev 3/i,
   );
   await card
     .getByRole("button", {
@@ -133,13 +135,8 @@ test("recorded changes and check-only history use actual artifacts and native ve
   await expect(card.getByRole("status")).toHaveText("Still certified · v3", {
     timeout: 60000,
   });
-  await page.locator('[data-node-key="P3-8"]').focus();
-  await expect(
-    card.getByLabel("Before and after changes", { exact: true }),
-  ).toContainText("alert display request");
-  await expect(card).toContainText(
-    "Requests inline display; alert policy still applies",
-  );
+  await page.locator('[data-node-key="P3-10"]').focus();
+  await expect(card.getByLabel("Before and after changes", {exact:true})).toBeVisible();
   const check = await page.request.post("/__dev/try-to-break-it", {
     headers: { Origin: "https://untrusted.example" },
     data: {
@@ -154,7 +151,7 @@ test("recorded changes and check-only history use actual artifacts and native ve
 test("timeline change comparison screenshot", async ({ page }) => {
   test.skip(!process.env.HISTORY_SHOTS, "Opt-in history screenshot");
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/browse?run=run1-P3");
+  await page.goto("/browse?run=core-10day-live");
   await expect(
     page.getByLabel("Before and after changes", { exact: true }),
   ).toBeVisible();

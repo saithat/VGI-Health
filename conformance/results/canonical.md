@@ -144,6 +144,7 @@
 | alert.passive.careGapsInline | PASS | — | — | — | PASS | PASS | — | — | — | PASS | PASS | — | — | — | PASS |
 | alert.passive.duplicateTherapyInline | PASS | — | — | — | PASS | PASS | — | — | — | PASS | PASS | — | — | — | PASS |
 | alert.passive.immunizationsDueInline | — | — | — | PASS | — | — | — | — | PASS | — | — | — | — | PASS | — |
+| alert.passive.criticalResult | PASS | — | — | PASS | PASS | PASS | — | — | PASS | PASS | PASS | — | — | PASS | PASS |
 | alerts.no-false-alarms | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 | human-only.patientIdReentry.macro | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | human-only.patientIdReentry.prefill | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
@@ -190,7 +191,7 @@
 | alert.removable.highAlertOrderNotice | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | alert.removable.activeRxPopup | PASS | — | — | PASS | — | PASS | — | — | PASS | — | PASS | — | — | PASS | — |
 | alert.removable.refillCareGapPopup | PASS | — | — | PASS | — | PASS | — | — | PASS | — | PASS | — | — | PASS | — |
-| alert.removable.minorInteractionPopup | — | — | FAIL | — | — | — | — | FAIL | — | — | — | — | FAIL | — | — |
+| alert.removable.minorInteractionPopup | — | — | PASS | — | — | — | — | PASS | — | — | — | — | PASS | — | — |
 | design.banner-identifiers | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS | PASS |
 | epcs.details-content | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
 | weight.linked-source-refresh | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS | PASS | PASS | — | PASS | PASS |
@@ -205,24 +206,21 @@
 
 | Revision | Start state | Passed | Failed | Not applicable |
 |---|---|---:|---:|---:|
-| canonical/v1/P1 | in-ui-selection | 121 | 0 | 79 |
-| canonical/v1/P2 | in-ui-selection | 103 | 0 | 97 |
-| canonical/v1/P3 | in-ui-selection | 45 | 1 | 154 |
-| canonical/v1/P4 | in-ui-selection | 119 | 0 | 81 |
-| canonical/v1/P5 | in-ui-selection | 125 | 0 | 75 |
-| canonical/v2/P1 | in-ui-selection | 125 | 0 | 75 |
-| canonical/v2/P2 | in-ui-selection | 105 | 0 | 95 |
-| canonical/v2/P3 | in-ui-selection | 45 | 1 | 154 |
-| canonical/v2/P4 | in-ui-selection | 121 | 0 | 79 |
-| canonical/v2/P5 | in-ui-selection | 129 | 0 | 71 |
-| canonical/v3/P1 | in-ui-selection | 127 | 0 | 73 |
-| canonical/v3/P2 | in-ui-selection | 107 | 0 | 93 |
-| canonical/v3/P3 | in-ui-selection | 46 | 1 | 153 |
-| canonical/v3/P4 | in-ui-selection | 123 | 0 | 77 |
-| canonical/v3/P5 | in-ui-selection | 131 | 0 | 69 |
+| canonical/v1/P1 | in-ui-selection | 122 | 0 | 79 |
+| canonical/v1/P2 | in-ui-selection | 103 | 0 | 98 |
+| canonical/v1/P3 | in-ui-selection | 46 | 0 | 155 |
+| canonical/v1/P4 | in-ui-selection | 120 | 0 | 81 |
+| canonical/v1/P5 | in-ui-selection | 126 | 0 | 75 |
+| canonical/v2/P1 | in-ui-selection | 126 | 0 | 75 |
+| canonical/v2/P2 | in-ui-selection | 105 | 0 | 96 |
+| canonical/v2/P3 | in-ui-selection | 46 | 0 | 155 |
+| canonical/v2/P4 | in-ui-selection | 122 | 0 | 79 |
+| canonical/v2/P5 | in-ui-selection | 130 | 0 | 71 |
+| canonical/v3/P1 | in-ui-selection | 128 | 0 | 73 |
+| canonical/v3/P2 | in-ui-selection | 107 | 0 | 94 |
+| canonical/v3/P3 | in-ui-selection | 47 | 0 | 154 |
+| canonical/v3/P4 | in-ui-selection | 124 | 0 | 77 |
+| canonical/v3/P5 | in-ui-selection | 132 | 0 | 69 |
 
 | Scenario | Revision | Observed outcome |
 |---|---|---|
-| alert.removable.minorInteractionPopup | canonical/v1/P3 | Workflow impossible: no reachable shown control for optional alert minorInteractionPopup |
-| alert.removable.minorInteractionPopup | canonical/v2/P3 | Workflow impossible: no reachable shown control for optional alert minorInteractionPopup |
-| alert.removable.minorInteractionPopup | canonical/v3/P3 | Workflow impossible: no reachable shown control for optional alert minorInteractionPopup |

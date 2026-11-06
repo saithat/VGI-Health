@@ -197,13 +197,15 @@ export function SectionNode({ node, onEvent }: Props<"section">) {
   );
 }
 export function ColumnsNode({ node, onEvent }: Props<"columns">) {
+  // Nested clinical groups must use their available width, independent of the viewport.
   const cards = isCardColumns(node.children);
   return (
     <SimpleGrid
+      type="container"
       cols={{
         base: 1,
-        sm: Math.min(2, Math.max(1, node.children.length)),
-        xl: Math.min(3, Math.max(1, node.children.length)),
+        "48em": Math.min(2, Math.max(1, node.children.length)),
+        "75em": Math.min(3, Math.max(1, node.children.length)),
       }}
       spacing="xs"
       className={`clinical-columns${cards ? " clinical-card-grid" : ""}`}

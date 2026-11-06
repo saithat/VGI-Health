@@ -55,7 +55,7 @@ it('does not reuse geometry across presentation-only alternatives sharing an exe
  const a=await ehr.simulate({...args,program:one});await ehr.simulate({...args,program:one});const b=await ehr.simulate({...args,program:two});
  expect(captures).toBe(2);expect(a.geometry?.componentsSha256).not.toBe(b.geometry?.componentsSha256);
 });
-withData("runs/run1-P3/decisions").it('stops on exhausted geometry infrastructure without publishing a night outcome',async()=>{
+withData("runs/core-10day-live/decisions").it('stops on exhausted geometry infrastructure without publishing a night outcome',async()=>{
  const {runDays}=await import('../src/run.js');const {createFakeEhr}=await import('../src/fake/ehr-fake.js');
  const {ScreenInfrastructureError}=await import('../src/errors.js');const {fakeWorld,tmp}=await import('./helpers.js');
  const {ScriptedLlm}=await import('./scripted.js');const {readFile}=await import('node:fs/promises');

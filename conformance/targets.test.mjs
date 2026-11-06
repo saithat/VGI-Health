@@ -1,7 +1,9 @@
 import { dataReason } from '../scripts/test-data.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
+import { digest } from './native.mjs';
+import { info } from './driver.mjs';
 import { canonicals, runTargets } from './index.mjs';
 
 const sorted = value => Array.isArray(value) ? value.map(sorted) : value && typeof value === 'object'
@@ -16,24 +18,28 @@ test('all 15 role canonicals are included independently of run personas', () => 
   assert.equal(targets.length, 15);
   for (const release of ['v1', 'v2', 'v3']) assert.equal(targets.filter(t => t.release === release).length, 5);
 });
-test('archived deployment inputs retain exact certificates or explicit current-gate refusals', { skip: dataReason('runs/run1-P3') }, () => {
-  const read = file => JSON.parse(readFileSync(new URL(`../runs/run1-P3/${file}`, import.meta.url), 'utf8'));
-  if (read('manifest.json').neutralMigration?.status === 'rejected') {
-    assert.throws(() => runTargets('run1-P3'), /no current certification/);
-    for (let revision=0;revision<8;revision++) {
-      const binding=read(`certs/P3/v${revision}.build.json`);
-      assert.equal(binding.status,'rejected');assert.equal(binding.current,null);
-      assert.equal(JSON.parse(binding.reason).violation.property,'navigation');
-    }
-    return;
-  }
-  const targets = runTargets('run1-P3');
-  assert.deepEqual(targets.map(t => t.revision), [0, 1, 2, 3, 4, 5, 6, 7]);
+test('recorded deployment inputs retain exact certificate hashes and frozen specs', { skip: dataReason('runs/core-10day-live') }, () => {
+  const targets = runTargets('core-10day-live');
+  assert.equal(targets.length, 33);
+  assert.deepEqual([...new Set(targets.map(t => t.persona))], ['P1','P2','P3','P4','P5']);
   for (const t of targets) {
     assert.equal(legacyJsonHash(t.program), t.certificate.programHash, t.id);
     assert.equal(legacyJsonHash(t.spec), t.certificate.specHash, t.id);
     assert.equal(t.spec.version, t.program.specVersion);
+    assert.equal(t.semanticRelease, t.release);
   }
-  assert.equal(targets[2].release, 'v1.1'); assert.equal(targets[2].semanticRelease, 'v2');
-  assert.equal(targets[5].release, 'v2'); assert.equal(targets[5].semanticRelease, 'v3');
+});
+
+test('stored CURES removal probe is bound to the current inputs and records the mandatory-display refusal', () => {
+  const target = canonicals().find(t => t.release === 'v3' && t.persona === 'P1');
+  const program = structuredClone(target.program);
+  for (const screen of program.screens) screen.components = screen.components.filter(c => !info('curesReport')(c));
+  const probe = JSON.parse(readFileSync(new URL('./results/cures-probe-check.json', import.meta.url), 'utf8'));
+  assert.equal(probe.programSha256, digest(program));
+  assert.equal(probe.specSha256, digest(target.spec));
+  const binary = new URL('../lean/.lake/build/bin/ehr', import.meta.url);
+  if (existsSync(binary)) assert.equal(probe.binarySha256, digest(readFileSync(binary)));
+  assert.equal(probe.exitCode, 1);
+  assert.equal(probe.verdict.violation.property, 'completable');
+  assert.match(probe.verdict.violation.message, /curesReport/);
 });

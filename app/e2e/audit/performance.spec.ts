@@ -8,7 +8,7 @@ test("performance: cold dashboard and EHR round trip", async ({
   baseURL,
   request,
 }) => {
-  const run = encodeURIComponent(process.env.AUDIT_RUN ?? "run1-P3");
+  const run = encodeURIComponent(process.env.AUDIT_RUN ?? "core-10day-live");
   console.log(`Performance recording: ${decodeURIComponent(run)}`);
   if (process.env.AUDIT_PHASE !== "before") {
     console.log("Checking compressed WASM response");

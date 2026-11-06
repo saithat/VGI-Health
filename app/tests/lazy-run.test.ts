@@ -10,16 +10,16 @@ import {
 import { versionsFor } from "../src/dashboard/workload";
 
 describe("dashboard loading budget", () => {
-  withData("runs/run1-P3").it("keeps paired/control measurements in the summary and hydrates original source for one persona", async () => {
+  withData("runs/core-10day-live").it("keeps paired/control measurements in the summary and hydrates original source for one persona", async () => {
     const recorded = JSON.parse(
       await readFile(
-        resolve(import.meta.dirname, "../../runs/run1-P3/days/day-01/P3.json"),
+        resolve(import.meta.dirname, "../../runs/core-10day-live/days/day-01/P3.json"),
         "utf8",
       ),
     );
     const source = JSON.parse(
       await readFile(
-        resolve(import.meta.dirname, "../../runs/run1-P3/programs/P3/v0.json"),
+        resolve(import.meta.dirname, "../../runs/core-10day-live/programs/P3/v0.json"),
         "utf8",
       ),
     );
@@ -104,16 +104,16 @@ describe("dashboard loading budget", () => {
       })),
     ).rejects.toThrow("another run");
   });
-  withData("runs/run1-P3").it("hydrates the selected persona's day traces only when details open", async () => {
+  withData("runs/core-10day-live").it("hydrates the selected persona's day traces only when details open", async () => {
     const recorded = JSON.parse(
       await readFile(
-        resolve(import.meta.dirname, "../../runs/run1-P3/days/day-01/P3.json"),
+        resolve(import.meta.dirname, "../../runs/core-10day-live/days/day-01/P3.json"),
         "utf8",
       ),
     );
-    const run = await loadRunSummary("run1-P3", async () => ({
+    const run = await loadRunSummary("core-10day-live", async () => ({
       manifest: {
-        runId: "run1-P3",
+        runId: "core-10day-live",
         days: 1,
         personas: ["P3"],
         ehr: { mode: "real" },
@@ -128,7 +128,7 @@ describe("dashboard loading budget", () => {
       paths.push(path);
       return recorded;
     });
-    expect(paths).toEqual(["/runs/run1-P3/days/day-01/P3.json"]);
+    expect(paths).toEqual(["/runs/core-10day-live/days/day-01/P3.json"]);
     expect(run.days[0]?.trace).toEqual([]);
     expect(detail.days[0]?.trace.length).toBeGreaterThan(0);
   });

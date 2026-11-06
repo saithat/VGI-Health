@@ -62,6 +62,7 @@ export const replaySchema = z.object({
       spec: z.unknown(),
       bundle: z.unknown(),
       user: z.unknown(),
+      trace: z.array(eventSchema).optional(),
     }),
   ),
   tasks: z.array(

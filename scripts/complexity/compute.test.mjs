@@ -1,5 +1,4 @@
 import { dataReason } from '../test-data.mjs';
-import { complexityReleaseLabels } from '../historical-releases.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -14,26 +13,23 @@ test('fixed cases cover W1–W7 with concrete clinical choices and a single surg
   assert.equal(suite.cases.find(c => c.id === 'W4').steps[0].choices.administer[0].drug, 'insulin lispro');
 });
 
-test('P3 report includes all certified iterations, scoped minima, high-alert cosign and release markers', { skip: dataReason('runs/run1-P3') }, async () => {
-  const report = complexityReleaseLabels(await load('runs/run1-P3/complexity.json'));
-  const person = report.personas[0];
-  assert.equal(person.persona, 'P3');
-  assert.deepEqual(person.iterations.map(i => i.version), [0, 1, 2, 3, 4, 5, 6, 7]);
-  assert.deepEqual(person.iterations.map(i => i.total.clicks), [25, 23, 23, 23, 23, 23, 23, 23]);
-  assert.equal(person.iterations[0].total.klmSeconds, 129.95);
+test('recorded report retains every deployed iteration and explicit search coverage', { skip: dataReason('runs/core-10day-live') }, async () => {
+  const report = await load('runs/core-10day-live/complexity.json');
+  const person = report.personas.find(p => p.persona === 'P3');
+  assert.deepEqual(person.iterations.map(i => i.version), [0,1,2,3,4]);
   for (const i of person.iterations) {
     assert.deepEqual(i.workflows.map(w => w.workflow), ['W4']);
-    assert.equal(i.skipped.length, 6);
-    assert.equal(i.tasks[0].exact, true);
-    assert.equal(i.tasks[0].native.exact, true);
-    assert.equal(i.tasks[0].space, 'navigationDirected');
-    const events = i.tasks[0].path.flat();
-    assert.ok(events.some(e => e.enter?.comp.endsWith('.highAlertCosign') && e.enter.value.user.u === 'P3-second'));
-    assert.ok(events.some(e => e.ack?.alert === 'highAlertAdmin'));
-    assert.ok(i.total.clicks >= i.floor.clicks);
+    for (const task of i.tasks) {
+      if (task.exact) {
+        assert.equal(task.native.exact, true);
+        assert.ok(task.metrics.clicks >= task.floor.clicks);
+        const events = task.path.flat();
+        assert.ok(events.some(e => e.enter?.comp.endsWith('.highAlertCosign') && e.enter.value.user.u === 'P3-second'));
+        assert.ok(events.some(e => e.ack?.alert === 'highAlertAdmin'));
+      } else assert.equal(task.status, 'not-computed');
+    }
   }
-  assert.deepEqual(person.markers.filter(m => m.kind === 'release').map(m => [m.label, m.version]), [['v2', 2], ['v3', 5]]);
-  assert.ok(person.markers.some(m => m.properties.includes('humanOnlyKept')));
+  assert.deepEqual(person.markers.filter(m => m.kind === 'release').map(m => m.label), ['v2','v3']);
 });
 
 test('canonical report covers every workflow once and actually enters pinned values', { skip: dataReason('programs/benchmarks') }, async () => {

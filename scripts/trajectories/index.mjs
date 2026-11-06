@@ -66,7 +66,7 @@ export async function verifySavedTrajectories(runId, root = defaultRoot) {
   return verification;
 }
 export async function indexTrajectories({ root = defaultRoot, runDirectory, contextCache, runId, leanDir = process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'), binary = process.env.EHR_BIN ?? path.join(leanDir, '.lake/build/bin/ehr'), baseline = [] }) {
-  if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected a run id, e.g. --run run1-P3');
+  if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected a run id, e.g. --run core-10day-live');
   const runDir = runDirectory ?? path.join(root, 'runs', runId);
   const relative = p => path.relative(root, p.startsWith(runDir + path.sep) ? path.join(root, 'runs', runId, path.relative(runDir,p)) : p).split(path.sep).join('/');
   const manifest = await read(path.join(runDir, 'manifest.json'));

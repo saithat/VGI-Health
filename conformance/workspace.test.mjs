@@ -8,8 +8,11 @@ import { canonicals } from './index.mjs';
 import { facts } from './clinical.mjs';
 import { directory } from './workspace.mjs';
 
-const binary = process.env.EHR_BIN ?? path.resolve(import.meta.dirname, '../.cache/conformance/ehr');
-const options = { skip: !existsSync(binary) };
+const binary = process.env.EHR_BIN ?? [
+  path.resolve(import.meta.dirname, '../lean/.lake/build/bin/ehr'),
+  path.resolve(import.meta.dirname, '../.cache/conformance/ehr'),
+].find(existsSync);
+const options = { skip: !binary || !existsSync(binary) };
 const patient = { id: 'heldout-A', name: 'Ada Quill', mrn: 'HA-701' };
 const input = () => ({ ...facts(), sourcePatientId: patient.id, patientDirectory: directory([patient]) });
 const target = () => canonicals().find(t => t.persona === 'P3' && t.release === 'v3');

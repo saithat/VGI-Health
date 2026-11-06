@@ -33,23 +33,21 @@ export async function exportReplay({root=path.resolve('.'),dir,runId=path.basena
    const projection=await command(['facts'],JSON.stringify({bundle,context:{today:'2026-11-02',now:original.startMin,receipts:[],record:[]}}));projection.facts=episode.facts;
    await writeFile(input,JSON.stringify({...schedule,tasks:[{...original,choices:episode.choices}]}));
    const versions=(await readdir(path.join(dir,'programs',persona))).filter(f=>/^v\d+\.json$/.test(f)).sort((a,b)=>Number(a.slice(1,-5))-Number(b.slice(1,-5)));
+   const sides=[];
    for(const file of versions){
     const program=programSchema.parse(await read(path.join(dir,'programs',persona,file)));
     const spec=await read(path.join(dir,'certifications',persona,`v${program.version}`,'spec.json'));
-    contexts.push({persona,version:program.version,specVersion:program.specVersion,spec,bundle:projection,user:{id:program.owner,role:program.role}});
-   }
-   const sides=[];
-   for(const file of [versions[0],versions.at(-1)]){
-    const program=await read(path.join(dir,'programs',persona,file));
     const result=await command(['simulate','--spec',path.join(dir,'certifications',persona,`v${program.version}`,'spec.json'),'--program',path.join(dir,'programs',persona,file),'--persona',path.join(world.dir,'personas',`${persona}.json`),'--schedule',input,'--world',world.dir,'--seed','1000004']);
     if(!result.tasks.every(t=>t.completed))throw new Error(`${persona} ${file}: replay episode did not complete`);
-    sides.push({version:program.version,trace:result.trace.map(t=>({event:t.event,ops:t.ops,klmDeciSec:t.t-original.startMin*600}))});
+    const side={version:program.version,trace:result.trace.map(t=>({event:t.event,ops:t.ops,klmDeciSec:t.t-original.startMin*600}))};
+    contexts.push({persona,version:program.version,specVersion:program.specVersion,spec,bundle:projection,user:{id:program.owner,role:program.role},trace:side.trace.map(t=>t.event)});
+    sides.push(side);
    }
-   tasks.push({persona,id:original.id,title:`${persona} · ${original.workflow} · same patient and episode`,before:sides[0],after:sides[1]});
+   tasks.push({persona,id:original.id,title:`${persona} · ${original.workflow} · same patient and episode`,before:sides[0],after:sides.at(-1)});
   }
   await writeFile(path.join(dir,'replay.json'),JSON.stringify({mode:'wasm',contexts,tasks},null,2)+'\n');
   console.log(`Exported ${contexts.length} native contexts and ${tasks.length} same-task replays for ${runId}`);
   return {contexts:contexts.length,tasks:tasks.length};
  }finally{await rm(scratch,{recursive:true,force:true});}
 }
-if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){const {register}=await import('../agent/node_modules/tsx/dist/esm/api/index.mjs');register();await exportReplay({runId:process.argv[2]??'run1-P3'});}
+if(process.argv[1]&&import.meta.url===pathToFileURL(path.resolve(process.argv[1])).href){const {register}=await import('../agent/node_modules/tsx/dist/esm/api/index.mjs');register();await exportReplay({runId:process.argv[2]??'core-10day-live'});}

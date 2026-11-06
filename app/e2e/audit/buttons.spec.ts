@@ -345,7 +345,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
     });
 
     // Both real and authored runs: every persona, with sampled version/release rows.
-    for (const run of ["run1-P3", "mock"]) {
+    for (const run of ["core-10day-live", "mock"]) {
       audit.program = run;
       audit.screen = "Evolution";
       const checkedDecisionLinks = new Set<string>();
@@ -491,7 +491,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
               .click();
         }
       }
-      if (run === "run1-P3") {
+      if (run === "core-10day-live") {
         await freshGoto(`/dashboard?run=${run}&view=Trajectories&persona=P3`);
         audit.screen = "Trajectories";
         audit.persona = "P3";
@@ -1286,7 +1286,7 @@ test("app live agent: capability, request and real verdict in the EHR viewer", a
 }) => {
   page.setDefaultTimeout(15000);
   const audit = new Audit(page);
-  audit.program = "run1-P3";
+  audit.program = "core-10day-live";
   audit.persona = "P3";
   audit.screen = "Try to break it";
   const capability = z
@@ -1295,7 +1295,7 @@ test("app live agent: capability, request and real verdict in the EHR viewer", a
     .parse(await (await request.get("/__dev/try-to-break-it")).json());
   try {
     await page.goto(
-      "/dashboard?run=run1-P3&persona=P3&view=Try%20to%20break%20it",
+      "/dashboard?run=core-10day-live&persona=P3&view=Try%20to%20break%20it",
     );
     await page
       .getByRole("button", { name: "Show recorded verdict", exact: true })

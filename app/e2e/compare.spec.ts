@@ -1,21 +1,23 @@
+import { expectRecordedWorkspace } from "./recorded-frame";
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import {
   trajectoryIndexSchema,
   trajectorySchema,
 } from "../src/dashboard/trajectories-data";
-const base = "/dashboard?view=compare&run=run1-P3&persona=P3&workflow=W4";
+const base = "/dashboard?view=compare&run=core-10day-live&persona=P3&workflow=W4";
 async function counts(file: string) {
   const task = trajectorySchema.parse(
     JSON.parse(
       await readFile(
-        new URL(`../../runs/run1-P3/trajectories/${file}`, import.meta.url),
+        new URL(`../../runs/core-10day-live/trajectories/${file}`, import.meta.url),
         "utf8",
       ),
     ),
   );
   const ops = task.trace.flatMap((event) => event.ops);
   return {
+    events: task.trace.length,
     clicks: ops.filter((op) => op === "click").length,
     scrolls: ops.filter((op) => op === "scroll").length,
     keys: ops.filter((op) => op === "key").length,
@@ -45,12 +47,8 @@ test("compare defaults to a saved same-task control and synchronizes fixed frame
   );
   const left = page.frameLocator('iframe[title="Left EHR"]'),
     right = page.frameLocator('iframe[title="Right EHR"]');
-  await expect(
-    left.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
-  await expect(
-    right.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
+  await expectRecordedWorkspace(left);
+  await expectRecordedWorkspace(right);
   const frames = page.locator(".comparison-player iframe");
   const size = () =>
     frames.evaluateAll((elements) =>
@@ -97,8 +95,12 @@ test("compare defaults to a saved same-task control and synchronizes fixed frame
       String(count),
     );
     await expect(view.getByLabel("Compare replay position")).toHaveText(
-      `L ${count}/32 · R ${count}/32`,
+      `L ${count}/${a.events} · R ${count}/${b.events}`,
     );
+    if (count === 2) {
+      await expect(left.getByRole("banner", { name: "Patient banner" })).toBeVisible();
+      await expect(right.getByRole("banner", { name: "Patient banner" })).toBeVisible();
+    }
   }
   expect(await size()).toEqual(initial);
   const boxes = await frames.all(),
@@ -108,7 +110,7 @@ test("compare defaults to a saved same-task control and synchronizes fixed frame
   else expect(r?.y).toBeGreaterThan((l?.y ?? 0) + (l?.height ?? 0));
   const jump = view
     .getByRole("region", { name: "Changes between revisions" })
-    .getByRole("button", { name: /^Jump/ })
+    .getByRole("button", { name: /^Jump.*(?:L[1-9]\d*|R[1-9]\d*)/ })
     .first();
   await expect(jump).toBeVisible();
   const moment = /L(\d+) \/ R(\d+)/.exec(await jump.innerText());
@@ -124,7 +126,7 @@ test("compare defaults to a saved same-task control and synchronizes fixed frame
   await view.getByRole("button", { name: "Reset", exact: true }).click();
   await view.getByRole("button", { name: "Play", exact: true }).click();
   await expect(view.getByLabel("Compare replay position")).not.toHaveText(
-    "L 0/32 · R 0/32",
+    `L 0/${a.events} · R 0/${b.events}`,
   );
   await view.getByRole("button", { name: "Pause", exact: true }).click();
   await view.getByLabel("Left day", { exact: true }).selectOption("4");
@@ -151,21 +153,17 @@ test("compare bookmarks cross-day selections and holds the shorter replay", asyn
   );
   const left = page.frameLocator('iframe[title="Left EHR"]'),
     right = page.frameLocator('iframe[title="Right EHR"]');
-  await expect(
-    left.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
-  await expect(
-    right.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
-  await view.getByLabel("Compare replay step").fill("68");
+  await expectRecordedWorkspace(left);
+  await expectRecordedWorkspace(right);
+  await view.getByLabel("Compare replay step").fill("32");
   await expect(view.getByLabel("Compare replay position")).toHaveText(
-    "L 68/69 · R 29/29",
+    "L 32/33 · R 21/21",
   );
   await view.getByRole("button", { name: "Step", exact: true }).click();
-  await expect(left.locator("html")).toHaveAttribute("data-replay-count", "69");
+  await expect(left.locator("html")).toHaveAttribute("data-replay-count", "33");
   await expect(right.locator("html")).toHaveAttribute(
     "data-replay-count",
-    "29",
+    "21",
   );
   await expect(
     view.getByRole("button", { name: "Step", exact: true }),
@@ -175,9 +173,7 @@ test("compare bookmarks cross-day selections and holds the shorter replay", asyn
   await expect(view.getByLabel("Right trajectory")).toHaveValue(
     "d10-P3-W4-001",
   );
-  await expect(
-    left.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
+  await expectRecordedWorkspace(left);
   await view.getByLabel("Compare replay step").fill("12");
   await expect(left.locator("html")).toHaveAttribute("data-replay-count", "12");
   await expect(right.locator("html")).toHaveAttribute(
@@ -210,7 +206,7 @@ test("compare bookmarks cross-day selections and holds the shorter replay", asyn
 test("Evolution, Trajectories and timeline link to compare", async ({
   page,
 }) => {
-  await page.goto("/dashboard?run=run1-P3&persona=P3&view=Evolution");
+  await page.goto("/dashboard?run=core-10day-live&persona=P3&view=Evolution");
   await page
     .getByRole("link", {
       name: "Compare recorded trajectories across revisions",
@@ -224,7 +220,7 @@ test("Evolution, Trajectories and timeline link to compare", async ({
   await expect(
     page.getByRole("region", { name: "Compare trajectories", exact: true }),
   ).toBeVisible();
-  await page.goto("/browse?run=run1-P3");
+  await page.goto("/browse?run=core-10day-live");
   const link = page.getByRole("link", {
     name: "Compare with baseline",
     exact: false,
@@ -239,12 +235,12 @@ test("Evolution, Trajectories and timeline link to compare", async ({
 test("a partial index without saved controls falls back to a cross-day pair", async ({
   page,
 }) => {
-  await page.route("**/runs/run1-P3/trajectories/index.json", async (route) => {
+  await page.route("**/runs/core-10day-live/trajectories/index.json", async (route) => {
     const index = trajectoryIndexSchema.parse(
       JSON.parse(
         await readFile(
           new URL(
-            "../../runs/run1-P3/trajectories/index.json",
+            "../../runs/core-10day-live/trajectories/index.json",
             import.meta.url,
           ),
           "utf8",
@@ -264,15 +260,7 @@ test("a partial index without saved controls falls back to a cross-day pair", as
   await expect(view.getByLabel("Comparison type")).toHaveValue("cross-day");
   await expect(view.getByLabel("Left day", { exact: true })).toHaveValue("1");
   await expect(view.getByLabel("Right day", { exact: true })).toHaveValue("4");
-  await expect(
-    page
-      .frameLocator('iframe[title="Left EHR"]')
-      .getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
-  await expect(
-    page
-      .frameLocator('iframe[title="Right EHR"]')
-      .getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
+  await expectRecordedWorkspace(page.frameLocator('iframe[title="Left EHR"]'));
+  await expectRecordedWorkspace(page.frameLocator('iframe[title="Right EHR"]'));
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });

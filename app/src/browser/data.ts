@@ -1,5 +1,4 @@
 import { readCachedJson } from "./json-cache";
-import { archivedReleaseId } from "../../../scripts/historical-releases.mjs";
 import {
   presentationBundleSchema,
   type PresentationBundle,
@@ -245,11 +244,9 @@ export async function verifyRecordedBuild(
 
 /** Historical replay uses its frozen contract; aliases change display names only. */
 export function programSpecPath(program: ProgramEntry): string {
-  if (program.run === "run1-P3")
-    return `/runs/run1-P3/trajectories/specs/${archivedReleaseId(program.release)}.json`;
   if (
     program.run &&
-    !["run1-P3", "mock", "run1-preflight"].includes(program.run)
+    !["mock", "run1-preflight"].includes(program.run)
   )
     return `/runs/${program.run}/certifications/${program.persona}/v${program.version}/spec.json`;
   if (program.path.startsWith("programs/benchmarks/releases/"))

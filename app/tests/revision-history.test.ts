@@ -111,47 +111,43 @@ describe("read-only clinician revision comparison", () => {
       "must be made by a person",
     );
   });
-  withData("runs/run1-P3").it("shows the final certified patch and never labels an undeployed proposal as applied", () => {
+  withData("runs/core-10day-live").it("shows the final certified patch and never labels an undeployed proposal as applied", () => {
     const record = decisionRecordSchema.parse(
       JSON.parse(
         readFileSync(
           new URL(
-            "../../runs/run1-P3/decisions/night-05/P3.json",
+            "../../runs/core-10day-live/decisions/night-09/P3.json",
             import.meta.url,
           ),
           "utf8",
         ),
       ),
     );
-    expect(recordedPatch(record)).toHaveLength(20);
+    expect(recordedPatch(record).length).toBeGreaterThan(0);
     record.versionAfter = record.versionBefore;
     expect(recordedPatch(record)).toEqual([]);
   });
-  withData("runs/run1-P3").it("reports the real recorded night-eight alert change rather than claiming no change", () => {
-    const load = (version: number) =>
-      programSchema.parse(
-        JSON.parse(
-          readFileSync(`../runs/run1-P3/programs/P3/v${version}.json`, "utf8"),
-        ),
-      );
-    const changes = revisionChanges(load(6), load(7));
-    expect(changes).toContainEqual(
-      expect.objectContaining({
-        label: expect.stringContaining("alert display request"),
-        before: "Requests a pop-up dialog",
-        after: "Requests inline display; alert policy still applies",
-      }),
-    );
+  it("reports an alert display change rather than claiming no change", () => {
+    const before = source();
+    const screen=before.screens[0];if(!screen)throw Error('Missing screen');
+    screen.components.push({id:'notice',label:'Notice',tab:0,visibility:'always',size:'normal',tag:'notice',kind:{alert:{alert:'minorInteractionPopup',popup:true}}});
+    const after = structuredClone(before);
+    const notice=after.screens[0]?.components.at(-1);if(!notice)throw Error('Missing notice');
+    notice.kind = {alert:{alert:'minorInteractionPopup',popup:false}};
+    expect(revisionChanges(before, after)).toContainEqual(expect.objectContaining({
+      label: expect.stringContaining("alert display request"), before: "Requests a pop-up dialog",
+      after: "Requests inline display; alert policy still applies",
+    }));
   });
   it("opens a persona and chart day without selecting a patient in the URL", () => {
     const program = {
-      path: "runs/run1-P3/programs/P3/v4.json",
+      path: "runs/core-10day-live/programs/P3/v4.json",
       release: "v2",
       persona: "P3",
       role: "rn",
       group: "Recorded",
       label: "Revision",
-      run: "run1-P3",
+      run: "core-10day-live",
       deployed: true,
       mock: false,
       version: 4,

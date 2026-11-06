@@ -29,8 +29,8 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
 }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/dashboard?run=run1-P3");
-  await expect(page.getByLabel("Recorded run")).toHaveValue("run1-P3");
+  await page.goto("/dashboard?run=core-10day-live&persona=P3");
+  await expect(page.getByLabel("Recorded run")).toHaveValue("core-10day-live");
   await expect(
     page
       .getByRole("navigation", { name: "Dashboard areas" })
@@ -45,13 +45,13 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
     page
       .getByRole("group", { name: "Persona", exact: true })
       .getByRole("button", { name: "P1", exact: true }),
-  ).toBeDisabled();
+  ).toBeEnabled();
   await expect(
     page.getByRole("button", { name: "P3", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect(
     page.getByRole("region", { name: "Version history" }),
-  ).toContainText("rev 7 · Night 8");
+  ).toContainText("rev 4 · Night 9");
   await checkLayout(page);
   if (testInfo.project.name === "desktop") {
     await mkdir("shots", { recursive: true });
@@ -61,7 +61,7 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
     });
   }
 
-  const version = page.getByRole("button", { name: /^rev 3 · Night 4/ });
+  const version = page.getByRole("button", { name: /^rev 4 · Night 9/ });
   await expect(version).toHaveAccessibleName(/Effect:.*clicks.*Status:/);
   await version.click();
   const drawer = page.getByRole("dialog");
@@ -78,10 +78,10 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
     exact: true,
   });
   await expect(
-    pair.getByRole("heading", { name: "Before · rev 2", exact: true }),
+    pair.getByRole("heading", { name: "Before · rev 3", exact: true }),
   ).toBeVisible();
   await expect(
-    pair.getByRole("heading", { name: "After · rev 3", exact: true }),
+    pair.getByRole("heading", { name: "After · rev 4", exact: true }),
   ).toBeVisible();
   await expect(pair.locator(".clinical-shell")).toHaveCount(2);
   if (testInfo.project.name === "desktop")
@@ -89,7 +89,10 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   await pair
     .getByRole("button", { name: "Next task event", exact: true })
     .click();
-  await expect(pair.getByText(/^Event 1 \/ /)).toBeVisible();
+  await pair
+    .getByRole("button", { name: "Next task event", exact: true })
+    .click();
+  await expect(pair.getByText(/^Event 2 \/ /)).toBeVisible();
   // Both replays retain their active high-alert condition in the pinned strip.
   // The exact set also rejects unexpected runtime-error alerts.
   const alerts = pair.getByRole("alert");
@@ -104,35 +107,22 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(version).toBeFocused();
 
-  await page
-    .getByRole("button", { name: /Rejected · Night 2.*humanOnlyKept/ })
-    .click();
-  await page
-    .getByRole("dialog")
-    .getByRole("button", { name: "Replay counterexample", exact: true })
-    .first()
-    .click();
-  const replay = page.getByRole("dialog", {
-    name: "Replay counterexample",
-    exact: true,
-  });
-  await expect(replay.locator(".clinical-shell")).toHaveCount(1);
-  await replay.getByRole("button", { name: "Next event", exact: true }).click();
-  await expect(replay.getByText(/^State 1 of /)).toBeVisible();
-  await expect(
-    replay.getByRole("alert", { name: "Care gaps due", exact: true }),
-  ).toBeVisible();
-  await expect(replay.getByRole("alert", {
-    name: "High-alert medication: double check required", exact: true,
-  })).toBeVisible();
-  await expect(replay.getByRole("alert")).toHaveCount(2);
-  await expect(replay.getByRole("alertdialog")).toHaveCount(0);
-  await replay.getByRole("button", { name: "Close EHR replay" }).click();
-  await page.keyboard.press("Escape");
+  // This retained run's checker counterexample belongs to P2, night 8.
+  await page.getByRole('button', {name:'P2', exact:true}).click();
+  await page.getByRole('button', {name:/Rejected · Night 8.*reviewsBeforeCommit/}).click();
+  await page.getByRole('dialog').getByRole('button', {name:'Replay counterexample', exact:true}).first().click();
+  const counterexample = page.getByRole('dialog', {name:'Replay counterexample', exact:true});
+  await expect(counterexample.locator('.clinical-shell')).toHaveCount(1);
+  await counterexample.getByRole('button', {name:'Next event', exact:true}).click();
+  await expect(counterexample.getByText(/^State 1 of /)).toBeVisible();
+  await counterexample.getByRole('button', {name:'Close EHR replay'}).click();
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', {name:'P3', exact:true}).click();
 
   await nav.getByRole("button", { name: "Releases", exact: true }).click();
   await expect(page.getByRole("table")).toHaveCount(1);
   await expect(page.getByRole("row")).toHaveCount(6);
+  await expect(page.getByRole("rowheader")).toHaveCount(5);
   await expect(page.getByRole("table")).toContainText("Old UI failed");
   await checkLayout(page);
   if (testInfo.project.name === "desktop")
@@ -148,12 +138,17 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
     exact: true,
   });
   await expect(
-    migration.getByRole("heading", { name: "Before · rev 4", exact: true }),
+    migration.getByRole("heading", { name: "Before · rev 2", exact: true }),
   ).toBeVisible();
   await expect(
-    migration.getByRole("heading", { name: "After · rev 5", exact: true }),
+    migration.getByRole("heading", { name: "After · rev 3", exact: true }),
   ).toBeVisible();
   await expect(migration.locator(".clinical-shell")).toHaveCount(2);
+  // Select and hydrate the exported patient, then reach medication administration.
+  // Checker prefixes alone do not select a patient in the clinical workspace.
+  for (let event = 0; event < 6; event++)
+    await migration.getByRole("button", { name: "Next task event", exact: true }).click();
+  await expect(migration.getByText(/^Event 6 \/ /)).toBeVisible();
   await expect(
     migration.getByRole("alert", {
       name: "High-alert medication: double check required",
@@ -172,7 +167,9 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
   await page
     .getByRole("button", { name: "Show recorded verdict", exact: true })
     .click();
-  await expect(page.locator(".failure-message")).toContainText("noFalseAlarms");
+  // Try to break it lists the run's actual rejected proposals across personas.
+  await expect(page.locator(".failure-message")).toContainText("reviewsBeforeCommit");
+  await expect(page.locator(".failure-message")).toContainText("anticoagulantList");
   await checkLayout(page);
   if (testInfo.project.name === "desktop")
     await page.screenshot({
@@ -187,10 +184,9 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
       .getByRole("dialog", { name: "Replay counterexample", exact: true })
       .locator(".clinical-shell"),
   ).toHaveCount(1);
-  await expect(page.getByRole("alert", {
-    name: "High-alert medication: double check required", exact: true,
-  })).toBeVisible();
-  await expect(page.getByRole("alert")).toHaveCount(1);
+  const recordedFailure = page.getByRole("dialog", { name: "Replay counterexample", exact: true });
+  await recordedFailure.getByRole("button", { name: "Next event", exact: true }).click();
+  await expect(recordedFailure.getByText(/^State 1 of /)).toBeVisible();
   expect(errors).toEqual([]);
 });
 

@@ -14,8 +14,10 @@ import { resolve, join, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { parseArgs } from 'node:util';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import { fictionalize, identityCatalog } from './fictional-identities.mjs';
+import { archiveStaleGeometry } from './geometry-history.mjs';
 const root = resolve(import.meta.dirname, '..');
 const compound = (...parts) => parts.join('');
 // Source spellings are assembled only here, for this offline migration.
@@ -123,6 +125,12 @@ async function main() {
     const result=spawnSync(process.execPath,['--import',join(root,'agent/node_modules/tsx/dist/loader.mjs'),fileURLToPath(import.meta.url),'--worker',...process.argv.slice(2)],{cwd:root,stdio:'inherit',env:process.env});
     process.exitCode=result.status??1;return;
   }
+  const {values}=parseArgs({options:{worker:{type:'boolean'},'recertify-only':{type:'boolean',default:false},runs:{type:'string'}}});
+  const recertifyOnly=values['recertify-only'];
+  const selected=values.runs?.split(',');
+  if(selected?.some(id=>!/^[-\w]+$/.test(id)))throw new Error('Invalid run selection');
+  if(recertifyOnly&&!selected?.length)throw new Error('--recertify-only requires explicit --runs');
+  if(selected)for(const id of selected)if(!await exists(join(root,'runs',id,'manifest.json')))throw new Error(`No recorded run ${id}`);
   const { installedBuild, bindBuild }=await import('../agent/src/build-binding.ts');
   const { contentDigest, writeDayDigest }=await import('../agent/src/content-digest.ts');
   const { stableStringify }=await import('../agent/src/program.ts');
@@ -137,17 +145,21 @@ async function main() {
   const { verifySavedTrajectories, indexTrajectories }=await import('./trajectories/index.mjs');
   const build=await installedBuild();
   const binary=join(root,'lean/.lake/build/bin/ehr');
-  const migrationCode={tool:'scripts/migrate-neutral-terms.mjs',toolSha256:sha(await readFile(fileURLToPath(import.meta.url))),identityGeneratorSha256:sha(await readFile(join(root,'scripts/fictional-identities.mjs'))),modelCalls:0,recordedChoicesPreserved:true};
+  const migrationCode={tool:'scripts/migrate-neutral-terms.mjs',toolSha256:sha(await readFile(fileURLToPath(import.meta.url))),identityGeneratorSha256:sha(await readFile(join(root,'scripts/fictional-identities.mjs'))),geometryHistorySha256:sha(await readFile(join(root,'scripts/geometry-history.mjs'))),modelCalls:0,recordedChoicesPreserved:true};
   const sourceCatalog=new Map();
-  for(const file of (await files(join(root,'fixtures/raw'))).filter(p=>/(?:hospitalInformation|practitionerInformation)[^/]*\.json$/.test(p)))identityCatalog(await read(file),sourceCatalog);
-  const report={schemaVersion:1,build,rewritten:await rewriteLocalData(['fixtures/synthea','fixtures/synthetic-hospital','fixtures/clinical','programs','runs'].map(p=>join(root,p)),sourceCatalog),runs:[],unregenerated:[]};
+  for(const file of (recertifyOnly?[]:await files(join(root,'fixtures/raw'))).filter(p=>/(?:hospitalInformation|practitionerInformation)[^/]*\.json$/.test(p)))identityCatalog(await read(file),sourceCatalog);
+  const report={schemaVersion:1,build,rewritten:recertifyOnly?null:await rewriteLocalData(['fixtures/synthea','fixtures/synthetic-hospital','fixtures/clinical','programs','runs'].map(p=>join(root,p)),sourceCatalog),runs:[],unregenerated:[]};
   for(const name of await readdir(join(root,'runs'))) {
+    if(selected&&!selected.includes(name))continue;
     const dir=join(root,'runs',name),manifestFile=join(dir,'manifest.json');
     if(!await exists(manifestFile))continue;
     const manifest=await read(manifestFile);
     if(manifest.ehr?.mode!=='real')continue;
+    const baselineIds=await exists(join(dir,'trajectories/index.json'))?(await read(join(dir,'trajectories/index.json'))).tasks.filter(t=>t.baseline).map(t=>t.id):[];
     const item={run:name,certificates:[],replay:null,measurements:[]};report.runs.push(item);
-    manifest.buildBindingRequired=true;await write(manifestFile,manifest);
+    manifest.buildBindingRequired=true;
+    manifest[recertifyOnly?'recertification':'neutralMigration']={...migrationCode,status:'pending',currentMeasurementsRegenerated:false};
+    await write(manifestFile,manifest);
     try {
     // A migration is a new certification. Every version receives the current gates.
     const ehr=createEhr({fake:false,binary}),screens=createScreenChecker(ehr,{artifactsDir:join(dir,'migration/screens')});
@@ -159,7 +171,7 @@ async function main() {
         await write(sourceFile,program);await write(join(folder,file),expandProgram(program));
         const presentations=compilePresentations(program);
         const componentsFile=join(folder,file.replace('.json','.components.json'));
-        if(presentations)await write(componentsFile,presentations);else await rm(componentsFile,{force:true});
+        if(presentations)await write(componentsFile,presentations);else if(!recertifyOnly)await rm(componentsFile,{force:true});
         const prefix=join(dir,'certs',persona,file.slice(0,-5));
         await write(`${prefix}.build.json`,{status:'rejected',current:null,reason:'Migration recertification pending'});
         const inputDir=join(dir,'certifications',persona,file.slice(0,-5));
@@ -185,20 +197,21 @@ async function main() {
     const rejected=item.certificates.filter(c=>c.status==='rejected');
     if(rejected.length)throw new Error(`Current checker rejected ${rejected.length} recorded revisions: ${JSON.stringify(rejected)}`);
     manifest.buildBindingRequired=true;manifest.ehr={mode:'real',binary};
-    manifest.neutralMigration={...migrationCode,status:'passed',currentMeasurementsRegenerated:true};
+    manifest[recertifyOnly?'recertification':'neutralMigration']={...migrationCode,status:'pending',currentMeasurementsRegenerated:false};
     manifest.fingerprints=await runFingerprints(ehr,manifest.world,root);
     await write(manifestFile,manifest);
     if(await exists(join(dir,'trajectories/index.json'))) {
       item.replay=await verifySavedTrajectories(name,root);
       await write(join(dir,'trajectories/verification.json'),item.replay);
     } else {
-      const extracted=await indexTrajectories({root,runId:name,binary,baseline:[]});
+      const extracted=await indexTrajectories({root,runId:name,binary,baseline:baselineIds});
       item.replay=extracted.verification;
       await verifySavedTrajectories(name,root);
     }
     for(let day=1;day<=manifest.days;day++)if(await exists(join(dir,'days',`day-${String(day).padStart(2,'0')}`)))await writeDayDigest(dir,day,manifest.personas);
     // Re-measure preserved workloads using native simulation and fresh Chromium
     // geometry. Recorded model decisions are inputs, never regenerated here.
+    item.geometryHistory=await archiveStaleGeometry(dir,build.appSha256);
     const fixtureIndex=await read(join(root,'fixtures/synthea/index.json'));
     const geometry=browserGeometry(ehr,[join(root,'fixtures/synthea',fixtureIndex.patients[0].file)],join(dir,'migration/geometry-cache'));
     const measured=geometryEhr(ehr,geometry.provider,dir);
@@ -213,13 +226,14 @@ async function main() {
         await write(dayFile,result);item.measurements.push({day,persona,tasks:result.tasks.length,geometry:result.geometry});
       }
     } finally {await geometry.close();}
-    const regenerated=await indexTrajectories({root,runId:name,binary,baseline:[]});
+    const regenerated=await indexTrajectories({root,runId:name,binary,baseline:baselineIds});
     item.regeneratedReplay=regenerated.verification;await verifySavedTrajectories(name,root);
     for(let day=1;day<=manifest.days;day++)if(await exists(join(dir,'days',`day-${String(day).padStart(2,'0')}`)))await writeDayDigest(dir,day,manifest.personas);
+    manifest[recertifyOnly?'recertification':'neutralMigration']={...migrationCode,status:'passed',currentMeasurementsRegenerated:true};
     const digest=await contentDigest(dir);manifest.contentDigest=digest.contentDigest;await write(manifestFile,manifest);await write(join(dir,'digest.json'),digest);
     } catch(error) {
       item.error=String(error);report.unregenerated.push(`${name}: ${String(error)}`);
-      manifest.neutralMigration={...migrationCode,status:'rejected',reason:String(error),currentMeasurementsRegenerated:false};
+      manifest[recertifyOnly?'recertification':'neutralMigration']={...migrationCode,status:'rejected',reason:String(error),currentMeasurementsRegenerated:false};
       manifest.ehr={mode:'real',binary};
       try {
         manifest.fingerprints=await runFingerprints(createEhr({fake:false,binary}),manifest.world,root);
@@ -232,7 +246,7 @@ async function main() {
   }
   const verdict=spawnSync('python3',['lean/Ehr/Check/certify.py'],{cwd:root,env:process.env,stdio:'inherit'});if(verdict.status!==0)throw new Error('Certification matrix failed');
   report.unregenerated.push('Model responses are preserved as historical records; generating new choices or new live-model experimental outcomes requires model calls.');
-  const destination=join(root,'runs/neutral-migration-report.json');await write(destination,report);
+  const destination=join(root,recertifyOnly?'runs/recertification-report.json':'runs/neutral-migration-report.json');await write(destination,report);
   console.log(`Migration complete: ${report.runs.length} recorded runs; report ${relative(root,destination)}`);
   if(report.runs.some(item=>item.error))process.exitCode=2;
 }

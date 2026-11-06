@@ -1,7 +1,9 @@
 import { dataReason } from "../test/data.ts";
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolve } from 'node:path';
+import { resolve, join, relative } from 'node:path';
+import { mkdtempSync, cpSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { read, hash, resourceKey, SYSTEM, EXT } from './common.mjs';
 import { reconcileBundle, ingredient } from './reconcile.mjs';
 import { ROOT, augment } from './generate.mjs';
@@ -111,9 +113,20 @@ test('regeneration is byte reproducible and never changes schedules or imported 
   const manifest=read(resolve(ROOT,'runs/world/2/manifest.json'));
   const before=manifest.files.map(f=>hash(read(resolve(ROOT,'runs/world/2',f))));
   const overlayHash=hash(clinical);
-  augment();
-  assert.deepEqual(manifest.files.map(f=>hash(read(resolve(ROOT,'runs/world/2',f)))),before);
-  assert.equal(hash(read(resolve(ROOT,'fixtures/clinical/overrides.json'))),overlayHash);
+  const scratch=mkdtempSync(join(tmpdir(),'world-realism-test-'));
+  try {
+    const world=join(scratch,'world'),clinicalOutput=join(scratch,'clinical');
+    cpSync(resolve(ROOT,'runs/world/2'),world,{recursive:true});
+    cpSync(resolve(ROOT,'fixtures/clinical'),clinicalOutput,{recursive:true});
+    augment({world,clinical:clinicalOutput});
+    const relocated=read(resolve(world,'manifest.json'));
+    assert.equal(relocated.clinicalData.fixtures,relative(ROOT,clinicalOutput));
+    relocated.clinicalData.fixtures=manifest.clinicalData.fixtures;
+    assert.deepEqual(manifest.files.map(f=>hash(f==='manifest.json'?relocated:read(resolve(world,f)))),before);
+    assert.equal(hash(read(resolve(clinicalOutput,'overrides.json'))),overlayHash);
+    assert.deepEqual(manifest.files.map(f=>hash(read(resolve(ROOT,'runs/world/2',f)))),before);
+    assert.equal(hash(read(resolve(ROOT,'fixtures/clinical/overrides.json'))),overlayHash);
+  } finally {rmSync(scratch,{recursive:true,force:true});}
   for(const source of read(resolve(ROOT,'fixtures/clinical/audit.json')).sourceFiles) assert.equal(hash(__read(source.file)),source.sha256);
 });
 import { readFileSync } from 'node:fs';

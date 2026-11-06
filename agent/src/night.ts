@@ -3,6 +3,7 @@ import { sessionReviewGate, tailoringFeedback } from './session-gate.js';
 import { CADENCE_PROTOCOL, autoApprove, releaseDue, usageWeightedSwitchCost, type ReleaseCadence, type ReviewGate, type ReviewBundle, type ReviewChoices, type SwitchCost } from './cadence.js';
 import { DesignArchiveStore, archiveFeedback, designHash, type ArchiveEntry, type ArchiveObservation } from './design-archive.js';
 import { describeProgram, generate, validateCandidate } from '../../explore/generator.js';
+import { placementVariants } from '../../explore/placements.js';
 import { seedPoints, niche, type Workflow } from '../../explore/design.js';
 import { archiveFrom } from '../../explore/search.js';
 import type { Evaluation } from '../../explore/archive.js';
@@ -645,23 +646,37 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   if (workflows.length && (!options.generatorOnly || options.discoveryNights === undefined || night<=options.discoveryNights)) {
     const points = seedPoints().flatMap(p => (['normal', 'compact'] as const).flatMap(density =>
       (['mouse', 'keyboard'] as const).map(input => ({ ...p, density, input }))));
-    for (let offset = 0; offset < points.length; offset++) {
+    // Compose placement with admitted compact fields and keyboard navigation, so
+    // alternatives can preserve task effort while moving a review out of the sidebar.
+    let placements: ReturnType<typeof placementVariants> = [];
+    try {
+      const placementBase = generate({...describeProgram(current, workflows).point, density:'compact', input:'keyboard'}, workflows, current, release.spec).program;
+      placements = placementVariants(placementBase, release.spec, workflows).map(variant => {
+        variant.candidate.program.version = current.version + 1;
+        validateCandidate(variant.candidate, current, release.spec);
+        return {...variant, hypothesis:`${variant.hypothesis}; compact fields and keyboard navigation`};
+      });
+    } catch (error) {
+      rec.flags.push(`explore placements unavailable: ${errorMessage(error)}`);
+    }
+    const layouts = points.flatMap((_, offset) => {
       const point = points[(night - 1 + offset) % points.length];
-      if (!point) continue;
-      try {
-        const generated = generate(point, workflows, current, release.spec);
-        if (designHash(generated.program) === designHash(current) || snapshot.entries.some(e => e.program && designHash(e.program) === designHash(generated.program))) continue;
-        newCandidates.push({ id: `explore-${night}`, summary: `Explore ${niche(generated.point)}`, moveType: 'reorder',
-          rationale: 'Fill an admitted design niche', targets: [], patch: replacementPatch(generated.program),
-          predicted: sumSavings([]), source: 'explore', seeded: false, seededKind: null });
-        break;
-      } catch (error) {
-        // Missing realizations (e.g. no clinical groups) are unsupported seeds,
-        // not certified archive entries. LLM proposals are never discarded here.
-        rec.flags.push(`explore seed ${niche(point)} unavailable: ${errorMessage(error)}`);
-      }
+      if (!point) return [];
+      try { return [{candidate:generate(point, workflows, current, release.spec), hypothesis:`Explore ${niche(point)}`}]; }
+      catch (error) { rec.flags.push(`explore seed ${niche(point)} unavailable: ${errorMessage(error)}`); return []; }
+    });
+    // One admitted proposal per night. Placement nights alternate with the layout cycle;
+    // enumeration uses public program structure and cannot read the chooser's tastes.
+    const variants = night % 3 === 2 ? [...placements, ...layouts] : [...layouts, ...placements];
+    for (const {candidate:generated, hypothesis} of variants) {
+      if (designHash(generated.program) === designHash(current) || snapshot.entries.some(e => e.program && designHash(e.program) === designHash(generated.program))) continue;
+      newCandidates.push({ id: `explore-${night}`, summary: hypothesis, moveType: 'reorder',
+        rationale: 'Fill an admitted design niche or clinical placement', targets: [], patch: replacementPatch(generated.program),
+        predicted: sumSavings([]), source: 'explore', seeded: false, seededKind: null });
+      break;
     }
   }
+
   const seeded = options.generatorOnly ? null : pickSeeded(deps.seedPolicy, deps.seedState, current, release.spec, night);
   if (seeded) { deps.seedState.injected++; newCandidates.push(seeded); }
   // Small disjoint bundles are additional designs, certified as a whole. The

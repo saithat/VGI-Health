@@ -38,6 +38,6 @@ test('fixed persona workflow contracts cover every commit exposed by all 15 cano
     const exposed = new Set(p.screens.flatMap(s => s.components.flatMap(c => c.kind?.button?.action?.commit ? [c.kind.button.action.commit.commit] : [])));
     assert.deepEqual([...exposed].sort(), [...personaCommits[persona]].sort(), `${release}/${persona}`);
     assert.deepEqual([...new Set(p.screens.map(s => s.workflow).filter(w => w !== 'shell'))].sort(),
-      [...personaWorkflows[persona]].sort(), `${release}/${persona} workflow scope`);
+      [...personaWorkflows[persona], 'chart'].sort(), `${release}/${persona} workflow scope`);
   }
 });

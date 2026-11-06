@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process';
 import { canonicals, root } from './index.mjs';
 import { digest, Native } from './native.mjs';
 import { fixtures, scenarioCatalog } from './scenarios.mjs';
-import { info } from './driver.mjs';
+import { curesProbe } from './cures-probe.mjs';
 
 const runId = process.argv[2] ?? 'neutral-recorded-day1';
 assert.match(runId, /^[\w-]+$/);
@@ -37,8 +37,6 @@ function subset(report, select) {
 const gap = id => /^(?:entry\.signOrders\.dosingWeight|cures\.|workflow\.empty-medication-signing|patient-switch\.chart-scoping|weight\.linked-source-refresh|refill\.denial-via-approval-action)/.test(id);
 write('conformance/results/gap-families.json', subset(combined, gap));
 write('conformance/results/refill-denial-recorded.json', subset(combined, id => id === 'refill.denial-via-approval-action'));
-const retired = join(root, 'conformance/results/refill-denial-' + 'run1-P3.json');
-rmSync(retired, { force: true });
 
 const targets = canonicals();
 const scratch = mkdtempSync(join(tmpdir(), 'neutral-conformance-evidence-'));
@@ -56,16 +54,7 @@ try {
   write('conformance/results/certifications.json', { generatedAt: new Date().toISOString(), binarySha256,
     purpose: 'Separate checker audit; never consulted for behavioral expectations or pass/fail', rows });
   const target = targets.find(t => t.release === 'v3' && t.persona === 'P1');
-  const program = structuredClone(target.program);
-  for (const screen of program.screens) screen.components = screen.components.filter(c => !info('curesReport')(c));
-  const programPath = join(scratch, 'cures-probe.json');
-  writeFileSync(programPath, JSON.stringify(program));
-  const result = spawnSync(binary, ['check', '--spec', target.specPath, '--program', programPath, '--canonical', target.programPath], { encoding: 'utf8', env: process.env, timeout: 120000 });
-  assert.ifError(result.error);
-  write('conformance/results/cures-probe-check.json', { program: 'P1 v3 copy with only curesReport panels removed',
-    command: 'ehr check --spec releases/v3/spec.json --program <copy> --canonical releases/v3/personas/P1.json',
-    binarySha256, programSha256: digest(program), specSha256: digest(target.spec), exitCode: result.status,
-    verdict: JSON.parse(result.stdout), purpose: 'Separate audit, not consulted by behavioral suite' });
+  write('conformance/results/cures-probe-check.json', curesProbe(target, binary));
   const native = new Native(binary);
   const scenario = scenarioCatalog.find(s => s.id === 'weight.linked-source-refresh');
   const { d, observed } = scenario.run(fixtures(native, target));

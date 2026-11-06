@@ -1,3 +1,4 @@
+import { expectRecordedWorkspace } from "./recorded-frame";
 import { test, expect } from "@playwright/test";
 import { trajectoryIndexSchema } from "../src/dashboard/trajectories-data";
 
@@ -10,7 +11,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
     requests.push(new URL(request.url()).pathname),
   );
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/dashboard?run=run1-P3&view=Evolution");
+  await page.goto("/dashboard?run=core-10day-live&persona=P3&view=Evolution");
   await expect(
     page.getByRole("heading", { name: "UI evolution", exact: true }),
   ).toBeVisible();
@@ -26,9 +27,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
     view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option"),
   ).toHaveCount(38);
   const frame = page.frameLocator('iframe[title="Recorded EHR"]');
-  await expect(
-    frame.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
+  await expectRecordedWorkspace(frame);
   await expect(
     frame.locator('[data-trajectory-highlight="true"]').first(),
   ).toBeVisible();
@@ -65,6 +64,8 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
       "data-replay-count",
       String(count),
     );
+    if (count === 2)
+      await expect(frame.getByRole("banner", { name: "Patient banner" })).toBeVisible();
   }
   expect(await logicalSize()).toEqual(initialSize);
   const afterBounds = await iframe.boundingBox();
@@ -77,7 +78,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   await view.getByRole("button", { name: "Reset", exact: true }).click();
   await expect(frame.locator("html")).toHaveAttribute("data-replay-count", "0");
   await view.getByRole("button", { name: "Step", exact: true }).click();
-  await expect(view.getByLabel("Replay position")).toHaveText("1 / 69");
+  await expect(view.getByLabel("Replay position")).toHaveText("1 / 33");
   await expect(frame.getByRole("heading", { level: 1 })).not.toHaveText(
     "Patient workspace",
   );
@@ -85,7 +86,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   await expect(
     view.getByRole("button", { name: "Pause", exact: true }),
   ).toBeVisible();
-  await expect(view.getByLabel("Replay position")).not.toHaveText("1 / 69");
+  await expect(view.getByLabel("Replay position")).not.toHaveText("1 / 33");
   await view.getByRole("button", { name: "Pause", exact: true }).click();
   await view.getByLabel("Compare baseline rev 0").check();
   await expect(
@@ -95,7 +96,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   ).toBeVisible();
   await view.getByLabel("Compare baseline rev 0").uncheck();
   // Jump across both episode resets and a clinical alert, keeping the controls usable.
-  await view.getByLabel("Replay event").fill("30");
+  await view.getByLabel("Replay event").fill("16");
   const urgent = frame.getByRole("region", { name: "Urgent clinical alerts" });
   const highAlert = urgent.getByRole("alert", {
     name: "High-alert medication: double check required", exact: true,
@@ -108,12 +109,12 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
   await expect(highAlert).toBeVisible();
   await expect(urgent.getByRole("button", { name: "Acknowledge", exact: true })).toHaveCount(0);
   await expect(frame.getByRole("dialog")).toHaveCount(0);
-  await view.getByLabel("Replay event").fill("69");
+  await view.getByLabel("Replay event").fill("33");
   await expect(
     view.getByText("Trajectory finished", { exact: true }),
   ).toBeVisible();
   await expect(view.locator(".trajectory-counters")).toContainText(
-    "27 clicks · 39 keys · 40 scrolls · 69 events",
+    "18 clicks · 40 keys · 12 scrolls · 33 events",
   );
   await view.getByLabel("Trajectory day").selectOption("7");
   await view
@@ -123,11 +124,9 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
     view.getByRole("listbox", { name: "Recorded tasks" }).getByRole("option"),
   ).toHaveCount(1);
   await expect(
-    view.getByRole("heading", { name: /d07-P3-W4-001 · W4 · rev 5 \/ v3/ }),
+    view.getByRole("heading", { name: /d07-P3-W4-001 · W4 · rev 3 \/ v3/ }),
   ).toBeVisible();
-  await expect(
-    frame.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
+  await expectRecordedWorkspace(frame);
   await view.getByRole("button", { name: "Step", exact: true }).click();
   await expect(view.getByLabel("Replay position")).toContainText("1 /");
   await view.getByRole("button", { name: "Step", exact: true }).click();
@@ -145,13 +144,11 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
 test("fixed playback supports fullscreen, shortcuts and visible interactions", async ({
   page,
 }, testInfo) => {
-  await page.goto("/dashboard?run=run1-P3&view=Trajectories");
+  await page.goto("/dashboard?run=core-10day-live&persona=P3&view=Trajectories");
   const view = page.getByRole("region", { name: "All task trajectories" });
   const frame = page.frameLocator('iframe[title="Recorded EHR"]');
   const iframe = page.locator('iframe[title="Recorded EHR"]');
-  await expect(
-    frame.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
+  await expectRecordedWorkspace(frame);
   await view.getByLabel("Playback speed").selectOption("2");
   await view.getByRole("button", { name: "Step", exact: true }).click();
   await expect(frame.locator(".trajectory-cursor")).toHaveCSS("opacity", "1");
@@ -167,9 +164,9 @@ test("fixed playback supports fullscreen, shortcuts and visible interactions", a
   expect(await page.evaluate(() => window.scrollY)).toBe(outerBefore);
   await view.getByRole("button", { name: "Step", exact: true }).focus();
   await page.keyboard.press("ArrowLeft");
-  await expect(view.getByLabel("Replay position")).toHaveText("1 / 69");
+  await expect(view.getByLabel("Replay position")).toHaveText("1 / 33");
   await page.keyboard.press("ArrowRight");
-  await expect(view.getByLabel("Replay position")).toHaveText("2 / 69");
+  await expect(view.getByLabel("Replay position")).toHaveText("2 / 33");
   await page.keyboard.press("Space");
   await expect(
     view.getByRole("button", { name: "Pause", exact: true }),
@@ -178,21 +175,21 @@ test("fixed playback supports fullscreen, shortcuts and visible interactions", a
   await expect(
     view.getByRole("button", { name: "Play", exact: true }),
   ).toBeVisible();
-  await view.getByLabel("Replay event").fill("19");
+  await view.getByLabel("Replay event").fill("9");
   await expect(frame.locator("html")).toHaveAttribute(
     "data-replay-count",
-    "19",
+    "9",
   );
   await view.getByLabel("Playback speed").selectOption("0.5");
   const field = frame.getByRole("textbox", {
-    name: "Double check: second nurse",
+    name: "Second nurse — independent check",
     exact: true,
   });
   await view.getByRole("button", { name: "Step", exact: true }).click();
   await expect.poll(() => field.inputValue()).toMatch(/^P/);
   await expect(frame.locator("html")).toHaveAttribute(
     "data-replay-count",
-    "20",
+    "10",
   );
   await expect(field).toHaveValue("P3-second");
   await iframe.scrollIntoViewIfNeeded();
@@ -247,7 +244,7 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
     const response = await page.request.get(route.request().url());
     await route.fulfill({
       response,
-      body: (await response.text()).replaceAll("run1-P3", "core-10day"),
+      body: (await response.text()).replaceAll("core-10day-live", "core-10day"),
     });
   });
   await page.route("**/runs/core-10day/**", async (route) => {
@@ -269,9 +266,10 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
             {
               screen: "home",
               state: "fixture",
+              sample: "workspace-d01",
               viewport: { width: 1440, height: 900 },
               components: {
-                "home.work.w1Rooming": {
+                "workspace.open|2ab83e2b-38d9-fa35-e2b0-dfbfae463454|0|scheduleTasks": {
                   center: { x: 820, y: 450 },
                   reveal: { x: 820, y: 450 },
                   chain: [],
@@ -286,23 +284,22 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
       return;
     }
     const response = await page.request.get(
-      url.replace("/core-10day/", "/run1-P3/"),
+      url.replace("/core-10day/", "/core-10day-live/"),
     );
-    let body = (await response.text()).replaceAll("run1-P3", "core-10day");
+    let body = (await response.text()).replaceAll("core-10day-live", "core-10day");
     if (url.endsWith("/trajectories/index.json")) {
       const index = trajectoryIndexSchema.parse(JSON.parse(body));
-      const first = index.tasks[0];
-      if (first) first.metrics.mouseTravelPx = 100;
+      const selected = index.tasks.find(task => task.id === "d01-P1-W1-001");
+      if (!selected) throw Error("Missing retained clinic trajectory fixture");
+      selected.metrics.mouseTravelPx = 100;
       body = JSON.stringify(index);
     }
     await route.fulfill({ response, body });
   });
-  await page.goto("/dashboard?run=core-10day&view=Trajectories");
+  await page.goto("/dashboard?run=core-10day&view=Trajectories&persona=P1&task=d01-P1-W1-001");
   const view = page.getByRole("region", { name: "All task trajectories" });
   const frame = page.frameLocator('iframe[title="Recorded EHR"]');
-  await expect(
-    frame.getByRole("banner", { name: "Patient banner" }),
-  ).toBeVisible();
+  await expectRecordedWorkspace(frame);
   await view.getByLabel("Playback speed").selectOption("4");
   await view.getByRole("button", { name: "Step", exact: true }).click();
   await expect(view.locator(".trajectory-counters")).toContainText(

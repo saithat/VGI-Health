@@ -16,6 +16,7 @@ import { drugDef, isBenzodiazepine, isControlled, isOpioid, order, serviceOrder 
 import type { HomeMed, PatientProfile } from "../patients";
 import { homeMed } from "../patients";
 import type { Rng } from "../rng";
+import { INBOX_RANDOM_STREAM } from "../seed-contract";
 import type { Json, OrderChoice } from "../schema";
 import type { InboxItem, PendingLab, RefillRequest } from "../state";
 import { addPendingLab, isInpatient, labValue, warfarinInr } from "./common";
@@ -480,7 +481,7 @@ function refillTaskFor(b: DayBuild, req: RefillRequest, start: number, rng: Rng)
 }
 
 function runInbox(b: DayBuild): void {
-  const rng = b.rng("p1-inbox");
+  const rng = b.rng(INBOX_RANDOM_STREAM);
   const arrivedLabs = b.state.pendingLabs.filter((l) => l.recipient === "P1" && l.resultDay <= b.day);
   b.state.pendingLabs = b.state.pendingLabs.filter((l) => !arrivedLabs.includes(l));
   const newItems: InboxItem[] = arrivedLabs.map((lab) => ({ id: b.nextId("item"), kind: "result", patientId: lab.patientId, arrivedDay: b.day, priority: lab.interpretation === "N" ? 2 : 0, lab, refill: null }));

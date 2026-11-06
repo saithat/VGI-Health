@@ -3,7 +3,7 @@
 import { fictionalize } from '../../scripts/fictional-identities.mjs';
 import { resolve, relative, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { readFileSync, readdirSync, rmSync, existsSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { read, write, hash, resourceKey, id, tag, ref, cc } from './common.mjs';
 import { reconcileBundle } from './reconcile.mjs';
 import { dayContext } from './context.mjs';
@@ -29,7 +29,7 @@ export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROO
       for(const e of result.bundle.entry) {
         const key=resourceKey(e),prior=old.get(key);
         if(!prior||JSON.stringify({...prior.resource,id:e.resource.id})!==JSON.stringify(e.resource)) {
-          overlays.push({source:relative(ROOT,file),sourceFullUrl:prior?.fullUrl??null,key,resource:fictionalize(e.resource),action:prior?'replace':'create'});
+          overlays.push({source:relative(ROOT,file),sourceFullUrl:prior?.fullUrl??null,key,resource:e.resource,action:prior?'replace':'create'});
           audit.changed[e.resource.resourceType]=(audit.changed[e.resource.resourceType]??0)+1;
         }
       }
@@ -55,7 +55,7 @@ export function augment({world=resolve(ROOT,'runs/world/2'),fixtures=resolve(ROO
   write(resolve(clinical,'index.json'),{schemaVersion:1,patients:population,overrides:'overrides.json',audit:'audit.json'});
   write(resolve(clinical,'audit.json'),audit);
   const generated=[];
-  if(existsSync(resolve(world,'context'))) rmSync(resolve(world,'context'),{recursive:true});
+  // Refresh named outputs without deleting recorded context or import history.
   const manifest=read(resolve(world,'manifest.json'));
   const operationHistory=new Map();
   for(const d of manifest.perDay) {

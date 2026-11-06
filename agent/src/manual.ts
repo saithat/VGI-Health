@@ -67,13 +67,16 @@ export function programVocabulary(): string {
 
 export function capabilitiesManual(): string {
   const examples: string[] = [];
-  const dir = path.join(REPO_ROOT, 'runs/run1-P3/decisions');
+  const dir = path.join(REPO_ROOT, 'runs/core-10day-live/decisions');
+  // Lexicographic night/persona/candidate order makes the two examples reproducible.
   for (const night of existsSync(dir) ? readdirSync(dir).sort() : []) {
-    const record = z.object({ candidates: z.array(z.object({ candidate: z.object({ summary: z.string(), patch: z.unknown() }), check: z.object({ status: z.string(), property: z.string().nullable(), message: z.string().nullable() }) })) }).parse(JSON.parse(read(`runs/run1-P3/decisions/${night}/P3.json`)));
-    for (const candidate of record.candidates) {
-      const outcome = candidate.check.status === 'pass' ? 'accepted by checker' : 'rejected';
-      if (examples.some((e) => e.startsWith(outcome))) continue;
-      examples.push(`${outcome} (historical full-profile run1-P3, ${night}): ${JSON.stringify(candidate)}`);
+    for (const file of readdirSync(path.join(dir, night)).filter(f => /^P[1-5]\.json$/.test(f)).sort()) {
+      const record = z.object({ candidates: z.array(z.object({ candidate: z.object({ summary: z.string(), patch: z.unknown() }), check: z.object({ status: z.string(), property: z.string().nullable(), message: z.string().nullable() }) })) }).parse(JSON.parse(read(`runs/core-10day-live/decisions/${night}/${file}`)));
+      for (const candidate of record.candidates) {
+        const outcome = candidate.check.status === 'pass' ? 'accepted by checker' : 'rejected';
+        if (examples.some(e => e.startsWith(outcome))) continue;
+        examples.push(`${outcome} (recorded core-10day-live, ${night}/${file}): ${JSON.stringify(candidate)}`);
+      }
     }
   }
   return `# Capabilities manual (generated; pnpm --filter agent manual)\n

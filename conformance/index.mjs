@@ -27,8 +27,8 @@ export function runTargets(id) {
   if (!/^[\w-]+$/.test(id)) throw new Error('Invalid run id');
   const dir = path.join(root, 'runs', id), manifest = read(path.join(dir, 'manifest.json'));
   if (manifest.runId !== id || manifest.ehr.mode !== 'real') throw new Error('Expected matching real native run manifest');
-  if (manifest.neutralMigration?.status === 'rejected')
-    throw new Error(`Run ${id} has no current certification: ${manifest.neutralMigration.reason}`);
+  if (manifest.neutralMigration?.status === 'rejected' || manifest.recertification?.status === 'rejected')
+    throw new Error(`Run ${id} has no current certification: ${(manifest.recertification?.status === 'rejected' ? manifest.recertification : manifest.neutralMigration).reason}`);
   const replay = existsSync(path.join(dir, 'replay.json')) ? read(path.join(dir, 'replay.json')) : null;
   const result = [];
   for (const persona of manifest.personas) {

@@ -7,6 +7,6 @@ export function dataReason(...paths: string[]): string | undefined {
     (path) => !existsSync(resolve(import.meta.dirname, "../..", path)),
   );
   return missing.length
-    ? `needs ${missing.join(", ")}; extract with \`git archive hackathon-final runs fixtures programs verdicts.json | tar -x\``
+    ? `needs ${missing.join(", ")}; restore these local files with their matching frozen recording inputs`
     : undefined;
 }

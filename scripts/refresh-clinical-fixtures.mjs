@@ -39,6 +39,8 @@ export function screenFor(persona,target,activity) {
   return native('render-ui',{...base,state,display:projection.display});
 }
 if(process.argv[1]&&resolve(process.argv[1])===resolve(import.meta.filename)) {
+  const liveSelectionOnly=process.argv.includes('--live-selection-only');
+  if(!liveSelectionOnly) {
   const scratch=mkdtempSync(join(tmpdir(),'neutral-ui-fixtures-'));
   try {
     execFileSync('lake',['env','lean','--run','Ehr/Render/ExportTests.lean',scratch,`../${index[0].file}`],{cwd:resolve(root,'lean'),env:{...process.env,LEAN_NUM_THREADS:'4'},stdio:'inherit'});
@@ -48,11 +50,12 @@ if(process.argv[1]&&resolve(process.argv[1])===resolve(import.meta.filename)) {
   for(const [persona,entries]of Object.entries(names))for(const name of entries)write(`app/src/fixtures/punch/${name}.json`,screenFor(persona,name==='P4-rooming'?'w5Rooming':targetFor(persona,name)));
   function refresh(dir){for(const name of readdirSync(resolve(root,dir),{withFileTypes:true})){const file=`${dir}/${name.name}`;if(name.isDirectory())refresh(file);else if(name.name.endsWith('.ui.json')){const persona=/P[1-5]/i.exec(name.name)?.[0]?.toUpperCase();if(!persona)continue;write(file,screenFor(persona,targetFor(persona,basename(file))));}}}
   refresh('app/shots/final');refresh('app/shots/realism/present/integration');
+  }
   for(const name of readdirSync(resolve(root,'app/shots/realism/live-select')).filter(n=>n.endsWith('.png'))) {
     const [,persona,activity,view]=/^(P[1-5])-(.+)-(chart|landing)\.png$/.exec(name)??[];
     if(!persona)continue;
     const target=view==='landing'?null:({P1:'w1Rooming',P2:'w3Triage',P3:'w4Mar',P4:'w5Rooming',P5:'w6PreOp'}[persona]);
     write(`app/shots/realism/live-select/${name.replace(/\.png$/,'.ui.json')}`,screenFor(persona,target,activity));
   }
-  console.log('Regenerated clinician semantic fixtures from current native interpreter.');
+  console.log(liveSelectionOnly?'Regenerated saved live-selection semantic snapshots from current native interpreter.':'Regenerated clinician semantic fixtures from current native interpreter.');
 }

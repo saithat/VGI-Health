@@ -158,7 +158,7 @@ test("fast app regression: report gate and dashboard control effects", async ({
     ),
   ).toEqual(new Set(["P1", "P2", "P3", "P4", "P5", "RN2"]));
   const audit = new Audit(page);
-  await page.goto("/dashboard?run=run1-P3");
+  await page.goto("/dashboard?run=core-10day-live");
   await page.getByRole("region", { name: "Version history" }).waitFor();
   await audit.click(
     page.getByRole("button", { name: "Evolution", exact: true }),
