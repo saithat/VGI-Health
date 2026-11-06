@@ -112,6 +112,9 @@ export async function createMarSession(
             intent.session,
             intent.event,
             intent.requestId,
+            staged.state.commits.find(
+              (id) => !session.getSnapshot().state.commits.includes(id),
+            ),
           );
           uncertain = undefined;
           current.version = result.version;

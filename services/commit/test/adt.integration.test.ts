@@ -116,10 +116,8 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
       const events = read.body.events.filter((e: Obj) => e.event.kind === 'adt');
       assert.ok(events.length);
       assert.ok(events.every((e: Obj) => !e.event.input && !e.event.accepted && e.event.patient.id === 'adt-a'));
-      const exported = await api(a.base, nurse, '/patients/adt-a/fhir');
-      assert.equal(exported.status, 200);
-      assert.ok(exported.body.entry.some((e: Obj) => e.resource.resourceType === 'Basic'));
-      assert.ok(!JSON.stringify(exported.body).includes('adt-b'));
+      assert.ok(!JSON.stringify(read.body).includes('adt-b'));
+      assert.equal((await api(a.base, nurse, '/patients/adt-a/fhir')).status, 404);
     });
     await t.test('SSE catch-up publishes a whole board and reconnect catches missed writes', async () => {
       const before = await board(); const abort = new AbortController(); const timer = setTimeout(() => abort.abort(), 10_000);

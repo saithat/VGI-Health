@@ -170,7 +170,7 @@ export const bundleSchema = z.object({
 export const chartSchema = z.object({
   patient: patientSchema,
   resources: z.array(resourceSchema),
-  source: z.enum(["offline", "medplum"]),
+  source: z.enum(["offline", "commit"]),
   message: z.string(),
   // Display-only labels, never used for guards or eligibility.
   context: z.object({

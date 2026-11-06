@@ -12,7 +12,7 @@ config.tenant = process.env.ADT_TENANT ?? 'adt-4west-dev';
 config.units = { '4-west': { name: '4 West', marOnService: true }, '5-east': { name: '5 East', marOnService: false } };
 config.adt = { patients: ['mar-patient', 'adt-patient'], beds: [{ id: 401, unit: '4-west' }, { id: 402, unit: '4-west' }] };
 config.releases.nurse.workflows.dose.mar.unit = '4-west';
-const subjects = JSON.parse(await readFile(process.env.KEYCLOAK_SUBJECTS ?? resolve(process.env.TMPDIR!, '4west-subjects.json'), 'utf8'));
+const subjects = JSON.parse(await readFile(process.env.KEYCLOAK_SUBJECTS ?? new URL('../../../.cache/commit/keycloak-subjects.json', import.meta.url), 'utf8'));
 for (const [n, name, role, adtRoles] of [
   [101, '4west-rn1', 'rn', []], [102, '4west-rn2', 'rn', []],
   [201, 'bed-manager', 'bedManager', ['bedManager']], [202, 'charge-4west', 'rn', ['chargeNurse']],

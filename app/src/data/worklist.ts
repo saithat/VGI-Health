@@ -2,7 +2,7 @@ import type {
   MedicationAdministration,
   MedicationRequest,
   Timing,
-} from "@medplum/fhirtypes";
+} from "./fhir-r4.ts";
 
 export function orderTiming(frequency: string, start: string): Timing {
   const repeat: Record<string, [number, number, "d" | "h" | "wk"]> = {

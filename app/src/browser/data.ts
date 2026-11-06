@@ -73,7 +73,7 @@ export type ProgramEntry = Catalog["programs"][number];
 export type Patient = Catalog["patients"][number];
 export const personas = ["P1", "P2", "P3", "P4", "P5"] as const;
 
-/** Same-origin committed artifacts only. No Medplum or remote service calls. */
+/** Same-origin committed artifacts only. No commit service or remote service calls. */
 export async function readArtifact(path: string): Promise<unknown> {
   if (
     !/^\/(?:catalog\.json|verdicts\.json|build\.json|ehr\/manifest\.json|(?:releases|programs|fixtures|runs)\/(?:[\w.-]+\/)*[\w.-]+\.json)$/.test(

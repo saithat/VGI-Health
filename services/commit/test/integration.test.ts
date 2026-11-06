@@ -55,14 +55,10 @@ test('real Postgres: HTTP, durable outcomes, atomic failure, notifications and s
       const lookup = await api(b.base, doctor, '/requests/same-payload');
       assert.deepEqual(lookup.body, { status: results[0].status, body: results[0].body });
       assert.equal((await api(a.base, config.actors[21], '/requests/same-payload')).status, 404);
-      const exported = await api(a.base, doctor, '/patients/pt-1/fhir');
-      assert.equal(exported.body.resourceType, 'Bundle');
-      assert.equal(exported.body.type, 'collection');
-      const commandRecords = exported.body.entry.filter((e: Obj) => e.resource.resourceType === 'Basic');
-      assert.equal(commandRecords.length, 1);
-      const journal = JSON.parse(commandRecords[0].resource.extension[0].valueString);
+      const journal = read.body.events[0];
       assert.equal(journal.event.guard.input.commit, 'signOrders');
       assert.equal(journal.version, 2);
+      assert.equal((await api(a.base, doctor, '/patients/pt-1/fhir')).status, 404);
       const scopes = doctor.patients;
       doctor.patients = scopes.filter(p => p !== 'pt-1');
       try {

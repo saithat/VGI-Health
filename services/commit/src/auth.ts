@@ -5,7 +5,7 @@ import { Fault, type Actor, type Config } from './types.ts';
 /** Keys/issuer are pinned operator input. Token headers can never select a URL. */
 export function authenticator(config: Config) {
   const oidc = config.oidc;
-  const keys = oidc ? createRemoteJWKSet(new URL(`${oidc.issuer}/protocol/openid-connect/certs`),
+  const keys = oidc ? createRemoteJWKSet(new URL(oidc.jwksUrl ?? `${oidc.issuer}/protocol/openid-connect/certs`),
     { timeoutDuration: 5000, cooldownDuration: 1000, cacheMaxAge: 60_000 }) : undefined;
   return async (authorization?: string): Promise<Actor & { expires?: number; persona?: string; name?: string }> => {
     if (!authorization?.startsWith('Bearer ')) throw new Fault(401, 'unauthorized');

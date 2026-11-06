@@ -1,26 +1,28 @@
 # Top-level targets. Lanes fill these in as they land.
 .PHONY: install run run-live check verify lean app infra-up infra-down infra-wait infra-reset setup load seed synthea fixtures wasm wasm-check
 
-COMPOSE := docker compose -f infra/docker-compose.yml
+COMPOSE := docker compose --env-file .env -f infra/docker-compose.yml
+export TMPDIR := /home/saithat/Projects/run-tmp
+export CI := true
 # Bound fresh Lean builds on shared development/judging machines.
 export LEAN_NUM_THREADS ?= 4
 APP_PORT ?= 5173
 LIVE_WORLD ?= runs/world/2
 LIVE_DAYS ?= 10
 LIVE_ARGS ?=
-SYNTHETIC_HOSPITAL ?= 0
+SYNTHETIC_HOSPITAL ?= 1
 SEED_ARGS ?=
 
-# Medplum part: start the stack and wait for its healthcheck (infra-up), then the idempotent
-# setup (project, client, personas -> .env), fixture load, and world worklist seed. Safe to re-run.
+# Fresh setup imports immutable baselines before starting the online writer.
 install:
 	cd lean && lake build
 	pnpm install --frozen-lockfile
 	$(MAKE) wasm-check
-	$(MAKE) infra-up
 	$(MAKE) setup
+	$(MAKE) infra-up
 	$(MAKE) load
-	$(MAKE) seed
+	$(COMPOSE) --profile app up -d commit
+	node infra/scripts/wait-healthy.mjs
 
 run:
 	$(MAKE) wasm-check
@@ -52,37 +54,29 @@ verify:
 	cd lean && COMPARATOR_BWRAP="$$PWD/../scripts/lean-bwrap.py" lake comparator --config Ehr/Check/comparator.json
 	cd lean && COMPARATOR_BWRAP="$$PWD/../scripts/lean-bwrap.py" lake comparator --config Ehr/Check/completion-comparator.json
 
-# Start the Medplum stack (server :8103, app :3000, Postgres, Redis) and block until healthy.
+# Independent project; callers can set COMPOSE_PROJECT_NAME for an isolated stack.
 infra-up:
-	$(COMPOSE) up -d
-	node infra/scripts/wait-healthy.mjs
+	$(COMPOSE) up -d postgres keycloak
 
-# Block until the Medplum server healthcheck (and the app) respond.
 infra-wait:
 	node infra/scripts/wait-healthy.mjs
 
-# Stop the stack, keeping data volumes.
 infra-down:
-	$(COMPOSE) down
+	$(COMPOSE) --profile app down
 
-# Stop the stack AND delete all Medplum data (Postgres volume).
 infra-reset:
-	$(COMPOSE) down -v
+	$(COMPOSE) --profile app down -v
 
-# Idempotent first-boot setup: project, ClientApplication, persona Practitioners + users; writes .env.
 setup:
 	node infra/scripts/setup.mjs
 
-# Upload fixtures/synthea/*.json into Medplum; each file at most once (atomic transaction + marker).
+# Clinical realism and worklists are composed before the immutable import.
 load:
-	node infra/scripts/load.mjs
+	node infra/scripts/wait-healthy.mjs --identity
+	node infra/keycloak/provision-adt.mjs
+	node infra/scripts/load.mjs $(if $(filter 1,$(SYNTHETIC_HOSPITAL)),--hospital,) $(SEED_ARGS)
 
-# Materialize a living-world day as real Medplum worklists (defaults to world 2, day 1).
-seed:
-	node infra/scripts/seed-world.mjs $(SEED_ARGS)
-ifeq ($(SYNTHETIC_HOSPITAL),1)
-	$(MAKE) load-synthetic-hospital
-endif
+seed: load
 
 # Opt-in historical charts, independent of simulation worlds; committed default cohort = 150.
 .PHONY: load-synthetic-hospital synthetic-hospital test-synthetic-hospital

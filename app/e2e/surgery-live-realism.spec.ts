@@ -4,7 +4,11 @@ import {
 } from "./clinical-navigation";
 import { mkdir } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
-import { backendAvailable, backendDownReason } from "./live-backend";
+import {
+  backendAvailable,
+  backendDownReason,
+  completeKeycloakLogin,
+} from "./live-backend";
 
 async function openClinic(
   page: Page,
@@ -13,6 +17,7 @@ async function openClinic(
 ) {
   await page.goto(`/?audit=buttons${inspect ? "&inspect=1" : ""}`);
   await page.getByRole("button", { name: /^P5 · / }).click();
+  await completeKeycloakLogin(page, "P5");
   await enterPatientChart(page, name);
   await expect(
     page.getByRole("banner", { name: "Patient banner", exact: true }),
@@ -54,18 +59,21 @@ test("surgical live review keeps readable receipts and the saved record binding"
       page.getByRole("banner", { name: "Patient banner", exact: true }),
     ).not.toContainText("Preoperative chart review");
   }
+  const savedCommand = page.waitForResponse(r => r.url().endsWith("/commit/commands") && r.request().method() === "POST", { timeout: 60000 });
   await page
     .getByRole("button", { name: "Mark allergies reviewed", exact: true })
     .click();
+  const accepted = await savedCommand;
+  expect(accepted.status(), await accepted.text()).toBe(201);
   const notice = page
     .locator(".mantine-Notification-root")
     .filter({ has: page.locator("button[data-resource-link]") })
     .last();
-  await expect(notice).toBeVisible();
+  await expect(notice).toBeVisible({ timeout: 30000 });
   if (stage === "after") {
     await expect(notice).toContainText("Allergies");
     await expect(notice).not.toContainText(
-      /\/medplum\/fhir\/|markReviewed|[0-9a-f]{8}-[0-9a-f]{4}-/i,
+      /\/external-fhir\/fhir\/|markReviewed|[0-9a-f]{8}-[0-9a-f]{4}-/i,
     );
     const banner = await page
       .getByRole("banner", { name: "Patient banner", exact: true })
@@ -81,20 +89,20 @@ test("surgical live review keeps readable receipts and the saved record binding"
     .getByRole("button", { name: "Live encounter", exact: true })
     .click();
   const details = page.getByRole("dialog", {
-    name: "Live Medplum encounter",
+    name: "Live commit service encounter",
     exact: true,
   });
   await expect(details).toBeVisible();
   if (stage === "after")
     await expect(details).not.toContainText(
-      /Encounter\/|\/medplum\/fhir\/|[0-9a-f]{8}-[0-9a-f]{4}-/i,
+      /Encounter\/|\/external-fhir\/fhir\/|[0-9a-f]{8}-[0-9a-f]{4}-/i,
     );
   await capture("live-encounter-details");
   const record = details.locator("button[data-resource-link]").first();
   const link = await record.getAttribute("data-resource-link");
   await record.click();
   const saved = page.getByRole("dialog", {
-    name: "Saved Medplum resource",
+    name: "Saved commit service resource",
     exact: true,
   });
   const json = saved.getByLabel("Saved resource JSON", { exact: true });
@@ -136,16 +144,19 @@ test("normal surgical clinic keeps technical save controls out of the patient wo
   await expect(
     page.getByRole("banner", { name: "Patient banner", exact: true }),
   ).toContainText("Office Visit");
+  const savedCommand = page.waitForResponse(r => r.url().endsWith("/commit/commands") && r.request().method() === "POST", { timeout: 60000 });
   await page
     .getByRole("button", { name: "Mark allergies reviewed", exact: true })
     .click();
+  const accepted = await savedCommand;
+  expect(accepted.status(), await accepted.text()).toBe(201);
   const notice = page
     .locator(".mantine-Notification-root")
     .filter({ hasText: "Allergies review recorded" })
     .last();
-  await expect(notice).toBeVisible();
+  await expect(notice).toBeVisible({ timeout: 30000 });
   await expect(notice).not.toContainText(
-    /\/medplum\/fhir\/|markReviewed|[0-9a-f]{8}-[0-9a-f]{4}-/i,
+    /\/external-fhir\/fhir\/|markReviewed|[0-9a-f]{8}-[0-9a-f]{4}-/i,
   );
   await page.getByRole("tab", { name: "Results", exact: true }).click();
   await expect(

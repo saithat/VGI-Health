@@ -1,5 +1,5 @@
 /** Build local visual-review inputs from the committed world and actual FHIR
- * seeder. Does not contact Medplum or write clinical records.
+ * seeder. Does not contact the store or write clinical records.
  * Usage: node lean/Ehr/Canonical/review_surgery_data.mjs /tmp/surg-review [day]
  */
 import { readFile, writeFile, mkdir } from 'node:fs/promises';

@@ -240,9 +240,9 @@ def growthReferenceSex (p : Json) : Option String :=
   | ["F"] => some "F"
   | _ => none
 
-/-- Stable identity shared by fixture and Medplum Patient records. This is
+/-- Stable identity shared by fixture and imported Patient records. This is
 also the wristband payload: the Synthea identifier search token when present,
-else the normalized source id. Medplum assigns unrelated server ids. -/
+else the normalized source id. Import sources assign unrelated server ids. -/
 def patientIdOf (p : Json) : String :=
   match (arr p "identifier").find? (fun i =>
       str i "system" == "https://github.com/synthetichealth/synthea" && str i "value" != "") with

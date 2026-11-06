@@ -13,7 +13,11 @@ export function fieldValue(
   const kind = field.kind.split(":")[0];
   if (kind === "flag") return { flag: { b: raw === true || raw === "true" } };
   if (kind === "quantity" || kind === "qty" || kind === "number") {
-    const unit = UnitKindValues.find((u) => u === field.unit);
+    // Lean omits the optional display unit for dimensionless quantities.
+    const unit =
+      field.unit === null
+        ? "none"
+        : UnitKindValues.find((u) => u === field.unit);
     const tenths = Math.round(Number(raw) * 10);
     return unit &&
       String(raw).trim() &&

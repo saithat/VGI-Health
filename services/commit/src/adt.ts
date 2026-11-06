@@ -1,3 +1,4 @@
+import { projectAdt } from './clinical-adt.ts';
 import { randomUUID } from 'node:crypto';
 import { Store, transaction } from './store.ts';
 import { digest, Fault, type Actor, type AdtCommand, type Obj } from './types.ts';
@@ -46,17 +47,35 @@ export class AdtStore {
     await transaction(this.store.db, async c => {
       // Keep initializers serialized. Online writers cannot provision streams.
       await c.query('SELECT pg_advisory_xact_lock(734592102)');
-      for (const bed of a.beds) await c.query(`INSERT INTO commit_streams(tenant,key,kind,snapshot) VALUES($1,$2,'bed',$3)`,
-        [this.store.config.tenant, `bed:${bed.id}`, { ...bed, phase: 'ready', occupant: null }]);
-      for (const key of this.keys()) {
-        const row = (await c.query('SELECT * FROM commit_streams WHERE tenant=$1 AND key=$2 FOR UPDATE', [this.store.config.tenant, key])).rows[0];
-        if (!row) throw new Fault(409, 'patient_not_imported');
-        if (row.kind !== 'patient') continue;
-        if (row.snapshot.adt) throw new Fault(409, 'adt_already_provisioned');
-        const snapshot = { ...row.snapshot, adt: { id: key.slice(8), admitted: false, bed: null } };
-        await c.query('UPDATE commit_streams SET version=version+1,snapshot=$3 WHERE tenant=$1 AND key=$2', [this.store.config.tenant, key, snapshot]);
+      const existing = (await c.query('SELECT key,kind,version,snapshot FROM commit_streams WHERE tenant=$1 AND key=ANY($2) ORDER BY key COLLATE "C" FOR UPDATE', [this.store.config.tenant, this.keys()])).rows;
+      if (existing.length === this.keys().length && existing.filter(r => r.kind === 'patient').every(r => r.snapshot.adt)) return;
+      if (existing.some(r => r.kind === 'bed' || r.snapshot.adt)) throw new Fault(409, 'adt_partial_provisioning');
+      if (existing.length !== a.patients.length) throw new Fault(409, 'patient_not_imported');
+      const placements = new Map<number, string>();
+      const initial = new Map<string, Obj>();
+      for (const row of existing) {
+        const id = row.key.slice(8);
+        const encounter = row.snapshot.bundle.entry.map((e: Obj) => e.resource).find((r: Obj) =>
+          r.resourceType === 'Encounter' && r.class?.code === 'IMP' && r.status === 'in-progress' && r.subject?.reference === `Patient/${id}`);
+        const bed = a.beds.find(b => b.resource && encounter?.location?.some((l: Obj) => l.location?.reference === `Location/${b.resource}` && l.status === 'active'));
+        if (bed && placements.has(bed.id)) throw new Fault(422, 'conflicting_initial_placement');
+        if (bed) placements.set(bed.id, id);
+        initial.set(id, { id, admitted: Boolean(encounter), bed: bed?.id ?? null });
+      }
+      const initialBeds = a.beds.map(b => ({ id: b.id, unit: b.unit, phase: placements.has(b.id) ? 'occupied' : 'ready', occupant: placements.get(b.id) ?? null }));
+      const state = { patients: [...initial.values()], beds: initialBeds };
+      const probe = initialBeds.find(b => b.phase === 'ready');
+      const admitted = state.patients.find(p => p.admitted);
+      const command = admitted ? { discharge: { patient: admitted.id } } : { admit: { patient: state.patients[0].id, bed: probe!.id } };
+      const checked = await this.store.lean.call('adt-commit', { state, versions: [], expected: [], role: 'bedManager', command });
+      if (checked.rejected) throw new Fault(422, 'invalid_initial_board');
+      for (const bed of initialBeds) await c.query(`INSERT INTO commit_streams(tenant,key,kind,snapshot) VALUES($1,$2,'bed',$3)`,
+        [this.store.config.tenant, `bed:${bed.id}`, bed]);
+      for (const row of existing) {
+        const snapshot = { ...row.snapshot, adt: initial.get(row.key.slice(8)) };
+        await c.query('UPDATE commit_streams SET version=version+1,snapshot=$3 WHERE tenant=$1 AND key=$2', [this.store.config.tenant, row.key, snapshot]);
         await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
-          [this.store.config.tenant, key, row.version + 1, randomUUID(), { kind: 'adt-initial', state: snapshot.adt }]);
+          [this.store.config.tenant, row.key, row.version + 1, randomUUID(), { kind: 'adt-initial', state: snapshot.adt }]);
       }
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
     });
@@ -104,7 +123,8 @@ export class AdtStore {
       const written: Obj[] = [];
       for (const row of rows) {
         const next = row.kind === 'patient'
-          ? { ...row.snapshot, adt: accepted.state.patients.find((p: Obj) => `patient:${p.id}` === row.key) }
+          ? { ...row.snapshot, adt: accepted.state.patients.find((p: Obj) => `patient:${p.id}` === row.key),
+              bundle: projectAdt(row.snapshot, accepted.state.patients.find((p: Obj) => `patient:${p.id}` === row.key), this.store.config, transactionId, new Date().toISOString()) }
           : accepted.state.beds.find((b: Obj) => `bed:${b.id}` === row.key);
         if (digest(next) === digest(row.snapshot)) continue;
         const result = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',

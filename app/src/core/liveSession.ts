@@ -6,16 +6,16 @@ import type {
   FactsOutput,
   Receipt,
 } from "../../../lean/generated/ehr-types";
-import { fhirDisplayContext, reviewSources } from "../data/fhirContext";
+import { fhirDisplayContext } from "../data/fhirContext";
 import { keepFocusedTask, selectedRowSource } from "../data/patientDirectory";
 import { createSession } from "./session";
 import type { Interp } from "./interp";
 import {
   bundleResources,
+  invalidateDirectory,
+  patientVersion,
   loadReviewReceipts,
   loadPatientBundle,
-  persistCommit,
-  resolveCosigner,
   type Bundle,
   type Encounter,
   type LiveUser,
@@ -23,8 +23,13 @@ import {
   type MedicationRequest,
   type Patient,
   type Task,
-} from "../data/medplum";
-import { valueText } from "../data/commitMapper";
+} from "../data/liveStore";
+import {
+  marRequest,
+  marEvent,
+  openMar,
+  type MarOpened,
+} from "../data/commitService";
 
 export interface LiveContext {
   patient: Patient;
@@ -35,11 +40,6 @@ export interface LiveContext {
   bed?: Location;
   worldContext?: Bundle;
 }
-const elementSchema = z.object({
-  id: z.string(),
-  label: z.string(),
-  fhirTarget: z.string(),
-});
 export function factsContext(
   user: LiveUser,
   now: string,
@@ -186,9 +186,6 @@ export async function createLiveSession(
   mar?: MarConnection,
 ) {
   if (mar) return createMarSession(interp, mar);
-  const elements = z
-    .object({ elements: z.array(elementSchema) })
-    .parse(spec).elements;
   const labels = z
     .object({
       commits: z
@@ -271,13 +268,77 @@ export async function createLiveSession(
     selectionEnabled && directory ? directory : scopedProjection(),
     { id: user.practitioner.id, role: user.role },
   );
+  const initialActivity = session.getSnapshot().state.patientContext?.activity;
   let pending = false;
   let refreshNeeded = false;
+  let remote: MarOpened | undefined;
+  let history: Event[] = [];
+  let unsent: Event[] = [];
+  function appendEvent(events: Event[], event: Event, accepted: boolean) {
+    const previous = events.at(-1);
+    // A field edit submits the final human value. Keep intervening navigation,
+    // acknowledgments, confirmations and macros in their original order.
+    if (
+      accepted &&
+      "enter" in event &&
+      previous &&
+      "enter" in previous &&
+      previous.enter.comp === event.enter.comp
+    )
+      events[events.length - 1] = event;
+    else events.push(event);
+  }
+  let uncertain:
+    { requestId: string; body: unknown; event: string } | undefined;
+  async function synchronize() {
+    if (remote) {
+      while (unsent.length) {
+        const event = unsent[0];
+        if (!event) break;
+        remote = { ...remote, ...(await marEvent(remote, event)) };
+        unsent.shift();
+      }
+      return remote;
+    }
+    if (!context?.patient.id || !context.encounter.id)
+      throw new Error("Select an existing encounter before saving");
+    const opened = await openMar({
+      patient: context.patient.id,
+      release: `${user.persona === "RN2" ? "P3" : user.persona}${sessionStorage.getItem("vgi.baseline") === "1" ? "-baseline" : ""}`,
+      workflow: "chart",
+      encounter: context.encounter.id,
+      expectedVersion: patientVersion(context.patient.id),
+      ...(context.task?.id ? { task: context.task.id } : {}),
+      ...(context.bed?.id ? { bed: context.bed.id } : {}),
+    });
+    if (
+      JSON.stringify([opened.spec, opened.program]) !==
+      JSON.stringify([spec, program])
+    )
+      throw new Error(
+        "The service release differs from this screen. Reopen the EHR with the server's current release.",
+      );
+    let current = opened;
+    for (const event of history)
+      current = { ...current, ...(await marEvent(current, event)) };
+    remote = current;
+    return remote;
+  }
   const projectionFor = scopedProjection;
   return {
     getSnapshot: session.getSnapshot,
     subscribe: session.subscribe,
     getContext: () => context,
+    setBed(bed: Location | undefined) {
+      if (pending || uncertain)
+        throw new Error("Wait for the pending save before selecting a bed");
+      if (!context) throw new Error("Open a patient chart first");
+      const { bed: previous, ...rest } = context;
+      void previous;
+      context = { ...rest, ...(bed ? { bed } : {}) };
+      if (context.patient.id)
+        patientCharts.set(context.patient.id, { context, chart });
+    },
     async dispatch(
       event: Event,
     ): Promise<
@@ -299,6 +360,32 @@ export async function createLiveSession(
       const priorPatient = before.state.patientContext?.patient;
       const selected = staged.state.patientContext?.patient;
       if (selectionEnabled && selected !== priorPatient) {
+        remote = undefined;
+        unsent = [];
+        // Directory interactions contain no clinical evidence. A new patient
+        // starts from a fresh native state and must earn its own guards.
+        const selectedContext = staged.state.patientContext;
+        history = [];
+        if (
+          selectedContext?.activity &&
+          selectedContext.activity !== initialActivity
+        )
+          history.push({
+            click: {
+              comp:
+                selectedContext.activity === "lookup"
+                  ? "workspace.lookup"
+                  : `workspace.activity|${selectedContext.activity}`,
+            },
+          });
+        if (selectedContext?.query)
+          history.push({
+            enter: {
+              comp: "workspace.search",
+              value: { text: { s: selectedContext.query } },
+            },
+          });
+        if (selected) history.push(event);
         session.accept(staged, directory);
         if (!selected) {
           context = undefined;
@@ -312,7 +399,8 @@ export async function createLiveSession(
             (r): r is Patient =>
               r.resourceType === "Patient" && r.id === selected,
           );
-          if (!patient) throw new Error("Medplum returned a different patient");
+          if (!patient)
+            throw new Error("The store returned a different patient");
           const source = selectedRowSource(
             directory?.facts.patientDirectory,
             staged.state.patientContext,
@@ -341,6 +429,22 @@ export async function createLiveSession(
             : (preselectedEncounter ??
               encounters.sort(
                 (a, b) =>
+                  Number(
+                    b.class.code ===
+                      (user.persona === "P2"
+                        ? "EMER"
+                        : ["P3", "RN2"].includes(user.persona)
+                          ? "IMP"
+                          : "AMB"),
+                  ) -
+                    Number(
+                      a.class.code ===
+                        (user.persona === "P2"
+                          ? "EMER"
+                          : ["P3", "RN2"].includes(user.persona)
+                            ? "IMP"
+                            : "AMB"),
+                    ) ||
                   Number(b.period?.start?.slice(0, 10) === workspaceDate) -
                     Number(a.period?.start?.slice(0, 10) === workspaceDate) ||
                   Number(b.status === "in-progress") -
@@ -432,6 +536,12 @@ export async function createLiveSession(
           ),
       );
       if (!commits.length && !newReceipts.length) {
+        if (uncertain)
+          throw new Error(
+            "Reconcile the previous save before entering another action",
+          );
+        appendEvent(history, event, staged.result === "ok");
+        if (remote) appendEvent(unsent, event, staged.result === "ok");
         session.accept(
           staged,
           staged.state.screen !== before.state.screen
@@ -459,32 +569,87 @@ export async function createLiveSession(
           throw new Error("Expected one commit or review receipt per action");
         const commitId = commits[0] ?? "markReviewed";
         const receipt = newReceipts[0];
-        const reviewed = receipt ? reviewSources(chart, receipt.info) : [];
-        // An empty allergy list still has a patient-version target, so its review
-        // is auditable; a subsequent allergy invalidates Lean's data version.
-        if (receipt && !reviewed.length) reviewed.push(context.patient);
-        const cosign = staged.state.captured.find(
-          (c) => c.element === "highAlertCosign" && c.confirmed,
-        );
-        const cosigner = cosign
-          ? await resolveCosigner(valueText(cosign.value))
-          : undefined;
-        const result = await persistCommit({
-          commitId,
-          captured: staged.state.captured,
-          elements,
-          patient: context.patient,
-          encounter: context.encounter,
-          user: user.practitioner,
-          now: new Date().toISOString(),
-          transactionId: crypto.randomUUID(),
-          ...(context.task ? { task: context.task } : {}),
-          ...(context.medication ? { medication: context.medication } : {}),
-          ...(context.renewal ? { renewal: context.renewal } : {}),
-          ...(context.bed ? { bed: context.bed } : {}),
-          ...(cosigner ? { cosigner } : {}),
-          ...(receipt ? { receipt, reviewed } : {}),
-        });
+        const authority = await synchronize();
+        if (uncertain && uncertain.event !== JSON.stringify(event))
+          throw new Error(
+            "Reconcile the previous save before entering another action",
+          );
+        const intent = uncertain ?? {
+          requestId: crypto.randomUUID(),
+          event: JSON.stringify(event),
+          body: {
+            requestId: crypto.randomUUID(),
+            sessionId: authority.sessionId,
+            revision: authority.revision,
+            expectedVersion: authority.version,
+            ...(authority.board ? { expectedBoard: authority.board } : {}),
+            commit: commitId,
+            ...(context.bed?.id ? { bed: context.bed.id } : {}),
+            event,
+          },
+        };
+        // Retain the exact command, including its ID, after an ambiguous response.
+        if (!uncertain)
+          intent.body = {
+            ...z.record(z.string(), z.unknown()).parse(intent.body),
+            requestId: intent.requestId,
+          };
+        uncertain = intent;
+        let accepted: {
+          state: typeof staged.state;
+          version: number;
+          revision: number;
+          board?: { key: string; version: number }[];
+          links?: string[];
+        };
+        try {
+          accepted = JSON.parse(
+            JSON.stringify(await marRequest("/commands", intent.body)),
+          );
+        } catch (error) {
+          try {
+            const outcome = z
+              .object({ status: z.number(), body: z.unknown() })
+              .parse(await marRequest(`/requests/${intent.requestId}`));
+            if (outcome.status !== 201) {
+              uncertain = undefined;
+              throw error;
+            }
+            accepted = JSON.parse(JSON.stringify(outcome.body));
+          } catch {
+            throw error;
+          }
+        }
+        uncertain = undefined;
+        invalidateDirectory();
+        remote = {
+          ...authority,
+          state: accepted.state,
+          version: accepted.version,
+          revision: accepted.revision,
+          ...(authority.board
+            ? {
+                board:
+                  accepted.board ??
+                  authority.board.map((v) =>
+                    v.key === `patient:${context?.patient.id}`
+                      ? { ...v, version: accepted.version }
+                      : v,
+                  ),
+              }
+            : {}),
+        };
+        const result: {
+          links: string[];
+          bundle: Bundle;
+          refreshError?: string;
+        } = { links: accepted.links ?? [], bundle: chart };
+        try {
+          result.bundle = await loadPatientBundle(context.patient.id ?? "");
+        } catch (error) {
+          result.refreshError = `Saved. Refresh failed: ${String(error)}`;
+        }
+        staged.state = accepted.state;
         if (result.refreshError) {
           refreshNeeded = true;
           session.accept(staged);

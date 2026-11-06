@@ -16,7 +16,7 @@ def output (b : Json) : FactsOutput :=
 def parsed := output clinical
 #guard parsed.facts.patientId == "https://github.com/synthetichealth/synthea|patient-1"
 #guard scanMatches parsed.facts "wristband" parsed.facts.patientId
-#guard !scanMatches parsed.facts "wristband" "medplum-server-id"
+#guard !scanMatches parsed.facts "wristband" "import-source-id"
 #guard parsed.display.allergies.length == 2
 #guard parsed.display.allergies.all (·.id != "")
 #guard parsed.facts.allergyClasses.contains "penicillin"
@@ -32,7 +32,7 @@ def parsed := output clinical
 #guard (parseBundle context .null).isOk == false
 #guard (bundleResources clinical).all (fun r => str r "id" != "")
 #guard listVersion (bundleResources clinical) == listVersion (bundleResources clinical).reverse
--- Same Synthea identity after Medplum assigns a different resource id.
+-- Same Synthea identity after Import sources assign a different resource id.
 #guard patientIdOf ((entryResource (first clinical "entry")).setObjVal! "id" (.str "server-id")) == parsed.facts.patientId
 
 def json (s : String) : Json := (Json.parse s).toOption.getD .null

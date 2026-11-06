@@ -2,19 +2,19 @@
   "banner": [
     [
       "Patient",
-      "Kling, Tashia Corazon"
+      "Schneider, Isidro Monte"
     ],
     [
       "DOB",
-      "Feb 25, 2017"
+      "Nov 1, 2023"
     ],
     [
       "MRN",
-      "23407288"
+      "57667085"
     ],
     [
       "Age / sex",
-      "9 / F"
+      "3 / M"
     ],
     [
       "Language",
@@ -22,7 +22,7 @@
     ],
     [
       "PCP",
-      "Fictional Clinician 5e2e1f6add"
+      "Fictional Clinician efe4b97f0c"
     ],
     [
       "Coverage",
@@ -50,7 +50,7 @@
     ],
     [
       "Allergies",
-      "No Known Allergies"
+      "Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Cow's milk — Wheal (finding), Anaphylaxis (disorder) (moderate); Soy — Rash (moderate); Fish — Dyspnea (finding), Eruption of skin (disorder), Rhinoconjunctivitis (disorder) (moderate)"
     ],
     [
       "Code status",
@@ -58,7 +58,7 @@
     ],
     [
       "Weight",
-      "35.0 kg · Nov 2, 2026 08:00"
+      "15.7 kg · Nov 2, 2026 08:20"
     ],
     [
       "Isolation",
@@ -156,25 +156,25 @@
                 [
                   [
                     "Record",
-                    "Name · Kling, Tashia Corazon"
+                    "Name · Schneider, Isidro Monte"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Age / sex · 9 / F"
+                    "Age / sex · 3 / M"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "MRN · 23407288"
+                    "MRN · 57667085"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "DOB · Feb 25, 2017"
+                    "DOB · Nov 1, 2023"
                   ]
                 ]
               ]
@@ -212,7 +212,49 @@
                 [
                   [
                     "Record",
-                    "No Known Allergies"
+                    "Mold — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dust mites — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Animal dander — Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Grass pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Tree pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Cow's milk — Wheal (finding), Anaphylaxis (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Soy — Rash (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Fish — Dyspnea (finding), Eruption of skin (disorder), Rhinoconjunctivitis (disorder) (moderate)"
                   ]
                 ]
               ]
@@ -228,7 +270,7 @@
                 [
                   [
                     "Record",
-                    "PCP · Fictional Clinician 5e2e1f6add"
+                    "PCP · Fictional Clinician efe4b97f0c"
                   ]
                 ],
                 [
@@ -240,7 +282,7 @@
                 [
                   [
                     "Record",
-                    "primary performer · Fictional Clinician adf6d53fd7"
+                    "primary performer · Fictional Clinician 11c7b81925"
                   ]
                 ]
               ]
@@ -268,13 +310,13 @@
                 [
                   [
                     "Record",
-                    "Location · Fictional Health Services 00483c1853"
+                    "Location · Fictional Health Services 4ec2abbf1b"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Admitted / start · Jul 2, 2026 02:04"
+                    "Admitted / start · Oct 14, 2026 22:23"
                   ]
                 ],
                 [
@@ -302,7 +344,7 @@
                 [
                   [
                     "Record",
-                    "Measured weight · 35.0 kg · 2026-11-02T08:00:00-08:00"
+                    "Measured weight · 15.7 kg · 2026-11-02T08:20:00-08:00"
                   ]
                 ]
               ]
@@ -318,67 +360,67 @@
                 [
                   [
                     "Record",
-                    "Body weight 35 kg (today)"
+                    "Body weight 15.7 kg (today)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body Height 130.2 cm (Feb 28, 2026 00:28)"
+                    "Body Height 95.3 cm (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 4 {score} (Feb 28, 2026 00:28)"
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body mass index (BMI) [Ratio] 19.75 kg/m2 (Feb 28, 2026 00:28)"
+                    "Weight-for-length Per age and sex 85.217 % (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body mass index (BMI) [Percentile] Per age and sex 88.593 % (Feb 28, 2026 00:28)"
+                    "Head Occipital-frontal circumference Percentile 59.13 % (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Blood pressure panel with all children optional 105/87 mm[Hg] (Feb 28, 2026 00:28)"
+                    "Head Occipital-frontal circumference 50.02 cm (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Heart rate 80 /min (Feb 28, 2026 00:28)"
+                    "Body mass index (BMI) [Ratio] 17.15 kg/m2 (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Respiratory rate 15 /min (Feb 28, 2026 00:28)"
+                    "Body mass index (BMI) [Percentile] Per age and sex 80.927 % (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Weight-for-length Per age and sex 95.292 % (Jan 30, 2021 00:28)"
+                    "Blood pressure panel with all children optional 116/75 mm[Hg] (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Head Occipital-frontal circumference Percentile 34.98 % (Jan 30, 2021 00:28)"
+                    "Heart rate 74 /min (Oct 7, 2026 22:23)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Head Occipital-frontal circumference 48.03 cm (Jan 30, 2021 00:28)"
+                    "Respiratory rate 12 /min (Oct 7, 2026 22:23)"
                   ]
                 ]
               ]
@@ -394,7 +436,7 @@
                 [
                   [
                     "Record",
-                    "Active/on-hold orders · 0"
+                    "Active/on-hold orders · 2"
                   ]
                 ]
               ]
@@ -419,7 +461,7 @@
                 [
                   [
                     "Record",
-                    "Jul 2, 2026 02:04 · History and physical note · Fictional Clinician adf6d53fd7 · Unknown · \n2026-07-02\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nTashia is a 9 year-old nonhispanic asian female. Patient has a history of fracture of ankle (disorder), partial thickness burn (disorder), medication review due (situation), fracture of bone (disorder), o… (excerpt; full note in Chart History) · current"
+                    "Oct 14, 2026 22:23 · History and physical note · Fictional Clinician 11c7b81925 · Unknown · \n2026-10-14\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nIsidro is a 2 year-old hispanic white male. Patient has a history of medication review due (situation).\n\n# Social History\n Patient has never smoked.\n\n\nPatient comes from a low socioeconomic background.\n\nP… (excerpt; full note in Chart History) · current"
                   ]
                 ]
               ]
@@ -512,7 +554,7 @@
               "provenance": "record:weightToday",
               "required": true,
               "unit": "kg",
-              "value": "35.0"
+              "value": "15.7"
             }
           },
           {
@@ -608,15 +650,15 @@
                 [
                   [
                     "Substance",
-                    "No Known Allergies"
+                    "Mold"
                   ],
                   [
                     "Reaction",
-                    ""
+                    "Sneezing and itchy eyes"
                   ],
                   [
                     "Severity",
-                    ""
+                    "mild"
                   ],
                   [
                     "Status",
@@ -628,7 +670,189 @@
                   ],
                   [
                     "Recorded",
-                    "Nov 2, 2026"
+                    "Sep 6, 2024 20:23"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Dust mites"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Sep 6, 2024 20:23"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Animal dander"
+                  ],
+                  [
+                    "Reaction",
+                    "Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Sep 6, 2024 20:23"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Grass pollen"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Sep 6, 2024 20:23"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Tree pollen"
+                  ],
+                  [
+                    "Reaction",
+                    "Sneezing and itchy eyes"
+                  ],
+                  [
+                    "Severity",
+                    "mild"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Sep 6, 2024 20:23"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Cow's milk"
+                  ],
+                  [
+                    "Reaction",
+                    "Wheal (finding), Anaphylaxis (disorder)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Sep 6, 2024 20:23"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Soy"
+                  ],
+                  [
+                    "Reaction",
+                    "Rash"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Sep 6, 2024 20:23"
+                  ]
+                ],
+                [
+                  [
+                    "Substance",
+                    "Fish"
+                  ],
+                  [
+                    "Reaction",
+                    "Dyspnea (finding), Eruption of skin (disorder), Rhinoconjunctivitis (disorder)"
+                  ],
+                  [
+                    "Severity",
+                    "moderate"
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Verification",
+                    "confirmed"
+                  ],
+                  [
+                    "Recorded",
+                    "Sep 6, 2024 20:23"
                   ]
                 ]
               ]
@@ -658,7 +882,52 @@
               "display": "table",
               "infoId": "currentMeds",
               "label": "Medications",
-              "rows": []
+              "rows": [
+                [
+                  [
+                    "Medication",
+                    "Fexofenadine hydrochloride 30 MG Oral Tablet"
+                  ],
+                  [
+                    "Instructions",
+                    "Take as needed."
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Sep 6, 2024 20:51"
+                  ],
+                  [
+                    "Prescriber",
+                    "Fictional Clinician 11c7b81925"
+                  ]
+                ],
+                [
+                  [
+                    "Medication",
+                    "NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector"
+                  ],
+                  [
+                    "Instructions",
+                    "Take as needed."
+                  ],
+                  [
+                    "Status",
+                    "active"
+                  ],
+                  [
+                    "Authored",
+                    "Sep 6, 2024 20:51"
+                  ],
+                  [
+                    "Prescriber",
+                    "Fictional Clinician 11c7b81925"
+                  ]
+                ]
+              ]
             }
           },
           {
@@ -670,7 +939,7 @@
                     "comp": "w5Rooming.decision0",
                     "humanOnly": false,
                     "kind": "code",
-                    "label": "Medication 1: continue / stop / modify",
+                    "label": "Medication 1: continue / stop / modify — Fexofenadine hydrochloride 30 MG Oral Tablet",
                     "pendingConfirm": false,
                     "provenance": null,
                     "required": true,
@@ -704,7 +973,7 @@
                     "comp": "w5Rooming.decision1",
                     "humanOnly": false,
                     "kind": "code",
-                    "label": "Medication 2: continue / stop / modify",
+                    "label": "Medication 2: continue / stop / modify — NDA020800 0.3 ML Epinephrine 1 MG/ML Auto-Injector",
                     "pendingConfirm": false,
                     "provenance": null,
                     "required": true,
@@ -765,251 +1034,11 @@
                   ],
                   [
                     "Start",
-                    "Jul 2, 2026 02:04"
+                    "Oct 14, 2026 22:23"
                   ],
                   [
                     "End",
-                    "Jul 2, 2026 02:19"
-                  ],
-                  [
-                    "Reason",
-                    "Fracture of ankle (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician adf6d53fd7"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Health Services 00483c1853"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Emergency Visit – Emergency Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Emergency"
-                  ],
-                  [
-                    "Start",
-                    "Apr 21, 2026 01:28"
-                  ],
-                  [
-                    "End",
-                    "Apr 21, 2026 02:28"
-                  ],
-                  [
-                    "Reason",
-                    "Fracture of bone (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician c53450af66"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Care Site e758a56380"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Well Child Visit – Pediatrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 28, 2026 00:28"
-                  ],
-                  [
-                    "End",
-                    "Feb 28, 2026 00:43"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician ebea885878"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Care Site 3787ee4e5e"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Pediatrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 1, 2026 00:28"
-                  ],
-                  [
-                    "End",
-                    "Feb 1, 2026 00:43"
-                  ],
-                  [
-                    "Reason",
-                    "Otitis media (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician adf6d53fd7"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Health Services 00483c1853"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Pediatrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "May 6, 2025 01:28"
-                  ],
-                  [
-                    "End",
-                    "May 6, 2025 01:43"
-                  ],
-                  [
-                    "Reason",
-                    "Partial thickness burn (disorder)"
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician adf6d53fd7"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Health Services 00483c1853"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Emergency Visit – Emergency Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Emergency"
-                  ],
-                  [
-                    "Start",
-                    "Mar 25, 2025 01:28"
-                  ],
-                  [
-                    "End",
-                    "Mar 25, 2025 02:28"
-                  ],
-                  [
-                    "Reason",
-                    "Burn injury (morphologic abnormality)"
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician c53450af66"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Care Site e758a56380"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Inpatient Stay – Hospital Medicine"
-                  ],
-                  [
-                    "Class",
-                    "Inpatient"
-                  ],
-                  [
-                    "Start",
-                    "Mar 25, 2025 01:28"
-                  ],
-                  [
-                    "End",
-                    "Apr 4, 2025 01:43"
-                  ],
-                  [
-                    "Reason",
-                    "Patient transfer to skilled nursing facility (procedure)"
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician 0e7e99c758"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Care Site 5e9f3ee754"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Well Child Visit – Pediatrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 22, 2025 00:28"
-                  ],
-                  [
-                    "End",
-                    "Feb 22, 2025 00:43"
-                  ],
-                  [
-                    "Reason",
-                    ""
-                  ],
-                  [
-                    "Provider",
-                    "Fictional Clinician ebea885878"
-                  ],
-                  [
-                    "Location",
-                    "Fictional Care Site 3787ee4e5e"
-                  ]
-                ],
-                [
-                  [
-                    "Encounter",
-                    "Office Visit – Pediatrics"
-                  ],
-                  [
-                    "Class",
-                    "Ambulatory"
-                  ],
-                  [
-                    "Start",
-                    "Feb 24, 2024 00:28"
-                  ],
-                  [
-                    "End",
-                    "Feb 24, 2024 01:01"
+                    "Oct 14, 2026 22:51"
                   ],
                   [
                     "Reason",
@@ -1017,11 +1046,11 @@
                   ],
                   [
                     "Provider",
-                    "Fictional Clinician adf6d53fd7"
+                    "Fictional Clinician 11c7b81925"
                   ],
                   [
                     "Location",
-                    "Fictional Health Services 00483c1853"
+                    "Fictional Health Services 4ec2abbf1b"
                   ]
                 ],
                 [
@@ -1035,11 +1064,11 @@
                   ],
                   [
                     "Start",
-                    "Feb 17, 2024 00:28"
+                    "Oct 7, 2026 22:23"
                   ],
                   [
                     "End",
-                    "Feb 17, 2024 00:43"
+                    "Oct 7, 2026 22:38"
                   ],
                   [
                     "Reason",
@@ -1047,11 +1076,11 @@
                   ],
                   [
                     "Provider",
-                    "Fictional Clinician ebea885878"
+                    "Fictional Clinician a94118808f"
                   ],
                   [
                     "Location",
-                    "Fictional Care Site 3787ee4e5e"
+                    "Fictional Health Services b92acc3a5a"
                   ]
                 ],
                 [
@@ -1065,11 +1094,11 @@
                   ],
                   [
                     "Start",
-                    "Feb 11, 2023 00:28"
+                    "Apr 8, 2026 22:23"
                   ],
                   [
                     "End",
-                    "Feb 11, 2023 00:43"
+                    "Apr 8, 2026 22:38"
                   ],
                   [
                     "Reason",
@@ -1077,11 +1106,11 @@
                   ],
                   [
                     "Provider",
-                    "Fictional Clinician ebea885878"
+                    "Fictional Clinician a94118808f"
                   ],
                   [
                     "Location",
-                    "Fictional Care Site 3787ee4e5e"
+                    "Fictional Health Services b92acc3a5a"
                   ]
                 ],
                 [
@@ -1095,11 +1124,11 @@
                   ],
                   [
                     "Start",
-                    "Feb 5, 2022 00:28"
+                    "Oct 8, 2025 22:23"
                   ],
                   [
                     "End",
-                    "Feb 5, 2022 00:43"
+                    "Oct 8, 2025 22:38"
                   ],
                   [
                     "Reason",
@@ -1107,29 +1136,29 @@
                   ],
                   [
                     "Provider",
-                    "Fictional Clinician ebea885878"
+                    "Fictional Clinician a94118808f"
                   ],
                   [
                     "Location",
-                    "Fictional Care Site 3787ee4e5e"
+                    "Fictional Health Services b92acc3a5a"
                   ]
                 ],
                 [
                   [
                     "Encounter",
-                    "Inpatient Stay – Hospital Medicine"
+                    "Well Child Visit – Pediatrics"
                   ],
                   [
                     "Class",
-                    "Inpatient"
+                    "Ambulatory"
                   ],
                   [
                     "Start",
-                    "Jan 22, 2022 01:09"
+                    "Apr 9, 2025 22:23"
                   ],
                   [
                     "End",
-                    "Jan 23, 2022 01:09"
+                    "Apr 9, 2025 22:38"
                   ],
                   [
                     "Reason",
@@ -1137,11 +1166,281 @@
                   ],
                   [
                     "Provider",
-                    "Fictional Clinician adf6d53fd7"
+                    "Fictional Clinician a94118808f"
                   ],
                   [
                     "Location",
-                    "Fictional Health Services 00483c1853"
+                    "Fictional Health Services b92acc3a5a"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jan 8, 2025 21:23"
+                  ],
+                  [
+                    "End",
+                    "Jan 8, 2025 21:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician a94118808f"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services b92acc3a5a"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Oct 9, 2024 22:23"
+                  ],
+                  [
+                    "End",
+                    "Oct 9, 2024 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician a94118808f"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services b92acc3a5a"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Sep 6, 2024 20:23"
+                  ],
+                  [
+                    "End",
+                    "Sep 6, 2024 20:51"
+                  ],
+                  [
+                    "Reason",
+                    "Allergic disposition (finding)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 11c7b81925"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 4ec2abbf1b"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Office Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Aug 22, 2024 01:23"
+                  ],
+                  [
+                    "End",
+                    "Aug 22, 2024 01:38"
+                  ],
+                  [
+                    "Reason",
+                    "Cow's milk (substance)"
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician 11c7b81925"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services 4ec2abbf1b"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Jul 10, 2024 22:23"
+                  ],
+                  [
+                    "End",
+                    "Jul 10, 2024 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician a94118808f"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services b92acc3a5a"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Apr 10, 2024 22:23"
+                  ],
+                  [
+                    "End",
+                    "Apr 10, 2024 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician a94118808f"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services b92acc3a5a"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Feb 7, 2024 21:23"
+                  ],
+                  [
+                    "End",
+                    "Feb 7, 2024 21:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician a94118808f"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services b92acc3a5a"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Dec 6, 2023 21:23"
+                  ],
+                  [
+                    "End",
+                    "Dec 6, 2023 21:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician a94118808f"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services b92acc3a5a"
+                  ]
+                ],
+                [
+                  [
+                    "Encounter",
+                    "Well Child Visit – Pediatrics"
+                  ],
+                  [
+                    "Class",
+                    "Ambulatory"
+                  ],
+                  [
+                    "Start",
+                    "Nov 1, 2023 22:23"
+                  ],
+                  [
+                    "End",
+                    "Nov 1, 2023 22:38"
+                  ],
+                  [
+                    "Reason",
+                    ""
+                  ],
+                  [
+                    "Provider",
+                    "Fictional Clinician a94118808f"
+                  ],
+                  [
+                    "Location",
+                    "Fictional Health Services b92acc3a5a"
                   ]
                 ]
               ]
@@ -1292,7 +1591,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Jul 2, 2026 02:04"
+                                      "Oct 14, 2026 22:23"
                                     ],
                                     [
                                       "Type",
@@ -1300,7 +1599,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician adf6d53fd7"
+                                      "Fictional Clinician 11c7b81925"
                                     ],
                                     [
                                       "Title",
@@ -1308,7 +1607,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2026-07-02\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nTashia is a 9 year-old nonhispanic asian female. Patient has a history of fracture of ankle (disorder), partial thickness burn (disorder), medication review due (situation), fracture of bone (disorder), o… (excerpt; full note in Chart History)"
+                                      "\n2026-10-14\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nIsidro is a 2 year-old hispanic white male. Patient has a history of medication review due (situation).\n\n# Social History\n Patient has never smoked.\n\n\nPatient comes from a low socioeconomic background.\n\nP… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",

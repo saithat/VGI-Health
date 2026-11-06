@@ -398,7 +398,7 @@ structure Task where
   day : Nat
   persona : String                 -- "P1" … "P5"
   workflow : Workflow
-  patientId : String               -- Synthea/Medplum Patient id
+  patientId : String               -- Imported FHIR Patient id
   startMin : Nat                   -- minutes since shift start
   choices : TaskChoices
   todayResources : List Lean.Json := []   -- synthetic FHIR for today (e.g. triage weight in lb)
@@ -558,7 +558,7 @@ The core tests and generated samples provide the exact requirement encoding.
 
 ## 10. Semantic UI tree + minimal design rules (owner decision, Oct 31; supersedes the raw Html page tree for EHR screens)
 
-Lean emits a **semantic UI tree**. React (Mantine/@medplum/react) draws it with one component per node kind. The vocabulary is small and expressive. Lean decides WHAT is on screen and its structure; React decides how it looks.
+Lean emits a **semantic UI tree**. React (Mantine/React) draws it with one component per node kind. The vocabulary is small and expressive. Lean decides WHAT is on screen and its structure; React decides how it looks.
 
 ```lean
 inductive UiNode

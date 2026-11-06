@@ -1,7 +1,6 @@
-import { loginMar } from "./data/commitService";
+import { loginMar, marRequest } from "./data/commitService";
 import { MarApp } from "./MarApp";
 import { clinicalDate, formatClinicalDate } from "./data/clinicalDate";
-import { CURRENT_RELEASE } from "./core/currentRelease";
 import { clinicianRoleNames } from "./ehr/ui/personas";
 import type { PresentationBundle } from "./ehr/ui/presentation-types";
 import { useEffect, useState, useSyncExternalStore } from "react";
@@ -22,12 +21,7 @@ import { UiScreenView } from "./ehr/ui/Screen";
 import { loadWasmInterp } from "./core/wasmInterp";
 import { createLiveSession, type LiveContext } from "./core/liveSession";
 import { medicationDue } from "./data/worklist";
-import {
-  loadCatalog,
-  readArtifact,
-  verifyRecordedBuild,
-  programSpecPath,
-} from "./browser/data";
+
 import {
   availableBeds,
   bundleResources,
@@ -50,7 +44,7 @@ import {
   type Resource,
   type Task,
   type Worklist,
-} from "./data/medplum";
+} from "./data/liveStore";
 
 const errorText = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
@@ -105,9 +99,7 @@ const personaLabels: Record<string, string> = {
   RN2: "RN2 · Second nurse",
 };
 
-/** Program shown in live mode: the persona's latest certified personalized
-version from a recorded run, the persona's canonical projection if none
-exists yet, or the original canonical baseline. */
+/** The online authority pins the certified release rendered by live clients. */
 async function liveProgram(
   persona: string,
   baseline: boolean,
@@ -116,33 +108,13 @@ async function liveProgram(
   program: unknown;
   presentations?: PresentationBundle | null;
 }> {
-  if (baseline)
-    return {
-      spec: await readArtifact(`/releases/${CURRENT_RELEASE}/spec.json`),
-      program: await readArtifact(
-        `/releases/${CURRENT_RELEASE}/personas/${persona}.json`,
+  return JSON.parse(
+    JSON.stringify(
+      await marRequest(
+        `/release?persona=${encodeURIComponent(persona)}&baseline=${baseline ? "1" : "0"}`,
       ),
-    };
-  const catalog = await loadCatalog();
-  const deployed = catalog.programs.find(
-    (p) =>
-      p.persona === persona && p.deployed && p.run !== null && p.run !== "mock",
-  );
-  if (deployed) {
-    const program = await readArtifact(`/${deployed.path}`);
-    const presentations = await verifyRecordedBuild(deployed.path, program);
-    return {
-      presentations,
-      spec: await readArtifact(programSpecPath(deployed)),
-      program,
-    };
-  }
-  return {
-    spec: await readArtifact(`/releases/${CURRENT_RELEASE}/spec.json`),
-    program: await readArtifact(
-      `/releases/${CURRENT_RELEASE}/personas/${persona}.json`,
     ),
-  };
+  );
 }
 
 function Login({
@@ -157,6 +129,7 @@ function Login({
     setPending(true);
     setError("");
     try {
+      sessionStorage.setItem("vgi.baseline", baseline ? "1" : "0");
       if (persona === "P3" || persona === "RN2") {
         await loginMar(persona.toLowerCase());
         return;
@@ -171,7 +144,7 @@ function Login({
   return (
     <main className="signin-page">
       <div className="signin-brand">
-        VGI HEALTH <span>LIVE · Local Medplum</span>
+        VGI HEALTH <span>LIVE · Local commit service</span>
       </div>
       <Paper p="xl" withBorder w="min(520px, 95vw)">
         <Title order={1} size="h2">
@@ -179,7 +152,7 @@ function Login({
         </Title>
         <Text mb="lg">
           Each opens that clinician's current certified EHR. Changes save to the
-          local Medplum server.
+          local commit service server.
         </Text>
         {error && (
           <Alert role="alert" color="red" mb="md">
@@ -194,7 +167,7 @@ function Login({
               variant="light"
               justify="flex-start"
               disabled={pending}
-              title={pending ? "Loading Medplum data" : undefined}
+              title={pending ? "Loading commit service data" : undefined}
               onClick={() => void login(persona, false)}
             >
               {personaLabels[persona]}
@@ -222,7 +195,7 @@ function Login({
             mt="md"
             variant="outline"
             disabled={pending}
-            title={pending ? "Loading Medplum data" : undefined}
+            title={pending ? "Loading commit service data" : undefined}
             onClick={() => void login(baselinePersona, true)}
           >
             Original canonical EHR (baseline)
@@ -257,6 +230,15 @@ function Chart({
   const [resourceOpen, setResourceOpen] = useState(false);
   const [savedResource, setSavedResource] = useState<Resource>();
   const [resourceError, setResourceError] = useState("");
+  const [admissionBeds, setAdmissionBeds] = useState<Location[]>([]);
+  const [admissionBed, setAdmissionBed] = useState("");
+  const emergency = session.getContext()?.encounter.class.code === "EMER";
+  useEffect(() => {
+    if (panel && emergency)
+      void availableBeds()
+        .then(setAdmissionBeds)
+        .catch((error: unknown) => setError(errorText(error)));
+  }, [panel, emergency]);
   function viewResource(link: string) {
     if (!inspecting) return;
     setResourceOpen(true);
@@ -308,7 +290,7 @@ function Chart({
                     setLinks(result.links);
                     notifications.show({
                       title: inspecting
-                        ? "Medplum"
+                        ? "commit service"
                         : result.refreshRequired
                           ? "Chart refresh needed"
                           : "Saved",
@@ -384,7 +366,9 @@ function Chart({
         zIndex={1100}
         opened={panel}
         onClose={() => setPanel(false)}
-        title={inspecting ? "Live Medplum encounter" : "Encounter options"}
+        title={
+          inspecting ? "Live commit service encounter" : "Encounter options"
+        }
         closeButtonProps={{
           "aria-label": inspecting
             ? "Close live encounter"
@@ -396,6 +380,27 @@ function Chart({
             {ui?.banner.find(([label]) => label === "Patient")?.[1] ||
               "Patient chart"}
           </Text>
+          {emergency && "setBed" in session && (
+            <label>
+              Admission bed
+              <select
+                aria-label="Admission bed"
+                value={admissionBed}
+                onChange={(event) => {
+                  const id = event.currentTarget.value;
+                  setAdmissionBed(id);
+                  session.setBed(admissionBeds.find((b) => b.id === id));
+                }}
+              >
+                <option value="">Select a bed for admission</option>
+                {admissionBeds.map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.name ?? b.id}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
           {error && (
             <Alert role="alert" color="red">
               {inspecting ? error : "Unable to save this change."}
@@ -434,7 +439,7 @@ function Chart({
         transitionProps={{ duration: 0 }}
         opened={inspecting && resourceOpen}
         onClose={() => setResourceOpen(false)}
-        title="Saved Medplum resource"
+        title="Saved commit service resource"
         size="xl"
         zIndex={1200}
         closeButtonProps={{ "aria-label": "Close saved resource" }}
@@ -623,7 +628,7 @@ function SelectEncounter({
               starting
                 ? "Creating encounter"
                 : pending
-                  ? "Loading Medplum data"
+                  ? "Loading commit service data"
                   : undefined
             }
             onClick={() => {
@@ -734,7 +739,7 @@ function PatientWorkspaceHome({
         {error}
       </Alert>
     );
-  if (!loaded) return <p>Loading Medplum department workspace…</p>;
+  if (!loaded) return <p>Loading commit service department workspace…</p>;
   return (
     <Chart
       session={loaded.session}
@@ -817,7 +822,8 @@ function Home({
       const patient = resources.find(
         (r): r is Patient => r.resourceType === "Patient",
       );
-      if (!patient) throw new Error("Patient missing from Medplum bundle");
+      if (!patient)
+        throw new Error("Patient missing from commit service bundle");
       const assignedLocations = [
         ...new Set(
           resources.flatMap((r) =>
@@ -936,7 +942,7 @@ function Home({
         </Button>
       </Group>
       {!worklist ? (
-        <p>Loading Medplum worklist…</p>
+        <p>Loading commit service worklist…</p>
       ) : (
         <div className="worklist-scroll">
           <table className="worklist-table">
@@ -1149,7 +1155,7 @@ function Home({
             <Button
               variant="subtle"
               disabled={pending}
-              title={pending ? "Loading Medplum data" : undefined}
+              title={pending ? "Loading commit service data" : undefined}
               onClick={() => void select(p.id ?? "")}
             >
               {nameOf(p)} · {p.birthDate}
@@ -1190,7 +1196,7 @@ function Home({
     </main>
   );
 }
-function MedplumLiveApp() {
+function CommitLiveApp() {
   const [user, setUser] = useState<LiveUser>();
   const [baseline, setBaseline] = useState(
     () => sessionStorage.getItem("vgi.baseline") === "1",
@@ -1243,6 +1249,6 @@ export function LiveApp() {
   return new URLSearchParams(location.search).get("workflow") === "mar" ? (
     <MarApp />
   ) : (
-    <MedplumLiveApp />
+    <CommitLiveApp />
   );
 }

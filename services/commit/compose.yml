@@ -1,4 +1,4 @@
-# Independent project/volume: never mounts or modifies Medplum's database.
+# Isolated integration-test database; no shared clinical storage.
 name: vgi-commit
 services:
   postgres:

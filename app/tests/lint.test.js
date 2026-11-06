@@ -14,10 +14,6 @@ describe("enforced TypeScript and network boundaries", () => {
     'fetch("/fhir");',
     'window.fetch("/fhir");',
     'globalThis["fetch"]("/fhir");',
-    'import { MedplumClient } from "@medplum/core";',
-    'import("@medplum/core");',
-    'export { MedplumClient } from "@medplum/core";',
-    'export * from "@medplum/core";',
     'export const x = {"dangerouslySetInnerHTML": {__html: "x"}};',
   ])("rejects %s", async (code) => {
     const [result] = await eslint.lintText(code, {
@@ -46,8 +42,8 @@ describe("enforced TypeScript and network boundaries", () => {
   });
   it("permits network access only in the data module", async () => {
     const [result] = await eslint.lintText(
-      'import { MedplumClient } from "@medplum/core"; export const client = new MedplumClient();',
-      { filePath: "src/data/medplum.ts" },
+      'export const request = fetch("/commit/me");',
+      { filePath: "src/data/commitService.ts" },
     );
     expect(result?.errorCount).toBe(0);
   });

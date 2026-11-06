@@ -5,8 +5,7 @@ import { EventEmitter } from 'node:events';
 import pg from 'pg';
 import { z } from 'zod';
 import { Store } from './store.ts';
-import { exportFhir } from './fhir.ts';
-import { Fault, adtCommandInput, cosignInput, commandInput, eventInput, sessionInput, version } from './types.ts';
+import { clinicalPersona, Fault, encounterInput, adtCommandInput, cosignInput, commandInput, eventInput, sessionInput, version } from './types.ts';
 
 /** LISTEN is a latency hint. Durable version reads plus periodic catch-up cover
  * disconnects, coalesced notifications and the LISTEN/snapshot startup race. */
@@ -62,9 +61,26 @@ export function server(store: Store, notifications: Notifications) {
   const authenticate = authenticator(store.config);
   const http = createServer(async (req, res) => {
     try {
+      if (req.method === 'GET' && req.url === '/health') {
+        await store.db.query('SELECT 1');
+        await store.lean.call('multi-step', { state: { administrations: [], placements: [] }, action: { assignBed: { actor: 0, patient: 0, bed: 0 } } });
+        return json(res, 200, { status: 'ok' });
+      }
       const actor = await authenticate(req.headers.authorization);
       const url = new URL(req.url!, 'http://localhost');
       const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
+      if (req.method === 'POST' && url.pathname === '/encounters') {
+        const result = await store.openEncounter(actor, encounterInput.parse(await body(req)));
+        return json(res, result.status, result.body);
+      }
+      if (req.method === 'GET' && url.pathname === '/release') {
+        if (url.searchParams.has('persona') && url.searchParams.get('persona') !== clinicalPersona(actor)) throw new Fault(403, 'release_forbidden');
+        const name = clinicalPersona(actor);
+        const release = store.config.releases[url.searchParams.get('baseline') === '1' && store.config.releases[`${name}-baseline`] ? `${name}-baseline` : name];
+        if (!release) throw new Fault(404, 'release_not_found');
+        return json(res, 200, { spec: release.spec, program: release.program });
+      }
+      if (req.method === 'GET' && url.pathname === '/directory') return json(res, 200, await store.directory(actor));
       if (req.method === 'GET' && url.pathname === '/me') return json(res, 200, { user: actor.user, persona: actor.persona, name: actor.name, adtRoles: actor.adtRoles, units: actor.units });
       if (req.method === 'GET' && url.pathname === '/adt/board') return json(res, 200, await adt.read(actor));
       if (req.method === 'POST' && url.pathname === '/adt/commands') {
@@ -109,17 +125,13 @@ export function server(store: Store, notifications: Notifications) {
       if (req.method === 'GET' && parts[0] === 'requests' && parts.length === 2) {
         return json(res, 200, await store.outcome(actor, parts[1]));
       }
-      if (req.method === 'GET' && parts[0] === 'patients' && parts.length === 3 && parts[2] === 'fhir') {
-        const snapshot = await store.read(actor, parts[1]);
-        const events = [...snapshot.events];
-        let after = events.at(-1)?.version ?? 0;
-        while (after < snapshot.version) {
-          const batch = await store.read(actor, parts[1], after);
-          const within = batch.events.filter((e: { version: number }) => e.version <= snapshot.version);
-          if (!within.length) throw new Error('Incomplete export history');
-          events.push(...within); after = events.at(-1)!.version;
-        }
-        return json(res, 200, exportFhir(parts[1], snapshot, events));
+      if (req.method === 'GET' && parts[0] === 'patients' && parts.length === 3 && parts[2] === 'chart') {
+        const current = await store.read(actor, parts[1], 2147483646);
+        return json(res, 200, { version: current.version, snapshot: { bundle: current.snapshot.bundle, context: current.snapshot.context }, adt: current.snapshot.adt });
+      }
+      if (req.method === 'GET' && parts[0] === 'patients' && parts.length === 6 && parts[2] === 'resources') {
+        const resource = await store.resource(actor, parts[1], parts[3], parts[4], parts[5]);
+        return json(res, 200, resource);
       }
       if (req.method === 'POST' && url.pathname === '/sessions') {
         return json(res, 201, await store.openSession(actor, sessionInput.parse(await body(req))));

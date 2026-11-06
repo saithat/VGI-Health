@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-11-06T08:52:23.208Z",
-  "binarySha256": "8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246",
+  "generatedAt": "2026-11-06T15:56:03.916Z",
+  "binarySha256": "bddb3b94499fb8395dd58e7d889ebdf092bcaac7d52996ce48c712fd5bbba556",
   "purpose": "Separate checker audit; never consulted for behavioral expectations or pass/fail",
   "rows": [
     {

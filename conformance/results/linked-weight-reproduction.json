@@ -1,7 +1,7 @@
 {
   "case": "Correcting weight to 20 kg refreshes or invalidates an earlier 70 kg link; mismatched values cannot be signed",
   "observed": "Superseded link refreshed or refused; consistent corrected kg path completed",
-  "binarySha256": "8112ec7a2b54120b649e464b7c2ff3a9ebd0ac679f1e1012b26fc3e3b82d5246",
+  "binarySha256": "bddb3b94499fb8395dd58e7d889ebdf092bcaac7d52996ce48c712fd5bbba556",
   "programPath": "releases/v3/personas/P1.json",
   "specPath": "releases/v3/spec.json",
   "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a",

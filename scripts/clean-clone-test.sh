@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reuses the named vgi-medplum stack. Never resets, stops or removes its data.
+# Offline clean-clone validation; no clinical stack or credentials.
 set -euo pipefail
 repo=$(git -C "$(dirname "$0")/.." rev-parse --show-toplevel)
 commit=$(git -C "$repo" rev-parse HEAD)
@@ -36,17 +36,6 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
-# This test reuses an already running stack and never provisions a shared one.
-if ! curl -fsS --max-time 3 http://localhost:8103/healthcheck >/dev/null 2>&1; then
-  echo 'Clean-clone test needs the shared Medplum stack on port 8103.' >&2
-  exit 1
-fi
-env_file=${CLEAN_CLONE_ENV_FILE:-$repo/.env}
-if [[ ! -f "$env_file" ]]; then
-  echo 'Clean-clone test needs the shared stack credentials: restore .env or set CLEAN_CLONE_ENV_FILE. Persona passwords must be preserved.' >&2
-  exit 1
-fi
-
 # Reject an occupied port before starting anything, so a stale server cannot pass.
 node --input-type=module - "$port" <<'JS'
 import net from 'node:net';
@@ -59,18 +48,15 @@ echo "Cloning local HEAD $commit into $clone"
 git clone --quiet --no-hardlinks --no-checkout "$repo" "$clone"
 git -C "$clone" checkout --quiet --detach "$commit"
 
-# setup resets persona passwords without .env; preserve the shared credentials.
-install -m 600 "$env_file" "$clone/.env"
-echo 'Reusing vgi-medplum and existing .env credentials; no data reset.'
 cd "$clone"
 # HEAD after the hackathon has no tracked data. Restore it before install seeds
-# Medplum and before the app catalogs/replays it; no dependencies are needed yet.
+# the app catalogs/replays it; no dependencies are needed yet.
 node scripts/clean-clone-smoke.mjs --extract-data
 # No build outputs, dependencies or Emscripten installation are copied.
 install_start=$(now_ms)
-timeout --kill-after=10s "${INSTALL_TIMEOUT:-900}" make install >"$test_root/install.log" 2>&1
+timeout --kill-after=10s "${INSTALL_TIMEOUT:-900}" bash -c 'make check && CI=true pnpm install --frozen-lockfile && make wasm-check' >"$test_root/install.log" 2>&1
 install_ms=$(( $(now_ms) - install_start ))
-echo "make install wall time: ${install_ms} ms (fresh build/dependencies; shared Medplum)." | tee "$test_root/timings.log"
+echo "offline build/install wall time: ${install_ms} ms (fresh build/dependencies; offline)." | tee "$test_root/timings.log"
 pnpm --filter app exec playwright install chromium
 echo "Install passed; starting make run without API keys on :$port"
 run_start=$(now_ms)
@@ -89,4 +75,4 @@ done
 run_ms=$(( $(now_ms) - run_start ))
 echo "make run wall time to first HTTP 200: ${run_ms} ms (includes production build)." | tee -a "$test_root/timings.log"
 node scripts/clean-clone-smoke.mjs "http://127.0.0.1:$port"
-echo "Clean-clone test PASSED at $commit: make install, make run, five EHR banners, dashboard, WASM and local-only replay."
+echo "Clean-clone test PASSED at $commit: offline build/install, make run, five EHR banners, dashboard, WASM and local-only replay."

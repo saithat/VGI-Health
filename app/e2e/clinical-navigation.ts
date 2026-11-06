@@ -101,6 +101,15 @@ export async function navigateClinicalScreen(
         `No visible source goto path from ${current} to ${destination}`,
       );
     await page.locator(`button[data-comp-id=${JSON.stringify(next)}]`).click();
+    await expect
+      .poll(
+        () =>
+          page.evaluate(
+            () => window.__buttonAuditSession?.snapshot().state.screen,
+          ),
+        { timeout: 30000 },
+      )
+      .not.toBe(current);
   }
   throw new Error(`Source navigation did not reach ${destination}`);
 }

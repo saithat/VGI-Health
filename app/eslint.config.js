@@ -9,36 +9,21 @@ const boundary = {
     schema: [],
     messages: {
       network:
-        "Medplum access belongs in src/data/medplum.ts; commitService.ts handles W4 authority; dashboard/data.ts and browser/data.ts may fetch constrained local JSON.",
+        "Network access belongs in src/data/commitService.ts; dashboard/data.ts and browser/data.ts may fetch constrained local JSON.",
     },
   },
   create(context) {
-    if (context.filename.replaceAll("\\", "/").endsWith("/src/data/medplum.ts"))
-      return {};
     return {
-      ImportDeclaration(node) {
-        if (node.source.value === "@medplum/core")
-          context.report({ node, messageId: "network" });
-      },
-      ImportExpression(node) {
-        if (
-          node.source.type === "Literal" &&
-          node.source.value === "@medplum/core"
-        )
-          context.report({ node, messageId: "network" });
-      },
-      ExportNamedDeclaration(node) {
-        if (node.source?.value === "@medplum/core")
-          context.report({ node, messageId: "network" });
-      },
-      ExportAllDeclaration(node) {
-        if (node.source.value === "@medplum/core")
-          context.report({ node, messageId: "network" });
-      },
       Identifier(node) {
         if (
           node.name === "fetch" &&
-          !["/src/dashboard/data.ts", "/src/browser/data.ts", "/src/data/commitService.ts"].some(path => context.filename.replaceAll("\\", "/").endsWith(path))
+          ![
+            "/src/dashboard/data.ts",
+            "/src/browser/data.ts",
+            "/src/data/commitService.ts",
+          ].some((path) =>
+            context.filename.replaceAll("\\", "/").endsWith(path),
+          )
         )
           context.report({ node, messageId: "network" });
       },
@@ -47,16 +32,6 @@ const boundary = {
           node.computed &&
           node.property.type === "Literal" &&
           node.property.value === "fetch"
-        )
-          context.report({ node, messageId: "network" });
-      },
-      CallExpression(node) {
-        if (
-          node.callee.type === "Identifier" &&
-          node.callee.name === "require" &&
-          node.arguments.some(
-            (arg) => arg.type === "Literal" && arg.value === "@medplum/core",
-          )
         )
           context.report({ node, messageId: "network" });
       },
@@ -74,7 +49,14 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     files: ["**/*.{ts,tsx,js,mjs}"],
-    plugins: { boundary: { rules: { "single-data-module": boundary, "presentation": presentationBoundary } } },
+    plugins: {
+      boundary: {
+        rules: {
+          "single-data-module": boundary,
+          presentation: presentationBoundary,
+        },
+      },
+    },
     rules: {
       "boundary/single-data-module": "error",
       "boundary/presentation": "error",

@@ -70,7 +70,7 @@ test.afterAll(async () => {
 async function login(page: Page, username: string, workflow = "adt") {
   await page.goto(`/?workflow=${workflow}`);
   await page.getByRole("button", { name: "Sign in with Keycloak" }).click();
-  await expect(page).toHaveURL(/localhost:8180/);
+  await expect(page).toHaveURL(/localhost:18180/);
   await page.getByLabel("Username or email").fill(username);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign In", exact: true }).click();
@@ -105,8 +105,8 @@ test("bed manager admits, transfers, releases/reassigns, discharges and cleans; 
   const errors: string[] = [];
   for (const page of [first, second, rn]) {
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.route("**/medplum/**", (route) => {
-      errors.push("ADT/4 West called Medplum");
+    await page.route("**/fhir/R4**", (route) => {
+      errors.push("Browser called an external FHIR writer");
       return route.abort();
     });
   }
@@ -122,7 +122,11 @@ test("bed manager admits, transfers, releases/reassigns, discharges and cleans; 
     await first
       .getByLabel("Patient", { exact: true })
       .selectOption("mar-patient");
-    await command(first, "admit", "Admit", "401");
+    // The immutable inpatient baseline is already admitted, without a bed.
+    await expect(second.getByTestId("patient-mar-patient")).toContainText(
+      "Admitted · No bed",
+    );
+    await command(first, "assign", "Assign bed", "401");
     await expect(second.getByTestId("bed-401")).toContainText("mar-patient");
     await command(first, "transfer", "Transfer", "402");
     await expect(second.getByTestId("bed-401")).toContainText("dirty");
@@ -141,13 +145,6 @@ test("bed manager admits, transfers, releases/reassigns, discharges and cleans; 
     await command(first, "clean", "Start cleaning", "401");
     await command(first, "ready", "Mark ready", "401");
     await command(first, "assign", "Assign bed", "401");
-    await command(first, "discharge", "Discharge");
-    await expect(second.getByTestId("patient-mar-patient")).toContainText(
-      "Not admitted · No bed",
-    );
-    await command(first, "clean", "Start cleaning", "402");
-    await command(first, "ready", "Mark ready", "402");
-    await expect(second.getByTestId("bed-402")).toContainText("ready");
     await login(rn, "4west-rn1", "mar");
     await expect(
       rn.getByRole("heading", { name: "Scheduled doses" }),
@@ -159,6 +156,20 @@ test("bed manager admits, transfers, releases/reassigns, discharges and cleans; 
     await expect(
       rn.locator('[data-comp-id="home.work.w4Worklist"][data-event]'),
     ).toBeVisible();
+    await command(first, "discharge", "Discharge");
+    await expect(second.getByTestId("patient-mar-patient")).toContainText(
+      "Not admitted · No bed",
+    );
+    await command(first, "clean", "Start cleaning", "402");
+    await command(first, "ready", "Mark ready", "402");
+    await expect(second.getByTestId("bed-402")).toContainText("ready");
+    await rn.reload();
+    await expect(
+      rn.getByRole("heading", { name: "Scheduled doses" }),
+    ).toBeVisible();
+    await expect(
+      rn.getByRole("button", { name: "Open MAR", exact: true }),
+    ).toHaveCount(0);
     expect(errors).toEqual([]);
   } finally {
     await c1.close();

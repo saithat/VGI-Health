@@ -61,7 +61,7 @@ function MarChart({ session, viewer }: { session: Session; viewer: string }) {
   );
 }
 
-/** The W4 service entry point needs no Medplum identity or transaction client. */
+/** W4 uses the same authenticated commit authority as every other live workflow. */
 export function MarApp() {
   const [user, setUser] = useState<MarUser>();
   const [items, setItems] = useState<MarItem[]>([]);

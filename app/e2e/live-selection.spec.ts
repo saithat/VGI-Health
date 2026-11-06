@@ -1,6 +1,9 @@
+import { completeKeycloakLogin } from "./live-backend";
 import { backendAvailable, backendDownReason } from "./live-backend";
 import { expect, test } from "@playwright/test";
-import { mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { z } from "zod";
 import type {} from "../src/core/buttonAudit";
 import { expectedAria, observedAria } from "../src/ehr/ui/fidelity";
 
@@ -27,7 +30,7 @@ for (const [persona, activity, caption] of [
     const writes: string[] = [];
     page.on("request", (request) => {
       if (
-        request.url().includes("/fhir/R4/") &&
+        /\/fhir\/R4\/|\/commit\/commands(?:[/?]|$)/.test(request.url()) &&
         ["POST", "PUT", "PATCH", "DELETE"].includes(request.method())
       )
         writes.push(`${request.method()} ${new URL(request.url()).pathname}`);
@@ -36,6 +39,7 @@ for (const [persona, activity, caption] of [
     await page
       .getByRole("button", { name: new RegExp(`^${persona} ·`) })
       .click();
+    await completeKeycloakLogin(page, persona);
     await expect(
       page.getByLabel("Patient search by name or MRN", { exact: true }),
     ).toBeVisible({ timeout: 30000 });
@@ -75,6 +79,10 @@ for (const [persona, activity, caption] of [
       (await open.getAttribute("aria-label")) ?? (await open.innerText());
     mkdirSync("shots/realism/live-select", { recursive: true });
     const stem = `${persona}-${activity}`;
+    writeFileSync(
+      `shots/realism/live-select/${stem}-landing.ui.json`,
+      JSON.stringify(landing, null, 2) + "\n",
+    );
     await page.screenshot({
       path: `shots/realism/live-select/${stem}-landing.png`,
     });
@@ -97,9 +105,33 @@ for (const [persona, activity, caption] of [
     expect(state?.patientContext?.patient).toBeTruthy();
     expect(state?.patientContext?.bound).toBe(state?.patientContext?.patient);
     expect(label).toContain("MRN");
+    writeFileSync(
+      `shots/realism/live-select/${stem}-chart.ui.json`,
+      JSON.stringify(chart, null, 2) + "\n",
+    );
     await page.screenshot({
       path: `shots/realism/live-select/${stem}-chart.png`,
     });
+    const manifestPath = "shots/final/neutral-manifest.json";
+    if (existsSync(manifestPath)) {
+      const manifest = z.object({
+        source: z.string(),
+        captures: z.array(z.object({
+          path: z.string(), source: z.string(), sha256: z.string(), mode: z.string().optional(),
+        }).passthrough()),
+      }).passthrough().parse(JSON.parse(readFileSync(manifestPath, "utf8")));
+      manifest.source =
+        "current native semantic exports and fresh live-selection UI snapshots; fictional identity seed v1";
+      for (const view of ["landing", "chart"]) {
+        const path = `shots/realism/live-select/${stem}-${view}.png`;
+        const capture = manifest.captures.find((entry) => entry.path === path);
+        if (!capture) throw new Error(`Missing screenshot manifest entry: ${path}`);
+        capture.source = path.replace(/\.png$/, ".ui.json");
+        capture.sha256 = createHash("sha256").update(readFileSync(path)).digest("hex");
+        capture.mode = "live";
+      }
+      writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
+    }
     expect(writes).toEqual([]);
   });
 }

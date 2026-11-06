@@ -13,16 +13,16 @@ const shared = z.discriminatedUnion('kind', [
 ]);
 export const configSchema = z.object({
   tenant: id,
-  oidc: z.object({ issuer: z.url(), audience: z.string().min(1), clientId: z.string().min(1) }).strict().optional(),
+  oidc: z.object({ issuer: z.url(), audience: z.string().min(1), clientId: z.string().min(1), jwksUrl: z.url().optional() }).strict().optional(),
   units: z.record(id, z.object({ name: z.string().min(1), marOnService: z.boolean() }).strict()).optional(),
-  adt: z.object({ patients: z.array(id).min(1).max(64), beds: z.array(z.object({ id: nat, unit: id }).strict()).min(1).max(64) }).strict().optional(),
+  adt: z.object({ patients: z.array(id).min(1).max(64), beds: z.array(z.object({ id: nat, unit: id, resource: id.optional() }).strict()).min(1).max(64) }).strict().optional(),
   actors: z.array(z.object({
-    token: z.string().min(24).optional(), subject: id.optional(), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon', 'chargeNurse', 'bedManager', 'admittingClerk']) }).strict(),
+    token: z.string().min(24).optional(), subject: id.optional(), persona: id.optional(), name: z.string().optional(), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon', 'chargeNurse', 'bedManager', 'admittingClerk']) }).strict(),
     modelId: nat, patients: z.array(id), units: z.array(id).optional(), adtRoles: z.array(adtRole).optional(),
   }).strict()).min(1),
   releases: z.record(id, z.object({
     spec: z.record(z.string(), z.any()), program: z.record(z.string(), z.any()),
-    workflows: z.record(id, z.object({ commit: id, shared: shared.optional(),
+    workflows: z.record(id, z.object({ commit: id, commits: z.array(id).optional(), project: z.boolean().optional(), shared: shared.optional(),
       mar: z.object({ unit: id.optional(), patient: id, medicationRequest: id, encounter: id, scheduledTime: z.iso.datetime({ offset: true }) }).strict().optional(),
     }).strict()),
   }).strict()),
@@ -65,14 +65,16 @@ export const configSchema = z.object({
 });
 export type Config = z.infer<typeof configSchema>;
 export type Actor = Config['actors'][number];
+/** RN2 is an independent authenticated nurse using the P3 clinical layout. */
+export const clinicalPersona = (actor: Actor) => actor.persona === 'RN2' ? 'P3' : actor.persona ?? actor.user.id;
 export type Release = Config['releases'][string];
 export type Workflow = Release['workflows'][string];
-export const sessionInput = z.object({ patient: id, release: id, workflow: id }).strict();
+export const sessionInput = z.object({ patient: id, release: id, workflow: id, expectedVersion: version.optional(), encounter: id.optional(), task: id.optional(), bed: id.optional() }).strict();
 export const cosignInput = sessionInput.extend({ expectedVersion: version }).strict();
 export const eventInput = z.object({ revision: version, event: z.record(z.string(), z.any()) }).strict();
 export const commandInput = z.object({
   requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/), sessionId: z.uuid(),
-  revision: version, expectedVersion: version, expectedSharedVersion: version.optional(),
+  revision: version, expectedVersion: version, expectedSharedVersion: version.optional(), commit: id.optional(), bed: id.optional(), expectedBoard: z.array(z.object({ key: z.string(), version }).strict()).max(128).optional(),
   event: z.record(z.string(), z.any()),
 }).strict();
 export type Command = z.infer<typeof commandInput>;
@@ -121,3 +123,5 @@ export const adtCommandInput = z.object({
     ctx.addIssue({ code: 'custom', message: 'incorrect ADT operands' });
 });
 export type AdtCommand = z.infer<typeof adtCommandInput>;
+
+export const encounterInput = z.object({ patient: id, expectedVersion: version, requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/) }).strict();

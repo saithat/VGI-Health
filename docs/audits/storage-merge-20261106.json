@@ -1,0 +1,376 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-06T18:29:26.637844+00:00",
+  "sourceBaseRevision": "72124073c1c4bc8537965c9d186dbc2929ed0be7",
+  "sourceDirty": true,
+  "scope": "Storage merge on main; owner 2026-11-06 update defers final full validation until all lanes merge",
+  "build": {
+    "appSha256": "8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04",
+    "ehrSha256": "bddb3b94499fb8395dd58e7d889ebdf092bcaac7d52996ce48c712fd5bbba556",
+    "wasmSha256": "f629107f930abe31595053b8ddb935622ae3d363a10f6cdf9c485b1bb8a94b00",
+    "leanSourceHash": "6502d55b0bdb95a9bad3d5f7b066a530c4942823390066a3c644ede732850052"
+  },
+  "environment": {
+    "CI": "true",
+    "TMPDIR": "/home/saithat/Projects/run-tmp",
+    "LEAN_NUM_THREADS": "4",
+    "pnpmStore": "/home/saithat/Projects/run-tmp/nomedplum-pnpm-store",
+    "pnpmCache": "/home/saithat/Projects/run-tmp/nomedplum-pnpm-cache"
+  },
+  "requiredLightweightChecks": [
+    {
+      "name": "final-lean-build",
+      "command": "cd lean && lake build",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T18:26:30.177746+00:00",
+      "finished": "2026-11-06T18:26:30.331721+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/final-lean-build.log",
+      "result": "463-job Lean build current",
+      "logSha256": "3ccf8a49db745766ff32f9838e4f4d8972bfe32a3688de81493b873dcbdbf596"
+    },
+    {
+      "name": "wasm-build",
+      "command": "make wasm && node scripts/wasm-assets.mjs",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:08:46.754966+00:00",
+      "finished": "2026-11-06T13:08:55.948243+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/wasm-build.log",
+      "result": "WASM rebuilt and installed",
+      "logSha256": "6eecec93d8de2e4aa5bee3d5285e00f5698c91516378907818e9c62d064aed29"
+    },
+    {
+      "name": "final-wasm-current",
+      "command": "node scripts/wasm-assets.mjs",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T18:26:30.354086+00:00",
+      "finished": "2026-11-06T18:26:30.485082+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/final-wasm-current.log",
+      "result": "Manifest and packaged WASM current",
+      "logSha256": "1e844ec0f10b784d4f8e7b500d331b36a6b4a64850a58eabefcbf9e207fed93e"
+    },
+    {
+      "name": "axioms",
+      "command": "cd lean && lake env lean \"$MERGE_LOG/axioms.lean\"",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:09:21.114914+00:00",
+      "finished": "2026-11-06T13:09:21.675192+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/axioms.log",
+      "result": "10 theorem axiom closures use only propext, Classical.choice, Quot.sound",
+      "logSha256": "7355bab3f8561ac5dd084689b8a69d3c3ab801f024aa0b1ccf15ee8c2e246cf7"
+    },
+    {
+      "name": "final-app-build",
+      "command": "pnpm --filter app build",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T18:26:30.507668+00:00",
+      "finished": "2026-11-06T18:26:40.254003+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/final-app-build.log",
+      "result": "Production app build passed",
+      "logSha256": "f10ee44615f8fcb680649438bed3a00bca7002ac4b719ee3bf714ace01a4608d"
+    },
+    {
+      "name": "final-static",
+      "command": "pnpm --filter @vgi/commit typecheck && pnpm --filter agent typecheck && pnpm --filter world typecheck && pnpm --filter app lint && pnpm --filter agent lint && pnpm --filter world lint",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T18:26:40.275511+00:00",
+      "finished": "2026-11-06T18:26:53.385171+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/final-static.log",
+      "result": "Service/agent/world typechecks and app/agent/world lint passed",
+      "logSha256": "59a4f13690c9a721bb3d4f2d5ae093cd3fe6fc0f6ff011fe1de272b631a7df78"
+    },
+    {
+      "name": "capture-types-final",
+      "command": "pnpm --filter app exec tsc --noEmit",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:29:45.745000+00:00",
+      "finished": "2026-11-06T13:29:52.594658+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/capture-types-final.log",
+      "result": "App TypeScript check passed",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "service-unit",
+      "command": "pnpm --filter @vgi/commit test",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:08:25.625388+00:00",
+      "finished": "2026-11-06T13:08:27.050911+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/service-unit.log",
+      "result": "7 passed, 0 failed",
+      "logSha256": "b7fb94631a425d55a5cc721732086a1ff4d49358367546b64af14159ad492960"
+    },
+    {
+      "name": "agent-test",
+      "command": "pnpm --filter agent test --maxWorkers=2",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:09:22.269736+00:00",
+      "finished": "2026-11-06T13:11:24.336129+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/agent-test.log",
+      "result": "190 passed, 0 failed",
+      "logSha256": "8f805a2c0c2515501ad4ed67bf9b77b8c670b75c3fd92b150d3d704f813d1634"
+    },
+    {
+      "name": "app-test",
+      "command": "pnpm --filter app exec vitest run --maxWorkers=2 --testTimeout=30000",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:10:14.280597+00:00",
+      "finished": "2026-11-06T13:12:08.818828+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/app-test.log",
+      "result": "327 passed, 0 failed",
+      "logSha256": "bd2353494f58b0434116562f129b894281967466d5bde34648afb8c4987d59eb"
+    },
+    {
+      "name": "world-vitest",
+      "command": "pnpm --filter world exec vitest run --maxWorkers=2",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:08:23.305845+00:00",
+      "finished": "2026-11-06T13:08:32.537087+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/world-vitest.log",
+      "result": "97 passed, 0 failed",
+      "logSha256": "833a7c21a3a6ddf7b761663cc4d9511b9586b7f4f289cc9c0dbdb9fad9059459"
+    },
+    {
+      "name": "final-certification",
+      "command": "python3 lean/Ehr/Check/certify.py",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T18:26:53.405552+00:00",
+      "finished": "2026-11-06T18:27:41.089393+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/final-certification.log",
+      "result": "15 accepted, 23 rejected",
+      "logSha256": "23797100dfa4caa171af6aa83ac8f3dab62e6f695366fe545889d1b9e2c8d715"
+    }
+  ],
+  "completedBeforeOwnerStop": [
+    {
+      "name": "service-integration",
+      "command": "pnpm --filter @vgi/commit test:integration",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:11:09.320371+00:00",
+      "finished": "2026-11-06T13:11:33.546679+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/service-integration.log",
+      "result": "39 real Postgres/native integration tests passed",
+      "logSha256": "a3b88aed31999282645b2f9119d526ffcf885d1380858f047212fb9a90f64cfb"
+    },
+    {
+      "name": "realism-import-final",
+      "command": "node --test infra/scripts/seed-world.test.mjs scripts/synthetic-hospital/convert.test.mjs world/realism/*.test.mjs",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:09:49.567762+00:00",
+      "finished": "2026-11-06T13:09:55.609349+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/realism-import-final.log",
+      "result": "18 import/conversion/realism tests passed",
+      "logSha256": "41e155141688b27cdeff738ebb1e8cb7d892bcaba0d7142ccf0fbf5dc2fe5f75"
+    },
+    {
+      "name": "native-wasm-differential",
+      "command": "EHR_RENDER_NATIVE=\"$EHR_BIN\" node lean/Ehr/Render/test-wasm.mjs \"$MERGE_LOG/wasm-api\"",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:13:14.493397+00:00",
+      "finished": "2026-11-06T13:43:07.061150+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/native-wasm-differential.log",
+      "result": "324 bundles and 897 render variants matched",
+      "logSha256": "de8065d47cadf6c9a5c31a2f48adc72a3cbce7946be2c65599e229c09369cf09"
+    },
+    {
+      "name": "conformance",
+      "command": "node conformance/index.mjs --canonical",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:10:47.666923+00:00",
+      "finished": "2026-11-06T15:45:45.340972+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/conformance.log",
+      "result": "1584 passed, 0 failed, 1431 inapplicable",
+      "logSha256": "b6ed2f347ba14be2fdcfaa0f35c7834cb65960837702c72fed9580f4fd142eb8"
+    },
+    {
+      "name": "conformance-recorded",
+      "command": "node conformance/index.mjs --canonical --run neutral-recorded-day1",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:20:25.282128+00:00",
+      "finished": "2026-11-06T15:55:49.711900+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/conformance-recorded.log",
+      "result": "1630 passed, 0 failed, 1586 inapplicable",
+      "logSha256": "1a7e8472069f050e3900c24f3a3f711cb2513ad806dee81b37943d1205e95faf"
+    },
+    {
+      "name": "conformance-derived",
+      "command": "node conformance/verify.mjs neutral-recorded-day1 && node conformance/refresh-evidence.mjs neutral-recorded-day1",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T15:55:49.733238+00:00",
+      "finished": "2026-11-06T15:57:18.032331+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/conformance-derived.log",
+      "result": "Independent report agreement and derived evidence refreshed",
+      "logSha256": "7eb5943bd9399ae0cadd106cb8ad1148dbf87bbe449e008b3101c7280bb57b6f"
+    },
+    {
+      "name": "conformance-unit-final",
+      "command": "pnpm test:conformance",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T15:49:11.175518+00:00",
+      "finished": "2026-11-06T15:51:33.556067+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/conformance-unit-final.log",
+      "result": "23 passed, 0 skipped",
+      "logSha256": "56de684ac82ccdcc17315f64fec7eed29a9724ab7ebdf81b4346b0fff48166dc"
+    },
+    {
+      "name": "native-fixtures",
+      "command": "node scripts/refresh-clinical-fixtures.mjs",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:09:21.696159+00:00",
+      "finished": "2026-11-06T13:14:36.158051+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/native-fixtures.log",
+      "result": "Native semantic samples/models regenerated",
+      "logSha256": "8002feb32f6ccbc22c5ace56dc274f3a06eaa2be22f2ae1c669faf60a096360b"
+    },
+    {
+      "name": "curated-browser",
+      "command": "DENSE_SHOTS=after EHR_SHOTS=1 pnpm --filter app exec playwright test e2e/live-ehr.spec.ts e2e/dense-shell.spec.ts e2e/ui-shots.spec.ts --project=desktop --workers=1",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:15:37.272402+00:00",
+      "finished": "2026-11-06T13:16:08.247127+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/curated-browser.log",
+      "result": "12 passed; 11 curated PNG/model pairs regenerated",
+      "logSha256": "531ac594b66b354ed15cb396c34d3730788f2d86ac3cc247aef87f258ace99c2"
+    },
+    {
+      "name": "semantic-screenshots",
+      "command": "NEUTRAL_SHOTS=1 pnpm --filter app exec playwright test neutral-shots.spec.ts --project=desktop --grep \"regenerate neutral clinical\" --workers=1",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T13:16:08.269052+00:00",
+      "finished": "2026-11-06T13:16:27.126822+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/semantic-screenshots.log",
+      "result": "86 semantic captures refreshed before owner stop; 18 live-selection PNGs subsequently restored from HEAD",
+      "logSha256": "1b730173d4d72e0b9c940ed2fbc3ce71326f3932c8621136ded91b4786b55531"
+    },
+    {
+      "name": "core-measurement-integrity",
+      "command": "python3 \"$MERGE_LOG/check-core-measurements.py\"",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T17:42:55.494185+00:00",
+      "finished": "2026-11-06T17:42:55.605434+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/core-measurement-integrity.log",
+      "result": "50 completed clinician-days have current matching geometry bindings and zero missing targets",
+      "logSha256": "7b775bb8f16cdf545fbf3465eb6f3391ae3d053cce1230b21e925fb13ca65def"
+    },
+    {
+      "name": "geometry-transfer",
+      "command": "python3 \"$MERGE_LOG/reuse-geometry.py\"",
+      "cwd": "/home/saithat/Projects/VGI-Health",
+      "started": "2026-11-06T16:26:56.113277+00:00",
+      "finished": "2026-11-06T18:04:22.976757+00:00",
+      "exitCode": 0,
+      "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/geometry-transfer.log",
+      "result": "6080 exact-context coordinate files copied with SHA-256 checks",
+      "logSha256": "d88336672791ad60a5ddf57dd8ba8e5d8158f2688ffceee3e2e16b265f9c5c8b"
+    }
+  ],
+  "artifacts": {
+    "certification": {
+      "accepted": 15,
+      "rejected": 23
+    },
+    "nativeUiSamples": 5,
+    "curatedPairs": 11,
+    "screenshotManifestEntries": 86,
+    "staleLiveSelectionPNGs": [
+      "app/shots/realism/live-select/P1-inboxResults-chart.png",
+      "app/shots/realism/live-select/P1-inboxResults-landing.png",
+      "app/shots/realism/live-select/P1-lookup-chart.png",
+      "app/shots/realism/live-select/P1-lookup-landing.png",
+      "app/shots/realism/live-select/P1-scheduleTasks-chart.png",
+      "app/shots/realism/live-select/P1-scheduleTasks-landing.png",
+      "app/shots/realism/live-select/P2-edTrackBoard-chart.png",
+      "app/shots/realism/live-select/P2-edTrackBoard-landing.png",
+      "app/shots/realism/live-select/P3-shiftWorklist-chart.png",
+      "app/shots/realism/live-select/P3-shiftWorklist-landing.png",
+      "app/shots/realism/live-select/P3-unitCensus-chart.png",
+      "app/shots/realism/live-select/P3-unitCensus-landing.png",
+      "app/shots/realism/live-select/P4-scheduleTasks-chart.png",
+      "app/shots/realism/live-select/P4-scheduleTasks-landing.png",
+      "app/shots/realism/live-select/P5-consultList-chart.png",
+      "app/shots/realism/live-select/P5-consultList-landing.png",
+      "app/shots/realism/live-select/P5-orSchedule-chart.png",
+      "app/shots/realism/live-select/P5-orSchedule-landing.png"
+    ],
+    "staleReason": "Retained pre-merge HEAD images; fresh live stack captures deferred by owner"
+  },
+  "recordingsAtStop": [
+    {
+      "run": "core-10day",
+      "status": "passed",
+      "currentBindings": 33,
+      "totalBindings": 33,
+      "furtherChanges": "Deferred; local data left as found at owner stop"
+    },
+    {
+      "run": "core-10day-live",
+      "status": "pending",
+      "currentBindings": 14,
+      "totalBindings": 33,
+      "furtherChanges": "Deferred; local data left as found at owner stop"
+    }
+  ],
+  "stopConfirmation": {
+    "hostPidNamespace": "systemd",
+    "matchingHeavyProcesses": 0,
+    "formerSessions": "No longer addressable; host scan confirmed no migration or queued browser jobs",
+    "queuedScripts": "Cancelled in disk-backed scratch; no full audits or live e2e started"
+  },
+  "deferred": [
+    "Further recording re-certification, remeasurement and replay verification",
+    "World/realism regeneration (current archives already pass)",
+    "Fresh live-selection screenshots (18 HEAD PNGs listed above)",
+    "Live desktop/narrow e2e and MAR/ADT service browser suites",
+    "Remaining targeted recorded dashboard/browse/trajectories/compare/complexity/columns Playwright",
+    "Full template screen/WCAG audit",
+    "Full persona screen/WCAG audit",
+    "Final complete verification on combined main after remaining lane merges"
+  ],
+  "teardown": {
+    "name": "isolated-stack-teardown",
+    "command": "docker compose --env-file .env -f infra/docker-compose.yml -p vgi-main-merge-20261106 --profile app down --volumes",
+    "cwd": "/home/saithat/Projects/VGI-Health",
+    "started": "2026-11-06T18:27:12.262928+00:00",
+    "finished": "2026-11-06T18:27:13.397568+00:00",
+    "exitCode": 0,
+    "log": "/home/saithat/Projects/run-tmp/no-medplum-merge-20261106/isolated-stack-teardown.log",
+    "result": "Only vgi-main-merge-20261106 containers, network and volumes removed; old stack untouched",
+    "logSha256": "3a67eccaa029d38574777db955a7d5c5bab8adfa34bf2b3a0195395382608458"
+  },
+  "sourceFixes": [
+    "Removed second live backend and browser FHIR writer through the staged lane squash merge",
+    "Corrected restored seed-1 exact import expectations:20 appointments,19 refills,9 OR cases; added source-identity agreement",
+    "Live-selection capture saves UI model/PNG pairs, updates manifest hashes and checks typed clinical commands",
+    "README unifies setup and labels current validation/deferrals"
+  ],
+  "preserved": [
+    "No push or other branch/worktree changes",
+    "No protected Lean statements/specifications/properties/comparator changes",
+    "No new axioms or proof shortcuts",
+    "No ignored data added to git and no ignore exceptions",
+    "Local recordings left partially re-certified after owner update",
+    "Prior geometry generations and transfer receipt preserved"
+  ],
+  "openOwnerQuestions": []
+}

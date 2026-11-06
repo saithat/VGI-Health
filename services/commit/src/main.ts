@@ -6,6 +6,7 @@ import { Lean } from './lean.ts';
 import { Notifications, server } from './http.ts';
 
 const config = configSchema.parse(JSON.parse(await readFile(process.env.COMMIT_CONFIG!, 'utf8')));
+if (config.oidc && process.env.KEYCLOAK_JWKS_URL) config.oidc.jwksUrl = process.env.KEYCLOAK_JWKS_URL;
 const url = process.env.DATABASE_URL!;
 if (!url) throw new Error('DATABASE_URL is required');
 const db = pool(url);

@@ -3,52 +3,52 @@
     1440,
     900
   ],
-  "source": "current native semantic exports; fictional identity seed v1",
+  "source": "current native semantic exports; live-selection PNGs retained from pre-merge HEAD pending fresh authority capture",
   "captures": [
     {
       "path": "shots/final/P1-chart.png",
       "source": "shots/final/P1-chart.ui.json",
-      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+      "sha256": "2c4bf36c7568ee956b13a4880037d5e24f2e71f7b7bc0f048937abd3a8201b46"
     },
     {
       "path": "shots/final/P1-landing.png",
       "source": "shots/final/P1-landing.ui.json",
-      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23"
     },
     {
       "path": "shots/final/P1-orders.png",
       "source": "shots/final/P1-orders.ui.json",
-      "sha256": "9f08870683882efddef606ddb560d2ee8d8e93e698cd535d4470116c94f7ffe1"
+      "sha256": "66d5ca38483ef252f9d4b36ca1e99fe7a6efd6ebb2168f28d0e63e5d2ea39192"
     },
     {
       "path": "shots/final/P1-summary.png",
       "source": "shots/final/P1-summary.ui.json",
-      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+      "sha256": "7aeb9d27cb1629cb97e26145871c3fefafcad3cac3d3c09a5bfda27ee331d030"
     },
     {
       "path": "shots/final/P2-chart.png",
       "source": "shots/final/P2-chart.ui.json",
-      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae"
     },
     {
       "path": "shots/final/P2-landing.png",
       "source": "shots/final/P2-landing.ui.json",
-      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757"
     },
     {
       "path": "shots/final/P2-track-board.png",
       "source": "shots/final/P2-track-board.ui.json",
-      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757"
     },
     {
       "path": "shots/final/P3-MAR.png",
       "source": "shots/final/P3-MAR.ui.json",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
     },
     {
       "path": "shots/final/P3-chart.png",
       "source": "shots/final/P3-chart.ui.json",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
     },
     {
       "path": "shots/final/P3-landing.png",
@@ -58,17 +58,17 @@
     {
       "path": "shots/final/P4-chart.png",
       "source": "shots/final/P4-chart.ui.json",
-      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+      "sha256": "39c240057766ece286b05bae747f4ad13ff9f4222eb574cba5f2cb211e67323e"
     },
     {
       "path": "shots/final/P4-growth.png",
       "source": "shots/final/P4-growth.ui.json",
-      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+      "sha256": "f086570f33fe2f2cd87ca58b231cb2172c56b6f0ebcf858bf3a90ba345c197b0"
     },
     {
       "path": "shots/final/P4-landing.png",
       "source": "shots/final/P4-landing.ui.json",
-      "sha256": "9dc19f98b536431d084c1d91f3fc17680edbee9d44cb8bd42d804c4c1d171beb"
+      "sha256": "c166bfd7d44a50200b55c86fd14bde33715baafa08df62e7cd8941f3cce09c10"
     },
     {
       "path": "shots/final/P5-OR.png",
@@ -78,7 +78,7 @@
     {
       "path": "shots/final/P5-chart.png",
       "source": "shots/final/P5-chart.ui.json",
-      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68"
+      "sha256": "29ac5a48004a95793582e7d54e1686309186bad59945e1d19e18c9602473d2ae"
     },
     {
       "path": "shots/final/P5-landing.png",
@@ -93,32 +93,32 @@
     {
       "path": "shots/final/before/P1-orders.png",
       "source": "shots/final/before/P1-orders.ui.json",
-      "sha256": "9f08870683882efddef606ddb560d2ee8d8e93e698cd535d4470116c94f7ffe1"
+      "sha256": "52ab5a4448b4ad8a4aff9d935b4c8c57e3145639fad61365190004bfe2633a7d"
     },
     {
       "path": "shots/final/before/P1-summary.png",
       "source": "shots/final/before/P1-summary.ui.json",
-      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+      "sha256": "7aeb9d27cb1629cb97e26145871c3fefafcad3cac3d3c09a5bfda27ee331d030"
     },
     {
       "path": "shots/final/before/P2-chart.png",
       "source": "shots/final/before/P2-chart.ui.json",
-      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae"
     },
     {
       "path": "shots/final/before/P2-track-board.png",
       "source": "shots/final/before/P2-track-board.ui.json",
-      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757"
     },
     {
       "path": "shots/final/before/P3-MAR.png",
       "source": "shots/final/before/P3-MAR.ui.json",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
     },
     {
       "path": "shots/final/before/P4-growth.png",
       "source": "shots/final/before/P4-growth.ui.json",
-      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+      "sha256": "f086570f33fe2f2cd87ca58b231cb2172c56b6f0ebcf858bf3a90ba345c197b0"
     },
     {
       "path": "shots/final/before/P5-OR.png",
@@ -133,22 +133,22 @@
     {
       "path": "shots/final/canonical-density-before/P1-chart.png",
       "source": "shots/final/before/P1-summary.ui.json",
-      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf"
+      "sha256": "7aeb9d27cb1629cb97e26145871c3fefafcad3cac3d3c09a5bfda27ee331d030"
     },
     {
       "path": "shots/final/canonical-density-before/P2-chart.png",
       "source": "shots/final/before/P2-chart.ui.json",
-      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc"
+      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae"
     },
     {
       "path": "shots/final/canonical-density-before/P3-chart.png",
       "source": "shots/final/before/P3-MAR.ui.json",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
     },
     {
       "path": "shots/final/canonical-density-before/P4-chart.png",
       "source": "shots/final/before/P4-growth.ui.json",
-      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+      "sha256": "f086570f33fe2f2cd87ca58b231cb2172c56b6f0ebcf858bf3a90ba345c197b0"
     },
     {
       "path": "shots/final/canonical-density-before/P5-chart.png",
@@ -158,92 +158,110 @@
     {
       "path": "shots/realism/live-select/P1-inboxResults-chart.png",
       "source": "shots/realism/live-select/P1-inboxResults-chart.ui.json",
-      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600"
+      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P1-inboxResults-landing.png",
       "source": "shots/realism/live-select/P1-inboxResults-landing.ui.json",
-      "sha256": "7b93957e064ebc67eb2ead653dcb4d19693fc1ee2749dd2cff0a8fc3fbcd93e0"
+      "sha256": "7b93957e064ebc67eb2ead653dcb4d19693fc1ee2749dd2cff0a8fc3fbcd93e0",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P1-lookup-chart.png",
       "source": "shots/realism/live-select/P1-lookup-chart.ui.json",
-      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600"
+      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P1-lookup-landing.png",
       "source": "shots/realism/live-select/P1-lookup-landing.ui.json",
-      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23"
+      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-chart.ui.json",
-      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600"
+      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-landing.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-landing.ui.json",
-      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23"
+      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-chart.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-chart.ui.json",
-      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae"
+      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-landing.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-landing.ui.json",
-      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757"
+      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-chart.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-chart.ui.json",
-      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-landing.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-landing.ui.json",
-      "sha256": "b53521c11728332d2208c89f96570ed03bac4ec427e9d18649b23cacfb9f0ef8"
+      "sha256": "b53521c11728332d2208c89f96570ed03bac4ec427e9d18649b23cacfb9f0ef8",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P3-unitCensus-chart.png",
       "source": "shots/realism/live-select/P3-unitCensus-chart.ui.json",
-      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P3-unitCensus-landing.png",
       "source": "shots/realism/live-select/P3-unitCensus-landing.ui.json",
-      "sha256": "4375049da7db3c5ccf5df6abf911d90e2fcb24472331323080fcd9547d95f2e1"
+      "sha256": "4375049da7db3c5ccf5df6abf911d90e2fcb24472331323080fcd9547d95f2e1",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P4-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P4-scheduleTasks-chart.ui.json",
-      "sha256": "1db313e95a004e4bfd31d8448ced2a868f7792319b9a0dd7f443e3b80f001b01"
+      "sha256": "1db313e95a004e4bfd31d8448ced2a868f7792319b9a0dd7f443e3b80f001b01",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P4-scheduleTasks-landing.png",
       "source": "shots/realism/live-select/P4-scheduleTasks-landing.ui.json",
-      "sha256": "c166bfd7d44a50200b55c86fd14bde33715baafa08df62e7cd8941f3cce09c10"
+      "sha256": "c166bfd7d44a50200b55c86fd14bde33715baafa08df62e7cd8941f3cce09c10",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P5-consultList-chart.png",
       "source": "shots/realism/live-select/P5-consultList-chart.ui.json",
-      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684"
+      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P5-consultList-landing.png",
       "source": "shots/realism/live-select/P5-consultList-landing.ui.json",
-      "sha256": "cc463b440277f02b01d5ceee8ffeaa8898c02beb44bff8cc6d554795fb91d34a"
+      "sha256": "cc463b440277f02b01d5ceee8ffeaa8898c02beb44bff8cc6d554795fb91d34a",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P5-orSchedule-chart.png",
       "source": "shots/realism/live-select/P5-orSchedule-chart.ui.json",
-      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684"
+      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/live-select/P5-orSchedule-landing.png",
       "source": "shots/realism/live-select/P5-orSchedule-landing.ui.json",
-      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956"
+      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956",
+      "mode": "stale-live"
     },
     {
       "path": "shots/realism/present/flowsheet-before.png",
@@ -413,22 +431,22 @@
     {
       "path": "shots/realism/present/integration/p1-home.png",
       "source": "shots/realism/present/integration/p1-home.ui.json",
-      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9"
+      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23"
     },
     {
       "path": "shots/realism/present/integration/p2-track-board.png",
       "source": "shots/realism/present/integration/p2-track-board.ui.json",
-      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e"
+      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757"
     },
     {
       "path": "shots/realism/present/integration/p3-mar.png",
       "source": "shots/realism/present/integration/p3-mar.ui.json",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af"
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06"
     },
     {
       "path": "shots/realism/present/integration/p4-growth.png",
       "source": "shots/realism/present/integration/p4-growth.ui.json",
-      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc"
+      "sha256": "f086570f33fe2f2cd87ca58b231cb2172c56b6f0ebcf858bf3a90ba345c197b0"
     },
     {
       "path": "shots/realism/present/integration/p5-or-schedule.png",

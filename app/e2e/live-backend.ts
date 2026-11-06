@@ -1,41 +1,41 @@
-import { request, type Page } from "@playwright/test";
+import { request, expect, type Page } from "@playwright/test";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
-
-// Playwright runs in Node, where import.meta.env is not Vite's environment.
-const env = loadEnv(
-  "test",
-  fileURLToPath(new URL("../../", import.meta.url)),
-  "",
-);
-export const backendDownReason = `Medplum is unavailable at ${env.VITE_MEDPLUM_BASE_URL ?? "http://localhost:8103/"}; live coverage requires the local stack`;
-
+const env = {
+  ...loadEnv("test", fileURLToPath(new URL("../../", import.meta.url)), ""),
+  ...process.env,
+};
+export const backendDownReason =
+  "The local commit authority is unavailable; start the isolated stack with make install";
 export async function backendAvailable(): Promise<boolean> {
   const client = await request.newContext();
   try {
-    const response = await client.get(
-      new URL(
-        "healthcheck",
-        env.VITE_MEDPLUM_BASE_URL ?? "http://localhost:8103/",
-      ).href,
-      { timeout: 2500 },
-    );
-    return response.ok();
+    return (
+      await client.get(
+        `${env.COMMIT_BASE_URL ?? "http://127.0.0.1:18090"}/health`,
+        { timeout: 2500 },
+      )
+    ).ok();
   } catch {
     return false;
   } finally {
     await client.dispose();
   }
 }
-
+export async function completeKeycloakLogin(page: Page, persona: string) {
+  await expect(page).toHaveURL(/\/realms\/vgi\/protocol\/openid-connect\/auth/);
+  await page.getByLabel("Username or email").fill(persona.toLowerCase());
+  if (!env.KEYCLOAK_PERSONA_PASSWORD) throw new Error("Run make setup first");
+  await page
+    .getByLabel("Password", { exact: true })
+    .fill(env.KEYCLOAK_PERSONA_PASSWORD);
+  await page.getByRole("button", { name: "Sign In", exact: true }).click();
+  await expect(page).not.toHaveURL(/\/protocol\/openid-connect\/auth/);
+}
 export async function signInBaseline(
   page: Page,
   persona: string,
 ): Promise<void> {
-  if (!env.VGI_USER_PASSWORD || !env.VITE_MEDPLUM_CLIENT_ID)
-    throw new Error(
-      "Live browser tests need VGI_USER_PASSWORD and VITE_MEDPLUM_CLIENT_ID in the repo-root .env",
-    );
   await page
     .getByLabel("Baseline clinician", { exact: true })
     .selectOption(persona);
@@ -45,4 +45,12 @@ export async function signInBaseline(
       exact: true,
     })
     .click();
+  await completeKeycloakLogin(page, persona);
+}
+export async function signInPersona(
+  page: Page,
+  persona: string,
+): Promise<void> {
+  await page.getByRole("button", { name: new RegExp(`^${persona} ·`) }).click();
+  await completeKeycloakLogin(page, persona);
 }

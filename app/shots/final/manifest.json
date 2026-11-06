@@ -11,42 +11,42 @@
       "name": "P1-summary",
       "file": "P1-chart.png",
       "screen": "chartSummary",
-      "sha256": "5a18a1f8c19f74d0380f1d0afb8c9a82c53879ca6e044a09613b0773d2f1aaaf",
+      "sha256": "2c4bf36c7568ee956b13a4880037d5e24f2e71f7b7bc0f048937abd3a8201b46",
       "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a"
     },
     {
       "name": "P1-orders",
       "file": "P1-orders.png",
       "screen": "w1Orders",
-      "sha256": "9f08870683882efddef606ddb560d2ee8d8e93e698cd535d4470116c94f7ffe1",
+      "sha256": "66d5ca38483ef252f9d4b36ca1e99fe7a6efd6ebb2168f28d0e63e5d2ea39192",
       "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a"
     },
     {
       "name": "P2-track-board",
       "file": "P2-landing.png",
       "screen": "workspace:edTrackBoard",
-      "sha256": "39e714b1d232d7211c5dd15e8f9906d2faeadab0cf7107736cde4726b19c3f3e",
+      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757",
       "programSha256": "c3099938db297160713439710fc3045912a4b2be06c8f1a3cd6fceb30ac85734"
     },
     {
       "name": "P2-chart",
       "file": "P2-chart.png",
       "screen": "w3Triage",
-      "sha256": "cf4774e3006da30d0d05f15283e56c634c8a335b2615a8b3b2e3bba94c6357fc",
+      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae",
       "programSha256": "c3099938db297160713439710fc3045912a4b2be06c8f1a3cd6fceb30ac85734"
     },
     {
       "name": "P3-MAR",
       "file": "P3-chart.png",
       "screen": "w4Mar",
-      "sha256": "228b9ab20e488a0e18fc7de9b9b7f2b3cc23a1c1ea0dab9e3be18084537668af",
+      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06",
       "programSha256": "14b669e8048780bd002032cf99364884f70d5a9292a42ee77f99ae5d6f929c02"
     },
     {
       "name": "P4-growth",
       "file": "P4-chart.png",
       "screen": "w5Growth",
-      "sha256": "c4c9077e8a5e3d4f856625d6c347bf0eb32ef356b1566c6ef4e9f3b2fed93cbc",
+      "sha256": "39c240057766ece286b05bae747f4ad13ff9f4222eb574cba5f2cb211e67323e",
       "programSha256": "6174174edd60a5f4643dd4141808f0248c039d2f02f593a531c206852a41adbc"
     },
     {
@@ -60,14 +60,14 @@
       "name": "P5-op-note",
       "file": "P5-chart.png",
       "screen": "w6OpNote",
-      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68",
+      "sha256": "29ac5a48004a95793582e7d54e1686309186bad59945e1d19e18c9602473d2ae",
       "programSha256": "201797186808411a6f9c5dae752757e0abe411a9f20e921be1304cc6d4791ae6"
     },
     {
       "name": "P1-landing",
       "file": "P1-landing.png",
       "screen": "workspace:scheduleTasks",
-      "sha256": "41207ccda8aa97e678cf51cdadc7a9f44e59b2e0d9fd46c97067d1ac8298f0d9",
+      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23",
       "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a"
     },
     {
@@ -81,7 +81,7 @@
       "name": "P4-landing",
       "file": "P4-landing.png",
       "screen": "workspace:scheduleTasks",
-      "sha256": "9dc19f98b536431d084c1d91f3fc17680edbee9d44cb8bd42d804c4c1d171beb",
+      "sha256": "c166bfd7d44a50200b55c86fd14bde33715baafa08df62e7cd8941f3cce09c10",
       "programSha256": "6174174edd60a5f4643dd4141808f0248c039d2f02f593a531c206852a41adbc"
     }
   ],

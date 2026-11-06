@@ -10,7 +10,7 @@ const ids = ['P1', 'P2', 'P3', 'RN2', 'P4', 'P5'];
 const roles = ['physician', 'physician', 'rn', 'rn', 'np', 'surgeon'];
 const scheduledTime = '2026-11-02T10:00:00Z';
 const config = configSchema.parse({ tenant: process.env.MAR_TENANT ?? 'mar-dev',
-  oidc: { issuer: 'http://localhost:8180/realms/vgi', audience: 'vgi-commit', clientId: 'vgi-mar' },
+  oidc: { issuer: 'http://localhost:18180/realms/vgi', audience: 'vgi-commit', clientId: 'vgi-mar' },
   actors: ids.map((id, n) => ({ subject: `00000000-0000-4000-8000-${String(n + 1).padStart(12, '0')}`,
     user: { id, role: roles[n] }, modelId: n + 1, patients: ['mar-patient'] })),
   releases: { nurse: { spec: f.hospitalSpec, program: f.nurseProgram,

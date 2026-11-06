@@ -209,7 +209,7 @@ for (const id of ['w1Rooming', 'w1Orders', 'w1Sign']) {
   }
 }
 // A real canonical RN scan must accept the interpreter's identity and reject
-// an unrelated Medplum resource address. The painter emits the same Value.code.
+// an unrelated imported resource address. The painter emits the same Value.code.
 const scanElement = common.spec.elements.find((e) => e.kind?.scan?.target === 'wristband');
 assert.ok(scanElement);
 let scanChecked = false;
@@ -225,7 +225,7 @@ for (const [name, state] of scanStates) {
   assert.deepEqual(good, native('step', input), `${name} wristband`);
   assert.equal(good.result, 'ok');
   assert.ok(good.state.captured.some((c) => c.element === scanElement.id && c.value?.code?.c === facts.patientId));
-  input.event.enter.value.code.c = 'unrelated-medplum-server-id';
+  input.event.enter.value.code.c = 'unrelated-import-source-id';
   const bad = JSON.parse(ehr.step(JSON.stringify(input)));
   assert.deepEqual(bad, native('step', input));
   assert.notEqual(bad.result, 'ok');

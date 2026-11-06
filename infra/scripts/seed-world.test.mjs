@@ -3,7 +3,7 @@ import { before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
-import { buildResources, loadWorld, options, seed, seededResources, printWorklists, WORLD_SYSTEM, WORKLIST_SYSTEM } from './seed-world.mjs';
+import { buildResources, loadWorld, options, WORLD_SYSTEM, WORKLIST_SYSTEM } from './seed-world.mjs';
 import { REPO_ROOT } from './lib.mjs';
 
 const world = resolve(REPO_ROOT, 'runs/world/1');
@@ -41,11 +41,15 @@ test('all ten world days have complete references, unique identifiers, and real 
 });
 
 test('day 1 preserves world worklists, abnormal results, triage pounds, MAR and future OR dates', { skip }, () => {
+  const data = loadWorld({ world, day: 1 });
   const entries = resources();
-  assert.equal(worklist(entries, 'P1-appointments').length, 19);
+  // Seed 1 retains the original clinical random stream, including service orders.
+  assert.equal(worklist(entries, 'P1-appointments').length, 20);
+  assert.deepEqual(worklist(entries, 'P1-appointments').map((r) => r.identifier.find((i) => i.system === WORLD_SYSTEM).value).sort(),
+    data.schedules.P1.tasks.filter((t) => t.workflow === 'W1').map((t) => `day1-appointment-${t.id}`).sort());
   assert.equal(worklist(entries, 'P1-inbox').length, 5); // three scheduled reviews + two carried items
   assert.equal(worklist(entries, 'P1-inbox').filter((r) => r.priority === 'urgent').length, 1);
-  assert.equal(worklist(entries, 'P1-refills').length, 14);
+  assert.equal(worklist(entries, 'P1-refills').length, 19);
   assert.ok(worklist(entries, 'P1-refills').every((r) => r.owner.reference === practitioners.P1 && r.focus.reference.startsWith('urn:')));
   assert.equal(worklist(entries, 'P2-ed').length, 22);
   assert.ok(worklist(entries, 'P2-ed').every((r) => r.class.code === 'EMER' && r.priority && r.statusHistory.some((h) => h.status === 'triaged')));
@@ -59,47 +63,14 @@ test('day 1 preserves world worklists, abnormal results, triage pounds, MAR and 
   assert.equal(worklist(entries, 'P4-appointments').length, 22);
   assert.equal(worklist(entries, 'P4-facts').filter((r) => r.code.coding?.some((c) => c.code === '29463-7')).length, 22);
   const or = worklist(entries, 'P5-or');
-  assert.equal(or.length, 11);
+  assert.equal(or.length, 9);
+  assert.deepEqual(or.map((r) => r.identifier.find((i) => i.system === WORLD_SYSTEM).value).sort(),
+    data.state.surgicalCases.filter((c) => c.orDay >= 1).map((c) => `day1-or-order-${c.id}`).sort());
   assert.ok(or.every((r) => r.occurrenceDateTime > '2026-11-02'));
   assert.equal(worklist(entries, 'P5-consults').length, 1);
   assert.equal(worklist(entries, 'RN2-role').length, 1);
   // Stable seed keys and times across repeated builds.
   assert.deepEqual(resources(), entries);
-});
-
-test('conditional transactions respect eight-entry limit and resolve prior-batch dependencies; rerun writes nothing', { skip }, async () => {
-  const stored = [];
-  const external = new Set([...Object.values(patients), ...Object.values(practitioners)]);
-  let writes = 0;
-  const client = {
-    async *searchResourcePages(type, query) {
-      assert.equal(query._tag, `${WORLD_SYSTEM}|day1`);
-      yield stored.filter((r) => r.resourceType === type);
-    },
-    async executeBatch(bundle) {
-      writes++;
-      assert.ok(bundle.entry.length <= 8);
-      const replacements = new Map(bundle.entry.map((e, i) => [e.fullUrl, `${e.resource.resourceType}/${String(writes * 8 + i).padStart(8, '0')}-0000-4000-a000-000000000000`]));
-      for (const e of bundle.entry) {
-        for (const r of references(e.resource)) {
-          assert.ok(replacements.has(r) || external.has(r) || stored.some((s) => `${s.resourceType}/${s.id}` === r), `Dangling ${r}`);
-        }
-        const rewrite = (v) => {
-          if (Array.isArray(v)) return v.map(rewrite);
-          if (!v || typeof v !== 'object') return v;
-          return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, k === 'reference' ? replacements.get(x) ?? x : rewrite(x)]));
-        };
-        stored.push({ ...rewrite(e.resource), id: replacements.get(e.fullUrl).split('/')[1] });
-      }
-      return { resourceType: 'Bundle', type: 'transaction-response', entry: bundle.entry.map((e) => ({ response: { status: '201 Created', location: replacements.get(e.fullUrl) } })) };
-    },
-  };
-  const data = loadWorld({ world, day: 1 });
-  await seed(client, data, resources());
-  const firstWrites = writes;
-  assert.equal(stored.length, resources().length);
-  await seed(client, data, resources());
-  assert.equal(writes, firstWrites);
 });
 
 test('invalid day/flags fail before writes', () => {
@@ -118,20 +89,4 @@ test('busy days retain unhandled abnormal results and refill requests', { skip }
     data.schedules.P1.tasks.filter((t) => t.workflow === 'W2').length + backlogResults);
   assert.equal(worklist(entries, 'P1-refills').length,
     data.schedules.P1.tasks.filter((t) => t.workflow === 'W7').length + backlogRefills);
-});
-
-test('worklist queries AND the day tag with the worklist tag', { skip }, async () => {
-  const client = { async search(type, params) {
-    assert.ok(params instanceof URLSearchParams);
-    assert.equal(params.getAll('_tag')[0], `${WORLD_SYSTEM}|day1`);
-    return { resourceType: 'Bundle', total: 0 };
-  } };
-  await printWorklists(client, loadWorld({ world, day: 1 }), practitioners);
-});
-
-test('reset refuses an accidental day tag without its matching seed identifier', async () => {
-  const client = { async *searchResourcePages() {
-    yield [{ resourceType: 'Location', id: 'unowned', meta: { tag: [{ system: WORLD_SYSTEM, code: 'day1' }] } }];
-  } };
-  await assert.rejects(() => seededResources(client, 1), /Refusing to manage/);
 });

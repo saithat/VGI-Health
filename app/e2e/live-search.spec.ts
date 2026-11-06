@@ -1,3 +1,4 @@
+import { completeKeycloakLogin } from "./live-backend";
 import { enterPatientChart } from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
 import { Audit } from "./audit/driver";
@@ -11,6 +12,7 @@ for (const name of ["Aaron", "Terrance"]) {
     test.skip(!(await backendAvailable()), backendDownReason);
     await page.goto("/?audit=buttons");
     await page.getByRole("button", { name: /^P1 · / }).click();
+    await completeKeycloakLogin(page, "P1");
     await enterPatientChart(page, name);
     await expect(
       page.getByRole("banner", { name: "Patient banner", exact: true }),

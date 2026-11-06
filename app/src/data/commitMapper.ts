@@ -12,14 +12,14 @@ import type {
   Reference,
   Resource,
   Task,
-} from "@medplum/fhirtypes";
+} from "./fhir-r4.ts";
 import type {
   Captured,
   ElementSpec,
   Receipt,
   Value,
-} from "../../../lean/generated/ehr-types";
-import { orderTiming } from "./worklist";
+} from "../../../lean/generated/ehr-types.ts";
+import { orderTiming } from "./worklist.ts";
 
 export const systems = {
   icd10: "http://hl7.org/fhir/sid/icd-10-cm",
@@ -310,7 +310,10 @@ export function mapCommit(input: CommitInput): Bundle {
       const drug = required(text("drug", slot), "drug");
       const dose = number("dose", slot);
       const doseValue = field("dose", slot)?.value;
-      const unit = doseValue && "qty" in doseValue ? doseValue.qty.unit : text("doseUnit", slot);
+      const unit =
+        doseValue && "qty" in doseValue
+          ? doseValue.qty.unit
+          : text("doseUnit", slot);
       if (!unit || (text("doseUnit", slot) && text("doseUnit", slot) !== unit))
         throw new Error("Dose and dose unit selector must agree");
       const ucum = unit === "mcg" ? "ug" : unit === "units" ? "[iU]" : unit;
@@ -581,10 +584,9 @@ export function mapCommit(input: CommitInput): Bundle {
       serviceOrders();
       break;
     case "signNote":
-    case "signProgressNote":
-    case "chartAssessment": {
+    case "signProgressNote": {
       note(
-        input.commitId === "chartAssessment" ? "34746-8" : "11506-3",
+        "11506-3",
         "Clinical note",
         (id, target) =>
           target.startsWith("Composition.section") ||
@@ -620,6 +622,42 @@ export function mapCommit(input: CommitInput): Bundle {
       }
       break;
     }
+    case "chartAssessment":
+      vitals();
+      add({
+        resourceType: "Observation",
+        status: "final",
+        subject,
+        encounter: context,
+        performer: [actor],
+        effectiveDateTime: now,
+        code: {
+          ...cc(
+            "nursing-assessment",
+            `${systems.local}/CodeSystem/observation`,
+          ),
+          text: "Nursing assessment",
+        },
+        valueString: required(text("nursingAssessment"), "nursing assessment"),
+      });
+      if (field("painReassessment"))
+        add({
+          resourceType: "Observation",
+          status: "final",
+          subject,
+          encounter: context,
+          performer: [actor],
+          effectiveDateTime: now,
+          code: {
+            ...cc(
+              "pain-reassessment",
+              `${systems.local}/CodeSystem/observation`,
+            ),
+            text: "Pain reassessment",
+          },
+          valueQuantity: { value: number("painReassessment"), unit: "score" },
+        });
+      break;
     case "diagnoses":
       diagnosis("visitDiagnosis");
       break;

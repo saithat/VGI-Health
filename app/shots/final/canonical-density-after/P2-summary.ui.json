@@ -2,19 +2,19 @@
   "banner": [
     [
       "Patient",
-      "Donnelly, Jamar"
+      "Mann, Lorena"
     ],
     [
       "DOB",
-      "May 14, 1943"
+      "Oct 14, 1987"
     ],
     [
       "MRN",
-      "73854169"
+      "14486708"
     ],
     [
       "Age / sex",
-      "83 / M"
+      "39 / F"
     ],
     [
       "Language",
@@ -22,11 +22,11 @@
     ],
     [
       "PCP",
-      "Fictional Clinician dd90f9a148"
+      "Fictional Clinician 125f98c9a2"
     ],
     [
       "Coverage",
-      "Fictional Health Services e277448254"
+      "Fictional Health Services 462e7f940b"
     ],
     [
       "Encounter",
@@ -50,15 +50,15 @@
     ],
     [
       "Allergies",
-      "amoxicillin — hives (reported at triage) (moderate)"
+      "Bee venom — Eruption of skin (disorder) (moderate); Mold — Sneezing and itchy eyes (mild); Dust mites — Sneezing and itchy eyes (mild); Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate); Grass pollen — Sneezing and itchy eyes (mild); Tree pollen — Sneezing and itchy eyes (mild); Penicillin V — Rash (moderate); Cow's milk — Wheezing (finding) (moderate); Egg — Wheal (finding) (moderate)"
     ],
     [
       "Code status",
-      "Not recorded"
+      "Full Code"
     ],
     [
       "Weight",
-      "77.2 kg · Nov 2, 2026 07:14"
+      "74.4 kg (from 164.0 lb) · Nov 2, 2026 07:15"
     ],
     [
       "Isolation",
@@ -131,25 +131,25 @@
                 [
                   [
                     "Record",
-                    "Name · Donnelly, Jamar"
+                    "Name · Mann, Lorena"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Age / sex · 83 / M"
+                    "Age / sex · 39 / F"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "MRN · 73854169"
+                    "MRN · 14486708"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "DOB · May 14, 1943"
+                    "DOB · Oct 14, 1987"
                   ]
                 ]
               ]
@@ -165,7 +165,7 @@
                 [
                   [
                     "Record",
-                    "Code status · Not recorded"
+                    "Code status · Full Code"
                   ]
                 ],
                 [
@@ -187,7 +187,55 @@
                 [
                   [
                     "Record",
-                    "amoxicillin — hives (reported at triage) (moderate)"
+                    "Bee venom — Eruption of skin (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Mold — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dust mites — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Animal dander — Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Grass pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Tree pollen — Sneezing and itchy eyes (mild)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Penicillin V — Rash (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Cow's milk — Wheezing (finding) (moderate)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Egg — Wheal (finding) (moderate)"
                   ]
                 ]
               ]
@@ -203,7 +251,7 @@
                 [
                   [
                     "Record",
-                    "PCP · Fictional Clinician dd90f9a148"
+                    "PCP · Fictional Clinician 125f98c9a2"
                   ]
                 ],
                 [
@@ -255,7 +303,7 @@
                 [
                   [
                     "Record",
-                    "Admitted / start · Nov 2, 2026 07:14"
+                    "Admitted / start · Nov 2, 2026 07:15"
                   ]
                 ],
                 [
@@ -283,7 +331,7 @@
                 [
                   [
                     "Record",
-                    "Measured weight · 77.2 kg · 2026-11-02T07:14:00-08:00"
+                    "Measured weight · 74.4 kg · 2026-11-02T07:15:00-08:00"
                   ]
                 ]
               ]
@@ -299,43 +347,43 @@
                 [
                   [
                     "Record",
-                    "Body weight 77.2 kg (today)"
+                    "Body weight 164 lb (today)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body Height 167.2 cm (Nov 14, 2025 17:22)"
+                    "Body Height 156.6 cm (Feb 11, 2026 05:12)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 3 {score} (Nov 14, 2025 17:22)"
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 0 {score} (Feb 11, 2026 05:12)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body mass index (BMI) [Ratio] 27.79 kg/m2 (Nov 14, 2025 17:22)"
+                    "Body mass index (BMI) [Ratio] 30.3 kg/m2 (Feb 11, 2026 05:12)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Blood pressure panel with all children optional 109/63 mm[Hg] (Nov 14, 2025 17:22)"
+                    "Blood pressure panel with all children optional 134/72 mm[Hg] (Feb 11, 2026 05:12)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Heart rate 79 /min (Nov 14, 2025 17:22)"
+                    "Heart rate 83 /min (Feb 11, 2026 05:12)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Respiratory rate 13 /min (Nov 14, 2025 17:22)"
+                    "Respiratory rate 14 /min (Feb 11, 2026 05:12)"
                   ]
                 ]
               ]
@@ -367,73 +415,7 @@
                 [
                   [
                     "Record",
-                    "History of coronary artery bypass grafting (situation) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Ischemic heart disease (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Gingivitis (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Metabolic syndrome X (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Essential hypertension (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Hyperlipidemia (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Dependent drug abuse (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Impacted molars (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Chronic pain (finding) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Chronic intractable migraine without aura (disorder) (active)"
-                  ]
-                ],
-                [
-                  [
-                    "Record",
-                    "Prediabetes (finding) (active)"
+                    "Body mass index 30+ - obesity (finding) (active)"
                   ]
                 ],
                 [
@@ -445,13 +427,19 @@
                 [
                   [
                     "Record",
-                    "Body mass index 30+ - obesity (finding) (active)"
+                    "Asthma (disorder) (active)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Chronic sinusitis (disorder) (active)"
+                    "Prediabetes (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Past pregnancy history of miscarriage (situation) (active)"
                   ]
                 ]
               ]
@@ -467,7 +455,7 @@
                 [
                   [
                     "Record",
-                    "Oct 21, 2026 19:57 · History and physical note · Fictional Clinician eff8b458b9 · Unknown · \n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History) · current"
+                    "Oct 15, 2026 06:12 · History and physical note · Fictional Clinician 0e0ee00ca5 · Unknown · \n2026-10-15\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 39 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart History) · current"
                   ]
                 ]
               ]
@@ -546,7 +534,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Donnelly, Jamar"
+                                      "Mann, Lorena"
                                     ]
                                   ],
                                   [
@@ -556,7 +544,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "83 / M"
+                                      "39 / F"
                                     ]
                                   ],
                                   [
@@ -566,7 +554,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "73854169"
+                                      "14486708"
                                     ]
                                   ],
                                   [
@@ -576,7 +564,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "May 14, 1943"
+                                      "Oct 14, 1987"
                                     ]
                                   ],
                                   [
@@ -616,7 +604,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Nov 2, 2026 07:14"
+                                      "Nov 2, 2026 07:15"
                                     ]
                                   ],
                                   [
@@ -646,7 +634,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Fictional Clinician dd90f9a148"
+                                      "Fictional Clinician 125f98c9a2"
                                     ]
                                   ],
                                   [
@@ -707,11 +695,11 @@
                                   [
                                     [
                                       "Problem",
-                                      "History of coronary artery bypass grafting (situation)"
+                                      "Body mass index 30+ - obesity (finding)"
                                     ],
                                     [
                                       "Onset",
-                                      "Nov 22, 2014 23:51"
+                                      "Feb 5, 2025 05:12"
                                     ],
                                     [
                                       "Status",
@@ -721,11 +709,11 @@
                                   [
                                     [
                                       "Problem",
-                                      "Abnormal findings diagnostic imaging heart+coronary circulat (finding)"
+                                      "Anemia (disorder)"
                                     ],
                                     [
                                       "Onset",
-                                      "Sep 23, 2014 02:45"
+                                      "Nov 11, 2009 05:12"
                                     ],
                                     [
                                       "Status",
@@ -735,11 +723,11 @@
                                   [
                                     [
                                       "Problem",
-                                      "Ischemic heart disease (disorder)"
+                                      "Asthma (disorder)"
                                     ],
                                     [
                                       "Onset",
-                                      "Sep 12, 2014 18:22"
+                                      "Nov 4, 2009 05:12"
                                     ],
                                     [
                                       "Status",
@@ -749,11 +737,11 @@
                                   [
                                     [
                                       "Problem",
-                                      "Gingivitis (disorder)"
+                                      "Prediabetes (finding)"
                                     ],
                                     [
                                       "Onset",
-                                      "Aug 14, 2009 20:32"
+                                      "Dec 13, 2006 05:12"
                                     ],
                                     [
                                       "Status",
@@ -763,53 +751,11 @@
                                   [
                                     [
                                       "Problem",
-                                      "Metabolic syndrome X (disorder)"
+                                      "Past pregnancy history of miscarriage (situation)"
                                     ],
                                     [
                                       "Onset",
-                                      "Aug 3, 2007 18:22"
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Problem",
-                                      "Essential hypertension (disorder)"
-                                    ],
-                                    [
-                                      "Onset",
-                                      "Jul 5, 2002 18:22"
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Problem",
-                                      "Hyperlipidemia (disorder)"
-                                    ],
-                                    [
-                                      "Onset",
-                                      "Jun 29, 2001 18:22"
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Problem",
-                                      "Dependent drug abuse (disorder)"
-                                    ],
-                                    [
-                                      "Onset",
-                                      "Jan 31, 1994 17:22"
+                                      "May 9, 2006 06:12"
                                     ],
                                     [
                                       "Status",
@@ -844,11 +790,11 @@
                                   [
                                     [
                                       "Medication",
-                                      "Simvastatin 10 MG Oral Tablet"
+                                      "{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Errin 28 Day]"
                                     ],
                                     [
                                       "Directions",
-                                      "Take Simvastatin 10 MG Oral Tablet by mouth daily."
+                                      ""
                                     ],
                                     [
                                       "Status",
@@ -856,17 +802,17 @@
                                     ],
                                     [
                                       "Prescriber",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ]
                                   ],
                                   [
                                     [
                                       "Medication",
-                                      "Hydrochlorothiazide 25 MG Oral Tablet"
+                                      "60 ACTUAT budesonide 0.09 MG/ACTUAT Dry Powder Inhaler [Pulmicort]"
                                     ],
                                     [
                                       "Directions",
-                                      "Take Hydrochlorothiazide 25 MG Oral Tablet by mouth daily."
+                                      "Take as needed."
                                     ],
                                     [
                                       "Status",
@@ -874,17 +820,17 @@
                                     ],
                                     [
                                       "Prescriber",
-                                      "Fictional Clinician d823a5fa8e"
+                                      "Fictional Clinician ffcadd02fb"
                                     ]
                                   ],
                                   [
                                     [
                                       "Medication",
-                                      "amLODIPine 2.5 MG Oral Tablet"
+                                      "NDA021457 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [ProAir]"
                                     ],
                                     [
                                       "Directions",
-                                      "Take amLODIPine 2.5 MG Oral Tablet by mouth daily."
+                                      "Take as needed."
                                     ],
                                     [
                                       "Status",
@@ -892,7 +838,7 @@
                                     ],
                                     [
                                       "Prescriber",
-                                      "Fictional Clinician d823a5fa8e"
+                                      "Fictional Clinician ffcadd02fb"
                                     ]
                                   ]
                                 ]
@@ -923,11 +869,11 @@
                                   [
                                     [
                                       "Substance",
-                                      "amoxicillin"
+                                      "Bee venom"
                                     ],
                                     [
                                       "Reaction",
-                                      "hives (reported at triage)"
+                                      "Eruption of skin (disorder)"
                                     ],
                                     [
                                       "Severity",
@@ -939,11 +885,219 @@
                                     ],
                                     [
                                       "Verification",
-                                      "unconfirmed"
+                                      "confirmed"
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 2, 2026 07:14"
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Mold"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Sneezing and itchy eyes"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "mild"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Dust mites"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Sneezing and itchy eyes"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "mild"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Animal dander"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Wheal (finding), Eruption of skin (disorder), Cough (finding), Rhinoconjunctivitis (disorder)"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "moderate"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Grass pollen"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Sneezing and itchy eyes"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "mild"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Tree pollen"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Sneezing and itchy eyes"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "mild"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Penicillin V"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Rash"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "moderate"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Cow's milk"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Wheezing (finding)"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "moderate"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Substance",
+                                      "Egg"
+                                    ],
+                                    [
+                                      "Reaction",
+                                      "Wheal (finding)"
+                                    ],
+                                    [
+                                      "Severity",
+                                      "moderate"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Verification",
+                                      "confirmed"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 24, 1988 20:12"
                                     ]
                                   ]
                                 ]
@@ -1002,7 +1156,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "112/66"
+                                      "134/70"
                                     ],
                                     [
                                       "Unit",
@@ -1010,7 +1164,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 8, 2024 17:22"
+                                      "Feb 5, 2025 05:12"
                                     ]
                                   ],
                                   [
@@ -1020,7 +1174,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "27.79"
+                                      "30.3"
                                     ],
                                     [
                                       "Unit",
@@ -1028,7 +1182,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 8, 2024 17:22"
+                                      "Feb 5, 2025 05:12"
                                     ]
                                   ],
                                   [
@@ -1038,7 +1192,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "77.7"
+                                      "74.3"
                                     ],
                                     [
                                       "Unit",
@@ -1046,7 +1200,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 8, 2024 17:22"
+                                      "Feb 5, 2025 05:12"
                                     ]
                                   ],
                                   [
@@ -1064,7 +1218,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 8, 2024 17:22"
+                                      "Feb 5, 2025 05:12"
                                     ]
                                   ],
                                   [
@@ -1074,7 +1228,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "167.2"
+                                      "156.6"
                                     ],
                                     [
                                       "Unit",
@@ -1082,7 +1236,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 8, 2024 17:22"
+                                      "Feb 5, 2025 05:12"
                                     ]
                                   ],
                                   [
@@ -1092,7 +1246,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "13"
+                                      "14"
                                     ],
                                     [
                                       "Unit",
@@ -1100,7 +1254,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1110,7 +1264,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "79"
+                                      "83"
                                     ],
                                     [
                                       "Unit",
@@ -1118,7 +1272,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1128,7 +1282,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "109"
+                                      "134"
                                     ],
                                     [
                                       "Unit",
@@ -1136,7 +1290,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1146,7 +1300,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "63"
+                                      "72"
                                     ],
                                     [
                                       "Unit",
@@ -1154,7 +1308,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1164,7 +1318,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "109/63"
+                                      "134/72"
                                     ],
                                     [
                                       "Unit",
@@ -1172,7 +1326,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1182,7 +1336,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "27.79"
+                                      "30.3"
                                     ],
                                     [
                                       "Unit",
@@ -1190,7 +1344,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1200,7 +1354,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "77.7"
+                                      "74.3"
                                     ],
                                     [
                                       "Unit",
@@ -1208,7 +1362,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1218,7 +1372,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "3"
+                                      "0"
                                     ],
                                     [
                                       "Unit",
@@ -1226,7 +1380,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1236,7 +1390,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "167.2"
+                                      "156.6"
                                     ],
                                     [
                                       "Unit",
@@ -1244,7 +1398,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
@@ -1254,15 +1408,15 @@
                                     ],
                                     [
                                       "Value",
-                                      "77.2"
+                                      "164"
                                     ],
                                     [
                                       "Unit",
-                                      "kg"
+                                      "lb"
                                     ],
                                     [
                                       "Recorded",
-                                      "Nov 2, 2026 07:14"
+                                      "Nov 2, 2026 07:15"
                                     ]
                                   ]
                                 ]
@@ -1321,21 +1475,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Nov 14, 2025 17:22"
-                                    ],
-                                    [
-                                      "Status",
-                                      "completed"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Vaccine",
-                                      "Td (adult), 5 Lf tetanus toxoid, preservative free, adsorbed"
-                                    ],
-                                    [
-                                      "Date",
-                                      "Nov 8, 2024 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ],
                                     [
                                       "Status",
@@ -1349,7 +1489,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Mar 22, 2024 18:22"
+                                      "Feb 5, 2025 05:12"
                                     ],
                                     [
                                       "Status",
@@ -1363,7 +1503,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Nov 3, 2023 18:22"
+                                      "Jan 31, 2024 05:12"
                                     ],
                                     [
                                       "Status",
@@ -1377,7 +1517,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Jul 1, 2022 18:22"
+                                      "Jan 25, 2023 05:12"
                                     ],
                                     [
                                       "Status",
@@ -1391,7 +1531,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Oct 22, 2021 18:22"
+                                      "Jan 19, 2022 05:12"
                                     ],
                                     [
                                       "Status",
@@ -1401,11 +1541,11 @@
                                   [
                                     [
                                       "Vaccine",
-                                      "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5mL dose or 50 mcg/0.25mL dose"
+                                      "COVID-19, mRNA, LNP-S, PF, 30 mcg/0.3 mL dose"
                                     ],
                                     [
                                       "Date",
-                                      "Mar 19, 2021 18:22"
+                                      "Sep 1, 2021 06:12"
                                     ],
                                     [
                                       "Status",
@@ -1415,11 +1555,25 @@
                                   [
                                     [
                                       "Vaccine",
-                                      "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5mL dose or 50 mcg/0.25mL dose"
+                                      "COVID-19, mRNA, LNP-S, PF, 30 mcg/0.3 mL dose"
                                     ],
                                     [
                                       "Date",
-                                      "Feb 19, 2021 17:22"
+                                      "Aug 11, 2021 06:12"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jan 13, 2021 05:12"
                                     ],
                                     [
                                       "Status",
@@ -1454,7 +1608,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Oct 21, 2026 19:57"
+                                      "Oct 15, 2026 06:12"
                                     ],
                                     [
                                       "Type",
@@ -1462,7 +1616,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ],
                                     [
                                       "Title",
@@ -1470,7 +1624,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2026-10-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
+                                      "\n2026-10-15\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 39 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1480,7 +1634,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Sep 21, 2026 18:45"
+                                      "Aug 18, 2026 15:12"
                                     ],
                                     [
                                       "Type",
@@ -1488,7 +1642,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ],
                                     [
                                       "Title",
@@ -1496,7 +1650,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2026-09-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
+                                      "\n2026-08-18\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 38 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1506,7 +1660,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Aug 22, 2026 17:23"
+                                      "Feb 25, 2026 05:12"
                                     ],
                                     [
                                       "Type",
@@ -1514,7 +1668,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ],
                                     [
                                       "Title",
@@ -1522,7 +1676,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2026-08-22\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
+                                      "\n2026-02-25\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 38 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1532,7 +1686,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Aug 1, 2026 03:23"
+                                      "Feb 19, 2026 14:12"
                                     ],
                                     [
                                       "Type",
@@ -1540,7 +1694,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician abf8d10f3e"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ],
                                     [
                                       "Title",
@@ -1548,7 +1702,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2026-08-01\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 83 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
+                                      "\n2026-02-19\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 38 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1558,7 +1712,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Nov 28, 2025 17:22"
+                                      "Feb 18, 2026 05:12"
                                     ],
                                     [
                                       "Type",
@@ -1566,7 +1720,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 7a6a9654a0"
                                     ],
                                     [
                                       "Title",
@@ -1574,7 +1728,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2025-11-28\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nJamar is a 82 year-old nonhispanic white male. Patient has a history of overdose (disorder), part-time employment (finding), medication review due (situation), radicular cyst, not in labor force (finding)… (excerpt; full note in Chart History)"
+                                      "\n2026-02-18\n\n# Chief Complaint\n- Wheezing\n- Nasal Congestion\n- Chest Pressure\n\n\n# History of Present Illness\nLorena is a 38 year-old nonhispanic black female. Patient has a history of eclampsia in pregnancy (disorder), medication review due (situation), unemployed (finding), vict… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1609,7 +1763,7 @@
                                   [
                                     [
                                       "Order",
-                                      "Ankle X-ray"
+                                      "CBC, BMP"
                                     ],
                                     [
                                       "Directions",
@@ -1621,7 +1775,43 @@
                                     ],
                                     [
                                       "Ordered",
-                                      "Nov 2, 2026 07:24"
+                                      "Nov 2, 2026 07:25"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Chest X-ray"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Nov 2, 2026 07:25"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Full Code"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Nov 2, 2026 07:15"
                                     ]
                                   ],
                                   [
@@ -1639,17 +1829,17 @@
                                     ],
                                     [
                                       "Ordered",
-                                      "Nov 2, 2026 07:14"
+                                      "Nov 2, 2026 07:15"
                                     ]
                                   ],
                                   [
                                     [
                                       "Order",
-                                      "Simvastatin 10 MG Oral Tablet"
+                                      "{28 (norethindrone 0.35 MG Oral Tablet) } Pack [Errin 28 Day]"
                                     ],
                                     [
                                       "Directions",
-                                      "Take Simvastatin 10 MG Oral Tablet by mouth daily."
+                                      ""
                                     ],
                                     [
                                       "Status",
@@ -1657,17 +1847,17 @@
                                     ],
                                     [
                                       "Ordered",
-                                      "Nov 21, 2025 17:22"
+                                      "Oct 15, 2026 06:12"
                                     ]
                                   ],
                                   [
                                     [
                                       "Order",
-                                      "Hydrochlorothiazide 25 MG Oral Tablet"
+                                      "60 ACTUAT budesonide 0.09 MG/ACTUAT Dry Powder Inhaler [Pulmicort]"
                                     ],
                                     [
                                       "Directions",
-                                      "Take Hydrochlorothiazide 25 MG Oral Tablet by mouth daily."
+                                      "Take as needed."
                                     ],
                                     [
                                       "Status",
@@ -1675,17 +1865,17 @@
                                     ],
                                     [
                                       "Ordered",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ],
                                   [
                                     [
                                       "Order",
-                                      "amLODIPine 2.5 MG Oral Tablet"
+                                      "NDA021457 200 ACTUAT albuterol 0.09 MG/ACTUAT Metered Dose Inhaler [ProAir]"
                                     ],
                                     [
                                       "Directions",
-                                      "Take amLODIPine 2.5 MG Oral Tablet by mouth daily."
+                                      "Take as needed."
                                     ],
                                     [
                                       "Status",
@@ -1693,7 +1883,7 @@
                                     ],
                                     [
                                       "Ordered",
-                                      "Nov 14, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ]
                                   ]
                                 ]
@@ -1748,11 +1938,11 @@
                                   [
                                     [
                                       "Finding",
-                                      "Only received primary school education (finding)"
+                                      "Received higher education (finding)"
                                     ],
                                     [
                                       "Detail",
-                                      "SNOMED CT 224295006; recorded: 1961-07-07T19:15:32-07:00"
+                                      "SNOMED CT 224299000; recorded: 2005-12-07T06:05:29-08:00"
                                     ],
                                     [
                                       "Status",
@@ -1762,11 +1952,11 @@
                                   [
                                     [
                                       "Finding",
-                                      "Victim of intimate partner abuse (finding)"
+                                      "Limited social contact (finding)"
                                     ],
                                     [
                                       "Detail",
-                                      "SNOMED CT 706893006; recorded: 2006-07-28T20:05:27-07:00"
+                                      "SNOMED CT 423315002; recorded: 2012-08-15T07:08:14-07:00"
                                     ],
                                     [
                                       "Status",
@@ -1776,43 +1966,15 @@
                                   [
                                     [
                                       "Finding",
-                                      "Has a criminal record (finding)"
+                                      "Pregnancy status"
                                     ],
                                     [
                                       "Detail",
-                                      "SNOMED CT 266948004; recorded: 2021-10-22T18:57:17-07:00"
+                                      "Pregnant; date: 2022-11-23T05:12:56-08:00"
                                     ],
                                     [
                                       "Status",
-                                      "active"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Finding",
-                                      "Unemployed (finding)"
-                                    ],
-                                    [
-                                      "Detail",
-                                      "SNOMED CT 73438004; recorded: 2024-11-08T18:00:39-08:00"
-                                    ],
-                                    [
-                                      "Status",
-                                      "resolved"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Finding",
-                                      "Medication review due (situation)"
-                                    ],
-                                    [
-                                      "Detail",
-                                      "SNOMED CT 314529007; recorded: 2025-11-14T17:22:31-08:00"
-                                    ],
-                                    [
-                                      "Status",
-                                      "resolved"
+                                      "final"
                                     ]
                                   ],
                                   [
@@ -1822,7 +1984,7 @@
                                     ],
                                     [
                                       "Detail",
-                                      "SNOMED CT 160903007; recorded: 2025-11-14T18:18:33-08:00"
+                                      "SNOMED CT 160903007; recorded: 2023-01-25T05:54:34-08:00"
                                     ],
                                     [
                                       "Status",
@@ -1836,7 +1998,7 @@
                                     ],
                                     [
                                       "Detail",
-                                      "Ex-smoker (finding); date: 2025-11-14T17:22:31-08:00"
+                                      "Never smoked tobacco (finding); date: 2026-02-11T05:12:56-08:00"
                                     ],
                                     [
                                       "Status",
@@ -1875,11 +2037,11 @@
                                     ],
                                     [
                                       "Date",
-                                      "Nov 2, 2026 07:14"
+                                      "Nov 2, 2026 07:15"
                                     ],
                                     [
                                       "Reason",
-                                      "Ankle pain after fall"
+                                      "Cough and shortness of breath"
                                     ],
                                     [
                                       "Provider",
@@ -1893,15 +2055,15 @@
                                     ],
                                     [
                                       "Date",
-                                      "Oct 21, 2026 19:57"
+                                      "Oct 15, 2026 06:12"
                                     ],
                                     [
                                       "Reason",
-                                      "Dependent drug abuse (disorder)"
+                                      "Contraception care (regime/therapy)"
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ]
                                   ],
                                   [
@@ -1911,15 +2073,15 @@
                                     ],
                                     [
                                       "Date",
-                                      "Sep 21, 2026 18:45"
+                                      "Aug 18, 2026 15:12"
                                     ],
                                     [
                                       "Reason",
-                                      "Dependent drug abuse (disorder)"
+                                      "Asthma (disorder)"
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ]
                                   ],
                                   [
@@ -1929,15 +2091,33 @@
                                     ],
                                     [
                                       "Date",
-                                      "Aug 22, 2026 17:23"
+                                      "Feb 25, 2026 05:12"
                                     ],
                                     [
                                       "Reason",
-                                      "Dependent drug abuse (disorder)"
+                                      "Gingivitis (disorder)"
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician 0e0ee00ca5"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Feb 19, 2026 14:12"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Asthma (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ]
                                   ],
                                   [
@@ -1947,15 +2127,15 @@
                                     ],
                                     [
                                       "Date",
-                                      "Aug 1, 2026 03:23"
+                                      "Feb 18, 2026 05:12"
                                     ],
                                     [
                                       "Reason",
-                                      "Overdose (disorder)"
+                                      "Asthma (disorder)"
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician abf8d10f3e"
+                                      "Fictional Clinician 7a6a9654a0"
                                     ]
                                   ],
                                   [
@@ -1965,7 +2145,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Nov 28, 2025 17:22"
+                                      "Feb 11, 2026 05:12"
                                     ],
                                     [
                                       "Reason",
@@ -1973,7 +2153,7 @@
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician eff8b458b9"
+                                      "Fictional Clinician ffcadd02fb"
                                     ]
                                   ],
                                   [
@@ -1983,33 +2163,15 @@
                                     ],
                                     [
                                       "Date",
-                                      "Nov 21, 2025 17:22"
+                                      "Oct 20, 2025 06:12"
                                     ],
                                     [
                                       "Reason",
-                                      "Hyperlipidemia (disorder)"
+                                      "Contraception care (regime/therapy)"
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician eff8b458b9"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Encounter",
-                                      "Office Visit – Internal Medicine"
-                                    ],
-                                    [
-                                      "Date",
-                                      "Nov 14, 2025 17:22"
-                                    ],
-                                    [
-                                      "Reason",
-                                      ""
-                                    ],
-                                    [
-                                      "Provider",
-                                      "Fictional Clinician d823a5fa8e"
+                                      "Fictional Clinician 0e0ee00ca5"
                                     ]
                                   ]
                                 ]
@@ -2074,7 +2236,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Nov 2, 2026 07:14"
+                                      "Nov 2, 2026 07:15"
                                     ]
                                   ],
                                   [
@@ -2104,7 +2266,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Ankle pain after fall"
+                                      "Cough and shortness of breath"
                                     ]
                                   ]
                                 ]
@@ -2135,11 +2297,29 @@
                                   [
                                     [
                                       "Order",
-                                      "Ankle X-ray"
+                                      "CBC, BMP"
                                     ],
                                     [
                                       "Requested",
-                                      "Nov 2, 2026 07:24"
+                                      "Nov 2, 2026 07:25"
+                                    ],
+                                    [
+                                      "Priority",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "Active order; no linked final result in supplied chart"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Chest X-ray"
+                                    ],
+                                    [
+                                      "Requested",
+                                      "Nov 2, 2026 07:25"
                                     ],
                                     [
                                       "Priority",

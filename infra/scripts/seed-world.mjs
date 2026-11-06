@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 // Materialize a world day as real FHIR worklists. Existing resources are never overwritten.
 import { fictionalize } from '../../scripts/fictional-identities.mjs';
-import { MedplumClient } from '@medplum/core';
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { loadEnv, PERSONA_SYSTEM, REPO_ROOT } from './lib.mjs';
@@ -345,179 +344,15 @@ function medication(o, subject, encounter, requester, authoredOn, data, patientI
       doseAndRate: [{ doseQuantity: { value: o.doseTenths / 10, unit: o.unit, system: UCUM, code: unit } }] }] };
 }
 
-export async function seededResources(client, day) {
-  const result = [];
-  for (const type of SEED_TYPES) {
-    for await (const page of client.searchResourcePages(type, { _tag: `${WORLD_SYSTEM}|day${day}`, _count: '1000' })) {
-      for (const r of page) {
-        if (!r.identifier?.some((i) => i.system === WORLD_SYSTEM && i.value?.startsWith(`day${day}-`))) {
-          throw new Error(`Refusing to manage ${type}/${r.id}: day tag without seed identifier`);
-        }
-        result.push(r);
-      }
-    }
-  }
-  return result;
-}
-
-async function transaction(client, entry) {
-  if (!entry.length) return;
-  const response = await client.executeBatch({ resourceType: 'Bundle', type: 'transaction', entry });
-  if (response.entry?.length !== entry.length || response.entry.some((e) => !/^2/.test(e.response?.status ?? ''))) {
-    throw new Error(`Transaction failed: ${JSON.stringify(response)}`);
-  }
-  return response;
-}
-
-export async function seed(client, data, entries, { resetDay, dryRun } = {}) {
-  let existing = await seededResources(client, data.day);
-  if (resetDay && existing.length) {
-    console.log(`${dryRun ? 'Would reset' : 'Resetting'} day ${data.day}: ${existing.length} seeded resources only`);
-    if (!dryRun) await transaction(client, existing.map((r) => ({ request: { method: 'DELETE', url: `${r.resourceType}/${r.id}` } })));
-    existing = [];
-  }
-  const byIdentifier = new Map();
-  for (const r of existing) {
-    const value = r.identifier.find((i) => i.system === WORLD_SYSTEM).value;
-    if (byIdentifier.has(value)) throw new Error(`Duplicate seeded identifier ${value}`);
-    byIdentifier.set(value, r);
-  }
-  const replacements = new Map(entries.map((e) => {
-    const r = byIdentifier.get(e.resource.identifier.find((i) => i.system === WORLD_SYSTEM).value);
-    return [e.fullUrl, r ? `${r.resourceType}/${r.id}` : e.fullUrl];
-  }));
-  const rewrite = (v) => {
-    if (Array.isArray(v)) return v.map(rewrite);
-    if (!v || typeof v !== 'object') return v;
-    return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, k === 'reference' ? replacements.get(x) ?? x : rewrite(x)]));
-  };
-  const pending = new Map(entries.filter((e) => replacements.get(e.fullUrl) === e.fullUrl).map((e) => [e.fullUrl, e]));
-  const missing = [];
-  const visiting = new Set();
-  const visit = (entry) => {
-    if (!pending.has(entry.fullUrl)) return;
-    if (visiting.has(entry.fullUrl)) throw new Error(`Seed reference cycle ${entry.fullUrl}`);
-    visiting.add(entry.fullUrl);
-    const walk = (v) => {
-      if (!v || typeof v !== 'object') return;
-      if (v.reference?.startsWith('urn:uuid:') && pending.has(v.reference)) visit(pending.get(v.reference));
-      for (const x of Object.values(v)) if (typeof x === 'object') walk(x);
-    };
-    walk(entry.resource);
-    visiting.delete(entry.fullUrl);
-    pending.delete(entry.fullUrl);
-    missing.push(entry);
-  };
-  for (const entry of entries) visit(entry);
-  console.log(`${dryRun ? 'Would seed' : 'Seeding'} day ${data.day} (${data.date}): ${missing.length} new, ${entries.length - missing.length} already seeded`);
-  // Medplum limits conditional-create (serializable) transactions to eight entries.
-  // Topological batches keep all dependencies in this batch or a prior committed batch;
-  // interrupted runs resume by identifier, without overwriting clinical work.
-  if (!dryRun) for (let i = 0; i < missing.length; i += 8) {
-    const batch = missing.slice(i, i + 8).map(rewrite);
-    const response = await transaction(client, batch);
-    for (const [j, e] of batch.entries()) {
-      const location = response.entry[j].response?.location;
-      const r = response.entry[j].resource;
-      const reference = r?.id ? `${r.resourceType}/${r.id}` : location?.match(/([A-Z][A-Za-z]+\/[0-9a-f-]{36})/)?.[1];
-      if (!reference) throw new Error(`Missing created reference for ${e.fullUrl}`);
-      replacements.set(e.fullUrl, reference);
-    }
-  }
-}
-
-export async function printWorklists(client, data, practitioners) {
-  const tag = `${WORLD_SYSTEM}|day${data.day}`;
-  const count = async (type, query) => {
-    const params = new URLSearchParams({ _tag: tag, _summary: 'count' });
-    for (const [k, v] of Object.entries(query)) params.append(k, v);
-    return (await client.search(type, params)).total ?? 0;
-  };
-  const rows = [];
-  for (const p of Object.keys(SHIFTS)) {
-    const pr = practitioners[p];
-    let counts;
-    if (p === 'P1') counts = { appointments: await count('Appointment', { actor: pr, status: 'booked' }),
-      results: await count('Task', { owner: pr, code: `${INFRA}|result-review`, status: 'requested' }),
-      abnormal: await count('Task', { owner: pr, code: `${INFRA}|result-review`, priority: 'urgent', status: 'requested' }),
-      refills: await count('Task', { owner: pr, code: `${INFRA}|refill-request`, status: 'requested' }) };
-    if (p === 'P2') counts = { ed: await count('Encounter', { participant: pr, class: 'EMER', status: 'in-progress' }),
-      weights: await count('Observation', { code: 'http://loinc.org|29463-7', '_tag': `${WORKLIST_SYSTEM}|P2-facts` }) };
-    if (p === 'P3') counts = { census: await count('Encounter', { participant: pr, class: 'IMP', status: 'in-progress' }),
-      mar: await count('MedicationRequest', { category: 'inpatient', status: 'active' }),
-      highAlert: await count('MedicationRequest', { category: 'inpatient', status: 'active', _tag: `${INFRA}|high-alert` }) };
-    if (p === 'P4') counts = { appointments: await count('Appointment', { actor: pr, status: 'booked' }),
-      weights: await count('Observation', { code: 'http://loinc.org|29463-7', '_tag': `${WORKLIST_SYSTEM}|P4-facts` }) };
-    if (p === 'P5') counts = { appointments: await count('Appointment', { actor: pr, status: 'booked' }),
-      orPlanned: await count('ServiceRequest', { performer: pr, '_tag': `${WORKLIST_SYSTEM}|P5-or`, status: 'active' }),
-      orToday: await count('ServiceRequest', { performer: pr, '_tag': `${WORKLIST_SYSTEM}|P5-or`, occurrence: data.date, status: 'active' }),
-      consults: await count('ServiceRequest', { performer: pr, code: 'http://snomed.info/sct|11429006', status: 'active' }),
-      rounding: await count('Task', { owner: pr, '_tag': `${WORKLIST_SYSTEM}|P5-rounding`, status: 'requested' }) };
-    rows.push({ persona: p, ...counts });
-    console.log(`${p}: ${Object.entries(counts).map(([k, v]) => `${k}=${v}`).join(' ')}`);
-  }
-  return rows;
-}
-
-export async function verifyReferences(client, data, patients, practitioners) {
-  const resources = await seededResources(client, data.day);
-  const identifiers = new Set(resources.flatMap((r) => r.identifier?.filter((i) => i.system === WORLD_SYSTEM).map((i) => i.value) ?? []));
-  for (const e of buildResources(data, patients, practitioners)) {
-    const expected = e.resource.identifier.find((i) => i.system === WORLD_SYSTEM).value;
-    if (!identifiers.has(expected)) throw new Error(`Incomplete day ${data.day}: missing ${expected}; rerun make seed for this day`);
-  }
-  const known = new Set([...Object.values(patients), ...Object.values(practitioners),
-    ...resources.map((r) => `${r.resourceType}/${r.id}`)]);
-  const other = new Set();
-  const walk = (v) => {
-    if (!v || typeof v !== 'object') return;
-    if (v.reference && !known.has(v.reference) && !v.reference.startsWith('#')) other.add(v.reference);
-    // Medplum's server-added meta.author/compartment are administrative references;
-    // client credentials may read the clinical graph without access to those resources.
-    for (const [k, x] of Object.entries(v)) if (k !== 'meta' && typeof x === 'object') walk(x);
-  };
-  resources.forEach(walk);
-  for (const reference of other) {
-    if (!/^[A-Z][A-Za-z]+\/[a-f0-9-]{36}$/.test(reference)) throw new Error(`Unresolved world reference: ${reference}`);
-    await client.readReference(ref(reference));
-  }
-  console.log(`Verified references across ${resources.length} day-${data.day} resources`);
-  return resources;
-}
-
+/** Import the complete dated baseline; reruns never overwrite a live stream. */
 export async function main(args = process.argv.slice(2)) {
+  loadEnv();
   const opts = options(args);
   if (!opts) return;
-  const data = loadWorld(opts); // Validate files and arguments before any backend mutation.
-  loadEnv();
-  for (const k of ['MEDPLUM_BASE_URL', 'MEDPLUM_CLIENT_ID', 'MEDPLUM_CLIENT_SECRET']) {
-    if (!process.env[k]) throw new Error(`${k} not set; run make setup`);
-  }
-  const client = new MedplumClient({ baseUrl: process.env.MEDPLUM_BASE_URL });
-  await client.startClientLogin(process.env.MEDPLUM_CLIENT_ID, process.env.MEDPLUM_CLIENT_SECRET);
-  if (!client.getProject()?.features?.includes('transaction-bundles')) throw new Error('Run make setup to enable transaction-bundles');
-  const patients = {};
-  for await (const page of client.searchResourcePages('Patient', { identifier: 'https://github.com/synthetichealth/synthea|', _count: '1000' })) {
-    for (const p of page) for (const i of p.identifier ?? []) {
-      if (i.system === 'https://github.com/synthetichealth/synthea') patients[i.value] = `Patient/${p.id}`;
-    }
-  }
-  const practitioners = {};
-  for (const p of Object.keys(PERSONAS)) {
-    const r = await client.searchOne('Practitioner', { identifier: `${PERSONA_SYSTEM}|${p}` });
-    if (!r) throw new Error(`Practitioner ${p} missing; run make setup`);
-    practitioners[p] = `Practitioner/${r.id}`;
-  }
-  if (!opts.verifyOnly) await seed(client, data, buildResources(data, patients, practitioners), opts);
-  if (!opts.dryRun) {
-    const resources = await verifyReferences(client, data, patients, practitioners);
-    await printWorklists(client, data, practitioners);
-    if (!opts.verifyOnly) writeFileSync(resolve(REPO_ROOT, "infra/seeded-world-day.json"), JSON.stringify({ date: data.date, day: data.day }) + "\n");
-    const prns = resources.filter((r) => r.resourceType === 'MedicationRequest' && r.category?.some((c) => c.coding?.some((v) => v.code === 'inpatient')) && r.dosageInstruction?.some((d) => d.asNeededBoolean));
-    console.log(`P3: PRN orders=${prns.length}`);
-  }
+  if (opts.resetDay) throw new Error('Resetting live data is forbidden; start a distinct compose project');
+  const { spawnSync } = await import('node:child_process');
+  const result = spawnSync(process.execPath, ['--experimental-strip-types', resolve(REPO_ROOT, 'services/commit/src/provision.ts'),
+    '--world', opts.world, '--day', String(opts.day), ...(opts.dryRun ? ['--dry-run'] : []), ...(opts.verifyOnly ? ['--verify-only'] : []), ...(process.env.SYNTHETIC_HOSPITAL === '0' ? [] : ['--hospital'])], { cwd: REPO_ROOT, env: process.env, stdio: 'inherit' });
+  if (result.status !== 0) throw new Error('Commit-service import failed');
 }
-
-if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
-  main().catch((err) => { console.error('seed-world failed:', err?.outcome ? JSON.stringify(err.outcome) : err.message); process.exitCode = 1; });
-}
+if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main().catch(e => { console.error(e); process.exitCode = 1; });

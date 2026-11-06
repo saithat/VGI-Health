@@ -5,7 +5,7 @@
  *
  * The index format is read leniently because the infra lane owns it:
  * - an array of entries, or an object with `patients` / `entries` / `items`;
- * - each entry: `id` | `patientId` | `medplumId` (optional), and a bundle path
+ * - each entry: `id` | `patientId` | `storeId` (optional), and a bundle path
  *   in `file` | `bundle` | `path` | `bundlePath` | `filename` (relative to the
  *   index file). If no path is given, `<id>.json` and `bundles/<id>.json` are tried.
  * - an entry may also be a bare string (the bundle path).
@@ -344,7 +344,7 @@ function indexEntries(index: unknown): IndexEntry[] {
         : asArray(getPath(index, "items"));
   return list.map((e) => {
     if (typeof e === "string") return { id: undefined, file: e };
-    const id = getString(e, "id") ?? getString(e, "patientId") ?? getString(e, "medplumId");
+    const id = getString(e, "id") ?? getString(e, "patientId") ?? getString(e, "storeId");
     const file = getString(e, "file") ?? getString(e, "bundle") ?? getString(e, "path") ?? getString(e, "bundlePath") ?? getString(e, "filename");
     return { id, file };
   });

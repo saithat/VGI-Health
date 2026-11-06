@@ -7,13 +7,15 @@ import type {
 } from "../../../lean/generated/ehr-types";
 
 const issuer =
-  import.meta.env.VITE_KEYCLOAK_ISSUER ?? "http://localhost:8180/realms/vgi";
+  import.meta.env.VITE_KEYCLOAK_ISSUER ?? "http://localhost:18180/realms/vgi";
 const clientId = "vgi-mar";
 const base = "/commit";
 const workflow = () =>
   new URLSearchParams(location.search).get("workflow") === "adt"
     ? "adt"
-    : "mar";
+    : new URLSearchParams(location.search).get("workflow") === "mar"
+      ? "mar"
+      : "chart";
 const callback = () => `${location.origin}/?workflow=${workflow()}`;
 const tokenSchema = z.object({
   access_token: z.string(),
@@ -55,7 +57,14 @@ const b64 = (bytes: Uint8Array) =>
 export async function loginMar(username?: string) {
   const verifier = b64(crypto.getRandomValues(new Uint8Array(32)));
   const state = b64(crypto.getRandomValues(new Uint8Array(32)));
-  sessionStorage.setItem("vgi.mar.login", JSON.stringify({ verifier, state }));
+  sessionStorage.setItem(
+    "vgi.mar.login",
+    JSON.stringify({
+      verifier,
+      state,
+      returnTo: location.pathname + location.search,
+    }),
+  );
   const challenge = b64(
     new Uint8Array(
       await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier)),
@@ -90,7 +99,11 @@ export async function restoreMar(): Promise<MarUser | undefined> {
     throw new Error(`Keycloak login: ${query.get("error")}`);
   if (query.has("code")) {
     const pending = z
-      .object({ verifier: z.string(), state: z.string() })
+      .object({
+        verifier: z.string(),
+        state: z.string(),
+        returnTo: z.string().optional(),
+      })
       .parse(JSON.parse(sessionStorage.getItem("vgi.mar.login") ?? "null"));
     sessionStorage.removeItem("vgi.mar.login");
     if (pending.state !== query.get("state"))
@@ -98,7 +111,11 @@ export async function restoreMar(): Promise<MarUser | undefined> {
     const code = query.get("code");
     if (!code) throw new Error("Missing authorization code");
     // Remove the one-use authorization code before any rendering or other requests.
-    history.replaceState(null, "", `/?workflow=${workflow()}`);
+    history.replaceState(
+      null,
+      "",
+      pending.returnTo ?? `/?workflow=${workflow()}`,
+    );
     await tokenRequest({
       grant_type: "authorization_code",
       code,
@@ -106,16 +123,22 @@ export async function restoreMar(): Promise<MarUser | undefined> {
       code_verifier: pending.verifier,
     });
   }
+  if (!tokens && sessionStorage.getItem("vgi.oidc.session") === "1") {
+    await loginMar();
+    return undefined;
+  }
+  if (tokens) sessionStorage.setItem("vgi.oidc.session", "1");
   return tokens ? userSchema.parse(await marRequest("/me")) : undefined;
 }
 export function logoutMar() {
+  sessionStorage.removeItem("vgi.oidc.session");
   tokens = undefined;
   location.assign(
     `${issuer}/protocol/openid-connect/logout?${new URLSearchParams({ client_id: clientId, post_logout_redirect_uri: callback() })}`,
   );
 }
 async function accessToken() {
-  if (!tokens) throw new Error("Sign in with Keycloak to open MAR.");
+  if (!tokens) throw new Error("Sign in with Keycloak to open the EHR.");
   if (Date.now() >= expiresAt - 30_000) {
     const refreshToken = tokens.refresh_token;
     refreshing ??= tokenRequest({
@@ -154,7 +177,7 @@ export async function marRequest(
           ? "The bed board changed. Review its current state before continuing."
           : error.reason === "dose_already_administered"
             ? "This scheduled dose was already administered. MAR refreshed; review the recorded dose."
-            : "Another nurse changed this chart. MAR refreshed; review the current dose before continuing.",
+            : "This chart changed. Reopen it and review current data before continuing.",
       );
     const message =
       error.reason === "adt_guard"
@@ -180,12 +203,17 @@ export interface MarOpened {
   spec: unknown;
   program: unknown;
   user: MarUser["user"];
-  shared: { version: number };
+  board?: { key: string; version: number }[];
+  shared?: { version: number };
 }
 export async function openMar(input: {
   patient: string;
   release: string;
   workflow: string;
+  expectedVersion?: number | undefined;
+  encounter?: string;
+  task?: string;
+  bed?: string;
 }): Promise<MarOpened> {
   return JSON.parse(JSON.stringify(await marRequest("/sessions", input)));
 }
@@ -206,13 +234,17 @@ export async function marCommit(
   session: MarOpened,
   event: Event,
   requestId: string,
+  commit?: string,
 ): Promise<{ state: State; version: number }> {
   const command = {
     requestId,
     sessionId: session.sessionId,
     revision: session.revision,
     expectedVersion: session.version,
-    expectedSharedVersion: session.shared.version,
+    ...(session.shared && (!commit || commit === "administerMed")
+      ? { expectedSharedVersion: session.shared.version }
+      : {}),
+    ...(commit ? { commit } : {}),
     event,
   };
   try {

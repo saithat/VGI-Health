@@ -192,7 +192,8 @@ it("keeps plain text values and confirmation events in a wrapping textbox", () =
   );
   const { rerender } = render(paint(value));
   const editor = screen.getByRole("textbox", { name: field.label });
-  if (!(editor instanceof HTMLTextAreaElement)) throw new Error("Expected a wrapping textbox");
+  if (!(editor instanceof HTMLTextAreaElement))
+    throw new Error("Expected a wrapping textbox");
   expect(editor.value).toBe(value);
   expect(editor.rows).toBe(1);
   expect(editor.wrap).toBe("soft");
@@ -204,7 +205,9 @@ it("keeps plain text values and confirmation events in a wrapping textbox", () =
   rerender(paint(edited));
   expect(screen.getByRole("textbox", { name: field.label })).toBe(editor);
   expect(editor.value).toBe(edited);
-  fireEvent.click(screen.getByRole("button", { name: `Confirm ${field.label}` }));
+  fireEvent.click(
+    screen.getByRole("button", { name: `Confirm ${field.label}` }),
+  );
   expect(onEvent).toHaveBeenLastCalledWith({ confirm: { comp: field.comp } });
 });
 
@@ -853,6 +856,12 @@ describe("semantic EHR painter", () => {
       expect(
         entryEvent({ ...field, kind: "qty", unit: "kg" }, value),
       ).toBeUndefined();
+    expect(entryEvent({ ...field, kind: "qty", unit: null }, "120")).toEqual({
+      enter: {
+        comp: field.comp,
+        value: { qty: { tenths: 1200, unit: "none" } },
+      },
+    });
     expect(
       entryEvent({ ...field, kind: "qty", unit: "bogus" }, "5"),
     ).toBeUndefined();
@@ -1680,27 +1689,63 @@ it("draws each semantic workflow destination as its exact declared click", () =>
 });
 
 it("timeline forwards exact child events and retains complete source cells", async () => {
-  const model = uiScreenSchema.parse((await import("../src/fixtures/ui/semantic-timeline.json")).default);
+  const model = uiScreenSchema.parse(
+    (await import("../src/fixtures/ui/semantic-timeline.json")).default,
+  );
   const emit = vi.fn();
-  render(<MantineProvider><UiScreenView screen={model} onEvent={emit} /></MantineProvider>);
-  expect(screen.getByRole("list", { name: "Clinical timeline events" }).textContent).toContain("Rash");
+  render(
+    <MantineProvider>
+      <UiScreenView screen={model} onEvent={emit} />
+    </MantineProvider>,
+  );
+  expect(
+    screen.getByRole("list", { name: "Clinical timeline events" }).textContent,
+  ).toContain("Rash");
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   expect(emit).toHaveBeenCalledExactlyOnceWith({ click: { comp: "next" } });
   const sign = screen.getByRole("button", { name: "Sign" });
-  if (!(sign instanceof HTMLButtonElement)) throw new Error("Sign must be a native button");
+  if (!(sign instanceof HTMLButtonElement))
+    throw new Error("Sign must be a native button");
 
   expect(sign.disabled).toBe(true);
 });
 
 it("timeline retains sibling confirmation identity without synthesizing a second control", () => {
   const emit = vi.fn();
-  const node: UiNode = { timeline: { title: "Confirm review", children: [
-    { field: { ...field, comp: "weight", label: "Weight", pendingConfirm: true } },
-    { button: { comp: "weight", label: "Confirm prefilled value", role: "confirm", enabled: true, blockedReason: null, hotkey: null } },
-  ] } };
-  render(<MantineProvider><UiNodeView node={node} onEvent={emit} /></MantineProvider>);
+  const node: UiNode = {
+    timeline: {
+      title: "Confirm review",
+      children: [
+        {
+          field: {
+            ...field,
+            comp: "weight",
+            label: "Weight",
+            pendingConfirm: true,
+          },
+        },
+        {
+          button: {
+            comp: "weight",
+            label: "Confirm prefilled value",
+            role: "confirm",
+            enabled: true,
+            blockedReason: null,
+            hotkey: null,
+          },
+        },
+      ],
+    },
+  };
+  render(
+    <MantineProvider>
+      <UiNodeView node={node} onEvent={emit} />
+    </MantineProvider>,
+  );
   expect(screen.getAllByRole("button")).toHaveLength(1);
-  fireEvent.click(screen.getByRole("button", { name: "Confirm prefilled value" }));
+  fireEvent.click(
+    screen.getByRole("button", { name: "Confirm prefilled value" }),
+  );
   expect(emit).toHaveBeenCalledExactlyOnceWith({ confirm: { comp: "weight" } });
 });
 

@@ -36,7 +36,7 @@ project is not affiliated with any EHR vendor.
 
 | Primary care order entry | ED track board | Inpatient MAR |
 |---|---|---|
-| ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-track-board.png) | ![MAR](app/shots/final/P3-MAR.png) |
+| ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-landing.png) | ![MAR](app/shots/final/P3-chart.png) |
 
 ## How the parts fit
 
@@ -116,40 +116,62 @@ flowchart TB
   AGENT["agent/<br/>nightly discovery + release cadence"]:::untrusted
   AGENT -->|"ehr check / gated release"| NATIVE
 
-  subgraph BACKEND["Backends"]
-    MEDPLUM[("Medplum FHIR R4<br/>Postgres + Redis")]:::trusted
-    COMMIT["services/commit<br/>Node + Postgres + Keycloak"]:::checked
+  subgraph BACKEND["Live authority"]
+    COMMIT["services/commit<br/>typed commands + read model"]:::checked
+    STORE[("Postgres<br/>initial imports + patient event log")]:::trusted
+    OIDC["Keycloak OIDC<br/>identity + signed roles"]:::trusted
   end
-  PAINTER -->|"FHIR transactions<br/>(most workflows)"| MEDPLUM
-  PAINTER -->|"MAR and bed management"| COMMIT
-  COMMIT -->|"ehr serve:<br/>re-checks the guard"| NATIVE
+  IMPORT["Synthea + Synthetic Hospital<br/>FHIR import (offline only)"]:::checked
+  PAINTER -->|"versioned interaction / command"| COMMIT
+  OIDC --> COMMIT
+  COMMIT -->|"ehr serve:<br/>re-check current guard"| NATIVE
+  COMMIT -->|"locked expected-version append<br/>+ atomic projection"| STORE
+  STORE -->|"authorized chart + directory reads"| COMMIT
+  IMPORT --> COMMIT
 ```
 
 Green: proved in Lean. Blue: tested. Grey: trusted. Red: untrusted by design.
 
-**One click.** The painter sends an event to the WASM `step`. If the event is a
-sign, the interpreter evaluates the commit guard first. The new state goes
-through `renderUi`, which produces the screen tree (banner, required reviews,
-enabled or disabled buttons with Lean's reason, modal or inline alerts). If a
-commit happened, the app writes it: as one FHIR transaction to Medplum, or for
-medication administration and bed management through the commit service, which
-re-runs the guard on the server under row locks before a Postgres write.
+**One click.** WASM `step` previews the interaction and `renderUi` supplies the
+screen tree, including honest guard explanations and interruptive alerts. In
+live mode the commit service reconstructs the authenticated clinician's human
+interactions using its pinned release. Every clinical commit and review receipt
+is a typed command with the version of the chart actually read. The service
+locks the patient stream, checks the expected version and runs the native Lean
+guard on current stored data. Only acceptance appends an event and materializes
+its read projection in the same Postgres transaction. MAR also locks the exact
+scheduled dose; clinical placement and administrative ADT commands use the same
+bed streams and native ADT reducer. A rejected or stale command cannot publish
+any of these effects. There is no browser FHIR writer.
+
+Noncommitting interactions preview locally and are submitted as an ordered
+human-event journal before the next command; consecutive valid edits of one field
+retain its final entered value. Server-generated session caches are bound to
+the locked patient version; a successful command invalidates them. They avoid replaying the entire history on
+every keystroke and never replace the final native guard. Request IDs bind exact
+intent and allow recovery of an uncertain outcome without duplicating a write.
+New clinical sessions recover the authenticated actor's current-day review receipts
+only while every reviewed resource version still matches the stored chart.
+Opening an encounter is a separate native role-guarded, versioned administrative
+command; it creates no signed clinical content or bed placement.
 
 ```mermaid
 sequenceDiagram
   actor C as Clinician
   participant P as Painter
   participant L as Lean (WASM)
-  participant S as Medplum / commit service
+  participant S as Commit service
+  participant N as Native Lean
+  participant DB as Postgres
   C->>P: clicks Sign
-  P->>L: step(spec, program, facts, user, state, event)
-  Note over L: guard: role, entries, reviews,<br/>alerts acknowledged
-  L-->>P: new state
-  P->>L: renderUi(new state)
-  L-->>P: screen tree
-  opt a commit was added
-    P->>S: write (FHIR transaction or guarded command)
-  end
+  P->>L: preview human step
+  L-->>P: staged state / guard explanation
+  P->>S: typed command + expected version + request ID
+  S->>DB: lock patient and shared resources
+  S->>N: reconstruct interaction, re-check current guard
+  N-->>S: accept or reject
+  S->>DB: accepted event + projection (atomic CAS)
+  S-->>P: durable result or refusal
 ```
 
 | Directory | Contents |
@@ -157,12 +179,12 @@ sequenceDiagram
 | `lean/` | Rulebook, interpreter, checker, renderer, simulator and all proofs. |
 | `app/` | React app: clinical painter, live and replay modes, dashboard. |
 | `agent/` | Nightly discovery, certified design archives, configurable release cadence and a typed review gate; simulator-only off-shift tailoring sessions (`session*.ts`). Historical nightly protocols remain available. The offline `proposal-quality` harness compares recorded prompt variants without deploying. |
-| `services/commit/` | Postgres commit authority for MAR and ADT, driven by the native Lean binary. |
+| `services/commit/` | Sole live store/writer: native guard, versioned patient event logs, chart/worklist projections, MAR and ADT; offline FHIR bootstrap. |
 | `wasm/` | Lean → C → Emscripten build. |
 | `world/` | Generator of simulated clinical days (patients, tasks, schedules). |
 | `conformance/` | 201 held-out rule scenarios run against every deployed revision. |
 | `releases/` | Vendor releases v1–v3 (rulebook + reference screens). |
-| `infra/` | Docker Compose for Medplum; setup and data loading. |
+| `infra/` | Isolated Postgres + Keycloak + commit Compose stack; initial-state import and identity provisioning. |
 | `explore/` | Quality-diversity archive, descriptors, admitted generators and search. The standalone research harness never deploys; `agent/` reuses these modules for cadence releases. |
 
 Cadence runs use protocol `certified-cadence-archive-v1`. `run-days` accepts
@@ -271,8 +293,9 @@ night/persona order from `runs/core-10day-live/decisions`; missing optional
 recordings omit examples while formal rule context remains required.
 The retired hackathon RN recording is preserved in the `hackathon-final` tag;
 its layouts exceed D5 and are excluded from current replay and audits. The browser audit script accepts `EHR_BIN` for a prebuilt native
-checker. Run the full template audit and then `--personas` sequentially, using
-`TMPDIR` on disk; neither builds Lean:
+checker. Reserve the full pair for final verification on fully merged main;
+lane work uses targeted subsets. Run the template audit and then `--personas`
+sequentially, using `TMPDIR` on disk; neither builds Lean:
 
 ```sh
 TMPDIR=/home/saithat/Projects/run-tmp EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr node scripts/audit-alert-policy.mjs /home/saithat/Projects/run-tmp/cadence-audit-templates
@@ -299,6 +322,129 @@ persona selected in Evolution. View-only playback changes remain inside
 Prompt golden hashes bind the current manual text, deterministic historical
 examples and all 35 retained nightly contexts.
 
+## Local setup and live validation
+
+Requires Node ≥22.18, pnpm 11.8, Docker Compose and the pinned Lean 4.35
+(`lean/lean-toolchain`). Fixture/world/recording data is local and gitignored;
+restore it before importing or running archive tests. FHIR is an initial import
+format only. `fixtures/clinical/overrides.json`, dated world resources and
+`runs/world/2/context/day-01.json` are composed before the immutable import;
+Synthea and Synthetic Hospital identities and references are preserved. The
+loader verifies fixture hashes, normalizes resource IDs/references (including
+stable content-derived IDs for anonymous resources), imports each
+patient exactly once and refuses a changed baseline. Rerunning an identical
+import preserves every later event. There is no online import/reset API.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true
+COMPOSE_PROJECT_NAME=vgi-local make install SYNTHETIC_HOSPITAL=1
+make run APP_PORT=5173
+```
+
+`make install` builds native Lean, installs the workspace dependencies, checks
+the packaged WASM manifest, generates untracked Keycloak credentials, starts
+Postgres/Keycloak, provisions local accounts, imports patient baselines and starts
+the commit service. Rebuild changed Lean sources with `make wasm` before
+installation; `wasm/setup.sh` installs the pinned Emscripten toolchain when needed.
+`make load` and `make seed` use the same immutable baseline loader. The legacy
+world-seed entrypoints load `.env` and resolve paths from the checkout root;
+`SYNTHETIC_HOSPITAL=0` selects a Synthea-only baseline.
+`SEED_ARGS='--world runs/world/2 --day 1'` chooses its dated inputs.
+Include `SYNTHETIC_HOSPITAL=1` on reruns of a cohort imported with hospital data.
+A different baseline belongs in a new tenant/database, never over live history.
+
+Default host ports are commit **18090**, Postgres **55532**, and Keycloak
+**18180**; the app proxies `/commit` to the authority. Login uses Keycloak's
+Authorization Code flow with S256 PKCE. Tokens remain in memory; a reload uses
+the identity provider's existing session. Local persona passwords are in the
+untracked `.env`; the browser never receives a password from the app server.
+The authority loads a recorded persona deployment from `core-10day-live` only
+when its program/certificate and current app, WASM and native build bindings
+match; otherwise it uses the certified canonical role preset. Set
+`COMMIT_RECORDED_RUN` to select another local recording. Baseline login always
+uses the canonical preset. After an approved deployment or rebind, run `make load`
+and restart the selected project's commit container to pin the new release;
+already-open sessions refuse a changed release. The five persona buttons open
+the clinical workspace; RN2 uses the P3 layout with its own authenticated identity
+and review receipts. `/?workflow=mar` opens the
+scheduled-dose authority and `/?workflow=adt` opens bed management. Clinical ED
+admission selects a bed under Encounter options and commits with the board read
+vector. The local ED persona has the signed admitting-clerk role; the surgeon
+has the signed bed-manager role for discharge. Additional 4 West/operator
+accounts are provisioned additively, with their separate local password. Their
+subject bindings are local to `.cache/commit/keycloak-subjects.json` (or
+`KEYCLOAK_SUBJECTS`); isolated checkouts do not share a scratch-file identity map.
+
+The default deployment bounds its administrative board to 64 patients and 64
+beds; a larger imported world must be partitioned explicitly. Initial occupancy
+comes from active imported inpatient encounters. Patient facts and worklists
+come from Postgres projections, and directory filtering happens in SQL before
+JSON decoding. The service accepts no caller-supplied state, facts, role, mapper
+effects or raw transactions. Dimensionless numeric entries use Lean’s `none`
+unit when the optional display unit is absent, so flowsheet vitals and refill
+quantities reach the interpreter. Nursing assessments project to their declared Observation targets, including narrative
+assessment and pain reassessment.
+Local structural R4 types live in
+`app/src/data/fhir-r4.ts`; the pure mapper is called by the authority after
+native acceptance. Worklist selections retain their source encounter; a name/MRN
+lookup prefers the role’s care setting before date and status. Admission bed
+selection is retained across field edits and is bound into the typed command.
+Discharge closes inpatient episodes and removes them from the scheduled-dose
+picker; already-open MAR sessions still require current patient versions and
+the native active-order/encounter guard. Administrative state comparisons are
+canonical across JSONB/native key order, so another patient’s placement cannot
+rewrite an unchanged inpatient episode or advance its chart version. Scoped
+journal reads redact full-board evidence from both clinical and administrative
+ADT events.
+
+`COMPOSE_PROJECT_NAME` selects isolated volumes. `COMMIT_PG_PORT`,
+`COMMIT_PORT`, `KEYCLOAK_PORT` and `KEYCLOAK_BASE_URL` change bindings. Set
+`KEYCLOAK_URL` to the same base for identity provisioning, and set the
+corresponding `DATABASE_URL`, `COMMIT_BASE_URL`, `COMMIT_INTERNAL_URL`,
+`KEYCLOAK_ISSUER` and `VITE_KEYCLOAK_ISSUER` consistently. The realm permits app
+callbacks on ports 4173, 4179, 4186 and 5173. `make infra-down` preserves volumes;
+`make infra-reset` removes only the selected project's volumes. Do not select
+another deployment's project name for either command.
+
+Integration/browser commands against a fresh local stack:
+
+```sh
+cd lean && lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/commit-fixture.json"
+cd ..
+export DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit
+export COMMIT_FIXTURE="$TMPDIR/commit-fixture.json"
+pnpm --filter @vgi/commit test
+pnpm --filter @vgi/commit test:integration
+pnpm --filter app build
+APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test live --project=desktop
+COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop
+```
+
+`scripts/clean-clone-test.sh` validates an offline build and recorded browser
+flows in a scratch clone; it needs no live stack or credentials.
+
+The service browser suites create and clean up their own tenant and listener;
+they use the fresh stack's Postgres and Keycloak and never substitute mocked
+clinical responses. Native/Postgres workflow tests exercise stale-version and
+guard refusal for every workflow family, plus persisted-review recovery,
+author isolation, date expiry and target-version invalidation.
+After all lanes merge, run live and recorded browser checks and the full
+template/persona screen-audit pair once, sequentially, as described above.
+Lane checks cover builds, static checks, fast unit suites and generated artifacts.
+
+The November 6 storage merge binds the app to
+`8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04`.
+The certification matrix remains 15 accepted / 23 rejected. Native semantic
+samples and curated captures were regenerated. The 18 PNGs under
+`app/shots/realism/live-select` retain pre-merge HEAD images and are explicitly
+marked stale in the screenshot manifest. Recording re-certification was stopped
+at the owner's request: local `core-10day` completed, while `core-10day-live`
+remains partially re-certified. Further recording work, live e2e and the full
+browser/audit pass are deferred to final combined-main verification.
+[Merge evidence](docs/audits/storage-merge-20261106.json) records commands,
+results, deferred checks and the stale screenshot paths; recording data stays
+outside git.
+
 ## What is proved
 
 "Proved" means a Lean theorem checked by the kernel using only the standard
@@ -316,8 +462,8 @@ cross-checked by Lean's Comparator (`make verify`).
 | Bed assignments are exclusive; scheduled doses are given at most once; critical results are resolved or escalated by a deadline. | Lean reducers and multi-actor models. |
 
 Not proved: that the rules are clinically complete; the React painter,
-browser and FHIR mapping (tested); Medplum, Postgres and authentication
-(integration-tested); the Lean compiler and Emscripten (trusted); the AI agent
+browser, FHIR import mapping and storage projections (tested); the Node/SQL
+wrapper, Postgres and authentication (integration-tested); the Lean compiler and Emscripten (trusted); the AI agent
 (untrusted; only accepted programs deploy).
 
 ## What parts of a real EHR are replicated
@@ -336,8 +482,8 @@ product.
 | **Documentation** | Visit and operative notes, nursing assessments, vaccine administration, consent, SBAR handoff, administration records. | Note templates, dictation. |
 | **Bed management (ADT)** | Admit, assign, transfer, release, discharge and bed cleaning on a unit bed board, with exclusive beds and atomic transfers. | Enterprise patient flow, transport, multiple facilities. |
 | **Regulatory updates** | Vendor releases v1 → v2 → v3 that add rules, migrated per clinician and re-certified. | Real vendor upgrade tooling. |
-| **Data and storage** | FHIR R4 on Medplum: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Postgres event streams with version checks and live updates for MAR and ADT. | HL7v2 interfaces, enterprise patient index, production audit logging, high availability. |
-| **Identity** | Keycloak single sign-on (PKCE) for MAR and bed management; development password login elsewhere. | Production identity, break-the-glass access. |
+| **Data and storage** | Immutable FHIR R4 imports and Postgres event projections: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Native-guarded, versioned commands and live updates for all workflows. | HL7v2 interfaces, enterprise patient index, production audit logging, high availability. |
+| **Identity** | Keycloak single sign-on (PKCE) for all live clinical, MAR and bed-management workflows. | Production identity, break-the-glass access. |
 | **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. The default policy plans through the current screens; an optional bounded policy learns locations and searches visible controls. | Real clinicians; no user study. Search, practice, forgetting and hidden tastes use uncalibrated simulation assumptions. |
 
 ## Bounded clinician simulation
@@ -636,8 +782,8 @@ program/component/build bindings. Status remains pending until measurement and
 regenerated replay verification finish.
 Rejected recertifications cannot supply conformance targets.
 
-The November 5–6 repair re-certification passed all 66 retained revisions and
-remeasured 100 clinician-days against app
+Before the storage merge, the November 5–6 repair re-certification passed all
+66 retained revisions and remeasured 100 clinician-days against app
 `718ad628861a2850c3073970f856d8583315903dff7e9b759ce9f28f5400ab6c`.
 Every day has Chromium geometry with zero missing targets. Each run's regenerated
 1,284 tasks / 72,636 events agree in native and WASM replay; the live run also
@@ -647,9 +793,9 @@ coordinate files plus their capture-context record through unchanged
 renderer/browser/font/context keys;
 native simulations and replay checks were recomputed independently. Receipts
 preserve all 544 prior atlas files byte-for-byte in the two geometry histories.
-The transfer receipt is `runs/recertification-geometry-reuse.json`.
-The final desktop/narrow regression set passed 28 tests (two opt-in screenshot
-cases skipped), followed by 86 native semantic screenshot captures. The full
+The repair evidence report retains that transfer's counts and input hashes.
+That repair's desktop/narrow regression set passed 28 tests (two opt-in
+screenshot cases skipped), followed by 86 native semantic screenshot captures. The full
 audit pair ran once, sequentially: templates covered 1,826 states / 16,434
 physical measurements and personas covered 1,296 states / 11,664 measurements,
 both with zero findings. [Repair evidence](docs/audits/main-repairs-20261105.json)
@@ -835,6 +981,10 @@ seeded fictional values in the fixture pipeline, and
 `scripts/fictional-identities.test.mjs` fails on any name outside that
 generator.
 
+The import regression checks the restored seed-1 worklists exactly: 20 primary-care
+appointments, 19 refill requests and nine future OR cases, including appointment
+and surgical-case identity agreement with the source world.
+
 World generation preserves the frozen seed-serialization keys and inbox random
 stream internally (`world/src/seed-contract.ts`), so terminology changes do not
 redraw clinical cases. Persisted state uses neutral keys. Worlds 1/2 are immutable
@@ -848,6 +998,11 @@ refreshes named context files without deleting recorded context directories.
 
 Regenerating derived artifacts:
 
+Curated screenshot fidelity covers the complete clinical root, including the
+urgent strip outside the inner shell. Saved P1 UI samples come from the current
+native `ExportTests.lean` inputs; stale source labels require regenerating those
+samples before native/WASM comparison.
+
 - `node scripts/regenerate-full-fixture.mjs`: the mapper's full-profile v3
   fixture.
 - `node scripts/refresh-clinical-fixtures.mjs`: the five painter samples and
@@ -855,7 +1010,10 @@ Regenerating derived artifacts:
   `--live-selection-only` reconstructs the saved live-selection snapshot
   sidecars without rewriting painter fixture inputs. These sidecars supply the
   18 live-selection captures in the opt-in neutral screenshot refresh; images
-  alone do not satisfy its semantic-fidelity coverage check.
+  alone do not satisfy its semantic-fidelity coverage check. Run
+  `live-selection.spec.ts` against the fresh authority after that refresh to
+  replace those references with the actual live PNG/model pairs and update
+  their manifest digests. Selection must issue no clinical commands.
 - `node conformance/verify.mjs <run>` then `node conformance/refresh-evidence.mjs
   <run>`: agreement of independent conformance runs, then the derived case
   reports and checker probes.
@@ -876,7 +1034,6 @@ Regenerating derived artifacts:
 - **Synthetic Hospital** (code MIT; data fully synthetic and redistributable)
   longitudinal records. Park, Chen, Dettmers, preprint 2026,
   https://arxiv.org/abs/2609.30027.
-- **Medplum** (Apache-2.0) FHIR backend.
 - CPT is a trademark of the AMA; only a few code identifiers with original
   short labels are included.
 - Fonts: Noto Sans, Noto Sans Mono and Noto Sans Symbols 2 (SIL OFL 1.1).

@@ -1,4 +1,4 @@
-import type { Bundle, Patient, Resource } from "@medplum/fhirtypes";
+import type { Bundle, Patient, Resource } from "./fhir-r4";
 import type {
   ArtifactBinding,
   ClinicalFacts,

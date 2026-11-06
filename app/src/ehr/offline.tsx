@@ -1,7 +1,6 @@
 import type { PresentationBundle } from "./ui/presentation-types";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
-import "@medplum/react/styles.css";
 import "../styles.css";
 import "../ehr.css";
 // Offline release harness. Uses exactly the production painter and stylesheet.

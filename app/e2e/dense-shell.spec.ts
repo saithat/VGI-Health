@@ -96,7 +96,7 @@ test("curated dense shell review and semantic fidelity", async ({ page }) => {
     );
     if (!model) throw new Error(`Missing ${name} semantic screen`);
     expect(
-      observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
+      observedAria(await page.locator(".clinical-app").ariaSnapshot()),
     ).toEqual(expectedAria(model));
     await page.mouse.move(1, 1);
     await page.screenshot({
@@ -206,7 +206,7 @@ for (const [width, columns] of [
         .evaluate((element) => getComputedStyle(element).display),
     ).toBe(width >= 900 ? "table-cell" : "grid");
     expect(
-      observedAria(await page.locator(".clinical-shell").ariaSnapshot()),
+      observedAria(await page.locator(".clinical-app").ariaSnapshot()),
     ).toEqual(expectedAria(screen));
     await expect(grid.getByRole("button")).toHaveText([
       "Open Quick View",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { Bundle, BundleEntry } from "@medplum/fhirtypes";
+import type { Bundle, BundleEntry } from "../src/data/fhir-r4";
 import { fhirDisplayContext, reviewSources } from "../src/data/fhirContext";
 
 const bundle: Bundle = {

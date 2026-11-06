@@ -11,7 +11,7 @@ if (!url) throw new Error('DATABASE_URL required: unit-gated MAR uses real Postg
 test('4 West unit gate applies to directory, session, cosign and already-open command; unassigned nurses fail closed', { timeout: 60_000 }, async () => {
   const f = await fixture();
   const scheduledTime = '2026-11-02T10:00:00Z';
-  const config = configSchema.parse({ tenant: `mar-unit-${randomUUID()}`, oidc: { issuer: 'http://localhost:8180/realms/vgi', audience: 'vgi-commit', clientId: 'vgi-mar' },
+  const config = configSchema.parse({ tenant: `mar-unit-${randomUUID()}`, oidc: { issuer: 'http://localhost:18180/realms/vgi', audience: 'vgi-commit', clientId: 'vgi-mar' },
     units: { '4-west': { name: '4 West', marOnService: true } },
     actors: [{ subject: 'unit-rn', user: { id: 'unit-rn', role: 'rn' }, modelId: 1, patients: ['unit-patient'], units: ['4-west'] }],
     releases: { nurse: { spec: f.hospitalSpec, program: f.nurseProgram, workflows: { dose: { commit: 'administerMed', shared: { kind: 'dose', order: 9, occurrence: 600 },

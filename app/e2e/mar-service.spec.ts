@@ -95,7 +95,7 @@ async function enter(page: Page, id: string, value: string) {
 async function login(page: Page, username: string) {
   await page.goto("/?workflow=mar");
   await page.getByRole("button", { name: "Sign in with Keycloak" }).click();
-  await expect(page).toHaveURL(/localhost:8180/);
+  await expect(page).toHaveURL(/localhost:18180/);
   await page.getByLabel("Username or email").fill(username);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Sign In", exact: true }).click();
@@ -117,9 +117,9 @@ test("Keycloak login → MAR → administer → second nurse receives the persis
   const errors: string[] = [];
   for (const page of [first, second]) {
     page.on("pageerror", (error) => errors.push(error.message));
-    // A W4 session must never authenticate to or transact with Medplum.
-    await page.route("**/medplum/**", (route) => {
-      errors.push("W4 called Medplum");
+    // Clinical sessions must never publish raw FHIR transactions.
+    await page.route("**/fhir/R4**", (route) => {
+      errors.push("Browser called an external FHIR writer");
       return route.abort();
     });
   }

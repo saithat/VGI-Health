@@ -2,19 +2,19 @@
   "banner": [
     [
       "Patient",
-      "Gutkowski, Alva"
+      "Carter, Zulma Tricia"
     ],
     [
       "DOB",
-      "Apr 5, 1996"
+      "Mar 4, 1943"
     ],
     [
       "MRN",
-      "46914471"
+      "13761514"
     ],
     [
       "Age / sex",
-      "30 / M"
+      "83 / F"
     ],
     [
       "Language",
@@ -26,7 +26,7 @@
     ],
     [
       "Coverage",
-      "Fictional Health Services 462e7f940b"
+      "Fictional Health Services e277448254"
     ],
     [
       "Last encounter",
@@ -42,11 +42,11 @@
     ],
     [
       "Encounter type",
-      "Emergency Visit – Emergency Medicine"
+      "Office Visit – Internal Medicine"
     ],
     [
       "Department",
-      "Emergency Medicine"
+      "Internal Medicine"
     ],
     [
       "Allergies",
@@ -58,7 +58,7 @@
     ],
     [
       "Weight",
-      "65.5 kg · Feb 14, 2025 13:45"
+      "80.9 kg · Oct 22, 2026 01:46"
     ],
     [
       "Isolation",
@@ -77,7 +77,7 @@
         ],
         [
           "workspace.activity|inboxResults",
-          "Inbox · Results (7)"
+          "Inbox · Results (5)"
         ],
         [
           "workspace.activity|inboxMessages",
@@ -85,7 +85,7 @@
         ],
         [
           "workspace.activity|inboxRxRequests",
-          "Inbox · Rx Requests (16)"
+          "Inbox · Rx Requests (21)"
         ],
         [
           "workspace.lookup",
@@ -139,25 +139,25 @@
                 [
                   [
                     "Record",
-                    "Name · Gutkowski, Alva"
+                    "Name · Carter, Zulma Tricia"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Age / sex · 30 / M"
+                    "Age / sex · 83 / F"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "MRN · 46914471"
+                    "MRN · 13761514"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "DOB · Apr 5, 1996"
+                    "DOB · Mar 4, 1943"
                   ]
                 ]
               ]
@@ -223,7 +223,7 @@
                 [
                   [
                     "Record",
-                    "primary performer · Fictional Clinician 9ab77356a1"
+                    "primary performer · Fictional Clinician 00d40819c0"
                   ]
                 ]
               ]
@@ -239,31 +239,31 @@
                 [
                   [
                     "Record",
-                    "Encounter · Emergency Visit – Emergency Medicine"
+                    "Encounter · Office Visit – Internal Medicine"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Department · Emergency Medicine"
+                    "Department · Internal Medicine"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Location · Fictional Health Services 1c1a16f00b"
+                    "Location · Fictional Health Services a5757d72f3"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Admitted / start · Jun 13, 2026 14:45"
+                    "Admitted / start · Oct 22, 2026 01:46"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "LOS · 0d 1h (recorded stay)"
+                    "LOS · 0d 0h (recorded stay)"
                   ]
                 ],
                 [
@@ -285,7 +285,7 @@
                 [
                   [
                     "Record",
-                    "Measured weight · 65.5 kg · 2025-02-14T13:45:36-08:00"
+                    "Measured weight · 80.9 kg · 2026-10-22T01:46:32-07:00"
                   ]
                 ]
               ]
@@ -301,43 +301,43 @@
                 [
                   [
                     "Record",
-                    "Body Height 163.3 cm (Feb 14, 2025 13:45)"
+                    "Body Height 157.9 cm (Oct 22, 2026 01:46)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} (Feb 14, 2025 13:45)"
+                    "Pain severity - 0-10 verbal numeric rating [Score] - Reported 2 {score} (Oct 22, 2026 01:46)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body Weight 65.5 kg (Feb 14, 2025 13:45)"
+                    "Body Weight 80.9 kg (Oct 22, 2026 01:46)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Body mass index (BMI) [Ratio] 24.58 kg/m2 (Feb 14, 2025 13:45)"
+                    "Body mass index (BMI) [Ratio] 32.45 kg/m2 (Oct 22, 2026 01:46)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Blood pressure panel with all children optional 112/69 mm[Hg] (Feb 14, 2025 13:45)"
+                    "Blood pressure panel with all children optional 101/69 mm[Hg] (Oct 22, 2026 01:46)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Heart rate 63 /min (Feb 14, 2025 13:45)"
+                    "Heart rate 67 /min (Oct 22, 2026 01:46)"
                   ]
                 ],
                 [
                   [
                     "Record",
-                    "Respiratory rate 13 /min (Feb 14, 2025 13:45)"
+                    "Respiratory rate 12 /min (Oct 22, 2026 01:46)"
                   ]
                 ]
               ]
@@ -353,7 +353,7 @@
                 [
                   [
                     "Record",
-                    "Active/on-hold orders · 0"
+                    "Active/on-hold orders · 9"
                   ]
                 ]
               ]
@@ -365,7 +365,152 @@
               "display": "list",
               "infoId": "problemList",
               "label": "Active Problems",
-              "rows": []
+              "rows": [
+                [
+                  [
+                    "Record",
+                    "Chronic congestive heart failure (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic kidney disease stage 2 (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Microalbuminuria due to type 2 diabetes mellitus (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Atrial fibrillation (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "History of myocardial infarction (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Acute ST segment elevation myocardial infarction (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic kidney disease stage 1 (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Disorder of kidney due to diabetes mellitus (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic low back pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Chronic neck pain (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Osteoporosis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Dependent drug abuse (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "History of coronary artery bypass grafting (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Abnormal findings diagnostic imaging heart+coronary circulat (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Ischemic heart disease (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Gingivitis (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Hyperlipidemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Metabolic syndrome X (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Essential hypertension (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Anemia (disorder) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Prediabetes (finding) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Past pregnancy history of miscarriage (situation) (active)"
+                  ]
+                ],
+                [
+                  [
+                    "Record",
+                    "Body mass index 30+ - obesity (finding) (active)"
+                  ]
+                ]
+              ]
             }
           },
           {
@@ -378,7 +523,7 @@
                 [
                   [
                     "Record",
-                    "Jun 13, 2026 14:45 · History and physical note · Fictional Clinician 9ab77356a1 · Unknown · \n2026-06-13\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 30 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History) · current"
+                    "Oct 22, 2026 01:46 · History and physical note · Fictional Clinician 00d40819c0 · Unknown · \n2026-10-22\n\n# Chief Complaint\n- Hunger\n- Fatigue\n- Thirst\n\n\n# History of Present Illness\nZulma is a 83 year-old nonhispanic white female. Patient has a history of overdose (disorder), encounter for antineoplastic radiation therapy, fracture of ankle (disorder), medication review… (excerpt; full note in Chart History) · current"
                   ]
                 ]
               ]
@@ -457,7 +602,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Gutkowski, Alva"
+                                      "Carter, Zulma Tricia"
                                     ]
                                   ],
                                   [
@@ -467,7 +612,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "30 / M"
+                                      "83 / F"
                                     ]
                                   ],
                                   [
@@ -477,7 +622,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "46914471"
+                                      "13761514"
                                     ]
                                   ],
                                   [
@@ -487,7 +632,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Apr 5, 1996"
+                                      "Mar 4, 1943"
                                     ]
                                   ],
                                   [
@@ -497,7 +642,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Emergency Visit – Emergency Medicine"
+                                      "Office Visit – Internal Medicine"
                                     ]
                                   ],
                                   [
@@ -507,7 +652,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Emergency Medicine"
+                                      "Internal Medicine"
                                     ]
                                   ],
                                   [
@@ -517,7 +662,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Fictional Health Services 1c1a16f00b"
+                                      "Fictional Health Services a5757d72f3"
                                     ]
                                   ],
                                   [
@@ -527,7 +672,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Jun 13, 2026 14:45"
+                                      "Oct 22, 2026 01:46"
                                     ]
                                   ],
                                   [
@@ -537,7 +682,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "0d 1h (recorded stay)"
+                                      "0d 0h (recorded stay)"
                                     ]
                                   ],
                                   [
@@ -577,7 +722,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "Fictional Clinician 9ab77356a1"
+                                      "Fictional Clinician 00d40819c0"
                                     ]
                                   ]
                                 ]
@@ -604,7 +749,120 @@
                                 "display": "table",
                                 "infoId": "chartProblems",
                                 "label": "Records",
-                                "rows": []
+                                "rows": [
+                                  [
+                                    [
+                                      "Problem",
+                                      "Chronic congestive heart failure (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Jul 17, 2025 01:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Chronic kidney disease stage 2 (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Aug 8, 2024 01:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Microalbuminuria due to type 2 diabetes mellitus (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Aug 8, 2024 01:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Atrial fibrillation (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Feb 8, 2024 00:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "History of myocardial infarction (situation)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Jul 12, 2021 03:32"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Acute ST segment elevation myocardial infarction (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Jul 12, 2021 02:11"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Chronic kidney disease stage 1 (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Nov 8, 2018 00:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Problem",
+                                      "Disorder of kidney due to diabetes mellitus (disorder)"
+                                    ],
+                                    [
+                                      "Onset",
+                                      "Nov 8, 2018 00:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ]
+                                  ]
+                                ]
                               }
                             }
                           ],
@@ -628,7 +886,152 @@
                                 "display": "table",
                                 "infoId": "chartMeds",
                                 "label": "Records",
-                                "rows": []
+                                "rows": [
+                                  [
+                                    [
+                                      "Medication",
+                                      "insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "Digoxin 0.125 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet [Percocet]"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Every six hours (qualifier value)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "Furosemide 40 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take as needed."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "Warfarin Sodium 5 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "Alendronic acid 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "verapamil hydrochloride 80 MG Oral Tablet [Calan]"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take verapamil hydrochloride 80 MG Oral Tablet [Calan] by mouth daily."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Medication",
+                                      "lisinopril 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take lisinopril 10 MG Oral Tablet by mouth daily."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Prescriber",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ]
+                                ]
                               }
                             }
                           ],
@@ -731,29 +1134,11 @@
                                   [
                                     [
                                       "Measure",
-                                      "Blood pressure panel with all children optional • Systolic Blood Pressure"
-                                    ],
-                                    [
-                                      "Value",
-                                      "112"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "mm[Hg]"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Jun 21, 2024 14:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
                                       "Blood pressure panel with all children optional • Diastolic Blood Pressure"
                                     ],
                                     [
                                       "Value",
-                                      "71"
+                                      "67"
                                     ],
                                     [
                                       "Unit",
@@ -761,7 +1146,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Jun 21, 2024 14:45"
+                                      "Oct 1, 2026 01:46"
                                     ]
                                   ],
                                   [
@@ -771,7 +1156,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "112/71"
+                                      "101/67"
                                     ],
                                     [
                                       "Unit",
@@ -779,7 +1164,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Jun 21, 2024 14:45"
+                                      "Oct 1, 2026 01:46"
                                     ]
                                   ],
                                   [
@@ -789,7 +1174,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "24.58"
+                                      "32.45"
                                     ],
                                     [
                                       "Unit",
@@ -797,7 +1182,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Jun 21, 2024 14:45"
+                                      "Oct 1, 2026 01:46"
                                     ]
                                   ],
                                   [
@@ -807,7 +1192,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "65.5"
+                                      "80.9"
                                     ],
                                     [
                                       "Unit",
@@ -815,151 +1200,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Jun 21, 2024 14:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Body Height"
-                                    ],
-                                    [
-                                      "Value",
-                                      "163.3"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "cm"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Jun 21, 2024 14:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Respiratory rate"
-                                    ],
-                                    [
-                                      "Value",
-                                      "13"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "/min"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Feb 14, 2025 13:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Heart rate"
-                                    ],
-                                    [
-                                      "Value",
-                                      "63"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "/min"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Feb 14, 2025 13:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Blood pressure panel with all children optional • Systolic Blood Pressure"
-                                    ],
-                                    [
-                                      "Value",
-                                      "112"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "mm[Hg]"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Feb 14, 2025 13:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Blood pressure panel with all children optional • Diastolic Blood Pressure"
-                                    ],
-                                    [
-                                      "Value",
-                                      "69"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "mm[Hg]"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Feb 14, 2025 13:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Blood pressure panel with all children optional"
-                                    ],
-                                    [
-                                      "Value",
-                                      "112/69"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "mm[Hg]"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Feb 14, 2025 13:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Body mass index (BMI) [Ratio]"
-                                    ],
-                                    [
-                                      "Value",
-                                      "24.58"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "kg/m2"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Feb 14, 2025 13:45"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Measure",
-                                      "Body Weight"
-                                    ],
-                                    [
-                                      "Value",
-                                      "65.5"
-                                    ],
-                                    [
-                                      "Unit",
-                                      "kg"
-                                    ],
-                                    [
-                                      "Recorded",
-                                      "Feb 14, 2025 13:45"
+                                      "Oct 1, 2026 01:46"
                                     ]
                                   ],
                                   [
@@ -977,7 +1218,7 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Feb 14, 2025 13:45"
+                                      "Oct 1, 2026 01:46"
                                     ]
                                   ],
                                   [
@@ -987,7 +1228,7 @@
                                     ],
                                     [
                                       "Value",
-                                      "163.3"
+                                      "157.9"
                                     ],
                                     [
                                       "Unit",
@@ -995,7 +1236,169 @@
                                     ],
                                     [
                                       "Recorded",
-                                      "Feb 14, 2025 13:45"
+                                      "Oct 1, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Respiratory rate"
+                                    ],
+                                    [
+                                      "Value",
+                                      "12"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "/min"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Heart rate"
+                                    ],
+                                    [
+                                      "Value",
+                                      "67"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "/min"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Systolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "101"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional • Diastolic Blood Pressure"
+                                    ],
+                                    [
+                                      "Value",
+                                      "69"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Blood pressure panel with all children optional"
+                                    ],
+                                    [
+                                      "Value",
+                                      "101/69"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "mm[Hg]"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body mass index (BMI) [Ratio]"
+                                    ],
+                                    [
+                                      "Value",
+                                      "32.45"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg/m2"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Weight"
+                                    ],
+                                    [
+                                      "Value",
+                                      "80.9"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "kg"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Pain severity - 0-10 verbal numeric rating [Score] - Reported"
+                                    ],
+                                    [
+                                      "Value",
+                                      "2"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "{score}"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Measure",
+                                      "Body Height"
+                                    ],
+                                    [
+                                      "Value",
+                                      "157.9"
+                                    ],
+                                    [
+                                      "Unit",
+                                      "cm"
+                                    ],
+                                    [
+                                      "Recorded",
+                                      "Oct 22, 2026 01:46"
                                     ]
                                   ]
                                 ]
@@ -1022,22 +1425,7 @@
                                 "display": "table",
                                 "infoId": "chartCareGaps",
                                 "label": "Records",
-                                "rows": [
-                                  [
-                                    [
-                                      "Task",
-                                      "Influenza vaccination review"
-                                    ],
-                                    [
-                                      "Status",
-                                      "Chart reminder"
-                                    ],
-                                    [
-                                      "Due",
-                                      "Verify source / eligibility"
-                                    ]
-                                  ]
-                                ]
+                                "rows": []
                               }
                             }
                           ],
@@ -1069,7 +1457,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Feb 14, 2025 13:45"
+                                      "Sep 10, 2026 01:46"
                                     ],
                                     [
                                       "Status",
@@ -1083,7 +1471,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Jun 21, 2024 14:45"
+                                      "Sep 4, 2025 01:46"
                                     ],
                                     [
                                       "Status",
@@ -1097,49 +1485,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Jun 18, 2021 14:45"
-                                    ],
-                                    [
-                                      "Status",
-                                      "completed"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Vaccine",
-                                      "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5mL dose or 50 mcg/0.25mL dose"
-                                    ],
-                                    [
-                                      "Date",
-                                      "Apr 23, 2021 14:45"
-                                    ],
-                                    [
-                                      "Status",
-                                      "completed"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Vaccine",
-                                      "COVID-19, mRNA, LNP-S, PF, 100 mcg/0.5mL dose or 50 mcg/0.25mL dose"
-                                    ],
-                                    [
-                                      "Date",
-                                      "Mar 26, 2021 14:45"
-                                    ],
-                                    [
-                                      "Status",
-                                      "completed"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Vaccine",
-                                      "Influenza, split virus, trivalent, PF"
-                                    ],
-                                    [
-                                      "Date",
-                                      "Jun 15, 2018 14:45"
+                                      "Sep 5, 2024 01:46"
                                     ],
                                     [
                                       "Status",
@@ -1153,7 +1499,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Jun 15, 2018 14:45"
+                                      "Apr 11, 2024 01:46"
                                     ],
                                     [
                                       "Status",
@@ -1163,11 +1509,53 @@
                                   [
                                     [
                                       "Vaccine",
-                                      "Hep B, adult"
+                                      "Influenza, split virus, trivalent, PF"
                                     ],
                                     [
                                       "Date",
-                                      "Jun 15, 2018 14:45"
+                                      "Sep 21, 2023 01:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 15, 2022 01:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "Influenza, split virus, trivalent, PF"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 23, 2021 01:46"
+                                    ],
+                                    [
+                                      "Status",
+                                      "completed"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Vaccine",
+                                      "COVID-19, mRNA, LNP-S, PF, 30 mcg/0.3 mL dose"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Feb 18, 2021 00:46"
                                     ],
                                     [
                                       "Status",
@@ -1202,7 +1590,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Jun 13, 2026 14:45"
+                                      "Oct 22, 2026 01:46"
                                     ],
                                     [
                                       "Type",
@@ -1210,7 +1598,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician 9ab77356a1"
+                                      "Fictional Clinician 00d40819c0"
                                     ],
                                     [
                                       "Title",
@@ -1218,7 +1606,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2026-06-13\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 30 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History)"
+                                      "\n2026-10-22\n\n# Chief Complaint\n- Hunger\n- Fatigue\n- Thirst\n\n\n# History of Present Illness\nZulma is a 83 year-old nonhispanic white female. Patient has a history of overdose (disorder), encounter for antineoplastic radiation therapy, fracture of ankle (disorder), medication review… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1228,7 +1616,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Feb 14, 2025 13:45"
+                                      "Oct 1, 2026 01:46"
                                     ],
                                     [
                                       "Type",
@@ -1236,7 +1624,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician 002b15f222"
+                                      "Fictional Clinician 26f4849cd5"
                                     ],
                                     [
                                       "Title",
@@ -1244,7 +1632,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2025-02-14\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 28 year-old nonhispanic black male. Patient has a history of dental caries, acute bronchitis (disorder), sprain (morphologic abnormality), medication review due (situation), reports of violence … (excerpt; full note in Chart History)"
+                                      "\n2026-10-01\n\n# Chief Complaint\n- Hunger\n- Fatigue\n- Thirst\n\n\n# History of Present Illness\nZulma is a 83 year-old nonhispanic white female. Patient has a history of overdose (disorder), encounter for antineoplastic radiation therapy, fracture of ankle (disorder), medication review… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1254,7 +1642,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Feb 5, 2025 07:45"
+                                      "Sep 17, 2026 01:46"
                                     ],
                                     [
                                       "Type",
@@ -1262,7 +1650,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician 002b15f222"
+                                      "Fictional Clinician ebb5294055"
                                     ],
                                     [
                                       "Title",
@@ -1270,7 +1658,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2025-02-05\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 28 year-old nonhispanic black male. Patient has a history of dental caries, sprain (morphologic abnormality), medication review due (situation), reports of violence in the environment (finding),… (excerpt; full note in Chart History)"
+                                      "\n2026-09-17\n\n# Chief Complaint\n- Hunger\n- Fatigue\n- Thirst\n\n\n# History of Present Illness\nZulma is a 83 year-old nonhispanic white female. Patient has a history of overdose (disorder), encounter for antineoplastic radiation therapy, fracture of ankle (disorder), medication review… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1280,7 +1668,7 @@
                                   [
                                     [
                                       "Date",
-                                      "Jun 21, 2024 14:45"
+                                      "Sep 10, 2026 01:46"
                                     ],
                                     [
                                       "Type",
@@ -1288,7 +1676,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician 24dac8c00e"
+                                      "Fictional Clinician 49db51ec86"
                                     ],
                                     [
                                       "Title",
@@ -1296,7 +1684,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2024-06-21\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 28 year-old nonhispanic black male. Patient has a history of dental caries, sprain (morphologic abnormality), medication review due (situation), sprain of wrist (disorder), viral sinusitis (diso… (excerpt; full note in Chart History)"
+                                      "\n2026-09-10\n\n# Chief Complaint\n- Hunger\n- Fatigue\n- Thirst\n\n\n# History of Present Illness\nZulma is a 83 year-old nonhispanic white female. Patient has a history of overdose (disorder), encounter for antineoplastic radiation therapy, fracture of ankle (disorder), medication review… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1306,7 +1694,7 @@
                                   [
                                     [
                                       "Date",
-                                      "May 15, 2023 14:45"
+                                      "Aug 27, 2026 01:46"
                                     ],
                                     [
                                       "Type",
@@ -1314,7 +1702,7 @@
                                     ],
                                     [
                                       "Author",
-                                      "Fictional Clinician 9ab77356a1"
+                                      "Fictional Clinician 00d40819c0"
                                     ],
                                     [
                                       "Title",
@@ -1322,7 +1710,7 @@
                                     ],
                                     [
                                       "Text",
-                                      "\n2023-05-15\n\n# Chief Complaint\nNo complaints.\n\n# History of Present Illness\nAlva is a 27 year-old nonhispanic black male. Patient has a history of dental caries, medication review due (situation), viral sinusitis (disorder), gingivitis (disorder), stress (finding).\n\n# Social Hist… (excerpt; full note in Chart History)"
+                                      "\n2026-08-27\n\n# Chief Complaint\n- Hunger\n- Fatigue\n- Thirst\n\n\n# History of Present Illness\nZulma is a 83 year-old nonhispanic white female. Patient has a history of overdose (disorder), encounter for antineoplastic radiation therapy, fracture of ankle (disorder), medication review… (excerpt; full note in Chart History)"
                                     ],
                                     [
                                       "Status",
@@ -1353,7 +1741,170 @@
                                 "display": "table",
                                 "infoId": "chartOrders",
                                 "label": "Records",
-                                "rows": []
+                                "rows": [
+                                  [
+                                    [
+                                      "Order",
+                                      "insulin isophane, human 70 UNT/ML / insulin, regular, human 30 UNT/ML Injectable Suspension [Humulin]"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Digoxin 0.125 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Acetaminophen 325 MG / Oxycodone Hydrochloride 10 MG Oral Tablet [Percocet]"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Every six hours (qualifier value)"
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Furosemide 40 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take as needed."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Warfarin Sodium 5 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Alendronic acid 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      ""
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "verapamil hydrochloride 80 MG Oral Tablet [Calan]"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take verapamil hydrochloride 80 MG Oral Tablet [Calan] by mouth daily."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "lisinopril 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take lisinopril 10 MG Oral Tablet by mouth daily."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Oct 22, 2026 01:46"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Order",
+                                      "Simvastatin 10 MG Oral Tablet"
+                                    ],
+                                    [
+                                      "Directions",
+                                      "Take Simvastatin 10 MG Oral Tablet by mouth daily."
+                                    ],
+                                    [
+                                      "Status",
+                                      "active"
+                                    ],
+                                    [
+                                      "Ordered",
+                                      "Dec 12, 2025 00:46"
+                                    ]
+                                  ]
+                                ]
                               }
                             }
                           ],
@@ -1409,7 +1960,7 @@
                                     ],
                                     [
                                       "Detail",
-                                      "SNOMED CT 224299000; recorded: 2014-06-06T15:31:48-07:00"
+                                      "SNOMED CT 224299000; recorded: 1961-04-27T01:39:18-08:00"
                                     ],
                                     [
                                       "Status",
@@ -1419,11 +1970,11 @@
                                   [
                                     [
                                       "Finding",
-                                      "Full-time employment (finding)"
+                                      "Has a criminal record (finding)"
                                     ],
                                     [
                                       "Detail",
-                                      "SNOMED CT 160903007; recorded: 2014-06-06T15:31:48-07:00"
+                                      "SNOMED CT 266948004; recorded: 2004-05-06T02:24:12-07:00"
                                     ],
                                     [
                                       "Status",
@@ -1437,25 +1988,11 @@
                                     ],
                                     [
                                       "Detail",
-                                      "SNOMED CT 314529007; recorded: 2025-02-14T13:45:36-08:00"
+                                      "SNOMED CT 314529007; recorded: 2025-10-30T01:46:32-07:00"
                                     ],
                                     [
                                       "Status",
-                                      "active"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Finding",
-                                      "Social isolation (finding)"
-                                    ],
-                                    [
-                                      "Detail",
-                                      "SNOMED CT 422650009; recorded: 2025-02-14T14:42:02-08:00"
-                                    ],
-                                    [
-                                      "Status",
-                                      "active"
+                                      "resolved"
                                     ]
                                   ],
                                   [
@@ -1465,11 +2002,67 @@
                                     ],
                                     [
                                       "Detail",
-                                      "Never smoked tobacco (finding); date: 2025-02-14T13:45:36-08:00"
+                                      "Never smoked tobacco (finding); date: 2025-11-27T00:46:32-08:00"
                                     ],
                                     [
                                       "Status",
                                       "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Tobacco smoking status"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "Never smoked tobacco (finding); date: 2026-01-29T00:46:32-08:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Stress (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 73595000; recorded: 2026-03-26T02:28:55-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "resolved"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Tobacco smoking status"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "Never smoked tobacco (finding); date: 2026-03-26T01:46:32-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "final"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Finding",
+                                      "Part-time employment (finding)"
+                                    ],
+                                    [
+                                      "Detail",
+                                      "SNOMED CT 160904001; recorded: 2026-05-07T02:32:12-07:00"
+                                    ],
+                                    [
+                                      "Status",
+                                      "resolved"
                                     ]
                                   ]
                                 ]
@@ -1500,29 +2093,11 @@
                                   [
                                     [
                                       "Encounter",
-                                      "Emergency Visit – Emergency Medicine"
-                                    ],
-                                    [
-                                      "Date",
-                                      "Jun 13, 2026 14:45"
-                                    ],
-                                    [
-                                      "Reason",
-                                      "Laceration - injury (disorder)"
-                                    ],
-                                    [
-                                      "Provider",
-                                      "Fictional Clinician 9ab77356a1"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Encounter",
                                       "Office Visit – Internal Medicine"
                                     ],
                                     [
                                       "Date",
-                                      "Feb 14, 2025 13:45"
+                                      "Oct 22, 2026 01:46"
                                     ],
                                     [
                                       "Reason",
@@ -1530,7 +2105,7 @@
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician 002b15f222"
+                                      "Fictional Clinician 00d40819c0"
                                     ]
                                   ],
                                   [
@@ -1540,25 +2115,7 @@
                                     ],
                                     [
                                       "Date",
-                                      "Feb 5, 2025 07:45"
-                                    ],
-                                    [
-                                      "Reason",
-                                      "Acute bronchitis (disorder)"
-                                    ],
-                                    [
-                                      "Provider",
-                                      "Fictional Clinician 002b15f222"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Encounter",
-                                      "Office Visit – Internal Medicine"
-                                    ],
-                                    [
-                                      "Date",
-                                      "Jun 21, 2024 14:45"
+                                      "Oct 1, 2026 01:46"
                                     ],
                                     [
                                       "Reason",
@@ -1566,25 +2123,7 @@
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician 24dac8c00e"
-                                    ]
-                                  ],
-                                  [
-                                    [
-                                      "Encounter",
-                                      "Emergency Visit – Emergency Medicine"
-                                    ],
-                                    [
-                                      "Date",
-                                      "May 15, 2023 14:45"
-                                    ],
-                                    [
-                                      "Reason",
-                                      "Sprain (morphologic abnormality)"
-                                    ],
-                                    [
-                                      "Provider",
-                                      "Fictional Clinician 9ab77356a1"
+                                      "Fictional Clinician 26f4849cd5"
                                     ]
                                   ],
                                   [
@@ -1594,15 +2133,105 @@
                                     ],
                                     [
                                       "Date",
-                                      "May 23, 2022 06:45"
+                                      "Sep 17, 2026 01:46"
                                     ],
                                     [
                                       "Reason",
-                                      "Viral sinusitis (disorder)"
+                                      ""
                                     ],
                                     [
                                       "Provider",
-                                      "Fictional Clinician 002b15f222"
+                                      "Fictional Clinician ebb5294055"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Sep 10, 2026 01:46"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 49db51ec86"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 27, 2026 01:46"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 00d40819c0"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Aug 9, 2026 01:46"
+                                    ],
+                                    [
+                                      "Reason",
+                                      "Chronic congestive heart failure (disorder)"
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician e51af8390c"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "Jun 11, 2026 01:46"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician ebb5294055"
+                                    ]
+                                  ],
+                                  [
+                                    [
+                                      "Encounter",
+                                      "Office Visit – Internal Medicine"
+                                    ],
+                                    [
+                                      "Date",
+                                      "May 28, 2026 01:46"
+                                    ],
+                                    [
+                                      "Reason",
+                                      ""
+                                    ],
+                                    [
+                                      "Provider",
+                                      "Fictional Clinician 00d40819c0"
                                     ]
                                   ]
                                 ]
@@ -1649,7 +2278,7 @@
             ],
             [
               "Value",
-              "Emergency Visit – Emergency Medicine"
+              "Office Visit – Internal Medicine"
             ]
           ],
           [
@@ -1659,7 +2288,7 @@
             ],
             [
               "Value",
-              "Emergency Medicine"
+              "Internal Medicine"
             ]
           ],
           [

@@ -27,7 +27,7 @@
 // Organization/Location/Practitioner (references become display-only with a type), Synthea's
 // bulk-import Provenance (not a review receipt), DiagnosticReports that only duplicate a clinical
 // note or wrap a survey score, screening/assessment procedures older than 12 months, narratives
-// (`text`), US Core meta.profile tags, resource ids (Medplum assigns its own; fullUrls link the
+// (`text`), US Core meta.profile tags, resource ids (Import sources assign its own; fullUrls link the
 // entries), `issued` (= effective time), and CodeableConcept.text that repeats the display.
 // Patients get a deterministic 8-digit MRN (Synthea's MRN is the UUID).
 //
@@ -361,7 +361,7 @@ function trimBundle(raw, cohort) {
     const r = structuredClone(e.resource);
     delete r.text;
     delete r.meta;
-    // Server ids are assigned by Medplum; the fullUrl (urn:uuid:<synthea id>) links entries, and
+    // Server ids are assigned by the store; the fullUrl (urn:uuid:<synthea id>) links entries, and
     // the Patient keeps its Synthea identifier for lookups.
     delete r.id;
     if (r.resourceType !== 'Patient' && r.identifier) r.identifier = r.identifier.filter((i) => i.system !== SYNTHEA_ID_SYSTEM);

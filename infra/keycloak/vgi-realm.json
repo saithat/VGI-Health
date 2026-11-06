@@ -45,13 +45,27 @@
         "http://127.0.0.1:4179/?workflow=adt",
         "http://127.0.0.1:5173/?workflow=adt",
         "http://localhost:5173/?workflow=adt",
-        "http://localhost:4173/?workflow=adt"
+        "http://localhost:4173/?workflow=adt",
+        "http://localhost:4173/?workflow=chart",
+        "http://localhost:4179/?workflow=chart",
+        "http://localhost:5173/?workflow=chart",
+        "http://127.0.0.1:4173/?workflow=chart",
+        "http://127.0.0.1:4179/?workflow=chart",
+        "http://127.0.0.1:5173/?workflow=chart",
+        "http://127.0.0.1:4186/?workflow=chart",
+        "http://127.0.0.1:4186/?workflow=mar",
+        "http://127.0.0.1:4186/?workflow=adt",
+        "http://localhost:4186/?workflow=chart",
+        "http://localhost:4186/?workflow=mar",
+        "http://localhost:4186/?workflow=adt"
       ],
       "webOrigins": [
         "http://127.0.0.1:4179",
         "http://127.0.0.1:5173",
         "http://localhost:5173",
-        "http://localhost:4173"
+        "http://localhost:4173",
+        "http://127.0.0.1:4186",
+        "http://localhost:4186"
       ],
       "attributes": {
         "pkce.code.challenge.method": "S256"
@@ -130,10 +144,14 @@
       "attributes": {
         "persona": [
           "P2"
+        ],
+        "units": [
+          "4-west"
         ]
       },
       "realmRoles": [
-        "physician"
+        "physician",
+        "admitting-clerk"
       ],
       "credentials": [
         {
@@ -154,6 +172,9 @@
       "attributes": {
         "persona": [
           "P3"
+        ],
+        "units": [
+          "4-west"
         ]
       },
       "realmRoles": [
@@ -178,6 +199,9 @@
       "attributes": {
         "persona": [
           "RN2"
+        ],
+        "units": [
+          "4-west"
         ]
       },
       "realmRoles": [
@@ -226,10 +250,14 @@
       "attributes": {
         "persona": [
           "P5"
+        ],
+        "units": [
+          "4-west"
         ]
       },
       "realmRoles": [
-        "surgeon"
+        "surgeon",
+        "bed-manager"
       ],
       "credentials": [
         {

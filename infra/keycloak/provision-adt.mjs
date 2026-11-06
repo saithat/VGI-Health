@@ -1,25 +1,21 @@
 /** Additive dev realm migration. Never deletes/recreates the realm, replaces
  * existing passwords, or changes existing clinical persona roles. */
-import { readFile, writeFile, chmod } from 'node:fs/promises';
+import { readFile, writeFile, chmod, mkdir } from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 const envPath = new URL('../../.env', import.meta.url);
 let env = await readFile(envPath, 'utf8');
 const value = key => process.env[key] ?? env.match(new RegExp(`^${key}=(.+)$`, 'm'))?.[1];
 let adminPassword = value('KEYCLOAK_ADMIN_PASSWORD');
-if (process.argv.includes('--running-dev')) {
-  // Reuse the existing dev container's bootstrap secret in memory only.
-  const entries = JSON.parse(execFileSync('docker', ['inspect', 'vgi-keycloak-keycloak-1'], { encoding: 'utf8' }))[0].Config.Env;
-  adminPassword = entries.find(e => e.startsWith('KC_BOOTSTRAP_ADMIN_PASSWORD='))?.split('=').slice(1).join('=');
-}
-if (!adminPassword) throw new Error('KEYCLOAK_ADMIN_PASSWORD required (or --running-dev for the existing local container)');
+if (!adminPassword) throw new Error('KEYCLOAK_ADMIN_PASSWORD required');
 let password = value('KEYCLOAK_4WEST_PASSWORD');
 if (!password) {
   password = randomBytes(32).toString('hex');
   env += `\nKEYCLOAK_4WEST_PASSWORD=${password}\n`;
   await writeFile(envPath, env, { mode: 0o600 }); await chmod(envPath, 0o600);
 }
-const base = process.env.KEYCLOAK_URL ?? 'http://localhost:8180';
+const base = process.env.KEYCLOAK_URL ?? 'http://localhost:18180';
 const adminRealm = new URL((await fetch(`${base}/admin/`)).url).pathname.split('/')[2];
 if (!adminRealm) throw new Error('Cannot discover the local administrative realm');
 const response = await fetch(`${base}/realms/${adminRealm}/protocol/openid-connect/token`, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -63,11 +59,11 @@ for (const user of realm.users.filter(u => u.attributes?.units)) {
   subjects[user.username] = existing.id;
   // Preserve unrelated attributes/roles and all existing passwords.
   await api(`/users/${existing.id}`, 'PUT', { ...existing, attributes: { ...existing.attributes, units: ['4-west'] } });
-  if (user.groups.length) await api(`/users/${existing.id}/groups/${group.id}`, 'PUT');
+  if (user.groups?.length) await api(`/users/${existing.id}/groups/${group.id}`, 'PUT');
   for (const name of user.realmRoles) await api(`/users/${existing.id}/role-mappings/realm`, 'POST', [await api(`/roles/${name}`)]);
 }
-const manifest = process.env.KEYCLOAK_SUBJECTS ?? `${process.env.TMPDIR}/4west-subjects.json`;
-if (!process.env.TMPDIR && !process.env.KEYCLOAK_SUBJECTS) throw new Error('TMPDIR or KEYCLOAK_SUBJECTS required');
+const manifest = value('KEYCLOAK_SUBJECTS') ?? resolve(fileURLToPath(new URL('../../', import.meta.url)), value('COMMIT_DATA_DIR') ?? '.cache/commit', 'keycloak-subjects.json');
+await mkdir(dirname(manifest), { recursive: true });
 await writeFile(manifest, JSON.stringify(subjects, null, 2), { mode: 0o600 });
 console.log(`Operator subject bindings: ${manifest}`);
 console.log('Dev ADT roles, 4 West RN group/users, unit claims and redirects provisioned. Existing passwords retained.');

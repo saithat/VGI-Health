@@ -1,3 +1,4 @@
+import { completeKeycloakLogin } from "../live-backend";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { ButtonAuditSession } from "../../src/core/buttonAudit";
@@ -142,6 +143,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       });
       await login.waitFor();
       console.log("login", await audit.click(login, undefined, "app"));
+      await completeKeycloakLogin(page, persona === "baseline" ? "P1" : persona);
       await Promise.race([
         page
           .getByLabel("Patient search by name or MRN", { exact: true })
@@ -187,7 +189,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
       const date = page.getByLabel("Worklist date", { exact: true });
       await audit.click(date, () => date.fill("2026-11-02"), "app");
       await page
-        .getByText("Loading Medplum worklist…", { exact: true })
+        .getByText("Loading commit service worklist…", { exact: true })
         .waitFor({ state: "hidden" });
       await audit.click(
         page.getByRole("button", { name: "Refresh worklist", exact: true }),
@@ -195,7 +197,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
         "app",
       );
       await page
-        .getByText("Loading Medplum worklist…", { exact: true })
+        .getByText("Loading commit service worklist…", { exact: true })
         .waitFor({ state: "hidden" });
       const workButtons = await page
         .locator(
@@ -211,7 +213,7 @@ test("app shell: sampled controls have an effect or an explained disabled state"
             .getByLabel("Worklist date", { exact: true })
             .fill("2026-11-02");
           await page
-            .getByText("Loading Medplum worklist…", { exact: true })
+            .getByText("Loading commit service worklist…", { exact: true })
             .waitFor({ state: "hidden" });
         }
         await audit.click(
@@ -723,10 +725,12 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
         // Canonical replay audits need no live service or persona credentials.
         await freshGoto(`/ehr?mode=replay&audit=buttons&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json`);
       } else {
+        await page.context().clearCookies();
         await freshGoto("/?audit=buttons&inspect=1");
         await page.evaluate(() => { localStorage.clear(); sessionStorage.clear(); });
         await page.reload();
         await page.getByRole("button", { name: new RegExp(`^${persona} ·`) }).click();
+        await completeKeycloakLogin(page, persona);
       }
       await Promise.race([
         page
@@ -1081,7 +1085,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             .waitFor({ state: "hidden", timeout: 30000 });
           const validation = page
             .getByRole("dialog", {
-              name: /^(?:Live Medplum encounter|Encounter options)$/,
+              name: /^(?:Live commit service encounter|Encounter options)$/,
               exact: true,
             })
             .getByRole("alert");
@@ -1113,7 +1117,7 @@ test("Lean EHR: breadth-first observed screens, isolated button clicks and real 
             checkedResources.add(link);
             await audit.click(button, undefined, "app");
             const viewer = page.getByRole("dialog", {
-              name: "Saved Medplum resource",
+              name: "Saved commit service resource",
               exact: true,
             });
             const json = viewer.getByLabel("Saved resource JSON", {

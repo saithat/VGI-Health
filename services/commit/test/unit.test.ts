@@ -4,8 +4,9 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Lean } from '../src/lean.ts';
-import { canonical, commandInput, digest, sharedAction, sharedKey } from '../src/types.ts';
+import { canonical, commandInput, configSchema, digest, sharedAction, sharedKey } from '../src/types.ts';
 import { versions } from '../src/store.ts';
+import { projectAdt } from '../src/clinical-adt.ts';
 
 const fake = (code: string, ms = 1000) => new Lean(process.execPath, ms, ['--input-type=module', '-e', code]);
 test('payload hash is canonical, including nested objects, and binds all intent', () => {
@@ -67,4 +68,16 @@ test('supervisor restarts after crash, protocol corruption and timeout; close re
       } finally { l.close(); }
     }
   } finally { await rm(dir, { recursive: true }); }
+});
+
+test('JSONB/native key order cannot rewrite an unchanged inpatient episode', () => {
+  const config = configSchema.parse({ tenant: 'projection-test', units: { west: { name: 'West', marOnService: true } },
+    adt: { patients: ['unrelated'], beds: [{ id: 42, unit: 'west', resource: 'bed-a' }] },
+    actors: [{ token: 'synthetic-projection-test-token-only', user: { id: 'nurse', role: 'rn' }, modelId: 1, patients: ['unrelated'] }], releases: {} });
+  const snapshot = { adt: { admitted: true, bed: 42, id: 'unrelated' }, bundle: { entry: [{ resource: {
+    resourceType: 'Encounter', id: 'episode', meta: { versionId: '7' }, status: 'in-progress', class: { code: 'IMP' }, subject: { reference: 'Patient/unrelated' },
+    location: [{ location: { reference: 'Location/bed-a' }, status: 'active', period: { start: '2026-11-01T10:00:00Z' } }],
+  } }] } };
+  const after = { id: 'unrelated', admitted: true, bed: 42 };
+  assert.strictEqual(projectAdt(snapshot, after, config, 'new-action', '2026-11-05T12:00:00Z'), snapshot.bundle);
 });

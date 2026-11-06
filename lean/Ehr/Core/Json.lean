@@ -77,7 +77,7 @@ structure Task where
   /-- `"P1"` … `"P5"`. -/
   persona : String
   workflow : Workflow
-  /-- Synthea/Medplum Patient id. -/
+  /-- Imported FHIR Patient id. -/
   patientId : String
   /-- Minutes since shift start. -/
   startMin : Nat

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { MedicationRequest } from "@medplum/fhirtypes";
+import type { MedicationRequest } from "../src/data/fhir-r4";
 import { medicationDue, orderTiming } from "../src/data/worklist";
 
 const request: MedicationRequest = {

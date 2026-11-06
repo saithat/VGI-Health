@@ -20,11 +20,30 @@ private def applyJson (α β : Type) [FromJson α] [ToJson β]
     (f : α → β) (input : Json) : Except String Json := do
   pure (toJson (f (← fromJson? input)))
 
+structure EncounterInput where
+  patient : String
+  bundle : Json
+  user : User
+  version : Nat
+  expectedVersion : Nat
+  deriving FromJson
+
+/-- Opening an episode is an administrative command: it cannot sign, place a
+patient in a bed, create reviews, or administer a drug. -/
+def mayOpenEncounter (i : EncounterInput) : Bool :=
+  i.version == i.expectedVersion && Commit.validId i.patient &&
+    [Role.physician, Role.np, Role.surgeon].contains i.user.role &&
+    ((Render.Fhir.bundleResources i.bundle).filter (fun r => Render.Fhir.resourceType r == "Patient")).map
+      (fun r => Render.Fhir.str r "id") == [i.patient]
+
 /-- Transport dispatch uses the same functions as the one-shot native commands. -/
 def dispatch (request : Json) : Except String Json := do
   let op ← (← request.getObjVal? "op").getStr?
   let input ← request.getObjVal? "input"
   match op with
+  | "encounter-open" =>
+    let i : EncounterInput ← fromJson? input
+    pure (Json.mkObj [("accepted", toJson (mayOpenEncounter i))])
   | "adt-commit" =>
     let i : Commit.Adt.Input ← fromJson? input
     pure <| match Commit.Adt.commit i with
@@ -43,6 +62,15 @@ def dispatch (request : Json) : Except String Json := do
       | none => Json.mkObj [("rejected", toJson (
           if i.dose ∈ i.state.shared.administrations.map Prod.fst
           then "dose_already_administered" else "invalid_mar_status_or_guard"))]
+  | "review-check" =>
+    let i : Commit.Request ← fromJson? input
+    let current ← Commit.prepare i
+    let next := step i.spec i.program current.facts i.user .human i.state i.event
+    let added := next.1.receipts.filter (fun r => !i.state.receipts.contains r)
+    pure <| if next.2 == .ok && next.1.commits == i.state.commits && added.length == 1 &&
+        next.1.receipts.length == i.state.receipts.length + 1 then
+      Json.mkObj [("accept", Json.mkObj [("state", toJson next.1)])]
+    else Json.mkObj [("reject", Json.mkObj [("reason", .str "review event must add exactly one native receipt")])]
   | "commit-check" => applyJson Commit.Request Commit.Decision Commit.check input
   | "init" => applyJson InitInput State runInit input
   | "step" => applyJson StepInput StepOutput runStep input

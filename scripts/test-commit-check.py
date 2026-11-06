@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exercise the compiled native JSON boundary without Medplum or credentials.
+"""Exercise the compiled native JSON boundary without the store or credentials.
 
 Run after `cd lean && lake build`; this script runs one sequential Lake command
 to emit the Lean example, then invokes only the compiled ehr binary.

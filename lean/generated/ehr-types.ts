@@ -1680,7 +1680,7 @@ export interface Task {
   persona: string;
   workflow: Workflow;
   /**
-   * Synthea/Medplum Patient id.
+   * Imported FHIR Patient id.
    */
   patientId: string;
   /**

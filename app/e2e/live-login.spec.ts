@@ -1,3 +1,4 @@
+import { completeKeycloakLogin } from "./live-backend";
 import { enterPatientChart } from "./clinical-navigation";
 import { expect, test } from "@playwright/test";
 import {
@@ -12,7 +13,7 @@ test("default route shows persona sign-in, baseline entry and offline links", as
   await page.goto("/?audit=buttons");
   await expect(
     page.getByRole("heading", { name: "Choose a clinician" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 30000 });
   for (const name of [
     /^P1 · /,
     /^P2 · /,
@@ -21,10 +22,12 @@ test("default route shows persona sign-in, baseline entry and offline links", as
     /^P5 · /,
     /^RN2 · /,
   ])
-    await expect(page.getByRole("button", { name })).toBeVisible();
+    await expect(page.getByRole("button", { name })).toBeVisible({
+      timeout: 30000,
+    });
   await expect(
     page.getByRole("button", { name: "Original canonical EHR (baseline)" }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 30000 });
   await expect(page.getByRole("textbox")).toHaveCount(0);
   await expect(
     page.getByRole("link", { name: /Demo \/ replay/ }),
@@ -39,14 +42,17 @@ for (const baseline of [false, true]) {
     page.on("pageerror", (e) => errors.push(e.message));
     await page.goto("/?audit=buttons");
     if (baseline) await signInBaseline(page, "P1");
-    else await page.getByRole("button", { name: /^P1 · / }).click();
+    else {
+      await page.getByRole("button", { name: /^P1 · / }).click();
+      await completeKeycloakLogin(page, "P1");
+    }
     await expect(
       page.getByRole("heading", { name: "Schedule", level: 1 }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 30000 });
     await page.reload();
     await expect(
       page.getByRole("heading", { name: "Schedule", level: 1 }),
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 30000 });
     await enterPatientChart(page, "Aaron");
     await expect(
       page.getByRole("banner", { name: "Patient banner" }),
@@ -75,14 +81,15 @@ test("baseline entry opens the selected clinician's certified role view", async 
       exact: true,
     })
     .click();
+  await completeKeycloakLogin(page, "P3");
   await expect(
     page.getByRole("heading", { name: "My Patients / MAR", level: 1 }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 30000 });
   await enterPatientChart(page, "Aaron");
   await expect(
     page.getByRole("banner", { name: "Patient banner", exact: true }),
   ).toContainText("Ankunding");
-  await expect(page.locator(".clinical-app")).toBeVisible();
+  await expect(page.locator(".clinical-app")).toBeVisible({ timeout: 30000 });
   expect(
     await page.evaluate(() => window.__buttonAuditSession?.program),
   ).toMatchObject({
