@@ -19,7 +19,7 @@ assert.equal(program.patientSelection,true);
 const signing=program.screens.flatMap(s=>s.components).find(c=>commitOf(c)==='signOrders');if(!signing)throw Error('Missing actual sign-order control');
 const inputs=[];
 for(const id of ['d01-P2-W3-001','d01-P2-W3-002']){
- const task=await read(`runs/core-10day-live/trajectories/tasks/${id}.json`),bundle=archivedBundle(await read(task.context.fixtureFile),task.context.segments[0].facts.sourcePatientId);
+ const task=await read(`runs/core-10day/trajectories/tasks/${id}.json`),bundle=archivedBundle(await read(task.context.fixtureFile),task.context.segments[0].facts.sourcePatientId);
  const projection=call('ehr_facts',{bundle:{...bundle,entry:[...bundle.entry,...task.context.resources.map(resource=>({resource}))]},context:{today:task.context.today,now:task.context.startMin,receipts:[],record:[]}});
  const input={spec:structuredClone(spec),program,facts:structuredClone(task.context.segments[0].facts),display:projection.display,user:{id:program.owner,role:'physician'}};
  if(id==='d01-P2-W3-001'){

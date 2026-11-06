@@ -19,7 +19,7 @@ import { RunStore } from '../src/store.js';
 import { fakeWorld, tmp } from './helpers.js';
 import { ScriptedLlm } from './scripted.js';
 
-withData("runs/core-10day-live/decisions").describe("archive-backed agent prompts", () => {
+withData("runs/core-10day/decisions").describe("archive-backed agent prompts", () => {
   let run: RunSummary;
   const rec = (night: number, persona: string): DecisionRecord =>
     decisionRecordSchema.parse(JSON.parse(readFileSync(new RunStore(run.dir).decisionPath(night, persona), 'utf8')));

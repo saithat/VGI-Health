@@ -6,7 +6,7 @@ import { ReplayLlm } from './backends/replay.js';
 import { armCrashHook } from './crash-hook.js';
 import { retryEhr } from './retry-boundaries.js';
 import { retryInfrastructure,infrastructureContext,type InfrastructureRetry } from './infrastructure.js';
-import { contentDigest,writeDayDigest } from './content-digest.js';
+import { contentDigest,writeDayDigest,writeNightDigest } from './content-digest.js';
 import {geometryEhr,type GeometryProvider} from './geometry.js';
 import {InfrastructureError} from './night.js';
 import {noAgentDay} from './no-agent.js';
@@ -51,7 +51,7 @@ import { REPO_ROOT, readJson, writeJson } from './util.js';
 
 export interface RunOptions {
   /** Omit for the historical nightly protocol. Cadence runs have a separate name. */
-  protocol?: 'core-10day-live' | typeof CADENCE_PROTOCOL;
+  protocol?: 'core-10day' | typeof CADENCE_PROTOCOL;
   cadence?: ReleaseCadence;
   departments?: Record<string, string>;
   generatorOnly?: boolean;
@@ -209,13 +209,13 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
-    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day-live', releasePolicy,
+    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', releasePolicy,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
     replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
     interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'raw only; not used'},
-    status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
+    completionProtocol: 'atomic-prefix-v1', status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
     mode: opts.generatorOnly ? 'OFFLINE' : llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
@@ -413,6 +413,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       });
       log(`night ${day} ${id}: ${r.mode} -> ${r.outcome} (v${r.versionBefore} -> v${r.versionAfter}); ${r.candidates.length} candidates, ${r.candidates.filter((e) => e.check.status === 'fail').length} rejected`);
     }));
+    await writeNightDigest(dir,day,personaIds);
     if (nextRelease) inForce = nextRelease;
   }
 

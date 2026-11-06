@@ -17,7 +17,7 @@ import { RunStore } from '../src/store.js';
 import { LEAK_MARKER, fakeWorld, markingEhr, readLlmRecords, tmp } from './helpers.js';
 import { ScriptedLlm } from './scripted.js';
 
-withData("runs/core-10day-live/decisions").describe("archive-backed agent prompts", () => {
+withData("runs/core-10day/decisions").describe("archive-backed agent prompts", () => {
   const PERSONAS = ['P1', 'P2', 'P3', 'P4', 'P5'];
   let world: string;
   let runsRoot: string;

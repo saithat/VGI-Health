@@ -130,7 +130,7 @@ export function CompareTrajectories({
     if (!active) return;
     let alive = true;
     setError("");
-    void loadTrajectoryIndex(runId)
+    void loadTrajectoryIndex(runId, run.manifest.prefixKey)
       .then((loaded) => {
         if (alive) setIndex(loaded);
       })
@@ -140,7 +140,7 @@ export function CompareTrajectories({
     return () => {
       alive = false;
     };
-  }, [runId, active]);
+  }, [runId, active, run.manifest.prefixKey]);
   useEffect(() => {
     let alive = true;
     if (!suppliedFactory)
@@ -269,8 +269,20 @@ export function CompareTrajectories({
     setGroups([]);
     if (left && right && factory) {
       void Promise.all([
-        loadTrajectory(runId, left.entry.file, left.entry.metrics, factory),
-        loadTrajectory(runId, right.entry.file, right.entry.metrics, factory),
+        loadTrajectory(
+          runId,
+          left.entry.file,
+          left.entry.metrics,
+          factory,
+          run.manifest.prefixKey,
+        ),
+        loadTrajectory(
+          runId,
+          right.entry.file,
+          right.entry.metrics,
+          factory,
+          run.manifest.prefixKey,
+        ),
       ])
         .then(([loadedLeft, loadedRight]) => {
           if (active)
@@ -283,7 +295,14 @@ export function CompareTrajectories({
     return () => {
       active = false;
     };
-  }, [pairKey, factory, runId, left?.entry, right?.entry]);
+  }, [
+    pairKey,
+    factory,
+    runId,
+    left?.entry,
+    right?.entry,
+    run.manifest.prefixKey,
+  ]);
 
   useEffect(() => {
     if (!pair || !left || !right) return;
@@ -360,7 +379,7 @@ export function CompareTrajectories({
       setGroups(available);
       setChangeStatus(
         results.some((result) => result.status === "rejected")
-          ? "Some intermediate revisions are not available in this partial run."
+          ? "Some intermediate revisions are not in the completed recording."
           : "",
       );
     });

@@ -15,7 +15,6 @@ export function catalogPlugin(): Plugin {
     },
   };
   function attach(server: Pick<import("vite").ViteDevServer, "middlewares">) {
-    let catalog: Promise<unknown> | undefined;
     server.middlewares.use(async (req, res, next) => {
       const pathname = new URL(req.url ?? "/", "http://localhost").pathname;
       if (
@@ -30,7 +29,7 @@ export function catalogPlugin(): Plugin {
             req,
             res,
             pathname,
-            Buffer.from(JSON.stringify(await (catalog ??= buildCatalog()))),
+            Buffer.from(JSON.stringify(await buildCatalog())),
           );
         } else {
           const directory = pathname.split("/")[1] ?? "";

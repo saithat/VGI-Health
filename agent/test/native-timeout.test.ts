@@ -9,7 +9,7 @@ import {ScriptedLlm} from './scripted.js';
 import {tinyProgram} from '../../lean/generated/ehr-samples.js';
 import {programSchema} from '../src/schema.js';
 import {nativeTimeout,runNative} from '../src/native-process.js';
-withData("runs/core-10day-live/decisions").it('kills a hung real native command, reports its command and deadline, and classifies the manifest',async()=>{
+withData("runs/core-10day/decisions").it('kills a hung real native command, reports its command and deadline, and classifies the manifest',async()=>{
  const dir=await tmp('native-timeout'),binary=path.join(dir,'hung-ehr');
  await writeFile(binary,`#!${process.execPath}\nsetInterval(()=>{},1000);`);await chmod(binary,0o755);
  const ehr=createEhr({fake:false,binary,timeoutMs:40}),program=programSchema.parse(tinyProgram);

@@ -1,3 +1,4 @@
+import { watchRun } from "../dashboard/run-refresh";
 import { SessionReview } from "./SessionReview";
 import { RevisionDetails } from "./RevisionDetails";
 import { useEffect, useMemo, useState } from "react";
@@ -8,7 +9,7 @@ import { AppHeader } from "../ehr/ui/AppHeader";
 import { ClinicalIcon } from "../ehr/ui/Icons";
 import { chartDateForTimelineDay } from "../data/worldChart";
 import { formatDisplayValue } from "../ehr/ui/display";
-import { loadRunSummary, type RunData } from "../dashboard/data";
+import { type RunData } from "../dashboard/data";
 import {
   ehrUrl,
   loadCatalog,
@@ -486,16 +487,29 @@ function BrowseCatalog() {
     let active = true;
     setRun(undefined);
     setRunError("");
-    if (runId)
-      void loadRunSummary(runId)
-        .then((run) => {
-          if (active) setRun(run);
-        })
-        .catch((error: unknown) => {
-          if (active) setRunError(String(error));
-        });
+    const stop = runId
+      ? watchRun(
+          runId,
+          (next) => {
+            if (active) {
+              setRun(next);
+              void loadCatalog()
+                .then((data) => {
+                  if (active) setCatalog(data);
+                })
+                .catch((error) => {
+                  if (active) setRunError(String(error));
+                });
+            }
+          },
+          (error) => {
+            if (active) setRunError(String(error));
+          },
+        )
+      : () => {};
     return () => {
       active = false;
+      stop();
     };
   }, [runId]);
   useEffect(() => {

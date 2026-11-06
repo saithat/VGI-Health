@@ -11,7 +11,7 @@ test('actual overnight bwrap sandbox cannot see held-out scenarios or results', 
   const request = mkdtempSync(path.join(tmpdir(), 'conformance-isolation-'));
   try {
     writeFileSync(path.join(request, 'allowed.json'), '{}');
-    const forbidden = [path.join(root, 'conformance'), path.join(root, 'conformance/scenarios.mjs'), path.join(root, 'runs/core-10day-live/conformance.json')];
+    const forbidden = [path.join(root, 'conformance'), path.join(root, 'conformance/scenarios.mjs'), path.join(root, 'runs/core-10day/conformance.json')];
     // Explicit argv; no shell interpolation of any path.
     const probe = spawnSync('bwrap', confinedArgs(request, '/bin/sh', ['-c',
       'test -r "$1/allowed.json" || exit 10; shift; for p do test ! -e "$p" || exit 11; done; printf confined',

@@ -48,7 +48,7 @@ const call=(name,input)=>{const value=JSON.parse(wasm.call(name,JSON.stringify(i
 const exotic=input=>call('ehr_exotic',input);
 const ehr=createEhr({binary:path.resolve('lean/.lake/build/bin/ehr')});
 const screen=createScreenChecker(ehr,{artifactsDir:path.join(out,'stock-gates'),cacheDir:path.join(out,'stock-screen-cache')});
-const index=await read('runs/core-10day-live/trajectories/index.json');
+const index=await read('runs/core-10day/trajectories/index.json');
 const searchIds=index.tasks.filter(t=>t.persona==='P2'&&t.workflow==='W3'&&t.day===1).slice(0,2);
 if(smoke)searchIds.splice(1);
 const usedPatients=new Set(searchIds.map(t=>t.patient.syntheaId));
@@ -59,7 +59,7 @@ const schedules={search:await read('runs/world/2/schedules/day-01/P2.json'),held
 const scenarios={};
 for(const [split,ids]of Object.entries({search:searchIds,heldout:heldIds})) {
  scenarios[split]=await Promise.all(ids.map(async entry=>{
-  const trajectory=await read(path.join('runs/core-10day-live/trajectories',entry.file));
+  const trajectory=await read(path.join('runs/core-10day/trajectories',entry.file));
   const task=schedules[split].tasks.find(t=>t.id===entry.id);if(!task)throw Error('Missing task');
   const bundle=archivedBundle(await read(trajectory.context.fixtureFile),trajectory.context.segments[0].facts.sourcePatientId);
   const projected=call('ehr_facts',{bundle:{...bundle,entry:[...bundle.entry,...trajectory.context.resources.map(resource=>({resource}))]},context:{today:trajectory.context.today,now:task.startMin,receipts:[],record:[]}});

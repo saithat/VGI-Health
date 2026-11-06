@@ -32,7 +32,7 @@ const output = path.resolve(
 const world = await loadWorld(
   path.resolve(process.argv[3] ?? path.join(root, "runs/world/2")),
 );
-const run = path.join(root, "runs/core-10day-live");
+const run = path.join(root, "runs/core-10day");
 await mkdir(output, { recursive: true });
 await mkdir(path.join(output, "replays"), { recursive: true });
 const json = async (file: string) => JSON.parse(await readFile(file, "utf8"));

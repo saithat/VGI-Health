@@ -6,9 +6,9 @@ import { trajectoryIndexSchema, trajectorySchema } from '../../app/src/dashboard
 import { loadInterpreter, verifyTask } from './index.mjs';
 
 const read = async p => JSON.parse(await readFile(new URL(`../../${p}`, import.meta.url), 'utf8'));
-const directory = 'runs/core-10day-live/trajectories';
+const directory = 'runs/core-10day/trajectories';
 
-test('index schema covers all 1284 tasks and exact event slices with complete context coverage', { skip: dataReason('runs/core-10day-live/trajectories') }, async () => {
+test('index schema covers all 1284 tasks and exact event slices with complete context coverage', { skip: dataReason('runs/core-10day/trajectories') }, async () => {
   const index = trajectoryIndexSchema.parse(await read(`${directory}/index.json`));
   assert.equal(index.tasks.length, 1284);
   assert.deepEqual([...new Set(index.tasks.map(t => t.day))], [1,2,3,4,5,6,7,8,9,10]);
@@ -22,7 +22,7 @@ test('index schema covers all 1284 tasks and exact event slices with complete co
     assert.equal(task.context.fixtureFile, row.patient.fixtureFile);
     assert.deepEqual(task.context.user, row.user);
     assert.equal(task.nativeMismatch, null);
-    const day = await read(`runs/core-10day-live/days/day-${String(row.day).padStart(2, '0')}/${row.persona}.json`);
+    const day = await read(`runs/core-10day/days/day-${String(row.day).padStart(2, '0')}/${row.persona}.json`);
     assert.deepEqual(task.trace, day.trace.filter(e => e.task === row.id));
     assert.equal(task.context.segments.at(-1).goalsMet, row.completed);
     events += row.eventCount;
@@ -44,7 +44,7 @@ test('index schema covers all 1284 tasks and exact event slices with complete co
   assert.equal(trajectoryIndexSchema.safeParse(invalid).success, false);
 });
 
-test('real WASM determinism across three releases, episode resets and baseline trajectories', { skip: dataReason('runs/core-10day-live/trajectories') }, async () => {
+test('real WASM determinism across three releases, episode resets and baseline trajectories', { skip: dataReason('runs/core-10day/trajectories') }, async () => {
   const index = trajectoryIndexSchema.parse(await read(`${directory}/index.json`));
   const interp = await loadInterpreter();
   for (const day of [1, 4, 7]) {

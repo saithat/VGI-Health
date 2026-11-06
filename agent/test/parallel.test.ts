@@ -7,7 +7,7 @@ import {InfrastructureError} from '../src/errors.js';
 import {markingEhr,fakeWorld,tmp} from './helpers.js';
 import {ScriptedLlm} from './scripted.js';
 
-withData("runs/core-10day-live/decisions").describe("archive-backed agent prompts", () => {
+withData("runs/core-10day/decisions").describe("archive-backed agent prompts", () => {
   it('runs five personas concurrently in one layout and replays/resumes deterministically',async()=>{
    const worldDir=await fakeWorld(3),runsRoot=await tmp('parallel');let active=0,peak=0;
    const ehr=markingEhr(),simulate=ehr.simulate.bind(ehr);ehr.simulate=async i=>{active++;peak=Math.max(peak,active);try{await new Promise(r=>setTimeout(r,10));return await simulate(i);}finally{active--;}};

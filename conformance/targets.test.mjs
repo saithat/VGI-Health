@@ -18,8 +18,8 @@ test('all 15 role canonicals are included independently of run personas', () => 
   assert.equal(targets.length, 15);
   for (const release of ['v1', 'v2', 'v3']) assert.equal(targets.filter(t => t.release === release).length, 5);
 });
-test('recorded deployment inputs retain exact certificate hashes and frozen specs', { skip: dataReason('runs/core-10day-live') }, () => {
-  const targets = runTargets('core-10day-live');
+test('recorded deployment inputs retain exact certificate hashes and frozen specs', { skip: dataReason('runs/core-10day') }, () => {
+  const targets = runTargets('core-10day');
   assert.equal(targets.length, 33);
   assert.deepEqual([...new Set(targets.map(t => t.persona))], ['P1','P2','P3','P4','P5']);
   for (const t of targets) {

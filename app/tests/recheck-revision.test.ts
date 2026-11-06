@@ -10,12 +10,12 @@ const digest = async (file: string) =>
     .update(await readFile(resolve("..", file)))
     .digest("hex");
 describe("real native check-only history", () => {
-  withData("runs/core-10day-live").it("checks a current baseline and an old revision without changing recorded artifacts", async () => {
+  withData("runs/core-10day").it("checks a current baseline and an old revision without changing recorded artifacts", async () => {
     const files = [
       "releases/v3/personas/P1.json",
-      "runs/core-10day-live/programs/P3/v0.json",
-      "runs/core-10day-live/manifest.json",
-      "runs/core-10day-live/decisions/night-05/P3.json",
+      "runs/core-10day/programs/P3/v0.json",
+      "runs/core-10day/manifest.json",
+      "runs/core-10day/decisions/night-05/P3.json",
     ];
     const before = await Promise.all(files.map(digest));
     const baseline = await recheckRevision(files[0] ?? "", "P1");

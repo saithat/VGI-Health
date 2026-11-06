@@ -4,12 +4,12 @@ import { test, expect } from "@playwright/test";
 test("browser opens P3 day 5 and leaves patient selection inside the EHR", async ({
   page,
 }) => {
-  await page.goto("/browse?run=core-10day-live");
+  await page.goto("/browse?run=core-10day");
   await expect(
     page.getByRole("heading", { name: "Open a clinical UI" }),
   ).toBeVisible();
   await expect(page.getByLabel("Recorded run", { exact: true })).toHaveValue(
-    "core-10day-live",
+    "core-10day",
     { timeout: 30000 },
   );
   await expect(
@@ -41,7 +41,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
   await page.keyboard.press("ArrowLeft");
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(
-    /program=runs%2Fcore-10day-live%2Fprograms%2FP3%2Fv2.json/,
+    /program=runs%2Fcore-10day%2Fprograms%2FP3%2Fv2.json/,
   );
   await expect(page).toHaveURL(/persona=P3/);
   await expect(page).toHaveURL(/day=5/);
@@ -56,7 +56,7 @@ test("browser opens P3 day 5 and leaves patient selection inside the EHR", async
 test("release grid orders v1 v2 v3 and exposes the vendor as a reference", async ({
   page,
 }) => {
-  await page.goto("/browse?run=core-10day-live");
+  await page.goto("/browse?run=core-10day");
   const grid = page.getByRole("table", { name: "" });
   await expect(grid.locator("thead th")).toHaveText([
     "View",
@@ -85,7 +85,7 @@ test("recorded changes and check-only history use actual artifacts and native ve
   page,
 }) => {
   test.setTimeout(120000);
-  await page.goto("/browse?run=core-10day-live");
+  await page.goto("/browse?run=core-10day");
   const card = page.getByRole("complementary", {
     name: "Selected revision details",
   });
@@ -151,7 +151,7 @@ test("recorded changes and check-only history use actual artifacts and native ve
 test("timeline change comparison screenshot", async ({ page }) => {
   test.skip(!process.env.HISTORY_SHOTS, "Opt-in history screenshot");
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/browse?run=core-10day-live");
+  await page.goto("/browse?run=core-10day");
   await expect(
     page.getByLabel("Before and after changes", { exact: true }),
   ).toBeVisible();

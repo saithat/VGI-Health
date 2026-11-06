@@ -27,7 +27,7 @@ const lab=await startLab();
 try{
  for(const split of ['search','heldout']){
   const scenarios=await Promise.all(protocol[split==='search'?'searchTasks':'heldoutTasks'].map(async id=>{
-   const trajectory=await read(`runs/core-10day-live/trajectories/tasks/${id}.json`),bundle=await read(trajectory.context.fixtureFile);
+   const trajectory=await read(`runs/core-10day/trajectories/tasks/${id}.json`),bundle=await read(trajectory.context.fixtureFile);
    const task=(await read(`runs/world/2/schedules/day-0${split==='search'?1:2}/P2.json`)).tasks.find(t=>t.id===id);
    const projection=call('ehr_facts',{bundle:{...bundle,entry:[...bundle.entry,...trajectory.context.resources.map(resource=>({resource}))]},context:{today:trajectory.context.today,now:task.startMin,receipts:[],record:[]}});
    return {id,patient:trajectory.context.segments[0].facts.sourcePatientId,segments:trajectory.context.segments,display:projection.display};

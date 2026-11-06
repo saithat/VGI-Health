@@ -54,7 +54,7 @@ def dated(schedule, day):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--world', type=Path, default=ROOT / 'runs/world/2')
-    parser.add_argument('--run', type=Path, default=ROOT / 'runs/core-10day-live')
+    parser.add_argument('--run', type=Path, default=ROOT / 'runs/core-10day')
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--seed', type=int, default=7)
     parser.add_argument('--k', type=int, default=2)

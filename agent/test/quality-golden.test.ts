@@ -11,8 +11,8 @@ import { REPO_ROOT } from '../src/util.js';
 import { withData } from './data.js';
 
 // Frozen builder hashes refreshed for neutral terms and deterministic core-recording manual examples.
-withData('runs/core-10day-live/decisions').it('arm A matches frozen propose, choose and repair bytes on all 35 frozen contexts',async()=>{
-  const records=await historicalDecisions(path.join(REPO_ROOT,'runs/core-10day-live'));
+withData('runs/core-10day/decisions').it('arm A matches frozen propose, choose and repair bytes on all 35 frozen contexts',async()=>{
+  const records=await historicalDecisions(path.join(REPO_ROOT,'runs/core-10day'));
   const actual:Record<string,string[]>={};
   for(const record of records.filter(r=>r.mode==='nightly')) {
     const c=await goldenContext(record,records);
@@ -21,8 +21,8 @@ withData('runs/core-10day-live/decisions').it('arm A matches frozen propose, cho
   expect(Object.keys(actual)).toHaveLength(35);expect(actual).toEqual(hashes);
 });
 
-withData('runs/core-10day-live/decisions').it('validates archived ledger coverage using the actual last-two-training-days estimator window',async()=>{
-  const records=await historicalDecisions(path.join(REPO_ROOT,'runs/core-10day-live'));
+withData('runs/core-10day/decisions').it('validates archived ledger coverage using the actual last-two-training-days estimator window',async()=>{
+  const records=await historicalDecisions(path.join(REPO_ROOT,'runs/core-10day'));
   const map=recomputedSavings(records,records);
   expect(map.size).toBe(records.reduce((n,r)=>n+r.candidates.length,0));
   const last=records.find(r=>r.night===9&&r.persona==='P4');if(!last)throw new Error('Missing archived decision');

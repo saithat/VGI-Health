@@ -11,13 +11,13 @@ import {
   trajectoryIndexSchema,
   trajectorySchema,
 } from "../src/dashboard/trajectories-data";
-withData("runs/core-10day-live/trajectories").describe("archive-backed tests", () => {
+withData("runs/core-10day/trajectories").describe("archive-backed tests", () => {
   let options: ReturnType<typeof comparisonOptions>;
   beforeAll(async () => {
   const index = trajectoryIndexSchema.parse(
     JSON.parse(
       await readFile(
-        new URL("../../runs/core-10day-live/trajectories/index.json", import.meta.url),
+        new URL("../../runs/core-10day/trajectories/index.json", import.meta.url),
         "utf8",
       ),
     ),
@@ -72,7 +72,7 @@ withData("runs/core-10day-live/trajectories").describe("archive-backed tests", (
         JSON.parse(
           await readFile(
             new URL(
-              `../../runs/core-10day-live/trajectories/${option.entry.file}`,
+              `../../runs/core-10day/trajectories/${option.entry.file}`,
               import.meta.url,
             ),
             "utf8",

@@ -29,7 +29,7 @@ for(const event of [{click:{comp:fixture.commands.find(c=>c.enabled).id}},{click
 const read=async p=>JSON.parse(await readFile(p,'utf8'));
 const proposals=await read(`${out}/proposals.json`);
 const candidate=proposals.results[0].candidate;
-const trajectory=await read('runs/core-10day-live/trajectories/tasks/d01-P2-W3-001.json');
+const trajectory=await read('runs/core-10day/trajectories/tasks/d01-P2-W3-001.json');
 const task=(await read('runs/world/2/schedules/day-01/P2.json')).tasks.find(t=>t.id==='d01-P2-W3-001');
 const program=expandProgram(candidate.program);
 const spec=await read('releases/v1/spec.json');

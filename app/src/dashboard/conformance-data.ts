@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/** Recorded evidence only. The dashboard never executes the held-out suite. */
+/** Held-out native evidence; the review UI only renders the resulting report. */
 export const ruleConformanceSchema = z.object({
   schemaVersion: z.literal(1),
   runId: z.string(),

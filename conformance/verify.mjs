@@ -7,7 +7,7 @@ import { root, canonicals, runTargets } from './index.mjs';
 import { scenarioCatalog } from './scenarios.mjs';
 import { digest } from './native.mjs';
 
-const runId = process.argv[2] ?? 'core-10day-live';
+const runId = process.argv[2] ?? 'core-10day';
 const read = file => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
 const canonical = read('conformance/results/canonical.json');
 const combined = read(`runs/${runId}/conformance.json`);

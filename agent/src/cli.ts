@@ -80,7 +80,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
       model: { type: 'string' }, 'service-tier': { type: 'string' }, 'reasoning-effort': { type: 'string' }, 'v3-day': { type: 'string' }, 'v2-day': { type: 'string' }, 'feature-day': { type: 'string' }, 'migration-day': { type: 'string' }, fhir: { type: 'string' },
     },
   });
-  if (values.protocol && values.protocol !== 'core-10day-live' && values.protocol !== CADENCE_PROTOCOL) throw Error('Unknown release protocol');
+  if (values.protocol && values.protocol !== 'core-10day' && values.protocol !== CADENCE_PROTOCOL) throw Error('Unknown release protocol');
   const useArchive = values.protocol === CADENCE_PROTOCOL || (!values.protocol && Boolean(values.cadence));
   const llm = values['generator-only'] ? generatorOnlyBackend : createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
   const summary = await runDays({

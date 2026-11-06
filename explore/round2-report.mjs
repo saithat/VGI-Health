@@ -56,7 +56,7 @@ const cal=await read(`${run}/calibration/calibration.json`),gate=await read(`${r
 let geometryCorrection=null;
 try{geometryCorrection=await read(`${run}/geometry-corrections.json`);}catch(error){if(error.code!=='ENOENT')throw error;}
 const manifest=await read('app/public/ehr/manifest.json');
-const historic=await read('runs/core-10day-live/certs/P2/v0.build.2.json');
+const historic=await read('runs/core-10day/certs/P2/v0.build.2.json');
 const appComparison=await read(`${run}/app-binding-comparison.json`);
 let before;try{before=await read(`${run}/bindings-before.json`);}catch(error){if(error.code!=='ENOENT')throw error;before=JSON.parse(execFileSync('git',['show','HEAD:app/public/ehr/manifest.json'],{encoding:'utf8'}));await writeFile(`${run}/bindings-before.json`,JSON.stringify(before,null,2));}
 const files=['lean/Ehr/Sem/Exotic.lean','lean/Ehr/Sem/ExoticApi.lean','lean/Ehr/Sem/ExoticMain.lean','app/src/ehr/ui/Exotic.tsx','app/src/ehr/ui/exotic-axis.ts','app/src/ehr/ui/exotic.css','app/src/ehr/exotic-offline.tsx','app/exotic-check.html','app/scripts/exotic-gate.mjs','explore/cohort.ts','explore/round2.mjs','explore/round2-propose.ts','explore/round2-recover.ts','explore/round2-agreement.mjs','explore/round2-samples.mjs','explore/round2-report.mjs','explore/round2-descriptors.mjs','explore/round2-remeasure.mjs','explore/cost.ts','explore/geometry-check.mjs','explore/workspace.mjs','explore/full-binding-check.mjs'];
@@ -325,7 +325,7 @@ node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-agreement.
 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-descriptors.mjs ${run}
 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-remeasure.mjs ${run}
 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-samples.mjs ${run}
-node --import ./agent/node_modules/tsx/dist/loader.mjs explore/calibration.mjs --source runs/core-10day-live --out ${run}/calibration --endpoint http://127.0.0.1:8788/v1 --model Mapika/decider-0.8b --limit 24
+node --import ./agent/node_modules/tsx/dist/loader.mjs explore/calibration.mjs --source runs/core-10day --out ${run}/calibration --endpoint http://127.0.0.1:8788/v1 --model Mapika/decider-0.8b --limit 24
 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-propose.ts ${run}
 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2-recover.ts ${run}
 EHR_SCREEN_WORKERS=4 APP_TEST_PREVIEW=1 APP_TEST_PORT=4272 node --import ./agent/node_modules/tsx/dist/loader.mjs explore/round2.mjs ${run}

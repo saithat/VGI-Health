@@ -17,7 +17,7 @@ const spec=await read('releases/v1/spec.json');
 const program=expandProgram((await read(`${out}/proposals.json`)).results.find(p=>p.id==='r2-008').candidate.program);
 const cases=[];
 for(const id of ['d01-P2-W3-001','d01-P2-W3-002','d02-P2-W3-001','d02-P2-W3-002']){
- const task=await read(`runs/core-10day-live/trajectories/tasks/${id}.json`),facts=task.context.segments[0].facts;
+ const task=await read(`runs/core-10day/trajectories/tasks/${id}.json`),facts=task.context.segments[0].facts;
  const fixture=archivedBundle(await read(task.context.fixtureFile),facts.sourcePatientId);
  const bundle={...fixture,entry:[...fixture.entry,...task.context.resources.map(resource=>({resource}))]};
  const projected=call('ehr_facts',{bundle,context:{today:task.context.today,now:task.context.startMin,receipts:[],record:[]}});

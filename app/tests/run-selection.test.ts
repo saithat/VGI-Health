@@ -21,7 +21,7 @@ describe("default recorded demo", () => {
     );
     expect(
       selectDefaultRun(
-        [run("mock"), run("partial", { replayable: false })],
+        [run("mock"), run("unstarted", { days: 0, replayable: false })],
         "",
       ),
     ).toBe("mock");
@@ -49,6 +49,11 @@ describe("default recorded demo", () => {
         "",
       ),
     ).toBe("newest");
+  });
+  it("shows an empty prefix when a new real run has no completed day yet", () => {
+    expect(
+      selectDefaultRun([run("starting", { days: 0, replayable: false })], ""),
+    ).toBe("starting");
   });
   it("honors explicit overrides and fails for unavailable recordings", () => {
     expect(selectDefaultRun([run("real"), run("mock")], "mock")).toBe("mock");

@@ -50,9 +50,9 @@ describe("shared JSON cache", () => {
     expect(load).toHaveBeenCalledTimes(6);
   });
 });
-const root = resolve(import.meta.dirname, "../../runs/core-10day-live");
+const root = resolve(import.meta.dirname, "../../runs/core-10day");
 // The recorded run is archive data (see README "Data"); its tests skip without it.
-const run = withData("runs/core-10day-live/trajectories/index.json");
+const run = withData("runs/core-10day/trajectories/index.json");
 async function loadIndex() {
   return trajectoryIndexSchema.parse(
     JSON.parse(await readFile(join(root, "trajectories/index.json"), "utf8")),

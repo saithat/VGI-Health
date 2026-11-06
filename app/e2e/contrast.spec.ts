@@ -14,7 +14,7 @@ const roleScreens = [
 
 for (const route of [
   "/browse",
-  "/dashboard?run=core-10day-live",
+  "/dashboard?run=core-10day",
   ...roleScreens.map(
     ([persona]) =>
       `/ehr?mode=replay&release=v3&persona=${persona}&program=releases/v3/personas/${persona}.json&audit=buttons`,

@@ -5,12 +5,12 @@ import {
   trajectoryIndexSchema,
   trajectorySchema,
 } from "../src/dashboard/trajectories-data";
-const base = "/dashboard?view=compare&run=core-10day-live&persona=P3&workflow=W4";
+const base = "/dashboard?view=compare&run=core-10day&persona=P3&workflow=W4";
 async function counts(file: string) {
   const task = trajectorySchema.parse(
     JSON.parse(
       await readFile(
-        new URL(`../../runs/core-10day-live/trajectories/${file}`, import.meta.url),
+        new URL(`../../runs/core-10day/trajectories/${file}`, import.meta.url),
         "utf8",
       ),
     ),
@@ -206,7 +206,7 @@ test("compare bookmarks cross-day selections and holds the shorter replay", asyn
 test("Evolution, Trajectories and timeline link to compare", async ({
   page,
 }) => {
-  await page.goto("/dashboard?run=core-10day-live&persona=P3&view=Evolution");
+  await page.goto("/dashboard?run=core-10day&persona=P3&view=Evolution");
   await page
     .getByRole("link", {
       name: "Compare recorded trajectories across revisions",
@@ -220,7 +220,7 @@ test("Evolution, Trajectories and timeline link to compare", async ({
   await expect(
     page.getByRole("region", { name: "Compare trajectories", exact: true }),
   ).toBeVisible();
-  await page.goto("/browse?run=core-10day-live");
+  await page.goto("/browse?run=core-10day");
   const link = page.getByRole("link", {
     name: "Compare with baseline",
     exact: false,
@@ -235,12 +235,12 @@ test("Evolution, Trajectories and timeline link to compare", async ({
 test("a partial index without saved controls falls back to a cross-day pair", async ({
   page,
 }) => {
-  await page.route("**/runs/core-10day-live/trajectories/index.json", async (route) => {
+  await page.route("**/runs/core-10day/trajectories/index.json", async (route) => {
     const index = trajectoryIndexSchema.parse(
       JSON.parse(
         await readFile(
           new URL(
-            "../../runs/core-10day-live/trajectories/index.json",
+            "../../runs/core-10day/trajectories/index.json",
             import.meta.url,
           ),
           "utf8",

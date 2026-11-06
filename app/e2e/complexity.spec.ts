@@ -5,7 +5,7 @@ import { dayResultSchema } from "../../agent/src/schema";
 test("P2 evolution chart distinguishes fixed exact minimum from simulated workload", async ({
   page,
 }, testInfo) => {
-  await page.goto("/dashboard?run=core-10day-live&persona=P2");
+  await page.goto("/dashboard?run=core-10day&persona=P2");
   const chart = page.getByRole("region", {
     name: "Union workflow complexity",
     exact: true,
@@ -58,7 +58,7 @@ test("P2 evolution chart distinguishes fixed exact minimum from simulated worklo
   await expect(final).toContainText("Days 10 · 14/14 tasks completed");
   await expect(final.getByRole("cell").nth(2)).toHaveText("59.286");
   await chart.getByLabel("Complexity metric").selectOption("mouseTravelPx");
-  const day=dayResultSchema.parse(JSON.parse(await readFile(new URL('../../runs/core-10day-live/days/day-10/P2.json',import.meta.url),'utf8')));
+  const day=dayResultSchema.parse(JSON.parse(await readFile(new URL('../../runs/core-10day/days/day-10/P2.json',import.meta.url),'utf8')));
   expect(day.tasks).toHaveLength(14);
   const mouseMean=day.tasks.reduce((sum,task)=>{
     if(typeof task.mouseTravelPx!=='number')throw Error('Recorded workload lacks mouse geometry');

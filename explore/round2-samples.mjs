@@ -11,7 +11,7 @@ const out=process.argv[2]??'runs/explore-round2',read=async p=>JSON.parse(await 
 if(!path.resolve(out).startsWith(path.resolve('runs')+path.sep))throw Error('Use ignored runs/');
 const proposals=await read(`${out}/proposals.json`),report=await read(`${out}/round2-report.json`);
 if(report.phase!=='complete')throw Error('Wait for frozen evaluation');
-const spec=await read('releases/v1/spec.json'),task=await read('runs/core-10day-live/trajectories/tasks/d01-P2-W3-001.json');
+const spec=await read('releases/v1/spec.json'),task=await read('runs/core-10day/trajectories/tasks/d01-P2-W3-001.json');
 const wasm=await loadEhrInterp({wasmBinary:await readFile('app/public/ehr/ehr-interp.wasm')});
 const call=(name,v)=>JSON.parse(wasm.call(name,JSON.stringify(v)));
 const bundle=await read(task.context.fixtureFile);
@@ -34,7 +34,7 @@ try{
   }
   const panes=[{patient:input.facts.sourcePatientId??input.facts.patientId,screen:selected.screen}];
   if(mode==='board'){
-   const other=await read('runs/core-10day-live/trajectories/tasks/d01-P2-W3-002.json');
+   const other=await read('runs/core-10day/trajectories/tasks/d01-P2-W3-002.json');
    const source=await read(other.context.fixtureFile);
    const projection=call('ehr_facts',{bundle:{...source,entry:[...source.entry,...other.context.resources.map(resource=>({resource}))]},context:{today:other.context.today,now:other.context.startMin,receipts:[],record:[]}});
    const otherInput={spec,program,facts:other.context.segments[0].facts,display:projection.display,user:input.user};

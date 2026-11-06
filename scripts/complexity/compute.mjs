@@ -26,7 +26,7 @@ const exists = async p => { try { await access(p); return true; } catch { return
 const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, stable(value[k])])) : value;
 const shape = program => JSON.stringify(stable({ screens: program.screens, start: program.start, macros: program.macros, specVersion: program.specVersion }));
 
-export async function compute({ root = defaultRoot, runDir, canonical, releaseDirectory, canonicalOutput, taskTimeoutMs=10000, searchBound=5000 } = {}) {
+export async function compute({ root = defaultRoot, runDir, files: committedFiles, outputFile, canonical, releaseDirectory, canonicalOutput, taskTimeoutMs=10000, searchBound=5000 } = {}) {
   canonical??=!runDir;
   if(!Number.isSafeInteger(taskTimeoutMs)||taskTimeoutMs<1||!Number.isSafeInteger(searchBound)||searchBound<1)throw new Error('Task time and search bound must be positive integers');
   if (process.env.EHR_FAKE === '1') throw new Error('Complexity requires the real EHR; EHR_FAKE is forbidden');
@@ -158,12 +158,12 @@ export async function compute({ root = defaultRoot, runDir, canonical, releaseDi
       const pendingPeople = await Promise.allSettled(manifest.personas.map(async persona=>{
         let directory = path.join(runDir, 'programs', persona);
         if (!await exists(directory)) directory = path.join(runDir, persona);
-        const files = (await readdir(directory)).filter(f => /^v\d+\.json$/.test(f)).sort((a, b) => Number(a.slice(1, -5)) - Number(b.slice(1, -5)));
+        const files = (await readdir(directory)).filter(f => /^v\d+\.json$/.test(f)&&(!committedFiles||committedFiles.includes(`programs/${persona}/${f}`))).sort((a, b) => Number(a.slice(1, -5)) - Number(b.slice(1, -5)));
         const decisions = [];
         const decisionRoot = path.join(runDir, 'decisions');
         for (const dir of await exists(decisionRoot) ? await readdir(decisionRoot) : []) {
           const file = path.join(runDir, 'decisions', dir, `${persona}.json`);
-          if (await exists(file)) decisions.push(await read(file));
+          if (await exists(file)&&(!committedFiles||committedFiles.includes(`decisions/${dir}/${persona}.json`))) decisions.push(await read(file));
         }
         decisions.sort((a, b) => a.night - b.night);
         const iterations = [], markers = [];
@@ -196,7 +196,7 @@ export async function compute({ root = defaultRoot, runDir, canonical, releaseDi
       const people=pendingPeople.map(result=>{if(result.status!=='fulfilled')throw new Error('Missing complexity worker');return result.value;});
       const output = { schemaVersion: 1, runId: manifest.runId, ...provenance, personas: people };
       await mkdir(runDir, { recursive: true });
-      const destination = path.join(runDir, 'complexity.json');
+      const destination = outputFile ?? path.join(runDir, 'complexity.json');
       // Atomic replacement avoids serving partially written JSON from the dashboard.
       const { rename } = await import('node:fs/promises');
       await write(`${destination}.tmp`, output);

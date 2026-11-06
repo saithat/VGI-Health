@@ -29,6 +29,6 @@ export function workloadAt(run:RunData,persona:string,version:number):WorkloadIt
  return {version,days:days.map(d=>d.day),tasks:workflows.reduce((n,w)=>n+w.tasks,0),completed:workflows.reduce((n,w)=>n+w.completed,0),unclassified,workflows,total,canonical,savings:canonical&&total?difference(canonical,total):null,noAgent,agentSavings:noAgent?difference(noAgent,controlActual):null};
 }
 export function versionsFor(run:RunData,persona:string){
- const published=new Set([0,...run.records.filter(r=>r.persona===persona&&r.deployed).map(r=>r.versionAfter)]);
- return [...new Set([...run.programs.keys(),...(run.files??[])])].flatMap(key=>{const m=new RegExp(`^programs/${persona}/v(\\d+)\\.json$`).exec(key);return m&&(!run.manifest.measurementProtocol||published.has(Number(m[1])))?[Number(m[1])]:[];}).sort((a,b)=>a-b);
+ const committed=new Set([0,...run.records.filter(r=>r.persona===persona&&r.deployed).map(r=>r.versionAfter)]);
+ return [...new Set([...run.programs.keys(),...(run.files??[])])].flatMap(key=>{const m=new RegExp(`^programs/${persona}/v(\\d+)\\.json$`).exec(key);return m&&(!run.manifest.measurementProtocol||committed.has(Number(m[1])))?[Number(m[1])]:[];}).sort((a,b)=>a-b);
 }

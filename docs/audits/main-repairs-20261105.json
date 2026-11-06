@@ -46,7 +46,7 @@
       }
     },
     {
-      "run": "core-10day-live",
+      "run": "core-10day",
       "certifiedRevisions": 33,
       "clinicianDays": 50,
       "replay": {
@@ -70,7 +70,7 @@
       "missingTargets": 0
     },
     {
-      "run": "core-10day-live",
+      "run": "core-10day",
       "archivedFilesVerified": 152,
       "days": 50,
       "currentAppChromiumDays": 50,

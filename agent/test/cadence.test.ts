@@ -123,6 +123,12 @@ describe('standing archive and weekly shipping (no live backend)', () => {
   it('resumes completed runs without new proposals or review', async () => {
     const resumed = await runFakeCadence(dir, { resume: true });
     expect(resumed.llm.prompts).toEqual([]);
+    const manifest = JSON.parse(await readFile(path.join(resumed.summary.dir,'manifest.json'),'utf8'));
+    expect(manifest.completionProtocol).toBe('atomic-prefix-v1');
+    const {completedPrefix}=await import('../../scripts/run-prefix.mjs');
+    const prefix=await completedPrefix(resumed.summary.dir);
+    expect(prefix.manifest.daysCompleted).toBe(manifest.days);
+    expect(prefix.manifest.nightsCompleted).toBe(manifest.days-1);
     expect(resumed.summary.timelines).toEqual(fixture.summary.timelines);
     await expect(runFakeCadence(dir, { resume: true, switchCost: () => ({ cost: 0, model: 'different', assumption: 'test' }), switchCostModel: 'different' }))
       .rejects.toThrow('policy must match');
@@ -212,7 +218,7 @@ it('preserves the default historical nightly decisions under an explicit legacy 
   const root = await tmp('legacy-protocol'), world = await fakeWorld(4);
   const common = { days: 4, worldDir: world, runsRoot: root, personas: ['P1'], releaseDays: { v2: 99, v3: 99 } };
   const implicit = await runDays({ ...common, llm: new ScriptedLlm(), runId: 'implicit', ehr: markingEhr() });
-  const explicit = await runDays({ ...common, protocol: 'core-10day-live', llm: new ScriptedLlm(), runId: 'explicit', ehr: markingEhr() });
+  const explicit = await runDays({ ...common, protocol: 'core-10day', llm: new ScriptedLlm(), runId: 'explicit', ehr: markingEhr() });
   expect(explicit.timelines).toEqual(implicit.timelines);
   for (const night of [1,2,3]) {
     const a = await decision(implicit.dir,night), b = await decision(explicit.dir,night);

@@ -1,6 +1,14 @@
-import { isDayResultFile } from "../src/browser/run-files";
-import { readdir, readFile } from "node:fs/promises";
-import { resolve, relative, sep } from "node:path";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import { z } from "zod";
+import {
+  completedPrefix,
+  derived,
+  runSummary,
+  savedPrefix,
+  readDecision,
+} from "../../scripts/live-run-data.mjs";
+import { readdir, access } from "node:fs/promises";
+import { resolve } from "node:path";
 import type { Plugin } from "vite";
 import { geometrySliceFile } from "./geometry-slice";
 import { sendArtifact } from "./artifact-response";
@@ -35,190 +43,193 @@ export function selectDefaultRun(
     )[0];
   if (best) return best.id;
   if (runs.some((run) => run.id === "mock" && run.replayable)) return "mock";
-  throw new Error("No replayable recorded runs; runs/mock must be committed");
+  const waiting = runs
+    .filter((run) => run.real)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+  if (waiting) return waiting.id;
+  throw new Error("No replayable recorded runs; wait for a completed day");
 }
 
-// Index existing agent directories without requiring changes to its manifest.
+/** Direct completed-prefix access, for both dev and preview servers. */
 export function runsPlugin(): Plugin {
-  const root = resolve(import.meta.dirname, "../../runs");
-  async function files(dir: string): Promise<string[]> {
-    const entries = await readdir(dir, { withFileTypes: true });
-    return (
-      await Promise.all(
-        entries
-          .filter((entry) => entry.name !== ".cache")
-          .map(async (entry) =>
-            entry.isDirectory()
-              ? files(resolve(dir, entry.name))
-              : [relative(root, resolve(dir, entry.name)).split(sep).join("/")],
-          ),
-      )
-    ).flat();
-  }
-  async function scanIndex() {
-    const all = (await files(root)).filter((file) => file.endsWith(".json"));
+  const middleware = runMiddleware();
+  const attach = (
+    server: Pick<import("vite").ViteDevServer, "middlewares">,
+  ) => {
+    server.middlewares.use(middleware);
+  };
+  return {
+    name: "recorded-runs",
+    configureServer: attach,
+    configurePreviewServer: attach,
+  };
+}
+export function runMiddleware(root = resolve(import.meta.dirname, "../..")) {
+  const runRoot = resolve(root, "runs");
+  async function index(): Promise<RecordedRun[]> {
     const runs: RecordedRun[] = [];
-    for (const file of all
-      .filter((file) => /^[\w-]+\/manifest.json$/.test(file))
-      .sort()) {
-      const id = file.slice(0, -"/manifest.json".length);
-      const manifest = JSON.parse(await readFile(resolve(root, file), "utf8"));
-      if (
-        manifest.runId !== id ||
-        !["real", "fake"].includes(manifest.ehr?.mode)
-      )
-        continue;
-      const runFiles = all
-        .filter((path) => path.startsWith(`${id}/`))
-        .map((path) => path.slice(id.length + 1));
-      let replayable = false;
-      if (runFiles.includes("replay.json")) {
-        const replay = JSON.parse(
-          await readFile(resolve(root, id, "replay.json"), "utf8"),
-        );
-        replayable =
-          Array.isArray(manifest.personas) &&
-          manifest.personas.length > 0 &&
-          manifest.personas.every(
-            (persona: string) =>
-              replay.contexts?.some(
-                (context: { persona: string }) => context.persona === persona,
-              ) &&
-              runFiles.some((path) =>
-                new RegExp(`^programs/${persona}/v\\d+\\.json$`).test(path),
-              ),
-          );
+    for (const entry of await readdir(runRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory() || !/^[\w-]+$/.test(entry.name)) continue;
+      try {
+        const prefix = await completedPrefix(resolve(runRoot, entry.name));
+        if (
+          prefix.manifest.runId !== entry.name ||
+          !["real", "fake"].includes(prefix.manifest.ehr.mode)
+        )
+          continue;
+        runs.push({
+          id: entry.name,
+          files: prefix.files,
+          real: prefix.manifest.ehr.mode === "real",
+          days: prefix.manifest.daysCompleted,
+          createdAt: prefix.manifest.createdAt ?? "",
+          replayable: prefix.manifest.daysCompleted > 0,
+        });
+      } catch (error) {
+        if (
+          (error instanceof Error && "code" in error ? error.code : null) !==
+          "ENOENT"
+        )
+          console.error(`Run ${entry.name}:`, error);
       }
-      runs.push({
-        id,
-        files: runFiles,
-        real: manifest.ehr.mode === "real",
-        days: manifest.days ?? 0,
-        createdAt: manifest.createdAt ?? "",
-        replayable,
-      });
     }
     return runs;
   }
-  let cachedIndex: { until: number; value: Promise<RecordedRun[]> } | undefined;
-  function index() {
-    if (!cachedIndex || cachedIndex.until <= Date.now()) {
-      const value = scanIndex();
-      cachedIndex = { until: Date.now() + 5_000, value };
-      void value.catch(() => {
-        if (cachedIndex?.value === value) cachedIndex = undefined;
-      });
-    }
-    return cachedIndex.value;
-  }
-  return {
-    name: "recorded-runs",
-    configureServer(server) {
-      attach(server);
-    },
-    configurePreviewServer(server) {
-      attach(server);
-    },
-  };
-  function attach(server: Pick<import("vite").ViteDevServer, "middlewares">) {
-    server.middlewares.use(async (req, res, next) => {
-      if (!req.url?.startsWith("/runs/")) {
-        next();
-        return;
+  return async (
+    req: IncomingMessage,
+    res: ServerResponse,
+    next: () => void,
+  ) => {
+    if (!req.url?.startsWith("/runs/")) return next();
+    try {
+      const pathname = decodeURIComponent(
+        new URL(req.url, "http://localhost").pathname,
+      );
+      res.setHeader("Content-Type", "application/json");
+      const send = (value: unknown) =>
+        sendArtifact(req, res, pathname, Buffer.from(JSON.stringify(value)));
+      if (pathname === "/runs/index.json") return await send(await index());
+      if (pathname === "/runs/default.json")
+        return await send({ runId: selectDefaultRun(await index()) });
+      const match = /^\/runs\/([\w-]+)\/((?:[\w.-]+\/)*[\w.-]+\.json)$/.exec(
+        pathname,
+      );
+      if (!match || pathname.split("/").includes(".."))
+        throw new Error("Invalid run path");
+      const [, id = "", requestedFile = ""] = match;
+      let file = requestedFile;
+      let prefix = await completedPrefix(resolve(runRoot, id));
+      const requested = /^\.cache\/completed\/([a-f0-9]{64})\/(.+)$/.exec(file);
+      if (requested) {
+        prefix = await savedPrefix(prefix, requested[1] ?? "");
+        file = requested[2] ?? "";
       }
-      try {
-        const url = new URL(req.url, "http://localhost");
-        if (url.pathname === "/runs/index.json") {
-          res.setHeader("Content-Type", "application/json");
-          await sendArtifact(
-            req,
-            res,
-            url.pathname,
-            Buffer.from(JSON.stringify(await index())),
-          );
-          return;
-        }
-        if (url.pathname === "/runs/default.json") {
-          res.setHeader("Content-Type", "application/json");
-          await sendArtifact(
-            req,
-            res,
-            url.pathname,
-            Buffer.from(
-              JSON.stringify({ runId: selectDefaultRun(await index()) }),
-            ),
-          );
-          return;
-        }
-        const summary = /^\/runs\/([\w-]+)\/summary.json$/.exec(url.pathname);
-        if (summary) {
-          res.setHeader("Content-Type", "application/json");
-          const id = summary[1] ?? "";
-          const entry = (await index()).find((r) => r.id === id);
-          if (!entry) throw new Error("Unknown run");
-          const get = async (file: string) =>
-            JSON.parse(await readFile(resolve(root, id, file), "utf8"));
-          const records = [],
-            days = [],
-            baselines = [],
-            noAgentDays = [];
-          const certificates: Record<string, unknown> = {};
-          let complexity = null;
-          for (const file of entry.files) {
-            if (/^(decisions|break)\/.+\.json$/.test(file))
-              records.push(await get(file));
-            else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
-              days.push({ ...(await get(file)), trace: [] });
-            else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
-              baselines.push({ ...(await get(file)), trace: [] });
-            else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
-              noAgentDays.push({ ...(await get(file)), trace: [] });
-            else if (file === "complexity.json") complexity = await get(file);
-            else if (/^certs\/P[1-5]\/v\d+\.json$/.test(file))
-              certificates[file] = await get(file);
-          }
-          await sendArtifact(
-            req,
-            res,
-            url.pathname,
-            Buffer.from(
-              JSON.stringify({
-                manifest: await get("manifest.json"),
-                records,
-                days,
-                baselines,
-                noAgentDays,
-                complexity,
-                files: entry.files,
-                certificates,
+      if (prefix.manifest.runId !== id)
+        throw new Error("Run identity mismatch");
+      if (file === "manifest.json") return await send(prefix.manifest);
+      if (file === "summary.json")
+        return await send(await runSummary(prefix, root));
+      const kinds: Record<string, string> = {
+        "trajectories/index.json": "trajectories",
+        "replay.json": "replay",
+        "complexity.json": "complexity",
+        "conformance.json": "conformance",
+      };
+      const kind = kinds[file];
+      if (kind) return await send(await derived(prefix, kind, root));
+      const pointer = /^programs\/(P[1-5])\/deployed\.json$/.exec(file);
+      if (pointer) {
+        const persona = pointer[1] ?? "",
+          version = Math.max(...(prefix.versions.get(persona) ?? []));
+        if (!Number.isFinite(version)) throw new Error("Unknown persona");
+        return await send({
+          version,
+          program: `programs/${persona}/v${version}.json`,
+          certificate: `certs/${persona}/v${version}.json`,
+        });
+      }
+      const slice =
+        /^geometry\/([a-f0-9]{64}(?:\.[a-f0-9]{64})?)\/slices\/((?:[\w.-]+\/)*[\w.-]+\.json)$/.exec(
+          file,
+        );
+      if (slice)
+        return await sendArtifact(
+          req,
+          res,
+          pathname,
+          await geometrySliceFile(prefix.dir, slice[1] ?? "", slice[2] ?? ""),
+        );
+      // Derived task paths belong to the index of this committed prefix.
+      if (file.startsWith("trajectories/tasks/")) {
+        const data = z
+          .object({
+            tasks: z.array(
+              z.object({
+                file: z.string(),
+                baseline: z.object({ file: z.string() }).optional(),
               }),
             ),
-          );
-          return;
-        }
-        const slice =
-          /^\/runs\/([\w-]+)\/geometry\/([a-f0-9]{64}(?:\.[a-f0-9]{64})?)\/slices\/((?:[\w.-]+\/)*[\w.-]+\.json)$/.exec(
-            url.pathname,
-          );
-        if (slice) {
-          const [, run = "", atlas = "", task = ""] = slice;
-          const file = await geometrySliceFile(resolve(root, run), atlas, task);
-          res.setHeader("Content-Type", "application/json");
-          await sendArtifact(req, res, url.pathname, file);
-          return;
-        }
-        const file = resolve(root, decodeURIComponent(url.pathname.slice(6)));
-        if (!file.startsWith(root + sep) || !file.endsWith(".json")) {
-          res.statusCode = 403;
-          res.end("Invalid run path");
-          return;
-        }
-        res.setHeader("Content-Type", "application/json");
-        await sendArtifact(req, res, url.pathname, file);
-      } catch {
-        res.statusCode = 404;
-        res.end("Run file not found");
+          })
+          .parse(await derived(prefix, "trajectories", root));
+        if (
+          !data.tasks.some(
+            (t) =>
+              `trajectories/${t.file}` === file ||
+              (t.baseline && `trajectories/${t.baseline.file}` === file),
+          )
+        )
+          throw new Error("Uncommitted task");
+        const cached = resolve(
+          prefix.dir,
+          ".cache/completed",
+          prefix.key,
+          file,
+        );
+        const source = await Promise.all([
+          access(cached),
+          access(
+            resolve(
+              prefix.dir,
+              ".cache/completed",
+              prefix.key,
+              "trajectories.ready.json",
+            ),
+          ),
+        ]).then(
+          () => cached,
+          () => resolve(prefix.dir, file),
+        );
+        return await sendArtifact(req, res, pathname, source);
       }
-    });
-  }
+      if (requested && file.startsWith("trajectories/")) {
+        const cachedFile = resolve(
+          prefix.dir,
+          ".cache/completed",
+          prefix.key,
+          file,
+        );
+        const ready = resolve(
+          prefix.dir,
+          ".cache/completed",
+          prefix.key,
+          "trajectories.ready.json",
+        );
+        if (
+          await access(ready).then(
+            () => true,
+            () => false,
+          )
+        )
+          return await sendArtifact(req, res, pathname, cachedFile);
+      }
+      if (!prefix.files.includes(file)) throw new Error("Uncommitted run file");
+      if (/^decisions\/night-\d+\/P[1-5]\.json$/.test(file))
+        return await send(await readDecision(prefix, file));
+      return await sendArtifact(req, res, pathname, resolve(prefix.dir, file));
+    } catch (error) {
+      console.error("Run read failed:", req.url, error);
+      res.statusCode = 404;
+      res.end("Run file not found");
+    }
+  };
 }

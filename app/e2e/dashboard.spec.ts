@@ -29,8 +29,8 @@ test("real P3: five areas, version drawer, exact version EHR pair, and counterex
 }, testInfo) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/dashboard?run=core-10day-live&persona=P3");
-  await expect(page.getByLabel("Recorded run")).toHaveValue("core-10day-live");
+  await page.goto("/dashboard?run=core-10day&persona=P3");
+  await expect(page.getByLabel("Recorded run")).toHaveValue("core-10day");
   await expect(
     page
       .getByRole("navigation", { name: "Dashboard areas" })

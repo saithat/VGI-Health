@@ -92,17 +92,19 @@ export async function readArtifact(path: string): Promise<unknown> {
   // verification. HTTP ETags still avoid retransmitting unchanged evidence.
   const evidence =
     path === "/build.json" ||
+    path === "/catalog.json" ||
+    /^\/runs\/(?:index|default)\.json$/.test(path) ||
+    /^\/runs\/[\w-]+\/(?:summary|complexity|conformance|replay|trajectories\/index)\.json$/.test(
+      path,
+    ) ||
     path === "/ehr/manifest.json" ||
     /^\/runs\/[\w-]+\/manifest\.json$/.test(path) ||
     path.includes("/certs/") ||
     /\.(?:source|components)\.json$/.test(path);
   return evidence ? read() : readCachedJson(path, read);
 }
-let catalog: Promise<Catalog> | undefined;
 export const loadCatalog = () =>
-  (catalog ??= readArtifact("/catalog.json").then((data) =>
-    catalogSchema.parse(data),
-  ));
+  readArtifact("/catalog.json").then((data) => catalogSchema.parse(data));
 export function defaultPatient(catalog: Catalog, persona: string): Patient {
   const found = catalog.patients.find((patient) =>
     persona === "P2"
@@ -244,10 +246,7 @@ export async function verifyRecordedBuild(
 
 /** Historical replay uses its frozen contract; aliases change display names only. */
 export function programSpecPath(program: ProgramEntry): string {
-  if (
-    program.run &&
-    !["mock", "run1-preflight"].includes(program.run)
-  )
+  if (program.run && !["mock", "run1-preflight"].includes(program.run))
     return `/runs/${program.run}/certifications/${program.persona}/v${program.version}/spec.json`;
   if (program.path.startsWith("programs/benchmarks/releases/"))
     return `/${program.path.split("/").slice(0, 4).join("/")}/spec.json`;

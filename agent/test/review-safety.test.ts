@@ -18,7 +18,7 @@ import { rejectionKind } from '../src/seeded.js';
 import { dayResultSchema, checkResultSchema } from '../src/schema.js';
 import { writeJson } from '../src/util.js';
 
-withData("runs/core-10day-live/decisions").describe("archive-backed agent prompts", () => {
+withData("runs/core-10day/decisions").describe("archive-backed agent prompts", () => {
   let run:RunSummary, world:string, root:string;
   beforeAll(async()=>{
     world=await fakeWorld(8); root=await tmp('FAKE-review-days1-8');

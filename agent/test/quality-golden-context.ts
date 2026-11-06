@@ -5,7 +5,7 @@ import { RunStore } from '../src/store.js';
 import { REPO_ROOT, readJson } from '../src/util.js';
 import { historyItem } from '../src/run.js';
 export async function goldenContext(record:DecisionRecord,records:readonly DecisionRecord[]) {
-  const source=path.join(REPO_ROOT,'runs/core-10day-live');
+  const source=path.join(REPO_ROOT,'runs/core-10day');
   const llm=await readJson(llmRecordPath(source,`night-${String(record.night).padStart(2,'0')}/${record.persona}/propose-0`),llmRecordSchema);
   const params=personaParamsSchema.parse(JSON.parse(llm.prompt.split('## Persona behavior parameters\n')[1]?.split('\n')[0]??'null'));
   const program=await new RunStore(source).readProgram(record.persona,record.versionBefore);

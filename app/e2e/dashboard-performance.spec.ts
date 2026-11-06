@@ -9,7 +9,7 @@ test("trajectory filters, paging, same-task control and bookmarks on the complet
     requests.push(new URL(request.url()).pathname),
   );
   await page.goto(
-    "/dashboard?run=core-10day-live&persona=P1&view=Trajectories",
+    "/dashboard?run=core-10day&persona=P1&view=Trajectories",
   );
   const view = page.getByRole("region", { name: "All task trajectories" });
   await expect(
@@ -85,7 +85,7 @@ test("warm section switches reuse the index; Compare excludes incomplete tasks",
     requests.push(new URL(request.url()).pathname),
   );
   await page.goto(
-    "/dashboard?run=core-10day-live&persona=P1&view=Trajectories&day=7&workflow=W1",
+    "/dashboard?run=core-10day&persona=P1&view=Trajectories&day=7&workflow=W1",
   );
   await expect(
     page.getByRole("button", { name: "Play", exact: true }),
@@ -135,7 +135,7 @@ test("warm section switches reuse the index; Compare excludes incomplete tasks",
   ).toBe(hiddenPosition);
   expect(
     requests.filter(
-      (path) => path === "/runs/core-10day-live/trajectories/index.json",
+      (path) => path === "/runs/core-10day/trajectories/index.json",
     ),
   ).toHaveLength(1);
   const slice = requests.find((path) => /geometry\/.+\/slices\//.test(path));

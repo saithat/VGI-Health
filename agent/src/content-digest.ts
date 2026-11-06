@@ -1,4 +1,4 @@
-/** Declared provenance exclusions, inventoried in agent/src and scripts/publish-partial.mjs.
+/** Declared provenance exclusions, inventoried in agent/src.
  * Clinical trace timestamps, simulated clock values and task order remain content.
  */
 import { readdir, readFile } from 'node:fs/promises';
@@ -7,9 +7,9 @@ import { gunzipSync } from 'node:zlib';
 import path from 'node:path';
 import { sha256,stableStringify } from './program.js';
 import { writeJson } from './util.js';
-export const VOLATILE_FILES = [/(^|\/)digest\.json$/, /\.tmp$/, /\.error\.json(?:\.gz)?$/, /^infrastructure\//, /^recovery\//, /^screen-cache\//, /^reports\/screens\/.*\/output\.txt$/];
+export const VOLATILE_FILES = [/^\.cache\//, /(^|\/)digest\.json$/, /\.tmp$/, /\.error\.json(?:\.gz)?$/, /^completion\//, /^infrastructure\//, /^recovery\//, /^screen-cache\//, /^reports\/screens\/.*\/output\.txt$/];
 export const VOLATILE_FIELDS = [
- {file:/.*/,keys:['createdAt','startedAt','publishedAt','resumes']},
+ {file:/.*/,keys:['createdAt','startedAt','resumes']},
  {file:/(^|\/)manifest\.json$/,keys:['runId','parallel','personaWorkers','screenWorkersPerPersona','contentDigest','infrastructureRetries']},
  {file:/^(rebind|recovery)\//,keys:['timestamp']},
  {file:/^decisions\//,keys:['runId']},
@@ -80,4 +80,11 @@ export async function writeDayDigest(dir:string,day:number,personas:string[]):Pr
  const combined=await contentDigest(dir,daily);
  const perPersona=Object.fromEntries(await Promise.all(personas.map(async persona=>[persona,(await contentDigest(dir,file=>daily(file)&&path.basename(file).startsWith(persona+'.'))).contentDigest])));
  await writeJson(path.join(dir,prefix,'digest.json'),{schemaVersion:1,personas:perPersona,contentDigest:combined.contentDigest});
+}
+
+/** All clinicians' durable decisions and deploy pointers precede this fence. */
+export async function writeNightDigest(dir:string,night:number,personas:string[]):Promise<void>{
+ const prefix=`decisions/night-${String(night).padStart(2,'0')}/`;
+ const digest=await contentDigest(dir,file=>file.startsWith(prefix));
+ await writeJson(path.join(dir,'completion',`night-${String(night).padStart(2,'0')}.json`),{schemaVersion:1,night,personas,contentDigest:digest.contentDigest});
 }

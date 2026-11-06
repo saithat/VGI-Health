@@ -190,7 +190,7 @@ sequenceDiagram
 Cadence runs use protocol `certified-cadence-archive-v1`. `run-days` accepts
 `--protocol certified-cadence-archive-v1 --cadence nightly|weekly|N` (`N` is a
 positive number of simulation days); `--cadence` alone selects that protocol.
-Omitting both retains the historical `core-10day-live` nightly selection path.
+Omitting both retains the historical `core-10day` nightly selection path.
 The archive protocol defaults to nightly shipping. Weekly slots are nights
 7, 14, …; every-N-day slots are N, 2N, …, anchored to the run calendar. A veto,
 failed validation or empty archive waits until the next slot. No discretionary
@@ -289,7 +289,7 @@ TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/c
 
 It exercises accumulation, weekly shipping, cross-night bundles, review vetoes,
 switch-cost blocking, screen rejection, train-only feedback and resume. Manual examples select the first accepted and rejected candidates in sorted
-night/persona order from `runs/core-10day-live/decisions`; missing optional
+night/persona order from `runs/core-10day/decisions`; missing optional
 recordings omit examples while formal rule context remains required.
 The retired hackathon RN recording is preserved in the `hackathon-final` tag;
 its layouts exceed D5 and are excluded from current replay and audits. The browser audit script accepts `EHR_BIN` for a prebuilt native
@@ -358,7 +358,7 @@ Default host ports are commit **18090**, Postgres **55532**, and Keycloak
 Authorization Code flow with S256 PKCE. Tokens remain in memory; a reload uses
 the identity provider's existing session. Local persona passwords are in the
 untracked `.env`; the browser never receives a password from the app server.
-The authority loads a recorded persona deployment from `core-10day-live` only
+The authority loads a recorded persona deployment from `core-10day` only
 when its program/certificate and current app, WASM and native build bindings
 match; otherwise it uses the certified canonical role preset. Set
 `COMMIT_RECORDED_RUN` to select another local recording. Baseline login always
@@ -428,22 +428,74 @@ they use the fresh stack's Postgres and Keycloak and never substitute mocked
 clinical responses. Native/Postgres workflow tests exercise stale-version and
 guard refusal for every workflow family, plus persisted-review recovery,
 author isolation, date expiry and target-version invalidation.
-After all lanes merge, run live and recorded browser checks and the full
-template/persona screen-audit pair once, sequentially, as described above.
-Lane checks cover builds, static checks, fast unit suites and generated artifacts.
 
-The November 6 storage merge binds the app to
-`8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04`.
-The certification matrix remains 15 accepted / 23 rejected. Native semantic
-samples and curated captures were regenerated. The 18 PNGs under
-`app/shots/realism/live-select` retain pre-merge HEAD images and are explicitly
-marked stale in the screenshot manifest. Recording re-certification was stopped
-at the owner's request: local `core-10day` completed, while `core-10day-live`
-remains partially re-certified. Further recording work, live e2e and the full
-browser/audit pass are deferred to final combined-main verification.
-[Merge evidence](docs/audits/storage-merge-20261106.json) records commands,
-results, deferred checks and the stale screenshot paths; recording data stays
-outside git.
+
+## Run data and live review
+
+`runs/<id>` is the single recording for a run, during execution and after it
+stops. The dashboard, UI browser and trajectory player read that directory
+through the local Vite dev/preview data layer. There is no second recording
+or copy step. The retained recording is `core-10day`.
+
+New manifests declare `completionProtocol: atomic-prefix-v1`. After every
+clinician's shift, canonical baseline, no-agent control and calibration output
+are durable, the writer atomically commits `days/day-NN/digest.json`.
+After all clinicians' nightly decisions and deployment pointers commit, it
+atomically commits `completion/night-NN.json`. The shared writer uses a
+same-directory temporary file, fsync, rename and directory fsync. Readers
+advance through consecutive day/night fences; a later day cannot pass an
+unfinished preceding night. Unmarked day/night files and staged revisions
+are excluded from summaries, catalogs and direct artifact URLs. Readers do
+not infer completion from directory existence or run status. A stopped run
+retains its last completed prefix.
+
+The completed prefix determines a cache key. Detail/evidence requests carry
+that key so a refresh cannot mix two completed prefixes. Existing replay, trajectory,
+complexity and conformance evidence is reused only when it covers that prefix,
+and is filtered to its committed days/revisions. Missing derived evidence is
+computed lazily in `runs/<id>/.cache/completed/<key>/`; this contains derived
+views and an input file list, never copied source days, decisions, programs
+or certificates. Native derivation is serialized under
+`$TMPDIR/vgi-derived.lock`. Lazy native derivation requires a built native
+checker and matching Lean modules (`EHR_BIN` and `EHR_LEAN_DIR` may select
+an existing build); it never builds or re-certifies the EHR. Failures are
+retryable and never create a ready receipt. Trajectory contexts retain native/WASM replay validation and frozen
+certification specs. The run already writes build bindings at deployment;
+review does not rebind or re-certify recordings. Rebind after a certified
+renderer change remains an explicit separate operation.
+
+Summary reads show completed days immediately; expensive derived evidence
+loads separately. Active runs refresh every 30 seconds, without page reload
+or resetting the selected view. Trajectory/Compare indices refresh when the
+completed-prefix key changes. Terminal runs do not poll. The UI browser
+refreshes its catalog with the selected active run. Missing derived evidence
+is shown as unavailable/loading until it arrives; recorded clinical state is
+never synthesized by the review layer.
+
+Rename a stopped local recording with
+`TMPDIR=/home/saithat/Projects/run-tmp node scripts/rename-run.mjs <old> <new>`.
+It refuses an existing destination, active status, unsafe IDs and symlinks;
+it renames in place, rewrites embedded identity/path references (including
+compressed JSON and journals), updates transitive byte/semantic SHA-256
+bindings, and recomputes day/night and whole-run content digests. Clinical
+results and certificate semantics are preserved. On a rewrite failure the
+reported destination is retained for recovery. Test the operation on a copy
+before using it on a retained recording.
+
+Stopped recordings made before the marker protocol need one explicit in-place
+upgrade after renaming: `TMPDIR=/home/saithat/Projects/run-tmp node
+scripts/mark-completed-run.mjs <id> <completed-days> <completed-nights>`.
+It validates all requested clinician day/decision records and committed
+pointers before installing fences. For the retained ten-day recording the
+counts are `10 9`. Data and these caches remain gitignored.
+
+Targeted checks for this path:
+
+```sh
+CI=true TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/run-prefix.test.mjs scripts/rename-run.test.mjs
+CI=true TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app exec vitest run tests/live-run-http.test.ts tests/run-refresh.test.ts tests/lazy-run.test.ts tests/run-selection.test.ts --maxWorkers=2
+```
+
 
 ## What is proved
 
@@ -787,7 +839,7 @@ and values above six are capped at six (browser workers also respect the existin
 memory budget). Parallel `run-days` divides the default four-worker budget
 across persona checkers and limits explicitly requested workers to six in total.
 Distinct uncached trees run through this bounded Playwright pool.
-`scripts/recertify-runs.mjs --runs core-10day-live --out <scratch>` concurrently
+`scripts/recertify-runs.mjs --runs core-10day --out <scratch>` concurrently
 runs native deploy/export checks with isolated output directories, then batches
 all revisions by presentation bundle through the same browser gate. A file
 manifest avoids command-line size limits. Reports preserve persona/revision/tree
@@ -797,10 +849,7 @@ native certificates and `recertification.json` in scratch; it does not replace
 recorded certificates, measurements, run metadata or replay. The migration command
 below consumes this batch gate when `--recertify-only` is selected and retains its
 existing certificate installation, remeasurement and strict replay checks.
-`core-10day-live` is the single retained recording. The historical repair report
-labels its former working-directory copy `retired-working-copy` solely to retain
-measurement provenance; that label is not a selectable run. Browser test aliases
-use unrelated fixture names.
+`core-10day` is the single retained recording.
 
 The final merged check owns timing and full browser validation. Use one shared
 lock, sequential commands and a fresh cache root for each cold experiment:
@@ -809,9 +858,9 @@ lock, sequential commands and a fresh cache root for each cold experiment:
 export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=4
 export EHR_SCREEN_CACHE_DIR="$TMPDIR/screen-speed-final-recert-cache"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
-  node scripts/recertify-runs.mjs --runs core-10day-live --out "$TMPDIR/screen-speed-final-recert-cold"
+  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-speed-final-recert-cold"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
-  node scripts/recertify-runs.mjs --runs core-10day-live --out "$TMPDIR/screen-speed-final-recert-warm"
+  node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-speed-final-recert-warm"
 node scripts/compare-screen-results.mjs \
   "$TMPDIR/screen-speed-final-recert-cold/recertification.json" \
   "$TMPDIR/screen-speed-final-recert-warm/recertification.json"
@@ -833,7 +882,7 @@ deferred these measurements and full sweeps to the fully merged checkout.
 record the completed checks and remaining measurements.
 
 `node scripts/migrate-neutral-terms.mjs --recertify-only --runs
-core-10day-live` skips terminology/identity rewrites and selects only
+core-10day` skips terminology/identity rewrites and selects only
 those recordings. It retains frozen spec/canonical/previous inputs, applies
 native and whole-version screen gates, updates build bindings, remeasures the
 preserved schedules, regenerates trajectories (including existing same-task

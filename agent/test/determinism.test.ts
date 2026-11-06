@@ -63,7 +63,7 @@ it('crash hook refuses live backends before any write',()=>{
  try{expect(()=>armCrashHook('codex')).toThrow('refuses live');expect(()=>armCrashHook('claude')).toThrow('refuses live');}finally{vi.unstubAllEnvs();}
 });
 
-withData('runs/core-10day-live/decisions').it('run manifests persist the explicit drift policy and every affected call',async()=>{
+withData('runs/core-10day/decisions').it('run manifests persist the explicit drift policy and every affected call',async()=>{
  const {runDays}=await import('../src/run.js');const {fakeWorld}=await import('./helpers.js');
  const source=await tmp('manifest-drift-source'),root=await tmp('manifest-drift');
  const noChange:JsonLlm={...llm,complete:async()=>({...await llm.complete(request),json:{hypothesis:'fixture',decision:'noChange',candidates:[]}})};

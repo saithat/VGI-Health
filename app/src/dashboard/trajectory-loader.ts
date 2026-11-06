@@ -3,7 +3,7 @@ import { readArtifact, verifyRecordedBuild } from "../browser/data";
 import { contentHash } from "../core/buildBinding";
 import type { GeometryAtlas } from "../metrics/geometry";
 import type { InterpFactory } from "./replay";
-import { readRunJson } from "./data";
+import { readRunJson, runArtifactPath } from "./data";
 import {
   replayGeometrySchema,
   trajectorySchema,
@@ -16,9 +16,12 @@ export async function loadTrajectory(
   file: string,
   metrics: TrajectoryEntry["metrics"],
   factory: InterpFactory,
+  prefixKey?: string,
 ): Promise<LoadedTrajectory> {
   const task = trajectorySchema.parse(
-    await readRunJson(`/runs/${runId}/trajectories/${file}`),
+    await readRunJson(
+      runArtifactPath(runId, `trajectories/${file}`, prefixKey),
+    ),
   );
   const [program, spec, fixture] = await Promise.all([
     readArtifact(`/${task.context.programPath}`),

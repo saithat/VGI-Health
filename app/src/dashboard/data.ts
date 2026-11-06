@@ -36,6 +36,9 @@ export const manifestSchema = z.object({
   buildBindingRequired: z.boolean().optional(),
   measurementProtocol: z.object({ name: z.string() }).optional(),
   status: z.string().optional(),
+  daysCompleted: z.number().int().nonnegative().optional(),
+  nightsCompleted: z.number().int().nonnegative().optional(),
+  prefixKey: z.string().optional(),
   blockers: z.array(z.string()).optional(),
   ehr: z.object({ mode: z.enum(["real", "fake"]) }),
 });
@@ -143,11 +146,20 @@ export async function loadRun(
         if (record.runId !== id || !manifest.personas.includes(record.persona))
           throw new Error("Decision belongs to another run or persona");
         run.records.push(record);
-      } else if (/^days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
+      } else if (
+        /^days\/day-\d+\/[\w-]+\.json$/.test(file) &&
+        isDayResultFile(file)
+      )
         run.days.push(dayResultSchema.parse(await get(file)));
-      else if (/^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
+      else if (
+        /^no-agent\/days\/day-\d+\/[\w-]+\.json$/.test(file) &&
+        isDayResultFile(file)
+      )
         run.noAgentDays?.push(dayResultSchema.parse(await get(file)));
-      else if (/^baselines\/day-\d+\/[\w-]+\.json$/.test(file) && isDayResultFile(file))
+      else if (
+        /^baselines\/day-\d+\/[\w-]+\.json$/.test(file) &&
+        isDayResultFile(file)
+      )
         run.baselines?.push(dayResultSchema.parse(await get(file)));
       else if (/^programs\/[\w-]+\/v\d+\.json$/.test(file))
         run.programs.set(file, programSchema.parse(await get(file)));
@@ -195,6 +207,7 @@ export async function loadRunSummary(
       baselines: z.array(dayResultSchema).default([]),
       noAgentDays: z.array(dayResultSchema).default([]),
       complexity: complexitySchema.nullable(),
+      ruleConformance: ruleConformanceSchema.nullable().optional(),
       files: z.array(z.string()),
       certificates: z.record(z.string(), certificateSchema).default({}),
     })
@@ -210,9 +223,7 @@ export async function loadRunSummary(
     (a, b) => a.night - b.night || a.persona.localeCompare(b.persona),
   );
   data.days.sort((a, b) => a.day - b.day);
-  const ruleConformance = data.files.includes("conformance.json")
-    ? ruleConformanceSchema.parse(await read(`/runs/${id}/conformance.json`))
-    : null;
+  const ruleConformance = data.ruleConformance ?? null;
   if (ruleConformance && ruleConformance.runId !== id)
     throw new Error("Rule conformance belongs to another run");
   return {
@@ -227,6 +238,41 @@ export async function loadRunSummary(
     certs: new Map(Object.entries(data.certificates)),
     replay: null,
   };
+}
+export function runArtifactPath(id: string, file: string, prefixKey?: string) {
+  return `/runs/${id}/${prefixKey ? `.cache/completed/${prefixKey}/` : ""}${file}`;
+}
+/** Expensive derived evidence loads separately so new completed days appear immediately. */
+export async function loadRunEvidence(
+  run: RunData,
+  read: ReadJson = readRunJson,
+): Promise<RunData> {
+  const [complexity, ruleConformance] = await Promise.all([
+    !run.complexity && run.files?.includes("complexity.json")
+      ? read(
+          runArtifactPath(
+            run.manifest.runId,
+            "complexity.json",
+            run.manifest.prefixKey,
+          ),
+        ).then((value) => complexitySchema.parse(value))
+      : run.complexity,
+    !run.ruleConformance && run.files?.includes("conformance.json")
+      ? read(
+          runArtifactPath(
+            run.manifest.runId,
+            "conformance.json",
+            run.manifest.prefixKey,
+          ),
+        ).then((value) => ruleConformanceSchema.parse(value))
+      : run.ruleConformance,
+  ]);
+  if (
+    (complexity && complexity.runId !== run.manifest.runId) ||
+    (ruleConformance && ruleConformance.runId !== run.manifest.runId)
+  )
+    throw new Error("Evidence belongs to another run");
+  return { ...run, complexity, ruleConformance: ruleConformance ?? null };
 }
 /** Hydrate only this persona when opening a decision or replay. */
 export async function loadRunDetails(
@@ -246,13 +292,17 @@ export async function loadRunDetails(
     run.files.map(async (file) => {
       if (file === "replay.json")
         detail.replay = replaySchema.parse(
-          await read(`/runs/${run.manifest.runId}/${file}`),
+          await read(
+            runArtifactPath(run.manifest.runId, file, run.manifest.prefixKey),
+          ),
         );
       else if (new RegExp(`^programs/${persona}/v\\d+\\.json$`).test(file))
         detail.programs.set(
           file,
           programSchema.parse(
-            await read(`/runs/${run.manifest.runId}/${file}`),
+            await read(
+              runArtifactPath(run.manifest.runId, file, run.manifest.prefixKey),
+            ),
           ),
         );
       else if (
@@ -261,19 +311,25 @@ export async function loadRunDetails(
         detail.sources.set(
           file.replace(/\.source\.json$/, ".json"),
           programSchema.parse(
-            await read(`/runs/${run.manifest.runId}/${file}`),
+            await read(
+              runArtifactPath(run.manifest.runId, file, run.manifest.prefixKey),
+            ),
           ),
         );
       else if (new RegExp(`^certs/${persona}/v\\d+\\.json$`).test(file))
         detail.certs.set(
           file,
           certificateSchema.parse(
-            await read(`/runs/${run.manifest.runId}/${file}`),
+            await read(
+              runArtifactPath(run.manifest.runId, file, run.manifest.prefixKey),
+            ),
           ),
         );
       else if (new RegExp(`^days/day-\\d+/${persona}\\.json$`).test(file)) {
         const day = dayResultSchema.parse(
-          await read(`/runs/${run.manifest.runId}/${file}`),
+          await read(
+            runArtifactPath(run.manifest.runId, file, run.manifest.prefixKey),
+          ),
         );
         detail.days = detail.days
           .filter((d) => d.persona !== day.persona || d.day !== day.day)

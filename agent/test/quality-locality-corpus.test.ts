@@ -5,10 +5,10 @@ import { dayResultSchema } from '../src/schema.js';
 import { REPO_ROOT, readJson } from '../src/util.js';
 import { withData } from './data.js';
 
-withData('runs/core-10day-live/geometry').it('conserves recorded per-task physical costs for all five personas on day 1',async()=>{
+withData('runs/core-10day/geometry').it('conserves recorded per-task physical costs for all five personas on day 1',async()=>{
   let tasks=0;
   for(const persona of ['P1','P2','P3','P4','P5']) {
-    const root=path.join(REPO_ROOT,'runs/core-10day-live');
+    const root=path.join(REPO_ROOT,'runs/core-10day');
     const result=await readJson(path.join(root,'days/day-01',`${persona}.json`),dayResultSchema);
     if(!result.geometry)throw new Error('Missing archived geometry metadata');
     const loaded=await loadGeometry(path.join(root,'geometry',`${result.geometry.programHash}.json`));

@@ -7,7 +7,7 @@ import { DeterministicDecision, LocalDecision } from './decision.ts';
 import { write } from './evaluate.ts';
 import { defaultPoint } from './design.ts';
 const args=process.argv.slice(2),arg=(key,fallback)=>{const i=args.indexOf(`--${key}`);return i<0?fallback:args[i+1];};
-const run=arg('source','runs/core-10day-live'),out=arg('out','runs/explore-calibration');
+const run=arg('source','runs/core-10day'),out=arg('out','runs/explore-calibration');
 if(!path.resolve(out).startsWith(path.resolve('runs')+path.sep))throw Error('Calibration outputs belong under ignored runs/');
 const endpoint=arg('endpoint',''),limit=Number(arg('limit','24'));
 if(!Number.isInteger(limit)||limit<1||limit>200)throw Error('Invalid calibration limit');

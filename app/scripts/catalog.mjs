@@ -1,3 +1,4 @@
+import { completedPrefix } from "../../scripts/run-prefix.mjs";
 import {
   releaseLabel,
   historicalReleaseId,
@@ -63,6 +64,19 @@ const problems = [
 ];
 export async function buildCatalog() {
   const programs = [];
+  const completed = new Map();
+  for (const entry of await readdir(resolve(root, "runs"), {
+    withFileTypes: true,
+  })) {
+    if (!entry.isDirectory() || !/^[\w-]+$/.test(entry.name)) continue;
+    try {
+      const prefix = await completedPrefix(resolve(root, "runs", entry.name));
+      if (prefix.manifest.runId === entry.name)
+        completed.set(entry.name, prefix);
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+  }
   const [coreBad] = await readJson("lean/Ehr/Check/bad-program-profiles.json");
   for (const path of [
     ...(await jsonFiles("releases")),
@@ -70,6 +84,10 @@ export async function buildCatalog() {
     ...(await jsonFiles("runs")),
   ]) {
     if (!/\/(?:canonical|P[1-5]|v\d+|\d\d-[\w-]+)\.json$/.test(path)) continue;
+    if (path.startsWith("runs/")) {
+      const [, id, ...parts] = path.split("/");
+      if (!completed.get(id)?.files.includes(parts.join("/"))) continue;
+    }
     const program = await readJson(path);
     if (!Array.isArray(program.screens) || typeof program.start !== "string")
       continue;
@@ -90,23 +108,10 @@ export async function buildCatalog() {
     let mock = false;
     let recordedCertificate = null;
     if (recorded) {
-      try {
-        deployed =
-          (
-            await readJson(
-              `runs/${recorded[1]}/programs/${persona}/deployed.json`,
-            )
-          ).version === program.version;
-      } catch {
-        /* No deployment pointer yet. */
-      }
-      try {
-        mock =
-          (await readJson(`runs/${recorded[1]}/manifest.json`)).ehr?.mode ===
-          "fake";
-      } catch {
-        /* Unfinished recording. */
-      }
+      const prefix = completed.get(recorded[1]);
+      deployed =
+        Math.max(...(prefix?.versions.get(persona) ?? [])) === program.version;
+      mock = prefix?.manifest.ehr.mode === "fake";
       if (!mock) {
         try {
           const certificate = await readJson(
@@ -230,11 +235,11 @@ export async function buildCatalog() {
         programs.flatMap((program) => (program.run ? [program.run] : [])),
       ),
     ].map(async (id) => {
-      const manifest = await readJson(`runs/${id}/manifest.json`);
+      const manifest = completed.get(id).manifest;
       return {
         id,
         mock: manifest.ehr?.mode !== "real",
-        days: manifest.days ?? 10,
+        days: manifest.daysCompleted,
         createdAt: manifest.createdAt ?? "",
       };
     }),

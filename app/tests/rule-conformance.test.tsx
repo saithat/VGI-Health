@@ -7,12 +7,12 @@ afterEach(cleanup);
 
 const evidence = {
   schemaVersion: 1,
-  runId: "core-10day-live",
+  runId: "core-10day",
   generatedAt: "2026-11-01T16:00:00Z",
   deploymentGate: false,
   targets: [
     {
-      id: "core-10day-live/P3/v2",
+      id: "core-10day/P3/v2",
       kind: "deployed",
       persona: "P3",
       revision: 2,
@@ -24,7 +24,7 @@ const evidence = {
   ],
   results: [
     {
-      target: "core-10day-live/P3/v2",
+      target: "core-10day/P3/v2",
       scenario: "patient-switch.chart-scoping",
       status: "fail",
       observed: "Patient A allergy appeared in B",
@@ -44,7 +44,7 @@ it("shows a per-revision failure badge and the observed outcome", () => {
   expect(screen.getByText(/Patient A allergy appeared in B/)).toBeTruthy();
   expect(screen.getByText(/FHIR adapter probe/)).toBeTruthy();
   expect(screen.getByRole("link").getAttribute("href")).toBe(
-    "/runs/core-10day-live/conformance.json",
+    "/runs/core-10day/conformance.json",
   );
 });
 it("shows all pass only for a measured matching revision", () => {
@@ -65,7 +65,7 @@ it("shows all pass only for a measured matching revision", () => {
 it("loads optional evidence separately from the recorded summary and rejects another run", async () => {
   const summary = {
     manifest: {
-      runId: "core-10day-live",
+      runId: "core-10day",
       days: 1,
       personas: ["P3"],
       ehr: { mode: "real" },
@@ -78,10 +78,10 @@ it("loads optional evidence separately from the recorded summary and rejects ano
   const read = async (url: string) =>
     url.endsWith("summary.json") ? summary : evidence;
   expect(
-    (await loadRunSummary("core-10day-live", read)).ruleConformance?.targets[0]?.failed,
+    (await loadRunSummary("core-10day", read)).ruleConformance?.targets[0]?.failed,
   ).toBe(1);
   await expect(
-    loadRunSummary("core-10day-live", async (url) =>
+    loadRunSummary("core-10day", async (url) =>
       url.endsWith("summary.json")
         ? summary
         : { ...evidence, runId: "another-run" },

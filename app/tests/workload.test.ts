@@ -6,16 +6,16 @@ import { beforeAll, describe, expect, it } from "vitest";
 import { loadRun } from "../src/dashboard/data";
 import { workloadAt, versionsFor } from "../src/dashboard/workload";
 
-const root = resolve(import.meta.dirname, "../../runs/core-10day-live");
-withData("runs/core-10day-live").describe("archive-backed tests", () => {
+const root = resolve(import.meta.dirname, "../../runs/core-10day");
+withData("runs/core-10day").describe("archive-backed tests", () => {
   let run: Awaited<ReturnType<typeof loadRun>>;
   beforeAll(async () => {
   const files = (await readdir(root, { recursive: true })).filter((f) =>
     f.endsWith(".json"),
   );
-  run = await loadRun("core-10day-live", files, async (path) =>
+  run = await loadRun("core-10day", files, async (path) =>
     JSON.parse(
-      await readFile(resolve(root, path.replace("/runs/core-10day-live/", "")), "utf8"),
+      await readFile(resolve(root, path.replace("/runs/core-10day/", "")), "utf8"),
     ),
   );
   });

@@ -120,7 +120,7 @@ export async function localReleases() {
     const program = await read(resolve(root, `releases/v3/personas/${persona}.json`));
     releases[`${persona}-baseline`] = { spec, program, workflows: { chart: { commit: 'signNote', commits: [...spec.commits.map((c: Obj) => c.id), 'markReviewed'], project: true } } };
     releases[persona] = releases[`${persona}-baseline`];
-    const run = process.env.COMMIT_RECORDED_RUN ?? 'core-10day-live';
+    const run = process.env.COMMIT_RECORDED_RUN ?? 'core-10day';
     if (!/^[A-Za-z0-9.-]+$/.test(run)) throw new Error('Invalid recorded run');
     try {
       const dir = resolve(root, 'runs', run);

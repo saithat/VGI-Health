@@ -23,11 +23,13 @@ import { ReplayError } from "./ReplayError";
 import "./trajectories.css";
 
 function TaskPlayback({
+  prefixKey,
   runId,
   entry,
   factory,
   active,
 }: {
+  prefixKey?: string | undefined;
   runId: string;
   entry: TrajectoryEntry;
   active: boolean;
@@ -50,7 +52,7 @@ function TaskPlayback({
       return () => {
         active = false;
       };
-    void loadTrajectory(runId, entry.file, entry.metrics, factory)
+    void loadTrajectory(runId, entry.file, entry.metrics, factory, prefixKey)
       .then((value) => {
         if (active) setLoaded(value);
       })
@@ -63,6 +65,7 @@ function TaskPlayback({
         entry.baseline.file,
         entry.baseline.metrics,
         factory,
+        prefixKey,
       )
         .then((value) => {
           if (active) setBaseline(value);
@@ -73,7 +76,7 @@ function TaskPlayback({
     return () => {
       active = false;
     };
-  }, [runId, entry, factory, compare]);
+  }, [runId, entry, factory, compare, prefixKey]);
   const max = Math.max(
     entry.eventCount,
     compare ? (entry.baseline?.eventCount ?? 0) : 0,
@@ -313,6 +316,7 @@ function TaskPlayback({
   );
 }
 export function Trajectories({
+  prefixKey,
   initialDay = 1,
   active = true,
   runId,
@@ -320,6 +324,7 @@ export function Trajectories({
   factory,
   noAgentDays,
 }: {
+  prefixKey?: string | undefined;
   runId: string;
   persona: string;
   noAgentDays?: RunData["noAgentDays"];
@@ -368,7 +373,7 @@ export function Trajectories({
   useEffect(() => {
     if (!active) return;
     let alive = true;
-    void loadTrajectoryIndex(runId)
+    void loadTrajectoryIndex(runId, prefixKey)
       .then((data) => {
         if (alive) setIndex(data);
       })
@@ -378,7 +383,7 @@ export function Trajectories({
     return () => {
       alive = false;
     };
-  }, [runId, active]);
+  }, [runId, active, prefixKey]);
   const tasks = useMemo(
     () => index?.tasks.filter((t) => t.persona === persona) ?? [],
     [index, persona],
@@ -589,8 +594,7 @@ export function Trajectories({
                 <strong>
                   <span>{t.id}</span>
                   <span className="trajectory-pick-wf">
-                    {t.workflow} · rev{" "}
-                    {t.programVersion}
+                    {t.workflow} · rev {t.programVersion}
                   </span>
                 </strong>
                 <span
@@ -645,6 +649,7 @@ export function Trajectories({
         <div className="trajectory-main">
           {entry && (
             <TaskPlayback
+              prefixKey={prefixKey}
               key={`${runId}-${persona}-${entry.id}`}
               runId={runId}
               active={active}

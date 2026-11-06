@@ -1,13 +1,15 @@
 import { trajectoryReleaseLabels } from "../../../scripts/historical-releases.mjs";
-import { readRunJson } from "./data";
+import { readRunJson, runArtifactPath } from "./data";
 import {
   trajectoryIndexSchema,
   type TrajectoryIndex,
 } from "./trajectories-data";
 const validated = new WeakMap<object, TrajectoryIndex>();
 /** Share validation as well as fetching; refreshed responses get validated again. */
-export async function loadTrajectoryIndex(runId: string) {
-  const raw = await readRunJson(`/runs/${runId}/trajectories/index.json`);
+export async function loadTrajectoryIndex(runId: string, prefixKey?: string) {
+  const raw = await readRunJson(
+    runArtifactPath(runId, "trajectories/index.json", prefixKey),
+  );
   if (typeof raw === "object" && raw !== null) {
     const cached = validated.get(raw);
     if (cached) {

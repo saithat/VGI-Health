@@ -103,7 +103,7 @@ try {
   };
   await action("first Evolution", async () => {
     await page.goto(
-      `${base}/dashboard?run=core-10day-live&persona=P1&view=Evolution`,
+      `${base}/dashboard?run=core-10day&persona=P1&view=Evolution`,
     );
     await expect(
       page.getByRole("region", { name: "Version history" }),
@@ -152,7 +152,7 @@ try {
   if (errors.length) throw new Error(errors.join("\n"));
   const report = {
     base,
-    run: "core-10day-live",
+    run: "core-10day",
     persona: "P1",
     viewport: "1440x900",
     browser: await browser.version(),

@@ -111,12 +111,12 @@ describe("read-only clinician revision comparison", () => {
       "must be made by a person",
     );
   });
-  withData("runs/core-10day-live").it("shows the final certified patch and never labels an undeployed proposal as applied", () => {
+  withData("runs/core-10day").it("shows the final certified patch and never labels an undeployed proposal as applied", () => {
     const record = decisionRecordSchema.parse(
       JSON.parse(
         readFileSync(
           new URL(
-            "../../runs/core-10day-live/decisions/night-09/P3.json",
+            "../../runs/core-10day/decisions/night-09/P3.json",
             import.meta.url,
           ),
           "utf8",
@@ -141,13 +141,13 @@ describe("read-only clinician revision comparison", () => {
   });
   it("opens a persona and chart day without selecting a patient in the URL", () => {
     const program = {
-      path: "runs/core-10day-live/programs/P3/v4.json",
+      path: "runs/core-10day/programs/P3/v4.json",
       release: "v2",
       persona: "P3",
       role: "rn",
       group: "Recorded",
       label: "Revision",
-      run: "core-10day-live",
+      run: "core-10day",
       deployed: true,
       mock: false,
       version: 4,

@@ -271,7 +271,7 @@ async function main() {
     },
   });
   if (!values.runs || !values.out || !process.env.TMPDIR)
-    throw Error("Use --runs core-10day-live --out <scratch>; set TMPDIR");
+    throw Error("Use --runs core-10day --out <scratch>; set TMPDIR");
   const lock = await acquireBrowserLock();
   try {
     const report = await recertifyRuns({

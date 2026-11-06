@@ -6,7 +6,7 @@ import { RunStore } from '../src/store.js';
 import { fakeWorld, tmp } from './helpers.js';
 import { ScriptedLlm } from './scripted.js';
 
-withData("runs/core-10day-live/decisions").it('resumes an unfinished night without repeating completed days, decisions or LLM calls', async () => {
+withData("runs/core-10day/decisions").it('resumes an unfinished night without repeating completed days, decisions or LLM calls', async () => {
   const worldDir = await fakeWorld(3);
   const runsRoot = await tmp('resume-runs');
   const common = { worldDir, runsRoot, runId: 'resume', personas: ['P3'], releaseDays: { v2: 2, v3: 3 } };

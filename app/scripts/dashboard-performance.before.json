@@ -1,6 +1,6 @@
 {
   "base": "http://127.0.0.1:5194",
-  "run": "core-10day-live",
+  "run": "core-10day",
   "persona": "P1",
   "viewport": "1440x900",
   "browser": "156.0.8078.4",
@@ -15,7 +15,7 @@
       "scriptMs": 81,
       "requests": [
         {
-          "url": "http://127.0.0.1:5194/dashboard?run=core-10day-live&persona=P1&view=Evolution",
+          "url": "http://127.0.0.1:5194/dashboard?run=core-10day&persona=P1&view=Evolution",
           "bytes": 862
         },
         {
@@ -95,11 +95,11 @@
           "bytes": 5042
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/summary.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/summary.json",
           "bytes": 112633
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/conformance.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/conformance.json",
           "bytes": 51305
         }
       ]
@@ -141,15 +141,15 @@
           "bytes": 489552
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/index.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/index.json",
           "bytes": 56053
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/tasks/d01-P1-W2-021.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/tasks/d01-P1-W2-021.json",
           "bytes": 12781
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/specs/v1.json",
           "bytes": 6931
         },
         {
@@ -157,11 +157,11 @@
           "bytes": 9352
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.json",
           "bytes": 14298
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 2239
         },
         {
@@ -173,23 +173,23 @@
           "bytes": 11600
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.json",
           "bytes": 370
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.json",
           "bytes": 424
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.2.json",
           "bytes": 641
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.source.json",
           "bytes": 14298
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/geometry/11e9e306af97dcccafd3b81d9ea3a000bfecc5517513ea4da328234fb338de76.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/geometry/11e9e306af97dcccafd3b81d9ea3a000bfecc5517513ea4da328234fb338de76.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.json",
           "bytes": 237928
         },
         {
@@ -247,15 +247,15 @@
       "scriptMs": 118,
       "requests": [
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/tasks/d01-P1-W7-022.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/tasks/d01-P1-W7-022.json",
           "bytes": 19400
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.json",
           "bytes": 263
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/specs/v1.json",
           "bytes": 261
         },
         {
@@ -263,15 +263,15 @@
           "bytes": 19170
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.json",
           "bytes": 255
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.json",
           "bytes": 257
         },
         {
@@ -283,11 +283,11 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.2.json",
           "bytes": 256
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.source.json",
           "bytes": 263
         },
         {
@@ -357,19 +357,19 @@
           "bytes": 3102
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/index.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/index.json",
           "bytes": 264
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.json",
           "bytes": 263
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/specs/v1.json",
           "bytes": 261
         },
         {
@@ -377,15 +377,15 @@
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.json",
           "bytes": 255
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.json",
           "bytes": 257
         },
         {
@@ -397,11 +397,11 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.2.json",
           "bytes": 256
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.source.json",
           "bytes": 263
         },
         {
@@ -413,11 +413,11 @@
           "bytes": 4094
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/tasks/d10-P1-W2-018.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/tasks/d10-P1-W2-018.json",
           "bytes": 12612
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v3.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/specs/v3.json",
           "bytes": 7210
         },
         {
@@ -425,11 +425,11 @@
           "bytes": 9399
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v5.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v5.json",
           "bytes": 14330
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 261
         },
         {
@@ -437,7 +437,7 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.build.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v5.build.json",
           "bytes": 370
         },
         {
@@ -445,19 +445,19 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v5.json",
           "bytes": 423
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.build.1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v5.build.1.json",
           "bytes": 646
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v5.source.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v5.source.json",
           "bytes": 14328
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/geometry/3f370b3610e464860dab25564ae36c833ba1374b468b20af6707b976f5391e1c.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/geometry/3f370b3610e464860dab25564ae36c833ba1374b468b20af6707b976f5391e1c.4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945.json",
           "bytes": 248859
         },
         {
@@ -549,19 +549,19 @@
           "bytes": 260
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v4.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v4.json",
           "bytes": 14242
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v1.json",
           "bytes": 14273
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v3.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v3.json",
           "bytes": 14212
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v2.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v2.json",
           "bytes": 14217
         }
       ]
@@ -584,15 +584,15 @@
       "scriptMs": 167,
       "requests": [
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/index.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/index.json",
           "bytes": 264
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.json",
           "bytes": 263
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/specs/v1.json",
           "bytes": 261
         },
         {
@@ -600,11 +600,11 @@
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v5.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v5.json",
           "bytes": 263
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v3.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/specs/v3.json",
           "bytes": 260
         },
         {
@@ -612,19 +612,19 @@
           "bytes": 263
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.json",
           "bytes": 255
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.json",
           "bytes": 257
         },
         {
@@ -632,7 +632,7 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.build.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v5.build.json",
           "bytes": 255
         },
         {
@@ -640,7 +640,7 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v5.json",
           "bytes": 257
         },
         {
@@ -652,19 +652,19 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.2.json",
           "bytes": 256
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v5.build.1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v5.build.1.json",
           "bytes": 257
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.source.json",
           "bytes": 263
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v5.source.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v5.source.json",
           "bytes": 261
         },
         {
@@ -766,15 +766,15 @@
       "scriptMs": 80,
       "requests": [
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/index.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/index.json",
           "bytes": 264
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.json",
           "bytes": 263
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/trajectories/specs/v1.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/trajectories/specs/v1.json",
           "bytes": 261
         },
         {
@@ -782,15 +782,15 @@
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/manifest.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/manifest.json",
           "bytes": 261
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.json",
           "bytes": 255
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.json",
           "bytes": 257
         },
         {
@@ -802,11 +802,11 @@
           "bytes": 267
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/certs/P1/v0.build.2.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/certs/P1/v0.build.2.json",
           "bytes": 256
         },
         {
-          "url": "http://127.0.0.1:5194/runs/core-10day-live/programs/P1/v0.source.json",
+          "url": "http://127.0.0.1:5194/runs/core-10day/programs/P1/v0.source.json",
           "bytes": 263
         },
         {

@@ -65,8 +65,8 @@ export async function verifySavedTrajectories(runId, root = defaultRoot) {
   if (mismatches.length) throw new Error(`Determinism failed: ${JSON.stringify(mismatches[0])}`);
   return verification;
 }
-export async function indexTrajectories({ root = defaultRoot, runDirectory, contextCache, runId, leanDir = process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'), binary = process.env.EHR_BIN ?? path.join(leanDir, '.lake/build/bin/ehr'), baseline = [] }) {
-  if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected a run id, e.g. --run core-10day-live');
+export async function indexTrajectories({ root = defaultRoot, runDirectory, contextCache, runId, files, outputDirectory, leanDir = process.env.EHR_LEAN_DIR ?? path.join(root, 'lean'), binary = process.env.EHR_BIN ?? path.join(leanDir, '.lake/build/bin/ehr'), baseline = [] }) {
+  if (typeof runId !== 'string' || !/^[\w-]+$/.test(runId)) throw new Error('Expected a run id, e.g. --run core-10day');
   const runDir = runDirectory ?? path.join(root, 'runs', runId);
   const relative = p => path.relative(root, p.startsWith(runDir + path.sep) ? path.join(root, 'runs', runId, path.relative(runDir,p)) : p).split(path.sep).join('/');
   const manifest = await read(path.join(runDir, 'manifest.json'));
@@ -75,7 +75,7 @@ export async function indexTrajectories({ root = defaultRoot, runDirectory, cont
   const worldManifest = await read(path.join(world, 'manifest.json'));
   const fixtureIndexPath = path.resolve(root, worldManifest.fixtures.index);
   const fixtureIndex = await read(fixtureIndexPath);
-  const output = path.join(runDir, 'trajectories');
+  const output = outputDirectory ?? path.join(runDir, 'trajectories');
   await mkdir(path.join(output, 'tasks'), { recursive: true });
   await mkdir(path.join(output, 'specs'), { recursive: true });
   // Snapshot the actual historical spec. Current releases may have evolved.
@@ -91,6 +91,7 @@ export async function indexTrajectories({ root = defaultRoot, runDirectory, cont
     if(await exists(certifications)) for(const persona of manifest.personas){
       const directory=path.join(certifications,persona);if(!await exists(directory))continue;
       for(const name of await readdir(directory)){
+        if(files&&!files.includes(`certifications/${persona}/${name}/inputs.json`))continue;
         const inputs=await read(path.join(directory,name,'inputs.json'));
         if(inputs.specVersion===version)frozen.push({path:path.join(directory,name,'spec.json'),spec:await read(path.join(directory,name,'spec.json'))});
       }
@@ -115,7 +116,7 @@ export async function indexTrajectories({ root = defaultRoot, runDirectory, cont
     for (const dayFolder of (await readdir(path.join(runDir, 'days'))).sort()) {
       for (const persona of manifest.personas) {
         const dayPath = path.join(runDir, 'days', dayFolder, `${persona}.json`);
-        if (!await exists(dayPath)) continue;
+        if (!await exists(dayPath)||files&&!files.includes(`days/${dayFolder}/${persona}.json`)) continue;
         const day = await read(dayPath);
         const schedulePath = path.join(world, 'schedules', dayFolder, `${persona}.json`);
         const schedule = await read(schedulePath);

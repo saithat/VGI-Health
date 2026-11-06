@@ -11,7 +11,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
     requests.push(new URL(request.url()).pathname),
   );
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/dashboard?run=core-10day-live&persona=P3&view=Evolution");
+  await page.goto("/dashboard?run=core-10day&persona=P3&view=Evolution");
   await expect(
     page.getByRole("heading", { name: "UI evolution", exact: true }),
   ).toBeVisible();
@@ -144,7 +144,7 @@ test("all trajectories load on selection and replay on the semantic WASM EHR", a
 test("fixed playback supports fullscreen, shortcuts and visible interactions", async ({
   page,
 }, testInfo) => {
-  await page.goto("/dashboard?run=core-10day-live&persona=P3&view=Trajectories");
+  await page.goto("/dashboard?run=core-10day&persona=P3&view=Trajectories");
   const view = page.getByRole("region", { name: "All task trajectories" });
   const frame = page.frameLocator('iframe[title="Recorded EHR"]');
   const iframe = page.locator('iframe[title="Recorded EHR"]');
@@ -239,15 +239,15 @@ test("fixed playback supports fullscreen, shortcuts and visible interactions", a
 test("new-run identifiers and optional mouse geometry use the shared playback", async ({
   page,
 }) => {
-  // This is an aliased recording fixture, not evidence of a real trajectory-fixture run.
+  // This is an aliased recording fixture, not evidence of a real aliased run.
   await page.route("**/runs/index.json", async (route) => {
     const response = await page.request.get(route.request().url());
     await route.fulfill({
       response,
-      body: (await response.text()).replaceAll("core-10day-live", "trajectory-fixture"),
+      body: (await response.text()).replaceAll("core-10day", "renamed-fixture"),
     });
   });
-  await page.route("**/runs/trajectory-fixture/**", async (route) => {
+  await page.route("**/runs/renamed-fixture/**", async (route) => {
     const url = route.request().url();
     const geometry =
       /\/geometry\/([a-f0-9]{64})(?:\.([a-f0-9]{64}))?(?:\.json|\/slices\/tasks\/[\w.-]+\.json)$/.exec(
@@ -284,9 +284,9 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
       return;
     }
     const response = await page.request.get(
-      url.replace("/trajectory-fixture/", "/core-10day-live/"),
+      url.replace("/renamed-fixture/", "/core-10day/"),
     );
-    let body = (await response.text()).replaceAll("core-10day-live", "trajectory-fixture");
+    let body = (await response.text()).replaceAll("core-10day", "renamed-fixture");
     if (url.endsWith("/trajectories/index.json")) {
       const index = trajectoryIndexSchema.parse(JSON.parse(body));
       const selected = index.tasks.find(task => task.id === "d01-P1-W1-001");
@@ -296,7 +296,7 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
     }
     await route.fulfill({ response, body });
   });
-  await page.goto("/dashboard?run=trajectory-fixture&view=Trajectories&persona=P1&task=d01-P1-W1-001");
+  await page.goto("/dashboard?run=renamed-fixture&view=Trajectories&persona=P1&task=d01-P1-W1-001");
   const view = page.getByRole("region", { name: "All task trajectories" });
   const frame = page.frameLocator('iframe[title="Recorded EHR"]');
   await expectRecordedWorkspace(frame);

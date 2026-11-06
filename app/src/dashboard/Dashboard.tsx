@@ -1,3 +1,4 @@
+import { watchRun, isRunning } from "./run-refresh";
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import { RuleConformanceBadge } from "./RuleConformance";
 import {
@@ -17,7 +18,6 @@ import type {
   Savings,
 } from "../../../agent/src/schema";
 import {
-  loadRunSummary,
   loadRunDetails,
   breakCapability,
   submitBreakAttempt,
@@ -522,8 +522,8 @@ function BeforeAfter({
         Interpreter comparison: exported traces use the same projected patient
         and episode in both versions. Older authored examples can use different
         recorded tasks. Next task event advances each available trace
-        independently; a pane with no further recorded events stays still.
-        Event positions do not align clinical milestones.
+        independently; a pane with no further recorded events stays still. Event
+        positions do not align clinical milestones.
       </p>
       <div className="dash-controls">
         <button
@@ -1372,11 +1372,17 @@ export function Dashboard({
     setError("");
     setSelection(null);
     setScreenMode(null);
-    loadRunSummary(runId)
-      .then((data) => {
+    let first = true;
+    const stop = watchRun(
+      runId,
+      (data) => {
         if (active) {
           setRun(data);
-          if (requestedVersion !== null && /^\d+$/.test(requestedVersion)) {
+          if (
+            first &&
+            requestedVersion !== null &&
+            /^\d+$/.test(requestedVersion)
+          ) {
             const record = data.records.find(
               (record) =>
                 record.persona === persona &&
@@ -1387,19 +1393,22 @@ export function Dashboard({
               setScreenMode("pair");
             }
           }
+          first = false;
           setPersona((current) =>
             data.manifest.personas.includes(current)
               ? current
               : (data.manifest.personas[0] ?? current),
           );
         }
-      })
-      .catch((e: unknown) => {
+      },
+      (e: unknown) => {
         if (active)
           setError(e instanceof Error ? e.message : "Run validation failed");
-      });
+      },
+    );
     return () => {
       active = false;
+      stop();
     };
   }, [index, runId]);
   useEffect(() => {
@@ -1552,7 +1561,7 @@ export function Dashboard({
           {run && (
             <span className="run-banner" role="status">
               {run.manifest.warning ??
-                `${runId} · Real checker · ${run.manifest.days} recorded days`}
+                `${runId} · Real checker · ${run.manifest.daysCompleted ?? run.manifest.days} completed days${isRunning(run.manifest.status) ? ` of ${run.manifest.days} · refreshing every 30 s` : ""}`}
             </span>
           )}
           <div
@@ -1643,6 +1652,7 @@ export function Dashboard({
                       noAgentDays={run.noAgentDays}
                       initialDay={requestedDay}
                       key={runId}
+                      prefixKey={run.manifest.prefixKey}
                       runId={runId}
                       persona={persona}
                       factory={interpFactory}
@@ -1670,8 +1680,7 @@ export function Dashboard({
                 </div>
               ) : (
                 <p role="status">
-                  No trajectories recorded for this run yet. Partial runs become
-                  comparable after trajectory indexing.
+                  No completed trajectories recorded for this run yet.
                 </p>
               ))}
             {view === "Releases" && (

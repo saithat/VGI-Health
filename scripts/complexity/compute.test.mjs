@@ -13,8 +13,8 @@ test('fixed cases cover W1–W7 with concrete clinical choices and a single surg
   assert.equal(suite.cases.find(c => c.id === 'W4').steps[0].choices.administer[0].drug, 'insulin lispro');
 });
 
-test('recorded report retains every deployed iteration and explicit search coverage', { skip: dataReason('runs/core-10day-live') }, async () => {
-  const report = await load('runs/core-10day-live/complexity.json');
+test('recorded report retains every deployed iteration and explicit search coverage', { skip: dataReason('runs/core-10day') }, async () => {
+  const report = await load('runs/core-10day/complexity.json');
   const person = report.personas.find(p => p.persona === 'P3');
   assert.deepEqual(person.iterations.map(i => i.version), [0,1,2,3,4]);
   for (const i of person.iterations) {

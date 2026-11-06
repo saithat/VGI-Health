@@ -23,7 +23,7 @@ export function canonicals() {
   }));
 }
 
-export function runTargets(id) {
+export function runTargets(id, files) {
   if (!/^[\w-]+$/.test(id)) throw new Error('Invalid run id');
   const dir = path.join(root, 'runs', id), manifest = read(path.join(dir, 'manifest.json'));
   if (manifest.runId !== id || manifest.ehr.mode !== 'real') throw new Error('Expected matching real native run manifest');
@@ -35,9 +35,9 @@ export function runTargets(id) {
     const folder = path.join(dir, 'programs', persona);
     const pointer = read(path.join(folder, 'deployed.json'));
     if (!Number.isInteger(pointer.version) || pointer.version < 0) throw new Error(`Invalid deployed pointer for ${persona}`);
-    const versions = readdirSync(folder).filter(name => /^v\d+\.json$/.test(name) && Number(name.slice(1, -5)) <= pointer.version)
+    const versions = readdirSync(folder).filter(name => /^v\d+\.json$/.test(name) && Number(name.slice(1, -5)) <= pointer.version && (!files || files.includes(`programs/${persona}/${name}`)))
       .sort((a, b) => Number(a.slice(1, -5)) - Number(b.slice(1, -5)));
-    if (!versions.includes(`v${pointer.version}.json`)) throw new Error(`Missing deployed executable for ${persona}`);
+    if (!files && !versions.includes(`v${pointer.version}.json`)) throw new Error(`Missing deployed executable for ${persona}`);
     for (const version of versions) {
       const programPath = path.join(folder, version), program = read(programPath);
       const certPath = path.join(dir, 'certs', persona, version);
