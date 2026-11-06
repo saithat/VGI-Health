@@ -37,20 +37,10 @@ export function assertScreenFingerprints(previous:Record<string,unknown>,current
 }
 export async function offlineScreenContext() {
   const app=path.join(REPO_ROOT,'app');
-  const sources=['e2e/ui-check.spec.ts','e2e/physical-policy.ts','e2e/geometry-capture.ts','e2e/capture-environment.ts',
-    'src/ehr/ui/fonts/manifest.json','playwright.config.ts','src/ehr/ui/fidelity.ts','src/ehr/ui/display.tsx','src/ehr/ui/types.ts',
-    'scripts/screen-check.mjs','scripts/screen-cache.mjs','scripts/audit-execution.mjs'];
-  const browser=execFileSync(process.execPath,['--input-type=module','-e',
-    'import {chromium} from "@playwright/test";process.stdout.write(chromium.executablePath())'],{cwd:app,encoding:'utf8'});
-  const physicalEnabled=process.env['EHR_PHYSICAL_POLICY']!=='0';
-  return sha256(JSON.stringify({app:JSON.parse(await readFile(path.join(app,'dist/build.json'),'utf8')),
-    sources:await Promise.all(sources.map(async file=>[file,await fileHash(path.join(app,file))])),
-    browser:await fileHash(browser),playwright:await fileHash(path.join(app,'node_modules/@playwright/test/package.json')),
-    presentations:null,node:process.version,platform:process.platform,
-    policy:await fileHash(path.join(REPO_ROOT,'docs/design/alert-urgency.json')),
-    minimumFont:process.env['EHR_MIN_FONT_PX']??'12',physicalEnabled,
-    physicalEnforced:physicalEnabled && process.env['EHR_ENFORCE_PHYSICAL']!=='0',
-    urgentAlertIds:process.env['EHR_URGENT_ALERT_IDS']??'[]',projects:['desktop','narrow']}));
+  // Use the same complete context as ordinary checks and audits; old protocol
+  // transcripts miss naturally rather than bypassing the shared cache's pins.
+  return execFileSync(process.execPath,['--input-type=module','-e',
+    'import {chromium} from "@playwright/test";import {screenContext,contextDigest} from "../scripts/screen-results.mjs";process.stdout.write(contextDigest(screenContext(process.cwd(),chromium.executablePath(),{...process.env,EHR_PRESENTATION_BUNDLE:""})))'],{cwd:app,encoding:'utf8'});
 }
 interface EvidenceScope {previous:string;oldWorld:string;world:string;app:string;context:string;}
 /** Internal leaf; reuseOfflineScreens validates this scope before construction. */

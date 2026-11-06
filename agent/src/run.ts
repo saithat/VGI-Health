@@ -159,9 +159,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     throw new Error('Every requested persona must occur exactly once in the world');
   if(opts.parallel&&opts.screens?.mode==='real')throw new Error('Parallel real runs require per-persona screen checkers; omit the shared screen override');
   if(opts.parallel&&underlyingEhr.mode==='real'&&personaIds.length>4)throw new Error('Parallel real mode permits at most four persona workers');
+  const screenWorkers=Number(process.env['EHR_SCREEN_WORKERS']??(opts.parallel?Math.max(1,Math.floor(4/personaIds.length)):4));
   if(underlyingEhr.mode==='real'){
-    const requested=Number(process.env['EHR_SCREEN_WORKERS']??1);
-    const maximum=opts.parallel?Math.max(1,Math.floor(4/personaIds.length)):4;
+    const requested=screenWorkers;
+    const maximum=opts.parallel?Math.max(1,Math.floor(6/personaIds.length)):6;
     if(!Number.isSafeInteger(requested)||requested<1||requested>maximum)throw new Error(`EHR_SCREEN_WORKERS must be between 1 and ${maximum} for this run`);
   }
   const releaseDays = opts.releaseDays ?? RELEASE_DAYS;
@@ -172,7 +173,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const store = new RunStore(dir,opts.verificationRelease || opts.generatorOnly ? path.join(dir,'custom'):undefined);
   const recorder = new RecordingLlm(llm, dir, opts.resume ?? false);
   const seedState: SeedState = { rejected: new Set(), injected: 0 };
-  const screens = opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), artifactsDir: path.join(dir, 'reports/screens') });
+  const screens = opts.screens ?? createScreenChecker(nativeEhr, { ...(opts.fhirBundles ? { bundles: opts.fhirBundles } : {}), artifactsDir: path.join(dir, 'reports/screens'), workers: screenWorkers });
   const rawProvider=opts.geometry??screens.geometry;
   const provider=rawProvider?((input:Parameters<typeof rawProvider>[0])=>retryInfrastructure('geometry',()=>rawProvider(input),true)):undefined;
   const ehr=provider?geometryEhr(nativeEhr,provider,dir):nativeEhr;
@@ -214,7 +215,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     driftedCallIds:previous?.driftedCallIds??[],
     infrastructureRetries:previous?.infrastructureRetries??[],
     interactionModel:{viewport:[1440,900],pointer:'Straight-line component-center travel; one center start per day trace; scroll positions reset on screen navigation',scroll:'Native scroll events page down one measured container viewport; off-screen targets reveal with measured browser offsets',time:'raw only; not used'},
-    status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:Math.max(1,Number.parseInt(process.env['EHR_SCREEN_WORKERS']??'1',10)||1),fingerprints, measurementProtocol,
+    status: 'initializing',parallel:opts.parallel??false,personaWorkers:opts.parallel?personaIds.length:1,screenWorkersPerPersona:screenWorkers,fingerprints, measurementProtocol,
     mode: opts.generatorOnly ? 'OFFLINE' : llm.name === 'replay' ? 'REPLAY' : llm.name === 'scripted' || ehr.mode === 'fake' ? 'FAKE' : 'REAL',
     releaseIds: RELEASE_IDS,
     noAgentRequired:true,
@@ -241,7 +242,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   for(const id of personaIds){
 
     const workerNative=underlyingEhr.mode==='real'?retryEhr(recordingEhr(underlyingEhr,path.join(dir,'ehr',id),id)):retryEhr(underlyingEhr);
-    const workerScreens=opts.screens??createScreenChecker(workerNative,{...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),artifactsDir:path.join(dir,'reports/screens'),cacheDir:path.join(dir,'screen-cache',id)});
+    const workerScreens=opts.screens??createScreenChecker(workerNative,{...(opts.fhirBundles?{bundles:opts.fhirBundles}:{}),artifactsDir:path.join(dir,'reports/screens'),workers:screenWorkers});
     const rawGeometry=opts.geometry??workerScreens.geometry;
     const geometry=rawGeometry?((input:Parameters<typeof rawGeometry>[0])=>retryInfrastructure('geometry',()=>rawGeometry(input),true)):undefined;
     const workerEhr=geometry?geometryEhr(workerNative,geometry,dir):workerNative;

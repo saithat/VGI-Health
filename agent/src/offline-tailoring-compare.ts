@@ -58,7 +58,7 @@ for(const id of ['P1','P2']) {
 console.log('Expert preflight: all selected clinical goals complete in v1');
 if(values['preflight-only'])process.exit(0);
 // Exact rendered-tree/context fingerprints govern reuse; every new state still passes the full screen gate.
-const realScreens=createScreenChecker(ehr,{artifactsDir:path.join(out,'screens'),cacheDir:path.join(out,'screen-cache')});
+const realScreens=createScreenChecker(ehr,{artifactsDir:path.join(out,'screens')});
 const reused=values['reuse-evidence'] ? await reuseOfflineScreens({previous:values['reuse-evidence'],sourceRef:values['reuse-source']??'',world,ehr,inner:realScreens}):null;
 const screens=immutableScreenChecks(reused?.screens??realScreens);
 for(const arm of ['A','B','C'] as const) {

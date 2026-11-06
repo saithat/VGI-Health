@@ -17,6 +17,8 @@ import { createHash } from 'node:crypto';
 import { parseArgs } from 'node:util';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import { fictionalize, identityCatalog } from './fictional-identities.mjs';
+import { recertifyRuns } from './recertify-runs.mjs';
+import { acquireBrowserLock } from './browser-heavy-lock.mjs';
 import { archiveStaleGeometry } from './geometry-history.mjs';
 const root = resolve(import.meta.dirname, '..');
 const compound = (...parts) => parts.join('');
@@ -127,6 +129,7 @@ async function main() {
   }
   const {values}=parseArgs({options:{worker:{type:'boolean'},'recertify-only':{type:'boolean',default:false},runs:{type:'string'}}});
   const recertifyOnly=values['recertify-only'];
+  const browserLock=await acquireBrowserLock();
   const selected=values.runs?.split(',');
   if(selected?.some(id=>!/^[-\w]+$/.test(id)))throw new Error('Invalid run selection');
   if(recertifyOnly&&!selected?.length)throw new Error('--recertify-only requires explicit --runs');
@@ -163,6 +166,7 @@ async function main() {
     try {
     // A migration is a new certification. Every version receives the current gates.
     const ehr=createEhr({fake:false,binary}),screens=createScreenChecker(ehr,{artifactsDir:join(dir,'migration/screens')});
+    const batched=recertifyOnly?await recertifyRuns({runs:[name],output:join(dir,'migration/batch-screen-check')}):null;
     for(const persona of manifest.personas) {
       const folder=join(dir,'programs',persona);
       for(const file of (await readdir(folder)).filter(f=>/^v\d+\.json$/.test(f)).sort((a,b)=>Number(a.slice(1,-5))-Number(b.slice(1,-5)))) {
@@ -180,9 +184,10 @@ async function main() {
         const specFile=await exists(frozen)?frozen:await exists(archived)?archived:join(root,'releases',program.specVersion,'spec.json');
         const oldInputs=await exists(join(inputDir,'inputs.json'))?await read(join(inputDir,'inputs.json')):null;
         const canonical=oldInputs?.canonical??program,prev=oldInputs?.prev??program;
-        const result=await ehr.deploy({specVersion:specFile,program,canonical,prev,outDir:join(dir,'migration/native')});
+        const batchCertificate=batched?.certificates.find(certificate=>certificate.persona===persona&&certificate.version===program.version);
+        const result=batchCertificate?.nativeResult??await ehr.deploy({specVersion:specFile,program,canonical,prev,outDir:join(dir,'migration/native')});
         if(!result.deployed){await write(`${prefix}.build.json`,{status:'rejected',current:null,reason:JSON.stringify(result.verdict)});item.certificates.push({persona,version:program.version,status:'rejected',verdict:result.verdict});continue;}
-        const screen=await screens.check({specVersion:specFile,program});
+        const screen=batchCertificate?{status:batchCertificate.status==='certified'?'pass':'fail'}:await screens.check({specVersion:specFile,program});
         if(screen.status!=='pass')throw new Error(`Migration screen gate refused ${name}/${persona}/${file}: ${JSON.stringify(screen)}`);
         const spec=await read(specFile),inputs={specVersion:program.specVersion,program,canonical,prev,night:oldInputs?.night??null};
         await write(frozen,spec);await write(join(inputDir,'inputs.json'),inputs);
@@ -249,5 +254,6 @@ async function main() {
   const destination=join(root,recertifyOnly?'runs/recertification-report.json':'runs/neutral-migration-report.json');await write(destination,report);
   console.log(`Migration complete: ${report.runs.length} recorded runs; report ${relative(root,destination)}`);
   if(report.runs.some(item=>item.error))process.exitCode=2;
+  browserLock.release();
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url))await main();

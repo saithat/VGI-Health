@@ -1,0 +1,113 @@
+{
+  "date": "2026-11-06",
+  "scope": "lane/screen-speed; content-addressed browser verdicts and batched recorded certification gates",
+  "ownerUpdate": "Full audits, recording re-certification and long timings deferred to the fully merged checkout. No completed full recording/audit/timing result is claimed for this lane.",
+  "implementation": [
+    "Single shared physical/results cache rooted at TMPDIR/vgi-screen-check-cache (EHR_SCREEN_CACHE_DIR override); canonical tree keys with build, served WASM/assets, font bytes, viewport/matrix, capture/runtime, assertions, presentation and policy pins.",
+    "Atomic checksummed pass/fail entries; corrupt/incomplete entries miss; infrastructure errors are not persisted; known-bad controls run on every invocation.",
+    "Ordered bounded native export/deploy pool and cross-revision Playwright batches; default four workers, maximum six; parallel persona checkers divide the run budget.",
+    "recertify-runs stages certificates and reports; migrate-neutral-terms --recertify-only consumes its gates, retaining frozen inputs, certificate installation and measurement/replay refresh.",
+    "Removed retired run references and replaced test aliases with fixture identifiers. No local recording data deleted or staged."
+  ],
+  "environment": {
+    "TMPDIR": "/home/saithat/Projects/run-tmp",
+    "CI": "true",
+    "testWorkers": 2
+  },
+  "verified": [
+    {
+      "command": "pnpm --filter agent typecheck",
+      "result": "exit 0"
+    },
+    {
+      "command": "pnpm --filter app typecheck",
+      "result": "exit 0"
+    },
+    {
+      "command": "pnpm --filter app exec eslint scripts/screen-check.mjs scripts/audit-execution.mjs tests/screen-cache.test.js tests/audit-execution.test.js e2e/trajectories.spec.ts",
+      "result": "exit 0"
+    },
+    {
+      "command": "pnpm --filter agent exec eslint src/screencheck.ts src/run.ts src/offline-screen-evidence.ts src/offline-tailoring-compare.ts src/dry-run.ts test/wrapper-resume.test.ts",
+      "result": "exit 0"
+    },
+    {
+      "command": "node /home/saithat/Projects/run-tmp/screen-speed-lint.mjs",
+      "result": "ESLint recommended rules on nine changed/new root scripts: zero errors/warnings",
+      "note": "ESLint API configured at repository root with Node globals; app flat config ignores root scripts outside its base path."
+    },
+    {
+      "command": "pnpm --filter app exec vitest run tests/screen-cache.test.js tests/audit-execution.test.js --maxWorkers=2",
+      "result": "10 tests passed"
+    },
+    {
+      "command": "node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/recertify-runs.test.mjs scripts/migrate-neutral-terms.test.mjs scripts/compare-screen-results.test.mjs",
+      "result": "6 tests passed; mocked native/browser adapters only"
+    },
+    {
+      "command": "pnpm --filter agent exec vitest run test/wrapper-resume.test.ts test/review-safety.test.ts test/offline-screen-evidence.test.ts --maxWorkers=2",
+      "result": "20 tests passed; wrapper uses native fingerprint checks, review tests use fake backend"
+    },
+    {
+      "command": "pnpm --filter agent exec vitest run test/offline-screen-evidence.test.ts --maxWorkers=2",
+      "result": "3 tests passed after shared-context refactor"
+    },
+    {
+      "command": "git diff --check",
+      "result": "exit 0"
+    },
+    {
+      "command": "git grep -n -P 'core-(?:10day)(?!-live)' -- ':!pnpm-lock.yaml'",
+      "result": "no tracked references (exit 1 expected)"
+    },
+    {
+      "command": "pnpm --filter agent exec vitest run test/parallel.test.ts --maxWorkers=2",
+      "result": "4 tests passed; fake-backend concurrent-persona replay/resume, worker joining and failure recovery"
+    }
+  ],
+  "beforeOwnerUpdate": {
+    "appBuild": {
+      "command": "pnpm --filter app build",
+      "result": "passed",
+      "appSha256": "718ad628861a2850c3073970f856d8583315903dff7e9b759ce9f28f5400ab6c",
+      "note": "Matches base build; changes affect tooling/tests, not bundled clinical modules. Recheck merged build."
+    },
+    "smallSmoke": {
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_CACHE_DIR=/home/saithat/Projects/run-tmp/screen-speed-target-cache EHR_SCREEN_RESULT=/home/saithat/Projects/run-tmp/screen-speed-target-cold.json flock /home/saithat/Projects/run-tmp/vgi-browser-heavy.lock env EHR_BROWSER_LOCK=off node app/scripts/screen-check.mjs --ui app/src/fixtures/ui/w1Rooming.json app/src/fixtures/ui/bad-sign.json",
+      "result": "29 passed, 5 skipped; 2 states, 18 physical measurements, zero findings",
+      "note": "Preliminary implementation only; final browser validation remains deferred."
+    },
+    "interrupted": "Recording benchmark was started before the owner update and interrupted before a completed report; queued browser integration check was cancelled. Browser lock availability was confirmed with flock -n."
+  },
+  "notDone": [
+    "No full audit pair, completed recording re-certification, long timing measurement or broad Playwright suite.",
+    "No Lean edits, theorem/spec changes, lake build or axiom check required.",
+    "No model calls, push, local data deletion or gitignore exceptions."
+  ],
+  "finalMergedCheck": {
+    "environment": [
+      "export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=4",
+      "Use fresh output/cache directories; every browser-heavy command takes flock \"$TMPDIR/vgi-browser-heavy.lock\" and passes EHR_BROWSER_LOCK=off inside that already-held lock. Run all commands sequentially."
+    ],
+    "commands": [
+      "pnpm --filter app build",
+      "node scripts/wasm-assets.mjs",
+      "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node --test scripts/screen-cache-browser.test.mjs",
+      "EHR_SCREEN_CACHE_DIR=\"$TMPDIR/screen-speed-final-recert-cache\" flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/recertify-runs.mjs --runs core-10day-live --out \"$TMPDIR/screen-speed-final-recert-cold\"",
+      "EHR_SCREEN_CACHE_DIR=\"$TMPDIR/screen-speed-final-recert-cache\" flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/recertify-runs.mjs --runs core-10day-live --out \"$TMPDIR/screen-speed-final-recert-warm\"",
+      "EHR_SCREEN_CACHE=0 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/recertify-runs.mjs --runs core-10day-live --out \"$TMPDIR/screen-speed-final-recert-uncached\"",
+      "node scripts/compare-screen-results.mjs \"$TMPDIR/screen-speed-final-recert-cold/recertification.json\" \"$TMPDIR/screen-speed-final-recert-warm/recertification.json\" \"$TMPDIR/screen-speed-final-recert-uncached/recertification.json\"",
+      "EHR_SCREEN_CACHE_DIR=\"$TMPDIR/screen-speed-final-audit-cache\" flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off /usr/bin/time -p -o \"$TMPDIR/screen-speed-final-templates-cold.time\" node scripts/audit-alert-policy.mjs \"$TMPDIR/screen-speed-final-templates-cold\"",
+      "EHR_SCREEN_CACHE_DIR=\"$TMPDIR/screen-speed-final-audit-cache\" flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off /usr/bin/time -p -o \"$TMPDIR/screen-speed-final-personas-cold.time\" node scripts/audit-alert-policy.mjs \"$TMPDIR/screen-speed-final-personas-cold\" --personas",
+      "EHR_SCREEN_CACHE_DIR=\"$TMPDIR/screen-speed-final-audit-cache\" flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off /usr/bin/time -p -o \"$TMPDIR/screen-speed-final-templates-warm.time\" node scripts/audit-alert-policy.mjs \"$TMPDIR/screen-speed-final-templates-warm\"",
+      "EHR_SCREEN_CACHE_DIR=\"$TMPDIR/screen-speed-final-audit-cache\" flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off /usr/bin/time -p -o \"$TMPDIR/screen-speed-final-personas-warm.time\" node scripts/audit-alert-policy.mjs \"$TMPDIR/screen-speed-final-personas-warm\" --personas",
+      "node scripts/compare-screen-results.mjs \"$TMPDIR/screen-speed-final-templates-cold/result.json\" \"$TMPDIR/screen-speed-final-templates-warm/result.json\"",
+      "node scripts/compare-screen-results.mjs \"$TMPDIR/screen-speed-final-personas-cold/result.json\" \"$TMPDIR/screen-speed-final-personas-warm/result.json\"",
+      "EHR_SCREEN_CACHE_DIR=\"$TMPDIR/screen-speed-final-recert-cache\" flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day-live"
+    ],
+    "measurements": "Record gate-only recertification.json elapsedMs, cache hits/misses and per-tree verdict equality for cold/warm/uncached. Record complete sequential audit pair wall time from the .time files and compare every tree, physical state count and finding. The final migration additionally installs bindings and remeasures/verifies replay once.",
+    "optional": "A one-component painter change/rebuild must invalidate all build-bound results; measure on scratch, restore source and rebuild before final certificate installation. Unit tests cover component invalidation without editing the painter in this lane.",
+    "browserRegressions": "Run the merged check's standard trajectory/replay suite, including app/e2e/trajectories.spec.ts with its renamed fixture alias."
+  },
+  "openQuestions": []
+}

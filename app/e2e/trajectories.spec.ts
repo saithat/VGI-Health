@@ -239,15 +239,15 @@ test("fixed playback supports fullscreen, shortcuts and visible interactions", a
 test("new-run identifiers and optional mouse geometry use the shared playback", async ({
   page,
 }) => {
-  // This is an aliased recording fixture, not evidence of a real core-10day run.
+  // This is an aliased recording fixture, not evidence of a real trajectory-fixture run.
   await page.route("**/runs/index.json", async (route) => {
     const response = await page.request.get(route.request().url());
     await route.fulfill({
       response,
-      body: (await response.text()).replaceAll("core-10day-live", "core-10day"),
+      body: (await response.text()).replaceAll("core-10day-live", "trajectory-fixture"),
     });
   });
-  await page.route("**/runs/core-10day/**", async (route) => {
+  await page.route("**/runs/trajectory-fixture/**", async (route) => {
     const url = route.request().url();
     const geometry =
       /\/geometry\/([a-f0-9]{64})(?:\.([a-f0-9]{64}))?(?:\.json|\/slices\/tasks\/[\w.-]+\.json)$/.exec(
@@ -284,9 +284,9 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
       return;
     }
     const response = await page.request.get(
-      url.replace("/core-10day/", "/core-10day-live/"),
+      url.replace("/trajectory-fixture/", "/core-10day-live/"),
     );
-    let body = (await response.text()).replaceAll("core-10day-live", "core-10day");
+    let body = (await response.text()).replaceAll("core-10day-live", "trajectory-fixture");
     if (url.endsWith("/trajectories/index.json")) {
       const index = trajectoryIndexSchema.parse(JSON.parse(body));
       const selected = index.tasks.find(task => task.id === "d01-P1-W1-001");
@@ -296,7 +296,7 @@ test("new-run identifiers and optional mouse geometry use the shared playback", 
     }
     await route.fulfill({ response, body });
   });
-  await page.goto("/dashboard?run=core-10day&view=Trajectories&persona=P1&task=d01-P1-W1-001");
+  await page.goto("/dashboard?run=trajectory-fixture&view=Trajectories&persona=P1&task=d01-P1-W1-001");
   const view = page.getByRole("region", { name: "All task trajectories" });
   const frame = page.frameLocator('iframe[title="Recorded EHR"]');
   await expectRecordedWorkspace(frame);

@@ -31,7 +31,8 @@
   },
   "recertification": [
     {
-      "run": "core-10day",
+      "run": "retired-working-copy",
+      "recordingCopy": "former working directory of the live snapshot; identifier retired",
       "certifiedRevisions": 33,
       "clinicianDays": 50,
       "replay": {
@@ -61,7 +62,8 @@
   ],
   "geometryIntegrity": [
     {
-      "run": "core-10day",
+      "run": "retired-working-copy",
+      "recordingCopy": "former working directory of the live snapshot; identifier retired",
       "archivedFilesVerified": 392,
       "days": 50,
       "currentAppChromiumDays": 50,
@@ -995,7 +997,8 @@
     },
     {
       "cwd": ".",
-      "command": "node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day,core-10day-live",
+      "command": "node scripts/migrate-neutral-terms.mjs --recertify-only --runs retired-working-copy,core-10day-live",
+      "commandNote": "Historical working-copy identifier replaced with retired-working-copy; original log and its digest are unchanged.",
       "exitCode": 0,
       "result": "66 revisions, 100 clinician-days, two complete strict-replay checks; zero mismatches; native matrix 15 accepted / 23 rejected",
       "log": "/home/saithat/Projects/run-tmp/recertify-runs.log",

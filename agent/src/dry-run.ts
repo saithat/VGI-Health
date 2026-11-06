@@ -25,7 +25,6 @@ const out = values.out ? resolveUserPath(values.out) : await mkdtemp(path.join(t
 if (out.startsWith(path.join(REPO_ROOT, 'runs') + path.sep)) throw new Error('Dry run output must be outside runs/; it is not real run evidence');
 if (existsSync(path.join(out, 'manifest.json'))) throw new Error('Choose an empty dry-run output directory; existing evidence is never overwritten');
 await mkdir(out, { recursive: true });
-process.env['EHR_SCREEN_CACHE_DIR'] = path.join(out, 'screen-cache');
 const specVersion = path.join(out, 'tiny-spec.json');
 await writeJson(specVersion, tinySpec);
 const world = await loadWorld(path.join(REPO_ROOT, 'runs/world/2'));

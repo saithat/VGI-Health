@@ -1,7 +1,7 @@
 import { freemem } from "node:os";
 import { readFileSync } from "node:fs";
 import { dirname, basename, resolve, sep } from "node:path";
-import { digest } from "./screen-cache.mjs";
+import { treeDigest } from "../../scripts/screen-results.mjs";
 
 // MemFree excludes reclaimable page cache on Linux; MemAvailable is the budget
 // a new browser job can actually use without swapping.
@@ -31,7 +31,7 @@ export function workerCount(env = process.env, available = availableMemory()) {
       (Math.min(available, 8 * 1024 ** 3) - 2 * 1024 ** 3) / (500 * 1024 ** 2),
     ),
   );
-  return Math.min(maximum, memory, positive(env.EHR_SCREEN_WORKERS, 6));
+  return Math.min(maximum, memory, positive(env.EHR_SCREEN_WORKERS, 4));
 }
 
 /** Probe files bypass clinical assertions and must never substitute for states. */
@@ -39,7 +39,7 @@ export function dedupeFiles(files, context, enabled = true) {
   const groups = new Map();
   return files.map((file) => {
     const key = JSON.stringify([
-      digest(readFileSync(file)),
+      treeDigest(file),
       context,
       /-geometry\.json$/.test(file),
     ]);

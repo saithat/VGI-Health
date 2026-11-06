@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // Full audits hold $TMPDIR/vgi-browser-heavy.lock, passing its token to nested
-// screen checks (EHR_BROWSER_LOCK=off opts out). Default: 6 memory-bounded
+// screen checks (EHR_BROWSER_LOCK=off opts out). Default: 4 memory-bounded
 // workers (ceiling 6), 64-tree batches, shared atomic physical samples under
 // $TMPDIR/vgi-screen-check-cache/physical. Timeout/crash-only retries halve
 // workers, at most twice; exact tree/context/bundle dedupe maps every state.
-// Iterate with targeted --grep/subsets; run the full audit pair once before
-// reporting; the merge session runs it once on main. See README for defaults.
+// Iterate with targeted --grep/subsets. Full audits/timings belong to the final
+// merged check. See README for defaults.
 import { createHash } from "node:crypto";
 import {
   readFileSync,
@@ -92,6 +92,7 @@ for (const version of ["v1", "v2", "v3"]) {
       if (result.status !== 0) process.exit(result.status ?? 1);
       const states = readdirSync(directory)
         .filter((name) => name.endsWith(".json"))
+        .sort()
         .map((name) => {
           const file = resolve(directory, name);
           const sha256 = createHash("sha256")
@@ -164,7 +165,6 @@ const result = spawnSync(
     stdio: "inherit",
     env: {
       ...process.env,
-      EHR_SCREEN_CACHE: "0",
       EHR_PHYSICAL_POLICY: "1",
       EHR_ENFORCE_PHYSICAL: "1",
       EHR_PHYSICAL_REPORT: resolve(output, "physical.json"),

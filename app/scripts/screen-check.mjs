@@ -1,11 +1,10 @@
 // Full --ui runs share $TMPDIR/vgi-browser-heavy.lock (inherited audit token;
-// EHR_BROWSER_LOCK=off opts out). Default: 6 memory-bounded workers, ceiling 6,
-// 64-tree batches (README records calibration). Timeout/crash-only retries halve
+// EHR_BROWSER_LOCK=off opts out). Default: 4 memory-bounded workers, ceiling 6,
+// 64-tree batches. Timeout/crash-only retries halve
 // workers, at most twice. Exact tree/context/bundle dedupe maps every state.
 // Atomic physical samples use $TMPDIR/vgi-screen-check-cache/physical.
-// Iterate with targeted --grep/subsets; run the full audit pair once before
-// reporting; the merge session runs it once on main. Agent calls do not lock.
-import { randomUUID } from "node:crypto";
+// Iterate with targeted --grep/subsets. The owner defers full audits/timings to
+// the final merged check. Agent calls inherit their caller scheduling/lock.
 import { Buffer } from "node:buffer";
 import { performance } from "node:perf_hooks";
 import { resolve, dirname, basename } from "node:path";
@@ -13,7 +12,6 @@ import { fileURLToPath } from "node:url";
 import {
   existsSync,
   mkdirSync,
-  renameSync,
   mkdtempSync,
   rmSync,
   readFileSync,
@@ -25,9 +23,13 @@ import { spawnSync } from "node:child_process";
 import {
   digest,
   contextDigest,
-  cachedTree,
-  recordBatch,
-} from "./screen-cache.mjs";
+  cacheRoot,
+  treeDigest,
+  resultKey,
+  readResult,
+  writeResult,
+  screenContext,
+} from "../../scripts/screen-results.mjs";
 import { acquireBrowserLock } from "../../scripts/browser-heavy-lock.mjs";
 import {
   isAgentScreenCheck,
@@ -47,9 +49,12 @@ const physicalEnforced =
   physicalEnabled && process.env.EHR_ENFORCE_PHYSICAL !== "0";
 process.env.EHR_PHYSICAL_POLICY = physicalEnabled ? "1" : "0";
 process.env.EHR_ENFORCE_PHYSICAL = physicalEnforced ? "1" : "0";
-const files = process.argv
-  .slice(ui ? 3 : 2)
-  .map((file) => resolve(process.env.INIT_CWD ?? process.cwd(), file));
+const arguments_ = process.argv.slice(ui ? 3 : 2);
+const files = (
+  arguments_[0] === "--manifest"
+    ? JSON.parse(readFileSync(arguments_[1], "utf8"))
+    : arguments_
+).map((file) => resolve(process.env.INIT_CWD ?? process.cwd(), file));
 if (!files.length || files.some((file) => !existsSync(file))) {
   process.stderr.write(
     "Usage: pnpm --filter app screen-check [--ui] <screen.json …>\nPaths are relative to the invoking directory (or absolute). Every input must exist.\n",
@@ -66,68 +71,27 @@ const policyPath = resolve(appDir, "../docs/design/alert-urgency.json");
 const policy = JSON.parse(readFileSync(policyPath, "utf8"));
 let cache;
 let checkedFiles = files;
-if (ui && process.env.EHR_SCREEN_CACHE !== "0") {
+const cachedResults = new Map();
+if (ui) {
   const { chromium } = await import("@playwright/test");
-  const sources = [
-    "e2e/ui-check.spec.ts",
-    "e2e/physical-policy.ts",
-    "e2e/geometry-capture.ts",
-    "e2e/capture-environment.ts",
-    "src/ehr/ui/fonts/manifest.json",
-    "playwright.config.ts",
-    "src/ehr/ui/fidelity.ts",
-    "src/ehr/ui/display.tsx",
-    "src/ehr/ui/types.ts",
-    "scripts/screen-check.mjs",
-    "scripts/screen-cache.mjs",
-    "scripts/audit-execution.mjs",
-  ];
-  const context = contextDigest({
-    app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
-    sources: sources.map((file) => [
-      file,
-      digest(readFileSync(resolve(appDir, file))),
-    ]),
-    browser: digest(readFileSync(chromium.executablePath())),
-    playwright: digest(
-      readFileSync(
-        resolve(appDir, "node_modules/@playwright/test/package.json"),
-      ),
-    ),
-    presentations: process.env.EHR_PRESENTATION_BUNDLE
-      ? digest(readFileSync(process.env.EHR_PRESENTATION_BUNDLE))
-      : null,
-    node: process.version,
-    platform: process.platform,
-    policy: digest(readFileSync(policyPath)),
-    minimumFont: process.env.EHR_MIN_FONT_PX ?? "12",
-    physicalEnabled,
-    physicalEnforced,
-    urgentAlertIds: process.env.EHR_URGENT_ALERT_IDS ?? "[]",
-    projects: ["desktop", "narrow"],
-  });
-  const directory = resolve(
-    process.env.EHR_SCREEN_CACHE_DIR ??
-      resolve(appDir, "../runs/screen-check-cache"),
-    context,
+  const context = contextDigest(
+    screenContext(appDir, chromium.executablePath()),
   );
+  const directory = cacheRoot();
   const entries = files.map((file) => {
-    const sha256 = digest(readFileSync(file));
-    return {
-      file,
-      sha256,
-      reused:
-        cachedTree(directory, context, sha256) &&
-        existsSync(resolve(directory, "geometry", `${sha256}.json`)),
-    };
+    const sha256 = treeDigest(file);
+    const key = resultKey(context, sha256, /-geometry\.json$/.test(file));
+    const result =
+      process.env.EHR_SCREEN_CACHE !== "0" ? readResult(directory, key) : null;
+    if (result) cachedResults.set(file, result);
+    return { file, sha256, key, reused: !!result };
   });
   checkedFiles = entries
     .filter((entry) => !entry.reused)
     .map((entry) => entry.file);
   cache = { context, directory, entries };
-  process.env.EHR_GEOMETRY_DIR = resolve(directory, "geometry");
   process.stdout.write(
-    `Whole-version screen coverage: ${entries.length} trees; ${entries.length - checkedFiles.length} identical certified trees reused, ${checkedFiles.length} checked now. Context ${context}. Known-bad controls always run.\n`,
+    `Screen coverage: ${files.length} trees; ${cachedResults.size} reused, ${checkedFiles.length} checked now. Context ${context}. Known-bad controls always run.\n`,
   );
 }
 const port =
@@ -147,59 +111,17 @@ if (ui && !process.env.EHR_GEOMETRY_DIR)
 // Measurement caches bind painter, assertions, policy, browser and configuration;
 // they may retain failures but can never mint a whole-version pass receipt.
 let sampleDirectory = resolve(output, "physical-samples");
-let measurementContext = "non-ui";
+const measurementContext = cache?.context ?? "non-ui";
 if (ui) {
-  const { chromium } = await import("@playwright/test");
-  const sampleContext = {
-    app: JSON.parse(readFileSync(resolve(appDir, "dist/build.json"), "utf8")),
-    ui: digest(readFileSync(resolve(appDir, "e2e/ui-check.spec.ts"))),
-    physicalCollector: digest(
-      readFileSync(resolve(appDir, "e2e/physical-policy.ts")),
-    ),
-    config: digest(readFileSync(resolve(appDir, "playwright.config.ts"))),
-    environment: digest(
-      readFileSync(resolve(appDir, "e2e/capture-environment.ts")),
-    ),
-    browser: digest(readFileSync(chromium.executablePath())),
-    playwright: digest(
-      readFileSync(
-        resolve(appDir, "node_modules/@playwright/test/package.json"),
-      ),
-    ),
-    policy: digest(readFileSync(policyPath)),
-    presentations: process.env.EHR_PRESENTATION_BUNDLE
-      ? digest(readFileSync(process.env.EHR_PRESENTATION_BUNDLE))
-      : null,
-    node: process.version,
-    platform: process.platform,
-    minimumFont: process.env.EHR_MIN_FONT_PX ?? "12",
-    physicalEnabled,
-    physicalEnforced,
-    urgentAlertIds: process.env.EHR_URGENT_ALERT_IDS ?? "[]",
-  };
-  const context = contextDigest(sampleContext);
-  measurementContext = context;
   sampleDirectory = resolve(
-    process.env.EHR_PHYSICAL_SAMPLE_CACHE === "0"
+    process.env.EHR_SCREEN_CACHE === "0" ||
+      process.env.EHR_PHYSICAL_SAMPLE_CACHE === "0"
       ? resolve(output, "physical-samples")
       : (process.env.EHR_PHYSICAL_SAMPLE_CACHE ??
-          resolve(tmpdir(), "vgi-screen-check-cache/physical")),
-    context,
+          resolve(cache.directory, "physical")),
+    measurementContext,
   );
   mkdirSync(sampleDirectory, { recursive: true });
-  const receipt = resolve(sampleDirectory, "context.json");
-  if (
-    existsSync(receipt) &&
-    JSON.stringify(JSON.parse(readFileSync(receipt, "utf8"))) !==
-      JSON.stringify(sampleContext)
-  )
-    throw new Error("Physical sample context mismatch");
-  const temporary = `${receipt}.${randomUUID()}.tmp`;
-  writeFileSync(temporary, JSON.stringify(sampleContext));
-  renameSync(temporary, receipt);
-  process.stdout.write(
-    `Physical measurement context: ${context}; samples ${sampleDirectory}\n`,
-  );
 }
 const mapping = dedupeFiles(
   checkedFiles,
@@ -228,7 +150,13 @@ const batches = representatives.length
       (_, i) => representatives.slice(i * batchSize, (i + 1) * batchSize),
     )
   : [[]];
-let gateStatus = "pass";
+let gateStatus = [...cachedResults.values()].some(
+  (result) => result.status === "fail",
+)
+  ? "fail"
+  : "pass";
+const treeResults = new Map(cachedResults);
+let controlsStatus = "pass";
 const measured = [];
 const batchResults = [];
 const retries = [];
@@ -272,6 +200,7 @@ for (const [index, batch] of batches.entries()) {
           APP_TEST_PORT: port,
           APP_TEST_PREVIEW: "1",
           EHR_PHYSICAL_SAMPLE_DIR:
+            process.env.EHR_SCREEN_CACHE === "0" ||
             process.env.EHR_PHYSICAL_SAMPLE_CACHE === "0"
               ? ""
               : sampleDirectory,
@@ -330,6 +259,18 @@ for (const [index, batch] of batches.entries()) {
   const { tests, errors, exitCode } = recovered;
   if (ui) rmSync(inputManifest, { force: true });
   const failed = tests.filter((test) => failureKind(test));
+  const failedControls = failed.filter(
+    (test) =>
+      !test.title.startsWith("semantic UI fidelity:") &&
+      !test.title.startsWith("physical policy:"),
+  );
+  if (
+    errors.length ||
+    failedControls.some((test) => failureKind(test) !== "assertion")
+  )
+    controlsStatus = "error";
+  else if (controlsStatus !== "error" && failedControls.length)
+    controlsStatus = "fail";
   let status =
     errors.length ||
     !tests.length ||
@@ -361,6 +302,74 @@ for (const [index, batch] of batches.entries()) {
     status = "fail";
   if (status === "error" || (gateStatus !== "error" && status === "fail"))
     gateStatus = status;
+  // A failed sibling never prevents independent completed trees being cached.
+  if (ui)
+    for (const file of batch) {
+      const selected = tests.filter(
+        (test) => test.title === `semantic UI fidelity: ${file}`,
+      );
+      const projects = ["desktop", "narrow"].map((project) => {
+        const test = selected.find((test) => test.project === project);
+        const kind = test ? failureKind(test) : "error";
+        return {
+          project,
+          status: kind
+            ? kind === "assertion"
+              ? "fail"
+              : "error"
+            : test.run?.status === "passed"
+              ? "pass"
+              : "error",
+          errors:
+            kind === "assertion"
+              ? (test.run.errors ?? []).map(
+                  (error) => error.message ?? "Assertion failed",
+                )
+              : [],
+        };
+      });
+      const state = batchPhysical.find((state) => state.file === file) ?? null;
+      const probe = /-geometry\.json$/.test(file);
+      const physicalTest = tests.find(
+        (test) =>
+          test.project === "desktop" &&
+          test.title === `physical policy: ${file}`,
+      );
+      const complete =
+        !errors.length &&
+        projects.every((project) => project.status !== "error") &&
+        (!physicalEnabled ||
+          probe ||
+          (state && physicalTest?.run?.status === "passed"));
+      const geometry = [".json", ".background.json"].flatMap((suffix) => {
+        const target = resolve(
+          process.env.EHR_GEOMETRY_DIR,
+          `${digest(readFileSync(file))}${suffix}`,
+        );
+        return existsSync(target)
+          ? [JSON.parse(readFileSync(target, "utf8"))]
+          : [];
+      });
+      const hasFindings =
+        physicalEnforced &&
+        state?.measurements.some((sample) => sample.findings.length);
+      const result = {
+        sourceFile: file,
+        status: !complete
+          ? "error"
+          : projects.some((project) => project.status === "fail") || hasFindings
+            ? "fail"
+            : "pass",
+        projects,
+        physical: state,
+        geometry,
+      };
+      treeResults.set(file, result);
+      if (complete && process.env.EHR_SCREEN_CACHE !== "0") {
+        const entry = cache.entries.find((entry) => entry.file === file);
+        writeResult(cache.directory, entry.key, result);
+      }
+    }
   batchResults.push({
     index,
     trees: batch.length,
@@ -371,14 +380,51 @@ for (const [index, batch] of batches.entries()) {
     exitCode,
   });
 }
-const physical = expandMeasurements(mapping, measured);
+// Expand both cached and freshly measured representatives in original input order.
+for (const { file, representative } of mapping) {
+  if (treeResults.has(representative))
+    treeResults.set(file, treeResults.get(representative));
+}
+const results = files.map((file) => {
+  const result = treeResults.get(file);
+  const source = result?.sourceFile;
+  return {
+    ...result,
+    file,
+    sha256: ui ? treeDigest(file) : digest(readFileSync(file)),
+    probe: /-geometry\.json$/.test(file),
+    ...(result
+      ? {
+          sourceFile: file,
+          physical: result.physical ? { ...result.physical, file } : null,
+          geometry: result.geometry.map((geometry) => ({
+            ...geometry,
+            state:
+              source && geometry.state.startsWith(source)
+                ? file + geometry.state.slice(source.length)
+                : geometry.state,
+          })),
+        }
+      : {}),
+  };
+});
+if (ui)
+  for (const result of results) {
+    if (!["pass", "fail"].includes(result.status)) gateStatus = "error";
+    else if (result.status === "fail" && gateStatus !== "error")
+      gateStatus = "fail";
+  }
+const physical = ui
+  ? results.flatMap((result) =>
+      result.physical ? [{ ...result.physical, file: result.file }] : [],
+    )
+  : expandMeasurements(mapping, measured);
 if (ui) {
   const summary = {
     policyStatus: policy.status,
     elapsedMs: Math.round(performance.now() - started),
-    expectedStates: checkedFiles.filter(
-      (file) => !/-geometry\.json$/.test(file),
-    ).length,
+    expectedStates: files.filter((file) => !/-geometry\.json$/.test(file))
+      .length,
     states: physical.length,
     measurements: physical.reduce(
       (n, state) => n + state.measurements.length,
@@ -416,8 +462,11 @@ if (process.env.EHR_SCREEN_RESULT)
     process.env.EHR_SCREEN_RESULT,
     JSON.stringify({
       status: gateStatus,
+      controlsStatus,
       elapsedMs: Math.round(performance.now() - started),
       physical,
+      trees: results,
+      cache: { hits: cachedResults.size, misses: checkedFiles.length },
       batches: batchResults,
       retries,
       workers,
@@ -426,36 +475,17 @@ if (process.env.EHR_SCREEN_RESULT)
         distinctTrees: representatives.length,
       },
       geometry: ui
-        ? files
-            .flatMap((file) =>
-              [
-                `${digest(readFileSync(file))}.json`,
-                `${digest(readFileSync(file))}.background.json`,
-              ].map((name) => ({
-                path: resolve(process.env.EHR_GEOMETRY_DIR, name),
-                sample:
-                  /^(workspace-d\d+)-/.exec(basename(file))?.[1] ??
-                  basename(dirname(file)),
-              })),
-            )
-            .filter((item) => existsSync(item.path))
-            .map((item) => ({
-              ...JSON.parse(readFileSync(item.path, "utf8")),
-              sample: item.sample,
-            }))
+        ? results.flatMap((result) =>
+            (result.geometry ?? []).map((geometry) => ({
+              ...geometry,
+              sample:
+                /^(workspace-d\d+)-/.exec(basename(result.file))?.[1] ??
+                basename(dirname(result.file)),
+            })),
+          )
         : [],
     }),
   );
-if (cache) {
-  const receipt = recordBatch(
-    cache.directory,
-    cache.context,
-    cache.entries,
-    cache.entries.filter((entry) => !entry.reused).map((entry) => entry.sha256),
-    gateStatus === "pass",
-  );
-  process.stdout.write(`Whole-version coverage receipt: ${receipt}\n`);
-}
 if (gateStatus === "pass") rmSync(output, { recursive: true, force: true });
 else process.stderr.write(`Screen-check artifacts: ${output}\n`);
 browserLock?.release();

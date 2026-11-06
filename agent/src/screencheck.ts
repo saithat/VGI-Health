@@ -57,7 +57,7 @@ export function bundlesFromEnv(): string[] {
   return (process.env['EHR_SAMPLE_FHIR'] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
 }
 
-export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string; artifactsDir?: string;cacheDir?:string } = {}): ScreenChecker {
+export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bundles?: string[]; pnpm?: string; artifactsDir?: string;cacheDir?:string;workers?:number } = {}): ScreenChecker {
   const fake = opts.fake ?? ehr.mode === 'fake';
   const bundles = [...(opts.bundles ?? bundlesFromEnv())].map(resolveUserPath);
   if (!fake && !bundles.length) bundles.push(path.join(REPO_ROOT,'fixtures/synthea/Ashly_Rippin_149fcc1f.json'));
@@ -72,7 +72,7 @@ export function createScreenChecker(ehr: EhrClient, opts: { fake?: boolean; bund
       preferredBundles[flag==='pediatric'?'np':'surgeon']=bundles.indexOf(file);
     }
   }
-  return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir,preferredBundles,opts.cacheDir);
+  return fake ? new FakeScreenChecker(ehr) : new CliScreenChecker(ehr, bundles, opts.pnpm ?? process.env['PNPM_BIN'] ?? 'pnpm', opts.artifactsDir,preferredBundles,opts.cacheDir,opts.workers);
 }
 
 function run(cmd: string, args: string[], cwd: string, onOutput?: (chunk: string) => void, env: NodeJS.ProcessEnv = process.env): Promise<{ code: number; output: string }> {
@@ -102,7 +102,7 @@ class CliScreenChecker implements ScreenChecker {
   private readonly atlases=new Map<string,GeometryAtlas>();
   private atlasKey(input:Parameters<GeometryProvider>[0]){return geometryCacheKey(input.program)+(input.schedule&&input.worldDir?`:${sha256(JSON.stringify([input.worldDir,input.schedule]))}`:'');}
   geometry:GeometryProvider=async input=>{const hash=this.atlasKey(input);if(!this.atlases.has(hash)){let result:ScreenCheckResult;try{result=await this.check(input);}catch(error){this.atlases.delete(hash);throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${errorMessage(error)}`);}if(result.status==='error'){this.atlases.delete(hash);throw new ScreenInfrastructureError(`Geometry screen-check infrastructure: ${result.message}`);}}return this.atlases.get(hash)??null;};
-  constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string,private readonly preferredBundles:Record<string,number>={},private readonly cacheDir?:string) {}
+  constructor(private readonly ehr: EhrClient, private readonly bundles: string[], private readonly pnpm: string, private readonly artifactsDir?: string,private readonly preferredBundles:Record<string,number>={},private readonly cacheDir?:string,private readonly workers?:number) {}
 
   async check(input: { specVersion: string; program: Program } & Partial<Pick<SimulateInput,'schedule'|'worldDir'>>): Promise<ScreenCheckResult> {
     const base = { mode: this.mode, bundles: this.bundles };
@@ -139,8 +139,8 @@ class CliScreenChecker implements ScreenChecker {
         await writeFile(path.join(reportDir, 'coverage.json'), JSON.stringify({ pages: files.length, distinct: representatives.size, coverage }, null, 2));
       }
       const transcript = reportDir ? createWriteStream(path.join(reportDir, 'output.txt')) : null;
-      process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; one browser, desktop + narrow\n`);
-      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:String(Math.max(1,Math.min(4,Number(process.env['EHR_SCREEN_WORKERS']??1)||1))), EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
+      process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${files.length} exported states, ${representatives.size} distinct trees; bounded browser pool, desktop + narrow\n`);
+      const res = await run(this.pnpm, ['--filter', 'app', 'screen-check', '--ui', ...representatives.values()], REPO_ROOT, (chunk) => { transcript?.write(chunk); }, { ...process.env,...(this.cacheDir?{EHR_SCREEN_CACHE_DIR:this.cacheDir}:{}),EHR_SCREEN_WORKERS:String(Math.max(1,Math.min(6,this.workers??(Number(process.env['EHR_SCREEN_WORKERS']??4)||4)))), EHR_SCREEN_RESULT: path.join(dir,'gate-result.json'), EHR_PRESENTATION_BUNDLE: components ? componentFile : '' });
       if (transcript) await new Promise<void>((resolve, reject) => { transcript.on('error', reject); transcript.end(resolve); });
       process.stderr.write(`[screens] ${input.program.owner}/v${input.program.version}: ${res.code === 0 ? 'passed' : 'FAILED'}\n`);
       const measured=z.object({geometry:z.array(screenGeometrySchema).optional()}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(()=>'{}')));
@@ -153,7 +153,9 @@ class CliScreenChecker implements ScreenChecker {
         const result:ScreenCheckResult={ ...base, status: 'pass', pages: files.length, failingScreens: [], failingFiles: [], message: `${files.length} page trees passed` };
         if(reportDir)await writeFile(path.join(reportDir,'result.json'),JSON.stringify(result));return result;
       }
-      const failingFiles = failingFilesFromOutput(res.output, files);
+      const treeReport = z.object({trees:z.array(z.object({file:z.string(),status:z.enum(['pass','fail','error'])})).optional()}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(()=>'{}')));
+      const failedHashes = new Set((treeReport.trees ?? []).filter(tree=>tree.status==='fail').map(tree=>coverage.find(entry=>path.resolve(dir,entry.file)===tree.file)?.sha256));
+      const failingFiles = treeReport.trees ? coverage.filter(entry=>failedHashes.has(entry.sha256)).map(entry=>path.resolve(dir,entry.file)) : failingFilesFromOutput(res.output, files);
       const result:ScreenCheckResult={
         ...base, status: z.object({status:z.enum(['fail','error'])}).parse(JSON.parse(await readFile(path.join(dir,'gate-result.json'),'utf8').catch(() => '{"status":"error"}'))).status, pages: files.length, failingFiles: failingFiles.map((f) => path.relative(dir, f)),
         failingScreens: [...new Set(failingFiles.map(screenOfFile))],

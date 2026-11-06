@@ -768,8 +768,72 @@ src/offline-columns-check.ts --comparison <comparison-directory> --out <scratch>
 This painter change changes the certified
 app hash; native program verdicts and clinical rules are unchanged.
 
+Screen gates share `$TMPDIR/vgi-screen-check-cache`: `physical/` retains the
+existing atomic physical samples and `results/` holds checksummed per-tree
+pass/fail results, geometry and physical findings. `EHR_SCREEN_CACHE_DIR`
+overrides that one root. Keys hash canonical JSON (object key order and whitespace
+are irrelevant; array order is preserved), the certified app build, served
+WASM/asset manifest and asset bytes, font manifest and font bytes, capture settings,
+Chromium/Playwright/runtime pins, fidelity viewports, the complete physical-policy
+matrix/version, assertion sources and the presentation bundle. Synthetic geometry
+probes have a separate key. Run, persona, revision and path are absent from the
+key. Corrupt or incomplete results miss; infrastructure errors are never cached.
+Cached failures remain failures and known-bad controls run on every invocation.
+`EHR_SCREEN_CACHE=0` bypasses both result and physical-sample reads/writes for an
+independent comparison. Every input state retains its own result/geometry mapping.
+
+The default pool is four workers; `EHR_SCREEN_WORKERS=1` selects serial execution,
+and values above six are capped at six (browser workers also respect the existing
+memory budget). Parallel `run-days` divides the default four-worker budget
+across persona checkers and limits explicitly requested workers to six in total.
+Distinct uncached trees run through this bounded Playwright pool.
+`scripts/recertify-runs.mjs --runs core-10day-live --out <scratch>` concurrently
+runs native deploy/export checks with isolated output directories, then batches
+all revisions by presentation bundle through the same browser gate. A file
+manifest avoids command-line size limits. Reports preserve persona/revision/tree
+order; failed siblings retain their own refusals. Frozen spec, canonical and
+previous inputs are mandatory and are never rewritten by this command. It stages
+native certificates and `recertification.json` in scratch; it does not replace
+recorded certificates, measurements, run metadata or replay. The migration command
+below consumes this batch gate when `--recertify-only` is selected and retains its
+existing certificate installation, remeasurement and strict replay checks.
+`core-10day-live` is the single retained recording. The historical repair report
+labels its former working-directory copy `retired-working-copy` solely to retain
+measurement provenance; that label is not a selectable run. Browser test aliases
+use unrelated fixture names.
+
+The final merged check owns timing and full browser validation. Use one shared
+lock, sequential commands and a fresh cache root for each cold experiment:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=4
+export EHR_SCREEN_CACHE_DIR="$TMPDIR/screen-speed-final-recert-cache"
+flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
+  node scripts/recertify-runs.mjs --runs core-10day-live --out "$TMPDIR/screen-speed-final-recert-cold"
+flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
+  node scripts/recertify-runs.mjs --runs core-10day-live --out "$TMPDIR/screen-speed-final-recert-warm"
+node scripts/compare-screen-results.mjs \
+  "$TMPDIR/screen-speed-final-recert-cold/recertification.json" \
+  "$TMPDIR/screen-speed-final-recert-warm/recertification.json"
+flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
+  node --test scripts/screen-cache-browser.test.mjs
+```
+
+The browser integration test compares real serial, four-worker, cold, warm and
+cache-disabled per-tree verdicts and physical samples, including a deliberately
+disabled urgent acknowledgment. For full audits, select a separate fresh cache
+root, run templates then `--personas` sequentially, then repeat with that same
+root for warm reports. Compare each output's `result.json` with
+`scripts/compare-screen-results.mjs`; `elapsedMs`, cache hits/misses and physical
+coverage are retained in reports. Compare a cache-disabled recording report too;
+optionally rebuild after one small painter change, confirm misses, and restore
+and rebuild before final certification. No lane timing claims are made: the owner
+deferred these measurements and full sweeps to the fully merged checkout.
+[Lane verification and merged-check commands](docs/audits/screen-speed-20261106.json)
+record the completed checks and remaining measurements.
+
 `node scripts/migrate-neutral-terms.mjs --recertify-only --runs
-core-10day,core-10day-live` skips terminology/identity rewrites and selects only
+core-10day-live` skips terminology/identity rewrites and selects only
 those recordings. It retains frozen spec/canonical/previous inputs, applies
 native and whole-version screen gates, updates build bindings, remeasures the
 preserved schedules, regenerates trajectories (including existing same-task
@@ -782,13 +846,13 @@ program/component/build bindings. Status remains pending until measurement and
 regenerated replay verification finish.
 Rejected recertifications cannot supply conformance targets.
 
-Before the storage merge, the November 5–6 repair re-certification passed all
-66 retained revisions and remeasured 100 clinician-days against app
+The November 5–6 repair checked the same 33 revisions in both then-present
+copies (66 checks) and remeasured 100 clinician-days across those copies against app
 `718ad628861a2850c3073970f856d8583315903dff7e9b759ce9f28f5400ab6c`.
-Every day has Chromium geometry with zero missing targets. Each run's regenerated
+Every day has Chromium geometry with zero missing targets. Each copy's regenerated
 1,284 tasks / 72,636 events agree in native and WASM replay; the live run also
 retains its three same-task controls / 79 events. The certification matrix stays
-15 accepted and 23 rejected. The second recording reused 6,080 newly captured
+15 accepted and 23 rejected. The second copy reused 6,080 newly captured
 coordinate files plus their capture-context record through unchanged
 renderer/browser/font/context keys;
 native simulations and replay checks were recomputed independently. Receipts
