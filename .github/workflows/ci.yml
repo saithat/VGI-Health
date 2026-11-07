@@ -31,14 +31,6 @@ jobs:
           if grep -E 'warning:.*(sorry|declaration uses)' "$TMPDIR/lean-build.log"; then exit 1; fi
       - name: Audit headline theorem axioms
         run: bash scripts/audit-verification.sh
-      - name: Regenerate the proof map; reject disallowed axioms
-        run: scripts/proof-map/build.sh lean/.lake/proof-map
-      - uses: actions/upload-artifact@v4
-        with:
-          name: proof-map
-          path: lean/.lake/proof-map
-          retention-days: 30
-          if-no-files-found: error
       - name: Generate deterministic test inputs
         working-directory: lean
         run: |
@@ -59,6 +51,25 @@ jobs:
             lean/.lake/audit/report.*
             /home/saithat/Projects/run-tmp/lean-build.log
           retention-days: 7
+
+  proof-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo mkdir -p "$TMPDIR" && sudo chown "$(id -u):$(id -g)" "$TMPDIR"
+      - uses: ./.github/actions/setup-lean
+      - name: Build default targets plus proof modules outside them
+        working-directory: lean
+        run: lake build && lake build $(cat ../scripts/proof-map/extra-modules.txt)
+      - name: Regenerate the proof map; reject disallowed axioms
+        run: scripts/proof-map/build.sh "$RUNNER_TEMP/proof-map"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proof-map
+          path: ${{ runner.temp }}/proof-map
+          retention-days: 30
+          if-no-files-found: error
 
   lint-typecheck:
     runs-on: ubuntu-latest
@@ -188,7 +199,7 @@ jobs:
   # Publishes the proof map to GitHub Pages for each push to main. Off until the
   # repository variable PROOF_MAP_PAGES is 'true' and Pages uses GitHub Actions.
   proof-map-pages:
-    needs: lean
+    needs: proof-map
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PROOF_MAP_PAGES == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5

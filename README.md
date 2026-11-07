@@ -701,9 +701,11 @@ audit reject proof placeholders; the three deliberate Comparator challenge
 modules are outside these targets. Full Comparator verification remains
 `make verify`.
 
-The `lean` job also regenerates the proof map (`scripts/proof-map/build.sh`),
-a browsable dependency tree of every project theorem and definition read from
-the compiled environment, and uploads it as the `proof-map` artifact (download,
+A parallel `proof-map` job builds the default targets plus the proof modules
+outside them (`scripts/proof-map/extra-modules.txt`, e.g. the UI-library range
+theorems), then regenerates the proof map (`scripts/proof-map/build.sh`): a
+browsable dependency tree of every project theorem and definition read from the
+compiled environment. It uploads it as the `proof-map` artifact (download,
 then open `index.html` from a local web server). The build fails if any theorem
 depends on an axiom other than the standard three, including `sorryAx`. The
 `proof-map-pages` job publishes it to GitHub Pages on pushes to `main` once the

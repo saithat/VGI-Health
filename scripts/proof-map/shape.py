@@ -9,6 +9,8 @@ full, repo, out_dir = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), path
 ALLOWED = {'propext', 'Classical.choice', 'Quot.sound'}
 raw = json.load(open(full))
 decls = [r for r in raw['decls'] if r['line'] and r['kind'] != 'instance']
+if len(decls) < 1000:
+    sys.exit(f'only {len(decls)} declarations extracted; is the Lean build missing?')
 bad = [(r['name'], sorted(set(r['axioms']) - ALLOWED)) for r in decls if set(r['axioms']) - ALLOWED]
 if bad:
     for n, a in bad[:20]: print(f'disallowed axiom in {n}: {", ".join(a)}', file=sys.stderr)
