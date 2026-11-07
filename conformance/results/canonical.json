@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "suite": "held-out-core-rule-conformance",
   "runId": null,
-  "generatedAt": "2026-11-06T15:45:45.254Z",
+  "generatedAt": "2026-11-06T21:53:27.387Z",
   "independentOfChecker": true,
   "deploymentGate": false,
   "boundary": "Native interpreter + FHIR projection + semantic in-UI patient selection. Does not exercise browser painter, persistence, or host networking.",

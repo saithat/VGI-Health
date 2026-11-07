@@ -859,6 +859,15 @@ below consumes this batch gate when `--recertify-only` is selected and retains i
 existing certificate installation, remeasurement and strict replay checks.
 `core-10day` is the single retained recording.
 
+At certified app hash `8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04`,
+the 33 revisions took 98m07s cold, 9m53s warm and 98m01s with caching disabled
+(six workers). Per-tree verdicts matched across all three runs: 24,353 clinical
+states, 219,177 physical measurements and zero findings per run. Installation and
+remeasurement preserved 1,284 tasks and 72,636 events with zero strict-replay
+mismatches. [Verification evidence](docs/audits/main-verification-20261106.json)
+records commands, build bindings and timings; the historical approximately
+90s/revision serial baseline has no recorded cache temperature.
+
 Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:
 

@@ -1,0 +1,1430 @@
+{
+  "schemaVersion": 1,
+  "status": "passed",
+  "scopeComplete": true,
+  "fullVerificationComplete": false,
+  "generatedAt": "2026-11-07T00:54:01.540488+00:00",
+  "sourceBaseRevision": "3ce61ac40bcbb90f047e58647f30ac7c39af4dd5",
+  "verifiedSourceRevision": "4d341393b6ab043ed963c427b40475920a1db53b",
+  "sourceCommits": [
+    {
+      "commit": "4d341393b6ab043ed963c427b40475920a1db53b",
+      "subject": "Seal recertification digests with the final manifest status"
+    },
+    {
+      "commit": "056893e050ffcf7506db34fd74348c22000f4f47",
+      "subject": "Restore persisted reviews when opening patient charts"
+    },
+    {
+      "commit": "54bb007d46ec8a02525e324e15259f42cf5e4c4d",
+      "subject": "Restore catalog discovery and fenced mock examples"
+    }
+  ],
+  "scope": "Merged-main verification with remaining scope narrowed by owner on 2026-11-06: confirm recording consistency, live desktop/narrow and MAR/ADT e2e, direct-run desktop dashboard; isolated stack removed; no push",
+  "build": {
+    "ehrSha256": "bddb3b94499fb8395dd58e7d889ebdf092bcaac7d52996ce48c712fd5bbba556",
+    "appSha256": "8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04",
+    "wasmSha256": "f629107f930abe31595053b8ddb935622ae3d363a10f6cdf9c485b1bb8a94b00",
+    "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+  },
+  "leanSourceHash": "6502d55b0bdb95a9bad3d5f7b066a530c4942823390066a3c644ede732850052",
+  "environment": {
+    "CI": "true",
+    "TMPDIR": "/home/saithat/Projects/run-tmp",
+    "LEAN_NUM_THREADS": "4",
+    "EHR_BIN": "/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr",
+    "screenWorkers": 6,
+    "functionalBrowserWorkers": 1,
+    "browserLock": "/home/saithat/Projects/run-tmp/vgi-browser-heavy.lock",
+    "composeProject": "vgi-main-verify-20261106"
+  },
+  "proofSurfaceUnchanged": true,
+  "headlineAxiomClosures": 55,
+  "axiomChecks": [
+    {
+      "declaration": "Ehr.Render.Fhir.timeline_backing_provenance",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.Fhir.timeline_entries_sources",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.Fhir.timeline_backing_occurrence",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.Fhir.chartResource_mem",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Commit.checkCurrent_sound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Commit.accepted_current_guard",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Commit.Mar.commit_invariant",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Commit.Mar.accepted_guard_at_written_version",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Commit.Adt.accepted_guard_at_written_versions",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "declaration": "Ehr.Commit.Adt.commit_invariant",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T0_commit_needs_guard",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.commitGuard_iff",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T0_entry_values",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T3_cosign_distinct",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T2_receipts_sound",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T2_shownOnCommit_shown",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T3_macro_step",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T3_macro_run",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T3_prefill_never_human_only",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T6_macro_is_fold",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.runMacro_ok_iff",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.T6_macro_run_safe",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.A2_view_firing",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.A2_view_shown",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.A2_popup_holds",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.A4_step",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.A4_run",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Proofs.A4_passive_never_popup",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_wellFormed",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_capturesAllOnce",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_writesOnly",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_reviewsBeforeCommit",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_humanOnlyKept",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_units",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_budgets",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_alertsFire",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_noFalseAlarms",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_noRepeatInterruptions",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_severityTiers",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.satisfies_of_checked_completable",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.T7_counterexample_replays",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.T7_rejection",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.T8_old_obligations",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_contracts",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.T8_checked_old_obligations",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.T8_v1_to_v2",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.T8_v2_to_v3",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.accepted_navigation",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Check.cached_completion_eq",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.D1_landmark",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.D2_required_info",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.D3_honest_actions",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.D4_interruptive_modal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.D4_passive_no_modal",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "declaration": "Ehr.Render.D6_clear_fields",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  ],
+  "testTotals": {
+    "leanBuildJobs": 463,
+    "headlineAxiomClosures": 55,
+    "commitUnitPassed": 7,
+    "commitIntegrationPassed": 39,
+    "agentVitestPassed": 190,
+    "appVitestPassed": 337,
+    "worldVitestPassed": 97,
+    "worldRealismPassed": 18,
+    "conformanceUnitPassed": 23,
+    "certificationAccepted": 15,
+    "certificationRejected": 23,
+    "rootScriptPassed": 20,
+    "migrationMetadataPassed": 13,
+    "nativeWasmPatientBundles": 324,
+    "nativeWasmHtmlSemanticVariants": 897
+  },
+  "commands": [
+    {
+      "name": "agent-vitest",
+      "command": "pnpm --filter agent test --maxWorkers=2",
+      "continueOnError": true,
+      "started": "2026-11-06T19:15:24.744260+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 124.896,
+      "finished": "2026-11-06T19:17:29.640055+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/agent-vitest.log",
+      "logSha256": "146313d7a79f2501613e9d09908ede24496bb90bc15cdf5e1e823ea2b19840d4"
+    },
+    {
+      "name": "app-build",
+      "command": "pnpm --filter app build && cat app/dist/build.json",
+      "started": "2026-11-06T19:15:13.748987+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 9.526,
+      "finished": "2026-11-06T19:15:23.275367+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-build.log",
+      "logSha256": "ef76d75135ca4dc93d35ad3514be01500538c0b62e8a483624374580fb23335d"
+    },
+    {
+      "name": "app-build-final",
+      "command": "pnpm --filter app build && cat app/dist/build.json",
+      "started": "2026-11-07T00:48:51.897497+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 9.471,
+      "finished": "2026-11-07T00:49:01.368093+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-build-final.log",
+      "logSha256": "7e66b4b291457ef9edfa246d37398600bb1a7536f1d7eb806a60840d8cd6794c"
+    },
+    {
+      "name": "app-build-fixed",
+      "command": "pnpm --filter app build && cat app/dist/build.json",
+      "started": "2026-11-06T19:24:43.913953+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 9.635,
+      "finished": "2026-11-06T19:24:53.548754+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-build-fixed.log",
+      "logSha256": "e0b38bd07f8681ceaa509da8b5c89ef7b3a01f1029509d692ca90350b76c3a2e"
+    },
+    {
+      "name": "app-fix-lint",
+      "command": "pnpm --filter app typecheck && pnpm --filter app lint && git diff --check",
+      "started": "2026-11-06T19:26:07.565714+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 9.423,
+      "finished": "2026-11-06T19:26:16.989049+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-fix-lint.log",
+      "logSha256": "39670688a5d5a7591cd3904fa51e618694446c369e7504a33ee5b77462f38fc0"
+    },
+    {
+      "name": "app-fix-static",
+      "command": "pnpm --filter app typecheck && pnpm --filter app lint && git diff --check",
+      "started": "2026-11-06T19:24:53.549017+00:00",
+      "exitCode": 1,
+      "elapsedSeconds": 9.117,
+      "finished": "2026-11-06T19:25:02.666468+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-fix-static.log",
+      "logSha256": "aac46197529bec14d265cad05ca001810a0991f9406234f6a2585d6389af63ae"
+    },
+    {
+      "name": "app-fix-targeted",
+      "command": "pnpm --filter app exec vitest run tests/dashboard.test.tsx tests/catalog-runs.test.ts tests/rule-conformance.test.tsx --maxWorkers=2",
+      "started": "2026-11-06T19:26:04.337253+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 3.228,
+      "finished": "2026-11-06T19:26:07.565465+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-fix-targeted.log",
+      "logSha256": "d63c4177b003ea730620a27c8d287f819c4b8599adca8b1445260af23169e8c4"
+    },
+    {
+      "name": "app-vitest",
+      "command": "pnpm --filter app exec vitest run --maxWorkers=2 --testTimeout=30000",
+      "continueOnError": true,
+      "started": "2026-11-06T19:17:29.640398+00:00",
+      "exitCode": 1,
+      "elapsedSeconds": 18.028,
+      "finished": "2026-11-06T19:17:47.668229+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-vitest.log",
+      "logSha256": "3708740357f54401dfb2034123d958ff86989eff1bac8b649815d426472645a3"
+    },
+    {
+      "name": "app-vitest-fixed",
+      "command": "pnpm --filter app exec vitest run --maxWorkers=2 --testTimeout=30000",
+      "started": "2026-11-06T19:22:52.950282+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 110.963,
+      "finished": "2026-11-06T19:24:43.913698+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/app-vitest-fixed.log",
+      "logSha256": "ce2ffc17848decdb9d2b79df9ae13eb836488e697eb65ba4f7928b6b56ab505f"
+    },
+    {
+      "name": "axioms",
+      "command": "cd lean && lake env lean /home/saithat/Projects/run-tmp/main-verify-20261106/axioms.lean",
+      "started": "2026-11-06T19:16:24.098205+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.631,
+      "finished": "2026-11-06T19:16:24.729048+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/axioms.log",
+      "logSha256": "799c3be537778b0b2592f1dc92601562a6a363135bafca388ddb2aefa63c872f"
+    },
+    {
+      "name": "canonical-conformance",
+      "command": "node conformance/index.mjs --canonical",
+      "started": "2026-11-06T19:17:14.076746+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 9373.401,
+      "finished": "2026-11-06T21:53:27.477573+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/canonical-conformance.log",
+      "logSha256": "478b13cc605920b5cd77a73ebd47707d3ea47516c5b83b4aa02192c0040f0478"
+    },
+    {
+      "name": "certification",
+      "command": "python3 lean/Ehr/Check/certify.py",
+      "started": "2026-11-06T19:16:24.729309+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 49.347,
+      "finished": "2026-11-06T19:17:14.076503+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/certification.log",
+      "logSha256": "23797100dfa4caa171af6aa83ac8f3dab62e6f695366fe545889d1b9e2c8d715"
+    },
+    {
+      "name": "commit-fixture",
+      "command": "cd lean && lake env lean --run ../services/commit/test/Fixture.lean > /home/saithat/Projects/run-tmp/main-verify-20261106/commit-fixture-input.json",
+      "started": "2026-11-06T19:18:32.576106+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.389,
+      "finished": "2026-11-06T19:18:32.964719+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-fixture.log",
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "commit-integration",
+      "command": "pnpm --filter @vgi/commit test:integration",
+      "env": {
+        "DATABASE_URL": "postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit",
+        "COMMIT_FIXTURE": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-fixture-input.json"
+      },
+      "started": "2026-11-06T19:18:32.964979+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 24.033,
+      "finished": "2026-11-06T19:18:56.998426+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-integration.log",
+      "logSha256": "00d7a87496dcb4294699520afa1ea9eb8244956e26db048a30cbb1eb5b0f8c48"
+    },
+    {
+      "name": "commit-integration-fixed",
+      "command": "pnpm --filter @vgi/commit test:integration",
+      "env": {
+        "DATABASE_URL": "postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit",
+        "COMMIT_FIXTURE": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-fixture-input.json"
+      },
+      "started": "2026-11-07T00:36:37.690767+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 23.074,
+      "finished": "2026-11-07T00:37:00.764809+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-integration-fixed.log",
+      "logSha256": "2319fb302aac20a7e05c9d7553d09f47f7abd5e929f9b58644b98b51c54a23f2"
+    },
+    {
+      "name": "commit-static-fixed",
+      "command": "pnpm --filter @vgi/commit typecheck && pnpm --filter @vgi/commit test && pnpm --filter app typecheck && pnpm --filter app lint && git diff --check",
+      "started": "2026-11-07T00:37:00.765083+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 11.73,
+      "finished": "2026-11-07T00:37:12.495253+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-static-fixed.log",
+      "logSha256": "be66212c99a725adce2dbafd94a1bf6631c6e7296e98c112ef151b51ac15e690"
+    },
+    {
+      "name": "commit-unit",
+      "command": "pnpm --filter @vgi/commit test",
+      "continueOnError": true,
+      "started": "2026-11-06T19:15:08.535306+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 1.44,
+      "finished": "2026-11-06T19:15:09.975553+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-unit.log",
+      "logSha256": "0c275ca3b1daef5a32085763dac00b6484f8c0ef03331b5fb9a896d9874e2c95"
+    },
+    {
+      "name": "conformance-unit",
+      "command": "pnpm test:conformance",
+      "continueOnError": true,
+      "started": "2026-11-06T19:17:47.668574+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 137.649,
+      "finished": "2026-11-06T19:20:05.317883+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/conformance-unit.log",
+      "logSha256": "ef55774c2a752c72b68796375555ea61a55c8906627f49fa131e95b1b3a1a425"
+    },
+    {
+      "name": "dashboard-playwright",
+      "command": "APP_TEST_PREVIEW=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live-dashboard.spec.ts dashboard-performance.spec.ts --project=desktop --workers=1 --reporter=list,json && python /home/saithat/Projects/run-tmp/main-verify-20261106/check-playwright.py /home/saithat/Projects/run-tmp/main-verify-20261106/dashboard-playwright-report.json all",
+      "env": {
+        "PLAYWRIGHT_JSON_OUTPUT_NAME": "/home/saithat/Projects/run-tmp/main-verify-20261106/dashboard-playwright-report.json"
+      },
+      "started": "2026-11-07T00:47:41.571871+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 26.877,
+      "finished": "2026-11-07T00:48:08.449236+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/dashboard-playwright.log",
+      "logSha256": "7b7a8d14156057356c7be04417ce3ed138d0e89939a66b630b57188eed3fc172"
+    },
+    {
+      "name": "lean-build",
+      "command": "cd lean && lake build",
+      "started": "2026-11-06T19:15:07.380697+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.153,
+      "finished": "2026-11-06T19:15:07.533667+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/lean-build.log",
+      "logSha256": "3ccf8a49db745766ff32f9838e4f4d8972bfe32a3688de81493b873dcbdbf596"
+    },
+    {
+      "name": "lean-build-final",
+      "command": "cd lean && lake build",
+      "started": "2026-11-07T00:48:51.629962+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.158,
+      "finished": "2026-11-07T00:48:51.787699+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/lean-build-final.log",
+      "logSha256": "3ccf8a49db745766ff32f9838e4f4d8972bfe32a3688de81493b873dcbdbf596"
+    },
+    {
+      "name": "live-desktop-playwright",
+      "command": "APP_TEST_PREVIEW=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live-login.spec.ts live-search.spec.ts commit-live.spec.ts workflows-live.spec.ts ambulatory-live-host.spec.ts surgery-live-realism.spec.ts --project=desktop --workers=1 --reporter=list,json && python /home/saithat/Projects/run-tmp/main-verify-20261106/check-playwright.py /home/saithat/Projects/run-tmp/main-verify-20261106/live-desktop-playwright-report.json all",
+      "env": {
+        "PLAYWRIGHT_JSON_OUTPUT_NAME": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-desktop-playwright-report.json"
+      },
+      "started": "2026-11-07T00:31:50.112316+00:00",
+      "exitCode": 1,
+      "elapsedSeconds": 510.028,
+      "finished": "2026-11-07T00:40:20.140455+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-desktop-playwright.log",
+      "logSha256": "3be32a227b15cd232ff208ca9907fc2142282906d24cacc764c2c38a8950b0bb"
+    },
+    {
+      "name": "live-desktop-playwright-fixed",
+      "command": "APP_TEST_PREVIEW=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live-login.spec.ts live-search.spec.ts commit-live.spec.ts workflows-live.spec.ts ambulatory-live-host.spec.ts surgery-live-realism.spec.ts --project=desktop --workers=1 --reporter=list,json && python /home/saithat/Projects/run-tmp/main-verify-20261106/check-playwright.py /home/saithat/Projects/run-tmp/main-verify-20261106/live-desktop-playwright-fixed-report.json all",
+      "env": {
+        "PLAYWRIGHT_JSON_OUTPUT_NAME": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-desktop-playwright-fixed-report.json"
+      },
+      "started": "2026-11-07T00:40:52.304670+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 181.024,
+      "finished": "2026-11-07T00:43:53.328693+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-desktop-playwright-fixed.log",
+      "logSha256": "40e309ba420baa0f5dbade7a0e46e9077531f81caafa03e47cc06a7fe9118a4f"
+    },
+    {
+      "name": "live-fixed-desktop-import",
+      "command": "COMPOSE_PROJECT_NAME=vgi-main-verify-20261106 COMMIT_TENANT=verify-fixed-desktop make load SYNTHETIC_HOSPITAL=1 && docker compose --env-file .env -f infra/docker-compose.yml -p vgi-main-verify-20261106 restart commit && node infra/scripts/wait-healthy.mjs",
+      "started": "2026-11-07T00:40:23.553113+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 28.751,
+      "finished": "2026-11-07T00:40:52.304398+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-fixed-desktop-import.log",
+      "logSha256": "55960b22d45b2c0737b17744aed4768b071d748dd044d7535722fa7cb7573488"
+    },
+    {
+      "name": "live-import",
+      "command": "COMPOSE_PROJECT_NAME=vgi-main-verify-20261106 COMMIT_TENANT=verify-desktop make load SYNTHETIC_HOSPITAL=1",
+      "started": "2026-11-06T19:26:47.042929+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 28.118,
+      "finished": "2026-11-06T19:27:15.160532+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-import.log",
+      "logSha256": "83143c82086479144a0547b5b620f7b812ff65860e7bf58196fdfaba83d078b6"
+    },
+    {
+      "name": "live-narrow-playwright",
+      "command": "APP_TEST_PREVIEW=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live-login.spec.ts live-search.spec.ts commit-live.spec.ts workflows-live.spec.ts ambulatory-live-host.spec.ts surgery-live-realism.spec.ts --project=narrow --workers=1 --reporter=list,json && python /home/saithat/Projects/run-tmp/main-verify-20261106/check-playwright.py /home/saithat/Projects/run-tmp/main-verify-20261106/live-narrow-playwright-report.json all",
+      "env": {
+        "PLAYWRIGHT_JSON_OUTPUT_NAME": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-narrow-playwright-report.json"
+      },
+      "started": "2026-11-07T00:44:22.417990+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 180.847,
+      "finished": "2026-11-07T00:47:23.265200+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-narrow-playwright.log",
+      "logSha256": "1390b7ab9c58e3bfcac53570c099259c758fd7a5f7113c1f1d681150d20f95e3"
+    },
+    {
+      "name": "live-scope-desktop-import",
+      "command": "COMPOSE_PROJECT_NAME=vgi-main-verify-20261106 COMMIT_TENANT=verify-scope-desktop make load SYNTHETIC_HOSPITAL=1 && docker compose --env-file .env -f infra/docker-compose.yml -p vgi-main-verify-20261106 restart commit && node infra/scripts/wait-healthy.mjs",
+      "started": "2026-11-07T00:31:21.947300+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 28.165,
+      "finished": "2026-11-07T00:31:50.111961+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-scope-desktop-import.log",
+      "logSha256": "55960b22d45b2c0737b17744aed4768b071d748dd044d7535722fa7cb7573488"
+    },
+    {
+      "name": "live-scope-narrow-import",
+      "command": "COMPOSE_PROJECT_NAME=vgi-main-verify-20261106 COMMIT_TENANT=verify-scope-narrow make load SYNTHETIC_HOSPITAL=1 && docker compose --env-file .env -f infra/docker-compose.yml -p vgi-main-verify-20261106 restart commit && node infra/scripts/wait-healthy.mjs",
+      "started": "2026-11-07T00:43:53.328927+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 29.089,
+      "finished": "2026-11-07T00:44:22.417686+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-scope-narrow-import.log",
+      "logSha256": "55960b22d45b2c0737b17744aed4768b071d748dd044d7535722fa7cb7573488"
+    },
+    {
+      "name": "live-start",
+      "command": "docker compose --env-file .env -f infra/docker-compose.yml -p vgi-main-verify-20261106 --profile app up -d commit && node infra/scripts/wait-healthy.mjs",
+      "started": "2026-11-06T19:27:15.160819+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 2.541,
+      "finished": "2026-11-06T19:27:17.702225+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/live-start.log",
+      "logSha256": "4f63518de59d4aa6d8cc0ab4bbf68b676b4b217ff3a3bd38ad78d49f0376afad"
+    },
+    {
+      "name": "mar-adt-playwright",
+      "command": "APP_TEST_PREVIEW=1 COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow --workers=1 --reporter=list,json && python /home/saithat/Projects/run-tmp/main-verify-20261106/check-playwright.py /home/saithat/Projects/run-tmp/main-verify-20261106/mar-adt-playwright-report.json all",
+      "env": {
+        "DATABASE_URL": "postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit",
+        "COMMIT_FIXTURE": "/home/saithat/Projects/run-tmp/main-verify-20261106/commit-fixture-input.json",
+        "PLAYWRIGHT_JSON_OUTPUT_NAME": "/home/saithat/Projects/run-tmp/main-verify-20261106/mar-adt-playwright-report.json"
+      },
+      "started": "2026-11-07T00:47:23.265414+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 18.306,
+      "finished": "2026-11-07T00:47:41.571655+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/mar-adt-playwright.log",
+      "logSha256": "85ded20300e19d76f75c7f2d67aa63b5764391e0736f4d94db563205a3f89b13"
+    },
+    {
+      "name": "migration-digest-tests",
+      "command": "node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/migrate-neutral-terms.test.mjs scripts/rename-run.test.mjs scripts/run-prefix.test.mjs",
+      "started": "2026-11-07T00:53:12.391221+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 2.344,
+      "finished": "2026-11-07T00:53:14.735406+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/migration-digest-tests.log",
+      "logSha256": "588b8d8dbf6f0a5e2809fb932fdb893ce7c18046d3efd7dff299014ca31742e7"
+    },
+    {
+      "name": "mock-prefix-upgrade",
+      "command": "node --import ./agent/node_modules/tsx/dist/loader.mjs /home/saithat/Projects/run-tmp/main-verify-20261106/fence-mock.mjs",
+      "started": "2026-11-06T19:22:51.890659+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 1.059,
+      "finished": "2026-11-06T19:22:52.950034+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/mock-prefix-upgrade.log",
+      "logSha256": "6acb5597d9984f65be3017873ade728876c25219bb4628a9257732e0977240e5"
+    },
+    {
+      "name": "native-wasm-differential",
+      "command": "EHR_RENDER_NATIVE=\"$EHR_BIN\" node lean/Ehr/Render/test-wasm.mjs /home/saithat/Projects/run-tmp/main-verify-20261106/wasm-api",
+      "started": "2026-11-06T19:23:25.362469+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 1786.245,
+      "finished": "2026-11-06T19:53:11.607248+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/native-wasm-differential.log",
+      "logSha256": "de8065d47cadf6c9a5c31a2f48adc72a3cbce7946be2c65599e229c09369cf09"
+    },
+    {
+      "name": "native-wasm-inputs",
+      "command": "cd lean && lake env lean --run Ehr/Render/ExportTests.lean /home/saithat/Projects/run-tmp/main-verify-20261106/wasm-api",
+      "started": "2026-11-06T19:23:24.232602+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 1.13,
+      "finished": "2026-11-06T19:23:25.362235+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/native-wasm-inputs.log",
+      "logSha256": "0ba16eac946f47738c8530408c32a63e5ebe65502258fef5f3c49d8ef14b0284"
+    },
+    {
+      "name": "recert-cold",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/recertify-runs.mjs --runs core-10day --out /home/saithat/Projects/run-tmp/main-verify-20261106/recert-cold",
+      "env": {
+        "EHR_SCREEN_CACHE_DIR": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-six-cache",
+        "EHR_SCREEN_WORKERS": "6"
+      },
+      "started": "2026-11-06T19:32:17.817135+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 5887.14,
+      "finished": "2026-11-06T21:10:24.957356+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-cold.log",
+      "logSha256": "bc1a28aa63f6d64128432575307be14ff33a2a8b1a0f501c9f865107f9c2dc11"
+    },
+    {
+      "name": "recert-cold-warm-compare",
+      "command": "node scripts/compare-screen-results.mjs /home/saithat/Projects/run-tmp/main-verify-20261106/recert-cold/recertification.json /home/saithat/Projects/run-tmp/main-verify-20261106/recert-warm/recertification.json",
+      "started": "2026-11-06T21:21:41.344658+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 3.154,
+      "finished": "2026-11-06T21:21:44.499138+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-cold-warm-compare.log",
+      "logSha256": "0c9dde205d2ecf7bb75836535459af2cfea346dc707662b2e196337bf77455cb"
+    },
+    {
+      "name": "recert-compare",
+      "command": "node scripts/compare-screen-results.mjs /home/saithat/Projects/run-tmp/main-verify-20261106/recert-cold/recertification.json /home/saithat/Projects/run-tmp/main-verify-20261106/recert-warm/recertification.json /home/saithat/Projects/run-tmp/main-verify-20261106/recert-uncached/recertification.json",
+      "started": "2026-11-06T22:58:19.100986+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 3.895,
+      "finished": "2026-11-06T22:58:22.995885+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-compare.log",
+      "logSha256": "674dec23fb5910f1c891128257263068116f85f7ef23897caa2f4e588051e5cd"
+    },
+    {
+      "name": "recert-uncached",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off EHR_SCREEN_CACHE=0 node scripts/recertify-runs.mjs --runs core-10day --out /home/saithat/Projects/run-tmp/main-verify-20261106/recert-uncached",
+      "env": {
+        "EHR_SCREEN_CACHE_DIR": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-six-cache",
+        "EHR_SCREEN_WORKERS": "6"
+      },
+      "started": "2026-11-06T21:20:17.762679+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 5881.326,
+      "finished": "2026-11-06T22:58:19.088458+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-uncached.log",
+      "logSha256": "69903f7e140924cf51ac893857f082b345b6d882161c120436ea1c780eda5c2f"
+    },
+    {
+      "name": "recert-warm",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/recertify-runs.mjs --runs core-10day --out /home/saithat/Projects/run-tmp/main-verify-20261106/recert-warm",
+      "env": {
+        "EHR_SCREEN_CACHE_DIR": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-six-cache",
+        "EHR_SCREEN_WORKERS": "6"
+      },
+      "started": "2026-11-06T21:10:24.972457+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 592.79,
+      "finished": "2026-11-06T21:20:17.762364+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-warm.log",
+      "logSha256": "da2051c8b7a74fb3f11f18dd43beea0029666dd996aee217fe2a0ea2b43eab84"
+    },
+    {
+      "name": "recording-digest-repair",
+      "command": "node --import ./agent/node_modules/tsx/dist/loader.mjs /home/saithat/Projects/run-tmp/main-verify-20261106/repair-run-digest.mjs",
+      "started": "2026-11-07T00:52:45.347039+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 1.925,
+      "finished": "2026-11-07T00:52:47.272061+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recording-digest-repair.log",
+      "logSha256": "6e2b4bc62a501e5ff961eb9cd220b36ec6baf5ab618bcc98fa488eaba69c16cd"
+    },
+    {
+      "name": "recording-install",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day",
+      "env": {
+        "EHR_SCREEN_CACHE_DIR": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-six-cache",
+        "EHR_SCREEN_WORKERS": "6"
+      },
+      "started": "2026-11-06T22:58:22.996121+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 5512.397,
+      "finished": "2026-11-07T00:30:15.392830+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recording-install.log",
+      "logSha256": "0bee4bd655845f30a1624d4f79a427421214da88bf503363c34aa1b7e613c00e"
+    },
+    {
+      "name": "recording-integrity",
+      "command": "python /home/saithat/Projects/run-tmp/main-verify-20261106/integrity.py after",
+      "started": "2026-11-07T00:30:17.656424+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.737,
+      "finished": "2026-11-07T00:30:18.392969+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recording-integrity.log",
+      "logSha256": "74d59d3ee2ed91a775d62956f091fc860d67a6bdcefc6763f7cc069def18cc38"
+    },
+    {
+      "name": "recording-integrity-final",
+      "command": "python /home/saithat/Projects/run-tmp/main-verify-20261106/integrity.py after",
+      "started": "2026-11-07T00:52:47.272282+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.687,
+      "finished": "2026-11-07T00:52:47.959427+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/recording-integrity-final.log",
+      "logSha256": "74d59d3ee2ed91a775d62956f091fc860d67a6bdcefc6763f7cc069def18cc38"
+    },
+    {
+      "name": "root-script-tests",
+      "command": "node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/recertify-runs.test.mjs scripts/migrate-neutral-terms.test.mjs scripts/compare-screen-results.test.mjs scripts/run-prefix.test.mjs scripts/rename-run.test.mjs scripts/geometry-history.test.mjs scripts/trajectories/context-cache.test.mjs scripts/trajectories/daily-canonical.test.mjs",
+      "started": "2026-11-06T19:23:21.650395+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 2.582,
+      "finished": "2026-11-06T19:23:24.232358+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/root-script-tests.log",
+      "logSha256": "e194a8b4620385079cc2071637692bea2940b4e466593622d5f341baecc28b61"
+    },
+    {
+      "name": "stack-identity",
+      "command": "node infra/scripts/wait-healthy.mjs --identity && node infra/keycloak/provision-adt.mjs",
+      "started": "2026-11-06T19:16:39.268786+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 13.165,
+      "finished": "2026-11-06T19:16:52.433313+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/stack-identity.log",
+      "logSha256": "22e4341b07c870569a55f0e6e1f3ab1f11cad86a98c241653cb868eacff2e2f4"
+    },
+    {
+      "name": "stack-setup",
+      "command": "node infra/scripts/setup.mjs && docker compose --env-file .env -f infra/docker-compose.yml -p vgi-main-verify-20261106 up -d postgres keycloak",
+      "started": "2026-11-06T19:16:37.675974+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 1.593,
+      "finished": "2026-11-06T19:16:39.268532+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/stack-setup.log",
+      "logSha256": "077457c11afb2a831b1db88361306540fc822a5fd22dc7e245f99a3699085022"
+    },
+    {
+      "name": "stack-teardown",
+      "command": "docker compose --env-file .env -f infra/docker-compose.yml -p vgi-main-verify-20261106 --profile app down --volumes",
+      "started": "2026-11-07T00:49:01.368358+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 1.725,
+      "finished": "2026-11-07T00:49:03.093220+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/stack-teardown.log",
+      "logSha256": "46164a11ee179316a7d60515bb71aaa1b6dc87db8f75ed1295df898c3c8d6105"
+    },
+    {
+      "name": "static-checks",
+      "command": "pnpm --filter @vgi/commit typecheck && pnpm --filter agent typecheck && pnpm --filter world typecheck && pnpm --filter app typecheck && pnpm --filter app lint && pnpm --filter agent lint && pnpm --filter world lint",
+      "started": "2026-11-06T19:18:56.998702+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 19.596,
+      "finished": "2026-11-06T19:19:16.594995+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/static-checks.log",
+      "logSha256": "53ff069bd11ce41bc80544d9b47a8bb93e0c5722a38f6a9cee2da281bcd4c1db"
+    },
+    {
+      "name": "viewport-static",
+      "command": "pnpm --filter app typecheck && pnpm --filter app lint && git diff --check",
+      "started": "2026-11-06T21:03:03.008816+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 10.703,
+      "finished": "2026-11-06T21:03:13.712223+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/viewport-static.log",
+      "logSha256": "39670688a5d5a7591cd3904fa51e618694446c369e7504a33ee5b77462f38fc0"
+    },
+    {
+      "name": "wasm-assets",
+      "command": "node scripts/wasm-assets.mjs",
+      "started": "2026-11-06T19:15:13.609097+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.14,
+      "finished": "2026-11-06T19:15:13.748756+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/wasm-assets.log",
+      "logSha256": "1e844ec0f10b784d4f8e7b500d331b36a6b4a64850a58eabefcbf9e207fed93e"
+    },
+    {
+      "name": "wasm-assets-final",
+      "command": "node scripts/wasm-assets.mjs",
+      "started": "2026-11-07T00:48:51.788379+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 0.109,
+      "finished": "2026-11-07T00:48:51.897216+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/wasm-assets-final.log",
+      "logSha256": "1e844ec0f10b784d4f8e7b500d331b36a6b4a64850a58eabefcbf9e207fed93e"
+    },
+    {
+      "name": "wasm-build",
+      "command": "make wasm",
+      "started": "2026-11-06T19:15:07.534328+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 6.074,
+      "finished": "2026-11-06T19:15:13.608774+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/wasm-build.log",
+      "logSha256": "a8609df6378ab73b4e5dcacdd09f20e35d5acf5f4ff0a515e08018fe73565ce5"
+    },
+    {
+      "name": "world-realism",
+      "command": "node --test infra/scripts/seed-world.test.mjs scripts/synthetic-hospital/convert.test.mjs world/realism/*.test.mjs",
+      "continueOnError": true,
+      "started": "2026-11-06T19:15:19.057931+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 5.686,
+      "finished": "2026-11-06T19:15:24.743978+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/world-realism.log",
+      "logSha256": "af5cede45382fb77906b447339a00d72f0dc21ccad106fe314543a82b9d3428c"
+    },
+    {
+      "name": "world-vitest",
+      "command": "pnpm --filter world exec vitest run --maxWorkers=2",
+      "continueOnError": true,
+      "started": "2026-11-06T19:15:09.975811+00:00",
+      "exitCode": 0,
+      "elapsedSeconds": 9.082,
+      "finished": "2026-11-06T19:15:19.057601+00:00",
+      "log": "/home/saithat/Projects/run-tmp/main-verify-20261106/world-vitest.log",
+      "logSha256": "f14798291cf898b76a7bce5da6d513de14c3a18069dd2a9bcebfae6308f71de1"
+    }
+  ],
+  "requiredCommands": [
+    "lean-build",
+    "axioms",
+    "wasm-build",
+    "wasm-assets",
+    "app-build-fixed",
+    "commit-unit",
+    "world-vitest",
+    "world-realism",
+    "agent-vitest",
+    "app-vitest-fixed",
+    "conformance-unit",
+    "certification",
+    "canonical-conformance",
+    "commit-integration",
+    "commit-integration-fixed",
+    "commit-static-fixed",
+    "static-checks",
+    "app-fix-targeted",
+    "app-fix-lint",
+    "viewport-static",
+    "root-script-tests",
+    "native-wasm-inputs",
+    "native-wasm-differential",
+    "recert-cold",
+    "recert-warm",
+    "recert-uncached",
+    "recert-compare",
+    "recert-cold-warm-compare",
+    "recording-install",
+    "recording-integrity",
+    "migration-digest-tests",
+    "recording-digest-repair",
+    "recording-integrity-final",
+    "live-desktop-playwright-fixed",
+    "live-narrow-playwright",
+    "mar-adt-playwright",
+    "dashboard-playwright",
+    "lean-build-final",
+    "wasm-assets-final",
+    "app-build-final",
+    "stack-teardown"
+  ],
+  "conformance": {
+    "targets": 15,
+    "scenarios": 201,
+    "passed": 1584,
+    "failed": 0,
+    "notApplicable": 1431
+  },
+  "recording": {
+    "recert-cold": {
+      "physicalCoverage": [
+        {
+          "policyStatus": "APPROVED by the owner on 2026-11-02",
+          "elapsedMs": 5322624,
+          "expectedStates": 24353,
+          "states": 24353,
+          "measurements": 219177,
+          "findings": 0
+        }
+      ],
+      "wallSeconds": 5887.14,
+      "gateSeconds": 5886.715,
+      "workers": 6,
+      "revisions": 33,
+      "batches": [
+        {
+          "key": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "code": 0,
+          "status": "pass",
+          "controlsStatus": "pass",
+          "cache": {
+            "hits": 0,
+            "misses": 27371
+          },
+          "coverage": {
+            "states": 27371,
+            "distinctTrees": 5739
+          },
+          "elapsedMs": 5322628
+        }
+      ],
+      "reportSha256": "b50a65555b18bff984038f7d722a10e04177f114a916e92fdc7d69ae69d22072"
+    },
+    "recert-warm": {
+      "physicalCoverage": [
+        {
+          "policyStatus": "APPROVED by the owner on 2026-11-02",
+          "elapsedMs": 37503,
+          "expectedStates": 24353,
+          "states": 24353,
+          "measurements": 219177,
+          "findings": 0
+        }
+      ],
+      "wallSeconds": 592.79,
+      "gateSeconds": 592.32,
+      "workers": 6,
+      "revisions": 33,
+      "batches": [
+        {
+          "key": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "code": 0,
+          "status": "pass",
+          "controlsStatus": "pass",
+          "cache": {
+            "hits": 27371,
+            "misses": 0
+          },
+          "coverage": {
+            "states": 0,
+            "distinctTrees": 0
+          },
+          "elapsedMs": 37511
+        }
+      ],
+      "reportSha256": "ef3440850208375308bab17c2818af3c4e8b31d2181bb5cb5022008c26f7d508"
+    },
+    "recert-uncached": {
+      "physicalCoverage": [
+        {
+          "policyStatus": "APPROVED by the owner on 2026-11-02",
+          "elapsedMs": 5310315,
+          "expectedStates": 24353,
+          "states": 24353,
+          "measurements": 219177,
+          "findings": 0
+        }
+      ],
+      "wallSeconds": 5881.326,
+      "gateSeconds": 5880.921,
+      "workers": 6,
+      "revisions": 33,
+      "batches": [
+        {
+          "key": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "code": 0,
+          "status": "pass",
+          "controlsStatus": "pass",
+          "cache": {
+            "hits": 0,
+            "misses": 27371
+          },
+          "coverage": {
+            "states": 27371,
+            "distinctTrees": 5739
+          },
+          "elapsedMs": 5310319
+        }
+      ],
+      "reportSha256": "28fc3555da1f1523df66ce20450c439826ccfd9075d18cf204d57dfb05ace111"
+    }
+  },
+  "recordingIntegrity": {
+    "events": 72636,
+    "preserved": {
+      "clinicalDays": 50,
+      "decisions": 45,
+      "frozen": 132,
+      "schedules": 50
+    },
+    "snapshotSha256": "ce75c3c712c6d9bad4bba55b0bd6981f7db60a88bad6a535cbc5090eb36fc422",
+    "status": "pass",
+    "tasks": 1284
+  },
+  "recordingDigestRepair": {
+    "status": "pass",
+    "repair": "Refresh only the final manifest entry and aggregate digest from the completed checkpoint; all other entries retain their hashes and pre-checkpoint modification times.",
+    "previous": {
+      "contentDigest": "2eec46a8b061bb2ad0ae6d5252a4868e68c6cb581d3bd2764c65e6c2b002b20d",
+      "manifestSha256": "6b4c31b85bc59da4dd91b8e954b67fdf7ab296e125349dfce3a05d23d568f519"
+    },
+    "current": {
+      "contentDigest": "57851f07f2b4a2fe7fce08492f48d499ee606ba8bfab9bee6bf51725311bd202",
+      "manifestSha256": "24a8943e54a1e5d018dbc94ed8ce5bac6fcd3497eb5097c6f90f47747dc9a849"
+    },
+    "checkpointFiles": 48589,
+    "reusedFileHashes": 48588,
+    "daysCompleted": 10,
+    "nightsCompleted": 9
+  },
+  "digestRepairToolSha256": "354eba1190842407a3e26dbf1064b15588113eef57c9ac9f24a5d0ca0b053789",
+  "currentBindings": 33,
+  "liveRecordedVersions": {
+    "P1": 5,
+    "P2": 7,
+    "P3": 4,
+    "P4": 8,
+    "P5": 4
+  },
+  "migration": {
+    "run": "core-10day",
+    "certificates": 33,
+    "measurements": 50,
+    "missingTargets": 0,
+    "replay": {
+      "status": "passed",
+      "tasks": 1284,
+      "events": 72636,
+      "nativeEventsVerified": 72636,
+      "wasmEventsVerified": 72636,
+      "baselineTasks": 3,
+      "mismatches": [],
+      "baselineEvents": 79,
+      "baselineWasmEventsVerified": 79
+    },
+    "regeneratedReplay": {
+      "status": "passed",
+      "tasks": 1284,
+      "events": 72636,
+      "nativeEventsVerified": 72636,
+      "wasmEventsVerified": 72636,
+      "baselineTasks": 3,
+      "mismatches": []
+    },
+    "geometryHistory": {
+      "schemaVersion": 1,
+      "currentAppSha256": "8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04",
+      "archivedDirectory": "migration/geometry-history/2026-11-06T23-19-55.638Z-630dda4d-050a-435f-9ecd-72ec55a477f2"
+    },
+    "archivedGeometryFiles": 66,
+    "incompatibleGeometryFiles": 66,
+    "reportSha256": "2afd46dd27bb691809374a4a4367ada0fed1b643cd10b436b800dceb4fc0b163"
+  },
+  "audits": {},
+  "browserReports": {
+    "live-desktop-playwright-fixed": {
+      "status": "pass",
+      "tests": 28,
+      "outcomes": {
+        "passed": 28
+      },
+      "requiredPassed": 28,
+      "skipped": []
+    },
+    "live-narrow-playwright": {
+      "status": "pass",
+      "tests": 28,
+      "outcomes": {
+        "passed": 28
+      },
+      "requiredPassed": 28,
+      "skipped": []
+    },
+    "mar-adt-playwright": {
+      "status": "pass",
+      "tests": 6,
+      "outcomes": {
+        "passed": 6
+      },
+      "requiredPassed": 6,
+      "skipped": []
+    },
+    "dashboard-playwright": {
+      "status": "pass",
+      "tests": 4,
+      "outcomes": {
+        "passed": 4
+      },
+      "requiredPassed": 4,
+      "skipped": []
+    }
+  },
+  "historicalSerialBaseline": {
+    "secondsPerRevision": 90,
+    "revisions": 33,
+    "estimatedTotalSeconds": 2970,
+    "cacheTemperature": "not recorded; historical approximate baseline"
+  },
+  "sourceFixes": [
+    {
+      "commit": "4d341393b6ab043ed963c427b40475920a1db53b",
+      "change": "Seal the run digest after writing final recertification status; independently recompute metadata digests in regression coverage. Local run repaired only its manifest hash and aggregate using the completed checkpoint; all clinical content retained."
+    },
+    {
+      "commit": "54bb007d",
+      "change": "Recognize recording identities before catalog validation; fence complete authored mock calendars; retain deferred evidence-loading and cross-run rejection assertions; remove obsolete README process and measurement narrative."
+    },
+    {
+      "commit": "056893e050ffcf7506db34fd74348c22000f4f47",
+      "change": "Check human-event effects before trusted chart hydration, preserving stored review recovery and command-only new reviews; propagate MAR/ADT actor viewports; require the fenced direct-run trajectory index."
+    }
+  ],
+  "preliminaryAttempts": [
+    {
+      "name": "recording-manifest-digest",
+      "result": "Migration completed successfully but hashed the pending manifest before writing passed status. Corrected the write order and repaired only the final manifest entry and aggregate digest; all 48,588 other checkpoint file hashes retained with unchanged inventory and pre-checkpoint modification times."
+    },
+    {
+      "name": "app-fix-static",
+      "result": "Initial helper used lint-prohibited assertions; replaced with schema validation and narrowing; app typecheck/lint and the complete app suite passed."
+    },
+    {
+      "name": "live-desktop-playwright",
+      "result": "Initial live suite exposed event endpoint rejection of restored persisted reviews during patient hydration; fixed at the service boundary, integration regression added, desktop/narrow rerun."
+    },
+    {
+      "name": "receipt-regression-before",
+      "result": "New regression reproduced use_commit_endpoint on patient selection before the service fix."
+    },
+    {
+      "name": "app-vitest",
+      "result": "Catalog discovery rejected unrelated research manifests; sparse authored mock lacked completion fences; evidence-loading test still exercised the former eager loader. Corrected and full suite passed."
+    },
+    {
+      "name": "commit-integration-fixture",
+      "result": "Scratch command-receipt filename collided with generated native fixture; corrected to commit-fixture-input.json; all 39 integration tests passed."
+    },
+    {
+      "name": "four-worker-cold-probe",
+      "result": "Unfinished benchmark stopped and preserved intact before a new six-worker cold run with a fresh cache; no completed timing claimed.",
+      "artifacts": "/home/saithat/Projects/run-tmp/main-verify-20261106/recert-four-worker-partial"
+    }
+  ],
+  "notDone": [
+    {
+      "action": "World/realism regeneration",
+      "reason": "All 97 world Vitest and 18 import/conversion/realism tests pass with current archives."
+    },
+    {
+      "action": "Optional painter-mutation cache experiment",
+      "reason": "Preserved the certified renderer; remaining browser cache verification deferred with the next full check."
+    },
+    {
+      "action": "Push or modification of another stack/worktree/branch",
+      "reason": "Owner instruction."
+    }
+  ],
+  "deferredByOwner": [
+    "Regenerate the 18 stale live-select PNGs and clear their stale manifest marking.",
+    "Full template/persona audit pair, sequential cold then warm using the same fresh cache root; compare per-tree verdicts and require zero findings.",
+    "Full desktop Playwright suite and screen-cache-browser integration test, omitted from the narrowed remaining scope."
+  ],
+  "nextFullCheck": [
+    "Rebuild Lean/native/WASM/app and check headline axioms and certified app hash after the next lanes merge.",
+    "Repeat fast suites, canonical conformance (zero failures), certification matrix, world/realism validation, and native/WASM differential checks.",
+    "Re-certify core-10day against the new hash with cold/warm/uncached comparisons; install certificates, remeasure and strict-replay with zero mismatches.",
+    "Use a fresh isolated stack for integration and live desktop/narrow/MAR/ADT e2e; verify direct-run dashboard at 1440x900.",
+    "Run the full desktop Playwright suite and screen-cache-browser integration test.",
+    "Regenerate all 18 live-select PNGs, clear stale marking, and run the full sequential template/persona cold/warm audit pairs with equivalent verdicts and zero findings."
+  ],
+  "openQuestions": []
+}
