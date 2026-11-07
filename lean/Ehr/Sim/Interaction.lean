@@ -142,4 +142,36 @@ def planNavigation (ctx : Context) (s : State) : Option (List Event) :=
   if ctx.goals.values.any (fun g => (ctx.sp.element? g.element).isNone) then none
   else bfsNav ctx (max 128 (ctx.prog.screens.length * 64)) [(s, [])] (({} : Std.HashSet String).insert (navKey s))
 
+/-- Decode only the actual rendered patient screen; a modal occludes chart data. -/
+def needWitnesses (ctx : Context) (s : State) (n : Information.Need) : List CompId :=
+  let ui := Render.renderUi ctx.sp ctx.prog ctx.facts ctx.goals.informationDisplay ctx.user s
+  if ui.modal.isSome then [] else
+    (ui.workspace ++ ui.side).flatMap (Information.witnesses n
+      (Information.asOfMinute ctx.goals.informationDisplay (nowMin ctx.facts s + ctx.goals.informationOffset)))
+
+/-- Information routing includes ordinary visible navigation only. It does not
+enter fields, make receipts, execute macros or commit. -/
+def needNavigation (ctx : Context) (s : State) : List Event :=
+  (shown ctx s).flatMap fun c => match c.kind with
+    | .button (.goto _) => [.click c.id]
+    | .group true _ => if s.expanded.contains c.id then [] else [.click c.id]
+    | .tabs => tabEvents (ctx.prog.compsOf s.screen) c
+    | _ => []
+
+def needBfs (ctx : Context) (n : Information.Need) :
+    Nat → List (State × List Event) → Std.HashSet String → Option (List Event)
+  | 0, _, _ => none
+  | _ + 1, [], _ => none
+  | fuel + 1, (s, rev) :: queue, seen =>
+    if !(needWitnesses ctx s n).isEmpty then some rev.reverse else
+    let (queue, seen) := (needNavigation ctx s).foldl (fun (q, v) e =>
+      let t := ctx.next s e
+      let k := navKey t
+      if v.contains k then (q, v) else (q ++ [(t, e :: rev)], v.insert k)) (queue, seen)
+    needBfs ctx n fuel queue seen
+
+def needPath (ctx : Context) (s : State) (n : Information.Need) : Option (List Event) :=
+  needBfs ctx n (max 128 (ctx.prog.screens.length * 64)) [(s, [])]
+    (({} : Std.HashSet String).insert (navKey s))
+
 end Ehr.Sim

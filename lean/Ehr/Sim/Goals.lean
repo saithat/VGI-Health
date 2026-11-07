@@ -1,5 +1,6 @@
 import Ehr.Core.Json
 import Ehr.Core.Guard
+import Ehr.Sim.InformationNeeds
 
 /-!
 Task goals come from clinical choices and hospital requirements.
@@ -25,6 +26,10 @@ structure ValueGoal where
 
 /-- Everything a task asks of the clinician. -/
 structure Goals where
+  /-- Opt-in simulator specification; absent in historical runs. -/
+  informationNeeds : List Information.Need := []
+  informationOffset : Nat := 0
+  informationDisplay : Render.Display := Render.Display.empty
   commits : List CommitId
   values : List ValueGoal
   /-- Optional legal alternatives, available only when the scenario is exempt. -/
@@ -340,7 +345,8 @@ def constrainGoal (sp : Spec) (facts : Facts) (user : User) (hyp : State)
 administration); `med?` is the medication given (W4). `facts` must already be
 the episode's facts (e.g. `medToGive?` set for W4). -/
 def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choices : TaskChoices)
-    (orders : List OrderChoice) (med? : Option OrderChoice) : Goals :=
+    (orders : List OrderChoice) (med? : Option OrderChoice)
+    (informationDisplay? : Option Render.Display := none) : Goals :=
   let commits := taskCommits sp wf choices
   let orderGoals := (List.range orders.length).zip orders |>.flatMap fun (i, o) =>
     orderElements.filterMap fun e => (orderValue e o).map fun v =>
@@ -406,6 +412,8 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
       ["naloxone response unspecified; modeling offered-declined"] else []
   let missing := if commits.isEmpty then [s!"no commit in spec {sp.version} for workflow {repr wf}"] else []
   {
+    informationNeeds := informationDisplay?.map (fun d => Information.derive facts d commits orders med? choices.ackResult) |>.getD [],
+    informationDisplay := informationDisplay?.getD Render.Display.empty,
     commits, values, waivers := checkedWaivers.map (·.1), expectedAcks := acks,
     problems := missing ++ assumptions ++ checked.flatMap (·.2) ++ checkedWaivers.flatMap (·.2) }
 

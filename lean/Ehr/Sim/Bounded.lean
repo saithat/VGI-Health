@@ -368,6 +368,52 @@ def reverseEvent (ctx : Context) (current prior : State) : Option Event :=
         if old != now then some (.selectTab c.id old) else none
       | .group true _ => if current.expanded.contains c.id != prior.expanded.contains c.id then some (.click c.id) else none
       | _ => none
+/-- Bounded lookup: experienced location first, then visible lexical scent, then an explicit paid help request. Help supplies events, never an answer. -/
+def lookupLoop (scent : Scent) (ctx : Context) (params : PersonaParams) (task : Task)
+    (n : Information.Need) : Nat → Runner → Runner
+  | 0, r => { r with episode := { r.episode with complaints := r.episode.complaints ++
+      [s!"{task.id}: lookup {n.id}: bounded fuel exhausted; incomplete"] } }
+  | fuel + 1, r => Id.run do
+    let r := { r with episode := { r.episode with state := { r.episode.state with clock := r.episode.elapsedMs / 100 } } }
+    let s := r.episode.state
+    let key := "need:" ++ n.id
+    if r.episode.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episode.episodeIndex) then return r
+    if let some comp := (needWitnesses ctx s n).head? then
+      let c := shownComp? ctx.sp ctx.prog ctx.facts s comp
+      let mut out := visualScan ctx task r c
+      out := { out with episode := readNeed ctx task out.episode n }
+      if let some c := c then
+        let m : MemoryEntry := { key, intent := key, control := comp, place := placement ctx s c, route := out.route, lastDay := task.day, exposures := ((out.memory.entries.find? (·.key == key)).map (·.exposures)).getD 0 + 1 }
+        out := { out with memory := { out.memory with entries := m :: out.memory.entries.filter (·.key != key) } }
+      return out
+    let mut out := r
+    if out.unsuccessful < Discovery.patience ctx.prog then
+      if let some m := out.memory.entries.find? (fun m => m.key == key && confident task.day m) then
+        if let some e := recalledEvent ctx s m then
+          if !out.tried.contains (edgeKey s e) then
+            out := observe task out "lookup-recall" m.place 0 (decisionMs (shown ctx s).length m.exposures)
+            out := act ctx params task out e false
+            return lookupLoop scent ctx params task n fuel { out with
+              tried := edgeKey s e :: out.tried, route := out.route ++ [e], unsuccessful := out.unsuccessful + 1 }
+    if out.unsuccessful ≥ 2 * Discovery.patience ctx.prog then
+      out := observe task out "lookup-help" { screen := s.screen } 0 (waitMs + mentalMs)
+      out := { out with effort := { out.effort with helpRequests := out.effort.helpRequests + 1 } }
+      let some path := needPath ctx s n | return { out with episode := { out.episode with
+        complaints := out.episode.complaints ++ [s!"{task.id}: lookup {n.id}: no reachable faithful answer; incomplete"] } }
+      for e in path do
+        out := act ctx params task out e false
+      return lookupLoop scent ctx params task n fuel { out with unsuccessful := 0 }
+    out := visualScan ctx task out
+    let lookupCtx := { ctx with goals := { ctx.goals with values := [], commits := [], waivers := [] } }
+    let e := chooseNavigation scent lookupCtx out (n.id ++ " " ++ " ".intercalate n.reads ++ " chart review")
+    match e with
+    | some e =>
+      out := act ctx params task out e false
+      return lookupLoop scent ctx params task n fuel { out with
+        tried := edgeKey s e :: out.tried, visited := localKey ctx s :: out.visited, route := out.route ++ [e], unsuccessful := out.unsuccessful + 1 }
+    | none => return lookupLoop scent ctx params task n fuel { out with
+        unsuccessful := 2 * Discovery.patience ctx.prog }
+
 def loop (scent : Scent) (ctx : Context) (params : PersonaParams) (task : Task) : Nat → Runner → Runner
   | 0, r => { r with
     episode := { r.episode with
@@ -486,12 +532,14 @@ structure Result extends DayResult where
   learnability : List Gap
   observations : List Observation
   assistance : List HelpRequest
+  information? : Option (List Lean.Json) := none
   deriving ToJson
 /-- Explicit memory in/out prevents counterfactual evaluations training an actor. -/
 def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
     (factsFor : Task → Facts) (seed : Nat) (memory : Memory := {})
-    (scent : Scent := lexicalScent) (guide : Discovery.Guide := Discovery.helpDesk) : Result := Id.run do
-  let expert := Ehr.Sim.simulate sp prog params schedule factsFor seed
+    (scent : Scent := lexicalScent) (guide : Discovery.Guide := Discovery.helpDesk)
+    (displayFor? : Option (Task → Render.Display) := none) : Result := Id.run do
+  let expert := (simulateWithInformation sp prog params schedule factsFor seed displayFor?).1
   let prog := if schedule.tasks.any (fun t => (factsFor t).patientDirectory?.isSome)
     then { prog with patientSelection? := some true } else prog
   let user : User := { id := prog.owner, role := params.role }
@@ -505,6 +553,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     floor := expert.floor,
     complaints := []
   }
+  let mut information := []
   let mut efforts := []
   let mut observations := []
   let mut assistance := []
@@ -521,7 +570,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       } else raw
     let facts := { raw with now := task.startMin, receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
     let eps := taskEpisodes facts task
-    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med?
+    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
     let n := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions n
     let mut r : Runner := {
@@ -542,7 +591,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     let mut complete := !eps.isEmpty
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
       let f := { ep.facts with receipts := facts.receipts ++ r.episode.state.receipts }
-      let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers } }
+      let ctx : Context := { sp, prog, facts := f, user, goals := { g with informationOffset := Information.shiftOffset params.id, values := g.values ++ g.waivers } }
       r := { r with
         lastEpisode := idx + 1 == eps.length,
         route := [],
@@ -556,6 +605,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         scanned := [],
         seenScreens := [],
         episode := { r.episode with
+          episodeIndex := idx,
           state := {
             (if Workspace.enabled prog && idx == 0 then Workspace.init prog else           { init sp prog f user with patientContext? := r.episode.state.patientContext? }) with
             clock := r.episode.elapsedMs / 100
@@ -573,8 +623,16 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
           }
         }
       else
-        r := loop scent ctx params task (Discovery.fuel ctx) r
+        if !ctx.goals.informationNeeds.isEmpty then
+          let prior := r.episode.trace.length
+          r := { r with episode := selectTaskPatient ctx task r.episode }
+          r := { r with effort := { r.effort with mouseTravelUnits := r.effort.mouseTravelUnits + traceTravel ctx.prog (r.episode.trace.drop prior) } }
+          for n in ctx.goals.informationNeeds do
+            r := lookupLoop scent ctx params task n (Discovery.fuel ctx) { r with tried := [], visited := [], route := [], unsuccessful := 0 }
+        if ctx.goals.informationNeeds.all (fun n => r.episode.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episode.episodeIndex && !a.consumed)) then
+          r := loop scent ctx params task (Discovery.fuel ctx) r
       complete := complete && ctx.done r.episode.state
+    information := information ++ r.episode.lookups.map (fun a => lookupJson { a with traceIndex := day.trace.length + a.traceIndex })
     receipts := (task.patientId, r.episode.state.receipts) :: receipts.filter (·.1 != task.patientId)
     memory := r.memory
     efforts := efforts ++ [r.effort]
@@ -609,7 +667,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     expertTravelUnits := expertTravel,
     learnability := gaps,
     observations,
-    assistance
+    assistance,
+    information? := displayFor?.map (fun _ => information)
   }
 structure RecentDay where
   usedTags : List String

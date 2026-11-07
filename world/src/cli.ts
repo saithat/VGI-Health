@@ -15,6 +15,7 @@ import { loadPopulation } from "./patients";
 import { personaParams } from "./personas";
 import { DayScheduleSchema, PERSONAS } from "./schema";
 import { dayFacts, dayTable } from "./summary";
+import { withInformationData } from "./information-needs";
 import { generateWorld } from "./world";
 
 export const GENERATOR = "world@0.1.0";
@@ -59,6 +60,8 @@ function main(): void {
   const fixtures = resolve(arg(args, "fixtures") ?? defaultFixtures(root));
   const outDir = resolve(arg(args, "out") ?? join(root, "runs", "world", "2"));
 
+  const informationNeeds = arg(args, "information-needs") ?? "off";
+  if (!["off", "v1"].includes(informationNeeds)) throw new Error("--information-needs must be off or v1");
   const pop = loadPopulation(fixtures);
   const run = generateWorld(seed, days, pop.patients);
 
@@ -84,18 +87,19 @@ function main(): void {
     write(`state-day-${d.state.day}.json`, d.state);
     files.push(`state-day-${d.state.day}.json`);
     for (const p of PERSONAS) {
-      const parsed = DayScheduleSchema.safeParse(d.schedules[p]);
+      const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...d.schedules[p], tasks: d.schedules[p].tasks.map(withInformationData)} : d.schedules[p]);
       if (!parsed.success) throw new Error(`day ${d.state.day} ${p}: schedule fails the schema: ${parsed.error.message}`);
       const name = `day-${d.state.day}-${p}.json`;
-      write(name, d.schedules[p]);
+      write(name, informationNeeds === "v1" ? parsed.data : d.schedules[p]);
       files.push(name);
       const agentName = `schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`;
-      write(agentName, d.schedules[p]);
+      write(agentName, informationNeeds === "v1" ? parsed.data : d.schedules[p]);
       files.push(agentName);
     }
   }
   write("manifest.json", {
     generator: GENERATOR,
+    ...(informationNeeds === "v1" ? {informationProtocol: "information-needs-v1"} : {}),
     seed,
     days,
     startDate: SIM_START_DATE,

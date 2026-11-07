@@ -1,0 +1,9 @@
+{
+  "extends": "../agent/tsconfig.json",
+  "compilerOptions": {
+    "types": ["node"],
+    "typeRoots": ["../agent/node_modules/@types"]
+  },
+  "include": ["information-needs-pixels.mts"],
+  "exclude": []
+}

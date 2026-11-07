@@ -32,7 +32,25 @@ def interruptionPositions (seed : UInt64) (count actions : Nat) : List Nat × UI
     let (n, rng') := draw rng actions
     (xs ++ [n], rng')) ([], seed)
 
+/-- Modeled cognitive-load proxy: each remembered source item incurs one unit
+per screen transition until its gated action. No calibrated working-memory claim. -/
+structure LookupRecord where
+  task : String
+  episodeIndex : Nat := 0
+  need : String
+  screen : String
+  component : String
+  traceIndex : Nat
+  items : Nat
+  samples : List Information.Sample := []
+  memoryCarry : Nat := 0
+  consumed : Bool := false
+  actionScreen : Option String := none
+  deriving Repr
+
 structure EpisodeResult where
+  lookups : List LookupRecord := []
+  episodeIndex : Nat := 0
   state : State
   trace : List TraceEvent
   complaints : List String
@@ -41,6 +59,30 @@ structure EpisodeResult where
   actionIndex : Nat
   elapsedMs : Nat
   lastDevice : Option Bool
+
+def lookupJson (r : LookupRecord) : Lean.Json := Lean.Json.mkObj [
+  ("task", Lean.toJson r.task), ("episode", Lean.toJson r.episodeIndex), ("need", Lean.toJson r.need),
+  ("screen", Lean.toJson r.screen), ("component", Lean.toJson r.component),
+  ("traceIndex", Lean.toJson r.traceIndex), ("items", Lean.toJson r.items),
+  ("memoryCarry", Lean.toJson r.memoryCarry), ("consumed", Lean.toJson r.consumed),
+  ("actionScreen", Lean.toJson r.actionScreen)]
+
+def gateEvent (ctx : Context) (s : State) (gate : Information.Gate) (e : Event) : Bool :=
+  match gate, e with
+  | .entry element slot, .enter c _ =>
+    ((shownComp? ctx.sp ctx.prog ctx.facts s c).map fun c => match c.kind with
+      | .field el sl _ => el == element && resolveSlot s sl == slot
+      | _ => false).getD false
+  | .commit id, .click c =>
+    ((shownComp? ctx.sp ctx.prog ctx.facts s c).map fun c => match c.kind with
+      | .button (.commit cm) => id == cm | _ => false).getD false
+  | _, _ => false
+
+/-- A source-bound answer must still be fresh at the actual gated event. -/
+def needsAllow (ctx : Context) (r : EpisodeResult) (s : State) (e : Event) : Bool :=
+  ctx.goals.informationNeeds.all fun n => !gateEvent ctx s n.gate e ||
+    r.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episodeIndex && !a.consumed &&
+      a.samples == Information.selected n (Information.asOfMinute ctx.goals.informationDisplay (nowMin ctx.facts s + ctx.goals.informationOffset)))
 
 /-- Why a prior receipt cannot replace the review that just blocked a commit. -/
 def receiptComplaints (ctx : Context) (s : State) (cm : CommitId) : List String :=
@@ -112,7 +154,9 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
   let (ms, dev) := klmFold r.lastDevice ops
   let elapsed := r.elapsedMs + ms
   let before := { r.state with clock := elapsed / 100 }
-  let (after, result) := if Workspace.enabled ctx.prog then Workspace.step ctx.sp ctx.prog ctx.facts ctx.user before e
+  let (after, result) := if !needsAllow ctx r before e then
+    (before, StepResult.blocked "information need missing or stale")
+    else if Workspace.enabled ctx.prog then Workspace.step ctx.sp ctx.prog ctx.facts ctx.user before e
     else step ctx.sp ctx.prog ctx.facts ctx.user .human before e
   let complaints := match e, result with
     | .click c, .blocked _ => match shownComp? ctx.sp ctx.prog ctx.facts before c with
@@ -121,12 +165,28 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
     | _, _ => []
   { r with
     state := after
+    lookups := r.lookups.map fun a =>
+      let used := a.episodeIndex == r.episodeIndex && ctx.goals.informationNeeds.any (fun n => n.id == a.need && gateEvent ctx before n.gate e) &&
+        (match result with | .ok => true | _ => false)
+      { a with
+        memoryCarry := a.memoryCarry + if a.episodeIndex == r.episodeIndex && !a.consumed && before.screen != after.screen then a.items else 0,
+        consumed := a.consumed || used,
+        actionScreen := if used then some before.screen else a.actionScreen }
     trace := r.trace ++ [{
       task := task.id, t := task.startMin * 600 + elapsed / 100,
       screen := before.screen, event := e, ops, result }]
     complaints := r.complaints ++ complaints
     elapsedMs := elapsed
     lastDevice := dev }
+
+/-- Missing or stale information cannot publish a gated interpreter action. -/
+theorem emit_blocks_unanswered (ctx task r e ops)
+    (h : needsAllow ctx r { r.state with clock := (r.elapsedMs + (klmFold r.lastDevice ops).1) / 100 } e = false) :
+    (emit ctx task r e ops).state =
+      { r.state with clock := (r.elapsedMs + (klmFold r.lastDevice ops).1) / 100 } := by
+  simp [emit, h]
+
+#print axioms emit_blocks_unanswered
 
 /-- Fixed patient-selection policy: identical directory, workflow and patient imply
 identical activations, typing, scrolls and pointer operations for every UI version. -/
@@ -172,6 +232,49 @@ def scrollTo (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) : Epi
     let idx := (shown ctx r.state).findIdx (·.id == id)
     let pages := if idx < 12 then 0 else (idx - 12) / 10 + 1
     (List.range pages).foldl (fun r _ => emit ctx task r (.scroll r.state.screen) [.scroll]) r
+
+/-- Scroll costs use the existing twelve-component fold plus ten source rows
+per page. This ordinal viewport is a simulation assumption, not browser geometry. -/
+def readNeed (ctx : Context) (task : Task) (r : EpisodeResult) (n : Information.Need) : EpisodeResult := Id.run do
+  let some comp := (needWitnesses ctx r.state n).head? | return r
+  let mut out := scrollTo ctx task r (.click comp)
+  let now := Information.asOfMinute ctx.goals.informationDisplay (nowMin ctx.facts out.state + ctx.goals.informationOffset)
+  let readable := (n :: ctx.goals.informationNeeds).eraseDups.filter fun m =>
+    (needWitnesses ctx out.state m).contains comp &&
+      !out.lookups.any (fun a => a.need == m.id && a.episodeIndex == r.episodeIndex)
+  let ui := Render.renderUi ctx.sp ctx.prog ctx.facts ctx.goals.informationDisplay ctx.user out.state
+  let depth := readable.foldl (fun d m => max d
+    (((ui.workspace ++ ui.side).map (Information.depth m now comp)).foldl max 0)) 0
+  let samples := (readable.flatMap (fun m => Information.selected m now)).eraseDups
+  let inventories := readable.foldl (fun total m => total + m.inventory.length) 0
+  let items := max 1 (samples.length + inventories)
+  for _ in List.range ((depth - 1) / 10) do
+    out := emit ctx task out (.scroll out.state.screen) [.scroll]
+  -- Reading is paid mental time without a fabricated UI activation/receipt.
+  out := { out with elapsedMs := out.elapsedMs + mentalMs * items }
+  let seen := { out.state with clock := out.elapsedMs / 100 }
+  for m in readable do
+    if (needWitnesses ctx seen m).contains comp then
+      let samples := Information.selected m (Information.asOfMinute ctx.goals.informationDisplay (nowMin ctx.facts seen + ctx.goals.informationOffset))
+      let prior := out.lookups.filter fun a => a.episodeIndex == r.episodeIndex &&
+        ctx.goals.informationNeeds.any (fun other => other.id == a.need && other.gate == m.gate)
+      let shared := prior.flatMap (·.samples)
+      let items := match m.question with
+        | .active _ => max 1 m.inventory.length
+        | _ => (samples.filter (!shared.contains ·)).length
+      out := { out with lookups := out.lookups ++ [{ task := task.id, need := m.id, screen := out.state.screen, component := comp, traceIndex := out.trace.length, items, samples, episodeIndex := r.episodeIndex }] }
+  return out
+
+def lookupExpert (ctx : Context) (params : PersonaParams) (task : Task)
+    (r : EpisodeResult) (n : Information.Need) : EpisodeResult := Id.run do
+  if r.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episodeIndex) then return r
+  let some path := needPath ctx r.state n | return { r with complaints := r.complaints ++
+    [s!"{task.id}: information need {n.id}: no reachable faithful answer; incomplete"] }
+  let mut out := r
+  for e in path do
+    let (ops, rng) := actionOps ctx params out.state e out.rng
+    out := emit ctx task { out with rng } e ops
+  return readNeed ctx task out n
 
 /-- Early review creates a receipt once per information version, only while
 that information is actually shown. -/
@@ -260,17 +363,22 @@ def playEpisode (ctx : Context) (params : PersonaParams) (task : Task) (lastEpis
   else
   let fuel := 4 * (ctx.goals.values.length + ctx.goals.commits.length + 2) *
     (ctx.prog.screens.length + 4) + 50
-  playLoop ctx params task lastEpisode fuel r true 0
+  let r := if ctx.goals.informationNeeds.isEmpty then r else selectTaskPatient ctx task r
+  let r := ctx.goals.informationNeeds.foldl (lookupExpert ctx params task) r
+  if !ctx.goals.informationNeeds.all (fun n => r.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episodeIndex && !a.consumed)) then r
+  else playLoop ctx params task lastEpisode fuel r true 0
 
 /-- One day: patient-specific receipts survive between tasks, captured values
 and commit/ack history do not. Each task has its own independent RNG stream. -/
-def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
-    (factsFor : Task → Facts) (seed : Nat) : DayResult := Id.run do
+def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
+    (factsFor : Task → Facts) (seed : Nat)
+    (displayFor? : Option (Task → Render.Display) := none) : DayResult × List LookupRecord := Id.run do
   -- Fresh day simulations include the shared workspace even for an older UI
   -- layout. Recorded trajectory replay keeps its original program flag.
   let prog := if schedule.tasks.any (fun task => (factsFor task).patientDirectory?.isSome)
     then { prog with patientSelection? := some true } else prog
   let user : User := { id := prog.owner, role := params.role }
+  let mut lookups := []
   let mut receipts : List (String × List Receipt) := []
   let mut day : DayResult := {
     day := schedule.day, persona := params.id,
@@ -289,7 +397,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     if eps.isEmpty then
       day := { day with complaints := day.complaints ++
         [s!"{task.id}: no clinical episode; refill approval requires a focused prescription or explicit order"] }
-    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med?
+    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
     let nActions := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions nActions
     let mut r : EpisodeResult := {
@@ -300,14 +408,16 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
       let f := ep.facts
       let f := { f with receipts := facts.receipts ++ r.state.receipts }
-      let ctx : Context := { sp, prog, facts := f, user, goals := { g with values := g.values ++ g.waivers } }
+      let ctx : Context := { sp, prog, facts := f, user, goals := { g with informationOffset := Information.shiftOffset params.id, values := g.values ++ g.waivers } }
       r := { r with
+        episodeIndex := idx,
         state := { (if Workspace.enabled prog && idx == 0 then Workspace.init prog else
           { init sp prog f user with patientContext? := r.state.patientContext? }) with clock := r.elapsedMs / 100 },
         complaints := r.complaints ++ g.problems.map (fun problem => s!"{task.id}: {problem}") }
       r := playEpisode ctx params task (idx + 1 == eps.length) r
       complete := complete && ctx.done r.state
       floor := addMetrics floor (floorMetrics task.id sp f user g)
+    lookups := lookups ++ r.lookups.map (fun a => { a with traceIndex := day.trace.length + a.traceIndex })
     receipts := (task.patientId, r.state.receipts) :: receipts.filter (·.1 != task.patientId)
     day := { day with
       trace := day.trace ++ r.trace
@@ -315,7 +425,12 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         wallTimeMinutes? := some ((r.elapsedMs + 59999) / 60000) }]
       floor := day.floor ++ [floor]
       complaints := (day.complaints ++ r.complaints).eraseDups }
-  return day
+  return (day, lookups)
+
+/-- Historical protocol: byte-for-byte outputs are retained when no needs are requested. -/
+def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
+    (factsFor : Task → Facts) (seed : Nat) : DayResult :=
+  (simulateWithInformation sp prog params schedule factsFor seed).1
 
 #guard (random 0).1.toNat == 16294208416658607535
 #guard (interruptionPositions 1 7 4).1.length == 7

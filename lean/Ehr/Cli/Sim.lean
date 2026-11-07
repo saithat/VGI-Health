@@ -1,5 +1,6 @@
 import Ehr.Sim.Bounded
 import Ehr.Sim.TaskMinimum
+import Ehr.Sim.InformationMinimum
 import Ehr.Render.Fhir
 
 /-!
@@ -115,7 +116,7 @@ def fixtureIndex (root world : System.FilePath) : IO (Option System.FilePath) :=
 
 /-- Per-task Facts, with patient bundles read once. Additional resources never
 leak backward from later tasks in the schedule. Missing patients are errors. -/
-def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List (String × Facts)) := do
+def loadClinical (root world : System.FilePath) (schedule : DaySchedule) : IO (List (String × (Facts × Render.Display))) := do
   let index ← fixtureIndex root world
   let mut paths : List (String × System.FilePath) := []
   let mut identities : List PatientChoice := []
@@ -157,7 +158,7 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
       if Render.Fhir.resourceType j == "Bundle" then
         bundle := some j
         bundles := (task.patientId, j) :: bundles
-    let f ← match bundle with
+    let (f, display) ← match bundle with
       | some b => do
         let rs := mergeResources (bundleResourcesWithIds b) today
         let merged := Json.mkObj [("resourceType", .str "Bundle"),
@@ -165,7 +166,7 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
         let ctx : Render.FactsContext := { today := dateOf task.day, now := task.startMin, record := (clinicalRecord rs).reverse }
         match Render.Fhir.parseBundle ctx merged with
         | .error e => throw (IO.userError s!"{task.id}: FHIR facts: {e}")
-        | .ok (f, _) => pure f
+        | .ok (f, display) => pure (f, display)
       | none => do
         let fallback := world / "facts" / s!"{task.patientId}.json"
         let p := if ← fallback.pathExists then fallback else direct
@@ -173,7 +174,7 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
         let f ← readAs Facts p
         if !task.todayResources.isEmpty then
           throw (IO.userError s!"{task.id}: precomputed Facts cannot merge todayResources; supply a FHIR bundle")
-        pure f
+        pure (f, Render.Display.empty)
     if f.patientId != task.patientId && !(bundle.any (bundlePatientMatches · task.patientId)) then
       throw (IO.userError s!"{task.id}: patient ID mismatch")
     let choice : PatientChoice := {
@@ -184,8 +185,11 @@ def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List
     let choice := (identities.find? (·.id == choice.id)).getD choice
     let choices := directory.patients ++ (if directory.patients.any (·.id == choice.id) then [] else [choice])
     let directory := { directory with patients := choices }
-    out := out ++ [(task.id, { f with sourcePatientId? := some choice.id, patientDirectory? := some directory })]
+    out := out ++ [(task.id, ({ f with sourcePatientId? := some choice.id, patientDirectory? := some directory }, display))]
   return out
+
+def loadFacts (root world : System.FilePath) (schedule : DaySchedule) : IO (List (String × Facts)) := do
+  return (← loadClinical root world schedule).map fun (id, f, _) => (id, f)
 
 structure TaskMinimum where
   task : String
@@ -234,13 +238,41 @@ def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
       episodePaths := Ehr.Sim.episodePaths click.path, keystrokeEpisodePaths := Ehr.Sim.episodePaths keys.path }
   return { tasks }
 
+/-- Per-episode certificates in the fixed staged protocol. Receipt carry is
+replayed, but the sum is not claimed as a joint optimum across episode resets. -/
+def informationMinimum (sp : Spec) (prog : Program) (schedule : DaySchedule)
+    (factsFor : Task → Facts) (displayFor : Task → Render.Display) (bound : Nat) : Except String Json := do
+  let user : User := { id := prog.owner, role := prog.role }
+  let tasks ← schedule.tasks.mapM fun task => do
+    let eps := taskEpisodes { factsFor task with now := task.startMin } task
+    let mut reports := []
+    let mut receipts := []
+    for ep in eps do
+      let f := { ep.facts with receipts := ep.facts.receipts ++ receipts }
+      let g := deriveGoals sp f user task.workflow ep.choices ep.orders ep.med? (some (displayFor task))
+      let ctx : Context := { sp, prog, facts := f, user, goals := { g with informationOffset := Information.shiftOffset schedule.persona } }
+      let start := init sp prog f user
+      let click ← optionExcept (Information.minimum ctx .clicks start bound)
+        s!"{task.id}: staged information click search bounded or unreachable"
+      let keys ← optionExcept (Information.minimum ctx .keystrokes start bound)
+        s!"{task.id}: staged information keystroke search bounded or unreachable"
+      let endState := click.path.foldl (Information.graph ctx .clicks).next { core := forgetHistory start }
+      receipts := endState.core.receipts
+      reports := reports ++ [Json.mkObj [("clicks", toJson click.cost), ("keystrokes", toJson keys.cost),
+        ("path", toJson click.path), ("keystrokePath", toJson keys.path), ("exact", .bool true),
+        ("needs", toJson (g.informationNeeds.map (·.id)))]]
+    return Json.mkObj [("task", toJson task.id), ("episodes", toJson reports)]
+  return Json.mkObj [("informationProtocol", .str "information-needs-v1"),
+    ("searchModel", .str "per-episode staged catalog-order lookups then navigationDirected actions; fixed clock; no Back; reads cost zero activations; scroll/mental effort separate; not a joint episode minimum"),
+    ("tasks", toJson tasks)]
+
 /-- Shared command boundary, with errors on stderr and nonzero exit. -/
 def command (mode : String) (args : List String) : IO UInt32 := do
   try
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -260,8 +292,12 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let world ← match (fs.lookup "--world").or (fs.lookup "--fhir") with
       | some p => pure (System.FilePath.mk p)
       | none => throw (IO.userError "missing --world")
-    let facts ← loadFacts root world schedule
-    let factsFor := fun task => (facts.lookup task.id).getD default
+    let clinical ← loadClinical root world schedule
+    let factsFor := fun (task : Task) => ((clinical.lookup task.id).map (·.1)).getD default
+    let information : Option (Task → Render.Display) ← match (fs.lookup "--information-needs").getD "off" with
+      | "off" => pure none
+      | "v1" => pure (some (fun (task : Task) => ((clinical.lookup task.id).map (·.2)).getD Render.Display.empty))
+      | _ => throw (IO.userError "--information-needs must be off or v1")
     if mode == "simulate" then
       let params ← readAs PersonaParams (← required fs "--persona")
       if params.id != schedule.persona then throw (IO.userError "persona does not match the schedule")
@@ -276,13 +312,21 @@ def command (mode : String) (args : List String) : IO UInt32 := do
           | none => pure {}
         if !memory.actor.isEmpty && memory.actor != prog.owner then
           throw (IO.userError "layout memory belongs to a different actor")
-        let result := Bounded.simulate sp prog params schedule factsFor seed memory
+        let result := Bounded.simulate sp prog params schedule factsFor seed memory Bounded.lexicalScent Discovery.helpDesk information
         if let some path := fs.lookup "--memory-out" then IO.FS.writeFile path (encodeJson result.memory)
-        IO.println (encodeJson result)
+        let json := if information.isSome then
+          (toJson result).setObjVal! "informationProtocol" (.str "information-needs-v1") else toJson result
+        IO.println json.compress
       else
         if (fs.lookup "--memory-in").isSome || (fs.lookup "--memory-out").isSome then
           throw (IO.userError "layout memory requires --policy bounded")
-        IO.println (encodeJson (simulate sp prog params schedule factsFor seed))
+        match information with
+        | none => IO.println (encodeJson (simulate sp prog params schedule factsFor seed))
+        | some _ =>
+          let (day, lookups) := simulateWithInformation sp prog params schedule factsFor seed information
+          let json := (toJson day).setObjVal! "informationProtocol" (.str "information-needs-v1")
+            |>.setObjVal! "information" (toJson (lookups.map lookupJson))
+          IO.println json.compress
     else
       let bound ← ioExcept (optionExcept ((fs.lookup "--bound").getD "20000").toNat? "--bound must be a natural number")
       let space ← match (fs.lookup "--space").getD "auto" with
@@ -291,6 +335,10 @@ def command (mode : String) (args : List String) : IO UInt32 := do
         | "goalDirected" => pure (some SearchSpace.goalDirected)
         | "navigationDirected" => pure (some SearchSpace.navigationDirected)
         | other => throw (IO.userError s!"unknown --space {other}; use auto, full, goalDirected, navigationDirected")
+      if let some displayFor := information then
+        if space.isSome then throw (IO.userError "information-needs-v1 uses its declared staged space; omit --space")
+        IO.println ((← ioExcept (informationMinimum sp prog schedule factsFor displayFor bound)).compress)
+        return 0
       match minSchedule sp prog schedule factsFor bound space with
       | .error e => throw (IO.userError e)
       | .ok result =>

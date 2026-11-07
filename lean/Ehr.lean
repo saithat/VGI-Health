@@ -31,6 +31,7 @@ import Ehr.Examples.TinyTests
 import Ehr.Examples.ApiTests
 import Ehr.Sim.Goals
 import Ehr.Sim.GoalsTests
+import Ehr.Sim.InformationNeedsTests
 import Ehr.Proofs.Frame
 import Ehr.Proofs.T3
 import Ehr.Proofs.T0
