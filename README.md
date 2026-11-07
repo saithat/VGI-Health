@@ -720,6 +720,10 @@ The preview/dev server serves its manifest and listed artifacts while refusing
 unlisted files and parent traversal. Recorded runs retain their completed-prefix
 boundary.
 
+The partial-index browser regression intercepts both direct and prefix-pinned
+trajectory indices, confirms fixture injection, and checks that missing saved
+controls select an available cross-day comparison.
+
 Summary reads show completed days immediately; expensive derived evidence
 loads separately. Active runs refresh every 30 seconds, without page reload
 or resetting the selected view. Trajectory/Compare indices refresh when the

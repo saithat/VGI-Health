@@ -235,7 +235,9 @@ test("Evolution, Trajectories and timeline link to compare", async ({
 test("a partial index without saved controls falls back to a cross-day pair", async ({
   page,
 }) => {
-  await page.route("**/runs/core-10day/trajectories/index.json", async (route) => {
+  let intercepted = 0;
+  await page.route(/\/runs\/core-10day\/(?:\.cache\/completed\/[a-f0-9]{64}\/)?trajectories\/index\.json(?:\?.*)?$/, async (route) => {
+    intercepted++;
     const index = trajectoryIndexSchema.parse(
       JSON.parse(
         await readFile(
@@ -257,6 +259,7 @@ test("a partial index without saved controls falls back to a cross-day pair", as
     name: "Compare trajectories",
     exact: true,
   });
+  await expect.poll(() => intercepted).toBeGreaterThan(0);
   await expect(view.getByLabel("Comparison type")).toHaveValue("cross-day");
   await expect(view.getByLabel("Left day", { exact: true })).toHaveValue("1");
   await expect(view.getByLabel("Right day", { exact: true })).toHaveValue("4");
