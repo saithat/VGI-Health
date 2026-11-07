@@ -694,3 +694,11 @@
   overflow: visible;
   line-height: 1.4;
 }
+
+/* Selected code labels need a text-sized track when text grows. The flex
+   section wraps fields instead of clipping the selected label. */
+:is(.clinical-app, .clinical-modal)
+  .clinical-section-body
+  > :is(.clinical-field, .clinical-field-pair):has(input[role="combobox"]) {
+  min-width: min(20em, 100%);
+}

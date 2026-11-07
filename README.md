@@ -1660,9 +1660,15 @@ mismatches. [Verification evidence](docs/audits/main-verification-20261106.json)
 records commands, build bindings and timings; the historical approximately
 90s/revision serial baseline has no recorded cache temperature.
 
-The current certified app hash is
-`98657b3382d3a810c1ee7bcfb075f5ae653f86b18faf383538c65c8b7929a5c3`.
-A cold P1/v1 profile using three FHIR bundles, 981 inputs and 819 distinct
+The current renderer app hash is
+`a53258c9e848767016c2fa4e66ab73372a187773d43bc5049e87d908e3c18fb3`.
+Code-choice fields and their confirmation wrappers reserve a text-relative
+minimum width inside wrapping sections. Increasing text size expands the track
+instead of clipping the selected label. Renderer changes require matching
+certificate bindings and fresh geometry measurements.
+
+At app hash `98657b3382d3a810c1ee7bcfb075f5ae653f86b18faf383538c65c8b7929a5c3`,
+a cold P1/v1 profile using three FHIR bundles, 981 inputs and 819 distinct
 trees took 847.23s before popup batching and capture-settling changes, and
 651.17s afterward (23.14% less command wall time). Native preparation fell from
 82.15s to 21.54s; the browser gate fell from 763.33s to 627.77s. All tree
@@ -1675,7 +1681,7 @@ With the exact current context fully cached, the 33-revision batch gate took
 219,177-measurement physical coverage. This gate timing excludes certificate
 installation, strict replay and remeasurement.
 The complete warm installation command took 91m44s: all 33 revisions received
-current bindings, all 50 shifts were remeasured, and freshly regenerated native
+matching bindings, all 50 shifts were remeasured, and freshly regenerated native
 and WASM replay verified 1,284 tasks / 72,636 events with zero mismatches. An
 additional saved-context WASM replay also passed. Frozen inputs, decisions,
 schedules and clinical traces were preserved.
