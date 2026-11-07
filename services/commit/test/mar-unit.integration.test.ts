@@ -1,7 +1,8 @@
+import { array, configSchema, obj, objs, required, str } from '../src/types.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID, createHash } from 'node:crypto';
-import { configSchema } from '../src/types.ts';
+
 import { migrate } from '../src/store.ts';
 import { fixture, host, patient, adminEvents } from './helpers.ts';
 
@@ -21,8 +22,8 @@ test('4 West unit gate applies to directory, session, cosign and already-open co
   try {
     await migrate(a.db);
     const p = patient(f, 'unit-patient', 1, true);
-    p.bundle.entry[1].resource.class = { code: 'IMP' };
-    p.bundle.entry.push({ resource: { resourceType: 'MedicationRequest', id: 'mar-order', meta: { versionId: '1' }, status: 'active', intent: 'order', subject: { reference: 'Patient/unit-patient' },
+    obj(obj(array(obj(p.bundle).entry)[1]).resource).class = { code: 'IMP' };
+    objs(obj(p.bundle).entry).push({ resource: { resourceType: 'MedicationRequest', id: 'mar-order', meta: { versionId: '1' }, status: 'active', intent: 'order', subject: { reference: 'Patient/unit-patient' },
       encounter: { reference: 'Encounter/enc-1' }, medicationCodeableConcept: { text: 'amoxicillin' }, dosageInstruction: [{ timing: { event: [scheduledTime] } }] } });
     await a.store.importPatient(p);
     assert.equal((await a.store.marDirectory(rn)).items.length, 1);
@@ -35,23 +36,23 @@ test('4 West unit gate applies to directory, session, cosign and already-open co
     let snapshot = { state: s.state, projection: s.projection };
     const paint = async () => {
       const rendered = await a.lean.call('render-screen', { spec: s.spec, program: s.program, user: s.user, ...snapshot.projection, state: snapshot.state });
-      frames.push({ step: revision, phase: 'ready', hash: createHash('sha256').update(rendered.canonical).digest('hex') });
+      frames.push({ step: revision, phase: 'ready', hash: createHash('sha256').update(str(rendered.canonical)).digest('hex') });
     };
     await paint();
     for (const event of adminEvents(f, 'unit-patient')) {
       const next = await a.store.event(rn, s.sessionId, { revision, event });
-      revision = next.revision; snapshot = next; await paint();
+      revision = next.revision; snapshot = { state: obj(next.state), projection: next.projection }; await paint();
     }
     const command = { requestId: 'unit-off', screens: { requestId: 'unit-off', frames }, sessionId: s.sessionId, revision, expectedVersion: 1, expectedSharedVersion: 0,
       event: { click: { comp: 'w4Admin.commit.administerMed' } } };
-    config.units!['4-west'].marOnService = false;
+    required(config.units)['4-west'].marOnService = false;
     assert.equal((await a.store.marDirectory(rn)).items.length, 0);
     await assert.rejects(a.store.openSession(rn, open), /mar_unit_disabled_or_forbidden/);
     await assert.rejects(a.store.cosign(rn, { ...open, expectedVersion: 1 }), /mar_unit_disabled_or_forbidden/);
     await assert.rejects(a.store.submit(rn, command), /mar_unit_disabled_or_forbidden/);
     assert.equal((await a.store.read(rn, 'unit-patient')).version, 1);
     await assert.rejects(a.store.outcome(rn, command.requestId), /request_not_found/);
-    config.units!['4-west'].marOnService = true;
+    required(config.units)['4-west'].marOnService = true;
     assert.equal((await a.store.submit(rn, command)).status, 201);
   } finally {
     for (const table of ['commit_mar_cosigns', 'commit_events', 'commit_requests', 'commit_sessions', 'commit_streams']) await a.db.query(`DELETE FROM ${table} WHERE tenant=$1`, [config.tenant]);

@@ -1,5 +1,7 @@
 # VGI Health
 
+[![CI](https://github.com/saithat/VGI-Health/actions/workflows/ci.yml/badge.svg)](https://github.com/saithat/VGI-Health/actions/workflows/ci.yml)
+
 _README last reviewed against commit `890c9b8a` (2026-11-07)._
 
 A research system for clinical software that can safely change itself. It has
@@ -665,6 +667,55 @@ pnpm --filter app build
 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live --project=desktop --project=narrow
 COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow
 ```
+
+### Continuous integration
+
+[CI](.github/workflows/ci.yml) runs on every push and pull request, on all
+branches. Five Ubuntu jobs build the pinned Lean default targets and audit
+headline theorem axioms; lint and typecheck app, agent, world and commit;
+run fast unit suites and the information-needs Python test; run all 201
+canonical conformance scenarios and the 15-accepted/23-rejected certification
+matrix; and run commit integration/protocol traces against Postgres. Native
+checks share the current run's `ehr` artifact. Conformance uses its stateless
+`serve` transport to avoid one process startup per event; `EHR_CONFORMANCE_TRANSPORT=cli`
+retains the one-shot comparison path. Both dispatch to the same native
+functions. pnpm, elan/toolchain and source-keyed Lake outputs are cached. The commit service enforces the same
+TypeScript bans as agent: no explicit `any`, non-null assertions, casts except
+`as const`, or TypeScript suppression comments. Opaque JSON is narrowed before
+host use; mapper inputs and protocol traces have runtime codecs. The unit
+runner enables unprivileged user namespaces on its ephemeral VM, installs
+bubblewrap and exposes the pinned Node executable at `/usr/bin/node` for
+confined queries.
+
+No archived data or API credentials are needed. CI generates bad programs and
+the commit fixture from tracked Lean inputs, and reruns the CURES-removal
+checker probe against the current binary before checking its evidence bindings. Archive-backed tests skip when
+recordings, worlds or patient fixtures are absent; the unit job creates an empty
+`runs/` directory for output-path guard tests. Browser cache integration and
+opt-in UI-library research suites stay local. CI tests the checked-in WASM
+canonical-byte corpus but does not rebuild WASM. Default builds and the proof
+audit reject proof placeholders; the three deliberate Comparator challenge
+modules are outside these targets. Full Comparator verification remains
+`make verify`.
+
+Heavy checks require matching local fixtures/recordings and, for live browser
+checks, the [fresh local stack](#local-setup-and-live-validation). Run locally:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6
+make wasm
+node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day
+node scripts/audit-alert-policy.mjs "$TMPDIR/audit-templates"
+node scripts/audit-alert-policy.mjs "$TMPDIR/audit-personas" --personas
+APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test live --project=desktop --project=narrow --workers=2
+COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow --workers=2
+pnpm --filter app shots
+```
+
+Keep the audit pair sequential under the shared browser lock (acquired by the
+audit script); wrap other heavy browser commands in
+`flock "$TMPDIR/vgi-browser-heavy.lock"` as above. Re-certification, full WCAG/screen
+audits, the live e2e/MAR/ADT stack, WASM builds and screenshots are manual checks.
 
 `scripts/clean-clone-test.sh` validates an offline build and recorded browser
 flows in a scratch clone; it needs no live stack or credentials.
@@ -1653,8 +1704,11 @@ geometry. This avoids starting an interpreter for each popup. A three-bundle
 P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
-The current renderer app hash is
+The retained recording's renderer app hash is
 `a53258c9e848767016c2fa4e66ab73372a187773d43bc5049e87d908e3c18fb3`.
+The CI lint dependencies changed `pnpm-lock.yaml`, which participates in that
+hash. This checkout needs a fresh app build and re-certification before its
+bindings can replace those retained certificates.
 Code-choice fields and their confirmation wrappers reserve a text-relative
 minimum width inside wrapping sections. Increasing text size expands the track
 instead of clipping the selected label. Renderer changes require matching
@@ -1666,7 +1720,7 @@ settling waits. Batching popups and removing those waits cut a cold P1/v1 sample
 with identical verdicts, geometry and 8,046 measurement records. Measurements at
 earlier app hashes are kept in [docs/audits/](docs/audits/).
 
-At the current app hash, an isolated cold P1/v1 check took 632.73s: 19.89s
+At that recorded app hash, an isolated cold P1/v1 check took 632.73s: 19.89s
 native preparation and 610.87s browser validation, covering the same 981 inputs,
 819 distinct trees and 8,046 physical measurements with zero findings. The
 fully warm 33-revision batch gate took 176.37s (27,371 hits, zero misses).

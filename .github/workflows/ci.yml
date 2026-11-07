@@ -1,0 +1,178 @@
+name: CI
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  TMPDIR: /home/saithat/Projects/run-tmp
+  LEAN_NUM_THREADS: '6'
+  EHR_SCREEN_WORKERS: '2'
+
+jobs:
+  lean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo mkdir -p "$TMPDIR" && sudo chown "$(id -u):$(id -g)" "$TMPDIR"
+      - uses: ./.github/actions/setup-lean
+      - name: Build default targets; reject proof placeholders
+        working-directory: lean
+        run: |
+          set -o pipefail
+          lake build 2>&1 | tee "$TMPDIR/lean-build.log"
+          if grep -E 'warning:.*(sorry|declaration uses)' "$TMPDIR/lean-build.log"; then exit 1; fi
+      - name: Audit headline theorem axioms
+        run: bash scripts/audit-verification.sh
+      - name: Generate deterministic test inputs
+        working-directory: lean
+        run: |
+          lake env lean --run Ehr/Tools/ExportContent.lean "$TMPDIR/ci-content"
+          lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/commit-fixture.json"
+          tar -czf "$TMPDIR/ehr-test-inputs.tar.gz" -C "$PWD/.lake/build/bin" ehr -C "$TMPDIR" ci-content/programs commit-fixture.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ehr
+          path: /home/saithat/Projects/run-tmp/ehr-test-inputs.tar.gz
+          retention-days: 7
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: proof-audit
+          path: |
+            lean/.lake/audit/report.*
+            /home/saithat/Projects/run-tmp/lean-build.log
+          retention-days: 7
+
+  lint-typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo mkdir -p "$TMPDIR" && sudo chown "$(id -u):$(id -g)" "$TMPDIR"
+      - uses: ./.github/actions/setup-js
+      - run: pnpm --filter app --filter agent --filter world --filter @vgi/commit lint
+      - run: pnpm --filter app --filter agent --filter world --filter @vgi/commit typecheck
+
+  unit:
+    needs: lean
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo mkdir -p "$TMPDIR" && sudo chown "$(id -u):$(id -g)" "$TMPDIR"
+      - uses: ./.github/actions/setup-js
+      - uses: actions/download-artifact@v4
+        with:
+          name: ehr
+          path: ${{ runner.temp }}/ehr-artifact
+      - name: Restore native binary
+        run: |
+          tar -xzf "$RUNNER_TEMP/ehr-artifact/ehr-test-inputs.tar.gz" -C "$TMPDIR"
+          install -D -m 755 "$TMPDIR/ehr" lean/.lake/build/bin/ehr
+      - name: Install sandbox test runtime
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y bubblewrap
+          # Enable the actual unprivileged namespace tests on this ephemeral VM.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          # The confined query launcher intentionally sees /usr, not toolcache.
+          sudo install -m 755 "$(command -v node)" /usr/bin/node
+      - run: mkdir -p runs
+      - run: pnpm --filter agent test --maxWorkers=2
+      - run: pnpm --filter app test --maxWorkers=2
+      - run: pnpm --filter world exec vitest run --maxWorkers=2
+      - run: node --test world/realism/*.test.mjs
+      - run: pnpm --filter @vgi/commit test
+      - name: Script and conformance runner units
+        run: |
+          node conformance/cures-probe.mjs
+          mapfile -t tests < <(find scripts conformance -name '*.test.mjs' ! -name 'completion-check.test.mjs' ! -name 'screen-cache-browser.test.mjs' ! -path 'scripts/ui-library/*' | sort)
+          node --import ./agent/node_modules/tsx/dist/loader.mjs --test --test-concurrency=2 "${tests[@]}"
+      - run: python3 scripts/test-information-needs-compare.py
+
+  conformance:
+    env:
+      EHR_CONFORMANCE_TRANSPORT: serve
+    needs: lean
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo mkdir -p "$TMPDIR" && sudo chown "$(id -u):$(id -g)" "$TMPDIR"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.23.1'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ehr
+          path: ${{ runner.temp }}/ehr-artifact
+      - name: Restore native binary and generated bad programs
+        run: |
+          tar -xzf "$RUNNER_TEMP/ehr-artifact/ehr-test-inputs.tar.gz" -C "$TMPDIR"
+          install -D -m 755 "$TMPDIR/ehr" lean/.lake/build/bin/ehr
+          cp -R "$TMPDIR/ci-content/programs" programs
+      - run: node conformance/index.mjs --canonical --jobs 2 --out "$TMPDIR/conformance.json"
+      - run: node --test scripts/completion-check.test.mjs
+      - run: python3 lean/Ehr/Check/certify.py
+      - name: Assert complete matrix
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          c = json.loads((Path(os.environ['TMPDIR']) / 'conformance.json').read_text())['summary']
+          assert (c['targets'], c['scenarios'], c['failed']) == (15, 201, 0), c
+          r = json.loads(Path('lean/Ehr/Check/certification-report.json').read_text())
+          assert (r['personaAccepted'], r['personaCount'], r['badRejected'], r['badCount']) == (15, 15, 23, 23), r
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conformance
+          path: |
+            /home/saithat/Projects/run-tmp/conformance.*
+            lean/Ehr/Check/certification-report.json
+          retention-days: 7
+
+  commit-integration:
+    needs: lean
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16.15
+        env:
+          POSTGRES_USER: vgi
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: vgi_commit
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vgi -d vgi_commit"
+          --health-interval 2s --health-timeout 2s --health-retries 20
+    env:
+      DATABASE_URL: postgres://vgi:ci-only-password@127.0.0.1:5432/vgi_commit
+      COMMIT_FIXTURE: /home/saithat/Projects/run-tmp/commit-fixture.json
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo mkdir -p "$TMPDIR" && sudo chown "$(id -u):$(id -g)" "$TMPDIR"
+      - uses: ./.github/actions/setup-js
+      - uses: ./.github/actions/setup-lean
+      - uses: actions/download-artifact@v4
+        with:
+          name: ehr
+          path: ${{ runner.temp }}/ehr-artifact
+      - name: Restore native binary and fixture
+        run: |
+          tar -xzf "$RUNNER_TEMP/ehr-artifact/ehr-test-inputs.tar.gz" -C "$TMPDIR"
+          install -D -m 755 "$TMPDIR/ehr" lean/.lake/build/bin/ehr
+      # Includes protocol.integration.test.ts; its JWT/JWKS server is local.
+      - run: pnpm --filter @vgi/commit test:integration

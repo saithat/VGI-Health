@@ -1,8 +1,10 @@
+import { array, digest, num, obj, objs, required, type Obj } from '../src/types.ts';
+
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { migrate, versions } from '../src/store.ts';
-import { digest, type Obj } from '../src/types.ts';
+
 import { fixture, host, api, ready, intent, patient, configuration, adminEvents, admissionEvents, shuffled } from './helpers.ts';
 
 const url = process.env.DATABASE_URL;
@@ -50,14 +52,14 @@ test('real Postgres: HTTP, durable outcomes, atomic failure, notifications and s
       for (const r of results) assert.deepEqual(r, results[0]);
       const read = await api(b.base, doctor, '/patients/pt-1?after=1');
       assert.equal(read.body.version, 2);
-      assert.equal(read.body.events.length, 1);
-      assert.equal(read.body.snapshot.lastCommand.transactionId, results[0].body.transactionId);
+      assert.equal(objs(read.body.events).length, 1);
+      assert.equal(obj(obj(read.body.snapshot).lastCommand).transactionId, results[0].body.transactionId);
       const lookup = await api(b.base, doctor, '/requests/same-payload');
       assert.deepEqual(lookup.body, { status: results[0].status, body: results[0].body });
       assert.equal((await api(a.base, config.actors[21], '/requests/same-payload')).status, 404);
-      const journal = read.body.events[0];
-      assert.equal(journal.event.guard.input.commit, 'signOrders');
-      assert.equal(journal.version, 2);
+      const journal = array(read.body.events)[0];
+      assert.equal(obj(obj(obj(obj(journal).event).guard).input).commit, 'signOrders');
+      assert.equal(obj(journal).version, 2);
       assert.equal((await api(a.base, doctor, '/patients/pt-1/fhir')).status, 404);
       const scopes = doctor.patients;
       doctor.patients = scopes.filter(p => p !== 'pt-1');
@@ -86,7 +88,7 @@ test('real Postgres: HTTP, durable outcomes, atomic failure, notifications and s
         });
         assert.equal(res.status, 200);
         assert.equal((await api(b.base, doctor, '/commands', intent(s, 'notified', sign))).status, 201);
-        const reader = res.body!.getReader();
+        const reader = required(res.body).getReader();
         let text = '';
         while (!text.includes('event: commit\n')) {
           const next = await reader.read(); assert.equal(next.done, false);
@@ -163,7 +165,7 @@ test('real Postgres: HTTP, durable outcomes, atomic failure, notifications and s
       const uniqueAccepted = new Set(results.filter(r => r.result.status === 201).map(r => r.result.body.transactionId));
       assert.equal(uniqueAccepted.size, 5, 'four independent doses and exactly one shared bed');
       // Refreshing the losing nurse cannot administer the consumed occurrence.
-      const loser = nursing.find(r => !results.some(x => x.actor === r.actor && x.result.status === 201))!;
+      const loser = required(nursing.find(r => !results.some(x => x.actor === r.actor && x.result.status === 201)));
       const refreshed = await ready(a.base, loser.actor, loser.patient, 'nurse', 'dose', adminEvents(f, loser.patient));
       const consumed = await api(a.base, loser.actor, '/commands', intent(refreshed, 'fresh-duplicate-dose', administer));
       assert.equal(consumed.status, 409, JSON.stringify(consumed));
@@ -173,7 +175,7 @@ test('real Postgres: HTTP, durable outcomes, atomic failure, notifications and s
       assert.equal((await api(a.base, loser.actor, '/commands', intent(later, 'later-dose', administer))).status, 201);
       // Shared expected version and actual occupancy are both checked.
       const bed = (await a.db.query('SELECT snapshot,version FROM commit_streams WHERE tenant=$1 AND key=$2', [tenant, 'bed:42'])).rows[0];
-      const occupant = bed.snapshot.placements[0][1] as number;
+      const occupant = num(bed.snapshot.placements[0][1]);
       const winnerPatient = `bed-${occupant - 100}`;
       const wrongPatient = winnerPatient === 'bed-0' ? 'bed-1' : 'bed-0';
       const wrongRelease = await ready(a.base, doctor, wrongPatient, 'admission', 'release', admissionEvents('discharge'));
@@ -201,21 +203,21 @@ test('real Postgres: HTTP, durable outcomes, atomic failure, notifications and s
           if (e.kind === 'import') { states.set(row.stream, e.patient); continue; }
           assert.equal(e.kind, 'command');
           assert.equal(e.readVersions[row.stream], row.version - 1);
-          const before = states.get(row.stream)!;
+          const before = required(states.get(row.stream));
           assert.deepEqual(e.guard.input.currentBundle, before.bundle);
-          assert.deepEqual(e.guard.input.factsVersions, versions(before.bundle));
+          assert.deepEqual(e.guard.input.factsVersions, versions(obj(obj(before).bundle)));
           const projected = await b.lean.call('facts', { bundle: before.bundle, context: e.session.context });
           const base = { spec: e.guard.input.spec, program: e.guard.input.program, user: e.guard.input.user, facts: projected.facts };
           let reconstructed = await b.lean.call('init', base);
           assert.equal(e.session.revision, e.session.events.length);
-          for (const event of e.session.events) reconstructed = (await b.lean.call('step', { ...base, state: reconstructed, event })).state;
+          for (const event of e.session.events) reconstructed = obj((await b.lean.call('step', { ...base, state: reconstructed, event })).state);
           assert.deepEqual(reconstructed, e.guard.input.state);
           assert.deepEqual(await b.lean.call('commit-check', e.guard.input), e.guard.decision);
           assert.ok(e.guard.decision.accept);
           const correlated = rows.filter(r => r.transaction_id === row.transaction_id);
           assert.equal(correlated.length, e.shared ? 2 : 1);
           if (e.shared) {
-            const sharedRow = correlated.find(r => r.stream === e.shared.key)!;
+            const sharedRow = required(correlated.find(r => r.stream === e.shared.key));
             assert.equal(e.readVersions[e.shared.key], sharedRow.version - 1);
             const replay = await b.lean.call('multi-step', { state: e.shared.before, action: e.shared.action });
             assert.equal(replay.changed, true);

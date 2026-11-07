@@ -1,3 +1,4 @@
+import { Fault, adtCommandInput, clinicalPersona, commandInput, cosignInput, encounterInput, eventInput, required, sessionInput, version } from './types.ts';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { AdtStore } from './adt.ts';
 import { authenticator } from './auth.ts';
@@ -5,7 +6,6 @@ import { EventEmitter } from 'node:events';
 import pg from 'pg';
 import { z } from 'zod';
 import { Store } from './store.ts';
-import { clinicalPersona, Fault, encounterInput, adtCommandInput, cosignInput, commandInput, eventInput, sessionInput, version } from './types.ts';
 
 /** LISTEN is a latency hint. Durable version reads plus periodic catch-up cover
  * disconnects, coalesced notifications and the LISTEN/snapshot startup race. */
@@ -67,7 +67,7 @@ export function server(store: Store, notifications: Notifications) {
         return json(res, 200, { status: 'ok' });
       }
       const actor = await authenticate(req.headers.authorization);
-      const url = new URL(req.url!, 'http://localhost');
+      const url = new URL(required(req.url), 'http://localhost');
       const parts = url.pathname.split('/').filter(Boolean).map(decodeURIComponent);
       if (req.method === 'POST' && url.pathname === '/encounters') {
         const result = await store.openEncounter(actor, encounterInput.parse(await body(req)));
@@ -89,7 +89,7 @@ export function server(store: Store, notifications: Notifications) {
       }
       if (req.method === 'GET' && url.pathname === '/adt/events') {
         const initial = await adt.read(actor);
-        let after = req.headers['last-event-id'] as string | undefined ?? url.searchParams.get('after') ?? '';
+        let after = z.string().optional().parse(req.headers['last-event-id']) ?? url.searchParams.get('after') ?? '';
         if (after && !/^[a-f0-9]{64}$/.test(after)) throw new Fault(400, 'invalid_cursor');
         res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', Connection: 'keep-alive' });
         res.flushHeaders();
@@ -149,7 +149,7 @@ export function server(store: Store, notifications: Notifications) {
       }
       if (req.method === 'GET' && parts[0] === 'patients' && parts.length === 3 && parts[2] === 'events') {
         const patient = parts[1];
-        let after = cursor(req.headers['last-event-id'] as string | undefined ?? url.searchParams.get('after'));
+        let after = cursor(z.string().optional().parse(req.headers['last-event-id']) ?? url.searchParams.get('after'));
         const initial = await store.read(actor, patient, after);
         if (after > initial.version) throw new Fault(409, 'cursor_ahead');
         res.writeHead(200, { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-store', Connection: 'keep-alive' });

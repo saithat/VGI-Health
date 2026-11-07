@@ -1,12 +1,15 @@
+import { Fault, clinicalPersona, digest, emptyShared, maybeObj, maybeObjs, num, obj, objs, required, sharedAction, sharedKey, str, type Actor, type Command, type Config, type Obj, type Patient, type Release, type Workflow } from './types.ts';
 import { protocolTrace, type ProtocolTrace } from './protocol-trace.ts';
 import { boardKeys, boardFrom, clinicalAction, projectAdt } from './clinical-adt.ts';
 import { projectCommand, storedReviewReceipts } from './projection.ts';
+import { z } from 'zod';
 import pg, { type PoolClient } from 'pg';
 import { readFile, readdir } from 'node:fs/promises';
 import { randomUUID, createHash } from 'node:crypto';
 import { verifyScreens } from './screens.ts';
 import { Lean } from './lean.ts';
-import { clinicalPersona, Fault, digest, emptyShared, sharedKey, sharedAction, type Actor, type Command, type Config, type Obj, type Patient } from './types.ts';
+
+const bedPhase = z.enum(['ready', 'occupied', 'dirty', 'cleaning']);
 
 export function pool(url: string) {
   const p = new pg.Pool({ connectionString: url, max: 6, connectionTimeoutMillis: 5000, idleTimeoutMillis: 10_000 });
@@ -58,12 +61,14 @@ export async function transaction<T>(db: pg.Pool, f: (c: PoolClient) => Promise<
  * to replace the current snapshot read under the patient lock. */
 export function versions(bundle: Obj) {
   if (bundle.resourceType !== 'Bundle' || bundle.type !== 'collection' || !Array.isArray(bundle.entry) ||
-      bundle.link?.some((l: Obj) => l.relation === 'next')) throw new Fault(422, 'invalid_bundle');
+      maybeObjs(bundle.link)?.some((l: Obj) => l.relation === 'next')) throw new Fault(422, 'invalid_bundle');
   const vs = bundle.entry.map((e: Obj) => {
-    const r = e.resource;
-    if (!r || !/^[A-Za-z]+$/.test(r.resourceType) || !/^[A-Za-z0-9.-]{1,64}$/.test(r.id ?? '') ||
-        !/^[A-Za-z0-9.-]{1,64}$/.test(r.meta?.versionId ?? '')) throw new Fault(422, 'missing_resource_version');
-    return { url: `${r.resourceType}/${r.id}`, version: r.meta.versionId as string };
+    const r = obj(e.resource);
+    const version = maybeObj(r.meta)?.versionId;
+    if (typeof r.resourceType !== 'string' || !/^[A-Za-z]+$/.test(r.resourceType) ||
+        typeof r.id !== 'string' || !/^[A-Za-z0-9.-]{1,64}$/.test(r.id) ||
+        typeof version !== 'string' || !/^[A-Za-z0-9.-]{1,64}$/.test(version)) throw new Fault(422, 'missing_resource_version');
+    return { url: `${r.resourceType}/${r.id}`, version };
   });
   if (new Set(vs.map((v: Obj) => v.url)).size !== vs.length) throw new Fault(422, 'duplicate_resource');
   return vs;
@@ -110,11 +115,11 @@ export class Store {
     });
   }
   private projectBeds(bundle: Obj, beds: Obj[]) {
-    const states = new Map(beds.map(row => [Number(row.key.slice(4)), row.snapshot]));
-    return { ...bundle, entry: bundle.entry.map((e: Obj) => {
-      const bed = this.config.adt?.beds.find(b => b.resource && b.resource === e.resource.id && e.resource.resourceType === 'Location');
+    const states = new Map(beds.map(row => [Number(str(row.key).slice(4)), row.snapshot]));
+    return { ...bundle, entry: objs(bundle.entry).map((e: Obj) => {
+      const bed = this.config.adt?.beds.find(b => b.resource && b.resource === obj(e.resource).id && obj(e.resource).resourceType === 'Location');
       const state = bed ? states.get(bed.id) : undefined;
-      return state ? { ...e, resource: { ...e.resource, operationalStatus: { code: ({ ready: 'U', occupied: 'O', dirty: 'H', cleaning: 'C' } as Obj)[state.phase] } } } : e;
+      return state ? { ...e, resource: { ...obj(e.resource), operationalStatus: { code: ({ ready: 'U', occupied: 'O', dirty: 'H', cleaning: 'C' } as const)[bedPhase.parse(obj(state).phase)] } } } : e;
     }) };
   }
   async directory(actor: Actor, db: pg.Pool | PoolClient = this.db) {
@@ -140,39 +145,40 @@ export class Store {
       if (!w.mar || !actor.patients.includes(w.mar.patient)) continue;
       if (w.mar.unit && (!this.config.units?.[w.mar.unit]?.marOnService || !actor.units?.includes(w.mar.unit))) continue;
       const p = await this.read(actor, w.mar.patient, 2147483646);
-      const resources = p.snapshot.bundle.entry.map((e: Obj) => e.resource);
-      const encounter = resources.find((r: Obj) => r.resourceType === 'Encounter' && r.id === w.mar!.encounter);
-      const order = resources.find((r: Obj) => r.resourceType === 'MedicationRequest' && r.id === w.mar!.medicationRequest);
+      const resources = p.snapshot.bundle.entry.map((e: Obj) => obj(e.resource));
+      const encounter = resources.find((r: Obj) => r.resourceType === 'Encounter' && r.id === required(w.mar).encounter);
+      const order = resources.find((r: Obj) => r.resourceType === 'MedicationRequest' && r.id === required(w.mar).medicationRequest);
       // Directory availability is a read projection; the native MAR command
       // still rechecks the active order/episode under the patient lock.
       if (encounter?.status !== 'in-progress' || order?.status !== 'active') continue;
       items.push({ release, workflow, ...w.mar, version: p.version,
-        patientResource: p.snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === 'Patient')?.resource,
-        order: p.snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === 'MedicationRequest' && e.resource.id === w.mar!.medicationRequest)?.resource,
-        administrations: p.snapshot.bundle.entry.filter((e: Obj) => e.resource.resourceType === 'MedicationAdministration' &&
-          e.resource.request?.reference === `MedicationRequest/${w.mar!.medicationRequest}` &&
-          e.resource.extension?.some((extension: Obj) => {
+        patientResource: p.snapshot.bundle.entry.find((e: Obj) => obj(e.resource).resourceType === 'Patient')?.resource,
+        order: p.snapshot.bundle.entry.find((e: Obj) => obj(e.resource).resourceType === 'MedicationRequest' && obj(e.resource).id === required(w.mar).medicationRequest)?.resource,
+        administrations: p.snapshot.bundle.entry.filter((e: Obj) => obj(e.resource).resourceType === 'MedicationAdministration' &&
+          maybeObj(obj(e.resource).request)?.reference === `MedicationRequest/${required(w.mar).medicationRequest}` &&
+          maybeObjs(obj(e.resource).extension)?.some((extension: Obj) => {
             if (extension.url !== 'urn:vgi:scheduled-dose' || w.shared?.kind !== 'dose') return false;
             // Exact source identity routing only; status/consumption is reduced in Lean.
-            const dose = JSON.parse(extension.valueString);
+            const dose = JSON.parse(str(extension.valueString));
             return dose.patient === p.snapshot.modelId && dose.order === w.shared.order && dose.occurrence === w.shared.occurrence;
-          })).map((e: Obj) => e.resource) });
+          })).map((e: Obj) => obj(e.resource)) });
     }
     return { items };
   }
-  requireMarUnit(actor: Actor, w: Obj) {
-    if (w.mar?.unit && (!this.config.units?.[w.mar.unit]?.marOnService || !actor.units?.includes(w.mar.unit)))
+  requireMarUnit(actor: Actor, w: Workflow) {
+    const unit = w.mar?.unit;
+    if (unit && (!this.config.units?.[unit]?.marOnService || !actor.units?.includes(unit)))
       throw new Fault(403, 'mar_unit_disabled_or_forbidden');
   }
-  private requireMarBinding(snapshot: Obj, workflow: Obj) {
-    if (workflow.mar && !(snapshot.marBindings ?? []).some((b: Obj) => digest(b) === digest({ shared: workflow.shared, mar: workflow.mar })))
+  private requireMarBinding(snapshot: Obj, workflow: Pick<Workflow, 'shared' | 'mar'>) {
+    if (workflow.mar && !objs((snapshot.marBindings ?? [])).some((b: Obj) => digest(b) === digest({ shared: workflow.shared, mar: workflow.mar })))
       throw new Fault(409, 'scheduled_binding_changed');
   }
-  private async workflowContext(context: Obj, w: Obj, bundle: Obj, initial = false) {
+  private async workflowContext(context: Obj, w: Pick<Workflow, 'shared' | 'mar'>, bundle: Obj, initial = false) {
     if (!w.mar) return currentContext(context);
-    const resolved = currentContext({ ...context, encounterKind: 'inpatient', encounterId: w.mar.encounter,
-      record: [...(context.record ?? []).filter(([k]: string[]) => !['selectedMedicationRequestId', 'selectedEncounterId'].includes(k)),
-        ['selectedMedicationRequestId', w.mar.medicationRequest], ['selectedEncounterId', w.mar.encounter]] });
+    const resolved = currentContext({ ...context, encounterKind: 'inpatient', encounterId: obj(w.mar).encounter,
+      record: [...z.array(z.tuple([z.string(), z.string()])).parse(context.record ?? []).filter(([k]) => !['selectedMedicationRequestId', 'selectedEncounterId'].includes(k)),
+        ['selectedMedicationRequestId', obj(w.mar).medicationRequest], ['selectedEncounterId', obj(w.mar).encounter]] });
     return this.lean.call(initial ? 'mar-import-context' : 'mar-context', { bundle, context: resolved, ...w.mar });
   }
   private release(name: string) {
@@ -188,8 +194,8 @@ export class Store {
   }
   async importPatient(patient: Patient) {
     versions(patient.bundle);
-    const patients = patient.bundle.entry.filter((e: Obj) => e.resource.resourceType === 'Patient');
-    if (patients.length !== 1 || patients[0].resource.id !== patient.patient) throw new Fault(422, 'patient_mismatch');
+    const patients = objs(patient.bundle.entry).filter((e: Obj) => obj(e.resource).resourceType === 'Patient');
+    if (patients.length !== 1 || obj(patients[0].resource).id !== patient.patient) throw new Fault(422, 'patient_mismatch');
     await this.lean.call('facts', { bundle: patient.bundle, context: patient.context });
     const marBindings = Object.values(this.config.releases).flatMap(r => Object.values(r.workflows))
       .filter(w => w.mar?.patient === patient.patient).map(w => ({ shared: w.shared, mar: w.mar }));
@@ -210,7 +216,7 @@ export class Store {
         if (w.mar && w.mar.patient !== patient.patient) continue;
         const key = sharedKey(patient.patient, w);
         if (key) await c.query('INSERT INTO commit_streams(tenant,key,kind,snapshot) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',
-          [this.config.tenant, key, w.shared!.kind === 'dose' ? 'dose' : 'bed', emptyShared()]);
+          [this.config.tenant, key, required(w.shared).kind === 'dose' ? 'dose' : 'bed', emptyShared()]);
       }
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
     });
@@ -246,14 +252,14 @@ export class Store {
     const board = this.config.adt;
     const fullBoardAccess = board && actor.adtRoles?.length && board.patients.every(p => actor.patients.includes(p)) &&
       board.beds.every(b => actor.units?.includes(b.unit));
-    if (!fullBoardAccess) row.events = row.events.map((e: Obj) => !['adt', 'clinical-adt'].includes(e.event.kind) ? (e.event.clinicalAdt ? { ...e, event: { ...e.event, clinicalAdt: undefined, readVersions: { [`patient:${patient}`]: e.event.readVersions?.[`patient:${patient}`] } } } : e) : { ...e,
-      event: { kind: e.event.kind, actor: e.event.actor, requestId: e.event.requestId, command: e.event.input.command,
-        patient: e.event.accepted.state.patients.find((p: Obj) => p.id === patient) } });
+    if (!fullBoardAccess) row.events = row.events.map((e: Obj) => !['adt', 'clinical-adt'].includes(str(obj(e.event).kind)) ? (obj(e.event).clinicalAdt ? { ...e, event: { ...obj(e.event), clinicalAdt: undefined, readVersions: { [`patient:${patient}`]: maybeObj(obj(e.event).readVersions)?.[`patient:${patient}`] } } } : e) : { ...e,
+      event: { kind: obj(e.event).kind, actor: obj(e.event).actor, requestId: obj(e.event).requestId, command: obj(obj(e.event).input).command,
+        patient: objs(obj(obj(obj(e.event).accepted).state).patients).find((p: Obj) => p.id === patient) } });
     return row;
   }
   async resource(actor: Actor, patient: string, type: string, id: string, version: string) {
     const current = await this.read(actor, patient, 2147483646);
-    const found = current.snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === type && e.resource.id === id && e.resource.meta?.versionId === version)?.resource;
+    const found = current.snapshot.bundle.entry.find((e: Obj) => obj(e.resource).resourceType === type && obj(e.resource).id === id && maybeObj(obj(e.resource).meta)?.versionId === version)?.resource;
     if (found) return found;
     const rows = await this.db.query(`SELECT resource FROM commit_events e CROSS JOIN LATERAL jsonb_array_elements(
       COALESCE(e.event->'projection'->'changed','[]'::jsonb) ||
@@ -288,10 +294,10 @@ export class Store {
       if (w.project) {
         if (input.expectedVersion !== p.version) throw new Fault(409, 'version_conflict');
         if (input.release !== clinicalPersona(actor) && !input.release.startsWith(`${clinicalPersona(actor)}-`)) throw new Fault(403, 'release_forbidden');
-        const resources = p.snapshot.bundle.entry.map((e: Obj) => e.resource);
+        const resources = p.snapshot.bundle.entry.map((e: Obj) => obj(e.resource));
         const encounter = resources.find((r: Obj) => r.resourceType === 'Encounter' && r.id === (input.encounter ?? context.encounterId));
         if (!encounter || encounter.subject?.reference !== `Patient/${input.patient}`) throw new Fault(422, 'encounter_required');
-        const task = input.task ? resources.find((r: Obj) => r.resourceType === 'Task' && r.id === input.task && r.for?.reference === `Patient/${input.patient}`) : undefined;
+        const task = input.task ? resources.find((r: Obj) => r.resourceType === 'Task' && r.id === input.task && maybeObj(r.for)?.reference === `Patient/${input.patient}`) : undefined;
         if (input.task && (!task || task.encounter?.reference && task.encounter.reference !== `Encounter/${encounter.id}`)) throw new Fault(422, 'task_mismatch');
         const bed = input.bed ? this.config.adt?.beds.find(b => b.resource === input.bed) : undefined;
         if (input.bed && !bed) throw new Fault(422, 'bed_not_configured');
@@ -307,7 +313,7 @@ export class Store {
       [this.config.tenant, id, actor.user.id, input.patient, input.release, digest(release), input.workflow, p.version, context]);
       const key = sharedKey(input.patient, w);
       const resource = key ? await this.stream(c, key) : undefined;
-      const boardRows = w.project && this.config.adt ? (await c.query('SELECT key,version FROM commit_streams WHERE tenant=$1 AND key=ANY($2) ORDER BY key COLLATE \"C\"', [this.config.tenant, boardKeys(this.config)])).rows : undefined;
+      const boardRows = w.project && this.config.adt ? (await c.query('SELECT key,version FROM commit_streams WHERE tenant=$1 AND key=ANY($2) ORDER BY key COLLATE "C"', [this.config.tenant, boardKeys(this.config)])).rows : undefined;
       return { sessionId: id, revision: 0, version: p.version, state, facts: facts.facts,
         ...(boardRows ? { board: boardRows.map(r => ({ key: r.key, version: r.version })) } : {}),
         projection: facts, spec: release.spec, program: release.program, user: actor.user,
@@ -323,46 +329,46 @@ export class Store {
     if (Date.now() - new Date(s.created_at).getTime() > 5 * 60_000) throw new Fault(409, 'session_expired');
     const release = this.release(s.release_name);
     if (digest(release) !== s.release_hash) throw new Fault(409, 'release_changed');
-    const workflow = release.workflows[s.workflow];
+    const workflow = release.workflows[str(s.workflow)];
     if (!workflow) throw new Fault(409, 'release_changed');
     this.requireMarUnit(actor, workflow);
     return { s, release, workflow };
   }
   private sourceBundle(bundle: Obj, context: Obj) {
-    return context.taskId ? { ...bundle, entry: bundle.entry.filter((e: Obj) => e.resource.resourceType !== 'Task' || e.resource.id === context.taskId) } : bundle;
+    return context.taskId ? { ...bundle, entry: objs(bundle.entry).filter((e: Obj) => obj(e.resource).resourceType !== 'Task' || obj(e.resource).id === context.taskId) } : bundle;
   }
-  private async reconstruct(actor: Actor, release: Obj, patient: Obj, s: Obj, screens = false) {
+  private async reconstruct(actor: Actor, release: Release, patient: Obj, s: Obj, screens = false) {
     // Interaction previews may reuse native caches. Command screen comparison
     // always replays: cached state cannot establish the newly displayed steps.
     if (!screens && s.native_state && s.native_facts && s.native_display && s.native_version === s.base_version)
       return { base: { spec: release.spec, program: release.program, user: actor.user,
-        facts: s.native_facts, display: s.native_display }, state: s.native_state, frames: [] };
-    const project = release.workflows[s.workflow]?.project;
-    const chart = this.sourceBundle(patient.bundle, s.context);
+        facts: s.native_facts, display: s.native_display }, state: obj(s.native_state), frames: [] };
+    const project = release.workflows[str(s.workflow)]?.project;
+    const chart = this.sourceBundle(obj(obj(patient).bundle), obj(s.context));
     const directory = project ? await this.directory(actor) : undefined;
     const projection = await this.lean.call('facts', { bundle: chart, context: s.context,
       ...(directory ? { worldContext: { ...directory, entry: directory.entry.filter((e: Obj) =>
-        !s.context.taskId || e.resource.resourceType !== 'Task' || e.resource.for?.reference !== `Patient/${patient.patient}` || e.resource.id === s.context.taskId) } } : {}) });
+        !obj(s.context).taskId || obj(e.resource).resourceType !== 'Task' || maybeObj(obj(e.resource).for)?.reference !== `Patient/${patient.patient}` || obj(e.resource).id === obj(s.context).taskId) } } : {}) });
     let base = { spec: release.spec, program: release.program, user: actor.user, facts: projection.facts, display: projection.display };
-    const selection = project && release.program.patientSelection;
-    const workspace = selection ? await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...s.context, today: s.context.directoryDate ?? s.context.today } }) : undefined;
+    const selection = project && obj(release.program).patientSelection;
+    const workspace = selection ? await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...obj(s.context), today: obj(s.context).directoryDate ?? obj(s.context).today } }) : undefined;
     if (workspace) base = { ...base, ...workspace };
     let state = await this.lean.call('init', base);
     const frames: { step: number; phase: 'ready' | 'loading'; hash: string }[] = [];
     const record = async (step: number, phase: 'ready' | 'loading') => {
-      if (!screens || step < s.screen_start) return;
+      if (!screens || step < num(s.screen_start)) return;
       const rendered = await this.lean.call('render-screen', { ...base, state });
-      frames.push({ step, phase, hash: createHash('sha256').update(rendered.canonical, 'utf8').digest('hex') });
+      frames.push({ step, phase, hash: createHash('sha256').update(str(rendered.canonical), 'utf8').digest('hex') });
     };
     await record(0, 'ready');
-    for (const [index, event] of s.events.entries()) {
-      const before = state.patientContext?.patient;
-      state = (await this.lean.call('step', { ...base, state, event })).state;
-      if (selection && state.patientContext?.patient !== before) {
-        if (state.patientContext?.patient && state.patientContext.patient !== patient.patient) throw new Fault(422, 'session_patient_mismatch');
-        if (state.patientContext?.patient) await record(index + 1, 'loading');
-        base = { ...base, ...(state.patientContext?.patient ? projection : workspace) };
-        if (state.patientContext?.patient) state = (await this.lean.call('step', { ...base, state, event: { scroll: { screen: state.screen } } })).state;
+    for (const [index, event] of objs(s.events).entries()) {
+      const before = maybeObj(state.patientContext)?.patient;
+      state = obj((await this.lean.call('step', { ...base, state, event })).state);
+      if (selection && maybeObj(state.patientContext)?.patient !== before) {
+        if (maybeObj(state.patientContext)?.patient && obj(state.patientContext).patient !== patient.patient) throw new Fault(422, 'session_patient_mismatch');
+        if (maybeObj(state.patientContext)?.patient) await record(index + 1, 'loading');
+        base = { ...base, ...(maybeObj(state.patientContext)?.patient ? projection : workspace) };
+        if (maybeObj(state.patientContext)?.patient) state = obj((await this.lean.call('step', { ...base, state, event: { scroll: { screen: state.screen } } })).state);
       }
       await record(index + 1, 'ready');
     }
@@ -380,10 +386,10 @@ export class Store {
       // Reject effects of the human event before chart hydration. Hydration can
       // restore this actor's already-persisted receipts from the locked chart;
       // those are not new reviews and must not prevent opening the patient.
-      if (digest(next.state.commits) !== digest(state.commits) || (workflow.project && digest(next.state.receipts) !== digest(state.receipts))) throw new Fault(422, 'use_commit_endpoint');
+      if (digest(obj(next.state).commits) !== digest(state.commits) || (workflow.project && digest(obj(next.state).receipts) !== digest(state.receipts))) throw new Fault(422, 'use_commit_endpoint');
       let cacheFacts = base.facts;
       let display = base.display;
-      if (workflow.project && release.program.patientSelection && state.patientContext?.patient !== next.state.patientContext?.patient) {
+      if (workflow.project && release.program.patientSelection && maybeObj(state.patientContext)?.patient !== maybeObj(obj(next.state).patientContext)?.patient) {
         const hydrated = await this.reconstruct(actor, release, p.snapshot, { ...s, native_state: null, events: [...s.events, input.event] });
         next.state = hydrated.state; cacheFacts = hydrated.base.facts; display = hydrated.base.display;
       }
@@ -391,7 +397,7 @@ export class Store {
       // new session and reviewing again, never by blindly replaying an event.
       await c.query('UPDATE commit_sessions SET events=$3,revision=revision+1,native_state=$4,native_facts=$5,native_version=$6,native_display=$7 WHERE tenant=$1 AND id=$2',
         [this.config.tenant, id, JSON.stringify([...s.events, input.event]), next.state, cacheFacts, p.version, display]);
-      return { revision: s.revision + 1, ...next, state: next.state, projection: { facts: cacheFacts, display } };
+      return { revision: s.revision + 1, ...next, state: obj(next.state), projection: { facts: cacheFacts, display } };
     });
   }
   async submit(actor: Actor, command: Command): Promise<{ status: number; body: Obj }> {
@@ -430,21 +436,21 @@ export class Store {
         streams.set(k, await this.stream(c, k, true));
         trace?.emit('lock', { key: trace.key(k) });
       }
-      const p = streams.get(`patient:${s.patient}`)!;
-      const resource = key ? streams.get(key)! : undefined;
+      const p = required(streams.get(`patient:${s.patient}`));
+      const resource = key ? required(streams.get(key)) : undefined;
       trace?.emit('read', { patient: trace.key(`patient:${s.patient}`),
         keys: keys.map(k => trace.key(k)),
-        versions: keys.map(k => [trace.key(k), streams.get(k)!.version]),
-        baseline: keys.map(k => [trace.key(k), streams.get(k)!.kind === 'patient' ? 1 : 0]),
+        versions: keys.map(k => [trace.key(k), required(streams.get(k)).version]),
+        baseline: keys.map(k => [trace.key(k), required(streams.get(k)).kind === 'patient' ? 1 : 0]),
         expected: keys.map(k => [trace.key(k), k === `patient:${s.patient}` ? command.expectedVersion :
-          k === key ? command.expectedSharedVersion : command.expectedBoard?.find(v => v.key === k)?.version ?? streams.get(k)!.version]),
+          k === key ? command.expectedSharedVersion : command.expectedBoard?.find(v => v.key === k)?.version ?? required(streams.get(k)).version]),
         sessionVersion: s.base_version, sessionRevision: s.revision,
         cacheVersion: s.native_version, cacheHit: Boolean(s.native_state && s.native_facts && s.native_version === s.base_version),
-        ...(key ? { action: sharedAction(actor, p.snapshot, workflow) } : {}) });
+        ...(key ? { action: sharedAction(actor, { modelId: num(obj(p.snapshot).modelId) }, workflow) } : {}) });
       if (s.revision !== command.revision || s.base_version !== p.version || p.version !== command.expectedVersion ||
           (resource && resource.version !== command.expectedSharedVersion) || (!resource && command.expectedSharedVersion !== undefined))
         return finish(409, { outcome: 'conflict', reason: 'version_conflict', version: p.version });
-      const { state, frames } = await this.reconstruct(actor, release, p.snapshot, s, true);
+      const { state, frames } = await this.reconstruct(actor, release, obj(obj(p).snapshot), s, true);
       const mismatch = verifyScreens(command, frames);
       trace?.emit('screens', { valid: !mismatch });
       const requireScreens = () => {
@@ -460,8 +466,8 @@ export class Store {
       if (commit !== workflow.commit && !workflow.commits?.includes(commit)) return finish(422, { outcome: 'rejected', reason: 'unsupported_command' });
       const requestInput = {
         spec: release.spec, program: release.program, user: actor.user, patient: s.patient,
-        state, event: command.event, commit, currentBundle: this.sourceBundle(p.snapshot.bundle, s.context),
-        factsVersions: versions(this.sourceBundle(p.snapshot.bundle, s.context)), context: currentContext(s.context),
+        state, event: command.event, commit, currentBundle: this.sourceBundle(obj(obj(p.snapshot).bundle), s.context),
+        factsVersions: versions(this.sourceBundle(obj(obj(p.snapshot).bundle), s.context)), context: currentContext(s.context),
       };
       const decision = await this.lean.call(commit === 'markReviewed' && workflow.project ? 'review-check' : 'commit-check', requestInput);
       trace?.emit('native', { accept: Boolean(decision.accept), version: p.version });
@@ -469,7 +475,7 @@ export class Store {
         // A reordered journal can invalidate the guard as well as the display.
         // Report its screen fault; ordinary guard refusals remain unchanged.
         requireScreens();
-        return finish(422, { outcome: 'rejected', reason: decision.reject?.reason ?? 'invalid_decision' });
+        return finish(422, { outcome: 'rejected', reason: maybeObj(decision.reject)?.reason ?? 'invalid_decision' });
       }
 
       const transactionId = randomUUID();
@@ -477,8 +483,8 @@ export class Store {
       if (command.bed && selectedBed === undefined) return finish(422, { outcome: 'rejected', reason: 'bed_not_configured' });
       let clinicalAdt: Obj | undefined;
       let clinicalInput: Obj | undefined;
-      const actionKind = placement ? clinicalAction(commit, decision.accept.state) : undefined;
-      if (actionKind && this.config.adt?.patients.includes(s.patient) && (actionKind === 'admit' || p.snapshot.adt?.admitted)) {
+      const actionKind = placement ? clinicalAction(commit, obj(obj(decision.accept).state)) : undefined;
+      if (actionKind && this.config.adt?.patients.includes(s.patient) && (actionKind === 'admit' || maybeObj(obj(p.snapshot).adt)?.admitted)) {
         const board = boardFrom(this.config, streams);
         if (digest(board.versions) !== digest(command.expectedBoard)) return finish(409, { outcome: 'conflict', reason: 'version_conflict' });
         const role = actor.adtRoles?.find(r => actionKind === 'admit' || r !== 'admittingClerk');
@@ -492,27 +498,27 @@ export class Store {
       let projection: Obj | undefined;
       const projecting = workflow.project || workflow.mar && commit !== 'administerMed';
       if (projecting) {
-        try { projection = projectCommand(p.snapshot, release, s.context, actor, commit, decision.accept.state, transactionId, clinicalAdt ? { state: clinicalAdt.state, config: this.config, bed: selectedBed } : undefined); }
+        try { projection = projectCommand(obj(obj(p).snapshot), release, s.context, actor, commit, obj(obj(decision.accept).state), transactionId, clinicalAdt ? { state: obj(clinicalAdt.state), config: this.config, bed: selectedBed } : undefined); }
         catch (error) { if (error instanceof Fault) return finish(error.status, { outcome: 'rejected', reason: error.message }); throw error; }
       }
       let mar: Obj | undefined;
       let marInput: Obj | undefined;
       if (workflow.mar && commit === 'administerMed') {
         this.requireMarUnit(actor, workflow);
-        this.requireMarBinding(p.snapshot, workflow);
+        this.requireMarBinding(obj(obj(p).snapshot), workflow);
         if (actor.user.role !== 'rn' || workflow.shared?.kind !== 'dose') throw new Fault(403, 'role_forbidden');
-        const capture = decision.accept.state.captured.find((c: Obj) => c.element === 'highAlertCosign' && c.confirmed);
+        const capture = objs(obj(obj(decision.accept).state).captured).find((c: Obj) => c.element === 'highAlertCosign' && c.confirmed);
         if (capture) {
-          const cosigner = capture.value?.user?.u;
+          const cosigner = maybeObj(maybeObj(capture.value)?.user)?.u;
           const consent = await c.query(`SELECT signer FROM commit_mar_cosigns WHERE tenant=$1 AND patient=$2 AND workflow=$3
             AND release_name=$4 AND patient_version=$5 AND signer=$6 AND expires_at>now() AND release_hash=$7`,
             [t, s.patient, s.workflow, s.release_name, p.version, cosigner, s.release_hash]);
           if (!cosigner || cosigner === actor.user.id || !consent.rowCount)
             return finish(422, { outcome: 'rejected', reason: 'An independent nurse must authenticate and cosign this dose version.' });
         }
-        marInput = { state: p.snapshot.mar ?? { shared: emptyShared(), events: [] }, version: p.version,
+        marInput = { state: obj(p.snapshot).mar ?? { shared: emptyShared(), events: [] }, version: p.version,
           expectedVersion: command.expectedVersion, actor: actor.modelId,
-          dose: { patient: p.snapshot.modelId, order: workflow.shared.order, occurrence: workflow.shared.occurrence },
+          dose: { patient: obj(p.snapshot).modelId, order: workflow.shared.order, occurrence: workflow.shared.occurrence },
           request: requestInput, medicationRequest: workflow.mar.medicationRequest, encounter: workflow.mar.encounter,
           time: new Date().toISOString(), resourceId: transactionId };
         mar = await this.lean.call('mar-commit', marInput);
@@ -523,14 +529,14 @@ export class Store {
       }
       let multi: Obj | undefined;
       let action: Obj | undefined;
-      if (resource && (!mar || mar.events.some((e: Obj) => e.administered))) {
-        action = sharedAction(actor, p.snapshot, workflow);
+      if (resource && (!mar || objs(mar.events).some((e: Obj) => e.administered))) {
+        action = sharedAction(actor, { modelId: num(obj(p.snapshot).modelId) }, workflow);
         multi = await this.lean.call('multi-step', { state: resource.snapshot, action });
         if (!multi.changed) return finish(409, { outcome: 'conflict', reason: 'shared_guard' });
       }
       if (resource && !multi) multi = { state: resource.snapshot };
       requireScreens();
-      const readVersions = Object.fromEntries(keys.map(k => [k, streams.get(k)!.version]));
+      const readVersions = Object.fromEntries(keys.map(k => [k, required(streams.get(k)).version]));
       // Retain the exact internal input and decision for independent replay.
       const event = { kind: 'command', actor: actor.user.id, requestId: command.requestId,
         releaseHash: s.release_hash, screens: command.screens, session: { id: s.id, revision: s.revision, context: s.context, events: s.events },
@@ -538,40 +544,40 @@ export class Store {
         ...(projection ? { projection } : {}),
         ...(clinicalAdt ? { clinicalAdt: { input: clinicalInput, accepted: clinicalAdt } } : {}),
         ...(mar ? { mar: { input: marInput, accepted: mar } } : {}),
-        ...(resource ? { shared: { key, before: resource.snapshot, action, after: multi!.state } } : {}) };
+        ...(resource ? { shared: { key, before: resource.snapshot, action, after: required(multi).state } } : {}) };
       trace?.emit('stage');
       for (const k of keys) {
-        const stream = streams.get(k)!;
+        const stream = required(streams.get(k));
         let snapshot = stream.snapshot;
-        if (k === `patient:${s.patient}`) snapshot = { ...p.snapshot,
-          lastCommand: { transactionId, commit, state: decision.accept.state },
+        if (k === `patient:${s.patient}`) snapshot = { ...obj(p.snapshot),
+          lastCommand: { transactionId, commit, state: obj(decision.accept).state },
           ...(projection ? { bundle: projection.bundle } : {}),
-          ...(mar ? { mar: mar.state, bundle: { ...p.snapshot.bundle,
-            entry: [...p.snapshot.bundle.entry, { resource: mar.resource }] } } : {}) };
-        if (k === key) snapshot = multi!.state;
-        if (clinicalAdt) snapshot = stream.kind === 'patient' ? { ...snapshot,
-          adt: clinicalAdt.state.patients.find((p: Obj) => `patient:${p.id}` === k),
-          bundle: projectAdt(snapshot, clinicalAdt.state.patients.find((p: Obj) => `patient:${p.id}` === k), this.config, transactionId, new Date().toISOString()) } : clinicalAdt.state.beds.find((b: Obj) => `bed:${b.id}` === k);
+          ...(mar ? { mar: mar.state, bundle: { ...obj(obj(p.snapshot).bundle),
+            entry: [...objs(obj(obj(p.snapshot).bundle).entry), { resource: mar.resource }] } } : {}) };
+        if (k === key) snapshot = required(multi).state;
+        if (clinicalAdt) snapshot = stream.kind === 'patient' ? { ...obj(snapshot),
+          adt: objs(obj(clinicalAdt.state).patients).find((p: Obj) => `patient:${p.id}` === k),
+          bundle: projectAdt(obj(snapshot), required(objs(obj(clinicalAdt.state).patients).find((p: Obj) => `patient:${p.id}` === k)), this.config, transactionId, new Date().toISOString()) } : objs(obj(clinicalAdt.state).beds).find((b: Obj) => `bed:${b.id}` === k);
         if (k !== `patient:${s.patient}` && digest(snapshot) === digest(stream.snapshot)) continue;
         const updated = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',
           [t, k, stream.version, snapshot]);
         if (!updated.rowCount) throw new Error('locked stream CAS failed');
         await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
-          [t, k, stream.version + 1, transactionId, k === `patient:${s.patient}` ? event : k === key ? { kind: action ? 'shared' : 'shared-noop', readVersions, ...(action ? { action } : {}), state: multi!.state } : { kind: 'clinical-adt', actor: actor.user.id, requestId: command.requestId, input: clinicalInput, accepted: clinicalAdt }]);
-        trace?.emit('write', { key: trace.key(k), before: stream.version, after: stream.version + 1, projection: digest(snapshot) });
+          [t, k, num(stream.version) + 1, transactionId, k === `patient:${s.patient}` ? event : k === key ? { kind: action ? 'shared' : 'shared-noop', readVersions, ...(action ? { action } : {}), state: required(multi).state } : { kind: 'clinical-adt', actor: actor.user.id, requestId: command.requestId, input: clinicalInput, accepted: clinicalAdt }]);
+        trace?.emit('write', { key: trace.key(k), before: stream.version, after: num(stream.version) + 1, projection: digest(snapshot) });
       }
       if (projecting) await c.query('UPDATE commit_sessions SET base_version=$3,events=$4,screen_start=jsonb_array_length($4::jsonb),revision=revision+1,native_state=NULL,native_facts=NULL,native_version=NULL,native_display=NULL WHERE tenant=$1 AND id=$2',
         [t, s.id, p.version + 1, JSON.stringify([...s.events, command.event])]);
       const refreshed = projecting ? await this.stream(c, `patient:${s.patient}`) : undefined;
       const screenProjection = projecting ? await this.lean.call('facts', {
-        bundle: this.sourceBundle(refreshed!.snapshot.bundle, s.context), context: s.context,
+        bundle: this.sourceBundle(required(refreshed).snapshot.bundle, s.context), context: s.context,
         ...(workflow.project ? { worldContext: await this.directory(actor, c) } : {}),
       }) : undefined;
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
       return finish(201, { outcome: 'persisted', transactionId, version: p.version + 1, revision: s.revision + 1,
-        ...(clinicalAdt ? { board: boardKeys(this.config).map(key => ({ key, version: streams.get(key)!.version + (key === `patient:${s.patient}` || streams.get(key)!.kind === 'bed' && digest(streams.get(key)!.snapshot) !== digest(clinicalAdt.state.beds.find((b: Obj) => `bed:${b.id}` === key)) ? 1 : 0) })) } : {}),
-        ...(projection ? { links: projection.changed.map((r: Obj) => `/commit/patients/${s.patient}/resources/${r.resourceType}/${r.id}/${r.meta.versionId}`) } : {}),
-        ...(resource ? { sharedVersion: resource.version + 1 } : {}), state: decision.accept.state, ...(screenProjection ? { screenProjection } : {}), ...(mar ? { mar: mar.events } : {}) });
+        ...(clinicalAdt ? { board: boardKeys(this.config).map(key => ({ key, version: num(required(streams.get(key)).version) + (key === `patient:${s.patient}` || required(streams.get(key)).kind === 'bed' && digest(required(streams.get(key)).snapshot) !== digest(objs(obj(clinicalAdt.state).beds).find((b: Obj) => `bed:${b.id}` === key)) ? 1 : 0) })) } : {}),
+        ...(projection ? { links: objs(projection.changed).map((r: Obj) => `/commit/patients/${s.patient}/resources/${r.resourceType}/${r.id}/${obj(r.meta).versionId}`) } : {}),
+        ...(resource ? { sharedVersion: num(resource.version) + 1 } : {}), state: obj(decision.accept).state, ...(screenProjection ? { screenProjection } : {}), ...(mar ? { mar: mar.events } : {}) });
     }, trace);
     trace?.emit('respond', { status: result.status, answer: digest(result) });
     return result;

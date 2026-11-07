@@ -1,11 +1,12 @@
+import { configSchema, required } from '../src/types.ts';
 /** Synthetic 4 West/ADT provisioning inputs. Charts/config live only in scratch. */
 import { readFile, writeFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { resolve } from 'node:path';
 import { fixture, patient } from './helpers.ts';
-import { configSchema } from '../src/types.ts';
-const dir = resolve(process.argv[2] ?? process.env.TMPDIR!);
+
+const dir = resolve(process.argv[2] ?? required(process.env.TMPDIR));
 execFileSync(process.execPath, ['--experimental-strip-types', fileURLToPath(new URL('mar-dev.ts', import.meta.url)), dir], { env: process.env });
 const config = JSON.parse(await readFile(resolve(dir, 'mar-config.json'), 'utf8'));
 config.tenant = process.env.ADT_TENANT ?? 'adt-4west-dev';

@@ -86,42 +86,44 @@ export async function runSuite({ targets, binary, runId = null, selected, catalo
   const report = { schemaVersion: 1, suite: 'held-out-core-rule-conformance', runId,
     generatedAt: new Date().toISOString(), independentOfChecker: true, deploymentGate: false,
     boundary: 'Native interpreter + FHIR projection + semantic in-UI patient selection. Does not exercise browser painter, persistence, or host networking.',
-    native: { binary: realpathSync(binary), sha256: native.sha256, calls: 0 },
+    native: { binary: realpathSync(binary), sha256: native.sha256, transport: native.transport, calls: 0 },
     scenarios: scenarios.map(({ run, applies, ...s }) => s), targets: [], results: [] };
-  for (const target of targets) {
-    const fixture = fixtures(native, target);
-    const { program, spec, programPath, specPath, ...metadata } = target;
-    const result = { ...metadata, programPath: rel(programPath), specPath: rel(specPath),
-      programSha256: digest(readFileSync(programPath)), specSha256: digest(spec),
-      selectionMode: program.patientSelection ? 'in-ui-selection' : 'legacy-preselected', passed: 0, failed: 0, notApplicable: 0 };
-    for (const s of scenarios) {
-      native.lastDriver = null;
-      if (!s.applies(target)) {
-        result.notApplicable++;
-        report.results.push({ target: target.id, scenario: s.id, status: 'not-applicable', observed: s.notApplicableReason ?? 'Outside this role/workflow/release or optional feature not surfaced' });
-        continue;
+  try {
+    for (const target of targets) {
+      const fixture = fixtures(native, target);
+      const { program, spec, programPath, specPath, ...metadata } = target;
+      const result = { ...metadata, programPath: rel(programPath), specPath: rel(specPath),
+        programSha256: digest(readFileSync(programPath)), specSha256: digest(spec),
+        selectionMode: program.patientSelection ? 'in-ui-selection' : 'legacy-preselected', passed: 0, failed: 0, notApplicable: 0 };
+      for (const s of scenarios) {
+        native.lastDriver = null;
+        if (!s.applies(target)) {
+          result.notApplicable++;
+          report.results.push({ target: target.id, scenario: s.id, status: 'not-applicable', observed: s.notApplicableReason ?? 'Outside this role/workflow/release or optional feature not surfaced' });
+          continue;
+        }
+        try {
+          const { d, observed, ...details } = s.run(fixture);
+          result.passed++;
+          report.results.push({ target: target.id, scenario: s.id, status: 'pass', observed, ...details,
+            testedProgramSha256: digest(d.program), steps: d.trace.length,
+            selectionMode: d.selectionMode, selectionSteps: d.selectionTrace.length, hydrationSteps: d.hydrationTrace.length });
+        } catch (e) {
+          result.failed++;
+          console.error(`${target.id}: FAIL ${s.id}: ${e.message}`);
+          const d = native.lastDriver;
+          report.results.push({ target: target.id, scenario: s.id, status: 'fail', observed: e.message, classification: e.classification ?? 'runner-error',
+            scope: s.scope ?? 'exact-program', ...(d ? { facts: d.facts, user: d.input.user, trace: d.trace, finalState: d.state,
+              selectionMode: d.selectionMode, selectionSteps: d.selectionTrace.length, hydrationSteps: d.hydrationTrace.length,
+              selectionTrace: d.selectionTrace, hydrationTrace: d.hydrationTrace,
+              testedProgramSha256: digest(d.program) } : {}) });
+        }
       }
-      try {
-        const { d, observed, ...details } = s.run(fixture);
-        result.passed++;
-        report.results.push({ target: target.id, scenario: s.id, status: 'pass', observed, ...details,
-          testedProgramSha256: digest(d.program), steps: d.trace.length,
-          selectionMode: d.selectionMode, selectionSteps: d.selectionTrace.length, hydrationSteps: d.hydrationTrace.length });
-      } catch (e) {
-        result.failed++;
-        console.error(`${target.id}: FAIL ${s.id}: ${e.message}`);
-        const d = native.lastDriver;
-        report.results.push({ target: target.id, scenario: s.id, status: 'fail', observed: e.message, classification: e.classification ?? 'runner-error',
-          scope: s.scope ?? 'exact-program', ...(d ? { facts: d.facts, user: d.input.user, trace: d.trace, finalState: d.state,
-            selectionMode: d.selectionMode, selectionSteps: d.selectionTrace.length, hydrationSteps: d.hydrationTrace.length,
-            selectionTrace: d.selectionTrace, hydrationTrace: d.hydrationTrace,
-            testedProgramSha256: digest(d.program) } : {}) });
-      }
+      report.targets.push(result);
+      native.cache.clear();
+      console.error(`${target.id}: ${result.passed} pass / ${result.failed} fail / ${result.notApplicable} not applicable`);
     }
-    report.targets.push(result);
-    native.cache.clear();
-    console.error(`${target.id}: ${result.passed} pass / ${result.failed} fail / ${result.notApplicable} not applicable`);
-  }
+  } finally { await native.close(); }
   report.native.calls = native.calls;
   report.summary = { targets: targets.length, scenarios: scenarios.length,
     passed: report.results.filter(r => r.status === 'pass').length, failed: report.results.filter(r => r.status === 'fail').length,

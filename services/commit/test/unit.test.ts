@@ -1,10 +1,11 @@
+import { canonical, commandInput, configSchema, digest, num, obj, objs, required, sharedAction, sharedKey, str } from '../src/types.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { Lean } from '../src/lean.ts';
-import { canonical, commandInput, configSchema, digest, sharedAction, sharedKey } from '../src/types.ts';
+
 import { versions } from '../src/store.ts';
 import { projectAdt } from '../src/clinical-adt.ts';
 
@@ -34,7 +35,7 @@ test('workflow selects shared identity; authenticated actor/patient select model
   assert.equal(sharedKey('p', w), 'dose:p:9:600');
   assert.equal(sharedKey('other', w), 'dose:other:9:600');
   const actor = { token: 'x'.repeat(24), user: { id: 'nurse', role: 'rn' as const }, modelId: 2, patients: ['p'] };
-  assert.deepEqual(sharedAction(actor, { patient: 'p', modelId: 7, bundle: {}, context: {} }, w),
+  assert.deepEqual(sharedAction(actor, { modelId: 7 }, w),
     { administer: { actor: 2, dose: { patient: 7, order: 9, occurrence: 600 } } });
 });
 test('supervisor serializes concurrent calls and isolates operation errors', async () => {
@@ -80,4 +81,20 @@ test('JSONB/native key order cannot rewrite an unchanged inpatient episode', () 
   } }] } };
   const after = { id: 'unrelated', admitted: true, bed: 42 };
   assert.strictEqual(projectAdt(snapshot, after, config, 'new-action', '2026-11-05T12:00:00Z'), snapshot.bundle);
+});
+
+test('JSON narrowing preserves mutable object/array identities and rejects wrong shapes', () => {
+  const entry = { resource: { id: 'original' } };
+  const entries = [entry];
+  assert.strictEqual(obj(entry), entry);
+  assert.strictEqual(objs(entries), entries);
+  objs(entries).push({ resource: { id: 'added' } });
+  assert.equal(entries.length, 2);
+  obj(entry.resource).id = 'changed';
+  assert.equal(entry.resource.id, 'changed');
+  for (const value of [null, [], 'object', 1]) assert.throws(() => obj(value));
+  for (const value of [null, {}, [1], [null]]) assert.throws(() => objs(value));
+  assert.throws(() => str(3));
+  assert.throws(() => num('3'));
+  assert.throws(() => required(undefined));
 });

@@ -1,10 +1,12 @@
+import { array, configSchema, obj, objs, type Obj } from '../src/types.ts';
+
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { configSchema, type Obj } from '../src/types.ts';
+
 import { migrate } from '../src/store.ts';
 import { AdtStore } from '../src/adt.ts';
-import { fixture, host, patient, ready, intent, api, admissionEvents } from './helpers.ts';
+import { fixture, host, patient, intent, api, admissionEvents } from './helpers.ts';
 const url = process.env.DATABASE_URL;
 if (!url) throw new Error('DATABASE_URL required');
 test('clinical admission shares the ADT bed stream: native guards, board CAS, atomic chart/bed projection and replay', { timeout: 60000 }, async () => {
@@ -20,8 +22,8 @@ test('clinical admission shares the ADT bed stream: native guards, board CAS, at
     await migrate(h.db);
     for (const [i, id] of ['clinical-a','clinical-b','clinical-c'].entries()) {
       const p = patient(f, id, i+1);
-      p.bundle.entry[1].resource.class = { code: id === 'clinical-c' ? 'IMP' : 'EMER' };
-      p.bundle.entry.push({ resource: { resourceType: 'Location', id: 'bed-a', meta: { versionId: '1' }, status: 'active', physicalType: { coding: [{ code: 'bd' }] }, operationalStatus: { code: 'U' } } });
+      obj(obj(array(obj(p.bundle).entry)[1]).resource).class = { code: id === 'clinical-c' ? 'IMP' : 'EMER' };
+      objs(obj(p.bundle).entry).push({ resource: { resourceType: 'Location', id: 'bed-a', meta: { versionId: '1' }, status: 'active', physicalType: { coding: [{ code: 'bd' }] }, operationalStatus: { code: 'U' } } });
       await h.store.importPatient(p);
     }
     await new AdtStore(h.store).provision();
@@ -33,7 +35,7 @@ test('clinical admission shares the ADT bed stream: native guards, board CAS, at
     };
     const a = await open('clinical-a'), b = await open('clinical-b');
     const unrelated = await h.store.read(actor, 'clinical-c', 2147483646);
-    const clinical = (row: Obj) => row.snapshot.bundle.entry.filter((e: Obj) => e.resource.resourceType !== 'Location');
+    const clinical = (row: Obj) => objs(obj(obj(row.snapshot).bundle).entry).filter((e: Obj) => obj(e.resource).resourceType !== 'Location');
     const commit = (s: Obj, requestId: string) => ({ ...intent(s, requestId, { click: { comp: 'w3Disposition.commit.disposition' } }), expectedBoard: s.board, bed: 'bed-a' });
     const accepted = await api(h.base, actor, '/commands', commit(a,'admit-a'));
     assert.equal(accepted.status, 201, JSON.stringify(accepted));
@@ -45,10 +47,10 @@ test('clinical admission shares the ADT bed stream: native guards, board CAS, at
     const fresh = await open('clinical-b');
     assert.equal((await api(h.base, actor, '/commands', commit(fresh,'occupied-bed'))).status, 422);
     const board = await new AdtStore(h.store).read(actor);
-    assert.equal(board.state.beds[0].occupant, 'clinical-a');
+    assert.equal(obj(board.state.beds[0]).occupant, 'clinical-a');
     const current = await h.store.read(actor, 'clinical-a');
     assert.equal(current.version, 3); assert.equal(current.snapshot.adt.bed, 42);
-    assert.ok(current.snapshot.bundle.entry.some((e: Obj) => e.resource.resourceType === 'Encounter' && e.resource.class.code === 'IMP' && e.resource.location[0].location.reference === 'Location/bed-a'));
+    assert.ok(current.snapshot.bundle.entry.some((e: Obj) => obj(e.resource).resourceType === 'Encounter' && obj(obj(e.resource).class).code === 'IMP' && obj(obj(array(obj(e.resource).location)[0]).location).reference === 'Location/bed-a'));
     const event = current.events.at(-1).event;
     assert.deepEqual(await h.lean.call('commit-check', event.guard.input), event.guard.decision);
     assert.deepEqual(await h.lean.call('adt-commit', event.clinicalAdt.input), event.clinicalAdt.accepted);
@@ -60,10 +62,10 @@ test('clinical admission shares the ADT bed stream: native guards, board CAS, at
     await h.db.query('UPDATE commit_streams SET version=4 WHERE tenant=$1 AND key=$2', [config.tenant, 'patient:clinical-a']);
     const scoped = await api(h.base, config.actors[1], '/patients/clinical-a?after=3');
     assert.equal(scoped.status, 200);
-    const envelope = scoped.body.events[0].event;
-    assert.equal(envelope.kind, 'clinical-adt');
-    assert.equal(envelope.patient.id, 'clinical-a');
-    assert.equal(envelope.input, undefined); assert.equal(envelope.accepted, undefined);
+    const envelope = obj(array(scoped.body.events)[0]).event;
+    assert.equal(obj(envelope).kind, 'clinical-adt');
+    assert.equal(obj(obj(envelope).patient).id, 'clinical-a');
+    assert.equal(obj(envelope).input, undefined); assert.equal(obj(envelope).accepted, undefined);
 
   } finally { await h.close(); }
 });

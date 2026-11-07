@@ -1,10 +1,12 @@
+import type { UiNode, UiScreen } from '../../../lean/generated/ehr-types.ts';
+import { array, obj, objs } from '../src/types.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 import { fixture, host, configuration, patient, ready, intent, api } from './helpers.ts';
 import { migrate } from '../src/store.ts';
-import type { UiScreen, UiNode } from '../../../lean/generated/ehr-types.ts';
+
 import { screenCanonical } from '../../../app/src/data/screenFingerprint.ts';
 
 const url = process.env.DATABASE_URL;
@@ -20,19 +22,19 @@ test('screen evidence binds exact journal order, survives stale caches, and refu
     const s = await ready(a.base, actor, 'pt-1', 'tiny', 'sign', f.tinyEvents);
     const command = intent(s, 'fingerprint-retry', { click: { comp: 'signButton' } });
     const originalFrames = structuredClone(command.screens.frames);
-    assert.equal(originalFrames.length, f.tinyEvents.length + 1);
+    assert.equal(objs(originalFrames).length, f.tinyEvents.length + 1);
     const unchanged = async () => {
       const read = await api(a.base, actor, '/patients/pt-1');
       assert.equal(read.body.version, 1);
-      assert.equal(read.body.events.length, 1); // import only
+      assert.equal(objs(read.body.events).length, 1); // import only
       assert.equal((await a.db.query('SELECT 1 FROM commit_requests WHERE tenant=$1 AND request_id=$2', [config.tenant, command.requestId])).rowCount, 0);
     };
     const cases = [
       { ...command, screens: undefined },
       { ...command, screens: { ...command.screens, requestId: 'different-request' } },
-      { ...command, screens: { ...command.screens, frames: originalFrames.slice(1) } },
-      { ...command, screens: { ...command.screens, frames: originalFrames.map((frame: { hash: string }, i: number) => i === 2 ? { ...frame, hash: '0'.repeat(64) } : frame) } },
-      { ...command, screens: { ...command.screens, frames: [originalFrames[1], originalFrames[0], ...originalFrames.slice(2)] } },
+      { ...command, screens: { ...command.screens, frames: array(originalFrames).slice(1) } },
+      { ...command, screens: { ...command.screens, frames: originalFrames.map((frame, i) => i === 2 ? { ...frame, hash: '0'.repeat(64) } : frame) } },
+      { ...command, screens: { ...command.screens, frames: [array(originalFrames)[1], array(originalFrames)[0], ...array(originalFrames).slice(2)] } },
     ];
     for (const bad of cases) {
       const refused = await api(a.base, actor, '/commands', bad);
@@ -73,10 +75,10 @@ test('screen evidence binds exact journal order, survives stale caches, and refu
     assert.deepEqual(await api(a.base, actor, '/commands', command), match);
     const read = await api(a.base, actor, '/patients/pt-1');
     assert.equal(read.body.version, 2);
-    assert.equal(read.body.events.length, 2);
-    const screen = await call('render-screen', { spec: s.spec, program: s.program, ...s.projection, user: s.user, state: s.state });
+    assert.equal(objs(read.body.events).length, 2);
+    const screen = await call('render-screen', { spec: s.spec, program: s.program, ...obj(s.projection), user: s.user, state: s.state });
     assert.equal(screen.canonical, screenCanonical(screen.screen));
-    const roundtrip = await call('screen-canonical', screen.screen);
+    const roundtrip = await call('screen-canonical', obj(screen.screen));
     assert.equal(roundtrip, screen.canonical);
   } finally {
     await a.db.query('DELETE FROM commit_requests WHERE tenant=$1', [config.tenant]);
@@ -135,8 +137,8 @@ test('success resets the evidence interval; a new step still requires comparison
     const next = await api(a.base, actor, `/sessions/${s.sessionId}/events`, { revision: s.revision, event: { click: { comp: 'w1Rooming.nav.w1MedRec' } } });
     assert.equal(next.status, 200); s = { ...s, ...next.body };
     const command = intent(s, 'second', { click: { comp: 'w1MedRec.review.currentMeds' } });
-    assert.deepEqual(command.screens.frames.map((f: { step: number }) => f.step), [1, 2]);
-    const missingNew = { ...command, screens: { ...command.screens, frames: command.screens.frames.slice(0, 1) } };
+    assert.deepEqual(command.screens.frames.map((f) => f.step), [1, 2]);
+    const missingNew = { ...command, screens: { ...command.screens, frames: array(command.screens.frames).slice(0, 1) } };
     assert.equal((await api(a.base, actor, '/commands', missingNew)).body.error, 'screen_fingerprint_mismatch');
     const second = await api(a.base, actor, '/commands', command);
     assert.equal(second.status, 201, JSON.stringify(second));

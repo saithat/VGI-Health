@@ -1,10 +1,11 @@
+import { array, configSchema, obj, objs, required } from '../src/types.ts';
 /** Synthetic W4 provisioning. Generated clinical/operator data stays outside git. */
 import { writeFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fixture, patient } from './helpers.ts';
-import { configSchema } from '../src/types.ts';
+
 const f = await fixture();
-const dir = resolve(process.argv[2] ?? process.env.TMPDIR!);
+const dir = resolve(process.argv[2] ?? required(process.env.TMPDIR));
 await mkdir(dir, { recursive: true });
 const ids = ['P1', 'P2', 'P3', 'RN2', 'P4', 'P5'];
 const roles = ['physician', 'physician', 'rn', 'rn', 'np', 'surgeon'];
@@ -17,8 +18,8 @@ const config = configSchema.parse({ tenant: process.env.MAR_TENANT ?? 'mar-dev',
     workflows: { dose: { commit: 'administerMed', shared: { kind: 'dose', order: 9, occurrence: 600 },
       mar: { patient: 'mar-patient', medicationRequest: 'mar-order', encounter: 'enc-1', scheduledTime } } } } } });
 const p = patient(f, 'mar-patient', 1, true);
-p.bundle.entry[1].resource.class = { system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode', code: 'IMP' };
-p.bundle.entry.push({ resource: { resourceType: 'MedicationRequest', id: 'mar-order', meta: { versionId: '1' },
+obj(obj(array(obj(p.bundle).entry)[1]).resource).class = { system: 'http://terminology.hl7.org/CodeSystem/v3-ActCode', code: 'IMP' };
+objs(obj(p.bundle).entry).push({ resource: { resourceType: 'MedicationRequest', id: 'mar-order', meta: { versionId: '1' },
   status: 'active', intent: 'order', subject: { reference: 'Patient/mar-patient' }, encounter: { reference: 'Encounter/enc-1' },
   medicationCodeableConcept: { coding: [{ system: 'http://www.nlm.nih.gov/research/umls/rxnorm', code: '723' }], text: 'amoxicillin' },
   dosageInstruction: [{ timing: { event: [scheduledTime] }, route: { text: 'PO' }, doseAndRate: [{ doseQuantity: { value: 500, unit: 'mg' } }] }] } });

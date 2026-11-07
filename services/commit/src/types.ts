@@ -1,7 +1,41 @@
 import { createHash } from 'node:crypto';
 import { z } from 'zod';
 
-export type Obj = Record<string, any>; // Opaque Lean/FHIR JSON; Lean validates codecs.
+/** Opaque JSON stays unknown until a consumer checks its shape. */
+export type Obj = Record<string, unknown>;
+export function obj(value: unknown): Obj {
+  if (!isObj(value)) throw new TypeError('Expected JSON object');
+  return value;
+}
+export function isObj(value: unknown): value is Obj {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+export const maybeObj = (value: unknown) => value == null ? undefined : obj(value);
+export const maybeObjs = (value: unknown) => value == null ? undefined : objs(value);
+export const maybeStr = (value: unknown) => value == null ? undefined : str(value);
+export function array(value: unknown): unknown[] {
+  if (!Array.isArray(value)) throw new TypeError('Expected array');
+  return value;
+}
+function isObjs(value: unknown): value is Obj[] {
+  return Array.isArray(value) && value.every(isObj);
+}
+export function objs(value: unknown): Obj[] {
+  if (!isObjs(value)) throw new TypeError('Expected JSON object array');
+  return value;
+}
+export function str(value: unknown): string {
+  if (typeof value !== 'string') throw new TypeError('Expected string');
+  return value;
+}
+export function num(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) throw new TypeError('Expected finite number');
+  return value;
+}
+export function required<T>(value: T | null | undefined): T {
+  if (value === null || value === undefined) throw new TypeError('Missing required value');
+  return value;
+}
 export const adtRole = z.enum(['chargeNurse', 'bedManager', 'admittingClerk']);
 const id = z.string().regex(/^[A-Za-z0-9.-]{1,64}$/);
 export const version = z.number().int().min(0).max(2147483646);
@@ -21,7 +55,7 @@ export const configSchema = z.object({
     modelId: nat, patients: z.array(id), units: z.array(id).optional(), adtRoles: z.array(adtRole).optional(),
   }).strict()).min(1),
   releases: z.record(id, z.object({
-    spec: z.record(z.string(), z.any()), program: z.record(z.string(), z.any()),
+    spec: z.record(z.string(), z.unknown()), program: z.record(z.string(), z.unknown()),
     workflows: z.record(id, z.object({ commit: id, commits: z.array(id).optional(), project: z.boolean().optional(), shared: shared.optional(),
       mar: z.object({ unit: id.optional(), patient: id, medicationRequest: id, encounter: id, scheduledTime: z.iso.datetime({ offset: true }) }).strict().optional(),
     }).strict()),
@@ -71,11 +105,11 @@ export type Release = Config['releases'][string];
 export type Workflow = Release['workflows'][string];
 export const sessionInput = z.object({ patient: id, release: id, workflow: id, expectedVersion: version.optional(), encounter: id.optional(), task: id.optional(), bed: id.optional() }).strict();
 export const cosignInput = sessionInput.extend({ expectedVersion: version }).strict();
-export const eventInput = z.object({ revision: version, event: z.record(z.string(), z.any()) }).strict();
+export const eventInput = z.object({ revision: version, event: z.record(z.string(), z.unknown()) }).strict();
 export const commandInput = z.object({
   requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/), sessionId: z.uuid(),
   revision: version, expectedVersion: version, expectedSharedVersion: version.optional(), commit: id.optional(), bed: id.optional(), expectedBoard: z.array(z.object({ key: z.string(), version }).strict()).max(128).optional(),
-  event: z.record(z.string(), z.any()),
+  event: z.record(z.string(), z.unknown()),
   // Optional in the codec so absence receives the same retry-safe refusal as a
   // mismatch, rather than a generic malformed-command response.
   screens: z.object({ requestId: z.string(), frames: z.array(z.object({
@@ -84,8 +118,8 @@ export const commandInput = z.object({
 }).strict();
 export type Command = z.infer<typeof commandInput>;
 export const importSchema = z.object({
-  patient: id, modelId: nat, bundle: z.record(z.string(), z.any()),
-  context: z.record(z.string(), z.any()),
+  patient: id, modelId: nat, bundle: z.record(z.string(), z.unknown()),
+  context: z.record(z.string(), z.unknown()),
 }).strict();
 export type Patient = z.infer<typeof importSchema>;
 export const emptyShared = () => ({ administrations: [], placements: [] });
@@ -93,7 +127,7 @@ export const emptyShared = () => ({ administrations: [], placements: [] });
 export function canonical(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
   if (value !== null && typeof value === 'object')
-    return `{${Object.keys(value).sort().map(k => `${JSON.stringify(k)}:${canonical((value as Obj)[k])}`).join(',')}}`;
+    return `{${Object.keys(value).sort().map(k => `${JSON.stringify(k)}:${canonical(obj(value)[k])}`).join(',')}}`;
   return JSON.stringify(value);
 }
 export const digest = (v: unknown) => createHash('sha256').update(canonical(v)).digest('hex');
@@ -102,8 +136,8 @@ export function sharedKey(patient: string, w: Workflow): string | undefined {
   return w.shared.kind === 'dose'
     ? `dose:${patient}:${w.shared.order}:${w.shared.occurrence}` : `bed:${w.shared.bed}`;
 }
-export function sharedAction(actor: Actor, patient: Patient, w: Workflow): Obj {
-  const s = w.shared!;
+export function sharedAction(actor: Actor, patient: { modelId: number }, w: Workflow): Obj {
+  const s = required(w.shared);
   return s.kind === 'dose'
     ? { administer: { actor: actor.modelId, dose: { patient: patient.modelId, order: s.order, occurrence: s.occurrence } } }
     : { [s.kind]: { actor: actor.modelId, patient: patient.modelId, bed: s.bed } };

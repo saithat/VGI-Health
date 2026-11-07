@@ -1,7 +1,7 @@
+import { Fault, digest, maybeObj, obj, objs, required, type Actor, type AdtCommand, type Obj } from './types.ts';
 import { projectAdt } from './clinical-adt.ts';
 import { randomUUID } from 'node:crypto';
 import { Store, transaction } from './store.ts';
-import { digest, Fault, type Actor, type AdtCommand, type Obj } from './types.ts';
 
 /** Closed-board prototype: lock the complete configured read set in total key
  * order. This also protects negative placement reads across patients/beds.
@@ -28,9 +28,9 @@ export class AdtStore {
   private board(rows: Obj[]) {
     const keys = this.keys();
     if (rows.length !== keys.length || rows.some((r, i) => r.key !== keys[i])) throw new Fault(409, 'adt_not_provisioned');
-    const patients = rows.filter(r => r.kind === 'patient').map(r => r.snapshot.adt);
+    const patients = rows.filter(r => r.kind === 'patient').map(r => obj(r.snapshot).adt);
     const beds = rows.filter(r => r.kind === 'bed').map(r => r.snapshot);
-    if (patients.some(p => !p) || beds.some(b => b.occupant === undefined)) throw new Fault(409, 'adt_not_provisioned');
+    if (patients.some(p => !p) || beds.some(b => obj(b).occupant === undefined)) throw new Fault(409, 'adt_not_provisioned');
     return { state: { patients, beds }, versions: rows.map(r => ({ key: r.key, version: r.version })) };
   }
   async read(actor: Actor) {
@@ -55,9 +55,9 @@ export class AdtStore {
       const initial = new Map<string, Obj>();
       for (const row of existing) {
         const id = row.key.slice(8);
-        const encounter = row.snapshot.bundle.entry.map((e: Obj) => e.resource).find((r: Obj) =>
-          r.resourceType === 'Encounter' && r.class?.code === 'IMP' && r.status === 'in-progress' && r.subject?.reference === `Patient/${id}`);
-        const bed = a.beds.find(b => b.resource && encounter?.location?.some((l: Obj) => l.location?.reference === `Location/${b.resource}` && l.status === 'active'));
+        const encounter = row.snapshot.bundle.entry.map((e: Obj) => obj(e.resource)).find((r: Obj) =>
+          r.resourceType === 'Encounter' && maybeObj(r.class)?.code === 'IMP' && r.status === 'in-progress' && maybeObj(r.subject)?.reference === `Patient/${id}`);
+        const bed = a.beds.find(b => b.resource && encounter?.location?.some((l: Obj) => maybeObj(l.location)?.reference === `Location/${b.resource}` && l.status === 'active'));
         if (bed && placements.has(bed.id)) throw new Fault(422, 'conflicting_initial_placement');
         if (bed) placements.set(bed.id, id);
         initial.set(id, { id, admitted: Boolean(encounter), bed: bed?.id ?? null });
@@ -66,7 +66,7 @@ export class AdtStore {
       const state = { patients: [...initial.values()], beds: initialBeds };
       const probe = initialBeds.find(b => b.phase === 'ready');
       const admitted = state.patients.find(p => p.admitted);
-      const command = admitted ? { discharge: { patient: admitted.id } } : { admit: { patient: state.patients[0].id, bed: probe!.id } };
+      const command = admitted ? { discharge: { patient: admitted.id } } : { admit: { patient: state.patients[0].id, bed: required(probe).id } };
       const checked = await this.store.lean.call('adt-commit', { state, versions: [], expected: [], role: 'bedManager', command });
       if (checked.rejected) throw new Fault(422, 'invalid_initial_board');
       for (const bed of initialBeds) await c.query(`INSERT INTO commit_streams(tenant,key,kind,snapshot) VALUES($1,$2,'bed',$3)`,
@@ -123,9 +123,9 @@ export class AdtStore {
       const written: Obj[] = [];
       for (const row of rows) {
         const next = row.kind === 'patient'
-          ? { ...row.snapshot, adt: accepted.state.patients.find((p: Obj) => `patient:${p.id}` === row.key),
-              bundle: projectAdt(row.snapshot, accepted.state.patients.find((p: Obj) => `patient:${p.id}` === row.key), this.store.config, transactionId, new Date().toISOString()) }
-          : accepted.state.beds.find((b: Obj) => `bed:${b.id}` === row.key);
+          ? { ...row.snapshot, adt: objs(obj(accepted.state).patients).find((p: Obj) => `patient:${p.id}` === row.key),
+              bundle: projectAdt(row.snapshot, required(objs(obj(accepted.state).patients).find((p: Obj) => `patient:${p.id}` === row.key)), this.store.config, transactionId, new Date().toISOString()) }
+          : objs(obj(accepted.state).beds).find((b: Obj) => `bed:${b.id}` === row.key);
         if (digest(next) === digest(row.snapshot)) continue;
         const result = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',
           [t, row.key, row.version, next]);

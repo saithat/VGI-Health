@@ -1,7 +1,10 @@
+import { configSchema, maybeObj, maybeObjs, obj, objs, str, type Obj } from './types.ts';
+import { z } from 'zod';
+
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { initialPatients, localReleases } from './bootstrap.ts';
-import { configSchema } from './types.ts';
+
 import { pool, Store, migrate } from './store.ts';
 import { AdtStore } from './adt.ts';
 import { Lean } from './lean.ts';
@@ -14,24 +17,24 @@ const roles = ['physician','physician','rn','rn','np','surgeon'];
 const personas = ['P1','P2','P3','RN2','P4','P5'];
 const ids = patients.map(p => p.patient);
 const releases = await localReleases();
-const marProgram = structuredClone(releases['P3-baseline'].program);
-marProgram.patientSelection = false;
+const marProgram = structuredClone(obj(releases['P3-baseline']).program);
+obj(marProgram).patientSelection = false;
 const workflows: Record<string, unknown> = {};
 let order = 0;
-for (const p of patients) for (const e of p.bundle.entry) {
+for (const p of patients) for (const e of objs(p.bundle.entry)) {
   const r = e.resource;
-  if (r.resourceType !== 'MedicationRequest' || r.status !== 'active' || !r.encounter?.reference) continue;
-  const times = r.dosageInstruction?.[0]?.timing?.event ?? [];
+  if (obj(r).resourceType !== 'MedicationRequest' || obj(r).status !== 'active' || !maybeObj(obj(r).encounter)?.reference) continue;
+  const times = z.array(z.string()).parse(maybeObj(maybeObjs(obj(r).dosageInstruction)?.[0]?.timing)?.event ?? []);
   if (!times.length) continue;
   const key = order++;
   for (const [n, scheduledTime] of times.entries()) workflows[`dose-${key}-${n}`] = { commit: 'administerMed', commits: ['chartAssessment'],
     shared: { kind: 'dose', order: key, occurrence: Math.floor(Date.parse(scheduledTime) / 60000) },
-    mar: { unit: '4-west', patient: p.patient, medicationRequest: r.id, encounter: r.encounter.reference.slice(10), scheduledTime } };
+    mar: { unit: '4-west', patient: p.patient, medicationRequest: obj(r).id, encounter: str(obj(obj(r).encounter).reference).slice(10), scheduledTime } };
 }
-if (Object.keys(workflows).length) releases.mar = { spec: releases.P3.spec, program: marProgram, workflows };
+if (Object.keys(workflows).length) releases.mar = { spec: obj(releases.P3).spec, program: marProgram, workflows };
 const bedResources = new Map<string, unknown>();
-const boardPatients = patients.filter(p => p.bundle.entry.some((e: any) => e.resource.resourceType === 'Encounter' && ['IMP','EMER'].includes(e.resource.class?.code) && ['in-progress','arrived','triaged'].includes(e.resource.status) && e.resource.meta?.tag?.length)).map(p => p.patient);
-for (const p of patients) for (const e of p.bundle.entry) if (e.resource.resourceType === 'Location' && e.resource.physicalType?.coding?.some((c: any) => c.code === 'bd')) bedResources.set(e.resource.id, e.resource);
+const boardPatients = patients.filter(p => objs(objs(p.bundle.entry)).some((e: Obj) => obj(e.resource).resourceType === 'Encounter' && ['IMP','EMER'].includes(String(maybeObj(obj(e.resource).class)?.code)) && ['in-progress','arrived','triaged'].includes(String(obj(e.resource).status)) && maybeObjs(maybeObj(obj(e.resource).meta)?.tag)?.length)).map(p => p.patient);
+for (const p of patients) for (const e of objs(p.bundle.entry)) if (obj(e.resource).resourceType === 'Location' && maybeObjs(maybeObj(obj(e.resource).physicalType)?.coding)?.some((c: Obj) => c.code === 'bd')) bedResources.set(str(obj(e.resource).id), e.resource);
 const beds = [...bedResources.keys()].sort().map((resource, i) => ({ id: i+1, resource, unit: '4-west' }));
 if (boardPatients.length > 64 || beds.length > 64) throw new Error('Dated board exceeds the bounded ADT deployment; partition units explicitly');
 const subjects = JSON.parse(await readFile(process.env.KEYCLOAK_SUBJECTS ?? resolve(dir, 'keycloak-subjects.json'), 'utf8'));

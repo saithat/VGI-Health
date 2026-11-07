@@ -1,3 +1,4 @@
+import { required } from '../src/types.ts';
 /** Transaction-linearized refinement TEST, not host verification.
  * The exporter must cover every writer in one fresh tenant. Clinical ADT and
  * projection internals require their existing tests; this bridge rejects
@@ -9,12 +10,27 @@ import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
-import type { Obj } from '../src/types.ts';
+import { z } from 'zod';
 
-const abortedScreen = (rows: Obj[]) => rows.some(r => r.step === 'aborted') && !rows.some(r => ['stage','write','finish','commit-start','committed'].includes(r.step));
+const abortedScreen = (rows: Row[]) => rows.some(r => r.step === 'aborted') && !rows.some(r => ['stage','write','finish','commit-start','committed'].includes(r.step));
 
-type Row = Obj & { attempt: string; step: string };
-export function compileTrace(rows: Row[]) {
+const vector = z.array(z.tuple([z.string(), z.number()]));
+const rowSchema = z.looseObject({
+  attempt: z.string(), step: z.string(), schema: z.string(),
+  id: z.string().optional(), payload: z.string().optional(),
+  key: z.string().optional(), patient: z.string().optional(), keys: z.array(z.string()).optional(),
+  baseline: vector.optional(), versions: vector.optional(),
+  expected: z.array(z.tuple([z.string(), z.number().nullable()])).optional(),
+  version: z.number().optional(), before: z.number().optional(), after: z.number().optional(),
+  expectedVersion: z.number().optional(), expectedSharedVersion: z.number().optional(),
+  sessionVersion: z.number().optional(), revision: z.number().optional(), sessionRevision: z.number().optional(),
+  cacheVersion: z.number().nullable().optional(), status: z.number().optional(),
+  answer: z.string().optional(), reason: z.string().optional(), projection: z.string().optional(),
+  accept: z.boolean().optional(), valid: z.boolean().optional(), uncertain: z.boolean().optional(),
+});
+type Row = z.infer<typeof rowSchema>;
+export function compileTrace(input: unknown[]) {
+  const rows = input.map(row => rowSchema.parse(row));
   assert.ok(rows.length, 'empty trace');
   const groups = new Map<string, { rows: Row[]; first: number; last: number }>();
   rows.forEach((r, index) => {
@@ -30,7 +46,7 @@ export function compileTrace(rows: Row[]) {
   // Fresh test-tenant baselines are explicit, never inferred from a suffix.
   // Patient imports start at 1; shared streams start at 0.
   for (const { rows } of attempts) for (const r of rows) if (r.step === 'read') {
-    for (const [k, v] of r.baseline as [string, number][]) {
+    for (const [k, v] of required(r.baseline)) {
       if (baseline.has(k)) assert.equal(baseline.get(k), v, 'baseline changed');
       baseline.set(k, v);
     }
@@ -64,11 +80,11 @@ export function compileTrace(rows: Row[]) {
     const aborted = at('aborted') >= 0;
     assert.ok(aborted !== (at('committed') >= 0), 'incomplete/ambiguous transaction');
     assert.equal(rows.filter(r => r.step === 'request-locked').length, at('request-locked') < 0 ? 0 : 1);
-    if (plan) assert.deepEqual(locked.map(r => r.key), plan.keys.slice(0, locked.length), 'lock acquisition order changed');
+    if (plan) assert.deepEqual(locked.map(r => r.key), required(plan.keys).slice(0, locked.length), 'lock acquisition order changed');
     if (read) {
       assert.deepEqual(locked.map(r => r.key), read.keys, 'read requires the full locked set');
       assert.ok(at('request-locked') < at('lock') && at('lock') < at('read'));
-      if (native) { assert.ok(at('read') < at('native')); assert.equal(native.version, read.versions.find(([k]: [string]) => k === read.patient)[1]); }
+      if (native) { assert.ok(at('read') < at('native')); assert.equal(native.version, required(required(read.versions).find(([k]) => k === read.patient))[1]); }
     }
     if (at('commit-start') >= 0) {
       assert.ok(finish || replay, 'COMMIT started before outcome');
@@ -77,17 +93,17 @@ export function compileTrace(rows: Row[]) {
     if (!aborted) {
       assert.ok(finish || replay, 'committed without staged outcome');
       assert.ok(response && at('commit-start') < at('committed') && at('committed') < at('respond'));
-      assert.equal(response.answer, (finish ?? replay)!.answer, 'response changed after commit');
+      assert.equal(response.answer, required((finish ?? replay)).answer, 'response changed after commit');
       const stableKey = begin.id + '/' + begin.payload;
       if (stable.has(stableKey)) assert.equal(response.answer, stable.get(stableKey), 'unstable durable answer');
-      stable.set(stableKey, response.answer);
+      stable.set(stableKey, required(response.answer));
     }
     if (writes.length) {
       assert.ok(read && screens?.valid === true && at('screens') < at('stage') && native?.accept && at('native') < at('stage'), 'append without native acceptance');
       assert.ok(writes.every(w => rows.indexOf(w) > at('stage')));
       for (const w of writes) {
-        assert.equal(w.before, read.versions.find(([k]: [string]) => k === w.key)?.[1], 'write replaced a different version');
-        assert.equal(w.after, w.before + 1);
+        assert.equal(w.before, required(read.versions).find(([k]) => k === w.key)?.[1], 'write replaced a different version');
+        assert.equal(w.after, required(w.before) + 1);
       }
     }
     if (!aborted && finish?.status === 201) {
@@ -98,8 +114,8 @@ export function compileTrace(rows: Row[]) {
     const expected = (read?.expected ?? meta?.expected ?? []).map(([k, v]: [string, number | null]) => {
       const supplied = k === patient ? begin.expectedVersion : v;
       // Missing optional shared versions are explicit mismatches in the model.
-      const current = read?.versions.find(([key]: [string]) => key === k)?.[1] ?? baseline.get(k) ?? 0;
-      return [k, supplied == null ? relative(k, current) + 1 : relative(k, supplied)];
+      const current = read?.versions?.find(([key]) => key === k)?.[1] ?? baseline.get(k) ?? 0;
+      return [k, supplied == null ? relative(k, current) + 1 : relative(k, required(supplied))];
     });
     if (read && !read.action && begin.expectedSharedVersion !== undefined)
       expected.push(['unexpected-shared-version', begin.expectedSharedVersion]);
@@ -120,8 +136,8 @@ export function compileTrace(rows: Row[]) {
     const alternateOps = aborted && rows.find(r => r.step === 'aborted')?.uncertain ? [...ops, 'commit', 'crash'] : [];
     if (aborted) ops.push('crash');
     else ops.push('commit', 'unlock', 'respond');
-    const result = aborted ? 'aborted' : (finish ?? replay)!.status === 201 ? 'accepted' :
-      (finish ?? replay)!.status === 409 ? 'conflict' : 'refused';
+    const result = aborted ? 'aborted' : required((finish ?? replay)).status === 201 ? 'accepted' :
+      required((finish ?? replay)).status === 409 ? 'conflict' : 'refused';
     // Payload conflicts throw and roll back; the stable answer belongs to the
     // earlier transaction. No invented outcome is added to such attempts.
     const after = attempts.flatMap((other, j) => other.last < g.first && j !== index ? [j] : []);
@@ -129,7 +145,7 @@ export function compileTrace(rows: Row[]) {
   });
 }
 export function checkTrace(path: string) {
-  const rows = readFileSync(path, 'utf8').trim().split('\n').map(line => JSON.parse(line) as Row);
+  const rows = readFileSync(path, 'utf8').trim().split('\n').map(line => JSON.parse(line));
   const program = compileTrace(rows);
   const dir = mkdtempSync(join(tmpdir(), 'commit-protocol-test-'));
   try {

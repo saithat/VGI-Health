@@ -1,10 +1,12 @@
+import { array, configSchema, maybeObj, obj, objs, required, str, type Obj } from '../src/types.ts';
+
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
 import { generateKeyPair, exportJWK, SignJWT } from 'jose';
-import { configSchema, type Obj } from '../src/types.ts';
+
 import { migrate } from '../src/store.ts';
 import { api, fixture, host, intent, ready, patient, adminEvents } from './helpers.ts';
 
@@ -32,29 +34,29 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
   const token = async (sub: string, roles = ['rn'], extra: Obj = {}) => new SignJWT({ typ: 'Bearer', azp: 'vgi-mar', realm_access: { roles }, ...extra })
     .setProtectedHeader({ alg: 'RS256', kid: 'test-key' }).setSubject(sub).setIssuer(issuer).setAudience('vgi-commit')
     .setIssuedAt().setExpirationTime('5m').sign(privateKey);
-  const actor = async (index: number, roles = ['rn'], extra: Obj = {}) => ({ ...config.actors[index], token: await token(config.actors[index].subject!, roles, extra) });
+  const actor = async (index: number, roles = ['rn'], extra: Obj = {}) => ({ ...config.actors[index], token: await token(required(config.actors[index].subject), roles, extra) });
   const a = await host(url, config); const b = await host(url, config);
   const nurseA = await actor(0); const nurseB = await actor(1);
   try {
     await migrate(a.db);
     for (const [i, kind] of ['mar', 'held', 'refused', 'high', 'failure'].entries()) {
       const p = patient(f, `${kind}-patient`, i + 1, true);
-      p.bundle.entry[1].resource.class = { code: 'IMP' };
-      p.bundle.entry.push({ resource: { resourceType: 'MedicationRequest', id: 'mar-order', meta: { versionId: '1' }, status: 'active', intent: 'order',
+      obj(obj(array(obj(p.bundle).entry)[1]).resource).class = { code: 'IMP' };
+      objs(obj(p.bundle).entry).push({ resource: { resourceType: 'MedicationRequest', id: 'mar-order', meta: { versionId: '1' }, status: 'active', intent: 'order',
         subject: { reference: `Patient/${kind}-patient` }, encounter: { reference: 'Encounter/enc-1' },
         medicationCodeableConcept: { text: kind === 'high' ? 'insulin lispro' : 'amoxicillin' },
         dosageInstruction: [{ timing: { event: [scheduledTime] }, doseAndRate: [{ doseQuantity: { value: 500, unit: 'mg' } }] }] } });
       if (kind === 'failure') {
-        p.bundle.entry.push({ resource: { resourceType: 'MedicationAdministration', id: 'prior-dose', meta: { versionId: '1' },
+        objs(obj(p.bundle).entry).push({ resource: { resourceType: 'MedicationAdministration', id: 'prior-dose', meta: { versionId: '1' },
           status: 'completed', request: { reference: 'MedicationRequest/mar-order' }, subject: { reference: 'Patient/failure-patient' } } });
         await assert.rejects(a.store.importPatient(p), /baseline reconciliation/);
-        p.bundle.entry.pop();
+        array(p.bundle.entry).pop();
       }
       await a.store.importPatient(p);
     }
     await t.test('JWT signature, issuer, audience, expiry, client, role and claim-derived identity', async () => {
-      assert.equal((await api(a.base, nurseA, '/me')).body.user.id, 'nurse-a');
-      assert.equal((await api(a.base, nurseA, '/me')).body.user.role, 'rn');
+      assert.equal(obj((await api(a.base, nurseA, '/me')).body.user).id, 'nurse-a');
+      assert.equal(obj((await api(a.base, nurseA, '/me')).body.user).role, 'rn');
       for (const bad of [nurseA.token.slice(0, -12) + 'bad-signature',
         await new SignJWT({ typ: 'Bearer', azp: 'vgi-mar' }).setProtectedHeader({ alg: 'RS256', kid: 'test-key' }).setSubject('nurse-a')
           .setIssuer(issuer).setAudience('wrong').setIssuedAt().setExpirationTime('5m').sign(privateKey),
@@ -82,22 +84,22 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
         assert.equal(subscription.status, 200);
         const results = await Promise.all([api(a.base, nurseA, '/commands', intent(s1, 'nurse-a-dose', administer)), api(b.base, nurseB, '/commands', intent(s2, 'nurse-b-dose', administer))]);
         assert.deepEqual(results.map(r => r.status).sort(), [201, 409]);
-        assert.equal(results.find(r => r.status === 409)!.body.reason, 'version_conflict');
-        const reader = subscription.body!.getReader(); let text = '';
+        assert.equal(required(results.find(r => r.status === 409)).body.reason, 'version_conflict');
+        const reader = required(subscription.body).getReader(); let text = '';
         while (!text.includes('event: commit')) { const chunk = await reader.read(); assert.equal(chunk.done, false); text += new TextDecoder().decode(chunk.value); }
         assert.match(text, /id: 2/); await reader.cancel();
       } finally { clearTimeout(timer); abort.abort(); }
       const refreshed = await api(b.base, nurseB, '/patients/mar-patient');
       assert.equal(refreshed.body.version, 2);
-      const administrations = refreshed.body.snapshot.bundle.entry.filter((e: Obj) => e.resource.resourceType === 'MedicationAdministration');
-      assert.equal(administrations.length, 1); assert.equal(administrations[0].resource.status, 'completed');
-      const events = refreshed.body.events[1].event;
-      assert.equal(events.guard.input.user.id, events.actor);
-      assert.ok(['nurse-a', 'nurse-b'].includes(events.actor));
-      assert.equal(events.mar.accepted.readVersion, 1); assert.equal(events.mar.accepted.version, 2);
-      assert.equal(events.mar.accepted.events.filter((e: Obj) => e.barcodeScanned).length, 2);
-      assert.equal(events.mar.accepted.events.filter((e: Obj) => e.administered).length, 1);
-      assert.deepEqual(await a.lean.call('mar-commit', events.mar.input), events.mar.accepted);
+      const administrations = objs(obj(obj(refreshed.body.snapshot).bundle).entry).filter((e: Obj) => obj(e.resource).resourceType === 'MedicationAdministration');
+      assert.equal(administrations.length, 1); assert.equal(obj(administrations[0].resource).status, 'completed');
+      const events = obj(array(refreshed.body.events)[1]).event;
+      assert.equal(obj(obj(obj(obj(events).guard).input).user).id, obj(events).actor);
+      assert.ok(['nurse-a', 'nurse-b'].includes(str(obj(events).actor)));
+      assert.equal(obj(obj(obj(events).mar).accepted).readVersion, 1); assert.equal(obj(obj(obj(events).mar).accepted).version, 2);
+      assert.equal(objs(obj(obj(obj(events).mar).accepted).events).filter((e: Obj) => e.barcodeScanned).length, 2);
+      assert.equal(objs(obj(obj(obj(events).mar).accepted).events).filter((e: Obj) => e.administered).length, 1);
+      assert.deepEqual(await a.lean.call('mar-commit', obj(obj(obj(events).mar).input)), obj(obj(events).mar).accepted);
       const fresh = await ready(a.base, nurseB, 'mar-patient', 'nurse', 'mar', adminEvents(f, 'mar-patient'));
       const consumed = await api(a.base, nurseB, '/commands', intent(fresh, 'consumed', administer));
       assert.equal(consumed.status, 409); assert.equal(consumed.body.reason, 'dose_already_administered');
@@ -106,13 +108,13 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
     await t.test('held/refused are clinical not-done records, retain reason and do not consume a dose', async () => {
       for (const kind of ['held', 'refused']) {
         const p = `${kind}-patient`;
-        const events = adminEvents(f, p).map((e: Obj) => e.enter?.comp === 'w4Admin.adminStatus' ? { enter: { ...e.enter, value: { code: { c: kind } } } } : e);
+        const events = adminEvents(f, p).map((e: Obj) => maybeObj(e.enter)?.comp === 'w4Admin.adminStatus' ? { enter: { ...obj(e.enter), value: { code: { c: kind } } } } : e);
         const s = await ready(a.base, nurseA, p, 'nurse', kind, events);
         assert.equal((await api(a.base, nurseA, '/commands', intent(s, `${kind}-dose`, administer))).status, 201);
         const read = (await api(a.base, nurseB, `/patients/${p}`)).body;
-        assert.equal(read.snapshot.mar.shared.administrations.length, 0);
-        const resource = read.snapshot.bundle.entry.at(-1).resource;
-        assert.equal(resource.status, 'not-done'); assert.equal(resource.statusReason[0].coding[0].code, kind);
+        assert.equal(objs(obj(obj(obj(read.snapshot).mar).shared).administrations).length, 0);
+        const resource = required(objs(obj(obj(read.snapshot).bundle).entry).at(-1)).resource;
+        assert.equal(obj(resource).status, 'not-done'); assert.equal(obj(array(obj(array(obj(resource).statusReason)[0]).coding)[0]).code, kind);
         const fresh = await ready(a.base, nurseA, p, 'nurse', kind, adminEvents(f, p));
         assert.equal((await api(a.base, nurseA, '/commands', { ...intent(fresh, `${kind}-stale`, administer), expectedVersion: 1 })).status, 409);
         assert.equal((await api(a.base, nurseA, '/commands', intent(fresh, `${kind}-then-given`, administer))).status, 201);
@@ -129,8 +131,8 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
         [tenant, 'patient:failure-patient', randomUUID(), { kind: 'fault-injection' }]);
       assert.equal((await api(a.base, nurseA, '/commands', command)).status, 503);
       const read = (await api(b.base, nurseB, '/patients/failure-patient')).body;
-      assert.equal(read.version, 1); assert.equal(read.snapshot.mar, undefined);
-      assert.equal(read.snapshot.bundle.entry.filter((e: Obj) => e.resource.resourceType === 'MedicationAdministration').length, 0);
+      assert.equal(read.version, 1); assert.equal(obj(read.snapshot).mar, undefined);
+      assert.equal(objs(obj(obj(read.snapshot).bundle).entry).filter((e: Obj) => obj(e.resource).resourceType === 'MedicationAdministration').length, 0);
       const shared = (await a.db.query('SELECT version,snapshot FROM commit_streams WHERE tenant=$1 AND key=$2', [tenant, 'dose:failure-patient:5:600'])).rows[0];
       assert.equal(shared.version, 0); assert.deepEqual(shared.snapshot.administrations, []);
       assert.equal((await api(a.base, nurseA, '/requests/mar-atomic-failure')).status, 404);
@@ -150,7 +152,7 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
       assert.equal(configSchema.safeParse(aliased).success, false);
     });
     await t.test('high alert cosign requires independent OIDC consent at the exact patient version', async () => {
-      const events = adminEvents(f, 'high-patient').map((e: Obj) => e.enter?.comp === 'w4Admin.medScan' ? { enter: { ...e.enter, value: { code: { c: 'insulin lispro' } } } } : e);
+      const events = adminEvents(f, 'high-patient').map((e: Obj) => maybeObj(e.enter)?.comp === 'w4Admin.medScan' ? { enter: { ...obj(e.enter), value: { code: { c: 'insulin lispro' } } } } : e);
       events.push({ enter: { comp: 'w4Admin.highAlertCosign', value: { user: { u: 'nurse-b' } } } });
       let s = await ready(a.base, nurseA, 'high-patient', 'nurse', 'high', events);
       for (let i = 0; i < 4; i++) {
@@ -158,8 +160,8 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
         if (opened.status === 422) break; // Ready: only /commands may add the commit.
         assert.equal(opened.status, 200);
         s = { ...s, ...opened.body };
-        assert.ok(s.state.popup, 'only an actual human-visible alert can be acknowledged');
-        const ack = await api(a.base, nurseA, `/sessions/${s.sessionId}/events`, { revision: s.revision, event: { ack: { alert: s.state.popup[0] } } });
+        assert.ok(obj(s.state).popup, 'only an actual human-visible alert can be acknowledged');
+        const ack = await api(a.base, nurseA, `/sessions/${s.sessionId}/events`, { revision: s.revision, event: { ack: { alert: array(obj(s.state).popup)[0] } } });
         assert.equal(ack.status, 200); s = { ...s, ...ack.body };
       }
       assert.equal((await api(a.base, nurseA, '/commands', intent(s, 'unconsented', administer))).status, 422);
@@ -173,7 +175,7 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
       assert.equal((await api(b.base, nurseB, '/mar/cosigns', { patient: 'high-patient', release: 'nurse', workflow: 'high', expectedVersion: 1 })).status, 201);
       const result = await api(a.base, nurseA, '/commands', intent(s, 'consented', administer));
       assert.equal(result.status, 201, JSON.stringify(result));
-      assert.equal(result.body.mar.filter((e: Obj) => e.doubleCheckCosign).length, 1);
+      assert.equal(objs(result.body.mar).filter((e: Obj) => e.doubleCheckCosign).length, 1);
     });
   } finally {
     for (const table of ['commit_mar_cosigns', 'commit_events', 'commit_requests', 'commit_sessions', 'commit_streams'])

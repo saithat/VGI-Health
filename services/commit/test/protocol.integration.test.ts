@@ -1,3 +1,4 @@
+import { array, num, obj, type Obj } from '../src/types.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -5,7 +6,7 @@ import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { migrate } from '../src/store.ts';
-import type { Obj } from '../src/types.ts';
+
 import { checkTrace, compileTrace } from '../model/check-trace.ts';
 import { fixture, host, api, ready, intent, patient, configuration, adminEvents, admissionEvents } from './helpers.ts';
 
@@ -45,7 +46,7 @@ test('protocol refinement TEST: actual guard/cache, replica races, rollback and 
       const s = await ready(a.base, doctor, 'pt', 'tiny', 'sign', f.tinyEvents);
       const command = intent(s, 'screen-retry', sign);
       const broken = structuredClone(command);
-      broken.screens.frames[0].hash = '0'.repeat(64);
+      obj(array(broken.screens.frames)[0]).hash = '0'.repeat(64);
       assert.equal((await api(a.base, doctor, '/commands', broken)).body.error, 'screen_fingerprint_mismatch');
       assert.equal((await a.store.read(doctor, 'pt')).version, 1);
       assert.equal((await a.db.query('SELECT 1 FROM commit_requests WHERE tenant=$1 AND request_id=$2', [tenant, command.requestId])).rowCount, 0);
@@ -65,7 +66,7 @@ test('protocol refinement TEST: actual guard/cache, replica races, rollback and 
         const call = h.lean.call.bind(h.lean);
         h.lean.call = async (op, input) => {
           const decision = await call(op, input);
-          if (op === 'commit-check') { inputs.push(input); decisions.push(decision); throw new Error('test rollback after guard'); }
+          if (op === 'commit-check') { inputs.push(obj(input)); decisions.push(decision); throw new Error('test rollback after guard'); }
           return decision;
         };
         try { assert.equal((await api(h.base, doctor, '/commands', intent(s, `aborted-${inputs.length}`, sign))).status, 503); }
@@ -91,7 +92,7 @@ test('protocol refinement TEST: actual guard/cache, replica races, rollback and 
       assert.deepEqual(results.map(r => r.status).sort(), [201, 409]);
       const consumed = await ready(a.base, nurses[0], 'dose', 'nurse', 'dose', adminEvents(f, 'dose'));
       const invalidScreens = intent(consumed, 'consumed-before-screen-enforcement', administer);
-      invalidScreens.screens.frames[0].hash = '0'.repeat(64);
+      obj(array(invalidScreens.screens.frames)[0]).hash = '0'.repeat(64);
       const conflict = await api(a.base, nurses[0], '/commands', invalidScreens);
       assert.equal(conflict.status, 409);
       assert.equal(conflict.body.reason, 'shared_guard');
@@ -113,15 +114,25 @@ test('protocol refinement TEST: actual guard/cache, replica races, rollback and 
       const s = await ready(a.base, doctor, 'pt', 'tiny', 'sign', f.tinyEvents);
       const command = intent(s, 'uncertain-commit', sign);
       const connect = a.db.connect.bind(a.db);
-      a.db.connect = (async () => {
-        const client = await connect(); const query = client.query.bind(client);
-        client.query = (async (...args: unknown[]) => {
-          const result = await (query as (...args: unknown[]) => Promise<unknown>)(...args);
-          if (args[0] === 'COMMIT') { client.query = query; throw new Error('test lost COMMIT reply after actual durable commit'); }
-          return result;
-        }) as typeof client.query;
-        return client;
-      }) as typeof a.db.connect;
+      a.db.connect = new Proxy(connect, {
+        apply(target, receiver, args: unknown[]) {
+          if (args.length) return Reflect.apply(target, receiver, args);
+          return target().then(client => {
+            const query = client.query;
+            client.query = new Proxy(query, {
+              apply(queryTarget, queryReceiver, queryArgs: unknown[]) {
+                const result: unknown = Reflect.apply(queryTarget, queryReceiver, queryArgs);
+                if (queryArgs[0] === 'COMMIT' && result instanceof Promise) return result.then(() => {
+                  client.query = query;
+                  throw new Error('test lost COMMIT reply after actual durable commit');
+                });
+                return result;
+              },
+            });
+            return client;
+          });
+        },
+      });
       try { assert.equal((await api(a.base, doctor, '/commands', command)).status, 503); }
       finally { a.db.connect = connect; }
       const recovered = await api(b.base, doctor, '/commands', command);
@@ -155,7 +166,7 @@ test('protocol refinement TEST: actual guard/cache, replica races, rollback and 
         (r: Obj) => { if (r.attempt === target && r.step === 'native') r.accept = false; },
         (r: Obj) => { if (r.attempt === target && r.step === 'screens') r.valid = false; },
         (r: Obj) => { if (r.attempt === target && r.step === 'screens') r.step = 'missing-screens'; },
-        (r: Obj) => { if (r.attempt === target && r.step === 'write') r.before++; },
+        (r: Obj) => { if (r.attempt === target && r.step === 'write') r.before = num(r.before) + 1; },
         (r: Obj) => { if (r.attempt === target && r.step === 'write') r.step = 'missing-write'; },
       ];
       for (const mutate of mutations) {

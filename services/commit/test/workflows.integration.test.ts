@@ -1,8 +1,10 @@
+import { array, configSchema, obj, objs, required, str, type Obj } from '../src/types.ts';
+
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { configSchema, type Obj } from '../src/types.ts';
+
 import { migrate } from '../src/store.ts';
 import { fixture, host, patient, api, intent } from './helpers.ts';
 import { normalize } from '../src/bootstrap.ts';
@@ -26,7 +28,7 @@ test('every workflow family refuses stale chart intent and native guard violatio
     releases[`${persona}-${id}`] = { spec, program, workflows: { chart: { commit, project: true } } };
   }
   releases.P3 = releases['P3-W4-assessment'];
-  releases['P1-review'] = { spec, program: { ...releases['P1-W1-note'].program, start: 'w1Rooming' },
+  releases['P1-review'] = { spec, program: { ...obj(obj(releases['P1-W1-note']).program), start: 'w1Rooming' },
     workflows: { chart: { commit: 'markReviewed', project: true } } };
   releases['P1-selection'] = { spec,
     program: JSON.parse(await readFile(new URL('../../../releases/v3/personas/P1.json', import.meta.url), 'utf8')),
@@ -38,7 +40,7 @@ test('every workflow family refuses stale chart intent and native guard violatio
     await migrate(a.db);
     for (const [i, row] of families.entries()) await a.store.importPatient(patient(f, row[0], i+1));
     for (const [id, persona, , screen, commit] of families) await t.test(id, async () => {
-      const actor = config.actors.find(a => a.persona === persona)!;
+      const actor = required(config.actors.find(a => a.persona === persona));
       const input = { patient: id, release: `${persona}-${id}`, workflow: 'chart', encounter: 'enc-1', expectedVersion: 1 };
       assert.equal((await api(a.base, actor, '/sessions', { ...input, expectedVersion: 0 })).status, 409);
       const opened = await api(a.base, actor, '/sessions', input);
@@ -50,13 +52,13 @@ test('every workflow family refuses stale chart intent and native guard violatio
       assert.equal(guarded.status, 422, JSON.stringify(guarded));
       assert.equal(guarded.body.outcome, 'rejected');
       const after = await api(b.base, actor, `/patients/${id}`);
-      assert.equal(after.body.version, 1); assert.equal(after.body.events.length, 1);
-      assert.equal(after.body.events[0].event.kind, 'import');
+      assert.equal(after.body.version, 1); assert.equal(objs(after.body.events).length, 1);
+      assert.equal(obj(obj(array(after.body.events)[0]).event).kind, 'import');
       // There is no raw FHIR writer, import endpoint, or caller-supplied effect API.
       for (const path of ['/fhir/R4', '/transactions', '/import']) assert.equal((await api(a.base, actor, path, { bundle: f.tiny.currentBundle })).status, 404);
     });
     await t.test('RN2 uses the P3 layout with its own identity and cannot open another clinician release', async () => {
-      const nurse = config.actors.find(a => a.persona === 'RN2')!;
+      const nurse = required(config.actors.find(a => a.persona === 'RN2'));
       assert.equal((await api(a.base, nurse, '/release?persona=P3')).status, 200);
       assert.equal((await api(a.base, nurse, '/release?persona=P1')).status, 403);
       const opened = await api(a.base, nurse, '/sessions', { patient: ids[4], release: 'P3-W4-assessment', workflow: 'chart', encounter: 'enc-1', expectedVersion: 1 });
@@ -72,14 +74,14 @@ test('every workflow family refuses stale chart intent and native guard violatio
       assert.equal(saved.status, 201, JSON.stringify(saved));
       const next = await api(b.base, actor, '/sessions', { ...input, expectedVersion: 2 });
       assert.equal(next.status, 201, JSON.stringify(next));
-      assert.equal(next.body.facts.receipts.length, 1);
-      assert.equal(next.body.facts.receipts[0].info, 'allergyList');
+      assert.equal(objs(obj(next.body.facts).receipts).length, 1);
+      assert.equal(obj(array(obj(next.body.facts).receipts)[0]).info, 'allergyList');
       // Selecting a chart restores authenticated persisted receipts; it must not
       // append a second review or permit a new review through the event route.
       const selection = await api(b.base, actor, '/sessions', { ...input, release: 'P1-selection', expectedVersion: 2 });
       assert.equal(selection.status, 201, JSON.stringify(selection));
       let selected = selection.body;
-      const choice = selected.facts.patientDirectory.patients.find((p: Obj) => p.id === id);
+      const choice = objs(obj(obj(selected.facts).patientDirectory).patients).find((p: Obj) => p.id === id);
       assert.ok(choice);
       for (const event of [
         { click: { comp: 'workspace.lookup' } },
@@ -92,10 +94,10 @@ test('every workflow family refuses stale chart intent and native guard violatio
         assert.equal(result.body.result, 'ok');
         selected = { ...selected, ...result.body };
       }
-      assert.equal(selected.state.patientContext.patient, id);
-      assert.equal(selected.state.screen, 'w1Rooming');
-      assert.equal(selected.state.receipts.length, 1);
-      assert.equal(selected.state.receipts[0].info, 'allergyList');
+      assert.equal(obj(obj(selected.state).patientContext).patient, id);
+      assert.equal(obj(selected.state).screen, 'w1Rooming');
+      assert.equal(objs(obj(selected.state).receipts).length, 1);
+      assert.equal(obj(array(obj(selected.state).receipts)[0]).info, 'allergyList');
       const blockedReview = await api(b.base, actor, `/sessions/${selected.sessionId}/events`, {
         revision: selected.revision, event: { click: { comp: 'w1Rooming.review.allergyList' } },
       });
@@ -103,38 +105,38 @@ test('every workflow family refuses stale chart intent and native guard violatio
       assert.equal(blockedReview.body.error, 'use_commit_endpoint');
       const unchanged = await api(b.base, actor, `/patients/${id}`);
       assert.equal(unchanged.body.version, 2);
-      assert.equal(unchanged.body.events.length, 2);
+      assert.equal(objs(unchanged.body.events).length, 2);
       const other = { ...actor, user: { ...actor.user, id: 'another-doctor' } };
       const theirs = await b.store.openSession(other, { ...input, expectedVersion: 2 });
-      assert.deepEqual(theirs.facts.receipts, []);
+      assert.deepEqual(obj(theirs.facts).receipts, []);
       // A changed reviewed target invalidates its receipt even when the native
       // aggregate dataVersion happened to remain equal.
       const snapshot = (await a.db.query('SELECT snapshot FROM commit_streams WHERE tenant=$1 AND key=$2', [config.tenant, `patient:${id}`])).rows[0].snapshot;
-      const provenance = snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === 'Provenance').resource;
+      const provenance = snapshot.bundle.entry.find((e: Obj) => obj(e.resource).resourceType === 'Provenance').resource;
       const recorded = provenance.recorded;
       provenance.recorded = '2000-01-01T00:00:00Z';
       await a.db.query('UPDATE commit_streams SET snapshot=$3 WHERE tenant=$1 AND key=$2', [config.tenant, `patient:${id}`, snapshot]);
-      assert.deepEqual((await a.store.openSession(actor, { ...input, expectedVersion: 2 })).facts.receipts, []);
+      assert.deepEqual(obj((await a.store.openSession(actor, { ...input, expectedVersion: 2 })).facts).receipts, []);
       provenance.recorded = recorded;
-      const target = snapshot.bundle.entry.find((e: Obj) => e.resource.resourceType === 'Patient').resource;
+      const target = snapshot.bundle.entry.find((e: Obj) => obj(e.resource).resourceType === 'Patient').resource;
       target.meta.versionId = '2';
       await a.db.query('UPDATE commit_streams SET snapshot=$3 WHERE tenant=$1 AND key=$2', [config.tenant, `patient:${id}`, snapshot]);
       const changed = await a.store.openSession(actor, { ...input, expectedVersion: 2 });
-      assert.deepEqual(changed.facts.receipts, []);
+      assert.deepEqual(obj(changed.facts).receipts, []);
     });
     await t.test('imports are immutable, idempotent after live writes, and resolve references before partitioning', async () => {
       const p = patient(f, ids[0], 1);
       await a.store.importPatient(p);
-      const changed = structuredClone(p); changed.bundle.entry[0].resource.birthDate = '2000-01-01';
+      const changed = structuredClone(p); obj(obj(array(obj(changed.bundle).entry)[0]).resource).birthDate = '2000-01-01';
       await assert.rejects(a.store.importPatient(changed), /import_changed/);
       const resources = normalize([{ fullUrl: 'urn:uuid:pt', resource: { resourceType: 'Patient' } },
         { fullUrl: 'urn:uuid:enc', resource: { resourceType: 'Encounter', subject: { reference: 'urn:uuid:pt' } } }]);
-      assert.equal(resources[1].subject.reference, 'Patient/pt');
-      assert.equal(resources[0].meta.versionId, '1');
+      assert.equal(obj(resources[1].subject).reference, 'Patient/pt');
+      assert.equal(obj(resources[0].meta).versionId, '1');
       const anonymous = [{ resource: { resourceType: 'Observation', subject: { reference: 'Patient/pt' }, valueString: 'first' } },
         { resource: { resourceType: 'Observation', subject: { reference: 'Patient/pt' }, valueString: 'second' } }];
       const local = normalize(anonymous);
-      assert.match(local[0].id, /^[a-f0-9]{32}$/);
+      assert.match(str(local[0].id), /^[a-f0-9]{32}$/);
       assert.notEqual(local[0].id, local[1].id);
       assert.deepEqual(normalize(structuredClone(anonymous)), local);
     });
@@ -146,7 +148,7 @@ test('every workflow family refuses stale chart intent and native guard violatio
       assert.deepEqual(await api(b.base, doctor, '/encounters', command), first);
       assert.equal((await api(b.base, doctor, '/encounters', { ...command, requestId: 'stale-episode' })).status, 409);
       const read = (await api(a.base, doctor, `/patients/${id}`)).body;
-      assert.equal(read.version, 2); assert.equal(read.events.at(-1).event.kind, 'encounter');
+      assert.equal(read.version, 2); assert.equal(obj(required(objs(read.events).at(-1)).event).kind, 'encounter');
       await a.store.importPatient(patient(f, id, 1));
       assert.equal((await a.store.read(doctor, id)).version, 2);
     });

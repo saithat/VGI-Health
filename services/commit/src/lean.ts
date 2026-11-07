@@ -1,5 +1,5 @@
+import { required, type Obj } from './types.ts';
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
-import type { Obj } from './types.ts';
 
 /** One bounded FIFO, one stateless long-running native child. Never auto-replay
  * a host transaction. A crash/time limit rejects the call and respawns on demand. */
@@ -16,7 +16,7 @@ export class Lean {
   private args: string[];
   constructor(binary: string, timeoutMs = 10_000, args = ['serve']) { this.binary = binary; this.timeoutMs = timeoutMs; this.args = args; }
 
-  call(op: string, input: Obj): Promise<Obj> {
+  call(op: string, input: object): Promise<Obj> {
     if (this.closed || this.queued >= 128) return Promise.reject(new Error('Lean unavailable/queue full'));
     this.queued++;
     const run = this.tail.then(() => this.execute(op, input));
@@ -48,14 +48,14 @@ export class Lean {
           if (response.error) p.reject(new Error(`Lean: ${response.error}`));
           else if (response.result === undefined) { p.reject(new Error('Lean missing result')); this.fail(new Error('Lean protocol')); }
           else p.resolve(response.result);
-        } catch (e) { this.fail(e as Error); }
+        } catch (e) { this.fail(e instanceof Error ? e : new Error(String(e))); }
       }
     });
     child.on('error', e => { if (this.child === child) this.fail(e); });
     child.stdin.on('error', e => { if (this.child === child) this.fail(e); });
     child.on('exit', () => { if (this.child === child) this.fail(new Error('Lean process exited')); });
   }
-  private execute(op: string, input: Obj): Promise<Obj> {
+  private execute(op: string, input: object): Promise<Obj> {
     if (this.closed) return Promise.reject(new Error('Lean closed'));
     if (!this.child) this.start();
     const id = ++this.sequence;
@@ -64,7 +64,7 @@ export class Lean {
       this.pending = { id, resolve: v => { clearTimeout(timer); resolve(v); }, reject: e => { clearTimeout(timer); reject(e); } };
       const line = JSON.stringify({ id, op, input });
       if (line.length > 8 * 1024 * 1024) { const p = this.pending; this.pending = undefined; p.reject(new Error('Lean request too large')); return; }
-      this.child!.stdin.write(line + '\n');
+      required(this.child).stdin.write(line + '\n');
     });
   }
   private fail(e: Error) {

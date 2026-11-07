@@ -1,3 +1,6 @@
+import { z } from 'zod';
+import { array, configSchema, maybeObj, maybeStr, num, obj, objs, required, str, type Actor, type Config, type Obj } from '../src/types.ts';
+
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { once } from 'node:events';
@@ -6,12 +9,12 @@ import assert from 'node:assert/strict';
 import { Lean } from '../src/lean.ts';
 import { Store, pool } from '../src/store.ts';
 import { Notifications, server } from '../src/http.ts';
-import { configSchema, type Actor, type Config, type Obj } from '../src/types.ts';
 
 export async function fixture() {
   if (!process.env.COMMIT_FIXTURE) throw new Error('Set COMMIT_FIXTURE to the output of test/Fixture.lean (see README)');
   return JSON.parse(await readFile(process.env.COMMIT_FIXTURE, 'utf8'));
 }
+const framesSchema = z.array(z.object({ step: z.number(), phase: z.enum(['ready', 'loading']), hash: z.string() }));
 const interpreters = new Map<string, Lean>();
 const screenSessions = new Map<string, Obj>();
 export async function host(url: string, config: Config, port = 0) {
@@ -33,28 +36,28 @@ export async function api(base: string, actor: Actor, path: string, body?: unkno
   const res = await fetch(base + path, { method: body === undefined ? 'GET' : 'POST',
     headers: { Authorization: `Bearer ${actor.token}`, 'Content-Type': 'application/json' },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
-  const result = { status: res.status, body: await res.json() as Obj };
+  const result = { status: res.status, body: obj(await res.json()) };
   // Test clients act as painters: hash each native wire object returned for the
   // pinned release/state. Production never returns trusted fingerprints to UI.
   let session: Obj | undefined;
   if (res.status === 201 && path === '/sessions') {
     session = { ...result.body, frames: [] };
-    screenSessions.set(session!.sessionId, session!);
+    screenSessions.set(str(required(session).sessionId), required(session));
   } else if (res.status === 200 && path.startsWith('/sessions/')) {
     session = screenSessions.get(path.split('/')[2]);
     if (session) Object.assign(session, result.body);
   } else if (res.status === 201 && path === '/commands') {
-    session = screenSessions.get((body as Obj).sessionId);
+    session = screenSessions.get(str(obj(body).sessionId));
     if (session) Object.assign(session, result.body, { projection: result.body.screenProjection ?? session.projection, frames: [] });
   }
   if (session) {
-    const rendered = await interpreters.get(base)!.call('render-screen', { spec: session.spec,
-      program: session.program, user: session.user, ...session.projection, state: session.state });
-    session.frames.push({ step: session.revision, phase: 'ready', hash: createHash('sha256').update(rendered.canonical).digest('hex') });
+    const rendered = await required(interpreters.get(base)).call('render-screen', { spec: session.spec,
+      program: session.program, user: session.user, ...obj(session.projection), state: session.state });
+    objs(session.frames).push({ step: session.revision, phase: 'ready', hash: createHash('sha256').update(str(rendered.canonical)).digest('hex') });
   }
   return result;
 }
-export async function ready(base: string, actor: Actor, patient: string, release: string, workflow: string, events: Obj[]) {
+export async function ready(base: string, actor: Actor, patient: string, release: string, workflow: string, events: Obj[]): Promise<Obj & { sessionId: string; revision: number; version: number }> {
   const opened = await api(base, actor, '/sessions', { patient, release, workflow });
   assert.equal(opened.status, 201, JSON.stringify(opened));
   let session = opened.body;
@@ -63,17 +66,19 @@ export async function ready(base: string, actor: Actor, patient: string, release
     assert.equal(next.status, 200, JSON.stringify(next));
     session = { ...session, ...next.body };
   }
-  return session;
+  return { ...session, sessionId: str(session.sessionId), revision: num(session.revision), version: num(session.version) };
 }
 export function intent(s: Obj, requestId: string, event: Obj) {
-  return { requestId, screens: { requestId, frames: structuredClone(screenSessions.get(s.sessionId)?.frames ?? []) }, sessionId: s.sessionId, revision: s.revision, expectedVersion: s.version,
-    ...(s.shared ? { expectedSharedVersion: s.shared.version } : {}), event };
+  return { requestId, screens: { requestId, frames: framesSchema.parse(structuredClone(screenSessions.get(str(s.sessionId))?.frames ?? [])) }, sessionId: str(s.sessionId), revision: num(s.revision), expectedVersion: num(s.version),
+    ...(s.shared ? { expectedSharedVersion: num(obj(s.shared).version) } : {}), event };
 }
 export function patient(f: Obj, id: string, modelId: number, nurse = false) {
-  const bundle = structuredClone(f.tiny.currentBundle);
-  bundle.entry[0].resource.id = id;
-  bundle.entry[1].resource.subject.reference = `Patient/${id}`;
-  return { patient: id, modelId, bundle, context: { ...f.tiny.context,
+  const bundle = obj(structuredClone(obj(f.tiny).currentBundle));
+  obj(obj(array(obj(bundle).entry)[0]).resource).id = id;
+  const encounter = obj(obj(array(bundle.entry)[1]).resource);
+  obj(encounter.subject).reference = `Patient/${id}`;
+  encounter.class ??= { code: nurse ? 'IMP' : 'AMB' };
+  return { patient: id, modelId, bundle, context: { ...obj(obj(f.tiny).context),
     ...(nurse ? { medToGive: 'amoxicillin', encounterKind: 'inpatient' } : {}) } };
 }
 export function configuration(f: Obj, tenant: string, patients: string[]) {
@@ -82,7 +87,7 @@ export function configuration(f: Obj, tenant: string, patients: string[]) {
     user: { id: `actor-${i}`, role: i < 20 ? 'rn' : 'physician' }, modelId: i + 1, patients,
   }));
   return configSchema.parse({ tenant, actors, releases: {
-    tiny: { spec: f.tiny.spec, program: f.tiny.program, workflows: { sign: { commit: 'signOrders' } } },
+    tiny: { spec: obj(f.tiny).spec, program: obj(f.tiny).program, workflows: { sign: { commit: 'signOrders' } } },
     nurse: { spec: f.hospitalSpec, program: f.nurseProgram, workflows: {
       dose: { commit: 'administerMed', shared: { kind: 'dose', order: 9, occurrence: 600 } },
       laterDose: { commit: 'administerMed', shared: { kind: 'dose', order: 9, occurrence: 960 } },
@@ -100,8 +105,8 @@ export const admissionEvents = (choice = 'admit') => [
   { enter: { comp: 'w3Disposition.dispositionCondition', value: { code: { c: 'stable' } } } },
 ];
 export function adminEvents(f: Obj, patient: string) {
-  return f.adminEvents.filter((e: Obj) => !e.enter?.comp.includes('.legal.')).map((e: Obj) =>
-    e.enter?.comp === 'w4Admin.wristbandScan' ? { enter: { comp: e.enter.comp, value: { code: { c: patient } } } } : e);
+  return objs(f.adminEvents).filter((e: Obj) => !maybeStr(maybeObj(e.enter)?.comp)?.includes('.legal.')).map((e: Obj) =>
+    maybeObj(e.enter)?.comp === 'w4Admin.wristbandScan' ? { enter: { comp: obj(e.enter).comp, value: { code: { c: patient } } } } : e);
 }
 export function shuffled<T>(items: T[], seed: number): T[] {
   const a = [...items]; let s = seed >>> 0;

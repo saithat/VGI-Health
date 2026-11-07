@@ -1,3 +1,4 @@
+import { withData } from './data.js';
 import { describe, expect, it, vi } from 'vitest';
 import { mkdtemp, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -91,7 +92,7 @@ describe('bounded tailoring seams',()=>{
     const negative=await boundedRelearning(ehr)({before:after,after:current,persona,schedules:input.recentDays,memory,worldDir:'',seed:7});
     expect(negative?.estimate.incremental.actions).toBe(-3);
   });
-  it('measures positive native relearning after an ordinal move from practiced memory',async()=>{
+  withData('runs/world/2').it('measures positive native relearning after an ordinal move from practiced memory',async()=>{
     const ehr=createEhr({fake:false});
     const worldDir=path.join(REPO_ROOT,'runs/world/2');
     const before=programSchema.parse(JSON.parse(await readFile(path.join(REPO_ROOT,'releases/v1/personas/P1.json'),'utf8')));
