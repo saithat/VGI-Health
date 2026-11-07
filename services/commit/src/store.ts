@@ -401,7 +401,7 @@ export class Store {
     });
   }
   async submit(actor: Actor, command: Command): Promise<{ status: number; body: Obj }> {
-    const trace = protocolTrace(actor, command, this.config.tenant);
+    const trace = protocolTrace(actor, command, this.config.tenant, this.config.adt);
     const result = await transaction(this.db, async c => {
       const t = this.config.tenant;
       const hash = digest(command);
@@ -445,6 +445,8 @@ export class Store {
         expected: keys.map(k => [trace.key(k), k === `patient:${s.patient}` ? command.expectedVersion :
           k === key ? command.expectedSharedVersion : command.expectedBoard?.find(v => v.key === k)?.version ?? required(streams.get(k)).version]),
         sessionVersion: s.base_version, sessionRevision: s.revision,
+        ...(placement && this.config.adt ? { adtBoard: trace.board(boardFrom(this.config, streams).state),
+          expectedBoard: command.expectedBoard?.map(v => ({ ...v, key: trace.key(v.key) })) } : {}),
         cacheVersion: s.native_version, cacheHit: Boolean(s.native_state && s.native_facts && s.native_version === s.base_version),
         ...(key ? { action: sharedAction(actor, { modelId: num(obj(p.snapshot).modelId) }, workflow) } : {}) });
       if (s.revision !== command.revision || s.base_version !== p.version || p.version !== command.expectedVersion ||
@@ -493,6 +495,8 @@ export class Store {
         clinicalInput = { ...board, expected: command.expectedBoard, role,
           command: actionKind === 'admit' ? { admit: { patient: s.patient, bed: selectedBed } } : { discharge: { patient: s.patient } } };
         clinicalAdt = await this.lean.call('adt-commit', clinicalInput);
+        trace?.emit('adt-decision', { input: trace.adtInput(clinicalInput), accept: !clinicalAdt.rejected,
+          board: clinicalAdt.rejected ? undefined : trace.board(clinicalAdt.state) });
         if (clinicalAdt.rejected) return finish(422, { outcome: 'rejected', reason: clinicalAdt.rejected });
       } else if (actionKind === 'admit') return finish(422, { outcome: 'rejected', reason: 'patient_not_on_bed_board' });
       let projection: Obj | undefined;
@@ -562,6 +566,7 @@ export class Store {
         const updated = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',
           [t, k, stream.version, snapshot]);
         if (!updated.rowCount) throw new Error('locked stream CAS failed');
+        if (this.config.adt) trace?.emit('update', { key: trace.key(k) });
         await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
           [t, k, num(stream.version) + 1, transactionId, k === `patient:${s.patient}` ? event : k === key ? { kind: action ? 'shared' : 'shared-noop', readVersions, ...(action ? { action } : {}), state: required(multi).state } : { kind: 'clinical-adt', actor: actor.user.id, requestId: command.requestId, input: clinicalInput, accepted: clinicalAdt }]);
         trace?.emit('write', { key: trace.key(k), before: stream.version, after: num(stream.version) + 1, projection: digest(snapshot) });

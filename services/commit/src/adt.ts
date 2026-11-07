@@ -1,5 +1,6 @@
 import { Fault, digest, maybeObj, obj, objs, required, type Actor, type AdtCommand, type Obj } from './types.ts';
 import { projectAdt } from './clinical-adt.ts';
+import { protocolTrace } from './protocol-trace.ts';
 import { randomUUID } from 'node:crypto';
 import { Store, transaction } from './store.ts';
 
@@ -88,39 +89,50 @@ export class AdtStore {
         (command.source !== undefined && !a.beds.some(b => b.id === command.source))) throw new Fault(403, 'adt_scope_forbidden');
     // Choose the least-privileged signed role that permits this operation.
     const role = roles.find(r => r !== 'admittingClerk') ?? roles[0];
-    return transaction(this.store.db, async c => {
+    const trace = protocolTrace(actor, command, this.store.config.tenant, a);
+    const result = await transaction(this.store.db, async c => {
       const t = this.store.config.tenant;
       const hash = digest({ endpoint: 'adt', command });
       await c.query('INSERT INTO commit_requests(tenant,actor,request_id,payload_hash) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',
         [t, actor.user.id, command.requestId, hash]);
       const request = (await c.query('SELECT * FROM commit_requests WHERE tenant=$1 AND actor=$2 AND request_id=$3 FOR UPDATE',
         [t, actor.user.id, command.requestId])).rows[0];
+      trace?.emit('request-locked');
       if (request.payload_hash !== hash) throw new Fault(409, 'idempotency_payload_conflict');
-      if (request.outcome) return request.outcome;
+      if (request.outcome) {
+        trace?.emit('replay', { status: request.outcome.status, answer: digest(request.outcome) });
+        return request.outcome;
+      }
       const finish = async (status: number, body: Obj) => {
         const result = { status, body };
+        trace?.emit('finish', { status, reason: body.reason, answer: digest(result) });
         await c.query('UPDATE commit_requests SET outcome=$4,patient=$5 WHERE tenant=$1 AND actor=$2 AND request_id=$3',
           [t, actor.user.id, command.requestId, result, command.patient]);
         return result;
       };
       const rows = [];
+      trace?.emit('plan', { keys: this.keys().map(k => trace.key(k)) });
       // One row at a time: the order is independent of query planner choices.
       for (const key of this.keys()) {
         const row = (await c.query('SELECT * FROM commit_streams WHERE tenant=$1 AND key=$2 FOR UPDATE', [t, key])).rows[0];
         if (!row) throw new Fault(409, 'adt_not_provisioned');
         rows.push(row);
+        trace?.emit('lock', { key: trace.key(key) });
       }
       const board = this.board(rows);
-      if (digest(board.versions) !== digest(command.expected))
-        return finish(409, { outcome: 'conflict', reason: 'version_conflict' });
       const { action, patient, bed, source } = command;
       const operands = action === 'transfer' ? { patient, source, target: bed } :
         ['clean', 'ready'].includes(action) ? { bed } : action === 'discharge' ? { patient } : { patient, bed };
       const input = { ...board, expected: command.expected, role, command: { [action]: operands } };
+      trace?.emit('read', { adt: trace.adtInput(input) });
+      if (digest(board.versions) !== digest(command.expected))
+        return finish(409, { outcome: 'conflict', reason: 'version_conflict' });
       const accepted = await this.store.lean.call('adt-commit', input);
+      trace?.emit('native', { accept: !accepted.rejected, board: accepted.rejected ? undefined : trace.board(accepted.state) });
       if (accepted.rejected) return finish(422, { outcome: 'rejected', reason: accepted.rejected });
       const transactionId = randomUUID();
       const written: Obj[] = [];
+      trace?.emit('stage');
       for (const row of rows) {
         const next = row.kind === 'patient'
           ? { ...row.snapshot, adt: objs(obj(accepted.state).patients).find((p: Obj) => `patient:${p.id}` === row.key),
@@ -130,14 +142,18 @@ export class AdtStore {
         const result = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',
           [t, row.key, row.version, next]);
         if (result.rowCount !== 1) throw new Error('ADT locked CAS failed');
+        trace?.emit('update', { key: trace.key(row.key) });
         await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
           [t, row.key, row.version + 1, transactionId, { kind: 'adt', actor: actor.user.id,
             requestId: command.requestId, input, accepted }]);
         written.push({ key: row.key, version: row.version + 1 });
+        trace?.emit('write', { key: trace.key(row.key), before: row.version, after: row.version + 1, projection: digest(next) });
       }
       if (!written.length) throw new Error('ADT accepted without effects');
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
       return finish(201, { outcome: 'persisted', transactionId, written });
-    });
+    }, trace);
+    trace?.emit('respond', { status: result.status, answer: digest(result) });
+    return result;
   }
 }

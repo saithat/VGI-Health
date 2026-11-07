@@ -5,6 +5,10 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
 import { once } from 'node:events';
+import { mkdtempSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { recordAdtBaseline, checkAdtTrace, compileAdtTrace } from '../model/check-adt-trace.ts';
 import { generateKeyPair, exportJWK, SignJWT } from 'jose';
 
 import { migrate } from '../src/store.ts';
@@ -28,7 +32,7 @@ function safe(board: Obj) {
   }
 }
 
-test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE and native journal replay', { timeout: 120_000 }, async t => {
+test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE and native journal replay', { timeout: 300_000 }, async t => {
   const f = await fixture();
   const { publicKey, privateKey } = await generateKeyPair('RS256');
   const jwk = { ...await exportJWK(publicKey), kid: 'adt-test', alg: 'RS256', use: 'sig' };
@@ -45,6 +49,10 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
   const manager = await actor(0, ['bed-manager']); const charge = await actor(1, ['rn', 'charge-nurse']);
   const clerk = await actor(2, ['admitting-clerk']); const nurse = await actor(3, ['rn']);
   const a = await host(url, config); const b = await host(url, config);
+  const dir = mkdtempSync(join(tmpdir(), 'adt-model-trace-'));
+  const path = join(dir, 'trace.jsonl');
+  const prior = process.env.COMMIT_PROTOCOL_TRACE;
+  process.env.COMMIT_PROTOCOL_TRACE = path;
   const board = async () => { const r = await api(b.base, manager, '/adt/board'); assert.equal(r.status, 200, JSON.stringify(r)); safe(r.body); return r.body; };
   const make = async (action: AdtCommand['action'], p = 'adt-a', bed?: number, source?: number): Promise<AdtCommand> => ({ requestId: randomUUID(), expected: objs((await board()).versions).map(v => ({ key: str(v.key), version: num(v.version) })), action, patient: p,
     ...(bed === undefined ? {} : { bed }), ...(source === undefined ? {} : { source }) });
@@ -56,6 +64,7 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
     await migrate(a.db);
     for (const [i, p] of ['adt-a', 'adt-b'].entries()) await a.store.importPatient(patient(f, p, i + 1));
     await new AdtStore(a.store).provision();
+    recordAdtBaseline(config.actors[0], config, await new AdtStore(a.store).read(config.actors[0]));
     await t.test('signed administrative role and unit claims override provision metadata; scopes fail closed', async () => {
       assert.equal(obj((await api(a.base, manager, '/me')).body.user).role, 'bedManager');
       assert.deepEqual((await api(a.base, charge, '/me')).body.adtRoles, ['chargeNurse']);
@@ -67,6 +76,9 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
       assert.equal((await api(a.base, manager, '/adt/commands', { ...await make('admit', 'adt-a', 401), expected: [] })).status, 400);
       const incomplete = await make('admit', 'adt-a', 401); incomplete.expected.pop();
       assert.equal((await api(a.base, manager, '/adt/commands', incomplete)).status, 409);
+      for (const action of ['swap', 'cancel']) {
+        assert.equal((await api(a.base, manager, '/adt/commands', { ...await make('admit', 'adt-a', 401), action })).status, 400);
+      }
     });
     await t.test('12 seeded admission races for one bed; every winner is safe and dirty beds cannot be reused', async () => {
       for (let seed = 1; seed <= 12; seed++) {
@@ -121,6 +133,37 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
       assert.ok(!JSON.stringify(read.body).includes('adt-b'));
       assert.equal((await api(a.base, nurse, '/patients/adt-a/fhir')).status, 404);
     });
+    await t.test('lost multi-stream COMMIT reply recovers the identical outcome once', async () => {
+      await readyBed(402);
+      const command = await make('transfer', 'adt-a', 402, 401);
+      const connect = a.db.connect.bind(a.db);
+      a.db.connect = new Proxy(connect, {
+        apply(target, receiver, args: unknown[]) {
+          if (args.length) return Reflect.apply(target, receiver, args);
+          return target().then(client => {
+            const query = client.query;
+            client.query = new Proxy(query, {
+              apply(queryTarget, queryReceiver, queryArgs: unknown[]) {
+                const result: unknown = Reflect.apply(queryTarget, queryReceiver, queryArgs);
+                if (queryArgs[0] === 'COMMIT' && result instanceof Promise) return result.then(() => {
+                  client.query = query;
+                  throw new Error('test lost COMMIT reply after actual durable commit');
+                });
+                return result;
+              },
+            });
+            return client;
+          });
+        },
+      });
+      try { assert.equal((await api(a.base, manager, '/adt/commands', command)).status, 503); }
+      finally { a.db.connect = connect; }
+      const recovered = await api(b.base, manager, '/adt/commands', command);
+      assert.equal(recovered.status, 201);
+      assert.deepEqual(await api(a.base, manager, '/adt/commands', command), recovered);
+      assert.equal(obj(array(obj((await board()).state).patients)[0]).bed, 402);
+      await readyBed(401);
+    });
     await t.test('SSE catch-up publishes a whole board and reconnect catches missed writes', async () => {
       const before = await board(); const abort = new AbortController(); const timer = setTimeout(() => abort.abort(), 10_000);
       try {
@@ -169,8 +212,30 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
       }
       assert.ok(seen.size > 100);
     });
+    await t.test('all ADT traces refine the Lean machine; altered locks, folds and partial writes fail', () => {
+      t.diagnostic(checkAdtTrace(path));
+      const rows = readFileSync(path, 'utf8').trim().split('\n').map(l => JSON.parse(l));
+      const target = rows.find(r => r.step === 'write').attempt;
+      const missing = structuredClone(rows).filter(r => !(r.attempt === target && r.step === 'write' && r.key.startsWith('bed:')));
+      assert.throws(() => compileAdtTrace(missing), /write set|UPDATE|INSERT/);
+      const order = structuredClone(rows);
+      const locks = order.filter(r => r.attempt === target && r.step === 'lock');
+      [locks[0].key, locks[1].key] = [locks[1].key, locks[0].key];
+      assert.throws(() => compileAdtTrace(order), /lock order/);
+      const corrupt = structuredClone(rows);
+      const read = corrupt.find(r => r.attempt === target && r.step === 'read');
+      // A well-shaped altered administrative baseline must be rejected in Lean.
+      const other = read.adt.state.patients.find((p: Obj) => p.id !== read.adt.command.admit.patient);
+      other.admitted = !other.admitted;
+      corrupt.find(r => r.attempt === target && r.step === 'native').board.patients.find((p: Obj) => p.id === other.id).admitted = other.admitted;
+      const bad = join(dir, 'corrupt.jsonl'); writeFileSync(bad, corrupt.map(r => JSON.stringify(r)).join('\n') + '\n');
+      assert.throws(() => checkAdtTrace(bad), /NOT A MODEL TRACE/);
+    });
   } finally {
+    if (prior === undefined) delete process.env.COMMIT_PROTOCOL_TRACE; else process.env.COMMIT_PROTOCOL_TRACE = prior;
     for (const table of ['commit_mar_cosigns', 'commit_events', 'commit_requests', 'commit_sessions', 'commit_streams']) await a.db.query(`DELETE FROM ${table} WHERE tenant=$1`, [config.tenant]);
     await a.close(); await b.close(); await new Promise<void>(resolve => identity.close(() => resolve()));
+    if (process.env.COMMIT_PROTOCOL_TRACE_KEEP) t.diagnostic(`ADT trace retained: ${path}`);
+    else rmSync(dir, { recursive: true, force: true });
   }
 });

@@ -682,7 +682,9 @@ retains the one-shot comparison path. Both dispatch to the same native
 functions. pnpm, elan/toolchain and source-keyed Lake outputs are cached. The commit service enforces the same
 TypeScript bans as agent: no explicit `any`, non-null assertions, casts except
 `as const`, or TypeScript suppression comments. Opaque JSON is narrowed before
-host use; mapper inputs and protocol traces have runtime codecs. The unit
+host use; mapper inputs and clinical/ADT protocol traces have runtime codecs.
+ADT test instrumentation validates administrative boards and version vectors;
+lost-COMMIT probes preserve the database driver overloads through proxies. The unit
 runner enables unprivileged user namespaces on its ephemeral VM, installs
 bubblewrap and exposes the pinned Node executable at `/usr/bin/node` for
 confined queries.
@@ -843,6 +845,11 @@ conditional on the final native guard using the fresh locked snapshot;
 a separate generic fold theorem proves cache/fresh agreement for fixed
 version-bound inputs and consistent journals. Actual cached reconstruction,
 external directory/time facts and clinical FHIR projections remain unproved.
+Administrative ADT now has a separate executable protocol model using the actual
+native reducer, with unbounded bed exclusivity, one-bed-per-patient, multi-stream
+idempotency and event-fold proofs. Its new specifications need owner review;
+[ADT evidence](docs/audits/adt-model-20261107.md) distinguishes these proofs from
+bounded lock checks and transaction-linearized host tests.
 `COMMIT_PROTOCOL_TRACE` enables a structured test exporter for `Store.submit`;
 `pnpm --filter @vgi/commit test:protocol` checks real Postgres traces against the
 Lean machine, including rollback and a lost COMMIT reply. This is a
@@ -850,7 +857,9 @@ transaction-linearized refinement test, not a proof of the host implementation.
 [Protocol evidence](docs/audits/commit-model-20261106.md) records exact commands,
 bounds and outcomes.
 
-Not proved: that the rules are clinically complete; the React painter,
+Not proved: host ADT/SQL/FHIR refinement, dynamic cache inputs, or swap/cancellation
+policy (these commands are absent); that the rules are clinically complete; the
+React painter,
 browser, FHIR import mapping and storage projections (tested); the Node/SQL
 wrapper, Postgres and authentication (integration-tested); the Lean compiler
 and native clang (trusted); SHA-256 collision resistance (assumed); serialization
@@ -880,7 +889,10 @@ records the canonical corpus, request/retry tests and a short added-latency samp
 
 `lean/Ehr/Commit/Protocol/Model.lean` is an executable transition system;
 `Proofs.lean` checks its safety theorems in Lean 4.35; `Cache.lean` models
-version-bound journal caches separately. [Verification evidence](docs/audits/commit-model-20261106.md)
+version-bound journal caches separately. `AdtModel.lean`, `AdtProofs.lean` and
+`AdtCheck.lean` extend this methodology to the implemented administrative board;
+`LockOrder.lean` proves the ordered-prefix circular-wait exclusion lemma.
+[Verification evidence](docs/audits/commit-model-20261106.md)
 records exact commands, finite bounds and outcomes. These new statements are
 not entries in the clinical Comparator catalog. The default `CommitProtocol`
 library checks them without importing them into the clinical executable. They do not change clinical
@@ -914,11 +926,14 @@ appends. `projection` is the shared reducer projection; `patientProjection` stor
 clinical successor hashes and is also proved equal to its event fold. Clinical
 FHIR transformation functions and initial imports remain implementation tests. `keys` abstracts the
 complete locked patient/shared/closed-board read set, including negative bed
-reads. The existing `Ehr.Multi` reducer supplies bed/dose semantics; administrative
-ADT's richer phases and clinical FHIR materialization are not reimplemented here.
-The final CAS validates the captured read vector; sorted locking avoids modeled
-stream-lock cycles, but this is not a deadlock-freedom proof (the host also takes
-session locks). Native clinical semantics are a fresh guard-result oracle;
+reads. The existing `Ehr.Multi` reducer supplies the original model's bed/dose semantics.
+The separate ADT machine uses `Ehr.Commit.Adt.commit` directly, including ready,
+occupied, dirty and cleaning phases. Clinical FHIR materialization remains an
+implementation test. The final CAS validates the captured read vector. The ADT
+checker tests lock prefixes, mutual exclusion and absence of wait cycles; the
+lock theorem excludes circular waits for strictly ordered acquisition prefixes
+under the service hierarchy. The host's correspondence to that hierarchy is
+tested/inspected, not proved. Native clinical semantics are a fresh guard-result oracle;
 `HistoryCorrect` binds each accepted oracle result to its replaced version.
 
 ### Claims and limits
@@ -946,10 +961,63 @@ refinement. The separate generic cache model includes revision-CAS session event
 projecting-commit invalidation. It assumes version-bound pure-fold replay;
 changes to external directory/time/context inputs require invalidation or an
 independent final guard. Session creation, consent expiry, role changes, and all
-administrative ADT operations are outside the fine-grained host machine.
+administrative ADT operations are outside the original fine-grained host machine;
+the separate ADT machine below covers their implemented command protocol.
 The model has explicit provisional staging but does not model SQL statements'
 private MVCC versions individually: rollback isolation and all-stream atomicity
 are the stated Postgres assumption.
+
+### Administrative ADT extension (new specifications for owner review)
+
+`AdtModel` separates the complete sorted board read set from changed patient/bed
+streams. It executes admit, assign, transfer, release, discharge, clean and ready
+through the existing native reducer; transfer publishes patient + source bed +
+target bed atomically. Private UPDATE and event INSERT are separate steps, so
+crashes before/after each stream write, before outcome staging, and after COMMIT
+are explicit. Rollback discards all provisional writes; a lost COMMIT reply
+preserves the complete durable outcome. Version counts include only changed
+streams. Provisioned boards, including admitted unplaced patients, are explicit
+baselines rather than empty-state assumptions.
+
+| ADT statement (`Ehr.Commit.Protocol.AdtModel`) | Evidence |
+|---|---|
+| Same bed ID cannot have two patients; a patient cannot occupy two bed IDs | Unbounded `bed_exclusivity`, `patient_one_bed` for every `Reachable` interleaving from a valid baseline |
+| Board equals native reducer fold of accepted transaction events | Unbounded `projections_equal_fold` |
+| One multi-stream effect per actor/request ID; durable retries return the identical answer | Unbounded `no_duplicate_accepted`, `retry_stable`, `receipt_persistent`, `changed_payload_no_effect` |
+| Events and accepted receipts correspond both ways | Unbounded `no_lost_accepted`, `no_phantom_effect` |
+| Exact changed-stream set and guard at replaced versions | Unbounded `guards_and_writes_on_replaced_versions` |
+| Every individual provisional event INSERT leaves durable state unchanged | Unbounded `partial_write_private`; all other steps covered by `advance_publication`, `machine_invariant` |
+| No finite circular wait under strict ordered acquisition prefixes | Unbounded `LockOrder.no_wait_cycle`, conditional on the lock-plan correspondence |
+| Actual machine locks follow sorted prefixes, remain exclusive and have no wait cycles | Bounded `AdtCheck`; host lock sequences checked in traces |
+
+The lock hierarchy is request reservation → optional clinical session → sorted
+streams; administrative commands take no session lock. Each transaction acquires
+one request and at most one session. No writer holding streams acquires a later
+request/session. Provisioning and offline import are excluded online writers.
+The theorem does not prove Postgres internals, lock timing, absence of every SQL
+error, starvation freedom or eventual response. A deliberately reversed stream
+order is a detected circular-wait control.
+
+Swap and cancellation are **absent from the implemented API and native command
+type**; the HTTP regression checks their rejection. Opposite transfers into two
+occupied beds are refused, not a swap. Retrying/aborting a transaction is not a
+domain cancellation. No new swap/cancellation semantics were invented. These
+operations and dynamic cache inputs remain open for owner specification.
+Clinical placement's non-ADT guard and session checks remain explicit abstract
+inputs; administrative guard decisions execute the native reducer without an
+oracle. FHIR projection functions, initial provisioning and TypeScript/SQL
+refinement remain tested rather than proved. See the
+[ADT verification record](docs/audits/adt-model-20261107.md) for bounds, commands,
+results and the final merged check. The final lane run exhausted 26,812 ADT
+transaction states and 62 reducer boards without a counterexample; all 11 targeted
+ADT tests passed, with Lean witnesses for 184 administrative and five mixed
+clinical/administrative attempts. The full warm-cache template/persona pair
+covered 1,826/1,296 states with zero findings. The source-wide WASM manifest is
+stale solely because of the independent protocol file changes; packaged assets
+and WASM build inputs match their recorded hashes. Rebuild/rebind that manifest
+in the merged certificate/replay procedure before claiming current-source WASM
+verification. This lane leaves certified app assets and recorded certificates
+untouched.
 
 ### Veil evaluation
 
@@ -975,6 +1043,9 @@ lake build
 lake env lean Ehr/Commit/Protocol/Proofs.lean
 lake env lean Ehr/Commit/Protocol/Cache.lean
 lake env lean --run Ehr/Commit/Protocol/Check.lean
+lake env lean Ehr/Commit/Protocol/AdtProofs.lean
+lake env lean Ehr/Commit/Protocol/LockOrder.lean
+lake env lean --run Ehr/Commit/Protocol/AdtCheck.lean
 ```
 
 Every new theorem has a `#print axioms` check. The checker exhausts each finite
@@ -1001,11 +1072,22 @@ instrumentation; it is off by default. It records actor-scoped request/payload
 hashes, hashed stream/session IDs, lock/read versions, cache eligibility, native
 acceptance, provisional stream writes and snapshot hashes, staged result hashes, COMMIT intervals,
 rollback/uncertainty and produced responses. It records no credentials, chart
-values or native states. It covers commands through `submit`; encounter opening,
-session-event transactions and administrative `AdtStore` are not exported.
+values or native clinical states. The original adapter covers non-ADT commands
+through `Store.submit`; encounter opening
+and session-event transactions are not exported. `AdtStore.submit` and clinical
+placement also export administrative board inputs/outputs with positional patient
+aliases, hashed unit identifiers and numeric bed IDs. They contain no chart data,
+credentials or clinical native states. `model/check-adt-trace.ts` requires one
+explicit provisioned baseline before all writers, validates the complete lock
+plan and UPDATE/INSERT pairs, and replays board contents and changed-stream
+versions through `AdtModel.advance` in `AdtTrace.lean`. It accepts unchanged locked
+streams. ADT integration tests exercise rollback, uncertain COMMIT and mixed
+clinical/administrative writes. This remains a transaction-linearized test;
+overlapping SQL lock timing and FHIR contents are not proved by the trace.
 
 Use a new file for **one fresh test tenant**, with every command writer traced.
-Patient imports have baseline version 1 and empty shared streams version 0;
+For the original adapter, patient imports have baseline version 1 and empty
+shared streams version 0;
 the adapter rejects changed/missing baselines and unsupported/no-op write sets.
 The adapter checks the complete lock sequence before reads, native acceptance
 before writes, before/after version agreement, complete staged writes before
@@ -1028,9 +1110,12 @@ export COMMIT_FIXTURE="$TMPDIR/commit-model-fixture.json"
 pnpm --filter @vgi/commit typecheck
 pnpm --filter @vgi/commit test
 pnpm --filter @vgi/commit test:protocol
+pnpm --filter @vgi/commit test:adt-protocol
 # Optional: retain the test's scratch trace (path printed in test diagnostics).
 COMMIT_PROTOCOL_TRACE_KEEP=1 pnpm --filter @vgi/commit test:protocol
 pnpm --filter @vgi/commit check:trace /absolute/scratch/trace.jsonl
+# Retained administrative/clinical ADT traces use their separate adapter.
+pnpm --filter @vgi/commit check:adt-trace /absolute/scratch/adt-trace.jsonl
 ```
 
 The targeted test uses two actual hosts and Postgres. It compares cached/fresh
