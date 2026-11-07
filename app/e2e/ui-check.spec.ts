@@ -71,21 +71,16 @@ const minimum = Number(process.env.EHR_MIN_FONT_PX ?? 12);
 if (!Number.isFinite(minimum) || minimum < 12)
   throw new Error("Legibility minimum must be at least 12px");
 
-async function render(page: Page, screen: UiScreen, settleMs = 220) {
+async function render(page: Page, screen: UiScreen, settleMs = 0) {
   await page.evaluate(
     ({ screen, presentations }) => window.renderUi(screen, presentations),
     { screen, presentations },
   );
   await waitForCaptureFonts(page);
-  // Wait for presentation transitions before inspecting the expected regions.
+  // Capture CSS disables transitions. The font helper already waits two
+  // animation frames after React paints; a second frame pair or a fixed delay
+  // adds no settling to this endpoint measurement.
   if (settleMs) await page.waitForTimeout(settleMs);
-  else
-    await page.evaluate(
-      () =>
-        new Promise<void>((done) =>
-          requestAnimationFrame(() => requestAnimationFrame(() => done())),
-        ),
-    );
 }
 function nodes(tree: UiNode): UiNode[] {
   if ("board" in tree) return [tree, ...tree.board.children.flatMap(nodes)];

@@ -1612,6 +1612,9 @@ matrix/version, assertion sources and the presentation bundle. Synthetic geometr
 probes have a separate key. Run, persona, revision and path are absent from the
 key. Corrupt or incomplete results miss; infrastructure errors are never cached.
 Cached failures remain failures and known-bad controls run on every invocation.
+Endpoint capture disables animations and transitions, loads the pinned fonts and
+waits two animation frames after painting. It avoids a redundant second frame
+pair and fixed timer; fidelity, geometry and physical assertions are unchanged.
 `EHR_SCREEN_CACHE=0` bypasses both result and physical-sample reads/writes for an
 independent comparison. Every input state retains its own result/geometry mapping.
 
