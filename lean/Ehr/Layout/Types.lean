@@ -166,7 +166,7 @@ def palette : List (String × Color) :=
 def radii : List (String × Nat) :=
   [("rounded-none",0),("rounded",256),("rounded-md",384),("rounded-lg",512),("rounded-full",1000000000)]
 def typeScale : List (String × Nat × Nat) :=
-  [("text-xs",768,1152),("text-sm",896,1280),("text-base",1024,1536),
+  [("text-xs",768,1152),("text-sm",896,1408),("text-base",1024,1536),
    ("text-lg",1152,1792),("text-xl",1280,1920),("text-2xl",1536,2176)]
 def fontNames : List (String × Nat) :=
   [("sans-400",0),("sans-600",1),("sans-650",2),("sans-700",3),

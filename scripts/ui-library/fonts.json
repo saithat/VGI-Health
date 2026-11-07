@@ -1,69 +1,69 @@
 [
   {
-    "id": "noto_sans_400",
-    "family": "noto-sans",
+    "id": "noto_world_sans_400",
+    "family": "noto-world-sans",
     "weight": 400,
     "unitsPerEm": 1000,
-    "maxAdvance": 1000,
-    "ascent": 1069,
+    "maxAdvance": 1544,
+    "ascent": 1160,
     "descent": 293,
-    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
-    "glyphs": 196
+    "sha256": "6298f914a228b529aaed6b5dce789ac08008bb05e39f956ea01a0cc132d09d6d",
+    "glyphs": 2001
   },
   {
-    "id": "noto_sans_600",
-    "family": "noto-sans",
+    "id": "noto_world_sans_600",
+    "family": "noto-world-sans",
     "weight": 600,
     "unitsPerEm": 1000,
-    "maxAdvance": 1000,
-    "ascent": 1069,
+    "maxAdvance": 1620,
+    "ascent": 1160,
     "descent": 293,
-    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
-    "glyphs": 196
+    "sha256": "98f599d0d69cddc4978d3b04c3e58c93ea585adb32dc9f66ecfc063cbb5d6b34",
+    "glyphs": 2001
   },
   {
-    "id": "noto_sans_650",
-    "family": "noto-sans",
+    "id": "noto_world_sans_650",
+    "family": "noto-world-sans",
     "weight": 650,
     "unitsPerEm": 1000,
-    "maxAdvance": 1000,
-    "ascent": 1069,
+    "maxAdvance": 1644,
+    "ascent": 1160,
     "descent": 293,
-    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
-    "glyphs": 196
+    "sha256": "267f95545e1e5d9343388596574f024a0614b7d0082946e78e387d321208d427",
+    "glyphs": 2001
   },
   {
-    "id": "noto_sans_700",
-    "family": "noto-sans",
+    "id": "noto_world_sans_700",
+    "family": "noto-world-sans",
     "weight": 700,
     "unitsPerEm": 1000,
-    "maxAdvance": 1000,
-    "ascent": 1069,
+    "maxAdvance": 1667,
+    "ascent": 1160,
     "descent": 293,
-    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
-    "glyphs": 196
+    "sha256": "74f99b35ddbd87b634634a1c05376085c0e813252b92751956d68cc0ad3a7c08",
+    "glyphs": 2001
   },
   {
-    "id": "noto_sans_750",
-    "family": "noto-sans",
+    "id": "noto_world_sans_750",
+    "family": "noto-world-sans",
     "weight": 750,
     "unitsPerEm": 1000,
-    "maxAdvance": 1000,
-    "ascent": 1069,
+    "maxAdvance": 1685,
+    "ascent": 1160,
     "descent": 293,
-    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
-    "glyphs": 196
+    "sha256": "88a4f5a0f676fbee0ffae92cc9dac800b831df69b2b5b84be0578cdb8992c173",
+    "glyphs": 2001
   },
   {
-    "id": "noto_sans_800",
-    "family": "noto-sans",
+    "id": "noto_world_sans_800",
+    "family": "noto-world-sans",
     "weight": 800,
     "unitsPerEm": 1000,
-    "maxAdvance": 1000,
-    "ascent": 1069,
+    "maxAdvance": 1703,
+    "ascent": 1160,
     "descent": 293,
-    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
-    "glyphs": 196
+    "sha256": "cafa0b2541a0d3fd39998106185d3b704596097c87abed5eb7f3282eac36d376",
+    "glyphs": 2001
   },
   {
     "id": "noto_sans_mono_400",

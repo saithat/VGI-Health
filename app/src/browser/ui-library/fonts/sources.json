@@ -1,0 +1,302 @@
+{
+  "fonttools": "4.68.0",
+  "brotli": "1.2.1",
+  "sources": [
+    {
+      "name": "noto-world-sans-400",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "sha256": "6298f914a228b529aaed6b5dce789ac08008bb05e39f956ea01a0cc132d09d6d",
+      "bytes": 60004,
+      "glyphs": 2001,
+      "ranges": [
+        [
+          32,
+          767
+        ],
+        [
+          880,
+          1327
+        ],
+        [
+          7680,
+          8191
+        ],
+        [
+          8192,
+          8303
+        ],
+        [
+          8322,
+          8322
+        ],
+        [
+          11360,
+          11391
+        ],
+        [
+          42560,
+          42655
+        ],
+        [
+          42784,
+          43007
+        ]
+      ]
+    },
+    {
+      "name": "noto-world-sans-600",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "sha256": "98f599d0d69cddc4978d3b04c3e58c93ea585adb32dc9f66ecfc063cbb5d6b34",
+      "bytes": 65524,
+      "glyphs": 2001,
+      "ranges": [
+        [
+          32,
+          767
+        ],
+        [
+          880,
+          1327
+        ],
+        [
+          7680,
+          8191
+        ],
+        [
+          8192,
+          8303
+        ],
+        [
+          8322,
+          8322
+        ],
+        [
+          11360,
+          11391
+        ],
+        [
+          42560,
+          42655
+        ],
+        [
+          42784,
+          43007
+        ]
+      ]
+    },
+    {
+      "name": "noto-world-sans-650",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "sha256": "267f95545e1e5d9343388596574f024a0614b7d0082946e78e387d321208d427",
+      "bytes": 65824,
+      "glyphs": 2001,
+      "ranges": [
+        [
+          32,
+          767
+        ],
+        [
+          880,
+          1327
+        ],
+        [
+          7680,
+          8191
+        ],
+        [
+          8192,
+          8303
+        ],
+        [
+          8322,
+          8322
+        ],
+        [
+          11360,
+          11391
+        ],
+        [
+          42560,
+          42655
+        ],
+        [
+          42784,
+          43007
+        ]
+      ]
+    },
+    {
+      "name": "noto-world-sans-700",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "sha256": "74f99b35ddbd87b634634a1c05376085c0e813252b92751956d68cc0ad3a7c08",
+      "bytes": 63936,
+      "glyphs": 2001,
+      "ranges": [
+        [
+          32,
+          767
+        ],
+        [
+          880,
+          1327
+        ],
+        [
+          7680,
+          8191
+        ],
+        [
+          8192,
+          8303
+        ],
+        [
+          8322,
+          8322
+        ],
+        [
+          11360,
+          11391
+        ],
+        [
+          42560,
+          42655
+        ],
+        [
+          42784,
+          43007
+        ]
+      ]
+    },
+    {
+      "name": "noto-world-sans-750",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "sha256": "88a4f5a0f676fbee0ffae92cc9dac800b831df69b2b5b84be0578cdb8992c173",
+      "bytes": 66276,
+      "glyphs": 2001,
+      "ranges": [
+        [
+          32,
+          767
+        ],
+        [
+          880,
+          1327
+        ],
+        [
+          7680,
+          8191
+        ],
+        [
+          8192,
+          8303
+        ],
+        [
+          8322,
+          8322
+        ],
+        [
+          11360,
+          11391
+        ],
+        [
+          42560,
+          42655
+        ],
+        [
+          42784,
+          43007
+        ]
+      ]
+    },
+    {
+      "name": "noto-world-sans-800",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "sourceSha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "sha256": "cafa0b2541a0d3fd39998106185d3b704596097c87abed5eb7f3282eac36d376",
+      "bytes": 65364,
+      "glyphs": 2001,
+      "ranges": [
+        [
+          32,
+          767
+        ],
+        [
+          880,
+          1327
+        ],
+        [
+          7680,
+          8191
+        ],
+        [
+          8192,
+          8303
+        ],
+        [
+          8322,
+          8322
+        ],
+        [
+          11360,
+          11391
+        ],
+        [
+          42560,
+          42655
+        ],
+        [
+          42784,
+          43007
+        ]
+      ]
+    },
+    {
+      "name": "noto-cjk",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/Sans2.004/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf",
+      "sourceSha256": "2c76254f6fc379fddfce0a7e84fb5385bb135d3e399294f6eeb6680d0365b74b",
+      "sha256": "47042454729bf8e40f7abc0e9570f99c7c26ae5a21babe96c3f35894f4787ee0",
+      "bytes": 5401836,
+      "glyphs": 32489,
+      "ranges": [
+        [
+          12288,
+          12543
+        ],
+        [
+          19968,
+          40959
+        ],
+        [
+          44032,
+          55203
+        ],
+        [
+          65281,
+          65376
+        ]
+      ]
+    },
+    {
+      "name": "noto-hebrew",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosanshebrew/NotoSansHebrew%5Bwdth%2Cwght%5D.ttf",
+      "sourceSha256": "7ef36a2c3593758cdb622e1bdef4f84523e92fbc3ccc667438dd80ff54c2de88",
+      "sha256": "d7f4336ca6fa7660ab434219a4d400a88b1efb7d5fb50263d900d1330c47bd77",
+      "bytes": 2184,
+      "glyphs": 33,
+      "ranges": [
+        [
+          1488,
+          1514
+        ],
+        [
+          1519,
+          1524
+        ]
+      ]
+    }
+  ]
+}

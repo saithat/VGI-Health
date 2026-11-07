@@ -1,4 +1,4 @@
-import Ehr.Layout.Family
+import Ehr.Layout.Range
 namespace Ehr.Layout
 open Lean Ehr.Render
 
@@ -40,4 +40,37 @@ def familyOutput (family : Family) (screen : UiScreen) (v : Size) : Json :=
       ("lineWidths",toJson (data.map drawnLineWidths)),
       ("findings",toJson (findings (shapeSources c.shape) v ps ++ realizationWarnings data)),
       ("layoutOk",toJson layoutOk),("linked",toJson (decide (Linked c.shape ps)))]
+/-- Research-only class painter: runtime checks structural membership and the
+viewport, not geometry, record lengths or glyph/string limits. -/
+def structuralOutput (screen : UiScreen) (v : Size) : Json :=
+  let shape := screenShape screen
+  if !Shell.accepts shape then
+    Json.mkObj [("accepted",toJson false),("uncoveredShape",toJson shape),
+      ("error",toJson "fixed-shell class requires one banner, at most one commit, at most two modal occurrences and unique sources")]
+  else
+    let data := (Shell.classBoxes v shape).map (bindSemantic screen)
+    let tree := match data with
+      | [] => Json.null
+      | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
+          (rest.map fun d => Json.mkObj [("drawn",toJson d),("children",toJson ([] : List Json))]))]
+    Json.mkObj [("accepted",toJson (viewports.contains v)),("viewport",toJson v),
+      ("boxes",toJson data),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
+      ("findings",toJson (realizationWarnings data)),("structuralClass",toJson "fixed-shell-v2")]
+
+/-- Runtime path after a program/class certificate: bind the actual native
+render without repeating per-patient class/geometry/content admission. -/
+def programOutput (input : RenderInput) (v : Size) : Json :=
+  if !viewports.contains v then Json.mkObj [("accepted",toJson false),("error",toJson "unsupported viewport")]
+  else
+    let screen := runRenderUi input
+    let data := (Range.uncheckedPaint screen v).getD []
+    let tree := match data with
+      | [] => Json.null
+      | root :: rest => Json.mkObj [("drawn",toJson root),("children",toJson
+          (rest.map fun d => Json.mkObj [("drawn",toJson d),("children",toJson ([] : List Json))]))]
+    Json.mkObj [("accepted",toJson (Range.checkProgram input.spec input.program)),("viewport",toJson v),
+      ("boxes",toJson data),("tree",tree),("lineWidths",toJson (data.map drawnLineWidths)),
+      ("findings",toJson (realizationWarnings data)),("structuralClass",toJson "fixed-shell-v2"),
+      ("rangeTheorem",toJson "Ehr.Layout.Range.layoutAccepted_program")]
+
 end Ehr.Layout

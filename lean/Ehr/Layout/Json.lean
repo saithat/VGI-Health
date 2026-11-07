@@ -143,10 +143,12 @@ def realizationWarnings (drawn : List Drawn) : List Finding := drawn.flatMap fun
 def drawnLineWidths (d : Drawn) : List Nat :=
   match d.box.info.text with
   | none => []
-  | some t => d.lines.map fun s => let units := Fonts.unitsPerEm[t.font]?.getD 1000
-    let table := (Fonts.tables[t.font]?.getD #[]).toList
-    let width := (s.toList.map (fun ch => glyphWidth table ch.toNat)).foldl (·+·) 0
-    (width*t.fontSize+units-1)/units
+  | some t => d.lines.map fun s => textAdvance t s.toList
+
+def drawnGlyphWidths (d : Drawn) : List (List Nat) :=
+  match d.box.info.text with
+  | none => []
+  | some t => d.lines.map fun s => s.toList.map (advance t)
 
 def lineWidths (data : Content) (p : Placed) : List Nat := drawnLineWidths (bind data p)
 

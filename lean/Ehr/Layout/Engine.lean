@@ -17,15 +17,48 @@ theorem glyphWidth_le (table : List (Nat × Nat)) (cp : Nat) : glyphWidth table 
     simp only [glyphWidth, maxWidth, List.foldr_cons]
     split <;> omega
 
-/-- Round advances upward at 1/64 px, so the proof never relies on subunit slack. -/
-def advance (t : TextSlot) (ch : Char) : Nat :=
+/-- Bounded binary lookup in the generated sorted repertoire. Missing entries
+never delegate measurement to a system font. Zero advances remain distinguishable
+from missing glyphs. The generator checks order, uniqueness and maximum advance. -/
+def glyphLookup (table : Array (Nat × Nat)) (cp : Nat) : Nat → Nat → Nat → Option Nat
+  | 0, _, _ => none
+  | fuel+1, lo, hi =>
+    if lo < hi then
+      let mid := (lo+hi)/2
+      match table[mid]? with
+      | none => none
+      | some (code,width) => if cp == code then some width
+        else if cp < code then glyphLookup table cp fuel lo mid
+        else glyphLookup table cp fuel (mid+1) hi
+    else none
+
+def rangeLookup (cp : Nat) : Nat → Nat → Nat → Option Nat
+  | 0, _, _ => none
+  | fuel+1, lo, hi =>
+    if lo < hi then
+      let mid := (lo+hi)/2
+      match Fonts.fallbackRanges[mid]? with
+      | none => none
+      | some (first,last,width) => if first ≤ cp && cp ≤ last then some width
+        else if cp < first then rangeLookup cp fuel lo mid
+        else rangeLookup cp fuel (mid+1) hi
+    else none
+
+def pinnedWidth (t : TextSlot) (ch : Char) : Option Nat :=
   let table := Fonts.tables[t.font]?.getD #[]
+  (glyphLookup table ch.toNat (table.size+1) 0 table.size).orElse fun _ =>
+    if t.font < 6 then rangeLookup ch.toNat (Fonts.fallbackRanges.size+1) 0 Fonts.fallbackRanges.size
+    else none
+
+/-- Integer advances round upward at 1/64 px. The generated maximum is also
+an explicit defensive cap; generation verifies it against every table entry. -/
+def advance (t : TextSlot) (ch : Char) : Nat :=
   let units := Fonts.unitsPerEm[t.font]?.getD 1000
-  (glyphWidth table.toList ch.toNat * t.fontSize + units - 1) / units
+  let maximum := Fonts.maxAdvance[t.font]?.getD 0
+  (min maximum ((pinnedWidth t ch).getD 0) * t.fontSize + units - 1) / units
 
 def supported (t : TextSlot) (ch : Char) : Bool :=
-  (ch == '\n' && t.overflow == .scroll) ||
-  (Fonts.tables[t.font]?.getD #[]).any (fun p => p.1 == ch.toNat)
+  (ch == '\n' && t.overflow == .scroll) || (pinnedWidth t ch).isSome
 
 /-- The escape alphabet is deliberately finite and uses only pinned glyphs. -/
 def escapeAlphabet : List Char := "[U+0123456789ABCDEF]".toList
@@ -87,12 +120,13 @@ theorem paintText_supported (t : TextSlot) (s : String)
 
 def cell (t : TextSlot) : Nat :=
   let units := Fonts.unitsPerEm[t.font]?.getD 1000
-  (maxWidth (Fonts.tables[t.font]?.getD #[]).toList * t.fontSize + units - 1) / units
+  (Fonts.maxAdvance[t.font]?.getD 0 * t.fontSize + units - 1) / units
 
 theorem advance_le_cell (t : TextSlot) (ch : Char) : advance t ch ≤ cell t := by
   unfold advance cell
   apply Nat.div_le_div_right
-  have := Nat.mul_le_mul_right t.fontSize (glyphWidth_le (Fonts.tables[t.font]?.getD #[]).toList ch.toNat)
+  have := Nat.mul_le_mul_right t.fontSize
+    (Nat.min_le_left (Fonts.maxAdvance[t.font]?.getD 0) ((pinnedWidth t ch).getD 0))
   omega
 
 def capacity (t : TextSlot) (w : Nat) : Nat := w / max 1 (cell t)
@@ -399,7 +433,15 @@ structure Drawn where
   box : Placed
   lines : List String
   original : Option String := none
-  deriving Repr, ToJson, FromJson
+  deriving Repr, FromJson
+
+/-- The painter places each scalar in the exact integer cell used by wrapping.
+This avoids accumulating fractional browser advances across long mixed runs. -/
+instance : ToJson Drawn where
+  toJson d := Json.mkObj [("box",toJson d.box),("lines",toJson d.lines),
+    ("original",toJson d.original),("glyphWidths",toJson
+      (d.lines.map fun line => line.toList.map fun ch =>
+        (d.box.info.text.map fun t => advance t ch).getD 0))]
 
 def bind (data : Content) (p : Placed) : Drawn :=
   ⟨p, (p.info.text.map fun t => textLines t p.rect.w (paintText t ((data.lookup t.key).getD ""))).getD [],

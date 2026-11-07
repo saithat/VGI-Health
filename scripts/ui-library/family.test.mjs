@@ -12,11 +12,11 @@ export function reviewScreen(rows=[]){return {banner:[['Patient','Synthetic pati
   {button:{comp:'sign',label:'Sign',role:'primary',enabled:false,blockedReason:'Complete review',hotkey:null}},
 ],side:[],modal:null};}
 const widths=[[1440,900],[1280,800],[1920,1080]];
-const text={key:'deliberately-wrong-key',maxLength:0,maxLines:2,overflow:'scroll',safety:true,font:0,fontSize:896,lineHeight:1280};
+const text={key:'deliberately-wrong-key',maxLength:0,maxLines:2,overflow:'scroll',safety:true,font:0,fontSize:896,lineHeight:1408};
 function layouts(){return widths.map(([w,h])=>({viewport:{w:w*64,h:h*64},tree:{type:'Absolute',id:'root',width:'fill',height:'fill',children:[
   {type:'Text',id:'banner',source:[0],banner:true,position:{x:1024,y:512},width:(w-32)*64,height:5120,text},
-  {type:'Text',id:'title',source:[1],position:{x:1024,y:6400},width:(w-32)*64,height:2560,text},
-  {type:'Text',id:'nav',source:[2],position:{x:1024,y:9600},width:(w-32)*64,height:2560,text},
+  {type:'Text',id:'title',source:[1],position:{x:1024,y:6400},width:(w-32)*64,height:2816,text},
+  {type:'Text',id:'nav',source:[2],position:{x:1024,y:9600},width:(w-32)*64,height:2816,text},
   {type:'Text',id:'review',source:[3],position:{x:1024,y:12800},width:(w-32)*64,height:6400,text},
   {type:'Button',id:'sign',source:[4],commit:true,position:{x:1024,y:(h-80)*64},width:(w-32)*64,height:3840,text},
 ]}}));}

@@ -59,7 +59,7 @@ test('APG transitions use native Lean semantics',()=>{
 });
 test('modal z, text occlusion, reading order and current commit failures are explicit',()=>{
   const r=template();
-  r.tree.children.push({type:'Text',id:'interruptive',interruptive:true,position:{x:2048,y:12800},width:19200,height:6144,z:0,text:{key:'alert',maxLength:48,maxLines:3,overflow:'scroll',safety:true,font:0,fontSize:896,lineHeight:1280}});
+  r.tree.children.push({type:'Text',id:'interruptive',interruptive:true,position:{x:2048,y:12800},width:19200,height:6144,z:0,text:{key:'alert',maxLength:48,maxLines:3,overflow:'scroll',safety:true,font:0,fontSize:896,lineHeight:1408}});
   r.content.push(['alert','Critical allergy review']);
   assert.ok(native(r).findings.some(f=>f.rule==='G2'));
   r.tree.children.at(-1).z=100;
@@ -68,7 +68,7 @@ test('modal z, text occlusion, reading order and current commit failures are exp
   covered.tree.children.push({type:'Rect',id:'occluder',position:{x:1024,y:7168},width:12800,height:6400,z:100});
   assert.ok(native(covered).findings.some(f=>f.rule==='G4'));
   const reordered=template();
-  reordered.tree.children.push({type:'Text',id:'out-of-order',z:10,position:{x:1024,y:6400},width:6400,height:1280,text:{key:'short',maxLength:4,maxLines:1,overflow:'wrap',safety:false,font:0,fontSize:896,lineHeight:1280}});
+  reordered.tree.children.push({type:'Text',id:'out-of-order',z:10,position:{x:1024,y:6400},width:6400,height:1280,text:{key:'short',maxLength:4,maxLines:1,overflow:'wrap',safety:false,font:0,fontSize:896,lineHeight:1408}});
   assert.ok(native(reordered).findings.some(f=>f.rule==='G8'));
   const missing=template();missing.tree.children[2].commit=false;
   assert.equal(native(missing).accepted,true);

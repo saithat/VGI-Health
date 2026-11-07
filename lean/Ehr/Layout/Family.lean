@@ -217,26 +217,63 @@ theorem layoutAccepted_allStates (sp : Ehr.Spec) (program : Ehr.Program) (family
   intro facts display user state v hv
   exact familyPaint_sound family accepted _ v hv
 
+/-- A certified rendering family may be a finite descriptor or a proved
+parameterized structural compiler. Every instance supplies the same Realizes
+contract; this extends representation without changing any G1–G9 predicate. -/
+class RenderFamily (F : Type) where
+  admitted : F → Bool
+  covered : F → UiScreen → Prop
+  paint : F → UiScreen → Size → Option (List Drawn)
+  sound : ∀ family, admitted family = true → ∀ screen, covered family screen →
+    ∀ v ∈ viewports, ∃ painted, paint family screen v = some painted ∧ Realizes screen v painted
+
+instance : RenderFamily Family where
+  admitted := acceptFamily
+  covered := Covered
+  paint := familyPaint
+  sound := layoutAccepted_allScreens
+
 /-- This is the remaining structural-coverage obligation for an EHR program.
 It quantifies over actual init/step/macro/wait reachability, every patient Facts,
 every Display and user. It does not restrict source strings or row counts. -/
-def RenderCovered (sp : Ehr.Spec) (program : Ehr.Program) (family : Family) : Prop :=
+def RenderCovered {F : Type} [RenderFamily F] (sp : Ehr.Spec) (program : Ehr.Program) (family : F) : Prop :=
   ∀ (facts : Ehr.Facts) (display : Display) (user : Ehr.User) (state : Ehr.State),
     Ehr.Props.Reachable ⟨sp,program,facts,user⟩ state →
-    Covered family (runRenderUi ⟨sp,program,facts,display,user,state⟩)
+    RenderFamily.covered family (runRenderUi ⟨sp,program,facts,display,user,state⟩)
 
 /-- EHR bridge: all patients, displays, users, reachable states and supported
 viewports, assuming a separately proved structural coverage certificate. The
 coverage premise is deliberately visible and is not discharged by sampling. -/
-theorem layoutAccepted_allPatients (sp : Ehr.Spec) (program : Ehr.Program) (family : Family)
+theorem layoutAccepted_allPatients {F : Type} [RenderFamily F]
+    (sp : Ehr.Spec) (program : Ehr.Program) (family : F)
+    (accepted : RenderFamily.admitted family = true) (coverage : RenderCovered sp program family) :
+    ∀ (facts : Ehr.Facts) (display : Display) (user : Ehr.User) (state : Ehr.State),
+      Ehr.Props.Reachable ⟨sp,program,facts,user⟩ state →
+      ∀ v ∈ viewports, ∃ painted,
+        RenderFamily.paint family (runRenderUi ⟨sp,program,facts,display,user,state⟩) v = some painted ∧
+        Realizes (runRenderUi ⟨sp,program,facts,display,user,state⟩) v painted := by
+  intro facts display user state reachable v hv
+  exact RenderFamily.sound family accepted _ (coverage facts display user state reachable) v hv
+
+/-- Definitional compatibility with the original finite-family coverage
+obligation: no quantifier or accepted finite layout is weakened. -/
+theorem RenderCovered_finite_iff (sp : Ehr.Spec) (program : Ehr.Program) (family : Family) :
+    RenderCovered sp program family ↔
+      ∀ (facts : Ehr.Facts) (display : Display) (user : Ehr.User) (state : Ehr.State),
+        Ehr.Props.Reachable ⟨sp,program,facts,user⟩ state →
+        Covered family (runRenderUi ⟨sp,program,facts,display,user,state⟩) := Iff.rfl
+
+theorem layoutAccepted_allPatients_finite (sp : Ehr.Spec) (program : Ehr.Program) (family : Family)
     (accepted : acceptFamily family = true) (coverage : RenderCovered sp program family) :
     ∀ (facts : Ehr.Facts) (display : Display) (user : Ehr.User) (state : Ehr.State),
       Ehr.Props.Reachable ⟨sp,program,facts,user⟩ state →
       ∀ v ∈ viewports, ∃ painted,
         familyPaint family (runRenderUi ⟨sp,program,facts,display,user,state⟩) v = some painted ∧
-        Realizes (runRenderUi ⟨sp,program,facts,display,user,state⟩) v painted := by
-  intro facts display user state reachable v hv
-  exact layoutAccepted_allScreens family accepted _ (coverage facts display user state reachable) v hv
+        Realizes (runRenderUi ⟨sp,program,facts,display,user,state⟩) v painted :=
+  layoutAccepted_allPatients sp program family accepted coverage
+
+#print axioms RenderCovered_finite_iff
+#print axioms layoutAccepted_allPatients_finite
 
 #print axioms candidate_length_le
 #print axioms finiteFamily_missingShape

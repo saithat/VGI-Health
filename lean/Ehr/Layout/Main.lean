@@ -20,6 +20,21 @@ def main : IO Unit := do
           | "dialog" => Keyboard.dialog (rows*cols) state key
           | "listbox" => Keyboard.listbox (rows*cols) state key
           | _ => Keyboard.grid rows cols state key))
+      else if (json.getObjValAs? String "op").toOption.getD "" == "program-check" then
+        let spec ← json.getObjValAs? Ehr.Spec "spec"
+        let program ← json.getObjValAs? Ehr.Program "program"
+        pure (Json.mkObj [("accepted",toJson (Range.checkProgram spec program)),
+          ("scope",toJson "fixed-shell-v2 layout admission"),
+          ("theorem",toJson "Ehr.Layout.Range.checkProgram_sound"),
+          ("program",toJson program.id)])
+      else if (json.getObjValAs? String "op").toOption.getD "" == "program-paint" then
+        let input ← json.getObjValAs? Ehr.Render.RenderInput "render"
+        let v := (json.getObjValAs? Size "viewport").toOption.getD ⟨92160,57600⟩
+        pure (programOutput input v)
+      else if (json.getObjValAs? String "op").toOption.getD "" == "structural-paint" then
+        let screen ← json.getObjValAs? Ehr.Render.UiScreen "screen"
+        let v := (json.getObjValAs? Size "viewport").toOption.getD ⟨92160,57600⟩
+        pure (structuralOutput screen v)
       else if ["family-check","family-paint"].contains ((json.getObjValAs? String "op").toOption.getD "") then
         let refs ← json.getObjValAs? (List FamilyReference) "references"
         let family ← parseFamily refs

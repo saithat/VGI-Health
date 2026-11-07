@@ -128,7 +128,7 @@ def compileShape (v : Size) (shape : ScreenShape) : Node := Id.run do
     let isCommit := entry.region == .footer
     let isModal := entry.region == .modal
     let reservedLines := if isBanner then 5 else if isTitle then 1 else if isCommit then 3 else if isModal then 2 else entry.lines
-    let slot : TextSlot := { key := id, maxLength := 0, maxLines := reservedLines, overflow := .scroll, safety := true, font := if isTitle then 3 else 0, fontSize := if isTitle then 1280 else 896, lineHeight := if isTitle then 1920 else 1280 }
+    let slot : TextSlot := { key := id, maxLength := 0, maxLines := reservedLines, overflow := .scroll, safety := true, font := if isTitle then 3 else 0, fontSize := if isTitle then 1280 else 896, lineHeight := if isTitle then 1920 else 1408 }
     let m : Meta := { id, source := some entry.path, target := entry.target, commit := isCommit, banner := isBanner, interruptive := isModal, text := some slot }
     let s : Style := { width := .fill, height := .fixed (reservedLines*slot.lineHeight+512), bg := if isBanner then ⟨241,245,249⟩ else if isCommit then ⟨29,78,216⟩ else ⟨255,255,255⟩, z := if isModal then 100 else 0, fg := if isCommit then ⟨255,255,255⟩ else ⟨15,23,42⟩, radius := 256 }
     match entry.region with
