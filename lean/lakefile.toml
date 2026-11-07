@@ -36,6 +36,10 @@ name = "EhrHeavy"
 name = "profile-goals"
 root = "Ehr.Tools.ProfileGoals"
 
+[[lean_exe]]
+name = "completion-bench"
+root = "Ehr.Tools.CompletionBench"
+
 # Reviewer audit only; deliberately absent from defaultTargets.
 [[lean_lib]]
 name = "VerificationAudit"

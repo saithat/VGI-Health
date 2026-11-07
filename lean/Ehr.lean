@@ -41,6 +41,12 @@ import Ehr.Proofs.T6
 import Ehr.Proofs.Audit
 import Ehr.Props
 import Ehr.Check.Catalog
+import Ehr.Check.CompletionAbstraction
+import Ehr.Check.CompletionModelTests
+import Ehr.Check.CompletionScenario
+import Ehr.Check.CompletionScenarioTests
+import Ehr.Check.InteractionRules
+import Ehr.Check.CompletionAudit
 import Ehr.Check.Tests
 import Ehr.Check.Deploy
 import Ehr.Cli.Check

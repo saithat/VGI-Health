@@ -2,6 +2,7 @@ import Ehr.Specs.CriticalResults
 import Ehr
 import Ehr.Api
 import Ehr.Cli.Check
+import Ehr.Cli.Completion
 import Ehr.Cli.Sim
 import Ehr.Cli.Commit
 import Ehr.Cli.Serve
@@ -41,6 +42,7 @@ def usage : String :=
   "  view                     stdin ViewInput  -> ScreenView\n" ++
   "  run-batch <file.jsonl>   BatchCase per line -> BatchStep per event (JSONL)\n" ++
   "  check --spec S --program P [--prev P0] --canonical C   -> Verdict (exit 0 ok, 1 not)\n" ++
+  "  check-completion --spec S --program P [--prev P0] --canonical C --scenarios FILE\n" ++
   "  deploy --spec S --program P [--prev P0] --canonical C --out DIR [--time ISO]\n" ++
   "  spec-export <name>       spec JSON (names: " ++
     ", ".intercalate (specRegistry.map (·.1)) ++ ")\n" ++
@@ -106,6 +108,7 @@ def main (args : List String) : IO UInt32 := do
   | ["view"] => stdinCommand ViewInput ScreenView runView
   | ["run-batch", file] => runBatch file
   | "check" :: rest => Ehr.Cli.checkMain rest
+  | "check-completion" :: rest => Ehr.Cli.Completion.command rest
   | "deploy" :: rest => Ehr.Cli.deployMain rest
   | ["cures-exemptions-export"] =>
     IO.println (Lean.toJson Specs.V1.curesExemptionCodes).pretty; return 0

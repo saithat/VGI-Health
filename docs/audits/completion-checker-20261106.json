@@ -1,0 +1,685 @@
+{
+  "date": "2026-11-06",
+  "lane": "lane/completability-checker",
+  "status": "partial: general property 6 remains open",
+  "property6Closed": false,
+  "baseRevision": "5d47ede3",
+  "lastCommittedRevisionBeforeEvidence": "c8160eee8b06248c3f2aa2f3e12361af9d667bda",
+  "sourceSha256": {
+    "lean/Ehr.lean": "f2be5ea0a7ce6aa969a1b7b4b356f8613a50400c6fed5dfa2bceb976648f195c",
+    "lean/Ehr/Check/CompletionAbstraction.lean": "62e34f13d9a8612e8b82a2175f97816606943101ac954da3fcece1bbbda28a21",
+    "lean/Ehr/Check/CompletionAudit.lean": "f11a1e46217f15e67cdb4c8bcceedfc1dea53fe59a812e10850fc14ffdb7bfa4",
+    "lean/Ehr/Check/CompletionModel.lean": "6d5e9589de922e06ec0ff295648ac03240f72c40144d9c03d72ce47a6998da15",
+    "lean/Ehr/Check/CompletionModelTests.lean": "8c935acdc5906d723feab606992a4d32166bbb844a960c89b3e57c3042a50122",
+    "lean/Ehr/Check/CompletionScenario.lean": "4abcfe423dde94ce37dece384620e22e032c41c28060091a72de8798727c546e",
+    "lean/Ehr/Check/CompletionScenarioTests.lean": "eb3bfc80a8ef0712a83f476fb3c6a4a7cde9ca2ffb0876703813c201fa40f59d",
+    "lean/Ehr/Check/CompletionSearch.lean": "f659242a5d40e450fe56e0f1316a03103f23582513a7577556c8ea8c8491be93",
+    "lean/Ehr/Check/InteractionRules.lean": "1482df24500cf2617b865caa355883dba2e4f8adb109f2f420d466027f009fca",
+    "lean/Ehr/Cli/Completion.lean": "478e83ee2a94b613bd251ff46513afc0049bca62c180464456dc52810e3507b7",
+    "lean/Ehr/Tools/CompletionBench.lean": "25581e038026a56d43ed44f207064242bb834be757384daad020bf8ade751b3a",
+    "lean/Main.lean": "b1624791984d7132e21ff701dc6a8da0e6b17253065d325572465dc82cfe2278",
+    "lean/lakefile.toml": "538105c5d3b09d0861232f24604e30302ccff0426a592b2085c0cef431ab95a9",
+    "scripts/completion-check.test.mjs": "6678bce6a429f8db2d8a517d56a7c97675ba39c531d371bd54bc12f2687c12df"
+  },
+  "binarySha256": {
+    "lean/.lake/build/bin/ehr": "114c45e1dfab220ce78698a613df07333567a0abc3656768a6af4c455ff3c439",
+    "lean/.lake/build/bin/completion-bench": "44fc5f8817d87be1a7a83a37783134ac01c4db1253cf107dd0c979e7ed70d8b7"
+  },
+  "proofAudit": {
+    "theorems": 33,
+    "axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "kernelInstances": [
+      "six-state repaired task",
+      "closed one-state trap with a one-click prefix"
+    ]
+  },
+  "scope": "AG EF and no unfinished dead ends in the supplied fixed-clock scenario graph; only Back history is abstracted. Selected benchmark cases use navigationDirected, not arbitrary human/macro events or all values.",
+  "staticMatrix": {
+    "acceptedPersonas": 15,
+    "personaCount": 15,
+    "expectedRejections": 23,
+    "badCount": 23,
+    "references": 3
+  },
+  "selectedScenarios": {
+    "accepted": 18,
+    "count": 18,
+    "boundPerScenario": 2000,
+    "space": "navigationDirected",
+    "allRequiredTaskScenariosCovered": false
+  },
+  "programs": [
+    {
+      "program": "releases/v1/canonical.json",
+      "programSha256": "0bceefe2a5069b92d870afc4c92fbe1fd505d22128035405cc8ee1048b507076",
+      "reference": true,
+      "staticStatus": "reference-refused-as-single-role",
+      "staticMs": 167,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 24,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P1-0",
+          "elapsedMs": 3038,
+          "edges": 23,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v1/personas/P1.json",
+      "programSha256": "98f3e252f0b68f15678299747feb88640982fc5fb52482b8b5921f1753d8f060",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 10,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 24,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P1-0",
+          "elapsedMs": 520,
+          "edges": 23,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v1/personas/P2.json",
+      "programSha256": "09771b557a92feec8972997fe704147a9140c529051b03e99375d31601b0ea90",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 8,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 26,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P2-0",
+          "elapsedMs": 177,
+          "edges": 25,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v1/personas/P3.json",
+      "programSha256": "5e35e52c47a6d47ed3de19e6f49d1ef761fa96bf923f9251d4affb6287067d9e",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 1,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 12,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P3-0",
+          "elapsedMs": 53,
+          "edges": 11,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v1/personas/P4.json",
+      "programSha256": "e97b361ea37bec8758d872f45081e5867f96a1971981f2c428afaa5183c02f18",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 7,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 41,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P4-0",
+          "elapsedMs": 432,
+          "edges": 40,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v1/personas/P5.json",
+      "programSha256": "5ff9a9436f52152eab6235619916ef62946a8562ec2345adce047813f9c0781a",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 46,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 13,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P5-0",
+          "elapsedMs": 542,
+          "edges": 12,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v2/canonical.json",
+      "programSha256": "54f415b5fe17155786f9581333a15d84e115aad818a7d01bbf19df1d135b4b61",
+      "reference": true,
+      "staticStatus": "reference-refused-as-single-role",
+      "staticMs": 168,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 24,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P1-0",
+          "elapsedMs": 3085,
+          "edges": 23,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v2/personas/P1.json",
+      "programSha256": "bdf4cf426ee2352bfc0b6dc71e416695d2a420bfd5cec3028af57a6d4a4d2784",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 14,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 24,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P1-0",
+          "elapsedMs": 565,
+          "edges": 23,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v2/personas/P2.json",
+      "programSha256": "70f7a4035ace4e703e003dfa617f6e75eff4b38ec6595fc88307683335f9639f",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 10,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 26,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P2-0",
+          "elapsedMs": 176,
+          "edges": 25,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v2/personas/P3.json",
+      "programSha256": "fd9a1052c497404c7e92653bd6eccf282db276e9fa98ab39a95d27c39cbf9b7f",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 2,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 12,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P3-0",
+          "elapsedMs": 51,
+          "edges": 11,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v2/personas/P4.json",
+      "programSha256": "29ad3852bd6ce312573e3154d60a7074442b2e8dcdf7733e97acd6beb1b17fcc",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 9,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 41,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P4-0",
+          "elapsedMs": 435,
+          "edges": 40,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v2/personas/P5.json",
+      "programSha256": "c4d9458934b31bb58185bb97a348a18f41d3269d9871f9fd3a0e7d6fb7d97788",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 59,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 13,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P5-0",
+          "elapsedMs": 541,
+          "edges": 12,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v3/canonical.json",
+      "programSha256": "eefdc7aff146245e92d3991217403d78d2f1a37793501be6e1df62f978e42ec2",
+      "reference": true,
+      "staticStatus": "reference-refused-as-single-role",
+      "staticMs": 168,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 24,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P1-0",
+          "elapsedMs": 2972,
+          "edges": 23,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v3/personas/P1.json",
+      "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 13,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 24,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P1-0",
+          "elapsedMs": 536,
+          "edges": 23,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v3/personas/P2.json",
+      "programSha256": "c3099938db297160713439710fc3045912a4b2be06c8f1a3cd6fceb30ac85734",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 11,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 26,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P2-0",
+          "elapsedMs": 171,
+          "edges": 25,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v3/personas/P3.json",
+      "programSha256": "14b669e8048780bd002032cf99364884f70d5a9292a42ee77f99ae5d6f929c02",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 2,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 12,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P3-0",
+          "elapsedMs": 51,
+          "edges": 11,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v3/personas/P4.json",
+      "programSha256": "6174174edd60a5f4643dd4141808f0248c039d2f02f593a531c206852a41adbc",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 10,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 43,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P4-0",
+          "elapsedMs": 450,
+          "edges": 42,
+          "bound": 2000
+        }
+      ]
+    },
+    {
+      "program": "releases/v3/personas/P5.json",
+      "programSha256": "201797186808411a6f9c5dae752757e0abe411a9f20e921be1304cc6d4791ae6",
+      "reference": false,
+      "staticStatus": "accepted",
+      "staticMs": 64,
+      "scenarioAccepted": true,
+      "scenarios": [
+        {
+          "status": "accepted",
+          "states": 13,
+          "space": "navigationDirected",
+          "navigationKeepsEntries": true,
+          "interruptiveBeforeCommit": true,
+          "id": "P5-0",
+          "elapsedMs": 544,
+          "edges": 12,
+          "bound": 2000
+        }
+      ]
+    }
+  ],
+  "bad": [
+    {
+      "program": "programs/bad/01-hidden-allergies.json",
+      "programSha256": "3134ec1f781b6eb64cf9a36bec28e06f750c801d07092e53d73b935f4162037a",
+      "staticMs": 157,
+      "property": "reviewsBeforeCommit",
+      "expectedProperty": "reviewsBeforeCommit"
+    },
+    {
+      "program": "programs/bad/02-prefilled-identity.json",
+      "programSha256": "74bc9843744b8b63bd1cebd83da83063d833579fda474d6c8d5ad7f6b0c0e74c",
+      "staticMs": 99,
+      "property": "humanOnlyKept",
+      "expectedProperty": "humanOnlyKept"
+    },
+    {
+      "program": "programs/bad/03-pounds-as-weight.json",
+      "programSha256": "fb1eabc9d6243a2753345bd4693b38fe5270f3b63d7b8756ea936af793aea8a6",
+      "staticMs": 162,
+      "property": "writesOnly",
+      "expectedProperty": "writesOnly"
+    },
+    {
+      "program": "programs/bad/04-macro-override.json",
+      "programSha256": "bfd73c5782f8b89b26536ee658896db932ab5ac396accbfc0bb3fd6a1343c57f",
+      "staticMs": 183,
+      "property": "humanOnlyKept",
+      "expectedProperty": "humanOnlyKept"
+    },
+    {
+      "program": "programs/bad/05-self-cosign.json",
+      "programSha256": "01ddbe228ff9fe94e81d71b8ec36e2c8bff617e1b07ad3fc5664019197457bc9",
+      "staticMs": 13,
+      "property": "humanOnlyKept",
+      "expectedProperty": "humanOnlyKept"
+    },
+    {
+      "program": "programs/bad/06-stale-weight.json",
+      "programSha256": "8db6fce8fadebcd81e9912933ebd20e6f545b8f27296356b08b22cb489893826",
+      "staticMs": 159,
+      "property": "units",
+      "expectedProperty": "units"
+    },
+    {
+      "program": "programs/bad/07-unreachable-refill.json",
+      "programSha256": "3899c3fa5bab83a74bee1e825f3ff108763e1b67debd0a8adbf93cf49195c8f2",
+      "staticMs": 192,
+      "property": "completable",
+      "expectedProperty": "completable"
+    },
+    {
+      "program": "programs/bad/08-forged-consent.json",
+      "programSha256": "8a16cca4d8de40379b492b3cdd4eea00b6117c0db5bbcdcaf75245964e25036f",
+      "staticMs": 170,
+      "property": "humanOnlyKept",
+      "expectedProperty": "humanOnlyKept"
+    },
+    {
+      "program": "programs/bad/09-hidden-allergy-alert.json",
+      "programSha256": "7ab8fb310088ba39754208f34838af62c79ca789f85cd813f90dad67901fff4e",
+      "staticMs": 180,
+      "property": "humanOnlyKept",
+      "expectedProperty": "humanOnlyKept"
+    },
+    {
+      "program": "programs/bad/10-invented-alert.json",
+      "programSha256": "15caef88716e4da926d579f15fc2b4baa24bc5158e279d26a23ac586a8c3afab",
+      "staticMs": 160,
+      "property": "wellFormed",
+      "expectedProperty": "wellFormed"
+    },
+    {
+      "program": "programs/bad/11-repeated-interaction.json",
+      "programSha256": "0648df97f9b638d6a32e3b92401d3d913630bd27e1b0a63f63257bc5a227a427",
+      "staticMs": 160,
+      "property": "noRepeatInterruptions",
+      "expectedProperty": "noRepeatInterruptions"
+    },
+    {
+      "program": "programs/bad/12-passive-popup.json",
+      "programSha256": "a399f72042173f8a9b2bd3f93bb2d80c87539997c967bc082a09e813a891b7ad",
+      "staticMs": 158,
+      "property": "severityTiers",
+      "expectedProperty": "severityTiers"
+    },
+    {
+      "program": "programs/bad/13-no-cures.json",
+      "programSha256": "5fac2b944b5fc7c4c66e455706cc6a5122c21ea2ffa79a85bc3e368f52a06b43",
+      "staticMs": 134,
+      "property": "completable",
+      "expectedProperty": "completable"
+    },
+    {
+      "program": "programs/bad/14-macro-naloxone.json",
+      "programSha256": "2eac01c075d644a0a5a64b54ca3e18e561616d071dc0e67b4ef594b7e59b1a19",
+      "staticMs": 181,
+      "property": "humanOnlyKept",
+      "expectedProperty": "humanOnlyKept"
+    },
+    {
+      "program": "programs/bad/15-hidden-controlled-details.json",
+      "programSha256": "9ae73f3c8208c9d8bcbda21b74f51dd57489e84f8b07c412bff8e78360800043",
+      "staticMs": 154,
+      "property": "reviewsBeforeCommit",
+      "expectedProperty": "reviewsBeforeCommit"
+    },
+    {
+      "program": "programs/bad/16-schedule-ii-refills.json",
+      "programSha256": "a29532d0d661df39cf348a36565dad697790a02ab639b86498f593b886dce5a2",
+      "staticMs": 114,
+      "property": "completable",
+      "expectedProperty": "completable"
+    },
+    {
+      "program": "programs/bad/33-np-preop-macro.json",
+      "programSha256": "6b51b51630f065cd48e45599aa201dadd4b210c7dd8d1d42291c36100489221a",
+      "staticMs": 186,
+      "property": "humanOnlyKept",
+      "expectedProperty": "humanOnlyKept"
+    },
+    {
+      "program": "lean/Ehr/Check/bad/35-dose-without-drug.json",
+      "programSha256": "3da5d84494934474360258f038e4dc44435ea7bf382b52acaf1ee8d92df0565f",
+      "staticMs": 0,
+      "property": "completable",
+      "expectedProperty": "completable"
+    },
+    {
+      "program": "lean/Ehr/Check/bad/36-cures-without-review.json",
+      "programSha256": "31eb6b5fd277abc3c29b2e9641330f23983cb27420a420da9ca6b9a685a72531",
+      "staticMs": 8,
+      "property": "completable",
+      "expectedProperty": "completable"
+    },
+    {
+      "program": "lean/Ehr/Check/bad/37-stale-dosing-weight.json",
+      "programSha256": "e1af5800ee191b251fceb8b69041155a4525c95c274549fc79422532878cff2f",
+      "staticMs": 9,
+      "property": "capturesAllOnce",
+      "expectedProperty": "capturesAllOnce"
+    },
+    {
+      "program": "lean/Ehr/Check/bad/38-cross-patient-panel.json",
+      "programSha256": "de988f775c29bca639710309994c04c41d310f646c6018c6d4ce42d19cc6597a",
+      "staticMs": 9,
+      "property": "writesOnly",
+      "expectedProperty": "writesOnly"
+    },
+    {
+      "program": "lean/Ehr/Check/bad/39-empty-order-signing.json",
+      "programSha256": "e84602ea9241bcce9175179d2eedbe96084cc633422f2b03aeeaf225018429d9",
+      "staticMs": 2,
+      "property": "completable",
+      "expectedProperty": "completable"
+    },
+    {
+      "program": "lean/Ehr/Check/bad/40-denial-without-reason.json",
+      "programSha256": "4a986ed0f82a62ad8c2ff9fe417c90f2d49246193881e1b92c2069d9468b0b47",
+      "staticMs": 9,
+      "property": "completable",
+      "expectedProperty": "completable"
+    }
+  ],
+  "boundedFullSearch": {
+    "program": "releases/v1/personas/P1.json",
+    "exitCode": 1,
+    "result": {
+      "staticVerdict": "ok",
+      "scope": "fixed supplied records, users, goals and clocks; declared move spaces; history erasure only",
+      "scenarios": [
+        {
+          "status": "unknown",
+          "space": "full",
+          "id": "P1-0",
+          "elapsedMs": 367,
+          "bound": 100
+        }
+      ],
+      "property6Closed": false,
+      "accepted": false
+    }
+  },
+  "verification": [
+    {
+      "cwd": "lean",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6 lake build",
+      "exitCode": 0,
+      "result": "481 jobs; default library and ehr built; kernel proofs and Lean guards passed"
+    },
+    {
+      "cwd": "lean",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6 lake build completion-bench",
+      "exitCode": 0,
+      "result": "184 jobs; native benchmark built"
+    },
+    {
+      "cwd": "lean",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6 lake env lean Ehr/Check/CompletionAudit.lean",
+      "exitCode": 0,
+      "result": "33 theorems; only the three allowed axioms"
+    },
+    {
+      "cwd": ".",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp CI=true node --test scripts/completion-check.test.mjs",
+      "exitCode": 0,
+      "result": "6 tests passed; 0 failed"
+    },
+    {
+      "cwd": ".",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6 lean/.lake/build/bin/completion-bench /home/saithat/Projects/VGI-completable /home/saithat/Projects/run-tmp/completion-bench-final-20261106",
+      "exitCode": 0,
+      "result": "15 accepted / 23 expected static rejections; 18 selected directed scenarios accepted; canonical references remain non-deployable"
+    },
+    {
+      "cwd": ".",
+      "command": "TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6 lean/.lake/build/bin/ehr check-completion --spec releases/v1/spec.json --program releases/v1/personas/P1.json --canonical releases/v1/canonical.json --scenarios /home/saithat/Projects/run-tmp/completion-bench-final-20261106/v1-P1-full-100.json",
+      "exitCode": 1,
+      "result": "expected unknown refusal at a 100-state full-space budget"
+    }
+  ],
+  "notCompleted": [
+    "A proved finite transition abstraction covering arbitrary free text, numbers, unbounded order lines, macro actors and waits on canonical programs. The guard observation lemma alone does not provide this.",
+    "EpisodeAbstraction instances and checked certificates quantified over all records/users/required commits for the 15 accepted programs.",
+    "Mandatory integration into ordinary check/deploy certification: scenario-only evidence cannot soundly discharge general property 6.",
+    "Patient-switch durability: local state reset and external persisted clinical data require a combined specification.",
+    "Comparator pinning for the new owner-review theorem statements; existing protected statements/configurations were unchanged."
+  ],
+  "skippedByOwnerDirection": [
+    "full browser audit pair",
+    "full recertification",
+    "broad Playwright suites",
+    "long simulation runs"
+  ],
+  "certifiedAppSourcesChanged": false,
+  "ignoredDataAddedToGit": false,
+  "ownerReview": [
+    "Accept the explicitly scenario-scoped interim theorem and separate gate?",
+    "Approve the new interruptive-alert and Back-preservation interaction specifications?"
+  ],
+  "finalMergedCheck": [
+    "TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6 make verify",
+    "Rebuild/install WASM and verify its source/asset manifest after merging Lean lanes; rebuild the app if required by the merged changes.",
+    "Run the full template audit and --personas audit sequentially once, under the shared browser lock.",
+    "Run merged native/certificate/conformance and strict replay validation, including full recertification if required by merged build bindings.",
+    "Repeat the completion build, 33-theorem axiom audit, CLI tests and targeted native benchmark."
+  ],
+  "wasmRebuild": {
+    "performed": false,
+    "reason": "Native checker/proof lane; defer installation into certified app assets and manifest refresh to the merged build."
+  }
+}
