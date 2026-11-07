@@ -300,7 +300,9 @@ completions total) accepted B's change and refused D's: D saved scrolls but adde
 three validation clicks. Both selected designs had structural distance 0.004717;
 both native rejection rates were zero. This sample does not establish an
 improvement from the new policy or greater boundary exploration. The gates were
-retained without tuning to the result. [Measurement and targeted verification](docs/audits/explore-structure-20261106.md)
+retained without tuning to the result. Validation-completion fault fixtures
+explicitly select the historical discovery policy so their candidate reaches
+the validation gate independently of the structural effect floor. [Measurement and targeted verification](docs/audits/explore-structure-20261106.md)
 records effects, costs and limitations.
 
 Cadence runs use protocol `certified-cadence-archive-v1`. `run-days` accepts

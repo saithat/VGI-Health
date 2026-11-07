@@ -117,7 +117,7 @@ withData("runs/core-10day/decisions").describe("archive-backed agent prompts", (
     const ehr=createFakeEhr();const original=ehr.simulate;
     ehr.simulate=async(i)=>{const result=await original(i);return i.seed>=90_000_000&&i.program.version>0?{...result,tasks:result.tasks.map(t=>({...t,completed:false,clicks:0,keystrokes:0,klmDeciSec:0}))}:result;};
     const directory=await tmp('FAKE-incomplete');
-    const options={days:2,personas:['P1'],worldDir:world,runsRoot:directory,runId:'completion',llm:new ScriptedLlm(),ehr,releaseDays};
+    const options={structurePolicy:false as const,days:2,personas:['P1'],worldDir:world,runsRoot:directory,runId:'completion',llm:new ScriptedLlm(),ehr,releaseDays};
     if(_mode==='normal'){
       const result=await runDays(options);expect((await new RunStore(result.dir).readDecision(1,'P1')).outcome).toBe('validation-rejected');
       expect((await new RunStore(result.dir).login('P1')).program.version).toBe(0);
