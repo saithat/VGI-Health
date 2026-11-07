@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { ScreenFrame } from "./screenFingerprint";
 import type {
   Event,
   FactsOutput,
@@ -180,13 +181,15 @@ export async function marRequest(
             : "This chart changed. Reopen it and review current data before continuing.",
       );
     const message =
-      error.reason === "adt_guard"
-        ? "Placement rejected. Review the patient, bed status and your permitted actions."
-        : error.reason === "invalid_mar_status_or_guard"
-          ? "Administration rejected. Use given, held or refused and complete the required checks."
-          : (error.reason ??
-            error.error ??
-            `MAR service returned ${res.status}`);
+      error.error === "screen_fingerprint_mismatch"
+        ? "Screen verification failed. Reopen the EHR before retrying."
+        : error.reason === "adt_guard"
+          ? "Placement rejected. Review the patient, bed status and your permitted actions."
+          : error.reason === "invalid_mar_status_or_guard"
+            ? "Administration rejected. Use given, held or refused and complete the required checks."
+            : (error.reason ??
+              error.error ??
+              `MAR service returned ${res.status}`);
     if (res.status < 500) throw new MarRejected(message);
     throw new Error(message);
   }
@@ -235,6 +238,7 @@ export async function marCommit(
   event: Event,
   requestId: string,
   commit?: string,
+  screens?: { requestId: string; frames: ScreenFrame[] },
 ): Promise<{ state: State; version: number }> {
   const command = {
     requestId,
@@ -246,6 +250,7 @@ export async function marCommit(
       : {}),
     ...(commit ? { commit } : {}),
     event,
+    screens,
   };
   try {
     return JSON.parse(JSON.stringify(await marRequest("/commands", command)));

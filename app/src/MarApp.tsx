@@ -35,6 +35,7 @@ function MarChart({ session, viewer }: { session: Session; viewer: string }) {
       <div aria-busy={pending}>
         <UiScreenView
           screen={snapshot.ui}
+            onPaint={session.onPaint}
           viewer={viewer}
           onEvent={(event) => {
             setPending(true);

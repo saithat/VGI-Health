@@ -76,6 +76,11 @@ export const commandInput = z.object({
   requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/), sessionId: z.uuid(),
   revision: version, expectedVersion: version, expectedSharedVersion: version.optional(), commit: id.optional(), bed: id.optional(), expectedBoard: z.array(z.object({ key: z.string(), version }).strict()).max(128).optional(),
   event: z.record(z.string(), z.any()),
+  // Optional in the codec so absence receives the same retry-safe refusal as a
+  // mismatch, rather than a generic malformed-command response.
+  screens: z.object({ requestId: z.string(), frames: z.array(z.object({
+    step: version, phase: z.enum(['ready', 'loading']), hash: z.string().regex(/^[a-f0-9]{64}$/),
+  }).strict()).max(1024) }).strict().optional(),
 }).strict();
 export type Command = z.infer<typeof commandInput>;
 export const importSchema = z.object({

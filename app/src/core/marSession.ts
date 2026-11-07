@@ -1,6 +1,8 @@
 import type { Event } from "../../../lean/generated/ehr-types";
 import type { Interp } from "./interp";
 import { createSession } from "./session";
+import { screenJournal } from "../data/screenFingerprint";
+import type { UiScreen } from "../ehr/ui/types";
 import {
   MarConflict,
   MarRejected,
@@ -24,6 +26,7 @@ export async function createMarSession(
   connection: MarConnection,
 ) {
   let current = await openMar(connection);
+  const screens = screenJournal(interp.screenCanonical);
   const release = JSON.stringify([current.spec, current.program, current.user]);
   const session = createSession(
     interp,
@@ -38,7 +41,13 @@ export async function createMarSession(
   let savedNeedsRefresh = false;
   let refreshVersion = current.version;
   let uncertain:
-    { event: Event; requestId: string; session: MarOpened } | undefined;
+    | {
+        event: Event;
+        requestId: string;
+        session: MarOpened;
+        screens: Awaited<ReturnType<typeof screens.evidence>>;
+      }
+    | undefined;
   async function refresh(message: string) {
     const fresh = await openMar(connection);
     if (disposed) return;
@@ -47,6 +56,7 @@ export async function createMarSession(
         "The MAR release or identity changed. Reopen MAR before continuing.",
       );
     current = fresh;
+    screens.clear();
     refreshVersion = current.version;
     session.accept({ state: current.state, result: "ok" }, current.projection);
     connection.onUpdate?.(message);
@@ -70,6 +80,7 @@ export async function createMarSession(
   return {
     getSnapshot: session.getSnapshot,
     subscribe: session.subscribe,
+    onPaint: (screen: UiScreen) => screens.observe(screen, current.revision),
     getContext: () => undefined,
     getGeneration: () => current.sessionId,
     close() {
@@ -102,9 +113,11 @@ export async function createMarSession(
             throw new Error(
               "Reconcile the previous save before entering another action.",
             );
+          const requestId = uncertain?.requestId ?? crypto.randomUUID();
           const intent = uncertain ?? {
             event,
-            requestId: crypto.randomUUID(),
+            requestId,
+            screens: await screens.evidence(requestId),
             session: current,
           };
           uncertain = intent;
@@ -115,6 +128,7 @@ export async function createMarSession(
             staged.state.commits.find(
               (id) => !session.getSnapshot().state.commits.includes(id),
             ),
+            intent.screens,
           );
           uncertain = undefined;
           current.version = result.version;

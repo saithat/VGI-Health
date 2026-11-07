@@ -486,10 +486,14 @@ function StockUiScreenView({
 
 export function UiScreenView(props: {
   screen: UiScreen;
+  onPaint?(screen: UiScreen): void;
   onEvent: Emit;
   viewer?: string | undefined;
   presentations?: PresentationBundle | null;
 }) {
+  useLayoutEffect(() => {
+    props.onPaint?.(props.screen);
+  });
   return (
     <CompactContext.Provider value={props.screen.compact ?? []}>
       <PresentationProvider bundle={props.presentations ?? null}>

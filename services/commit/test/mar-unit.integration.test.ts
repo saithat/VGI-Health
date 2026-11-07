@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
 import { configSchema } from '../src/types.ts';
 import { migrate } from '../src/store.ts';
 import { fixture, host, patient, adminEvents } from './helpers.ts';
@@ -31,8 +31,18 @@ test('4 West unit gate applies to directory, session, cosign and already-open co
     await assert.rejects(a.store.openSession(outside, open), /mar_unit_disabled_or_forbidden/);
     await assert.rejects(a.store.cosign(outside, { ...open, expectedVersion: 1 }), /mar_unit_disabled_or_forbidden/);
     const s = await a.store.openSession(rn, open); let revision = s.revision;
-    for (const event of adminEvents(f, 'unit-patient')) revision = (await a.store.event(rn, s.sessionId, { revision, event })).revision;
-    const command = { requestId: 'unit-off', sessionId: s.sessionId, revision, expectedVersion: 1, expectedSharedVersion: 0,
+    const frames: { step: number; phase: 'ready'; hash: string }[] = [];
+    let snapshot = { state: s.state, projection: s.projection };
+    const paint = async () => {
+      const rendered = await a.lean.call('render-screen', { spec: s.spec, program: s.program, user: s.user, ...snapshot.projection, state: snapshot.state });
+      frames.push({ step: revision, phase: 'ready', hash: createHash('sha256').update(rendered.canonical).digest('hex') });
+    };
+    await paint();
+    for (const event of adminEvents(f, 'unit-patient')) {
+      const next = await a.store.event(rn, s.sessionId, { revision, event });
+      revision = next.revision; snapshot = next; await paint();
+    }
+    const command = { requestId: 'unit-off', screens: { requestId: 'unit-off', frames }, sessionId: s.sessionId, revision, expectedVersion: 1, expectedSharedVersion: 0,
       event: { click: { comp: 'w4Admin.commit.administerMed' } } };
     config.units!['4-west'].marOnService = false;
     assert.equal((await a.store.marDirectory(rn)).items.length, 0);

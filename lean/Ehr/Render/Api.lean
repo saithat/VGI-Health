@@ -27,6 +27,14 @@ def apiRenderUi (input : String) : String :=
   | .error e => errorJson e
   | .ok i => encodeJson (runRenderUi i)
 
+/-- Serialize a supplied screen, never render it again. The host checks this
+against its own encoding of the object actually handed to the painter. -/
+@[export ehr_screen_canonical]
+def apiScreenCanonical (input : String) : String :=
+  match decodeJson UiScreen input with
+  | .error e => errorJson e
+  | .ok screen => encodeJson screen.canonical
+
 @[export ehr_facts]
 def apiFacts (input : String) : String :=
   match decodeJson Fhir.FactsInput input with

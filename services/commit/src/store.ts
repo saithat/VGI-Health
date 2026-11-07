@@ -2,7 +2,8 @@ import { boardKeys, boardFrom, clinicalAction, projectAdt } from './clinical-adt
 import { projectCommand, storedReviewReceipts } from './projection.ts';
 import pg, { type PoolClient } from 'pg';
 import { readFile, readdir } from 'node:fs/promises';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHash } from 'node:crypto';
+import { verifyScreens } from './screens.ts';
 import { Lean } from './lean.ts';
 import { clinicalPersona, Fault, digest, emptyShared, sharedKey, sharedAction, type Actor, type Command, type Config, type Obj, type Patient } from './types.ts';
 
@@ -110,10 +111,10 @@ export class Store {
       return state ? { ...e, resource: { ...e.resource, operationalStatus: { code: ({ ready: 'U', occupied: 'O', dirty: 'H', cleaning: 'C' } as Obj)[state.phase] } } } : e;
     }) };
   }
-  async directory(actor: Actor) {
+  async directory(actor: Actor, db: pg.Pool | PoolClient = this.db) {
     // Filter in Postgres before decoding JSON. Loading every complete chart
     // just to paint the worklist needlessly multiplies memory by the cohort.
-    const rows = await this.db.query(`SELECT DISTINCT ON (r->>'resourceType',r->>'id') r AS resource
+    const rows = await db.query(`SELECT DISTINCT ON (r->>'resourceType',r->>'id') r AS resource
       FROM commit_streams s CROSS JOIN LATERAL jsonb_array_elements(s.snapshot->'bundle'->'entry') e
       CROSS JOIN LATERAL (SELECT e->'resource' AS r) x
       WHERE s.tenant=$1 AND s.kind='patient' AND substring(s.key from 9)=ANY($2)
@@ -123,7 +124,7 @@ export class Store {
       [this.config.tenant, actor.patients, ['Patient','Practitioner','Organization','Location','List'],
         ['Appointment','Encounter','Task','ServiceRequest','Procedure','Communication'],
         ['urn:vgi:world:realism','https://vgi-health.example/fhir/sid/world']]);
-    const beds = (await this.db.query("SELECT key,snapshot FROM commit_streams WHERE tenant=$1 AND kind='bed'", [this.config.tenant])).rows;
+    const beds = (await db.query("SELECT key,snapshot FROM commit_streams WHERE tenant=$1 AND kind='bed'", [this.config.tenant])).rows;
     return this.projectBeds({ resourceType: 'Bundle', type: 'collection', entry: rows.rows.map(row => ({ resource: row.resource })) }, beds);
   }
   async marDirectory(actor: Actor) {
@@ -303,7 +304,7 @@ export class Store {
       const boardRows = w.project && this.config.adt ? (await c.query('SELECT key,version FROM commit_streams WHERE tenant=$1 AND key=ANY($2) ORDER BY key COLLATE \"C\"', [this.config.tenant, boardKeys(this.config)])).rows : undefined;
       return { sessionId: id, revision: 0, version: p.version, state, facts: facts.facts,
         ...(boardRows ? { board: boardRows.map(r => ({ key: r.key, version: r.version })) } : {}),
-        ...((w.mar || w.project) ? { projection: facts, spec: release.spec, program: release.program, user: actor.user } : {}),
+        projection: facts, spec: release.spec, program: release.program, user: actor.user,
         ...(resource ? { shared: { key, version: resource.version, state: resource.snapshot } } : {}) };
     });
   }
@@ -324,30 +325,42 @@ export class Store {
   private sourceBundle(bundle: Obj, context: Obj) {
     return context.taskId ? { ...bundle, entry: bundle.entry.filter((e: Obj) => e.resource.resourceType !== 'Task' || e.resource.id === context.taskId) } : bundle;
   }
-  private async reconstruct(actor: Actor, release: Obj, patient: Obj, s: Obj) {
-    if (s.native_state && s.native_facts && s.native_version === s.base_version)
-      return { base: { spec: release.spec, program: release.program, user: actor.user, facts: s.native_facts }, state: s.native_state };
+  private async reconstruct(actor: Actor, release: Obj, patient: Obj, s: Obj, screens = false) {
+    // Interaction previews may reuse native caches. Command screen comparison
+    // always replays: cached state cannot establish the newly displayed steps.
+    if (!screens && s.native_state && s.native_facts && s.native_display && s.native_version === s.base_version)
+      return { base: { spec: release.spec, program: release.program, user: actor.user,
+        facts: s.native_facts, display: s.native_display }, state: s.native_state, frames: [] };
     const project = release.workflows[s.workflow]?.project;
     const chart = this.sourceBundle(patient.bundle, s.context);
     const directory = project ? await this.directory(actor) : undefined;
     const projection = await this.lean.call('facts', { bundle: chart, context: s.context,
       ...(directory ? { worldContext: { ...directory, entry: directory.entry.filter((e: Obj) =>
         !s.context.taskId || e.resource.resourceType !== 'Task' || e.resource.for?.reference !== `Patient/${patient.patient}` || e.resource.id === s.context.taskId) } } : {}) });
-    let base = { spec: release.spec, program: release.program, user: actor.user, facts: projection.facts };
+    let base = { spec: release.spec, program: release.program, user: actor.user, facts: projection.facts, display: projection.display };
     const selection = project && release.program.patientSelection;
-    if (selection) base = { ...base, facts: (await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...s.context, today: s.context.directoryDate ?? s.context.today } })).facts };
+    const workspace = selection ? await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...s.context, today: s.context.directoryDate ?? s.context.today } }) : undefined;
+    if (workspace) base = { ...base, ...workspace };
     let state = await this.lean.call('init', base);
-    for (const event of s.events) {
+    const frames: { step: number; phase: 'ready' | 'loading'; hash: string }[] = [];
+    const record = async (step: number, phase: 'ready' | 'loading') => {
+      if (!screens || step < s.screen_start) return;
+      const rendered = await this.lean.call('render-screen', { ...base, state });
+      frames.push({ step, phase, hash: createHash('sha256').update(rendered.canonical, 'utf8').digest('hex') });
+    };
+    await record(0, 'ready');
+    for (const [index, event] of s.events.entries()) {
       const before = state.patientContext?.patient;
       state = (await this.lean.call('step', { ...base, state, event })).state;
       if (selection && state.patientContext?.patient !== before) {
         if (state.patientContext?.patient && state.patientContext.patient !== patient.patient) throw new Fault(422, 'session_patient_mismatch');
-        base = { ...base, facts: state.patientContext?.patient ? projection.facts :
-          (await this.lean.call('facts', { bundle: directory, directoryOnly: true, context: { ...s.context, today: s.context.directoryDate ?? s.context.today } })).facts };
+        if (state.patientContext?.patient) await record(index + 1, 'loading');
+        base = { ...base, ...(state.patientContext?.patient ? projection : workspace) };
         if (state.patientContext?.patient) state = (await this.lean.call('step', { ...base, state, event: { scroll: { screen: state.screen } } })).state;
       }
+      await record(index + 1, 'ready');
     }
-    return { base, state };
+    return { base, state, frames };
   }
   async event(actor: Actor, id: string, input: { revision: number; event: Obj }) {
     return transaction(this.db, async c => {
@@ -363,15 +376,16 @@ export class Store {
       // those are not new reviews and must not prevent opening the patient.
       if (digest(next.state.commits) !== digest(state.commits) || (workflow.project && digest(next.state.receipts) !== digest(state.receipts))) throw new Fault(422, 'use_commit_endpoint');
       let cacheFacts = base.facts;
+      let display = base.display;
       if (workflow.project && release.program.patientSelection && state.patientContext?.patient !== next.state.patientContext?.patient) {
         const hydrated = await this.reconstruct(actor, release, p.snapshot, { ...s, native_state: null, events: [...s.events, input.event] });
-        next.state = hydrated.state; cacheFacts = hydrated.base.facts;
+        next.state = hydrated.state; cacheFacts = hydrated.base.facts; display = hydrated.base.display;
       }
       // Events have revision CAS; an uncertain response is recovered by opening a
       // new session and reviewing again, never by blindly replaying an event.
-      await c.query('UPDATE commit_sessions SET events=$3,revision=revision+1,native_state=$4,native_facts=$5,native_version=$6 WHERE tenant=$1 AND id=$2',
-        [this.config.tenant, id, JSON.stringify([...s.events, input.event]), next.state, cacheFacts, p.version]);
-      return { revision: s.revision + 1, ...next };
+      await c.query('UPDATE commit_sessions SET events=$3,revision=revision+1,native_state=$4,native_facts=$5,native_version=$6,native_display=$7 WHERE tenant=$1 AND id=$2',
+        [this.config.tenant, id, JSON.stringify([...s.events, input.event]), next.state, cacheFacts, p.version, display]);
+      return { revision: s.revision + 1, ...next, projection: { facts: cacheFacts, display } };
     });
   }
   async submit(actor: Actor, command: Command): Promise<{ status: number; body: Obj }> {
@@ -406,7 +420,16 @@ export class Store {
       if (s.revision !== command.revision || s.base_version !== p.version || p.version !== command.expectedVersion ||
           (resource && resource.version !== command.expectedSharedVersion) || (!resource && command.expectedSharedVersion !== undefined))
         return finish(409, { outcome: 'conflict', reason: 'version_conflict', version: p.version });
-      const { state } = await this.reconstruct(actor, release, p.snapshot, s);
+      const { state, frames } = await this.reconstruct(actor, release, p.snapshot, s, true);
+      const mismatch = verifyScreens(command, frames);
+      const requireScreens = () => {
+        if (!mismatch) return;
+        console.error(JSON.stringify({ diagnostic: 'screen_fingerprint_mismatch', requestId: command.requestId,
+          release: s.release_name, releaseHash: s.release_hash, patientVersion: p.version, ...mismatch }));
+        // Throw rolls back even the request reservation: corrected evidence may
+        // retry the same ID, and no clinical event or projection is appended.
+        throw new Fault(422, 'screen_fingerprint_mismatch');
+      };
       const commit = command.commit ?? workflow.commit;
       if (commit !== workflow.commit && !workflow.commits?.includes(commit)) return finish(422, { outcome: 'rejected', reason: 'unsupported_command' });
       const requestInput = {
@@ -415,7 +438,12 @@ export class Store {
         factsVersions: versions(this.sourceBundle(p.snapshot.bundle, s.context)), context: currentContext(s.context),
       };
       const decision = await this.lean.call(commit === 'markReviewed' && workflow.project ? 'review-check' : 'commit-check', requestInput);
-      if (!decision.accept) return finish(422, { outcome: 'rejected', reason: decision.reject?.reason ?? 'invalid_decision' });
+      if (!decision.accept) {
+        // A reordered journal can invalidate the guard as well as the display.
+        // Report its screen fault; ordinary guard refusals remain unchanged.
+        requireScreens();
+        return finish(422, { outcome: 'rejected', reason: decision.reject?.reason ?? 'invalid_decision' });
+      }
       const transactionId = randomUUID();
       const selectedBed = command.bed ? this.config.adt?.beds.find(b => b.resource === command.bed)?.id : s.context.bed;
       if (command.bed && selectedBed === undefined) return finish(422, { outcome: 'rejected', reason: 'bed_not_configured' });
@@ -473,10 +501,11 @@ export class Store {
         if (!multi.changed) return finish(409, { outcome: 'conflict', reason: 'shared_guard' });
       }
       if (resource && !multi) multi = { state: resource.snapshot };
+      requireScreens();
       const readVersions = Object.fromEntries(keys.map(k => [k, streams.get(k)!.version]));
       // Retain the exact internal input and decision for independent replay.
       const event = { kind: 'command', actor: actor.user.id, requestId: command.requestId,
-        releaseHash: s.release_hash, session: { id: s.id, revision: s.revision, context: s.context, events: s.events },
+        releaseHash: s.release_hash, screens: command.screens, session: { id: s.id, revision: s.revision, context: s.context, events: s.events },
         readVersions, guard: { input: requestInput, decision },
         ...(projection ? { projection } : {}),
         ...(clinicalAdt ? { clinicalAdt: { input: clinicalInput, accepted: clinicalAdt } } : {}),
@@ -501,13 +530,18 @@ export class Store {
         await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
           [t, k, stream.version + 1, transactionId, k === `patient:${s.patient}` ? event : k === key ? { kind: action ? 'shared' : 'shared-noop', readVersions, ...(action ? { action } : {}), state: multi!.state } : { kind: 'clinical-adt', actor: actor.user.id, requestId: command.requestId, input: clinicalInput, accepted: clinicalAdt }]);
       }
-      if (projecting) await c.query('UPDATE commit_sessions SET base_version=$3,events=$4,revision=revision+1,native_state=NULL,native_facts=NULL,native_version=NULL WHERE tenant=$1 AND id=$2',
+      if (projecting) await c.query('UPDATE commit_sessions SET base_version=$3,events=$4,screen_start=jsonb_array_length($4::jsonb),revision=revision+1,native_state=NULL,native_facts=NULL,native_version=NULL,native_display=NULL WHERE tenant=$1 AND id=$2',
         [t, s.id, p.version + 1, JSON.stringify([...s.events, command.event])]);
+      const refreshed = projecting ? await this.stream(c, `patient:${s.patient}`) : undefined;
+      const screenProjection = projecting ? await this.lean.call('facts', {
+        bundle: this.sourceBundle(refreshed!.snapshot.bundle, s.context), context: s.context,
+        ...(workflow.project ? { worldContext: await this.directory(actor, c) } : {}),
+      }) : undefined;
       await c.query("SELECT pg_notify('vgi_commit', 'changed')");
       return finish(201, { outcome: 'persisted', transactionId, version: p.version + 1, revision: s.revision + 1,
         ...(clinicalAdt ? { board: boardKeys(this.config).map(key => ({ key, version: streams.get(key)!.version + (key === `patient:${s.patient}` || streams.get(key)!.kind === 'bed' && digest(streams.get(key)!.snapshot) !== digest(clinicalAdt.state.beds.find((b: Obj) => `bed:${b.id}` === key)) ? 1 : 0) })) } : {}),
         ...(projection ? { links: projection.changed.map((r: Obj) => `/commit/patients/${s.patient}/resources/${r.resourceType}/${r.id}/${r.meta.versionId}`) } : {}),
-        ...(resource ? { sharedVersion: resource.version + 1 } : {}), state: decision.accept.state, ...(mar ? { mar: mar.events } : {}) });
+        ...(resource ? { sharedVersion: resource.version + 1 } : {}), state: decision.accept.state, ...(screenProjection ? { screenProjection } : {}), ...(mar ? { mar: mar.events } : {}) });
     });
   }
 }

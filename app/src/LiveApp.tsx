@@ -268,6 +268,7 @@ function Chart({
           <UiScreenView
             presentations={presentations}
             screen={ui}
+            onPaint={session.onPaint}
             viewer={viewer}
             onEvent={(event) => {
               if (pending) return;

@@ -20,6 +20,7 @@ import {
 
 /** Exact string-based seam for the forthcoming Lean WASM exports (§5). */
 export interface Interp {
+  screenCanonical?(screenJson: string): string;
   init(
     specJson: string,
     programJson: string,

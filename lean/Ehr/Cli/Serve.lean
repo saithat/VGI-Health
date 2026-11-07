@@ -73,6 +73,11 @@ def dispatch (request : Json) : Except String Json := do
     else Json.mkObj [("reject", Json.mkObj [("reason", .str "review event must add exactly one native receipt")])]
   | "commit-check" => applyJson Commit.Request Commit.Decision Commit.check input
   | "init" => applyJson InitInput State runInit input
+  | "screen-canonical" => applyJson Render.UiScreen String Render.UiScreen.canonical input
+  | "render-screen" =>
+    let i : Render.RenderInput ← fromJson? input
+    let screen := Render.runRenderUi i
+    pure (Json.mkObj [("screen", toJson screen), ("canonical", .str screen.canonical)])
   | "step" => applyJson StepInput StepOutput runStep input
   | "facts" =>
     let i ← fromJson? input

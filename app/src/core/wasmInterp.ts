@@ -10,6 +10,7 @@ export interface WasmEnvelopeInterp {
   exports?: readonly string[];
   call?(name: string, input: string): string;
   renderUi?(input: string): string;
+  screenCanonical?(input: string): string;
 }
 
 /** Adapt the existing string seam without translating Lean data or semantics. */
@@ -64,6 +65,18 @@ export function createWasmInterp(wasm: WasmEnvelopeInterp): Interp {
     return `"spec":${spec},"program":${program},"facts":${data.facts},"user":${user}${render && data.display ? `,"display":${data.display}` : ""}`;
   }
   return {
+    ...(wasm.screenCanonical ||
+    (wasm.exports?.includes("ehr_screen_canonical") && wasm.call)
+      ? {
+          screenCanonical: (input: string) => {
+            if (wasm.screenCanonical)
+              return checked(wasm.screenCanonical(input));
+            if (wasm.call)
+              return checked(wasm.call("ehr_screen_canonical", input));
+            throw new Error("Screen serialization export is unavailable");
+          },
+        }
+      : {}),
     init: (spec, program, facts, user) =>
       checked(wasm.init(`{${context(spec, program, facts, user)}}`)),
     step: (spec, program, facts, user, state, event) =>

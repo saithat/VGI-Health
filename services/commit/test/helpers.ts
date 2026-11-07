@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { once } from 'node:events';
+import { createHash } from 'node:crypto';
 import assert from 'node:assert/strict';
 import { Lean } from '../src/lean.ts';
 import { Store, pool } from '../src/store.ts';
@@ -11,6 +12,8 @@ export async function fixture() {
   if (!process.env.COMMIT_FIXTURE) throw new Error('Set COMMIT_FIXTURE to the output of test/Fixture.lean (see README)');
   return JSON.parse(await readFile(process.env.COMMIT_FIXTURE, 'utf8'));
 }
+const interpreters = new Map<string, Lean>();
+const screenSessions = new Map<string, Obj>();
 export async function host(url: string, config: Config, port = 0) {
   const db = pool(url);
   const lean = new Lean(resolve(process.env.EHR_BIN ?? '../../lean/.lake/build/bin/ehr'), 20_000);
@@ -23,13 +26,33 @@ export async function host(url: string, config: Config, port = 0) {
   const addr = app.http.address();
   assert.ok(addr && typeof addr !== 'string');
   const base = `http://127.0.0.1:${addr.port}`;
-  return { db, lean, store, base, async close() { await app.close(); await notifications.close(); lean.close(); await db.end(); } };
+  interpreters.set(base, lean);
+  return { db, lean, store, base, async close() { interpreters.delete(base); await app.close(); await notifications.close(); lean.close(); await db.end(); } };
 }
 export async function api(base: string, actor: Actor, path: string, body?: unknown) {
   const res = await fetch(base + path, { method: body === undefined ? 'GET' : 'POST',
     headers: { Authorization: `Bearer ${actor.token}`, 'Content-Type': 'application/json' },
     ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
-  return { status: res.status, body: await res.json() as Obj };
+  const result = { status: res.status, body: await res.json() as Obj };
+  // Test clients act as painters: hash each native wire object returned for the
+  // pinned release/state. Production never returns trusted fingerprints to UI.
+  let session: Obj | undefined;
+  if (res.status === 201 && path === '/sessions') {
+    session = { ...result.body, frames: [] };
+    screenSessions.set(session!.sessionId, session!);
+  } else if (res.status === 200 && path.startsWith('/sessions/')) {
+    session = screenSessions.get(path.split('/')[2]);
+    if (session) Object.assign(session, result.body);
+  } else if (res.status === 201 && path === '/commands') {
+    session = screenSessions.get((body as Obj).sessionId);
+    if (session) Object.assign(session, result.body, { projection: result.body.screenProjection ?? session.projection, frames: [] });
+  }
+  if (session) {
+    const rendered = await interpreters.get(base)!.call('render-screen', { spec: session.spec,
+      program: session.program, user: session.user, ...session.projection, state: session.state });
+    session.frames.push({ step: session.revision, phase: 'ready', hash: createHash('sha256').update(rendered.canonical).digest('hex') });
+  }
+  return result;
 }
 export async function ready(base: string, actor: Actor, patient: string, release: string, workflow: string, events: Obj[]) {
   const opened = await api(base, actor, '/sessions', { patient, release, workflow });
@@ -43,7 +66,7 @@ export async function ready(base: string, actor: Actor, patient: string, release
   return session;
 }
 export function intent(s: Obj, requestId: string, event: Obj) {
-  return { requestId, sessionId: s.sessionId, revision: s.revision, expectedVersion: s.version,
+  return { requestId, screens: { requestId, frames: structuredClone(screenSessions.get(s.sessionId)?.frames ?? []) }, sessionId: s.sessionId, revision: s.revision, expectedVersion: s.version,
     ...(s.shared ? { expectedSharedVersion: s.shared.version } : {}), event };
 }
 export function patient(f: Obj, id: string, modelId: number, nurse = false) {

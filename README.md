@@ -102,8 +102,10 @@ flowchart TB
     CORE --> SIM
   end
 
+  TOOLCHAIN["Lean compiler + native clang"]:::trusted
+  TOOLCHAIN --> NATIVE
   NATIVE["native ehr binary"]:::trusted
-  WASM["ehr-interp.wasm"]:::trusted
+  WASM["ehr-interp.wasm<br/>untrusted preview + renderer"]:::untrusted
   LEAN --> NATIVE
   LEAN --> WASM
 
@@ -122,9 +124,9 @@ flowchart TB
     OIDC["Keycloak OIDC<br/>identity + signed roles"]:::trusted
   end
   IMPORT["Synthea + Synthetic Hospital<br/>FHIR import (offline only)"]:::checked
-  PAINTER -->|"versioned interaction / command"| COMMIT
+  PAINTER -->|"versioned journal + painted screen hashes<br/>request-bound command"| COMMIT
   OIDC --> COMMIT
-  COMMIT -->|"ehr serve:<br/>re-check current guard"| NATIVE
+  COMMIT -->|"ehr serve: native screen comparison<br/>+ current guard"| NATIVE
   COMMIT -->|"locked expected-version append<br/>+ atomic projection"| STORE
   STORE -->|"authorized chart + directory reads"| COMMIT
   IMPORT --> COMMIT
@@ -133,9 +135,21 @@ flowchart TB
 Green: proved in Lean. Blue: tested. Grey: trusted. Red: untrusted by design.
 
 **One click.** WASM `step` previews the interaction and `renderUi` supplies the
-screen tree, including honest guard explanations and interruptive alerts. In
-live mode the commit service reconstructs the authenticated clinician's human
-interactions using its pinned release. Every clinical commit and review receipt
+screen tree. The painter records the exact object it receives, including the
+banner, required reviews and interruptive alerts. The host checks Lean's
+canonical serialization against an independent encoding of that painted object,
+then hashes its UTF-8 bytes with SHA-256. In live mode every command binds the
+ordered screen evidence to its request ID. The commit service reconstructs the
+authenticated clinician's journal using its pinned release, renders each source
+screen natively and compares its hash, including the command's source screen.
+Missing, reordered or differing evidence returns retry-safe
+`screen_fingerprint_mismatch` (422), rolls back the request reservation, and
+appends no event or projection. Existing version-conflict refusals retain their
+priority. Diagnostics contain the request ID, step, both
+hashes and release name/hash. Corrected evidence may reuse the refused ID;
+uncertain transport outcomes retain the exact original intent. WASM and
+Emscripten are untrusted for this comparison; native Lean compilation and clang
+remain trusted. Every clinical commit and review receipt
 is a typed command with the version of the chart actually read. The service
 locks the patient stream, checks the expected version and runs the native Lean
 guard on current stored data. Only acceptance appends an event and materializes
@@ -145,11 +159,19 @@ bed streams and native ADT reducer. A rejected or stale command cannot publish
 any of these effects. There is no browser FHIR writer.
 
 Noncommitting interactions preview locally and are submitted as an ordered
-human-event journal before the next command; consecutive valid edits of one field
-retain its final entered value. Server-generated session caches are bound to
-the locked patient version; a successful command invalidates them. They avoid replaying the entire history on
-every keystroke and never replace the final native guard. Request IDs bind exact
+human-event journal before the next command; every field edit retains its
+position and displayed evidence. Each native ready screen since the previous
+successful command is mandatory. Loading screens are compared when React
+actually paints them; batched-away loading frames require no evidence. Returning
+to the directory discards clinical state and starts a fresh patient session at
+native init, so another patient's evidence cannot authorize a command. Chart
+hydration and post-command rendering use native projections, avoiding browser
+recomputation of the authoritative display. Version-bound native caches remain available for interaction previews. Commands
+bypass them for reconstruction; a stale cache cannot suppress comparison of a new step.
+The final native guard and locked version checks remain authoritative. Request IDs bind exact
 intent and allow recovery of an uncertain outcome without duplicating a write.
+An unresolved save blocks new interactions, including patient switches, until
+the original intent is reconciled.
 New clinical sessions recover the authenticated actor's current-day review receipts
 only while every reviewed resource version still matches the stored chart.
 The interaction endpoint checks the human event before hydrating a selected chart;
@@ -168,10 +190,16 @@ sequenceDiagram
   C->>P: clicks Sign
   P->>L: preview human step
   L-->>P: staged state / guard explanation
-  P->>S: typed command + expected version + request ID
+  Note over P: Capture exact painted tree at each journal step
+  P->>P: canonical bytes + host SHA-256
+  P->>S: typed command + version + request ID + ordered screen hashes
   S->>DB: lock patient and shared resources
-  S->>N: reconstruct interaction, re-check current guard
+  S->>N: reconstruct journal + render each screen natively
+  N-->>S: canonical native screen bytes
+  S->>N: re-check current guard and shared transitions
   N-->>S: accept or reject
+  S->>S: version checks + compare every source screen
+  Note over S: Missing/mismatch: 422, rollback, diagnostic
   S->>DB: accepted event + projection (atomic CAS)
   S-->>P: durable result or refusal
 ```
@@ -528,8 +556,28 @@ cross-checked by Lean's Comparator (`make verify`).
 
 Not proved: that the rules are clinically complete; the React painter,
 browser, FHIR import mapping and storage projections (tested); the Node/SQL
-wrapper, Postgres and authentication (integration-tested); the Lean compiler and Emscripten (trusted); the AI agent
-(untrusted; only accepted programs deploy).
+wrapper, Postgres and authentication (integration-tested); the Lean compiler
+and native clang (trusted); SHA-256 collision resistance (assumed); serialization
+injectivity and native/WASM/host agreement (tested). WASM/Emscripten are untrusted
+for displayed tree content: discrepancies refuse the next command. This does
+not prove DOM pixels, CSS, browser behavior, what a person perceived, or clinical
+actions outside a command. The AI agent is untrusted; only accepted programs deploy.
+
+`UiScreen.canonical` (`lean/Ehr/Render/Json.lean`) defines `vgi-screen-v1:`:
+null/booleans have single-byte tags; numbers end with `;`; strings carry UTF-8
+byte lengths; arrays and objects carry entry counts, with object keys ordered
+by Unicode scalar value. The derived `UiScreen` writer includes every painter
+field, including the banner, modal, urgent strip and review content. The WASM
+`ehr_screen_canonical` export serializes a supplied screen without re-rendering.
+Native `ehr serve` exposes `screen-canonical` and `render-screen`; the latter
+returns the native screen and its canonical bytes. SHA-256 belongs to the host.
+Serialization injectivity is tested rather than proved.
+
+Screen verification changes the certified clinical app and WASM/source bindings.
+Certificates must bind the current native binary, app and packaged WASM;
+recertification installs matching bindings and verifies strict replay.
+[Screen-fingerprint evidence](docs/audits/screen-fingerprint-20261106.md)
+records the canonical corpus, request/retry tests and a short added-latency sample.
 
 ## What parts of a real EHR are replicated
 

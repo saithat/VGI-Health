@@ -9,6 +9,8 @@ import type {
 import { fhirDisplayContext } from "../data/fhirContext";
 import { keepFocusedTask, selectedRowSource } from "../data/patientDirectory";
 import { createSession } from "./session";
+import { screenJournal } from "../data/screenFingerprint";
+import type { UiScreen } from "../ehr/ui/types";
 import type { Interp } from "./interp";
 import {
   bundleResources,
@@ -25,6 +27,8 @@ import {
   type Task,
 } from "../data/liveStore";
 import {
+  MarRejected,
+  MarConflict,
   marRequest,
   marEvent,
   openMar,
@@ -268,26 +272,13 @@ export async function createLiveSession(
     selectionEnabled && directory ? directory : scopedProjection(),
     { id: user.practitioner.id, role: user.role },
   );
-  const initialActivity = session.getSnapshot().state.patientContext?.activity;
   let pending = false;
   let refreshNeeded = false;
   let remote: MarOpened | undefined;
-  let history: Event[] = [];
+  const screensSeen = screenJournal(interp.screenCanonical);
+  const history: Event[] = [];
   let unsent: Event[] = [];
-  function appendEvent(events: Event[], event: Event, accepted: boolean) {
-    const previous = events.at(-1);
-    // A field edit submits the final human value. Keep intervening navigation,
-    // acknowledgments, confirmations and macros in their original order.
-    if (
-      accepted &&
-      "enter" in event &&
-      previous &&
-      "enter" in previous &&
-      previous.enter.comp === event.enter.comp
-    )
-      events[events.length - 1] = event;
-    else events.push(event);
-  }
+
   let uncertain:
     { requestId: string; body: unknown; event: string } | undefined;
   async function synchronize() {
@@ -324,10 +315,27 @@ export async function createLiveSession(
     remote = current;
     return remote;
   }
-  const projectionFor = scopedProjection;
+  if (!selectionEnabled && context) {
+    const authority = await synchronize();
+    session.accept(
+      { state: authority.state, result: "ok" },
+      authority.projection,
+    );
+  }
   return {
     getSnapshot: session.getSnapshot,
     subscribe: session.subscribe,
+    onPaint: (screen: UiScreen) => {
+      const state = session.getSnapshot().state;
+      screensSeen.observe(
+        screen,
+        history.length,
+        state.patientContext?.patient &&
+          state.patientContext.bound !== state.patientContext.patient
+          ? "loading"
+          : "ready",
+      );
+    },
     getContext: () => context,
     setBed(bed: Location | undefined) {
       if (pending || uncertain)
@@ -345,6 +353,10 @@ export async function createLiveSession(
       { links: string[]; message: string; refreshRequired?: true } | undefined
     > {
       if (pending) throw new Error("A transaction is already saving");
+      if (uncertain && uncertain.event !== JSON.stringify(event))
+        throw new Error(
+          "Reconcile the previous save before entering another action",
+        );
       if (refreshNeeded)
         throw new Error(
           "The previous transaction saved. Reopen the chart to refresh before continuing.",
@@ -364,28 +376,25 @@ export async function createLiveSession(
         unsent = [];
         // Directory interactions contain no clinical evidence. A new patient
         // starts from a fresh native state and must earn its own guards.
-        const selectedContext = staged.state.patientContext;
-        history = [];
-        if (
-          selectedContext?.activity &&
-          selectedContext.activity !== initialActivity
-        )
-          history.push({
-            click: {
-              comp:
-                selectedContext.activity === "lookup"
-                  ? "workspace.lookup"
-                  : `workspace.activity|${selectedContext.activity}`,
-            },
-          });
-        if (selectedContext?.query)
-          history.push({
-            enter: {
-              comp: "workspace.search",
-              value: { text: { s: selectedContext.query } },
-            },
-          });
-        if (selected) history.push(event);
+        if (priorPatient) {
+          // Returning to the directory starts a fresh patient session. Discard
+          // clinical state and its journal together; no prior patient's evidence
+          // may authorize the next chart. Paint the same native init baseline.
+          history.length = 0;
+          screensSeen.clear();
+          const state = JSON.parse(
+            interp.init(
+              JSON.stringify(spec),
+              JSON.stringify(program),
+              JSON.stringify(directory),
+              JSON.stringify({ id: user.practitioner.id, role: user.role }),
+            ),
+          );
+          context = undefined;
+          session.accept({ state, result: "ok" }, directory);
+          return undefined;
+        }
+        history.push(event);
         session.accept(staged, directory);
         if (!selected) {
           context = undefined;
@@ -496,27 +505,11 @@ export async function createLiveSession(
             ...(renewal ? { renewal } : {}),
           };
           patientCharts.set(selected, { context, chart });
-          const reviews = await loadReviewReceipts(
-            chart,
-            user,
-            new Date().toISOString(),
+          const authority = await synchronize();
+          session.accept(
+            { state: authority.state, result: "ok" },
+            authority.projection,
           );
-          const projection = projectionFor(staged.state.screen, reviews);
-          if (projection.facts.sourcePatientId !== selected)
-            throw new Error(
-              "Patient identity does not match the selected chart",
-            );
-          const hydrated = JSON.parse(
-            interp.step(
-              JSON.stringify(spec),
-              JSON.stringify(program),
-              JSON.stringify(projection),
-              JSON.stringify({ id: user.practitioner.id, role: user.role }),
-              JSON.stringify(staged.state),
-              JSON.stringify({ scroll: { screen: staged.state.screen } }),
-            ),
-          );
-          session.accept(hydrated, projection);
           return undefined;
         } finally {
           pending = false;
@@ -540,14 +533,9 @@ export async function createLiveSession(
           throw new Error(
             "Reconcile the previous save before entering another action",
           );
-        appendEvent(history, event, staged.result === "ok");
-        if (remote) appendEvent(unsent, event, staged.result === "ok");
-        session.accept(
-          staged,
-          staged.state.screen !== before.state.screen
-            ? projectionFor(staged.state.screen, staged.state.receipts)
-            : undefined,
-        );
+        history.push(event);
+        if (remote) unsent.push(event);
+        session.accept(staged, remote?.projection);
         return undefined;
       }
       if (!context)
@@ -574,11 +562,13 @@ export async function createLiveSession(
           throw new Error(
             "Reconcile the previous save before entering another action",
           );
+        const requestId = uncertain?.requestId ?? crypto.randomUUID();
         const intent = uncertain ?? {
-          requestId: crypto.randomUUID(),
+          requestId,
           event: JSON.stringify(event),
           body: {
-            requestId: crypto.randomUUID(),
+            requestId,
+            screens: await screensSeen.evidence(requestId),
             sessionId: authority.sessionId,
             revision: authority.revision,
             expectedVersion: authority.version,
@@ -601,12 +591,17 @@ export async function createLiveSession(
           revision: number;
           board?: { key: string; version: number }[];
           links?: string[];
+          screenProjection: FactsOutput;
         };
         try {
           accepted = JSON.parse(
             JSON.stringify(await marRequest("/commands", intent.body)),
           );
         } catch (error) {
+          if (error instanceof MarRejected || error instanceof MarConflict) {
+            uncertain = undefined;
+            throw error;
+          }
           try {
             const outcome = z
               .object({ status: z.number(), body: z.unknown() })
@@ -621,10 +616,14 @@ export async function createLiveSession(
           }
         }
         uncertain = undefined;
+        screensSeen.clear();
+        history.push(event);
+        unsent = [];
         invalidateDirectory();
         remote = {
           ...authority,
           state: accepted.state,
+          projection: accepted.screenProjection,
           version: accepted.version,
           revision: accepted.revision,
           ...(authority.board
@@ -669,10 +668,7 @@ export async function createLiveSession(
         if (context.patient.id)
           patientCharts.set(context.patient.id, { context, chart });
         try {
-          session.accept(
-            staged,
-            projectionFor(staged.state.screen, staged.state.receipts),
-          );
+          session.accept(staged, accepted.screenProjection);
         } catch (error) {
           refreshNeeded = true;
           session.accept(staged);

@@ -55,4 +55,24 @@ instance (priority := 1100) : Lean.FromJson Display where
 
 deriving instance Lean.ToJson, Lean.FromJson for RenderInput, FactsContext, FactsOutput
 
+/-- Versioned, length-delimited wire encoding. Object keys follow Lean's Unicode
+scalar order; lengths count UTF-8 bytes. No whitespace or JSON escaping choices
+enter the fingerprint. UiScreen's derived writer includes every painter field.
+Hosts independently encode the painted object before hashing these exact bytes. -/
+partial def screenWireJson : Lean.Json → String
+  | .null => "n"
+  | .bool true => "t"
+  | .bool false => "f"
+  | .num n => "i" ++ n.toString ++ ";"
+  | .str s => "s" ++ toString s.utf8ByteSize ++ ":" ++ s
+  | .arr xs => "a" ++ toString xs.size ++ ":" ++ String.join (xs.toList.map screenWireJson)
+  | .obj fields =>
+    let entries := fields.toList
+    "o" ++ toString entries.length ++ ":" ++ String.join (entries.map fun (k, v) =>
+      screenWireJson (.str k) ++ screenWireJson v)
+
+/-- Canonical screen bytes, shared by native ehr serve and the WASM API. -/
+def UiScreen.canonical (screen : UiScreen) : String :=
+  "vgi-screen-v1:" ++ screenWireJson (Lean.toJson screen)
+
 end Ehr.Render
