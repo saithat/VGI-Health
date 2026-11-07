@@ -5,6 +5,45 @@ import path from "node:path";
 import { expect, it, vi } from "vitest";
 import { runMiddleware } from "../scripts/runs-plugin";
 
+it("serves generated-world inventory without a recording completion marker", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "world-http-"));
+  const directory = path.join(root, "runs/world/2");
+  await mkdir(path.join(directory, "context"), { recursive: true });
+  const manifest = { seed: 2, files: ["day-1-P2.json", "context/day-01.json"] };
+  await writeFile(path.join(directory, "manifest.json"), JSON.stringify(manifest));
+  await writeFile(path.join(directory, "day-1-P2.json"), JSON.stringify({ tasks: [] }));
+  await writeFile(path.join(directory, "context/day-01.json"), JSON.stringify({ entry: [] }));
+  await writeFile(path.join(directory, "private.json"), JSON.stringify({ hidden: true }));
+  await writeFile(path.join(root, "runs/secret.json"), JSON.stringify({ hidden: true }));
+  const middleware = runMiddleware(root);
+  const server = createServer((req, res) => void middleware(req, res, () => {
+    res.statusCode = 404;
+    res.end();
+  }));
+  await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const address = server.address();
+  if (!address || typeof address === "string") throw new Error("Missing test listener");
+  const read = (file: string) => new Promise<{ status: number; body: string }>((resolve) =>
+    get(`http://127.0.0.1:${address.port}/runs/${file}`, (res) => {
+      let body = "";
+      res.on("data", (chunk) => (body += chunk));
+      res.on("end", () => resolve({ status: res.statusCode ?? 0, body }));
+    }));
+  const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    expect(JSON.parse((await read("world/2/manifest.json")).body)).toEqual(manifest);
+    expect(JSON.parse((await read("world/2/day-1-P2.json")).body)).toEqual({ tasks: [] });
+    expect(JSON.parse((await read("world/2/context/day-01.json")).body)).toEqual({ entry: [] });
+    expect((await read("world/2/private.json")).status).toBe(404);
+    expect((await read("world/2/..%2f..%2fsecret.json")).status).toBe(404);
+    expect(JSON.parse((await read("index.json")).body)).toEqual([]);
+  } finally {
+    log.mockRestore();
+    await new Promise<void>((resolve, reject) => server.close((e) => e ? reject(e) : resolve()));
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 it("HTTP summary/index and direct artifacts share the marker boundary", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "run-http-"));
   const put = async (file: string, value: unknown) => {

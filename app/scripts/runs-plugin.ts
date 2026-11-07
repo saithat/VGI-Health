@@ -7,7 +7,7 @@ import {
   savedPrefix,
   readDecision,
 } from "../../scripts/live-run-data.mjs";
-import { readdir, access } from "node:fs/promises";
+import { readdir, access, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { Plugin } from "vite";
 import { geometrySliceFile } from "./geometry-slice";
@@ -108,6 +108,21 @@ export function runMiddleware(root = resolve(import.meta.dirname, "../..")) {
       res.setHeader("Content-Type", "application/json");
       const send = (value: unknown) =>
         sendArtifact(req, res, pathname, Buffer.from(JSON.stringify(value)));
+      if (pathname.split("/").includes(".."))
+        throw new Error("Invalid run path");
+      const world = /^\/runs\/world\/([\w-]+)\/((?:[\w.-]+\/)*[\w.-]+\.json)$/.exec(
+        pathname,
+      );
+      if (world) {
+        const directory = resolve(runRoot, "world", world[1] ?? "");
+        const file = world[2] ?? "";
+        const manifest = z.object({ files: z.array(z.string()) }).passthrough()
+          .parse(JSON.parse(await readFile(resolve(directory, "manifest.json"), "utf8")));
+        if (file === "manifest.json") return await send(manifest);
+        if (!manifest.files.includes(file))
+          throw new Error("Unlisted world artifact");
+        return await sendArtifact(req, res, pathname, resolve(directory, file));
+      }
       if (pathname === "/runs/index.json") return await send(await index());
       if (pathname === "/runs/default.json")
         return await send({ runId: selectDefaultRun(await index()) });

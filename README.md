@@ -231,8 +231,9 @@ Code ranks the top eight screen-effort, repeated screen-navigation and A→B→A
 backtrack hotspots, with stable tie breaking. Ranking uses clicks + scrolls +
 scroll pixels / 900; no elapsed-time model enters the prompt. `InformationEffort`
 in `agent/src/hotspots.ts` accepts one numeric lookup-detour/memory-carry aggregate
-per completed train task, ready for the information-needs adapter. Missing
-information evidence adds no inferred detours or memory costs.
+per completed train task. The adapter is not yet connected to the opt-in
+information-needs simulator output; absent evidence adds no inferred detours
+or memory costs.
 
 Each proposal requests small, medium and radical alternatives, each naming an
 exact hotspot and predicting daily physical savings. Radical requires changed
@@ -712,6 +713,12 @@ retryable and never create a ready receipt. Trajectory contexts retain native/WA
 certification specs. The run already writes build bindings at deployment;
 review does not rebind or re-certify recordings. Rebind after a certified
 renderer change remains an explicit separate operation.
+
+Generated-world JSON under `/runs/world/<id>/` uses its own manifest inventory.
+It has no recording completion marker and does not enter the recorded-run index.
+The preview/dev server serves its manifest and listed artifacts while refusing
+unlisted files and parent traversal. Recorded runs retain their completed-prefix
+boundary.
 
 Summary reads show completed days immediately; expensive derived evidence
 loads separately. Active runs refresh every 30 seconds, without page reload
@@ -1648,6 +1655,26 @@ remeasurement preserved 1,284 tasks and 72,636 events with zero strict-replay
 mismatches. [Verification evidence](docs/audits/main-verification-20261106.json)
 records commands, build bindings and timings; the historical approximately
 90s/revision serial baseline has no recorded cache temperature.
+
+The current certified app hash is
+`98657b3382d3a810c1ee7bcfb075f5ae653f86b18faf383538c65c8b7929a5c3`.
+A cold P1/v1 profile using three FHIR bundles, 981 inputs and 819 distinct
+trees took 847.23s before popup batching and capture-settling changes, and
+651.17s afterward (23.14% less command wall time). Native preparation fell from
+82.15s to 21.54s; the browser gate fell from 763.33s to 627.77s. All tree
+verdicts, geometry and 8,046 physical measurement records matched exactly.
+These are single observations; other native checks overlapped the first two
+optimized browser batches. Standalone revision timing is not comparable to
+the average of a cross-revision-deduplicated batch.
+With the exact current context fully cached, the 33-revision batch gate took
+178.11s total, with 27,371 cache hits, zero misses and the same 24,353-state /
+219,177-measurement physical coverage. This gate timing excludes certificate
+installation, strict replay and remeasurement.
+The complete warm installation command took 91m44s: all 33 revisions received
+current bindings, all 50 shifts were remeasured, and freshly regenerated native
+and WASM replay verified 1,284 tasks / 72,636 events with zero mismatches. An
+additional saved-context WASM replay also passed. Frozen inputs, decisions,
+schedules and clinical traces were preserved.
 
 Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:
