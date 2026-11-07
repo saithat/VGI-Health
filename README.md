@@ -1,4 +1,4 @@
-_README last reviewed against commit `cbc1bc79` (2026-11-07)._
+_README last reviewed against commit `b09f6788` (2026-11-07)._
 
 # VGI Health
 
@@ -700,6 +700,15 @@ canonical-byte corpus but does not rebuild WASM. Default builds and the proof
 audit reject proof placeholders; the three deliberate Comparator challenge
 modules are outside these targets. Full Comparator verification remains
 `make verify`.
+
+The `lean` job also regenerates the proof map (`scripts/proof-map/build.sh`),
+a browsable dependency tree of every project theorem and definition read from
+the compiled environment, and uploads it as the `proof-map` artifact (download,
+then open `index.html` from a local web server). The build fails if any theorem
+depends on an axiom other than the standard three, including `sorryAx`. The
+`proof-map-pages` job publishes it to GitHub Pages on pushes to `main` once the
+repository variable `PROOF_MAP_PAGES` is `true`. Locally, after `lake build`:
+`scripts/proof-map/build.sh [out-dir]` (default `lean/.lake/proof-map`).
 
 Heavy checks require matching local fixtures/recordings and, for live browser
 checks, the [fresh local stack](#local-setup-and-live-validation). Run locally:

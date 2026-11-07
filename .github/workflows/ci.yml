@@ -31,6 +31,14 @@ jobs:
           if grep -E 'warning:.*(sorry|declaration uses)' "$TMPDIR/lean-build.log"; then exit 1; fi
       - name: Audit headline theorem axioms
         run: bash scripts/audit-verification.sh
+      - name: Regenerate the proof map; reject disallowed axioms
+        run: scripts/proof-map/build.sh lean/.lake/proof-map
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proof-map
+          path: lean/.lake/proof-map
+          retention-days: 30
+          if-no-files-found: error
       - name: Generate deterministic test inputs
         working-directory: lean
         run: |
@@ -176,3 +184,30 @@ jobs:
           install -D -m 755 "$TMPDIR/ehr" lean/.lake/build/bin/ehr
       # Includes protocol.integration.test.ts; its JWT/JWKS server is local.
       - run: pnpm --filter @vgi/commit test:integration
+
+  # Publishes the proof map to GitHub Pages for each push to main. Off until the
+  # repository variable PROOF_MAP_PAGES is 'true' and Pages uses GitHub Actions.
+  proof-map-pages:
+    needs: lean
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PROOF_MAP_PAGES == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: proof-map-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: proof-map
+          path: proof-map
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: proof-map
+      - id: deploy
+        uses: actions/deploy-pages@v4
