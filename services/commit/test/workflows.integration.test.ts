@@ -28,6 +28,9 @@ test('every workflow family refuses stale chart intent and native guard violatio
   releases.P3 = releases['P3-W4-assessment'];
   releases['P1-review'] = { spec, program: { ...releases['P1-W1-note'].program, start: 'w1Rooming' },
     workflows: { chart: { commit: 'markReviewed', project: true } } };
+  releases['P1-selection'] = { spec,
+    program: JSON.parse(await readFile(new URL('../../../releases/v3/personas/P1.json', import.meta.url), 'utf8')),
+    workflows: { chart: { commit: 'markReviewed', project: true } } };
   const config = configSchema.parse({ tenant: `workflows-${randomUUID()}`, actors: ['P1','P2','P3','P4','P5','RN2'].map((id,i) => ({
     token: `workflow-test-token-${id}-synthetic-only`, persona: id, user: { id, role: ['physician','physician','rn','np','surgeon','rn'][i] }, modelId: i+1, patients: ids })), releases });
   const a = await host(url, config); const b = await host(url, config);
@@ -71,6 +74,36 @@ test('every workflow family refuses stale chart intent and native guard violatio
       assert.equal(next.status, 201, JSON.stringify(next));
       assert.equal(next.body.facts.receipts.length, 1);
       assert.equal(next.body.facts.receipts[0].info, 'allergyList');
+      // Selecting a chart restores authenticated persisted receipts; it must not
+      // append a second review or permit a new review through the event route.
+      const selection = await api(b.base, actor, '/sessions', { ...input, release: 'P1-selection', expectedVersion: 2 });
+      assert.equal(selection.status, 201, JSON.stringify(selection));
+      let selected = selection.body;
+      const choice = selected.facts.patientDirectory.patients.find((p: Obj) => p.id === id);
+      assert.ok(choice);
+      for (const event of [
+        { click: { comp: 'workspace.lookup' } },
+        { enter: { comp: 'workspace.search', value: { text: { s: choice.name } } } },
+        { click: { comp: `workspace.open|${id}|0|lookup` } },
+        { click: { comp: 'chartSummary.patientCare.w1Rooming' } },
+      ]) {
+        const result = await api(b.base, actor, `/sessions/${selected.sessionId}/events`, { revision: selected.revision, event });
+        assert.equal(result.status, 200, JSON.stringify(result));
+        assert.equal(result.body.result, 'ok');
+        selected = { ...selected, ...result.body };
+      }
+      assert.equal(selected.state.patientContext.patient, id);
+      assert.equal(selected.state.screen, 'w1Rooming');
+      assert.equal(selected.state.receipts.length, 1);
+      assert.equal(selected.state.receipts[0].info, 'allergyList');
+      const blockedReview = await api(b.base, actor, `/sessions/${selected.sessionId}/events`, {
+        revision: selected.revision, event: { click: { comp: 'w1Rooming.review.allergyList' } },
+      });
+      assert.equal(blockedReview.status, 422, JSON.stringify(blockedReview));
+      assert.equal(blockedReview.body.error, 'use_commit_endpoint');
+      const unchanged = await api(b.base, actor, `/patients/${id}`);
+      assert.equal(unchanged.body.version, 2);
+      assert.equal(unchanged.body.events.length, 2);
       const other = { ...actor, user: { ...actor.user, id: 'another-doctor' } };
       const theirs = await b.store.openSession(other, { ...input, expectedVersion: 2 });
       assert.deepEqual(theirs.facts.receipts, []);

@@ -93,17 +93,19 @@ async function command(
 test("bed manager admits, transfers, releases/reassigns, discharges and cleans; a second charge nurse sees atomic board updates; 4 West RN opens service MAR", async ({
   browser,
   baseURL,
+  viewport,
 }, testInfo) => {
   test.setTimeout(90_000);
   if (!baseURL) throw new Error("Playwright baseURL missing");
-  const c1 = await browser.newContext({ baseURL });
-  const c2 = await browser.newContext({ baseURL });
-  const c3 = await browser.newContext({ baseURL });
+  const c1 = await browser.newContext({ baseURL, viewport });
+  const c2 = await browser.newContext({ baseURL, viewport });
+  const c3 = await browser.newContext({ baseURL, viewport });
   const first = await c1.newPage();
   const second = await c2.newPage();
   const rn = await c3.newPage();
   const errors: string[] = [];
   for (const page of [first, second, rn]) {
+    expect(page.viewportSize()).toEqual(viewport);
     page.on("pageerror", (e) => errors.push(e.message));
     await page.route("**/fhir/R4**", (route) => {
       errors.push("Browser called an external FHIR writer");
@@ -181,11 +183,13 @@ test("bed manager admits, transfers, releases/reassigns, discharges and cleans; 
 test("an ambiguous ADT response reconciles the identical request before permitting a new command", async ({
   browser,
   baseURL,
+  viewport,
 }) => {
   test.setTimeout(60_000);
   if (!baseURL) throw new Error("Playwright baseURL missing");
-  const context = await browser.newContext({ baseURL });
+  const context = await browser.newContext({ baseURL, viewport });
   const page = await context.newPage();
+  expect(page.viewportSize()).toEqual(viewport);
   const payloads: string[] = [];
   try {
     await login(page, "bed-manager");

@@ -152,6 +152,8 @@ every keystroke and never replace the final native guard. Request IDs bind exact
 intent and allow recovery of an uncertain outcome without duplicating a write.
 New clinical sessions recover the authenticated actor's current-day review receipts
 only while every reviewed resource version still matches the stored chart.
+The interaction endpoint checks the human event before hydrating a selected chart;
+restoring stored receipts adds no patient event, while new reviews require a typed command.
 Opening an encounter is a separate native role-guarded, versioned administrative
 command; it creates no signed clinical content or bed placement.
 
@@ -411,6 +413,7 @@ another deployment's project name for either command.
 Integration/browser commands against a fresh local stack:
 
 ```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true
 cd lean && lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/commit-fixture.json"
 cd ..
 export DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit
@@ -418,15 +421,16 @@ export COMMIT_FIXTURE="$TMPDIR/commit-fixture.json"
 pnpm --filter @vgi/commit test
 pnpm --filter @vgi/commit test:integration
 pnpm --filter app build
-APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test live --project=desktop
-COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop
+APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live --project=desktop --project=narrow
+COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --project=narrow
 ```
 
 `scripts/clean-clone-test.sh` validates an offline build and recorded browser
 flows in a scratch clone; it needs no live stack or credentials.
 
-The service browser suites create and clean up their own tenant and listener;
-they use the fresh stack's Postgres and Keycloak and never substitute mocked
+The service browser suites apply the selected viewport to every actor context
+and run on desktop and narrow screens. They create and clean up their own tenant
+and listener; they use the fresh stack's Postgres and Keycloak and never substitute mocked
 clinical responses. Native/Postgres workflow tests exercise stale-version and
 guard refusal for every workflow family, plus persisted-review recovery,
 author isolation, date expiry and target-version invalidation.
@@ -499,8 +503,10 @@ counts are `10 9`. Data and these caches remain gitignored.
 Targeted checks for this path:
 
 ```sh
-CI=true TMPDIR=/home/saithat/Projects/run-tmp node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/run-prefix.test.mjs scripts/rename-run.test.mjs
-CI=true TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app exec vitest run tests/live-run-http.test.ts tests/run-refresh.test.ts tests/lazy-run.test.ts tests/run-selection.test.ts --maxWorkers=2
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true
+node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/run-prefix.test.mjs scripts/rename-run.test.mjs
+pnpm --filter app exec vitest run tests/live-run-http.test.ts tests/run-refresh.test.ts tests/lazy-run.test.ts tests/run-selection.test.ts --maxWorkers=2
+APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live-dashboard.spec.ts dashboard-performance.spec.ts --project=desktop --workers=1
 ```
 
 

@@ -133,11 +133,13 @@ test("warm section switches reuse the index; Compare excludes incomplete tasks",
   expect(
     await hiddenCompare.getByLabel("Compare replay position").textContent(),
   ).toBe(hiddenPosition);
-  expect(
-    requests.filter(
-      (path) => path === "/runs/core-10day/trajectories/index.json",
-    ),
-  ).toHaveLength(1);
+  const indices = requests.filter((path) =>
+    path.endsWith("/trajectories/index.json"),
+  );
+  expect(indices).toHaveLength(1);
+  expect(indices[0]).toMatch(
+    /^\/runs\/core-10day\/\.cache\/completed\/[a-f0-9]{64}\/trajectories\/index\.json$/,
+  );
   const slice = requests.find((path) => /geometry\/.+\/slices\//.test(path));
   if (!slice) throw new Error("Missing geometry slice request");
   const response = await page.request.get(slice);

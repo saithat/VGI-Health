@@ -358,12 +358,15 @@ export class Store {
       if (s.events.length >= 256) throw new Fault(422, 'session_event_limit');
       const { base, state } = await this.reconstruct(actor, release, p.snapshot, s);
       const next = await this.lean.call('step', { ...base, state, event: input.event });
+      // Reject effects of the human event before chart hydration. Hydration can
+      // restore this actor's already-persisted receipts from the locked chart;
+      // those are not new reviews and must not prevent opening the patient.
+      if (digest(next.state.commits) !== digest(state.commits) || (workflow.project && digest(next.state.receipts) !== digest(state.receipts))) throw new Fault(422, 'use_commit_endpoint');
       let cacheFacts = base.facts;
       if (workflow.project && release.program.patientSelection && state.patientContext?.patient !== next.state.patientContext?.patient) {
         const hydrated = await this.reconstruct(actor, release, p.snapshot, { ...s, native_state: null, events: [...s.events, input.event] });
         next.state = hydrated.state; cacheFacts = hydrated.base.facts;
       }
-      if (digest(next.state.commits) !== digest(state.commits) || (workflow.project && digest(next.state.receipts) !== digest(state.receipts))) throw new Fault(422, 'use_commit_endpoint');
       // Events have revision CAS; an uncertain response is recovered by opening a
       // new session and reviewing again, never by blindly replaying an event.
       await c.query('UPDATE commit_sessions SET events=$3,revision=revision+1,native_state=$4,native_facts=$5,native_version=$6 WHERE tenant=$1 AND id=$2',

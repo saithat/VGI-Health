@@ -107,15 +107,17 @@ async function login(page: Page, username: string) {
 test("Keycloak login → MAR → administer → second nurse receives the persisted dose and a refreshed chart", async ({
   browser,
   baseURL,
+  viewport,
 }) => {
   test.setTimeout(90_000);
   if (!baseURL) throw new Error("Playwright baseURL missing");
-  const c1 = await browser.newContext({ baseURL });
-  const c2 = await browser.newContext({ baseURL });
+  const c1 = await browser.newContext({ baseURL, viewport });
+  const c2 = await browser.newContext({ baseURL, viewport });
   const first = await c1.newPage();
   const second = await c2.newPage();
   const errors: string[] = [];
   for (const page of [first, second]) {
+    expect(page.viewportSize()).toEqual(viewport);
     page.on("pageerror", (error) => errors.push(error.message));
     // Clinical sessions must never publish raw FHIR transactions.
     await page.route("**/fhir/R4**", (route) => {
