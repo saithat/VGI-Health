@@ -449,6 +449,7 @@ export class Store {
       trace?.emit('screens', { valid: !mismatch });
       const requireScreens = () => {
         if (!mismatch) return;
+        trace?.emit('screen-refused');
         console.error(JSON.stringify({ diagnostic: 'screen_fingerprint_mismatch', requestId: command.requestId,
           release: s.release_name, releaseHash: s.release_hash, patientVersion: p.version, ...mismatch }));
         // Throw rolls back even the request reservation: corrected evidence may

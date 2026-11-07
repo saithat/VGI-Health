@@ -89,6 +89,12 @@ test('protocol refinement TEST: actual guard/cache, replica races, rollback and 
       assert.equal((await api(a.base, nurses[0], '/commands', missing)).status, 409);
       const results = await Promise.all(nurses.map((actor, i) => api(i ? b.base : a.base, actor, '/commands', intent(doses[i], `dose-${i}`, administer))));
       assert.deepEqual(results.map(r => r.status).sort(), [201, 409]);
+      const consumed = await ready(a.base, nurses[0], 'dose', 'nurse', 'dose', adminEvents(f, 'dose'));
+      const invalidScreens = intent(consumed, 'consumed-before-screen-enforcement', administer);
+      invalidScreens.screens.frames[0].hash = '0'.repeat(64);
+      const conflict = await api(a.base, nurses[0], '/commands', invalidScreens);
+      assert.equal(conflict.status, 409);
+      assert.equal(conflict.body.reason, 'shared_guard');
       const beds = await Promise.all(['bed-a', 'bed-b'].map((p, i) => ready(i ? b.base : a.base, doctor, p, 'admission', 'admit', admissionEvents())));
       const placements = await Promise.all(beds.map((s, i) => api(i ? b.base : a.base, doctor, '/commands', intent(s, `bed-${i}`, disposition))));
       assert.deepEqual(placements.map(r => r.status).sort(), [201, 409]);

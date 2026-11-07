@@ -165,7 +165,8 @@ def advance (m : Machine) (i : Nat) (op : Op) : Option Machine := do
     if t.phase != .locked || t.held != t.request.keys then none else
     put { t with phase := .read, observed := readVersions m.durable t.request, cacheHit := t.request.cacheVersion == some (version m.durable t.request.patient) } m.durable
   | .guard =>
-    if t.phase != .read || !t.request.screenValid then none else
+    if t.phase != .read || (!t.request.screenValid &&
+        match decide m.durable t.request with | .accepted _ => true | _ => false) then none else
     put { t with phase := .guarded, answer := some (decide m.durable t.request) } m.durable
   | .stage =>
     if t.phase == .requestLocked && (receipt m.durable t.request).isSome then

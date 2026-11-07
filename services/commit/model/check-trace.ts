@@ -20,7 +20,7 @@ export function compileTrace(rows: Row[]) {
   rows.forEach((r, index) => {
     assert.equal(r.schema, 'vgi-commit-protocol-test-v1', 'unknown schema');
     assert.ok(typeof r.attempt === 'string' && typeof r.step === 'string');
-    assert.ok(['begin','request-locked','plan','lock','read','screens','native','stage','write','finish','replay','commit-start','committed','aborted','respond'].includes(r.step), 'unknown step');
+    assert.ok(['begin','request-locked','plan','lock','read','screens','screen-refused','native','stage','write','finish','replay','commit-start','committed','aborted','respond'].includes(r.step), 'unknown step');
     let g = groups.get(r.attempt);
     if (!g) { g = { rows: [], first: index, last: index }; groups.set(r.attempt, g); }
     g.rows.push(r); g.last = index;
@@ -53,7 +53,10 @@ export function compileTrace(rows: Row[]) {
     const native = rows.find(r => r.step === 'native');
     const screens = rows.find(r => r.step === 'screens');
     if (screens) assert.ok(at('read') < at('screens'));
-    if (screens?.valid === false) assert.ok(abortedScreen(rows), 'screen mismatch must roll back');
+    if (at('screen-refused') >= 0) {
+      assert.equal(screens?.valid, false);
+      assert.ok(abortedScreen(rows), 'enforced screen mismatch must roll back');
+    }
     const finish = rows.find(r => r.step === 'finish');
     const replay = rows.find(r => r.step === 'replay');
     const response = rows.find(r => r.step === 'respond');

@@ -89,9 +89,11 @@ semantics first. These remain outside the claimed host proof.
 ## Integrated fingerprint protocol
 
 The merged store retains native fingerprint reconstruction and the trace exporter.
-`Request.screenValid` blocks the machine guard transition on mismatched evidence;
-the service throws before staging and rolls back the reservation. Version conflicts
-are returned before screen verification. The trace adapter requires valid screen
+`Request.screenValid` blocks an accepting machine guard transition on mismatched evidence;
+the service throws at fingerprint enforcement before staging and rolls back the
+reservation. Earlier version/shared refusals keep their durable conflict
+outcome. A separate `screen-refused` trace row distinguishes enforcement from
+a computed mismatch that an earlier refusal supersedes. The trace adapter requires valid screen
 evidence before every write and rejects a mismatched-screen durable outcome.
 
 Merged targeted checks: default `lake build` passed; bounded exploration added
@@ -101,3 +103,9 @@ passed. The protocol suite passed 9 tests and Lean witnessed 22 HTTP attempts,
 including screen mismatch, reservation rollback and a corrected same-ID attempt.
 Both falsified and missing screen-check trace rows were rejected. The preexisting
 fingerprint suite separately verifies successful corrected same-ID publication.
+
+The integrated priority regression additionally exercises an already-consumed dose
+with invalid screen evidence: the existing shared guard returns durable 409 before
+fingerprint enforcement, without an append. The trace checker accepts that actual
+priority while refusing any write with invalid or missing evidence. Nine protocol
+tests passed, with a Lean model witness for 23 attempts.

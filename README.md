@@ -925,7 +925,10 @@ checking of all request contents or of the implementation.
 The cache graph additionally checks up to three journal events and two version
 advances, including writes by another session and projecting invalidation.
 Unsafe negative controls must fail: duplicate effect, wrong projection, missing
-receipt, missing accepted event and native refusal bypass. Fingerprint mismatches abort before staging, remove the request reservation and permit corrected same-ID retries. The machine blocks its guard transition for invalid screen evidence; preview caches remain advisory. Returned version conflicts retain priority.
+receipt, missing accepted event and native refusal bypass. Fingerprint mismatches that reach enforcement abort before staging, remove the
+request reservation and permit corrected same-ID retries. The machine blocks
+acceptance with invalid screen evidence. Earlier version/shared refusals retain
+their durable outcome and priority; preview caches remain advisory.
 
 ### Trace refinement test
 
