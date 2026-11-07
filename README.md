@@ -1676,7 +1676,7 @@ verdicts, geometry and 8,046 physical measurement records matched exactly.
 These are single observations; other native checks overlapped the first two
 optimized browser batches. Standalone revision timing is not comparable to
 the average of a cross-revision-deduplicated batch.
-With the exact current context fully cached, the 33-revision batch gate took
+For that renderer, with the exact context fully cached, the 33-revision batch gate took
 178.11s total, with 27,371 cache hits, zero misses and the same 24,353-state /
 219,177-measurement physical coverage. This gate timing excludes certificate
 installation, strict replay and remeasurement.
@@ -1685,6 +1685,18 @@ matching bindings, all 50 shifts were remeasured, and freshly regenerated native
 and WASM replay verified 1,284 tasks / 72,636 events with zero mismatches. An
 additional saved-context WASM replay also passed. Frozen inputs, decisions,
 schedules and clinical traces were preserved.
+
+At the current app hash, an isolated cold P1/v1 check took 632.73s: 19.89s
+native preparation and 610.87s browser validation, covering the same 981 inputs,
+819 distinct trees and 8,046 physical measurements with zero findings. The
+fully warm 33-revision batch gate took 176.37s (27,371 hits, zero misses).
+The complete installation command took 92m30s, installed all 33 matching
+bindings and remeasured all 50 shifts. Fresh native/WASM strict replay verified
+1,284 tasks and 72,636 events with zero mismatches; independent content-digest
+and frozen-clinical-input checks also passed. Full template and persona audits
+covered 1,826 and 1,296 states respectively, with zero findings. The
+[verification report](docs/audits/merge-six-verification-20261106.md) records
+commands, build bindings, audit coverage and timing limits.
 
 Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:

@@ -3,7 +3,7 @@
     1440,
     900
   ],
-  "source": "current native semantic exports; live-selection PNGs retained from pre-merge HEAD pending fresh authority capture",
+  "source": "current native semantic exports and fresh live-selection UI snapshots; fictional identity seed v1",
   "captures": [
     {
       "path": "shots/final/P1-chart.png",
@@ -158,110 +158,110 @@
     {
       "path": "shots/realism/live-select/P1-inboxResults-chart.png",
       "source": "shots/realism/live-select/P1-inboxResults-chart.ui.json",
-      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600",
-      "mode": "stale-live"
+      "sha256": "7b2204420d2b0367b62fb3dc00a4993335aa1f327aa976d9d11c7db66ed72d92",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P1-inboxResults-landing.png",
       "source": "shots/realism/live-select/P1-inboxResults-landing.ui.json",
-      "sha256": "7b93957e064ebc67eb2ead653dcb4d19693fc1ee2749dd2cff0a8fc3fbcd93e0",
-      "mode": "stale-live"
+      "sha256": "049c685cb4446ea0040e69fd21966873735a6324f81015d63104b8bbdfa57085",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P1-lookup-chart.png",
       "source": "shots/realism/live-select/P1-lookup-chart.ui.json",
-      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600",
-      "mode": "stale-live"
+      "sha256": "5a2b9b4e3cd64fce8d8ffdbc262b861e73a57e3ca45de2c3b69d86945d1fe560",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P1-lookup-landing.png",
       "source": "shots/realism/live-select/P1-lookup-landing.ui.json",
-      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23",
-      "mode": "stale-live"
+      "sha256": "bdbc05bee6fdc87372ae2a7eef9f10f4f3e13e3401f2aa5d67587b3ea6ac04d4",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-chart.ui.json",
-      "sha256": "5f48f02b794330b015aec534db37f428937763b37d1cabb7014708d544ffd600",
-      "mode": "stale-live"
+      "sha256": "a1c538625a67f0691cee3663b83f0f0b80808b9e7b781d883c62543b949f33ca",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-landing.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-landing.ui.json",
-      "sha256": "5865084cadf9a8a768f6bb7301197053ce5ee3d16427384a27f1505fd63fda23",
-      "mode": "stale-live"
+      "sha256": "e491073d3891aaf3d3d7ecf5f907e829bb259d5a7bd8927ef3d0f021af927532",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-chart.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-chart.ui.json",
-      "sha256": "fd845a70cd1caf9d9379dcb53f73a8663ae0d233783eec5eb8fd0471321633ae",
-      "mode": "stale-live"
+      "sha256": "48d8b9f1b549fdffb69f7ca9d3d9d688f51d0545623122606990bccf4f29c855",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-landing.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-landing.ui.json",
-      "sha256": "f245bf4b3a3923544cd51b45dda05eadcfb88e3f32c5fa1ea4a685f0fd88d757",
-      "mode": "stale-live"
+      "sha256": "e903f439be630160b77e151d12a0c8a642e7f246e802fe0743a73c7ebcc26f0c",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-chart.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-chart.ui.json",
-      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06",
-      "mode": "stale-live"
+      "sha256": "80a8a5f7181193bc1c6d6e2dd6e8910b0393885c8028c3f962224d07958c1af5",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-landing.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-landing.ui.json",
-      "sha256": "b53521c11728332d2208c89f96570ed03bac4ec427e9d18649b23cacfb9f0ef8",
-      "mode": "stale-live"
+      "sha256": "6a18119368ae32a574f58da302dec6e2af29aaf1b7d1472ef5c585b0a6bbf000",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-unitCensus-chart.png",
       "source": "shots/realism/live-select/P3-unitCensus-chart.ui.json",
-      "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06",
-      "mode": "stale-live"
+      "sha256": "80a8a5f7181193bc1c6d6e2dd6e8910b0393885c8028c3f962224d07958c1af5",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-unitCensus-landing.png",
       "source": "shots/realism/live-select/P3-unitCensus-landing.ui.json",
-      "sha256": "4375049da7db3c5ccf5df6abf911d90e2fcb24472331323080fcd9547d95f2e1",
-      "mode": "stale-live"
+      "sha256": "1cae8d952326ef00c419555f78ccd0ce91be177d9b9394ead68e800d481bf484",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P4-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P4-scheduleTasks-chart.ui.json",
-      "sha256": "1db313e95a004e4bfd31d8448ced2a868f7792319b9a0dd7f443e3b80f001b01",
-      "mode": "stale-live"
+      "sha256": "2671faa7db227730eb6ebd3b95390ac3b937b702242385a6448bae0d07786d13",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P4-scheduleTasks-landing.png",
       "source": "shots/realism/live-select/P4-scheduleTasks-landing.ui.json",
-      "sha256": "c166bfd7d44a50200b55c86fd14bde33715baafa08df62e7cd8941f3cce09c10",
-      "mode": "stale-live"
+      "sha256": "d89f4a11e6cc78ee04a0fd27dda0c9119e43e56c868451b5743968785167c6bb",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P5-consultList-chart.png",
       "source": "shots/realism/live-select/P5-consultList-chart.ui.json",
-      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684",
-      "mode": "stale-live"
+      "sha256": "b30147aa8af5e22bb405d607815e315a6adee53371afa908231d6e5f998d7811",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P5-consultList-landing.png",
       "source": "shots/realism/live-select/P5-consultList-landing.ui.json",
-      "sha256": "cc463b440277f02b01d5ceee8ffeaa8898c02beb44bff8cc6d554795fb91d34a",
-      "mode": "stale-live"
+      "sha256": "bba574e568ac7cc78fd21cc05270525d5189fe424408893215d0264738709cef",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P5-orSchedule-chart.png",
       "source": "shots/realism/live-select/P5-orSchedule-chart.ui.json",
-      "sha256": "1951c78c447fdd904c295dd0af7acf16f92fbefebf2bc2657dd5eba18234c684",
-      "mode": "stale-live"
+      "sha256": "8b3a794ea0f7131e397ecb96866c763dc14e91405dec859db33c6ecfed5191d6",
+      "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P5-orSchedule-landing.png",
       "source": "shots/realism/live-select/P5-orSchedule-landing.ui.json",
-      "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956",
-      "mode": "stale-live"
+      "sha256": "33e9d11d8708fff8d34a22f0416930ce1af11f6a44337febf58e1e6230875376",
+      "mode": "live"
     },
     {
       "path": "shots/realism/present/flowsheet-before.png",
