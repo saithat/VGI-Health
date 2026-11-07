@@ -49,7 +49,7 @@ export async function runFakeCadence(out: string, options: { days?: number; resu
     // the existing no-regression validation gate without null pixel metrics.
     return { ...day, tasks: day.tasks.map(t => ({ ...t, scrollPx: t.scrolls * 100, mouseTravelPx: t.clicks * 100 })) };
   } };
-  const summary = await runDays({ days, worldDir, runsRoot: out, runId: 'cadence-fake', llm, ehr,
+  const summary = await runDays({ structurePolicy:false, days, worldDir, runsRoot: out, runId: 'cadence-fake', llm, ehr,
     protocol: CADENCE_PROTOCOL, cadence: { kind: 'weekly' }, departments: { P1: 'primary-care' },
     seedPolicy: 'none', releaseDays: { v2: days + 10, v3: days + 20 }, ...options });
   return { summary, llm };

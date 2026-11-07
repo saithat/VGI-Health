@@ -9,7 +9,7 @@ import type { PromptParts } from './prompts.js';
 import {
   LLM_CHOICE_JSON_SCHEMA, LLM_PROPOSAL_JSON_SCHEMA, llmChoiceSchema, llmProposalSchema, toCandidate,
   type Candidate, type LlmCallRef, type LlmChoice,
-} from './schema.js';
+} from '../../app/src/dashboard/agent-evidence.js';
 import { errorMessage } from './util.js';
 
 export interface ProposeContext {
@@ -53,7 +53,14 @@ export class LlmAgent implements AgentBackend {
     const req: JsonRequest = {
       callId: ctx.callId, purpose: ctx.purpose, system: ctx.parts.system, prompt: ctx.parts.prompt,
       ...(ctx.parts.queryBundle?{queryBundle:ctx.parts.queryBundle}:{}),
-      schemaName: 'LlmProposal', schema: LLM_PROPOSAL_JSON_SCHEMA,
+      schemaName: 'LlmProposal', schema: ctx.parts.portfolio ? {
+        ...LLM_PROPOSAL_JSON_SCHEMA, properties:{...LLM_PROPOSAL_JSON_SCHEMA.properties,candidates:{type:'array',items:{
+          ...LLM_PROPOSAL_JSON_SCHEMA.properties.candidates.items,
+          required:[...LLM_PROPOSAL_JSON_SCHEMA.properties.candidates.items.required,'portfolio'],
+          properties:{...LLM_PROPOSAL_JSON_SCHEMA.properties.candidates.items.properties,portfolio:{type:'object',additionalProperties:false,
+            required:['scale','hotspotId'],properties:{scale:{type:'string',enum:['small','medium','radical']},hotspotId:{type:'string'}}}},
+        }}},
+      } : LLM_PROPOSAL_JSON_SCHEMA,
     };
     const res = await this.llm.complete(req);
     const parsed = llmProposalSchema.safeParse(res.json);

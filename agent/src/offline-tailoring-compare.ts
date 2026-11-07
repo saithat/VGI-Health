@@ -63,7 +63,7 @@ const reused=values['reuse-evidence'] ? await reuseOfflineScreens({previous:valu
 const screens=immutableScreenChecks(reused?.screens??realScreens);
 for(const arm of ['A','B','C'] as const) {
   const dir=path.join(out,'runs',arm);
-  const summary=await runDays({protocol:CADENCE_PROTOCOL,days,worldDir:world,runsRoot:path.join(out,'runs'),runId:arm,
+  const summary=await runDays({structurePolicy:false,protocol:CADENCE_PROTOCOL,days,worldDir:world,runsRoot:path.join(out,'runs'),runId:arm,
     resume:values.resume && existsSync(path.join(dir,'manifest.json')),personas,ehr,screens,llm:generatorOnlyBackend,generatorOnly:true,discoveryNights:3,boundedCosts:true,
     cadence:arm==='A'?{kind:'nightly'}:{kind:'weekly'},tailoringSessions:arm==='C',seedPolicy:'none',releaseDays:{v2:100,v3:101},
     log:line=>console.log(`${arm}: ${line}`)});

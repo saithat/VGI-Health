@@ -213,7 +213,7 @@ describe('bounded tailoring seams',()=>{
     const llm=new CadenceFakeLlm();
     const root=path.join(dir,'connected','runs');
     const gate=sessionReviewGate({ehr,persona,runsRoot:root,chooser:s=>({chosen:[...s.options].sort((a,b)=>(b.evidence.savings.clicks+b.evidence.savings.scrolls)-(a.evidence.savings.clicks+a.evidence.savings.scrolls))[0]?.id??null,reason:'Prefer the first diverse bundle.',reasons:[]})});
-    const summary=await runDays({days:9,worldDir:world,runsRoot:dir,runId:'connected',llm,ehr,protocol:CADENCE_PROTOCOL,
+    const summary=await runDays({structurePolicy:false,days:9,worldDir:world,runsRoot:dir,runId:'connected',llm,ehr,protocol:CADENCE_PROTOCOL,
       cadence:{kind:'weekly'},tailoringSessions:true,reviewGate:gate,seedPolicy:'none',releaseDays:{v2:30,v3:31}});
     expect(summary.timelines[0]?.nights.find(n=>n.night===7)?.outcome).toBe('deployed');
     const proposal=llm.prompts.find(p=>p.callId.includes('night-08'));

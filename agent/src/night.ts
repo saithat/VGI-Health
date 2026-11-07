@@ -1,3 +1,8 @@
+import { onlineQuality, assertTrain } from './online-context.js';
+import { rankHotspots, type InformationEffort } from './hotspots.js';
+import { structurePrompt } from './structure-prompt.js';
+import { structurePolicySchema, effectPass, scoreStructure, rejectionGauge, STRUCTURE_POLICY, type StructurePolicy } from './structure-policy.js';
+import { radicalChange, structuralDistance } from '../../explore/structure.js';
 import { boundedSwitchCost, IncompleteBoundedReplay } from './bounded-tailoring.js';
 import { sessionReviewGate, tailoringFeedback } from './session-gate.js';
 import { CADENCE_PROTOCOL, autoApprove, releaseDue, usageWeightedSwitchCost, type ReleaseCadence, type ReviewGate, type ReviewBundle, type ReviewChoices, type SwitchCost } from './cadence.js';
@@ -40,7 +45,7 @@ import type { Release } from './releases.js';
 import {
   violationOf, jsonPatchSchema, type Candidate, type CertAttempt, type CheckResult, type DayResult, type DaySchedule, type DecisionRecord, type EvaluatedCandidate,
   type JsonPatchOp, type LlmCallRef, type Program, type ReplayDay, type Savings, type Spec, type ScreenCheckResult, type TrainSummary, type Verdict,
-} from './schema.js';
+} from '../../app/src/dashboard/agent-evidence.js';
 import { pickSeeded, rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
 import { screenCheckRejection, type ScreenChecker } from './screencheck.js';
 import type { RunStore } from './store.js';
@@ -71,6 +76,7 @@ export interface LoopDeps {
 
 export interface NightInput {
   night: number;
+  informationEffort?: readonly InformationEffort[];
   persona: PersonaView;
   release: Release;
   current: Program;
@@ -362,12 +368,16 @@ export function compatible(a: Candidate, b: Candidate): boolean {
 }
 
 // ---------------------------------------------------------------- the nightly loop
-export async function runNight(deps: LoopDeps, input: NightInput, options: { offline?: boolean; quality?: QualityContext; queryBundle?:QueryBundle; cadence?: CadenceNightOptions } = {}): Promise<NightResult> {
+export async function runNight(deps: LoopDeps, input: NightInput, options: { offline?: boolean; quality?: QualityContext; queryBundle?:QueryBundle; structure?: StructurePolicy | false; cadence?: CadenceNightOptions } = {}): Promise<NightResult> {
   if (options.cadence) {
     if (options.offline || options.quality || options.queryBundle) throw Error('Cadence uses its own protocol; offline quality arms remain unchanged');
     return runCadenceNight(deps, input, options.cadence);
   }
   if(options.queryBundle&&(!options.offline||!options.quality))throw new Error('Queries require offline arm C with train-only quality context');
+  const structure = options.structure === false || (options.offline&&!options.structure) ? null : structurePolicySchema.parse(options.structure??{});
+  if(structure) assertTrain(input);
+  const quality = options.quality ?? (structure ? await onlineQuality(deps,input) : undefined);
+  const hotspots = structure && quality ? rankHotspots(input.train,quality.locality,input.informationEffort,structure.topK) : [];
   const { night, persona, release, current } = input;
   const specVersion = release.specVersion;
   const gate: Gate = { specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
@@ -375,6 +385,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   // 1. Observe (train days only).
   const evidence = summarizeTrain(persona.id, current, input.train, input.programs);
   const rec = emptyRecord(deps, { night, persona, specVersion, current, spec: input.release.spec }, evidence);
+  if(structure) rec.exploration={policy:STRUCTURE_POLICY,minimumEffect:structure.minimumEffect,checker:rejectionGauge(rec),candidates:[],selectedDistance:null};
   const calls: LlmCallRef[] = [];
   let noted = 0;
   const note = () => {
@@ -383,6 +394,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   };
   const finish = async (deployed: Program | null): Promise<NightResult> => {
     note();
+    if(rec.exploration)rec.exploration.checker=rejectionGauge(rec);
     rec.llmCalls = calls;
     rec.backend = backendInfo(deps.agent, calls);
     if (!options.offline) await deps.store.writeDecision(rec);
@@ -394,7 +406,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   try {
     proposal = await deps.agent.proposeCandidates({
       callId: callId(night, persona.id, 'propose-0'), purpose: 'propose', source: 'llm',
-      parts: withQueries(withQuality(nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }), options.quality),options.queryBundle),
+      parts: withQueries(withQuality(structure ? structurePrompt(nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }),current,hotspots,structure.minimumEffect) : nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }), quality),options.queryBundle),
     });
   } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
@@ -417,7 +429,18 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
       check: invalidPatch(u.error), trainEstimate: null, componentsMoved: null,
     });
   }
-  for (const c of proposal.candidates) rec.candidates.push(await evaluateCandidate(deps, current, c, gate, estimator));
+  for (const c of proposal.candidates) {
+    const evaluated=await evaluateCandidate(deps,current,c,gate,estimator);
+    if(structure && evaluated.check.status==='pass') {
+      const program=applyToProgram(current,c.patch,{version:gate.nextVersion,specVersion}).program;
+      try {validateCandidate(describeProgram(program,[...new Set(input.train.flatMap(d=>d.schedule.tasks.map(t=>t.workflow)))]),current,release.spec);}
+      catch(error){evaluated.check=invalidPatch(error);}
+      if(!c.portfolio || !hotspots.some(h=>h.id===c.portfolio?.hotspotId) ||
+        (c.portfolio.scale==='radical'&&!radicalChange(current,program))) evaluated.check=invalidPatch('Missing/unknown hotspot or radical candidate does not change structure');
+    }
+    rec.candidates.push(evaluated);
+  }
+  if(structure) for(const scale of ['small','medium','radical']) if(!proposal.candidates.some(c=>c.portfolio?.scale===scale)) rec.flags.push(`portfolio missing ${scale}`);
 
   // Tempting-but-unsafe moves: inject one if the LLM did not produce the rejection itself.
   note();
@@ -434,9 +457,24 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
     return finish(null);
   }
 
-  // 5. Choose (LLM), with a deterministic fallback if the choice is unusable.
+  // Production ranks measured net effort; legacy frozen arms retain their chooser.
   let chosen: Candidate[] = [];
-  try {
+  if(structure) {
+    const ranked=[];
+    for(const e of eligible) {
+      const program=applyToProgram(current,e.candidate.patch,{version:gate.nextVersion,specVersion}).program;
+      const score=await scoreStructure(current,program,e.trainEstimate,{clinician:persona.id,department:'unspecified',role:current.role,train:trainEstimateWindow(input.train)},[...input.programs.values()]);
+      rec.exploration?.candidates.push({id:e.candidate.id,gross:score.gross,net:score.net,switchCost:score.switchCost.cost,
+        fromCurrent:score.fromCurrent,fromArchive:score.fromArchive,explorationRank:score.net+structure.noveltyWeight*score.bonus});
+      if(effectPass(e.trainEstimate,score.net,structure.minimumEffect))ranked.push({e,score});
+    }
+    ranked.sort((a,b)=>b.score.net-a.score.net||a.e.candidate.id.localeCompare(b.e.candidate.id));
+    const best=ranked[0];
+    if(!best) {rec.outcome='no-change';rec.validation.reason='No complete candidate meets minimum net train effect';return finish(null);}
+    chosen=[best.e.candidate];
+    rec.chosen={candidateIds:chosen.map(c=>c.id),rationale:`Highest net measured train saving: ${best.score.net}/day; relearning ${best.score.switchCost.cost}/day`,
+      choiceBy:'loop-fallback',rejectedAlternatives:eligible.filter(e=>e!==best.e).map(e=>({id:e.candidate.id,reason:'Lower net saving or effect floor'}))};
+  } else try {
     const choice = await deps.agent.chooseCandidates({
       callId: callId(night, persona.id, 'choose-0'),
       parts: withQueries(withQuality(choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }), options.quality),options.queryBundle),
@@ -522,6 +560,14 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
     return finish(null);
   }
   rec.certification.result = 'certified';
+  let selectedCost=0;
+  if(structure) {
+    const estimate=await estimator.estimate(finalProgram);
+    const score=await scoreStructure(current,finalProgram,estimate,{clinician:persona.id,department:'unspecified',role:current.role,train:trainEstimateWindow(input.train)});
+    selectedCost=score.switchCost.cost;
+    if(!effectPass(estimate,score.net,structure.minimumEffect)) {rec.outcome='no-change';rec.validation.reason='Complete selected program fails net train effect floor';return finish(null);}
+    if(rec.exploration)rec.exploration.selectedDistance=structuralDistance(current,finalProgram);
+  }
 
   // 7. Validate: replay past calibration tasks (same patients, events, choices) on the old and new versions.
   const moved = componentsMoved(current, finalProgram);
@@ -538,6 +584,9 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
     rec.validation.reason = 'no validation day available';
     rec.outcome = 'validation-rejected';
     return finish(null);
+  }
+  if(structure && (replay.saving.clicks+replay.saving.scrolls-selectedCost<structure.minimumEffect || replay.saving.clicks+replay.saving.scrolls-selectedCost<=0)) {
+    rec.validation.reason='Validation net effect below shipping floor';rec.outcome='validation-rejected';return finish(null);
   }
   if (!rec.validation.improved || !stabilityOk) {
     rec.validation.reason = !stabilityOk ? `stability budget exceeded (${moved} moved)` : 'validation replay did not improve';
@@ -573,6 +622,8 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
 }
 
 export interface CadenceNightOptions {
+  structure?: StructurePolicy | false;
+  offlineArchive?: readonly Program[];
   generatorOnly?: boolean;
   discoveryNights?: number;
   boundedCosts?: boolean;
@@ -598,6 +649,9 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
     throw Error('Cadence archive accepts past odd train days only');
   if (!options.department.trim()) throw Error('Archive requires a department');
   if (deps.ehr.mode === 'real' && deps.screens.mode !== 'real') throw Error('Real archive requires real screen evidence');
+  const structure=options.structure===false?null:structurePolicySchema.parse(options.structure??{});
+  const quality=structure ? await onlineQuality(deps,input) : undefined;
+  const hotspots=structure&&quality ? rankHotspots(input.train,quality.locality,input.informationEffort,structure.topK) : [];
   const cadence = options.cadence ?? { kind: 'nightly' };
   const due = releaseDue(night, cadence);
   const gate: Gate = { specVersion: release.specVersion, prev: current, canonical: release.canonical, nextVersion: current.version + 1, night };
@@ -608,6 +662,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   const rec = emptyRecord(deps, { ...input, specVersion: release.specVersion, spec: release.spec },
     summarizeTrain(persona.id, current, input.train, input.programs));
   rec.mode = 'cadence';
+  if(structure)rec.exploration={policy:STRUCTURE_POLICY,minimumEffect:structure.minimumEffect,checker:rejectionGauge(rec),candidates:[],selectedDistance:null};
   rec.cadence = { protocol: CADENCE_PROTOCOL, cadence: stableStringify(cadence), due,
     archive: path.relative(deps.store.dir, archiveStore.directory), niches: 0, offers: [], review: null };
   const sessionRuns = path.join(deps.store.dir,'runs');
@@ -620,13 +675,15 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   const newCandidates: Candidate[] = [];
   if (!options.generatorOnly) try {
     const tailoring = options.tailoringSessions ? await tailoringFeedback(sessionRuns,night,current.owner,input.train,options.frictionFlags) : undefined;
-    const parts = nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence: rec.evidence, history: input.history,
+    let parts = nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence: rec.evidence, history: input.history,
       ...(tailoring ? {tailoring}: {}) });
+    if(structure)parts=withQuality(structurePrompt(parts,current,hotspots,structure.minimumEffect),quality);
     parts.prompt += `\nStanding quality-diversity archive (train evidence only):\n${JSON.stringify(archiveFeedback(snapshot))}`;
     const proposal = await deps.agent.proposeCandidates({ callId: callId(night, persona.id, 'propose-0'), purpose: 'propose', source: 'llm', parts });
     rec.llmCalls.push(proposal.call);
     rec.hypothesis = proposal.hypothesis;
     newCandidates.push(...proposal.candidates);
+    if(structure)for(const scale of ['small','medium','radical'])if(!proposal.candidates.some(c=>c.portfolio?.scale===scale))rec.flags.push(`portfolio missing ${scale}`);
     for (const u of proposal.undecodable) {
       const c: Candidate = { id: u.id, summary: u.summary, moveType: 'reorder', rationale: '', targets: [], patch: [],
         predicted: sumSavings([]), source: 'llm', seeded: false, seededKind: null };
@@ -640,6 +697,14 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
     rec.flags.push(`llm-error: ${errorMessage(error)}`);
   }
   rec.backend = backendInfo(deps.agent, rec.llmCalls);
+
+  for(const program of options.offlineArchive??[]) {
+    // Archives provide bytes only. This night's native, identity, screen, train,
+    // relearning, validation and release checks all run again.
+    if(program.owner!==current.owner||program.id!==current.id||program.role!==current.role||program.specVersion!==release.specVersion)continue;
+    if(snapshot.entries.some(e=>e.program&&designHash(e.program)===designHash(program)))continue;
+    newCandidates.push({id:`offline-${designHash(program).slice(0,16)}`,summary:'Offline MAP-Elites archive alternative',moveType:'composeTaskView',rationale:'Recheck offline design against current train and release gates',targets:[],patch:replacementPatch(program),predicted:sumSavings([]),...(structure&&hotspots[0]?{portfolio:{scale:radicalChange(current,program)?'radical' as const:'small' as const,hotspotId:hotspots[0].id}}:{}),source:'explore',seeded:false,seededKind:null});
+  }
 
   // Reuse the admitted explore generator; cycle across layouts, density and
   // input, skipping already evaluated designs. No additional model calls.
@@ -668,11 +733,19 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
     // One admitted proposal per night. Placement nights alternate with the layout cycle;
     // enumeration uses public program structure and cannot read the chooser's tastes.
     const variants = night % 3 === 2 ? [...placements, ...layouts] : [...layouts, ...placements];
+    if(structure) {
+      const ranking=archiveFrom(snapshot.entries.flatMap(e=>{
+        const o=e.observations.at(-1),metrics=o?.trainEstimate?.after;
+        return e.program&&o?.check.status==='pass'&&o.screen?.status==='pass'&&!o.staticError&&metrics ?
+          [{id:e.id,candidate:describeProgram(e.program,workflows),status:'accepted' as const,metrics,quality:0,evidence:{leanVerdict:'ok',screenStatus:'pass'}}] : [];
+      }));
+      variants.sort((a,b)=>ranking.explorationRank(b.candidate,current,0,structure.noveltyWeight)-ranking.explorationRank(a.candidate,current,0,structure.noveltyWeight));
+    }
     for (const {candidate:generated, hypothesis} of variants) {
       if (designHash(generated.program) === designHash(current) || snapshot.entries.some(e => e.program && designHash(e.program) === designHash(generated.program))) continue;
       newCandidates.push({ id: `explore-${night}`, summary: hypothesis, moveType: 'reorder',
         rationale: 'Fill an admitted design niche or clinical placement', targets: [], patch: replacementPatch(generated.program),
-        predicted: sumSavings([]), source: 'explore', seeded: false, seededKind: null });
+        predicted: sumSavings([]), ...(structure&&hotspots[0]?{portfolio:{scale:radicalChange(current,generated.program)?'radical' as const:'small' as const,hotspotId:hotspots[0].id}}:{}), source: 'explore', seeded: false, seededKind: null });
       break;
     }
   }
@@ -704,6 +777,10 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   }
   for (const candidate of newCandidates) {
     const attempt = await checkPatch(deps.ehr, current, candidate.patch, gate);
+    if(structure&&candidate.source==='llm'&&attempt.program&&attempt.check.status==='pass'&&
+      (!candidate.portfolio||!hotspots.some(h=>h.id===candidate.portfolio?.hotspotId)||(candidate.portfolio.scale==='radical'&&!radicalChange(current,attempt.program)))) {
+      attempt.check=invalidPatch('Missing/unknown hotspot or radical candidate does not change structure');attempt.program=null;
+    }
     const observation: ArchiveObservation = { night, baseHash: programHash(current), specHash: sha256(stableStringify(release.spec)),
       programHash: attempt.program ? programHash(attempt.program) : null, check: attempt.check, trainEstimate: null, screen: null, staticError: null, switchCost: null };
     const entry: ArchiveEntry = { id: `${night}:${candidate.id}`, night, candidateIds: members.get(candidate.id) ?? [candidate.id],
@@ -762,6 +839,10 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
     const candidate = describeProgram(program, workflows);
     const score = (estimate.before.clicks + estimate.before.scrolls - estimate.after.clicks - estimate.after.scrolls) / estimate.days.length - cost.cost;
     const id = hash;
+    if(structure) {
+      const distances=await scoreStructure(current,program,estimate,context,snapshot.entries.flatMap(e=>e.program&&e.id!==entry.id?[e.program]:[]),()=>cost);
+      rec.exploration?.candidates.push({id:entry.id,gross:distances.gross,net:score,switchCost:cost.cost,fromCurrent:distances.fromCurrent,fromArchive:distances.fromArchive,explorationRank:score+structure.noveltyWeight*distances.bonus});
+    }
     evaluations.push({ id, candidate, status: 'accepted', metrics: estimate.after, quality: score,
       evidence: { leanVerdict: 'ok', screenStatus: 'pass', trainDays: estimate.days } });
     offers.set(id, { id, candidateIds: entry.candidateIds, program,
@@ -772,13 +853,14 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   snapshot.cells = Object.fromEntries([...archive.cells].map(([key,e]) => [key,e.id]));
   rec.cadence.niches = archive.cells.size;
   rec.flags.push(...noteRejections(deps.seedState, rec.candidates));
+  if(rec.exploration)rec.exploration.checker=rejectionGauge(rec);
   await archiveStore.save(snapshot);
   const finish = async (deployed: Program | null): Promise<NightResult> => {
     await deps.store.writeDecision(rec);
     return { record: rec, deployed };
   };
   if (!due) { rec.outcome = 'release-deferred'; rec.validation.reason = 'Candidates archived; next release slot pending'; return finish(null); }
-  const ranked = [...archive.cells.values()].map(e => offers.get(e.id)).filter((b): b is ReviewBundle => Boolean(b && (options.tailoringSessions || b.evidence.score > 0)))
+  const ranked = [...archive.cells.values()].map(e => offers.get(e.id)).filter((b): b is ReviewBundle => Boolean(b && (structure ? effectPass(b.evidence.train,b.evidence.score,structure.minimumEffect) : (options.tailoringSessions || b.evidence.score > 0))))
     .sort((a,b) => b.evidence.score-a.evidence.score || a.id.localeCompare(b.id)).slice(0,3);
   const [first, second, third] = ranked;
   if (!first) { rec.outcome = 'archived'; rec.validation.reason = options.tailoringSessions ? 'No complete archived bundle for session review' : 'No complete bundle with positive net train score'; return finish(null); }
@@ -796,6 +878,7 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   const chosen = choices.find(b => b.id === review.chosenBundle);
   if (!chosen) throw Error('Review choice missing');
   const program = chosen.program;
+  if(rec.exploration)rec.exploration.selectedDistance=structuralDistance(current,program);
   for (const id of chosen.candidateIds) {
     if (rec.candidates.some(e => e.candidate.id === id)) continue;
     const entry = snapshot.entries.find(e => e.candidate.id === id);
@@ -816,6 +899,9 @@ async function runCadenceNight(deps: LoopDeps, input: NightInput, options: Caden
   rec.measured.validation = replay;
   const prediction = predictionVerdict(rec.predicted, replay);
   rec.measured.predictionHeld = prediction.held; rec.measured.predictionNote = prediction.note;
+  if(structure&&(!replay || replay.saving.clicks+replay.saving.scrolls-chosen.evidence.switchCost.cost<structure.minimumEffect || replay.saving.clicks+replay.saving.scrolls-chosen.evidence.switchCost.cost<=0)) {
+    rec.outcome='validation-rejected';rec.validation.reason='Validation net effect below shipping floor';return finish(null);
+  }
   if (!rec.validation.stabilityOk || !rec.validation.improved) { rec.outcome = 'validation-rejected'; return finish(null); }
   rec.validation.accepted = true; rec.validation.reason = 'Reviewed bundle passed past-calibration replay';
   rec.userResponse = options.tailoringSessions ? {response:'accepted',probability:0,reason:'Simulated clinician already chose this bundle in the off-shift session'} : userResponse(deps, night, persona.id, chosen.evidence.moved);

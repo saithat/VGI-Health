@@ -1,3 +1,5 @@
+import { programSchema } from './schema.js';
+import { structurePolicySchema } from './structure-policy.js';
 import { generatorOnlyBackend } from './generator-only.js';
 import { CADENCE_PROTOCOL, parseCadence } from './cadence.js';
 import { compareSanityRuns } from './quality-compare.js';
@@ -73,6 +75,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
+      'minimum-effect':{type:'string'},'novelty-weight':{type:'string'},'hotspots':{type:'string'},'offline-archive':{type:'string'},'historical-nightly':{type:'boolean',default:false},
       'generator-only':{type:'boolean',default:false}, 'discovery-nights':{type:'string'}, 'bounded-costs':{type:'boolean',default:false}, 'tailoring-sessions':{type:'boolean',default:false},
       protocol: { type: 'string' }, cadence: { type: 'string' }, departments: { type: 'string' },
       days: { type: 'string' }, backend: { type: 'string' }, world: { type: 'string' }, 'replay-from': { type: 'string' }, 'replay-allow-drift': {type:'boolean',default:false},
@@ -83,7 +86,13 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   if (values.protocol && values.protocol !== 'core-10day' && values.protocol !== CADENCE_PROTOCOL) throw Error('Unknown release protocol');
   const useArchive = values.protocol === CADENCE_PROTOCOL || (!values.protocol && Boolean(values.cadence));
   const llm = values['generator-only'] ? generatorOnlyBackend : createBackend(backendArg(values.backend), { replayFrom: opt(values['replay-from']), replayAllowDrift:values['replay-allow-drift'], model: values.model, serviceTier: values['service-tier'], reasoningEffort: values['reasoning-effort'] });
-  const summary = await runDays({
+  const structurePolicy=values['historical-nightly']?false:structurePolicySchema.parse({
+    ...(values['minimum-effect']!==undefined?{minimumEffect:Number(values['minimum-effect'])}:{}),
+    ...(values['novelty-weight']!==undefined?{noveltyWeight:Number(values['novelty-weight'])}:{}),
+    ...(values.hotspots!==undefined?{topK:Number(values.hotspots)}:{}),
+  });
+  const offlineArchive=values['offline-archive']?await readJson(resolveUserPath(values['offline-archive']),z.object({programs:z.array(programSchema)})):undefined;
+  const summary = await runDays({ structurePolicy,...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
     ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
     ...(values['generator-only'] ? {generatorOnly:true}:{}),
     ...(values['discovery-nights'] ? {discoveryNights:intArg(values['discovery-nights'],'discovery-nights',3)}:{}),
@@ -231,7 +240,7 @@ const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
     const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'}}});
     if(!values.run||!values.out)throw new Error('--run and --out are required');
     const backend=values.backend??'replay';if(backend!=='replay'&&backend!=='codex')throw new Error('--backend must be replay or codex');
-    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='sanity')return a;throw new Error('--arms must contain A, B, C or sanity');});
+    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='D'||a==='sanity')return a;throw new Error('--arms must contain A, B, C, D or sanity');});
     await evaluateQuality({runDir:resolveUserPath(values.run),outDir:resolveUserPath(values.out),arms,samples:intArg(values.samples,'samples',1),backend,workers:intArg(values.workers,'workers',1),
       ...(values['ledger-from']?{ledgerFrom:resolveUserPath(values['ledger-from'])}:{}),...(values.resume?{resume:true}:{}),...(values.decisions?{decisions:values.decisions.split(',')}:{}),...(values.world?{worldDir:resolveUserPath(values.world)}:{}),
       ...(values.model?{model:values.model}:{}),...(values['reasoning-effort']?{reasoningEffort:values['reasoning-effort']}:{}),...(values['service-tier']?{serviceTier:values['service-tier']}:{}),

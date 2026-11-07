@@ -16,7 +16,7 @@ import type {
   DecisionRecord,
   JsonPatchOp,
   Savings,
-} from "../../../agent/src/schema";
+} from "./agent-evidence";
 import {
   loadRunDetails,
   breakCapability,
@@ -363,6 +363,12 @@ function Why({
             : `${record.evidence.totals.mouseTravelPx}px mouse travel · ${record.evidence.totals.scrollPx}px scroll.`}{" "}
           Train days: {record.evidence.trainDays.join(", ")}.
         </p>
+        {record.exploration && <p>
+          Checker rejection rate: {record.exploration.checker.rate === null ? 'no proposals' : `${(record.exploration.checker.rate * 100).toFixed(1)}%`}
+          {' '}({record.exploration.checker.checkerRejected} native rejections, {record.exploration.checker.invalid} invalid proposals / {record.exploration.checker.proposed}).
+          {' '}Net effect floor: {record.exploration.minimumEffect}/day.
+          {' '}Selected structural distance: {record.exploration.selectedDistance?.toFixed(3) ?? 'none'}.
+        </p>}
         {record.evidence.complaints.map((c, i) => (
           <p key={i}>
             “{c.text}” · {c.count} reports

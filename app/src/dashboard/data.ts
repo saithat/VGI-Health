@@ -1,6 +1,6 @@
 import { isDayResultFile } from "../browser/run-files";
 import { readArtifact } from "../browser/data";
-import { checkResultSchema, jsonPatchSchema } from "../../../agent/src/schema";
+import { checkResultSchema, jsonPatchSchema } from "./agent-evidence";
 import {
   ruleConformanceSchema,
   type RuleConformance,
@@ -20,7 +20,7 @@ import {
   type DecisionRecord,
   type DayResult,
   type Program,
-} from "../../../agent/src/schema";
+} from "./agent-evidence";
 
 export const runIndexSchema = z.array(
   z.object({ id: z.string().regex(/^[\w-]+$/), files: z.array(z.string()) }),

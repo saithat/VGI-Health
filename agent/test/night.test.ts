@@ -32,7 +32,7 @@ withData("runs/core-10day/decisions").describe("archive-backed agent prompts", (
     world = await fakeWorld(4);
     runsRoot = await tmp('runs');
     // Releases pushed out of the window so these nights are all nightly-mode.
-    const common = { days: 4, worldDir: world, runsRoot, releaseDays: { v2: 99, v3: 99 } };
+    const common = { structurePolicy:false as const, days: 4, worldDir: world, runsRoot, releaseDays: { v2: 99, v3: 99 } };
     recorded = await runDays({ ...common, llm: new ScriptedLlm(), runId: 'recorded', ehr: markingEhr() });
     replayed = await runDays({ ...common, llm: new ReplayLlm(recorded.dir), runId: 'replayed', ehr: markingEhr() });
   });

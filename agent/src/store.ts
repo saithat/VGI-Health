@@ -23,7 +23,7 @@ import { z } from 'zod';
 import {
   certificateSchema, dayResultSchema, decisionRecordSchema, programSchema,
   type Certificate, type DayResult, type DecisionRecord, type Program,
-} from './schema.js';
+} from '../../app/src/dashboard/agent-evidence.js';
 import { pad2, readJson, writeJson, writeJsonAtomic } from './util.js';
 
 export const deployedPointerSchema = z.object({ version: z.number().int().nonnegative(), program: z.string(), certificate: z.string(), build: z.string().optional(), source: z.string().optional(), components: z.string().optional() });

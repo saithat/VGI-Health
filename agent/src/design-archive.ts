@@ -4,7 +4,7 @@ import { relearningEstimateSchema } from './session-schema.js';
 import { readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
-import { candidateSchema, checkResultSchema, programSchema, screenCheckResultSchema, trainEstimateSchema, type Program } from './schema.js';
+import { candidateSchema, checkResultSchema, programSchema, screenCheckResultSchema, trainEstimateSchema, type Program } from '../../app/src/dashboard/agent-evidence.js';
 import { programHash, sha256, stableStringify } from './program.js';
 import { readJson, writeJson } from './util.js';
 import { designFeedback } from '../../explore/operators.js';

@@ -219,10 +219,94 @@ sequenceDiagram
 | `infra/` | Isolated Postgres + Keycloak + commit Compose stack; initial-state import and identity provisioning. |
 | `explore/` | Quality-diversity archive, descriptors, admitted generators and search. The standalone research harness never deploys; `agent/` reuses these modules for cadence releases. |
 
+Production nightly discovery now uses `hotspot-portfolio-v1`: the live run's own
+past train estimates supply the measured-idea ledger, and exact program/component/
+app-bound train atlases supply physical locality. Foreign run/owner records, duplicate ideas
+within a decision, future/even train days and mismatched atlases fail closed.
+Validation/test metrics never enter the ledger. Program rows use a lossless
+columnar projection, preserving kinds, ids, order, optional fields and definitions.
+Production has no tools. Frozen A/B/C prompts retain the historical representation and chooser.
+
+Code ranks the top eight screen-effort, repeated screen-navigation and A→B→A
+backtrack hotspots, with stable tie breaking. Ranking uses clicks + scrolls +
+scroll pixels / 900; no elapsed-time model enters the prompt. `InformationEffort`
+in `agent/src/hotspots.ts` accepts one numeric lookup-detour/memory-carry aggregate
+per completed train task, ready for the information-needs adapter. Missing
+information evidence adds no inferred detours or memory costs.
+
+Each proposal requests small, medium and radical alternatives, each naming an
+exact hotspot and predicting daily physical savings. Radical requires changed
+screen/container/tab membership, kinds, screen topology or added components;
+density/shortcut changes alone do not qualify. Structural LLM designs also pass
+the independent identity movement budget. Every alternative is checked and
+measured independently; missing portfolio coverage is recorded. The loop selects
+the greatest measured daily click+scroll saving minus the usage-weighted movement
+proxy, with a configurable minimum net effect (default 5 interactions/day), then
+rechecks the complete program and applies that floor to validation as well. All
+existing completion, stability, pixel, screen and deploy gates still apply.
+The floor is provisional: the frozen B data has 179 positive train candidates
+(minimum 1/day, lower quartile 23/day, median 40/day); 20 fall below 5 before
+relearning cost. This is a selection policy, not a fitted clinical threshold.
+
+`run-days --minimum-effect 5 --novelty-weight 0.25 --hotspots 8` configures
+this policy; `RunOptions.structurePolicy` supplies the same values. Manifests bind
+these values and imported archive hashes; resume rejects changes. Explicit
+`--historical-nightly` (`structurePolicy: false`) is restricted to scripted/replay
+verification, including the existing cadence fake and offline tailoring comparison.
+New single-night reruns restore their source run's policy and train ledger after
+fingerprint verification. Historical live reruns use `proposal-quality` with
+recomputed evidence; scripted/replay reruns retain their original policy.
+
+`explore/structure.ts` measures structural Jaccard distance over screens, component
+kinds, placements and sibling edges; label/density/shortcut changes have zero
+distance. `explore/archive.ts` exposes exploration ranking with a novelty bonus
+from distance to current and nearest archived design. It changes neither archive
+admission nor release scores. Nightly evidence records candidate net effects,
+distances and exploration ranks; the dashboard displays the per-night rejection
+gauge, native versus invalid counts, effect floor and selected distance. The rate counts native checker failures; invalid proposals are separate. Seeded
+safety probes and generated bundles are excluded from the proposal denominator.
+The selected distance describes a considered release, even if a later gate refuses
+it; only deployed records represent shipped changes. Review-only schema extensions
+live in `app/src/dashboard/agent-evidence.ts`; the shared clinical schema and
+certified app hash remain unchanged.
+
+`explore/offline.ts` exports `offlineMapElites` and a replaceable
+`StructuralOperator.enumerate` interface. Today's operators enumerate complete
+subtree/review placements, same-workflow cross-screen moves and admitted layouts.
+`agent/src/offline-explore.ts::runOfflineExploration` supplies the native/screen
+adapter, replays only recent train schedules with expert policy and no carried
+memory, and writes `archive.json`. It makes no model calls. Offline quality
+is recomputed as negative (clicks + scrolls + keystrokes/20) per task with zero
+switching cost. Cells combine admitted design niches with screen-count and
+structural-distance bins. The search returns evaluations and `{programs}` for
+`run-days --protocol certified-cadence-archive-v1 --offline-archive <file>`.
+Imported bytes are scoped by program identity/owner/role/spec and pass the current
+native, identity, screen, train, online relearning, effect, validation and deployment
+gates again. Search requires explicit passing native and screen evidence before admission;
+it never deploys or treats novelty as certification evidence.
+
+The frozen-decision `proposal-quality` evaluator adds arm D (the new prompt and
+shipping rules) beside unchanged B. Reports include accepted-change rate, measured
+train/net/validation effect, rejection rate and structural distance of accepted
+changes. These offline acceptances are hypothetical releases; screen checks and
+deployment are skipped. Nonempty historical ledgers still require a completed,
+exactly bound `--ledger-from` sanity run. First-night comparisons with no earlier
+candidate history may omit it because their ledger is empty. Use a small declared
+`--decisions` subset and `--samples 1 --arms B,D --service-tier default`; no new
+model calls occur with `--backend replay`, which tests plumbing only.
+
+The one-context frozen B/D pilot (`night-01/P1`, one sample per arm, three live
+completions total) accepted B's change and refused D's: D saved scrolls but added
+three validation clicks. Both selected designs had structural distance 0.004717;
+both native rejection rates were zero. This sample does not establish an
+improvement from the new policy or greater boundary exploration. The gates were
+retained without tuning to the result. [Measurement and targeted verification](docs/audits/explore-structure-20261106.md)
+records effects, costs and limitations.
+
 Cadence runs use protocol `certified-cadence-archive-v1`. `run-days` accepts
 `--protocol certified-cadence-archive-v1 --cadence nightly|weekly|N` (`N` is a
 positive number of simulation days); `--cadence` alone selects that protocol.
-Omitting both retains the historical `core-10day` nightly selection path.
+Omitting both selects the `core-10day` nightly release path with hotspot discovery.
 The archive protocol defaults to nightly shipping. Weekly slots are nights
 7, 14, …; every-N-day slots are N, 2N, …, anchored to the run calendar. A veto,
 failed validation or empty archive waits until the next slot. No discretionary
@@ -259,7 +343,7 @@ exploration source fingerprints; resume refuses a changed policy. The native
 The single-night `night` command refuses cadence runs because it cannot restore
 their archive and external review/cost hooks; use `run-days --resume`.
 
-A complete bundle's score is daily train click-plus-scroll saving minus
+A complete bundle's release score is daily train click-plus-scroll saving minus
 `switchCost(prev, next, clinicianContext)`. Pixel improvements still pass the
 existing no-regression validation gate; pixel-only improvements do not produce
 a positive scalar release score. The default `usage-weighted-movement-v1` is a
@@ -297,7 +381,7 @@ memory across odd calibration partitions; blind/validation cases never practice
 that actor. Rehearsal memory is discarded. This is an uncalibrated simulation
 estimate, not measured clinician learning or a guarantee of convergence.
 
-Before release, the default `ReviewGate.review` receives 1–3 positive-scoring niche winners
+Before release, the default `ReviewGate.review` receives 1–3 niche winners meeting the net effect floor
 (program bundles plus train estimates, switch costs, checker/screen evidence
 and movement counts). It returns an offered bundle ID or `null`, with a reason;
 `auto-approve-v1` chooses the highest score. `RunOptions.reviewGate` is the
@@ -1439,7 +1523,7 @@ as untrusted data. A generator passes this result as the optional
 `NightlyContext.tailoring` prompt input. Opting into cadence sessions wires this input into subsequent nightly prompts;
 flags must match actual train task/day IDs and the session owner, and sessions
 must precede the proposal night. Foreign, future, blind and validation feedback
-is excluded. Existing nightly callers are unchanged.
+is excluded. Historical scripted/replay callers retain their original policy explicitly.
 There is no in-app flag control; a future control would enqueue this annotation
 without interrupting work or changing screens during a shift.
 
@@ -1484,9 +1568,7 @@ TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app exec playwright test --c
 `run-days --protocol certified-cadence-archive-v1 --cadence weekly
 --bounded-costs --tailoring-sessions` enables the connected path. On a release
 slot, `sessionReviewGate` recertifies the archive's top three niche bundles in
-scratch and prepares 2–3 diverse replay-complete options. Sessions may consider
-nonpositive effort scores to express a placement preference; auto-approval still
-requires a positive net score. Fewer than two eligible options or a `null`
+scratch and prepares 2–3 diverse replay-complete options. The historical session comparison may consider nonpositive effort scores to express a placement preference; production releases require the configured net effect floor. Fewer than two eligible options or a `null`
 choice keeps current. A choice still passes the existing validation, stability,
 screen and atomic deployment gates. It replaces the legacy random login veto;
 the simulated clinician has already decided. Session records live at
@@ -1506,7 +1588,7 @@ while retained bundles continue to be rescored and reviewed; the cutoff is
 bound in the manifest. Fixed-release experiments use `--feature-day 100 --migration-day 101`.
 It stages custom artifacts under the run directory, uses native certification
 and the usual screen/validation gates, and labels manifests `OFFLINE`.
-Omitting the new flags preserves the historical protocols.
+The offline tailoring comparison explicitly selects the historical discovery policy; production defaults to the hotspot portfolio.
 
 `ColumnsNode` uses the group's container width: two columns from 48em and three
 from 75em, each capped by its child count. Narrow-region regressions cover

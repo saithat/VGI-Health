@@ -1,3 +1,7 @@
+import { applyToProgram } from './program.js';
+import { trainEstimateWindow } from './protocol.js';
+import { defaultStructurePolicy, scoreStructure } from './structure-policy.js';
+import { structuralDistance } from '../../explore/structure.js';
 /** Frozen one-night experiment. No deployment, screen gate, or model calls on import. */
 import { existsSync } from 'node:fs';
 import { cp, mkdir, readFile, readdir, realpath, rename, rm, writeFile } from 'node:fs/promises';
@@ -15,7 +19,7 @@ import { fileHash, treeHash } from './fingerprints.js';
 import { geometryComponentsHash, geometryEhr, geometryProgramHash, loadGeometry } from './geometry.js';
 import { localityDigest } from './locality.js';
 import { retryInfrastructure } from './infrastructure.js';
-import { daySeed, makeHoldout, runNight, type LoopDeps, type NightInput } from './night.js';
+import { daySeed, makeHoldout, runNight, TrainEstimator, type LoopDeps, type NightInput } from './night.js';
 import { auditedOperation } from './operation-manifest.js';
 import { queryUsage } from './backends/query-audit.js';
 import { trainingQueryBundle, writeQueryDirectory } from './quality-queries.js';
@@ -27,7 +31,7 @@ import { recordingEhr } from './recording-ehr.js';
 import { loadRelease, releaseForPersona } from './releases.js';
 import { retryEhr } from './retry-boundaries.js';
 import { historyItem } from './run.js';
-import { dayResultSchema, decisionRecordSchema, programSchema, specSchema, type DecisionRecord, type Program } from './schema.js';
+import { dayResultSchema, decisionRecordSchema, programSchema, specSchema, type DecisionRecord, type Program } from '../../app/src/dashboard/agent-evidence.js';
 import { RunStore } from './store.js';
 import { REPO_ROOT, pad2, readJson, writeJson } from './util.js';
 import { loadWorld, type World } from './world.js';
@@ -200,11 +204,13 @@ export async function evaluateQuality(opts:QualityOptions) {
   if(opts.backend==='codex'&&opts.serviceTier==='fast')throw new Error('Codex fast mode is prohibited; use --service-tier default');
   if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>2)throw new Error('--workers must be 1 or 2 (14 GB budget)');
   if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
-  if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, sanity');
+  if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','D','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, D, sanity');
   if(opts.arms.includes('sanity')&&opts.backend!=='replay')throw new Error('Sanity requires replay; no new proposals');
-  if(opts.arms.some(a=>a!=='sanity')&&!opts.ledgerFrom)throw new Error('Comparative arms require --ledger-from <completed current sanity run>');
   const source=await realpath(opts.runDir),historical=await historicalDecisions(source),selected=selectDecisions(historical,opts.decisions);
   if(!selected.length)throw new Error('No nightly decisions selected');
+  // An empty earlier ledger has no measured values to import or rebind. All
+  // other comparisons still require the fully bound recomputed sanity ledger.
+  if(opts.arms.some(a=>a!=='sanity')&&!opts.ledgerFrom&&selected.some(r=>historical.some(h=>h.persona===r.persona&&h.night<r.night&&h.candidates.length)))throw new Error('Comparative arms with history require --ledger-from <completed current sanity run>');
   const manifest=await readJson(path.join(source,'manifest.json'),z.object({world:z.string(),model:z.string().optional(),
     fingerprints:z.object({world:z.string(),fixtures:z.string()}).optional()}));
   const worldSource=await realpath(opts.worldDir??manifest.world);
@@ -277,8 +283,8 @@ export async function evaluateQuality(opts:QualityOptions) {
         await writeJson(path.join(inputDir,'input.json'),{...input,programs:Object.fromEntries(input.programs),holdout:{day:input.holdout.day}});
         const prepareMs=performance.now()-started;
         const contextStarted=performance.now();
-        const locality=opts.arms.some(a=>a==='B'||a==='C')?await frozenLocality(input,geometryDir):null;
-        const quality=locality&&measured?{ledger:measuredLedger(historical,original.persona,original.night,measured),locality}:null;
+        const locality=opts.arms.some(a=>a==='B'||a==='C'||a==='D')?await frozenLocality(input,geometryDir):null;
+        const quality=locality?{ledger:measuredLedger(historical,original.persona,original.night,measured??new Map()),locality}:null;
         const qualityContextMs=performance.now()-contextStarted;
         const queryBundle=opts.arms.includes('C')&&quality?trainingQueryBundle(input,(await frozenTrainAtlases(input,geometryDir)).map(d=>d.atlas),quality):null;
         if(queryBundle){const files=path.join(inputDir,'query-files');await rm(files,{recursive:true,force:true});await mkdir(files);await writeQueryDirectory(files,queryBundle);}
@@ -300,9 +306,16 @@ export async function evaluateQuality(opts:QualityOptions) {
           const sampleDeps:LoopDeps={...deps,store:new RunStore(sampleDir),agent:new LlmAgent(new RecordingLlm(meter.llm,sampleDir)),seedState:{injected:0,rejected:new Set()}};
           const tick=performance.now();
           const result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,
-            ...((arm==='B'||arm==='C')&&quality?{quality}:{}),...(arm==='C'&&queryBundle?{queryBundle}:{})}));
-          const record:OfflineRecord={...result.record,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:decisionId(original),arm,sample,
-            queries:meter.queries(),tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'?qualityContextMs:arm==='C'?qualityContextMs+queryContextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
+            ...((arm==='B'||arm==='C'||arm==='D')&&quality?{quality}:{}),...(arm==='D'?{structure:defaultStructurePolicy()}:{}),...(arm==='C'&&queryBundle?{queryBundle}:{})}));
+          const certified=arm==='sanity'?undefined:result.record.certification.attempts.filter(a=>a.check.status==='pass').at(-1);
+          const program=certified?applyToProgram(input.current,certified.patch,{version:input.current.version+1,specVersion:input.current.specVersion}).program:null;
+          const singleton=certified?.candidateIds.length===1?result.record.candidates.find(e=>e.candidate.id===certified.candidateIds[0])?.trainEstimate:null;
+          const estimate=program?(singleton??await new TrainEstimator(sampleDeps,input,input.release.specVersion).estimate(program)):null;
+          const effect=program?await scoreStructure(input.current,program,estimate,{clinician:input.persona.id,department:'offline',role:input.current.role,train:trainEstimateWindow(input.train)}):null;
+          const effects={train:effect?.gross??null,netTrain:effect?.net??null,validation:result.record.validation.replay?result.record.validation.replay.saving.clicks+result.record.validation.replay.saving.scrolls:null,
+            structuralDistance:program?structuralDistance(input.current,program):null};
+          const record:OfflineRecord={...result.record,effects,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:decisionId(original),arm,sample,
+            queries:meter.queries(),tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'||arm==='D'?qualityContextMs:arm==='C'?qualityContextMs+queryContextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
             repeatedMeasuredBad:measured?repetitionCount(result.record,historical,measured):0,proposedCandidates:result.record.candidates.filter(e=>!e.candidate.seeded).length};
           await writeJson(path.join(sampleDir,'record.json'),offlineRecordSchema.parse(record));await writeJson(path.join(sampleDir,'calls.json'),meter.calls);
           if(arm==='sanity') {

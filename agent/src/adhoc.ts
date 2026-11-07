@@ -1,3 +1,6 @@
+import { onlineQuality } from './online-context.js';
+import { structurePolicySchema } from './structure-policy.js';
+import { verifyResume } from './verify-resume.js';
 import { CADENCE_PROTOCOL } from './cadence.js';
 import { auditedOperation } from './operation-manifest.js';
 import { retryEhr,retryScreens } from './retry-boundaries.js';
@@ -39,6 +42,7 @@ export const NIGHT_MODES: readonly NightMode[] = ['auto', 'nightly', 'surface-fe
 
 const manifestSchema = z.object({
   protocol: z.string().optional(),
+  nightlyDiscovery:structurePolicySchema.nullable().optional(),
   runId: z.string(),
   days: z.number().int(),
   world: z.string(),
@@ -107,7 +111,14 @@ export async function rerunNight(args: {
   let result: NightResult;
   if (mode === 'surface-feature') result = await runSurfaceFeature(deps, { ...input, next: await loadRelease(RELEASE_IDS.feature, args.ehr) });
   else if (mode === 'migrate') result = await runMigration(deps, { ...input, next: await loadRelease(RELEASE_IDS.migration, args.ehr) });
-  else result = await runNight(deps, input);
+  else if(manifest.nightlyDiscovery) {
+    if(args.ehr.mode==='real')await verifyResume(args.runDir);
+    const quality=await onlineQuality({...deps,store:source,runId:manifest.runId},input);
+    result=await runNight(deps,input,{quality,structure:manifest.nightlyDiscovery});
+  } else {
+    if(!['scripted','replay'].includes(args.llm.name))throw Error('Historical nightly reruns require the frozen proposal-quality evaluator with recomputed train evidence');
+    result = await runNight(deps,input,{structure:false});
+  }
   return { result, outDir };
   });
 }

@@ -10,6 +10,7 @@ import { promptContext } from './manual.js';
 import type { CheckResult, Component, EvaluatedCandidate, JsonPatchOp, PersonaParams, Program, Spec, TrainSummary } from './schema.js';
 
 export interface PromptParts {
+  portfolio?: boolean;
   queryBundle?: QueryBundle;
   system: string;
   prompt: string;

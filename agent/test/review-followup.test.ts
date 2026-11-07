@@ -30,7 +30,7 @@ it.each(['screen-check','native-deploy','publication'])('records %s infrastructu
  const spy=stage==='publication'?vi.spyOn(RunStore.prototype,'deploy').mockImplementation(async function(this:RunStore,...args:Parameters<RunStore['deploy']>){if(args[1].version>0)throw new Error('FAKE store I/O');return original.apply(this,args);}):null;
  try{
  const runsRoot=await tmp('infra');
- await expect(runDays({days:2,runId:'failure',personas:['P1'],worldDir:await fakeWorld(2),runsRoot,llm:new ScriptedLlm(),ehr,screens,releaseDays:{v2:99,v3:99}})).rejects.toThrow('failed after 3 attempts');
+ await expect(runDays({structurePolicy:false,days:2,runId:'failure',personas:['P1'],worldDir:await fakeWorld(2),runsRoot,llm:new ScriptedLlm(),ehr,screens,releaseDays:{v2:99,v3:99}})).rejects.toThrow('failed after 3 attempts');
  const dir=path.join(runsRoot,'failure');
  await expect(readFile(new RunStore(dir).decisionPath(1,'P1'),'utf8')).rejects.toThrow('ENOENT');
  const manifest=JSON.parse(await readFile(path.join(dir,'manifest.json'),'utf8'));

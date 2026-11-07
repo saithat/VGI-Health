@@ -194,17 +194,17 @@ async function directNight() {
 it('screen failures and invalid switch costs cannot enter release offers', async () => {
   const { deps,input,holdout } = await directNight();
   deps.screens = { mode: 'fake', async check() { return { status: 'fail', mode: 'fake', message: 'test screen failure', pages: 1, bundles: [], failingFiles: [], failingScreens: ['w1-notes'] }; } };
-  const result = await runNight(deps,input,{ cadence: { department: 'primary-care' } });
+  const result = await runNight(deps,input,{ cadence: { structure:false, department: 'primary-care' } });
   expect(result.deployed).toBeNull(); expect(result.record.cadence?.offers).toEqual([]); expect(holdout).not.toHaveBeenCalled();
   const fresh = await directNight();
-  await expect(runNight(fresh.deps,fresh.input,{ cadence: { department: 'primary-care', switchCost: () => ({ cost: NaN, model: 'bad', assumption: 'bad' }) } }))
+  await expect(runNight(fresh.deps,fresh.input,{ cadence: { structure:false, department: 'primary-care', switchCost: () => ({ cost: NaN, model: 'bad', assumption: 'bad' }) } }))
     .rejects.toThrow('finite and nonnegative');
 });
 
 it('rejects future/even train days and unknown review IDs', async () => {
   const { deps,input } = await directNight();
   const day = input.train[0]; if (!day) throw Error('fixture day');
-  await expect(runNight(deps,{ ...input, train: [{ ...day, schedule: { ...day.schedule, day: 2 } }] },{ cadence: { department: 'primary-care' } }))
+  await expect(runNight(deps,{ ...input, train: [{ ...day, schedule: { ...day.schedule, day: 2 } }] },{ cadence: { structure:false, department: 'primary-care' } }))
     .rejects.toThrow('past odd train days');
   const fixture = await tmp('cadence-invalid-review');
   await expect(runFakeCadence(fixture,{ reviewGate: { id: 'invalid', async review() { return { chosenBundle: 'unoffered', reason: 'invalid' }; } } }))
@@ -233,7 +233,7 @@ it('keeps department × role shards and train estimates separate under parallel 
   const { markingEhr } = await import('./helpers.js');
   const root = await tmp('cadence-department'), world = await writeFakeWorld(path.join(root,'world'),{ days: 3, personas: ['P1','P2'] });
   const run = await runDays({ days: 3, worldDir: world, runsRoot: root, runId: 'department', llm: new CadenceFakeLlm(), ehr: markingEhr(),
-    parallel: true, protocol: CADENCE_PROTOCOL, cadence: { kind: 'weekly' }, departments: { P1: 'shared', P2: 'shared' }, seedPolicy: 'none', releaseDays: { v2: 99,v3: 99 } });
+    structurePolicy:false, parallel: true, protocol: CADENCE_PROTOCOL, cadence: { kind: 'weekly' }, departments: { P1: 'shared', P2: 'shared' }, seedPolicy: 'none', releaseDays: { v2: 99,v3: 99 } });
   const groups = path.join(run.dir,'archives/departments');
   const [group] = await readdir(groups); if (!group) throw Error('department archive missing');
   expect(await readdir(path.join(groups,group))).toHaveLength(2);

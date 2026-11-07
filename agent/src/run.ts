@@ -1,3 +1,4 @@
+import { structurePolicySchema, STRUCTURE_POLICY, type StructurePolicy } from './structure-policy.js';
 import { generatorOnlyBackend } from './generator-only.js';
 import { BOUNDED_COST_MODEL } from './bounded-tailoring.js';
 import { SESSION_GATE_ID } from './session-gate.js';
@@ -43,13 +44,15 @@ import type { TrainDay } from './observe.js';
 import { sha256,stableStringify,personalize } from './program.js';
 import type { HistoryItem, PersonaView } from './prompts.js';
 import { loadRelease, releaseForPersona, type Release } from './releases.js';
-import { dayResultSchema, programSchema, type DecisionRecord, type Program } from './schema.js';
+import { dayResultSchema, programSchema, type DecisionRecord, type Program } from '../../app/src/dashboard/agent-evidence.js';
 import { rejectionKind, type SeedPolicy, type SeedState } from './seeded.js';
 import { RunStore } from './store.js';
 import { loadWorld } from './world.js';
 import { REPO_ROOT, readJson, writeJson } from './util.js';
 
 export interface RunOptions {
+  structurePolicy?: Partial<StructurePolicy> | false;
+  offlineArchive?: readonly Program[];
   /** Omit for the historical nightly protocol. Cadence runs have a separate name. */
   protocol?: 'core-10day' | typeof CADENCE_PROTOCOL;
   cadence?: ReleaseCadence;
@@ -136,6 +139,10 @@ async function personaPhase<T>(items:readonly T[],parallel:boolean,work:(item:T)
 export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const llm=opts.generatorOnly ? generatorOnlyBackend : opts.llm;
   const archiveMode = opts.protocol === CADENCE_PROTOCOL;
+  const structure=opts.structurePolicy===false?false:structurePolicySchema.parse(opts.structurePolicy??{});
+  if(structure===false&&!['scripted','replay'].includes(llm.name))throw Error('Historical discovery is restricted to scripted/replay verification');
+  if(opts.offlineArchive&&!archiveMode)throw Error('Offline archive release requires cadence protocol');
+  const nightlyDiscovery=structure===false?null:{policy:STRUCTURE_POLICY,...structure,offlineArchiveSha256:sha256(stableStringify(opts.offlineArchive??[]))};
   if (!archiveMode && (opts.cadence || opts.departments || opts.reviewGate || opts.switchCost || opts.switchCostModel || opts.generatorOnly || opts.discoveryNights !== undefined || opts.boundedCosts || opts.tailoringSessions || opts.frictionFlags))
     throw Error(`Archive options require protocol ${CADENCE_PROTOCOL}`);
   if (opts.discoveryNights !== undefined && (!opts.generatorOnly || !Number.isSafeInteger(opts.discoveryNights) || opts.discoveryNights<1)) throw Error('discoveryNights requires generator-only mode and a positive integer');
@@ -181,9 +188,10 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     runId, store, ehr, screens, agent: new LlmAgent(recorder), seedPolicy: opts.seedPolicy ?? 'until-each-rejected', seedState,
     worldDir: world.dir, worldSeed: world.manifest.seed,
   };
-  const fingerprints = {...await runFingerprints(ehr, world.dir),...(archiveMode?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
+  const fingerprints = {...await runFingerprints(ehr, world.dir),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    nightlyDiscovery:z.unknown().optional(),
     releasePolicy:z.unknown().optional(),
     infrastructureRetries:z.array(z.custom<InfrastructureRetry>()).optional(), replayAllowDrift:z.boolean().optional(),driftedCallIds:z.array(z.string()).optional(),
     fingerprints: z.unknown(),parallel:z.boolean().optional(),
@@ -197,6 +205,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   if (opts.resume) {
     if (!opts.runId || !existsSync(manifestFile)) throw new Error('--resume requires an existing --run-id');
     previous = resumeManifestSchema.parse(JSON.parse(await readFile(manifestFile, 'utf8')));
+    if(stableStringify(previous.nightlyDiscovery??null)!==stableStringify(nightlyDiscovery))throw Error('Resume nightly exploration policy/archive must match');
     if (stableStringify(previous.releasePolicy ?? null) !== stableStringify(releasePolicy)) throw Error('Resume release cadence/department/review/switch-cost policy must match');
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
@@ -209,7 +218,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
-    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', releasePolicy,
+    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', releasePolicy, nightlyDiscovery,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
     replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],
@@ -391,6 +400,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       } else if (next?.id === RELEASE_IDS.feature) res = await runSurfaceFeature(deps, { ...nightInput, next });
       else if (next) res = await runMigration(deps, { ...nightInput, next });
       else res = await runNight(deps, nightInput, releasePolicy ? { cadence: {
+        structure, ...(opts.offlineArchive?{offlineArchive:opts.offlineArchive}:{}),
         cadence: releasePolicy.cadence, department: releasePolicy.departments[id] ?? 'unspecified',
         ...(opts.generatorOnly ? {generatorOnly:true}:{}),
         ...(opts.discoveryNights !== undefined ? {discoveryNights:opts.discoveryNights}:{}),
@@ -399,7 +409,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
         ...(opts.frictionFlags ? {frictionFlags:opts.frictionFlags}:{}),
         ...(opts.reviewGate ? { reviewGate: opts.reviewGate } : {}),
         ...(opts.switchCost ? { switchCost: opts.switchCost } : {}),
-      } } : {});
+      } } : {structure});
       const r = res.record;
       records.push(r);
       const streak = r.outcome === 'llm-error' ? (failures.get(id) ?? 0) + 1 : 0;
