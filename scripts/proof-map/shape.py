@@ -43,7 +43,8 @@ for r in decls:
                 tags, 1 if r['private'] else 0])
 mi = {m['module']: m['imports'] for m in raw['modules']}
 commit = os.environ.get('GITHUB_SHA') or subprocess.check_output(['git', '-C', str(repo), 'rev-parse', 'HEAD'], text=True).strip()
-data = {'commit': commit, 'modules': [[m, [midx[x] for x in mi.get(m, []) if x in midx]] for m in mods], 'decls': out}
+layers = json.load(open(pathlib.Path(__file__).with_name('layers.json')))
+data = {'commit': commit, 'layers': layers, 'modules': [[m, [midx[x] for x in mi.get(m, []) if x in midx]] for m in mods], 'decls': out}
 out_dir.mkdir(parents=True, exist_ok=True)
 (out_dir / 'data.json').write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')))
 print(f'{len(out)} declarations, {sum(1 for r in out if r[8])} headline, commit {commit[:8]}')

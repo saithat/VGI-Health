@@ -62,8 +62,8 @@ jobs:
       - name: Build default targets plus proof modules outside them
         working-directory: lean
         run: lake build && lake build $(cat ../scripts/proof-map/extra-modules.txt)
-      - name: Regenerate the proof map; reject disallowed axioms
-        run: scripts/proof-map/build.sh "$RUNNER_TEMP/proof-map"
+      - name: Regenerate the proof map; reject disallowed axioms and a stale README map
+        run: scripts/proof-map/build.sh --check-readme "$RUNNER_TEMP/proof-map"
       - uses: actions/upload-artifact@v4
         with:
           name: proof-map

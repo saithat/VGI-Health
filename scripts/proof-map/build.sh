@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
 # Regenerate the proof map from the compiled Lean build.
-# usage: scripts/proof-map/build.sh [out-dir]   (run after `cd lean && lake build`)
+# usage: scripts/proof-map/build.sh [--readme | --check-readme] [out-dir]
+# Run after `cd lean && lake build` (CI also builds extra-modules.txt).
 # Writes <out-dir>/index.html and <out-dir>/data.json (default: lean/.lake/proof-map).
+# --readme rewrites README.md's generated proof-map section; --check-readme fails
+# if that section is out of date.
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
+readme=""
+case "${1:-}" in --readme) readme=write; shift ;; --check-readme) readme=check; shift ;; esac
 out="${1:-$root/lean/.lake/proof-map}"
 mkdir -p "$out"
 cd "$root/lean"
-# Every compiled project module except executables' mains and the Comparator
-# challenge modules, which restate headline theorems with `sorry` and would
-# shadow the real proofs. Test-only modules (*Tests) are skipped too.
-mapfile -t mods < <(cd .lake/build/lib/lean && find . -name '*.olean' | sed 's|^\./||; s|\.olean$||; s|/|.|g' \
-  | grep -E '^(Ehr|CommitProtocol|Solution)(\.|$)' \
-  | grep -vxE 'Ehr\..*Tests|Ehr\.Tools\.(GenTS|ExportContent|ProfileGoals|CompletionBench)|Ehr\.Sem\.ExoticMain|Ehr\.Layout\.(Main|Audit)|Ehr\.Check\.(ComparatorStatements|CompletionStatements)' \
-  | sort | while read -r m; do [ -f "$root/lean/${m//.//}.lean" ] && echo "$m"; done)  # skip stale oleans
+# Map exactly the default build targets (lakefile defaultTargets: libraries Ehr
+# and CommitProtocol, executable root Main) plus the proof modules listed in
+# extra-modules.txt, with everything they import. A fixed root set keeps the
+# output identical on every machine, whatever else is compiled locally. The
+# Comparator challenge modules (headline statements with `sorry`) are not
+# reachable from these roots; shape.py fails if any `sorry` slips in.
+mapfile -t mods < <(printf '%s\n' Ehr CommitProtocol Main; grep -v '^\s*$' "$root/scripts/proof-map/extra-modules.txt")
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 lake env lean --run "$root/scripts/proof-map/Extract.lean" "$tmp/full.json" "${mods[@]}"
 python3 "$root/scripts/proof-map/shape.py" "$tmp/full.json" "$root" "$out"
 cp "$root/scripts/proof-map/index.html" "$out/index.html"
+case "$readme" in
+  write) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/README.md" ;;
+  check) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/README.md" --check ;;
+esac
