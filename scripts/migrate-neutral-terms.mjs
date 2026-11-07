@@ -57,6 +57,16 @@ export function migrateTerms(value) {
 const exists = async p=>{try{await access(p);return true;}catch{return false;}};
 const read = async p=>JSON.parse(await readFile(p,'utf8'));
 const write = async(p,v)=>{await mkdir(dirname(p),{recursive:true});await writeFile(p,JSON.stringify(v,null,2)+'\n');};
+/** Hash the final manifest status, not the preceding pending status. */
+export async function writeRunDigest(dir, manifest) {
+  const { contentDigest }=await import('../agent/src/content-digest.ts');
+  const manifestFile=join(dir,'manifest.json');
+  await write(manifestFile,manifest);
+  const digest=await contentDigest(dir);
+  manifest.contentDigest=digest.contentDigest;
+  await write(manifestFile,manifest);await write(join(dir,'digest.json'),digest);
+  return digest;
+}
 const sha = bytes=>createHash('sha256').update(bytes).digest('hex');
 async function files(dir) {
   if(!await exists(dir))return [];
@@ -235,7 +245,7 @@ async function main() {
     item.regeneratedReplay=regenerated.verification;await verifySavedTrajectories(name,root);
     for(let day=1;day<=manifest.days;day++)if(await exists(join(dir,'days',`day-${String(day).padStart(2,'0')}`)))await writeDayDigest(dir,day,manifest.personas);
     manifest[recertifyOnly?'recertification':'neutralMigration']={...migrationCode,status:'passed',currentMeasurementsRegenerated:true};
-    const digest=await contentDigest(dir);manifest.contentDigest=digest.contentDigest;await write(manifestFile,manifest);await write(join(dir,'digest.json'),digest);
+    await writeRunDigest(dir,manifest);
     } catch(error) {
       item.error=String(error);report.unregenerated.push(`${name}: ${String(error)}`);
       manifest[recertifyOnly?'recertification':'neutralMigration']={...migrationCode,status:'rejected',reason:String(error),currentMeasurementsRegenerated:false};

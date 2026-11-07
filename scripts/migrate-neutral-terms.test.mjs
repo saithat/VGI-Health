@@ -4,7 +4,25 @@ import {mkdtemp,writeFile,readFile,rm,mkdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
-import {migrateTerms,rewriteLocalData} from './migrate-neutral-terms.mjs';
+import {migrateTerms,rewriteLocalData,writeRunDigest} from './migrate-neutral-terms.mjs';
+test('completed run digest covers the final migration status and preserved clinical bytes',async()=>{
+ const {contentDigest}=await import('../agent/src/content-digest.ts');
+ const dir=await mkdtemp(join(tmpdir(),'recertification-digest-test-'));
+ try{
+  const manifest={runId:'recording',recertification:{status:'pending',currentMeasurementsRegenerated:false}};
+  const clinical=JSON.stringify({tasks:[{id:'preserved-task'}],events:[{click:{comp:'review'}}]});
+  await writeFile(join(dir,'manifest.json'),JSON.stringify(manifest));
+  await writeFile(join(dir,'clinical.json'),clinical);
+  manifest.recertification={status:'passed',currentMeasurementsRegenerated:true};
+  const sealed=await writeRunDigest(dir,manifest),actual=await contentDigest(dir);
+  const finalManifest=JSON.parse(await readFile(join(dir,'manifest.json'),'utf8'));
+  assert.deepEqual(finalManifest.recertification,{status:'passed',currentMeasurementsRegenerated:true});
+  assert.equal(actual.contentDigest,sealed.contentDigest);
+  assert.equal(finalManifest.contentDigest,actual.contentDigest);
+  assert.deepEqual(JSON.parse(await readFile(join(dir,'digest.json'),'utf8')),actual);
+  assert.equal(await readFile(join(dir,'clinical.json'),'utf8'),clinical);
+ }finally{await rm(dir,{recursive:true});}
+});
 test('advisory labels and identifiers retain their casing without changing unrelated HTML or rule text',()=>{
  const lower=['b','p','a'].join(''),upper=lower.toUpperCase();
  assert.deepEqual(migrateTerms({[lower+'Dismissed']:true,kind:lower,css:lower+'-banner',label:upper,constant:upper+'_PANEL',other:'tabpanel /subpart-C'}),{advisoryDismissed:true,kind:'advisory',css:'advisory-banner',label:'Advisory',constant:'ADVISORY_PANEL',other:'tabpanel /subpart-C'});

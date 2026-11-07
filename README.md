@@ -898,6 +898,8 @@ Before remeasurement, incompatible atlas generations are renamed intact into
 use a new active `geometry/` namespace. The adapter still refuses mismatched
 program/component/build bindings. Status remains pending until measurement and
 regenerated replay verification finish.
+The final status is written before computing the run digest, so the digest covers
+the passed manifest as well as the remeasured files.
 Rejected recertifications cannot supply conformance targets.
 
 The native offline A/B/C harness creates independent archives and memories for
