@@ -1,3 +1,4 @@
+import { protocolTrace, type ProtocolTrace } from './protocol-trace.ts';
 import { boardKeys, boardFrom, clinicalAction, projectAdt } from './clinical-adt.ts';
 import { projectCommand, storedReviewReceipts } from './projection.ts';
 import pg, { type PoolClient } from 'pg';
@@ -30,9 +31,10 @@ export async function migrate(db: pg.Pool) {
     }
   });
 }
-export async function transaction<T>(db: pg.Pool, f: (c: PoolClient) => Promise<T>): Promise<T> {
+export async function transaction<T>(db: pg.Pool, f: (c: PoolClient) => Promise<T>, trace?: ProtocolTrace): Promise<T> {
   const c = await db.connect();
   let broken = false;
+  let commitStarted = false;
   try {
     await c.query('BEGIN ISOLATION LEVEL READ COMMITTED');
     await c.query("SET LOCAL lock_timeout = '5s'");
@@ -40,10 +42,14 @@ export async function transaction<T>(db: pg.Pool, f: (c: PoolClient) => Promise<
     await c.query("SET LOCAL idle_in_transaction_session_timeout = '30s'");
     await c.query('SET LOCAL synchronous_commit = on');
     const out = await f(c);
+    trace?.emit('commit-start');
+    commitStarted = true;
     await c.query('COMMIT');
+    trace?.emit('committed');
     return out;
   } catch (e) {
     try { await c.query('ROLLBACK'); } catch { broken = true; }
+    trace?.emit('aborted', { uncertain: commitStarted });
     throw e;
   } finally { c.release(broken); }
 }
@@ -385,11 +391,12 @@ export class Store {
       // new session and reviewing again, never by blindly replaying an event.
       await c.query('UPDATE commit_sessions SET events=$3,revision=revision+1,native_state=$4,native_facts=$5,native_version=$6,native_display=$7 WHERE tenant=$1 AND id=$2',
         [this.config.tenant, id, JSON.stringify([...s.events, input.event]), next.state, cacheFacts, p.version, display]);
-      return { revision: s.revision + 1, ...next, projection: { facts: cacheFacts, display } };
+      return { revision: s.revision + 1, ...next, state: next.state, projection: { facts: cacheFacts, display } };
     });
   }
   async submit(actor: Actor, command: Command): Promise<{ status: number; body: Obj }> {
-    return transaction(this.db, async c => {
+    const trace = protocolTrace(actor, command, this.config.tenant);
+    const result = await transaction(this.db, async c => {
       const t = this.config.tenant;
       const hash = digest(command);
       // Unique key serializes duplicate requests even across independent hosts.
@@ -397,14 +404,17 @@ export class Store {
         [t, actor.user.id, command.requestId, hash]);
       const request = (await c.query('SELECT * FROM commit_requests WHERE tenant=$1 AND actor=$2 AND request_id=$3 FOR UPDATE',
         [t, actor.user.id, command.requestId])).rows[0];
+      trace?.emit('request-locked');
       if (request.payload_hash !== hash) throw new Fault(409, 'idempotency_payload_conflict');
       if (request.outcome) {
         if (!request.patient) throw new Fault(409, 'outcome_requires_reconciliation');
         this.authorize(actor, request.patient);
+        trace?.emit('replay', { status: request.outcome.status, answer: digest(request.outcome) });
         return request.outcome;
       }
       const finish = async (status: number, body: Obj) => {
         const result = { status, body };
+        trace?.emit('finish', { status, reason: body.reason, answer: digest(result) });
         await c.query('UPDATE commit_requests SET outcome=$4,patient=$5 WHERE tenant=$1 AND actor=$2 AND request_id=$3',
           [t, actor.user.id, command.requestId, result, s.patient]);
         return result;
@@ -414,14 +424,29 @@ export class Store {
       const placement = workflow.project && ['disposition','recordAdmission','discharge'].includes(command.commit ?? workflow.commit);
       const keys = [...new Set([`patient:${s.patient}`, ...(key ? [key] : []), ...(placement ? boardKeys(this.config) : [])])].sort();
       const streams = new Map<string, Obj>();
-      for (const k of keys) streams.set(k, await this.stream(c, k, true));
+      trace?.emit('plan', { patient: trace.key(`patient:${s.patient}`), keys: keys.map(k => trace.key(k)),
+        sessionVersion: s.base_version, sessionRevision: s.revision });
+      for (const k of keys) {
+        streams.set(k, await this.stream(c, k, true));
+        trace?.emit('lock', { key: trace.key(k) });
+      }
       const p = streams.get(`patient:${s.patient}`)!;
       const resource = key ? streams.get(key)! : undefined;
+      trace?.emit('read', { patient: trace.key(`patient:${s.patient}`),
+        keys: keys.map(k => trace.key(k)),
+        versions: keys.map(k => [trace.key(k), streams.get(k)!.version]),
+        baseline: keys.map(k => [trace.key(k), streams.get(k)!.kind === 'patient' ? 1 : 0]),
+        expected: keys.map(k => [trace.key(k), k === `patient:${s.patient}` ? command.expectedVersion :
+          k === key ? command.expectedSharedVersion : command.expectedBoard?.find(v => v.key === k)?.version ?? streams.get(k)!.version]),
+        sessionVersion: s.base_version, sessionRevision: s.revision,
+        cacheVersion: s.native_version, cacheHit: Boolean(s.native_state && s.native_facts && s.native_version === s.base_version),
+        ...(key ? { action: sharedAction(actor, p.snapshot, workflow) } : {}) });
       if (s.revision !== command.revision || s.base_version !== p.version || p.version !== command.expectedVersion ||
           (resource && resource.version !== command.expectedSharedVersion) || (!resource && command.expectedSharedVersion !== undefined))
         return finish(409, { outcome: 'conflict', reason: 'version_conflict', version: p.version });
       const { state, frames } = await this.reconstruct(actor, release, p.snapshot, s, true);
       const mismatch = verifyScreens(command, frames);
+      trace?.emit('screens', { valid: !mismatch });
       const requireScreens = () => {
         if (!mismatch) return;
         console.error(JSON.stringify({ diagnostic: 'screen_fingerprint_mismatch', requestId: command.requestId,
@@ -438,12 +463,14 @@ export class Store {
         factsVersions: versions(this.sourceBundle(p.snapshot.bundle, s.context)), context: currentContext(s.context),
       };
       const decision = await this.lean.call(commit === 'markReviewed' && workflow.project ? 'review-check' : 'commit-check', requestInput);
+      trace?.emit('native', { accept: Boolean(decision.accept), version: p.version });
       if (!decision.accept) {
         // A reordered journal can invalidate the guard as well as the display.
         // Report its screen fault; ordinary guard refusals remain unchanged.
         requireScreens();
         return finish(422, { outcome: 'rejected', reason: decision.reject?.reason ?? 'invalid_decision' });
       }
+
       const transactionId = randomUUID();
       const selectedBed = command.bed ? this.config.adt?.beds.find(b => b.resource === command.bed)?.id : s.context.bed;
       if (command.bed && selectedBed === undefined) return finish(422, { outcome: 'rejected', reason: 'bed_not_configured' });
@@ -511,6 +538,7 @@ export class Store {
         ...(clinicalAdt ? { clinicalAdt: { input: clinicalInput, accepted: clinicalAdt } } : {}),
         ...(mar ? { mar: { input: marInput, accepted: mar } } : {}),
         ...(resource ? { shared: { key, before: resource.snapshot, action, after: multi!.state } } : {}) };
+      trace?.emit('stage');
       for (const k of keys) {
         const stream = streams.get(k)!;
         let snapshot = stream.snapshot;
@@ -529,6 +557,7 @@ export class Store {
         if (!updated.rowCount) throw new Error('locked stream CAS failed');
         await c.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
           [t, k, stream.version + 1, transactionId, k === `patient:${s.patient}` ? event : k === key ? { kind: action ? 'shared' : 'shared-noop', readVersions, ...(action ? { action } : {}), state: multi!.state } : { kind: 'clinical-adt', actor: actor.user.id, requestId: command.requestId, input: clinicalInput, accepted: clinicalAdt }]);
+        trace?.emit('write', { key: trace.key(k), before: stream.version, after: stream.version + 1, projection: digest(snapshot) });
       }
       if (projecting) await c.query('UPDATE commit_sessions SET base_version=$3,events=$4,screen_start=jsonb_array_length($4::jsonb),revision=revision+1,native_state=NULL,native_facts=NULL,native_version=NULL,native_display=NULL WHERE tenant=$1 AND id=$2',
         [t, s.id, p.version + 1, JSON.stringify([...s.events, command.event])]);
@@ -542,6 +571,9 @@ export class Store {
         ...(clinicalAdt ? { board: boardKeys(this.config).map(key => ({ key, version: streams.get(key)!.version + (key === `patient:${s.patient}` || streams.get(key)!.kind === 'bed' && digest(streams.get(key)!.snapshot) !== digest(clinicalAdt.state.beds.find((b: Obj) => `bed:${b.id}` === key)) ? 1 : 0) })) } : {}),
         ...(projection ? { links: projection.changed.map((r: Obj) => `/commit/patients/${s.patient}/resources/${r.resourceType}/${r.id}/${r.meta.versionId}`) } : {}),
         ...(resource ? { sharedVersion: resource.version + 1 } : {}), state: decision.accept.state, ...(screenProjection ? { screenProjection } : {}), ...(mar ? { mar: mar.events } : {}) });
-    });
+    }, trace);
+    trace?.emit('respond', { status: result.status, answer: digest(result) });
+    return result;
+
   }
 }

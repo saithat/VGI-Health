@@ -1,9 +1,13 @@
 name = "ehr"
 version = "0.1.0"
-defaultTargets = ["Ehr", "ehr"]
+defaultTargets = ["Ehr", "ehr", "CommitProtocol"]
 
 [[lean_lib]]
 name = "Ehr"
+
+# New host-protocol specifications; checked by default without linking into ehr.
+[[lean_lib]]
+name = "CommitProtocol"
 
 [[lean_exe]]
 name = "ehr"
