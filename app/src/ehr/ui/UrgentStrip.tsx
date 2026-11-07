@@ -12,6 +12,7 @@ export function UrgentStrip({
   onEvent: Emit;
 }) {
   const ref = useRef<HTMLElement>(null);
+  const visible = nodes.length > 0;
   useLayoutEffect(() => {
     const strip = ref.current;
     const shell = strip?.closest<HTMLElement>(".clinical-app");
@@ -28,8 +29,8 @@ export function UrgentStrip({
       observer.disconnect();
       shell.style.removeProperty("--urgent-strip-height");
     };
-  }, []);
-  if (!nodes.length) return null;
+  }, [visible]);
+  if (!visible) return null;
   return (
     <section
       ref={ref}

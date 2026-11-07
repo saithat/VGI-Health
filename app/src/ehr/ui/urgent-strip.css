@@ -29,9 +29,6 @@
 .clinical-app:has(.urgent-alert-strip) {
   padding-top: var(--urgent-strip-height, 0px);
 }
-.clinical-app:has(.urgent-alert-strip) .clinical-banner {
-  top: var(--urgent-strip-height, 0px);
-}
 .clinical-app:has(.urgent-alert-strip) .mantine-Modal-inner {
   padding-top: calc(var(--urgent-strip-height, 0px) + 12px);
 }

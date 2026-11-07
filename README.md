@@ -1,8 +1,8 @@
+_README last reviewed against commit `cbc1bc79` (2026-11-07)._
+
 # VGI Health
 
 [![CI](https://github.com/saithat/VGI-Health/actions/workflows/ci.yml/badge.svg)](https://github.com/saithat/VGI-Health/actions/workflows/ci.yml)
-
-_README last reviewed against commit `890c9b8a` (2026-11-07)._
 
 A research system for clinical software that can safely change itself. It has
 three parts:
@@ -406,8 +406,8 @@ The self-contained fake path uses synthetic geometry and the fake checker,
 certifies nothing, and makes no live model calls:
 
 ```sh
-TMPDIR="$HOME/run-tmp" pnpm --filter agent cadence-fake --out "$HOME/run-tmp"/cadence-demo
-TMPDIR="$HOME/run-tmp" pnpm --filter agent exec vitest run test/cadence.test.ts --maxWorkers=2
+pnpm --filter agent cadence-fake --out "$TMPDIR"/cadence-demo
+pnpm --filter agent exec vitest run test/cadence.test.ts --maxWorkers=2
 ```
 
 It exercises accumulation, weekly shipping, cross-night bundles, review vetoes,
@@ -421,7 +421,7 @@ shared browser lock, using disk-backed `TMPDIR`; neither builds Lean. Use target
 subsets during iteration:
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
 export EHR_BIN=./lean/.lake/build/bin/ehr
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-templates"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-personas" --personas
@@ -551,7 +551,7 @@ Reproduce in scratch (the pixel pass holds the shared browser lock; it does not
 run a screen audit or issue a certificate):
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
 pnpm --filter world gen --seed 7 --days 2 --information-needs v1 --out "$TMPDIR/info-needs-world" --quiet
 python scripts/information-needs-compare.py --world "$TMPDIR/info-needs-world" --out "$TMPDIR/info-needs-final"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter agent exec tsx ../scripts/information-needs-pixels.mts "$TMPDIR/info-needs-final/summary.json"
@@ -572,7 +572,8 @@ staging limit this expert floor.
 ## Local setup and live validation
 
 Requires Node ≥22.18, pnpm 11.8, Docker Compose and the pinned Lean 4.35
-(`lean/lean-toolchain`). Fixture/world/recording data is local and gitignored;
+(`lean/lean-toolchain`). Set `TMPDIR` to disk-backed scratch outside the repository
+before using the commands below. Fixture/world/recording data is local and gitignored;
 restore it before importing or running archive tests. FHIR is an initial import
 format only. `fixtures/clinical/overrides.json`, dated world resources and
 `runs/world/2/context/day-01.json` are composed before the immutable import;
@@ -583,7 +584,7 @@ patient exactly once and refuses a changed baseline. Rerunning an identical
 import preserves every later event. There is no online import/reset API.
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
 COMPOSE_PROJECT_NAME=vgi-local make install SYNTHETIC_HOSPITAL=1
 make run APP_PORT=5173
 ```
@@ -656,7 +657,7 @@ another deployment's project name for either command.
 Integration/browser commands against a fresh local stack:
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
 cd lean && lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/commit-fixture.json"
 cd ..
 export DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit
@@ -788,7 +789,7 @@ is shown as unavailable/loading until it arrives; recorded clinical state is
 never synthesized by the review layer.
 
 Rename a stopped local recording with
-`TMPDIR="$HOME/run-tmp" node scripts/rename-run.mjs <old> <new>`.
+`node scripts/rename-run.mjs <old> <new>`.
 It refuses an existing destination, active status, unsafe IDs and symlinks;
 it renames in place, rewrites embedded identity/path references (including
 compressed JSON and journals), updates transitive byte/semantic SHA-256
@@ -798,7 +799,7 @@ reported destination is retained for recovery. Test the operation on a copy
 before using it on a retained recording.
 
 Stopped recordings made before the marker protocol need one explicit in-place
-upgrade after renaming: `TMPDIR="$HOME/run-tmp" node
+upgrade after renaming: `node
 scripts/mark-completed-run.mjs <id> <completed-days> <completed-nights>`.
 It validates all requested clinician day/decision records and committed
 pointers before installing fences. For the retained ten-day recording the
@@ -807,7 +808,7 @@ counts are `10 9`. Data and these caches remain gitignored.
 Targeted checks for this path:
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
 node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/run-prefix.test.mjs scripts/rename-run.test.mjs
 pnpm --filter app exec vitest run tests/live-run-http.test.ts tests/run-refresh.test.ts tests/lazy-run.test.ts tests/run-selection.test.ts --maxWorkers=2
 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live-dashboard.spec.ts dashboard-performance.spec.ts --project=desktop --workers=1
@@ -1030,7 +1031,7 @@ runtime comparison. Sources: [toolchain](https://github.com/verse-lab/veil/blob/
 Use this checkout, no concurrent Lake processes, and disk-backed scratch:
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true LEAN_NUM_THREADS=6
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
 cd lean
 lake build
 lake env lean Ehr/Commit/Protocol/Proofs.lean
@@ -1094,7 +1095,7 @@ TypeScript/SQL-to-model refinement. Projection contents remain covered by the
 existing integration replay tests, not by hashes in this trace test.
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true LEAN_NUM_THREADS=6
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true LEAN_NUM_THREADS=6
 # Isolated 256 MB database for protocol tests; no shared database reset.
 COMMIT_PG_PORT=55436 docker compose -p vgi-commit-model -f services/commit/compose.yml up -d --wait
 (cd lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$TMPDIR/commit-model-fixture.json"
@@ -1171,7 +1172,7 @@ no discard-on-Back prompt in the modeled semantics because Back preserves input.
 Targeted native verification for this checker:
 
 ```sh
-export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=6 CI=true
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" LEAN_NUM_THREADS=6 CI=true
 (cd lean && lake build && lake build completion-bench)
 (cd lean && lake env lean Ehr/Check/CompletionAudit.lean)
 node --test scripts/completion-check.test.mjs
@@ -1199,13 +1200,13 @@ adapters and a mandatory ordinary deployment gate remain unfinished. The CLI
 preserves information-needs goal fields and refuses nonempty lookup requirements
 because those stages are outside its scenario graph.
 
-## Lean UI library (research, v1)
+## Lean UI library (research)
 
 `lean/Ehr/Layout` is isolated from deployment, the generator and the clinical
 checker. Its new theorems are kernel checked; they are not yet in Comparator.
 `ui-layout` consumes JSONL proposals without compiling Lean per proposal.
-The certified app sources and pinned build inputs are unchanged; the visual
-harness lives entirely under `app/src/browser/ui-library`.
+The visual harness and its font assets live under
+`app/src/browser/ui-library`, outside the certified clinical source boundary.
 
 **Language.** Units are integer 1/64 CSS pixels. Frames, horizontal/vertical
 stacks, wrapping rows, fixed/weighted grid tracks, absolute layers and fixed scroll
@@ -1394,7 +1395,7 @@ layoutAccepted_allStates
     | none => ¬ Covered family (runRenderUi ⟨sp, program, facts, display, user, state⟩)
     | some painted => Realizes (runRenderUi ⟨sp, program, facts, display, user, state⟩) v painted
 
-layoutAccepted_allPatients
+layoutAccepted_allPatients_finite
     (sp : Ehr.Spec) (program : Ehr.Program) (family : Family)
     (accepted : acceptFamily family = true)
     (coverage : RenderCovered sp program family) :
@@ -1408,10 +1409,11 @@ layoutAccepted_allPatients
 `Realizes` includes G1–G9 on the actual semantic inventory, linked source roles,
 exact full original values and the unbounded safety-text preservation/width
 contract. `Covered` is finite structural family membership, with no string or
-row-count bound. `RenderCovered` is the remaining **proof obligation**: every
-actual EHR render shape reachable by human/macro events or time must be a member
-of the admitted family, for every Facts/Display/user. For finite descriptors, the theorem makes that
-premise visible; the structural program certificate below discharges it.
+row-count bound. For a finite descriptor, `RenderCovered` requires every actual
+EHR render shape reachable by human/macro events or time to belong to the
+admitted family, for every Facts/Display/user. The theorem makes that premise
+visible; the structural program certificate below discharges the corresponding
+obligation for the fixed-shell compiler.
 The all-states theorem needs no coverage or reachability premise: it establishes
 partial correctness for every EHR input state, including unreachable states,
 and identifies missing structural cases exactly. It does **not** promise an
@@ -1490,7 +1492,7 @@ The exact program-level headlines, in namespace `Ehr.Layout.Range`, are:
 
 ```lean
 checkProgram_sound (sp : Ehr.Spec) (program : Ehr.Program)
-    (accepted : checkProgram sp program = true) :
+    (_accepted : checkProgram sp program = true) :
   RenderCovered sp program Library.fixedShell
 
 layoutAccepted_program (sp : Ehr.Spec) (program : Ehr.Program)
@@ -1503,8 +1505,8 @@ layoutAccepted_program (sp : Ehr.Spec) (program : Ehr.Program)
 ```
 
 `checkProgram_allStates` strengthens the second result by dropping reachability.
-`RenderFamily` extends the family representation to finite descriptors and
-certified structural compilers. `RenderCovered` keeps all its patient/state
+`RenderFamily` is a typeclass for finite descriptors and certified structural
+compilers. `RenderCovered` keeps all its patient/state
 quantifiers. `RenderCovered_finite_iff` is a definitional equivalence with the
 original finite-family obligation, and `layoutAccepted_allPatients_finite`
 reproduces its original conclusion. The generic `layoutAccepted_allPatients`
@@ -1578,8 +1580,9 @@ Targeted checks passed 21 native regressions (19 layout/program tests and two
 font tests) and seven Playwright tests (one worker under the shared lock, after
 the refreshed port audit). The differential compared
 228 boxes, 153 text lines and 6,861 intrinsic glyph advances: all worst
-deviations were 0 CSS px. Explicit inspection reported 186 theorem axiom
-outputs using only `propext`, `Classical.choice` and `Quot.sound`.
+deviations were 0 CSS px. The named-declaration audit covers 186 theorems. Environment-wide inspection
+also checks generated helper lemmas: 551 theorem closures use only `propext`,
+`Classical.choice` and `Quot.sound`.
 
 The targeted browser command also paints the audit's W1 sample when present
 and verifies vertical scrolling/preservation of a 70,000-character safety value
@@ -1725,8 +1728,8 @@ compare both programs from the same training-day memory snapshot and discard
 counterfactual updates; validation without an explicit snapshot is a cold run.
 
 For reproducible small comparisons, run
-`TMPDIR="$HOME/run-tmp" python3 scripts/user-model-compare.py
---out "$HOME/run-tmp"/user-model-comparison`. It samples the first
+`python3 scripts/user-model-compare.py
+--out "$TMPDIR"/user-model-comparison`. It samples the first
 task of each represented workflow for every v1/v3 persona template, verifies
 byte determinism/default equivalence, and compares three adjacent historical
 P1 deployments. The template comparison fails on any task completed by the expert but missed by the
@@ -1834,7 +1837,7 @@ evidence, choice/reasons and comparisons). These files are gitignored data.
 The offline harness runs without an LLM or deployment:
 
 ```sh
-TMPDIR="$HOME/run-tmp" \
+\
 EHR_BIN=./lean/.lake/build/bin/ehr \
 pnpm --filter agent exec tsx src/session-cli.ts /absolute/path/to/session-input.json
 ```
@@ -1861,9 +1864,9 @@ inside `app/src/browser`; the certified clinical app hash is unchanged.
 Validation for this module uses the fake backend and no LLM calls:
 
 ```sh
-TMPDIR="$HOME/run-tmp" pnpm --filter agent exec vitest run test/session.test.ts test/bounded-tailoring.test.ts --maxWorkers=2
-TMPDIR="$HOME/run-tmp" pnpm --filter app build
-TMPDIR="$HOME/run-tmp" pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
+pnpm --filter agent exec vitest run test/session.test.ts test/bounded-tailoring.test.ts --maxWorkers=2
+pnpm --filter app build
+pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
 ```
 
 `run-days --protocol certified-cadence-archive-v1 --cadence weekly
@@ -1937,14 +1940,21 @@ P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
 The current certified app SHA-256 is
-`4a510587c2f2ba9a60f2213691764eeb91ff562b2e63b8c7ad64b9d069c714c3`.
+`b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7`.
 The CI lint dependencies in `pnpm-lock.yaml` participate in this hash. Source-bound
 WASM assets and their manifest are rebuilt with the current Lean sources;
 recordings require re-certification before their bindings can authorize this build.
 Code-choice fields and their confirmation wrappers reserve a text-relative
 minimum width inside wrapping sections. Increasing text size expands the track
-instead of clipping the selected label. Renderer changes require matching
-certificate bindings and fresh geometry measurements.
+instead of clipping the selected label.
+
+Urgent alerts appearing after mount reserve their measured height immediately. The
+pinned patient banner includes that height in its scroll offset;
+resizing a wrapped strip updates the scroll reveal padding. The transition
+regression covers appearance, document scrolling, wrapping and removal.
+
+Renderer changes require matching certificate bindings and fresh geometry
+measurements.
 
 Cold profiling found repeated native interpreter startup and redundant browser
 settling waits. Batching popups and removing those waits cut a cold P1/v1 sample
@@ -1968,7 +1978,7 @@ Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:
 
 ```sh
-export TMPDIR="$HOME/run-tmp" CI=true EHR_SCREEN_WORKERS=4
+export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true EHR_SCREEN_WORKERS=4
 export EHR_SCREEN_CACHE_DIR="$TMPDIR/screen-recert-cache"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
   node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-recert-cold"
@@ -2072,10 +2082,10 @@ choices and deployments are recomputed. Reuse provenance and hit counts enter
 `comparison.json`; resume fingerprint checks remain unchanged.
 
 ```sh
-TMPDIR="$HOME/run-tmp" EHR_SCREEN_WORKERS=4 \
-flock "$HOME/run-tmp"/vgi-browser-heavy.lock \
+EHR_SCREEN_WORKERS=4 \
+flock "$TMPDIR"/vgi-browser-heavy.lock \
 pnpm --filter agent exec tsx src/offline-tailoring-compare.ts \
-  --out "$HOME/run-tmp"/wire-tailoring-medication-comparison --days 8
+  --out "$TMPDIR"/wire-tailoring-medication-comparison --days 8
 ```
 
 `--world` defaults to this checkout's `runs/world/2`. The outer `flock`
@@ -2157,7 +2167,7 @@ samples before native/WASM comparison.
 - `node conformance/verify.mjs <run>` then `node conformance/refresh-evidence.mjs
   <run>`: agreement of independent conformance runs, then the derived case
   reports and checker probes.
-- `TMPDIR="$HOME/run-tmp" node scripts/migrate-neutral-terms.mjs`
+- `node scripts/migrate-neutral-terms.mjs`
   (after building Lean, WASM and the app): one-time rewrite of local `runs/`,
   `programs/` and `fixtures/` to the current terms and fictional identities,
   rebuilding digests, certificates and bindings and checking strict replay.

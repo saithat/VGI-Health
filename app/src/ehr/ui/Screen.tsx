@@ -332,16 +332,18 @@ function StockUiScreenView({
     const shell = shellRef.current;
     const header = shell?.querySelector<HTMLElement>(".clinical-banner");
     if (!shell || !header) return;
+    const urgent = shell.closest(".clinical-app")?.querySelector<HTMLElement>(".urgent-alert-strip");
     const root = document.documentElement;
     const previousPadding = root.style.scrollPaddingTop;
     const measure = () => {
       const height = Math.ceil(header.getBoundingClientRect().height);
+      const urgentHeight = Math.ceil(urgent?.getBoundingClientRect().height ?? 0);
       const pinned =
-        window.innerWidth >= 1100 && height < window.innerHeight * 0.45;
+        window.innerWidth >= 1100 && height + urgentHeight < window.innerHeight * 0.45;
       shell.dataset.pinned = String(pinned);
       shell.style.setProperty("--clinical-header-height", `${height}px`);
       root.style.scrollPaddingTop = pinned
-        ? `${height + 12}px`
+        ? `${height + urgentHeight + 12}px`
         : previousPadding;
       const status = shell.querySelector<HTMLElement>(".workspace-footer");
       shell.style.setProperty(
@@ -352,6 +354,7 @@ function StockUiScreenView({
     measure();
     const observer = new ResizeObserver(measure);
     observer.observe(header);
+    if (urgent) observer.observe(urgent);
     const status = shell.querySelector<HTMLElement>(".workspace-footer");
     if (status) observer.observe(status);
     window.addEventListener("resize", measure);
@@ -360,7 +363,7 @@ function StockUiScreenView({
       window.removeEventListener("resize", measure);
       root.style.scrollPaddingTop = previousPadding;
     };
-  }, [screen.banner.length > 0]);
+  }, [screen.banner.length > 0, Boolean(screen.urgent?.length)]);
   return (
     <AppShell
       className="clinical-app"

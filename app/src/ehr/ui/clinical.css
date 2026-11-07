@@ -143,13 +143,13 @@
 }
 .clinical-app .clinical-shell[data-pinned="true"] > .clinical-banner {
   position: sticky;
-  top: 0;
+  top: var(--urgent-strip-height, 0px);
   z-index: 150;
 }
 .clinical-app .clinical-shell[data-pinned="true"] > .clinical-navbar {
   position: sticky;
-  top: var(--clinical-header-height);
-  height: calc(100dvh - var(--clinical-header-height));
+  top: calc(var(--urgent-strip-height, 0px) + var(--clinical-header-height));
+  height: calc(100dvh - var(--urgent-strip-height, 0px) - var(--clinical-header-height));
   min-height: 0;
   overflow-y: auto;
 }
