@@ -665,8 +665,9 @@ APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=o
 ## What is proved
 
 "Proved" means a Lean theorem checked by the kernel using only the standard
-axioms (`propext`, `Classical.choice`, `Quot.sound`). The clinical statements
-below are cross-checked by Lean's Comparator (`make verify`).
+axioms (`propext`, `Classical.choice`, `Quot.sound`). The clinical statements are
+cross-checked by Lean's Comparator (`make verify`). The protocol and experimental
+UI-library theorems are kernel checked and are not yet in Comparator.
 
 | Guarantee | Scope |
 |---|---|
@@ -966,6 +967,255 @@ accepting its explored prefix. All 33 axiom audits passed. General arbitrary-val
 adapters and a mandatory ordinary deployment gate remain unfinished. The CLI
 preserves information-needs goal fields and refuses nonempty lookup requirements
 because those stages are outside its scenario graph.
+
+## Lean UI library (research, v1)
+
+`lean/Ehr/Layout` is isolated from deployment, the generator and the clinical
+checker. Its new theorems are kernel checked; they are not yet in Comparator.
+`ui-layout` consumes JSONL proposals without compiling Lean per proposal.
+The certified app sources and pinned build inputs are unchanged; the visual
+harness lives entirely under `app/src/browser/ui-library`.
+
+**Language.** Units are integer 1/64 CSS pixels. Frames, horizontal/vertical
+stacks, wrapping rows, fixed/weighted grid tracks, absolute layers and fixed scroll
+viewports support hug/fill/fixed dimensions, min/max requests, gaps, padding
+and alignment. Spacing, radii, palette, font-instance and type-scale tokens resolve in Lean
+(`space-2`, `rounded-lg`, `slate-900`, `sans-600`, `text-sm`); integer/color
+literals remain legal. Absolute positions,
+overlapping layers, arbitrary opaque sRGB colors and component variants/slots
+remain expressible; checking happens after expansion and layout. Marks are
+rectangles, circles, rational-turn wedges, lines/polylines and text. Component
+expansion has a total bounded-depth parser; cycles fail explicitly. Grid tracks accept integer fixed widths and integer fractional weights
+(`tracks: [6400, "1fr", {"fr": 2}]`); omitted tracks retain equal columns.
+Fixed tracks are honored even when they overrun their parent, so the checker
+reports overflow rather than restricting the input language. A dynamic
+bounded-list authoring primitive remains to implement.
+
+**Layout and text proofs.** `layout_satisfies` establishes incoming size
+constraints; clamping a parent does not itself establish child containment.
+`column_apart` proves vertical stack separation for arbitrary child heights;
+`scroll_apart` preserves separation under translation. `geometry_independent`
+proves that binding any two content environments preserves computed geometry.
+Measurement is one structural traversal; translation and flattening are separate
+traversals. Text reserves line counts before data binding. `wrap_complete` and
+`layoutAccepted_textComplete` prove complete bounded wrap content;
+`advance_le_cell` and `wrap_line_width` bound advances and wrapped line widths.
+Scroll text uses advance-based greedy breaking and retains paragraph breaks;
+`greedy_complete`, `greedy_width`, `scroll_complete` and `scroll_line_width`
+establish preservation and width bounds. Under the owner's provisional policy,
+every safety-classified slot must be a vertical text scroller with wrapping,
+unbounded content height and no line budget or truncation. `maxLength` applies
+only to non-safety text; safety text never fails length/glyph validation. A
+character absent from the pinned font is spelled `[U+HHHHHH]` with pinned ASCII
+(e.g. `[U+01F9EC]`); `TextAtom` preserves each original scalar, and the full
+original string is emitted as the painter's accessible label. This explicit
+fallback avoids unmeasured browser fallback glyphs. `paintText_supported`,
+`textAtoms_preserve` and `layoutAccepted_safety` prove this lossless source/visual
+spelling contract for arbitrary Unicode strings. Layout admission requires the
+chosen font to support the escape alphabet. Non-safety text retains its finite
+length/glyph validation and declared overflow policy. Pinned advances and vertical extents come from Noto Sans
+400/600/650/700/750/800, Mono 400 and Symbols 400. Every text slot has a font,
+font size, line height, reserved viewport lines and overflow policy; only
+non-safety slots have a finite source-length contract.
+
+**New rule predicates (owner review).** `layoutAccepted_rules` reflects checker
+acceptance into the following conjunction. `acceptTemplate` checks 1440×900,
+1280×800 and 1920×1080; `layoutAccepted_allViewports` quantifies over arbitrary
+content environments for one fixed semantic template.
+
+| Rule | Exact library predicate |
+|---|---|
+| G1 | Exactly one banner, outside scrolling and contained in the viewport; separated from every other painted mark. `layoutAccepted_bannerPixels` proves no shared pixel for any scroll offsets in the conservative clipping model. |
+| G2 | Every active interruptive mark is fixed, contained and has strictly greater global z than ordinary paint. `modal_blocks` proves ordinary targets cannot dispatch while an interruptive layer is present. |
+| G3 | Every declared target is at least 1536×1536 units (24×24 px); active target pairs are separated. Ordinary targets blocked by a modal are inactive. Shared scrollers use content coordinates; independent regions use conservative viewport envelopes. |
+| G4 | Painted footprints or their outer scroll viewport are contained. Text has valid pinned metrics, positive capacity/lines, sufficient vertical reserve, bounded non-safety wrap capacity, and unbounded vertical wrapping for safety text with a pinned escape alphabet. Active text cannot intersect higher paint or unrelated paint at the same z; ancestor backgrounds at the same z are exempt. `layoutAccepted_textPixels` proves separation for arbitrary scrolling. |
+| G5 | Every outer footprint has nonnegative x and right edge within viewport width; scroll content fits the nearest viewport horizontally. |
+| G6 | Foreground/background contrast is at least 4.5:1 for ordinary text, 3:1 for text ≥24px or ≥18⅔px at weights ≥700, and 3:1 for targets. Colors are opaque 8-bit sRGB. Outward-rounded rational luminance bounds have exact integer fifth-power certificates (`channel_certificates`); no floating point enters the check. |
+| G7 | Expected semantic occurrence paths and painted IDs are unique; each expected path is painted exactly once and no invented source path is painted. The W1 adapter derives the inventory from the actual `UiScreen`; the lower-level proposal API takes the expected inventory as an input. |
+| G8 | Document order is top-to-bottom, then left-to-right at equal y. Within a shared scroller use content positions; between regions use outer viewports. Distinct z layers are separate reading regions. This does not establish an assistive technology's traversal order. |
+| G9 (provisional scope) | At 1440×900, **if any current-task commit target is present**, exactly one is fixed and fully contained without page scrolling. A screen with no current-task commit is exempt. Other sizes impose no extra commit constraint. Family admission links commit flags to the actual semantic source, preventing omission to claim an exemption. |
+
+The pixel model overapproximates nested clipping with the outermost viewport;
+inner clips can only remove pixels. Scroll ancestor identities distinguish
+independent regions; this conservative envelope test can reject safe nested
+designs containing targets or text in different inner regions. `findings` reports rule, node/peer, metric, actual,
+required and signed deficit; warnings never admit a violation. Accepted mark
+overlaps can produce `exploit` warnings for a later agent-facing odd-design log.
+
+**Keyboard semantics.** `Keyboard` defines manual horizontal tabs, single-select
+listboxes, modal dialogs and rectangular non-editable data grids against the
+W3C APG [tabs](https://www.w3.org/WAI/ARIA/apg/patterns/tabs/),
+[listbox](https://www.w3.org/WAI/ARIA/apg/patterns/listbox/),
+[dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) and
+[grid](https://www.w3.org/WAI/ARIA/apg/patterns/grid/) profiles. Theorems cover
+entry/activation, focus/selection bounds, modal Tab containment/Escape restoration,
+and grid bounds/row boundaries. Optional deletion, popup menus, multiselection,
+type-ahead and editable cells are absent. The visual harness emits requested
+roles and blocks ordinary buttons beneath a modal; it does not yet connect DOM
+keyboard events or ARIA relationships to these proved transition functions.
+
+**Painter differential and W1 prototype.** The harness draws a flat global z
+order, absolutely placed boxes and prebroken lines. `paint=false` suppresses all
+visible ink, including text. Text has its own opaque local background above any
+shape in the same box, matching the local contrast model. Native scroll offsets only
+translate marks and intersect Lean-supplied clips. Kerning/ligatures are disabled;
+`text-rendering: geometricPrecision` is required (ordinary hinted text produced
+a 13.5px discrepancy in the initial probe). A targeted differential spans three
+viewports, all eight font instances, adversarial long labels, wrapping rows,
+nine-column grids, custom shapes and nested scrolling. Browser glyph rendering
+matching the pinned advance/vertical tables remains trusted, as do browser
+clipping, paint and accessibility behavior; the differential validates samples,
+not those assumptions universally.
+
+`Semantic.portScreen` maps every `UiNode` occurrence, including wrappers, to a
+unique path and retains user-facing labels, values and rows in safety-classified text. W1 signing
+uses a persistent slate banner, blue commit control, fixed review scroller and
+interruptive layers. It is a semantic prototype: fields/review rows are text
+cards, not a close visual/interactive reproduction of today's EHR widgets.
+The adapter identifies the first primary-role UiNode in preorder as the
+current-task commit source; disabled primary buttons still count. This is the
+precise task-selection convention in the absence of a separate task argument.
+`portAccepted_rules` is conditional on checking the generated tree. The native
+`ui-port-audit` probes every local program containing `w1Sign` with its matching
+spec (frozen recorded specs where available), native group/tab/alert variants
+and all supported viewports. These are probes using one synthetic patient,
+not universal state coverage or clinical program certification. The initial 2026-11-06
+pass (before the provisional G9 exemption) found 76 distinct programs across 103 paths: 3,304/3,381 checks accepted;
+77 G9 failures were confined to intentionally bad programs and nursing benchmark
+screens without an order-sign commit. Under the provisional scope, the follow-up
+pass accepts all 3,381 layout checks: all 77 previous G9 failures are exempt
+(48 nursing benchmark checks; 29 checks from two intentionally bad programs).
+The two bad programs remain rejected by the unchanged native clinical checker:
+`05-self-cosign` violates `humanOnlyKept` through a human-only cosign prefill;
+`20-no-administration-time` fails `wellFormed` on an unknown alert reference
+under its selected v1 spec. This does not claim a new administration-time
+counterexample. All 76 observed structural families are admitted (354 cases
+summed across families); their general `RenderCovered` obligations remain open.
+`scope-comparison.json` records the baseline/check mapping and clinical verdicts.
+Source data and audit outputs stay outside git.
+
+**Universal bridge.** `screenShape` erases patient labels/values and info-table
+rows, while retaining occurrence paths, interaction/commit placement classes
+and structural line reservations. `compileShape` never reads content.
+`Family.acceptFamily` checks every supplied shape/layout case at all supported
+viewports, including semantic flag linkage (`Linked`). Layouts are arbitrary
+Nodes, with per-viewport JSON cases; the reference compiler is optional.
+Semantic source values bind by tree path, independently of agent text keys.
+`family-check` admits references once; `family-paint` takes a new `UiScreen` or
+actual `RenderInput`, binds its unrestricted values and paints without checking
+safety string lengths. Omitted `layouts` selects the reference compiler;
+custom layouts supply `{viewport, tree}` cases for each supported size. Request
+`content`, `expected` and `components` have explicit decoder defaults; malformed
+supplied values still fail. The stateless JSONL runner revalidates the supplied
+family descriptor, independently of patient values. Uncovered shapes are
+reported explicitly.
+
+The kernel-checked headline statements are:
+
+```lean
+layoutAccepted_allScreens
+    (family : Family) (h : acceptFamily family = true)
+    (screen : UiScreen) (covered : Covered family screen)
+    (v : Size) (hv : v ∈ viewports) :
+  ∃ painted, familyPaint family screen v = some painted ∧ Realizes screen v painted
+
+layoutAccepted_allStates
+    (sp : Ehr.Spec) (program : Ehr.Program) (family : Family)
+    (accepted : acceptFamily family = true) :
+  ∀ (facts : Ehr.Facts) (display : Display) (user : Ehr.User) (state : Ehr.State),
+    ∀ v ∈ viewports,
+    match familyPaint family (runRenderUi ⟨sp, program, facts, display, user, state⟩) v with
+    | none => ¬ Covered family (runRenderUi ⟨sp, program, facts, display, user, state⟩)
+    | some painted => Realizes (runRenderUi ⟨sp, program, facts, display, user, state⟩) v painted
+
+layoutAccepted_allPatients
+    (sp : Ehr.Spec) (program : Ehr.Program) (family : Family)
+    (accepted : acceptFamily family = true)
+    (coverage : RenderCovered sp program family) :
+  ∀ (facts : Ehr.Facts) (display : Display) (user : Ehr.User) (state : Ehr.State),
+    Ehr.Props.Reachable ⟨sp, program, facts, user⟩ state →
+    ∀ v ∈ viewports, ∃ painted,
+      familyPaint family (runRenderUi ⟨sp, program, facts, display, user, state⟩) v = some painted ∧
+      Realizes (runRenderUi ⟨sp, program, facts, display, user, state⟩) v painted
+```
+
+`Realizes` includes G1–G9 on the actual semantic inventory, linked source roles,
+exact full original values and the unbounded safety-text preservation/width
+contract. `Covered` is finite structural family membership, with no string or
+row-count bound. `RenderCovered` is the remaining **proof obligation**: every
+actual EHR render shape reachable by human/macro events or time must be a member
+of the admitted family, for every Facts/Display/user. The theorem makes that
+premise visible; no general certificate for an arbitrary EHR Program is claimed.
+The all-states theorem needs no coverage or reachability premise: it establishes
+partial correctness for every EHR input state, including unreachable states,
+and identifies missing structural cases exactly. It does **not** promise an
+output for an uncovered shape. The all-screens theorem needs only local shape
+membership and applies to every payload of that shape, including unbounded
+lists represented inside an info node. `realized_currentCommit_visible` proves
+that a linked, complete current-task source cannot be hidden to obtain G9's
+no-commit exemption. `finiteFamily_missingShape` proves that a finite shape
+family cannot cover all possible UiScreens; it does not rule out coverage for a
+particular EHR Program. Therefore finite probes are not treated as a global
+coverage proof. Patient-directory controls can introduce structural growth even
+when clinical table rows stay inside a single info node. Parameterized structural
+certificates, or a proof of a concrete Program's finite shape coverage, are still
+needed to close the general case.
+
+There is also a closed positive certificate: `reviewFamily_accepted` proves
+admission of `reviewFamily` with proof-producing `decide_cbv` (kernel checked,
+no native evaluation axiom). `layoutAccepted_reviewAllPayloads` states:
+
+```lean
+∀ (banner : List (String × String)) (rows : List (List (String × String)))
+  (enabled : Bool) (reason : Option String) (v : Size), v ∈ viewports →
+  ∃ painted,
+    familyPaint reviewFamily (reviewScreen banner rows enabled reason) v = some painted ∧
+    Realizes (reviewScreen banner rows enabled reason) v painted
+```
+
+This has no length, glyph, shape-membership, coverage or runtime-acceptance
+premise. It is a semantic review/sign family with arbitrary banner fields,
+review-table rows and enabled/blocked reason; it is not a theorem that every
+state of the deployed EHR renderer has that exact shape.
+
+**Not proved / incomplete.** General `RenderCovered` certificates, close widget
+fidelity, bounded-list authoring, complete DOM/APG integration,
+Comparator coverage and deployment integration remain open. Browser glyph and
+accessibility rendering remain trusted. Nothing here replaces existing clinical
+certification or authorizes switching the deployed painter or generator. No data
+or import bound is introduced.
+
+Validation (from the repository root; pnpm uses `CI=true`):
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6
+(cd lean && lake build && lake build ui-layout ui-port-audit)
+node --test scripts/ui-library/native.test.mjs scripts/ui-library/family.test.mjs
+node scripts/ui-library/port-audit.mjs --baseline "$TMPDIR/ui-library-port-before-scope.jsonl"
+pnpm --filter app typecheck
+pnpm --filter app lint
+flock "$TMPDIR/vgi-browser-heavy.lock" pnpm --filter app exec playwright test --config src/browser/ui-library/playwright.config.ts
+```
+
+Targeted checks passed 13 native regressions and four
+Playwright tests (one worker under the shared lock). The differential compared
+198 boxes and 111 text lines: worst deviations were 0 CSS px for boxes and
+1/64 CSS px for line widths. Explicit inspection reported 69 theorem axiom
+outputs using only `propext`, `Classical.choice` and `Quot.sound`.
+
+The targeted browser command also paints the audit's W1 sample when present
+and verifies vertical scrolling/preservation of a 70,000-character safety value
+with an unsupported Unicode glyph.
+Port-audit baseline paths are resolved against the current checkout for the
+known `releases/`, `programs/` and `runs/` corpus roots.
+Metrics, corpus reports and the signing screenshot are written under `$TMPDIR`.
+Font tables regenerate with `scripts/ui-library/generate-fonts.py` (fonttools
+4.68.0, brotli 1.2.1); `scripts/ui-library/fonts.json` binds source bytes/instances.
+`scripts/ui-library/generate-contrast.py` regenerates rational interval certificates.
+The default `lake build` imports the unit tests, closed review-family certificate
+and headline axiom checks. Explicit axiom inspection is also available with
+`cd lean && for module in Engine Contrast Check Keyboard Semantic Family Examples;
+do lake env lean "Ehr/Layout/$module.lean"; done`.
 
 ## What parts of a real EHR are replicated
 

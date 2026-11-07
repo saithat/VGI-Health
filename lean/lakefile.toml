@@ -53,3 +53,12 @@ name = "CompletionObligations"
 [[lean_exe]]
 name = "exotic-api"
 root = "Ehr.Sem.ExoticMain"
+
+# Isolated integer-layout research harness; not the clinical painter or gate.
+[[lean_exe]]
+name = "ui-layout"
+root = "Ehr.Layout.Main"
+
+[[lean_exe]]
+name = "ui-port-audit"
+root = "Ehr.Layout.Audit"

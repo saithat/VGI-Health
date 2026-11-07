@@ -1,0 +1,90 @@
+[
+  {
+    "id": "noto_sans_400",
+    "family": "noto-sans",
+    "weight": 400,
+    "unitsPerEm": 1000,
+    "maxAdvance": 1000,
+    "ascent": 1069,
+    "descent": 293,
+    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
+    "glyphs": 196
+  },
+  {
+    "id": "noto_sans_600",
+    "family": "noto-sans",
+    "weight": 600,
+    "unitsPerEm": 1000,
+    "maxAdvance": 1000,
+    "ascent": 1069,
+    "descent": 293,
+    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
+    "glyphs": 196
+  },
+  {
+    "id": "noto_sans_650",
+    "family": "noto-sans",
+    "weight": 650,
+    "unitsPerEm": 1000,
+    "maxAdvance": 1000,
+    "ascent": 1069,
+    "descent": 293,
+    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
+    "glyphs": 196
+  },
+  {
+    "id": "noto_sans_700",
+    "family": "noto-sans",
+    "weight": 700,
+    "unitsPerEm": 1000,
+    "maxAdvance": 1000,
+    "ascent": 1069,
+    "descent": 293,
+    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
+    "glyphs": 196
+  },
+  {
+    "id": "noto_sans_750",
+    "family": "noto-sans",
+    "weight": 750,
+    "unitsPerEm": 1000,
+    "maxAdvance": 1000,
+    "ascent": 1069,
+    "descent": 293,
+    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
+    "glyphs": 196
+  },
+  {
+    "id": "noto_sans_800",
+    "family": "noto-sans",
+    "weight": 800,
+    "unitsPerEm": 1000,
+    "maxAdvance": 1000,
+    "ascent": 1069,
+    "descent": 293,
+    "sha256": "94def8a146654f422722c0f2e44ff376e2d70a4ded7abd6e088126d131ee183e",
+    "glyphs": 196
+  },
+  {
+    "id": "noto_sans_mono_400",
+    "family": "noto-sans-mono",
+    "weight": 400,
+    "unitsPerEm": 1000,
+    "maxAdvance": 600,
+    "ascent": 1069,
+    "descent": 293,
+    "sha256": "6ce8c4c2dad6498cbe9d8ed6a8d150f1247496a12b6f5c3ca995751fc4902e35",
+    "glyphs": 196
+  },
+  {
+    "id": "noto_symbols_400",
+    "family": "noto-symbols",
+    "weight": 400,
+    "unitsPerEm": 1000,
+    "maxAdvance": 829,
+    "ascent": 1069,
+    "descent": 630,
+    "sha256": "c42c38c36ab482af6ad70df377d853da6dc1df30b400a09155b2a8d4655c9222",
+    "glyphs": 2
+  }
+]
