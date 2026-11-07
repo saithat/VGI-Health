@@ -1,5 +1,7 @@
 # VGI Health
 
+_README last reviewed against commit `890c9b8a` (2026-11-07)._
+
 A research system for clinical software that can safely change itself. It has
 three parts:
 
@@ -402,8 +404,8 @@ The self-contained fake path uses synthetic geometry and the fake checker,
 certifies nothing, and makes no live model calls:
 
 ```sh
-TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent cadence-fake --out /home/saithat/Projects/run-tmp/cadence-demo
-TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/cadence.test.ts --maxWorkers=2
+TMPDIR="$HOME/run-tmp" pnpm --filter agent cadence-fake --out "$HOME/run-tmp"/cadence-demo
+TMPDIR="$HOME/run-tmp" pnpm --filter agent exec vitest run test/cadence.test.ts --maxWorkers=2
 ```
 
 It exercises accumulation, weekly shipping, cross-night bundles, review vetoes,
@@ -417,8 +419,8 @@ shared browser lock, using disk-backed `TMPDIR`; neither builds Lean. Use target
 subsets during iteration:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true
-export EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr
+export TMPDIR="$HOME/run-tmp" CI=true
+export EHR_BIN=./lean/.lake/build/bin/ehr
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-templates"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs "$TMPDIR/cadence-audit-personas" --personas
 ```
@@ -547,7 +549,7 @@ Reproduce in scratch (the pixel pass holds the shared browser lock; it does not
 run a screen audit or issue a certificate):
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true
+export TMPDIR="$HOME/run-tmp" CI=true
 pnpm --filter world gen --seed 7 --days 2 --information-needs v1 --out "$TMPDIR/info-needs-world" --quiet
 python scripts/information-needs-compare.py --world "$TMPDIR/info-needs-world" --out "$TMPDIR/info-needs-final"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter agent exec tsx ../scripts/information-needs-pixels.mts "$TMPDIR/info-needs-final/summary.json"
@@ -579,7 +581,7 @@ patient exactly once and refuses a changed baseline. Rerunning an identical
 import preserves every later event. There is no online import/reset API.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true
+export TMPDIR="$HOME/run-tmp" CI=true
 COMPOSE_PROJECT_NAME=vgi-local make install SYNTHETIC_HOSPITAL=1
 make run APP_PORT=5173
 ```
@@ -652,7 +654,7 @@ another deployment's project name for either command.
 Integration/browser commands against a fresh local stack:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true
+export TMPDIR="$HOME/run-tmp" CI=true
 cd lean && lake env lean --run ../services/commit/test/Fixture.lean > "$TMPDIR/commit-fixture.json"
 cd ..
 export DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit
@@ -733,7 +735,7 @@ is shown as unavailable/loading until it arrives; recorded clinical state is
 never synthesized by the review layer.
 
 Rename a stopped local recording with
-`TMPDIR=/home/saithat/Projects/run-tmp node scripts/rename-run.mjs <old> <new>`.
+`TMPDIR="$HOME/run-tmp" node scripts/rename-run.mjs <old> <new>`.
 It refuses an existing destination, active status, unsafe IDs and symlinks;
 it renames in place, rewrites embedded identity/path references (including
 compressed JSON and journals), updates transitive byte/semantic SHA-256
@@ -743,7 +745,7 @@ reported destination is retained for recovery. Test the operation on a copy
 before using it on a retained recording.
 
 Stopped recordings made before the marker protocol need one explicit in-place
-upgrade after renaming: `TMPDIR=/home/saithat/Projects/run-tmp node
+upgrade after renaming: `TMPDIR="$HOME/run-tmp" node
 scripts/mark-completed-run.mjs <id> <completed-days> <completed-nights>`.
 It validates all requested clinician day/decision records and committed
 pointers before installing fences. For the retained ten-day recording the
@@ -752,7 +754,7 @@ counts are `10 9`. Data and these caches remain gitignored.
 Targeted checks for this path:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true
+export TMPDIR="$HOME/run-tmp" CI=true
 node --import ./agent/node_modules/tsx/dist/loader.mjs --test scripts/run-prefix.test.mjs scripts/rename-run.test.mjs
 pnpm --filter app exec vitest run tests/live-run-http.test.ts tests/run-refresh.test.ts tests/lazy-run.test.ts tests/run-selection.test.ts --maxWorkers=2
 APP_TEST_PREVIEW=1 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test live-dashboard.spec.ts dashboard-performance.spec.ts --project=desktop --workers=1
@@ -916,7 +918,7 @@ runtime comparison. Sources: [toolchain](https://github.com/verse-lab/veil/blob/
 Use this checkout, no concurrent Lake processes, and disk-backed scratch:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6
+export TMPDIR="$HOME/run-tmp" CI=true LEAN_NUM_THREADS=6
 cd lean
 lake build
 lake env lean Ehr/Commit/Protocol/Proofs.lean
@@ -966,7 +968,7 @@ TypeScript/SQL-to-model refinement. Projection contents remain covered by the
 existing integration replay tests, not by hashes in this trace test.
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6
+export TMPDIR="$HOME/run-tmp" CI=true LEAN_NUM_THREADS=6
 # Isolated 256 MB database for protocol tests; no shared database reset.
 COMMIT_PG_PORT=55436 docker compose -p vgi-commit-model -f services/commit/compose.yml up -d --wait
 (cd lean && lake env lean --run ../services/commit/test/Fixture.lean) > "$TMPDIR/commit-model-fixture.json"
@@ -1040,7 +1042,7 @@ no discard-on-Back prompt in the modeled semantics because Back preserves input.
 Targeted native verification for this checker:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp LEAN_NUM_THREADS=6 CI=true
+export TMPDIR="$HOME/run-tmp" LEAN_NUM_THREADS=6 CI=true
 (cd lean && lake build && lake build completion-bench)
 (cd lean && lake env lean Ehr/Check/CompletionAudit.lean)
 node --test scripts/completion-check.test.mjs
@@ -1288,7 +1290,7 @@ or import bound is introduced.
 Validation (from the repository root; pnpm uses `CI=true`):
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6
+export TMPDIR="$HOME/run-tmp" CI=true LEAN_NUM_THREADS=6
 (cd lean && lake build && lake build ui-layout ui-port-audit)
 node --test scripts/ui-library/native.test.mjs scripts/ui-library/family.test.mjs
 node scripts/ui-library/port-audit.mjs --baseline "$TMPDIR/ui-library-port-before-scope.jsonl"
@@ -1440,8 +1442,8 @@ compare both programs from the same training-day memory snapshot and discard
 counterfactual updates; validation without an explicit snapshot is a cold run.
 
 For reproducible small comparisons, run
-`TMPDIR=/home/saithat/Projects/run-tmp python3 scripts/user-model-compare.py
---out /home/saithat/Projects/run-tmp/user-model-comparison`. It samples the first
+`TMPDIR="$HOME/run-tmp" python3 scripts/user-model-compare.py
+--out "$HOME/run-tmp"/user-model-comparison`. It samples the first
 task of each represented workflow for every v1/v3 persona template, verifies
 byte determinism/default equivalence, and compares three adjacent historical
 P1 deployments. The template comparison fails on any task completed by the expert but missed by the
@@ -1549,8 +1551,8 @@ evidence, choice/reasons and comparisons). These files are gitignored data.
 The offline harness runs without an LLM or deployment:
 
 ```sh
-TMPDIR=/home/saithat/Projects/run-tmp \
-EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr \
+TMPDIR="$HOME/run-tmp" \
+EHR_BIN=./lean/.lake/build/bin/ehr \
 pnpm --filter agent exec tsx src/session-cli.ts /absolute/path/to/session-input.json
 ```
 
@@ -1576,9 +1578,9 @@ inside `app/src/browser`; the certified clinical app hash is unchanged.
 Validation for this module uses the fake backend and no LLM calls:
 
 ```sh
-TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter agent exec vitest run test/session.test.ts test/bounded-tailoring.test.ts --maxWorkers=2
-TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app build
-TMPDIR=/home/saithat/Projects/run-tmp pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
+TMPDIR="$HOME/run-tmp" pnpm --filter agent exec vitest run test/session.test.ts test/bounded-tailoring.test.ts --maxWorkers=2
+TMPDIR="$HOME/run-tmp" pnpm --filter app build
+TMPDIR="$HOME/run-tmp" pnpm --filter app exec playwright test --config src/browser/session-playwright.config.ts
 ```
 
 `run-days --protocol certified-cadence-archive-v1 --cadence weekly
@@ -1651,15 +1653,6 @@ geometry. This avoids starting an interpreter for each popup. A three-bundle
 P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
-At certified app hash `8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04`,
-the 33 revisions took 98m07s cold, 9m53s warm and 98m01s with caching disabled
-(six workers). Per-tree verdicts matched across all three runs: 24,353 clinical
-states, 219,177 physical measurements and zero findings per run. Installation and
-remeasurement preserved 1,284 tasks and 72,636 events with zero strict-replay
-mismatches. [Verification evidence](docs/audits/main-verification-20261106.json)
-records commands, build bindings and timings; the historical approximately
-90s/revision serial baseline has no recorded cache temperature.
-
 The current renderer app hash is
 `a53258c9e848767016c2fa4e66ab73372a187773d43bc5049e87d908e3c18fb3`.
 Code-choice fields and their confirmation wrappers reserve a text-relative
@@ -1667,24 +1660,11 @@ minimum width inside wrapping sections. Increasing text size expands the track
 instead of clipping the selected label. Renderer changes require matching
 certificate bindings and fresh geometry measurements.
 
-At app hash `98657b3382d3a810c1ee7bcfb075f5ae653f86b18faf383538c65c8b7929a5c3`,
-a cold P1/v1 profile using three FHIR bundles, 981 inputs and 819 distinct
-trees took 847.23s before popup batching and capture-settling changes, and
-651.17s afterward (23.14% less command wall time). Native preparation fell from
-82.15s to 21.54s; the browser gate fell from 763.33s to 627.77s. All tree
-verdicts, geometry and 8,046 physical measurement records matched exactly.
-These are single observations; other native checks overlapped the first two
-optimized browser batches. Standalone revision timing is not comparable to
-the average of a cross-revision-deduplicated batch.
-For that renderer, with the exact context fully cached, the 33-revision batch gate took
-178.11s total, with 27,371 cache hits, zero misses and the same 24,353-state /
-219,177-measurement physical coverage. This gate timing excludes certificate
-installation, strict replay and remeasurement.
-The complete warm installation command took 91m44s: all 33 revisions received
-matching bindings, all 50 shifts were remeasured, and freshly regenerated native
-and WASM replay verified 1,284 tasks / 72,636 events with zero mismatches. An
-additional saved-context WASM replay also passed. Frozen inputs, decisions,
-schedules and clinical traces were preserved.
+Cold profiling found repeated native interpreter startup and redundant browser
+settling waits. Batching popups and removing those waits cut a cold P1/v1 sample
+(three FHIR bundles, 981 inputs, 819 distinct trees) from 847.23s to 651.17s,
+with identical verdicts, geometry and 8,046 measurement records. Measurements at
+earlier app hashes are kept in [docs/audits/](docs/audits/).
 
 At the current app hash, an isolated cold P1/v1 check took 632.73s: 19.89s
 native preparation and 610.87s browser validation, covering the same 981 inputs,
@@ -1702,7 +1682,7 @@ Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:
 
 ```sh
-export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=4
+export TMPDIR="$HOME/run-tmp" CI=true EHR_SCREEN_WORKERS=4
 export EHR_SCREEN_CACHE_DIR="$TMPDIR/screen-recert-cache"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off \
   node scripts/recertify-runs.mjs --runs core-10day --out "$TMPDIR/screen-recert-cold"
@@ -1806,10 +1786,10 @@ choices and deployments are recomputed. Reuse provenance and hit counts enter
 `comparison.json`; resume fingerprint checks remain unchanged.
 
 ```sh
-TMPDIR=/home/saithat/Projects/run-tmp EHR_SCREEN_WORKERS=4 \
-flock /home/saithat/Projects/run-tmp/vgi-browser-heavy.lock \
+TMPDIR="$HOME/run-tmp" EHR_SCREEN_WORKERS=4 \
+flock "$HOME/run-tmp"/vgi-browser-heavy.lock \
 pnpm --filter agent exec tsx src/offline-tailoring-compare.ts \
-  --out /home/saithat/Projects/run-tmp/wire-tailoring-medication-comparison --days 8
+  --out "$HOME/run-tmp"/wire-tailoring-medication-comparison --days 8
 ```
 
 `--world` defaults to this checkout's `runs/world/2`. The outer `flock`
@@ -1891,7 +1871,7 @@ samples before native/WASM comparison.
 - `node conformance/verify.mjs <run>` then `node conformance/refresh-evidence.mjs
   <run>`: agreement of independent conformance runs, then the derived case
   reports and checker probes.
-- `TMPDIR=/home/saithat/Projects/run-tmp node scripts/migrate-neutral-terms.mjs`
+- `TMPDIR="$HOME/run-tmp" node scripts/migrate-neutral-terms.mjs`
   (after building Lean, WASM and the app): one-time rewrite of local `runs/`,
   `programs/` and `fixtures/` to the current terms and fictional identities,
   rebuilding digests, certificates and bindings and checking strict replay.
