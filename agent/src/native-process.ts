@@ -25,3 +25,19 @@ export function runNative(binary:string,args:string[],opts:{timeoutMs?:number;in
   child.stdin.end(opts.input);
  });
 }
+
+/** Independent stateless JSON requests in one native serve process. EOF closes
+ * the process; partial, reordered and errored batches never supply evidence. */
+export async function runNativeJsonBatch(binary:string,requests:readonly {op:string;input:unknown}[],opts:{timeoutMs?:number}={}):Promise<unknown[]>{
+ if(!requests.length)return [];
+ const result=await runNative(binary,['serve'],{...opts,input:requests.map((request,id)=>JSON.stringify({id,...request})).join('\n')+'\n'});
+ if(result.code!==0)throw new InfrastructureError(`ehr serve: exit ${result.code}: ${result.stderr.slice(0,2000)}`);
+ try {
+  const rows=result.stdout.trim().split('\n').map((line:string)=>{const value:unknown=JSON.parse(line);return value;});
+  if(rows.length!==requests.length)throw new Error('incomplete native batch');
+  return rows.map((row,index)=>{
+   if(!row||typeof row!=='object'||!('id' in row)||row.id!==index||'error' in row||!('result' in row))throw new Error(`invalid native response at ${index}`);
+   return row.result;
+  });
+ }catch(error){throw new InfrastructureError(`ehr serve batch: ${error instanceof Error?error.message:String(error)}`);}
+}

@@ -1,7 +1,7 @@
 /** Supplement representative native exports with possible alert-popup states.
  * Uses the existing native facts/init/render-ui APIs; never changes programs or rules.
  */
-import {runNative} from './native-process.js';
+import {runNative,runNativeJsonBatch} from './native-process.js';
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {z} from 'zod';
@@ -41,8 +41,9 @@ export async function exportPopupGeometry(binary:string,input:{program:Program;s
    const result=z.object({state:z.record(z.string(),z.unknown())}).parse(await jsonCommand(binary,'step',{spec,program,facts:projection.facts,user,state,event}));state=result.state;
   }
  }
- for(const target of targets){
-  const ui=await jsonCommand(binary,'render-ui',{spec,program,facts:projection.facts,display:projection.display,user,state:{...state,screen:target.screen,popup:[target.id,'geometry-probe']}});
+ const rendered=await runNativeJsonBatch(binary,targets.map(target=>({op:'render-screen',input:{spec,program,facts:projection.facts,display:projection.display,user,state:{...state,screen:target.screen,popup:[target.id,'geometry-probe']}}})));
+ for(const [index,target] of targets.entries()){
+  const ui=z.object({screen:z.unknown()}).parse(rendered[index]).screen;
   const name=`${target.screen}-popup-${target.id}-geometry.json`;if(!/^[\w.-]+$/.test(name))throw new Error('Unsafe geometry output path');
   await writeJson(path.join(input.outDir,name),ui);
  }

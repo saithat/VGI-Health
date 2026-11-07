@@ -1627,6 +1627,11 @@ native certificates and `recertification.json` in scratch; it does not replace
 recorded certificates, measurements, run metadata or replay. The migration command
 below consumes this batch gate when `--recertify-only` is selected and retains its
 existing certificate installation, remeasurement and strict replay checks.
+Native popup geometry uses one EOF-terminated JSON-lines batch per FHIR bundle,
+through the existing stateless `ehr serve` renderer. Every response must match
+its request index; partial, reordered or errored batches fail before supplying
+geometry. This avoids starting an interpreter for each popup. A three-bundle
+P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
 At certified app hash `8d0fadf26732b5c9cc8a40c84f426b54aa4cd14eaf96c6264c983b1c35283e04`,
