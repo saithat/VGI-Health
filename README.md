@@ -1936,11 +1936,11 @@ geometry. This avoids starting an interpreter for each popup. A three-bundle
 P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
-The retained recording's renderer app hash is
-`a53258c9e848767016c2fa4e66ab73372a187773d43bc5049e87d908e3c18fb3`.
-The CI lint dependencies changed `pnpm-lock.yaml`, which participates in that
-hash. This checkout needs a fresh app build and re-certification before its
-bindings can replace those retained certificates.
+The current certified app SHA-256 is
+`4a510587c2f2ba9a60f2213691764eeb91ff562b2e63b8c7ad64b9d069c714c3`.
+The CI lint dependencies in `pnpm-lock.yaml` participate in this hash. Source-bound
+WASM assets and their manifest are rebuilt with the current Lean sources;
+recordings require re-certification before their bindings can authorize this build.
 Code-choice fields and their confirmation wrappers reserve a text-relative
 minimum width inside wrapping sections. Increasing text size expands the track
 instead of clipping the selected label. Renderer changes require matching
@@ -1952,7 +1952,7 @@ settling waits. Batching popups and removing those waits cut a cold P1/v1 sample
 with identical verdicts, geometry and 8,046 measurement records. Measurements at
 earlier app hashes are kept in [docs/audits/](docs/audits/).
 
-At that recorded app hash, an isolated cold P1/v1 check took 632.73s: 19.89s
+At the earlier `a53258c9` app hash, an isolated cold P1/v1 check took 632.73s: 19.89s
 native preparation and 610.87s browser validation, covering the same 981 inputs,
 819 distinct trees and 8,046 physical measurements with zero findings. The
 fully warm 33-revision batch gate took 176.37s (27,371 hits, zero misses).
