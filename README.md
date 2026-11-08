@@ -2504,6 +2504,10 @@ product.
 
 ## Medication administration outcomes
 
+The generated release templates label all five MAR actions explicitly. Regenerate
+them from Lean-owned content after changing canonical screens; recorded programs
+and frozen certification inputs retain their original layouts.
+
 Scheduled ward doses carry `OrderChoice.administration`, separately from order
 `holdReason`: a typed given, held, refused, delayed or notGiven outcome, reason,
 stable occurrence ID, scheduled/window/attempt minutes, re-offer and prescriber

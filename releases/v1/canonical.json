@@ -10862,7 +10862,7 @@
      "tab": 0,
      "size": "normal",
      "parent": "w4Admin.documentation",
-     "label": "Action: given / held / refused",
+     "label": "Action: given / held / refused / delayed / not-given",
      "kind":
      {"field":
       {"slot": {"fixed": {"n": 0}},
