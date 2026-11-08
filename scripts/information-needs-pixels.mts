@@ -61,7 +61,14 @@ const rendering:EhrClient={mode:native.mode,binary:native.binary,
   candidates.sort((a,b)=>a.bytes.length-b.bytes.length||a.file.localeCompare(b.file));
   const files=new Set<string>();
   for(const screen of current.screens){const found=candidates.find(c=>c.screen===screen);if(found)files.add(found.file);}
-  for(const id of current.targets){const found=candidates.find(c=>c.file.includes(`-popup-${encodeURIComponent(id)}-`)&&c.bytes.includes(JSON.stringify(id)))??candidates.find(c=>c.bytes.includes(JSON.stringify(id)));if(found)files.add(found.file);}
+  for(const id of current.targets){
+    // Workspace targets must retain their schedule-day sample. A smaller
+    // clinical home variant can contain the same ID but cannot supply geometry
+    // for an unselected workspace activity switch.
+    const workspace=id.startsWith('workspace.')?candidates.find(c=>path.basename(c.file).startsWith('workspace-')&&c.bytes.includes(JSON.stringify(id))):undefined;
+    const found=workspace??candidates.find(c=>c.file.includes(`-popup-${encodeURIComponent(id)}-`)&&c.bytes.includes(JSON.stringify(id)))??candidates.find(c=>c.bytes.includes(JSON.stringify(id)));
+    if(found)files.add(found.file);
+  }
   return [...files];
 }};
 // Native rendering is restricted to the sample's actual screens and targets.

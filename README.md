@@ -536,8 +536,8 @@ needs-off comparisons. Neither generated worlds nor measurements belong in git.
 
 A targeted seed-7 comparison uses the first task per workflow plus the first
 represented insulin, warfarin, antibiotic and antihypertensive-administration
-category per persona/day. The two-day v1 sample contains 31 tasks; **31/31
-complete in both arms**. Layout memory starts cold each day and carries between
+category per persona/day. The two-day v1 sample uses the shared clock and typed interruption work: 30 tasks;
+**30/30 complete in both arms**. Layout memory starts cold each day and carries between
 that day's sampled tasks. Explicit `off` and omission produce byte-identical
 native outputs. These are signed needs-on minus needs-off totals, including
 downstream route and practice effects; they are not isolated additive lookup
@@ -545,26 +545,27 @@ costs or a population estimate.
 
 | Persona | Tasks | Native clicks | Native scrolls | Scroll px | Mouse travel px | Ordinal travel units | Memory carry |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| P1 | 10 | +40 | +14 | +19,201 | +4,106.18 | +13,760 | 576 |
-| P2 | 5 | +17 | +6 | +10,800 | +1,530.95 | +9,520 | 345 |
-| P3 | 6 | +12 | −2 | −4,148 | −3,055.89 | +2,720 | 32 |
-| P4 | 4 | 0 | 0 | 0 | 0 | 0 | 314 |
+| P1 | 9 | +32 | +12 | +16,628 | +4,001.80 | +12,240 | 440 |
+| P2 | 5 | +16 | +6 | +10,800 | +205.97 | +7,040 | 940 |
+| P3 | 6 | +12 | −2 | −4,148 | −3,055.87 | +2,720 | 32 |
+| P4 | 4 | 0 | 0 | 0 | 0 | 0 | 144 |
 | P5 | 6 | −3 | +6 | +7,304 | −6,647.12 | −3,120 | 231 |
 
 Pixels use Chromium's existing static geometry model at 1440×900, with the
-pointer reset per matched task. Only visited screens, attempted remembered
-locations and actual alert-acknowledgment targets are captured: 172 screen
-states, zero missing targets. Identical pointer traces have zero delta without
+pointer reset per matched task. Workspace controls retain their schedule-day
+samples, including the activity switch before patient selection. Only visited screens, attempted remembered
+locations and actual alert-acknowledgment targets are captured: 150 screen
+state occurrences, zero missing targets. Identical pointer traces have zero delta without
 additional capture. Native ordinal page counts and geometry-derived scrolling
 are different models; their totals need not move together. Memory carry counts
 source items × screen transitions, with identical samples shared by questions
 at the same gate. It is neither time nor a measured human capacity limit.
 
-Repeated origins are Chart History (12 answered needs), Chart Summary (11),
+Repeated origins are Chart History (11 answered needs), Chart Summary (11),
 and the nursing flowsheet (2). Routes include Chart History → result review
-(4 trend/flag questions), Chart History → order signing (2 INR questions),
-Chart History → ED signing (2 glucose questions), Chart History → MAR action
-(2 glucose questions), and flowsheet → MAR action (2 BP questions). Allergy
+(four trend/flag questions), Chart History → order signing (one INR question),
+Chart History → ED signing (one glucose and one INR question), Chart History →
+MAR action (two glucose questions), and flowsheet → MAR action (two BP questions). Allergy
 lookups lead to signing or MAR action in every role. P4 already encounters the
 allergy data on its ordinary route, so this sample adds carry without extra
 physical interactions. A future summary could remove a lookup only if its
@@ -577,10 +578,10 @@ run a screen audit or issue a certificate):
 ```sh
 export TMPDIR="${TMPDIR:?Set disk-backed TMPDIR}" CI=true
 pnpm --filter world gen --seed 7 --days 2 --information-needs v1 --out "$TMPDIR/info-needs-world" --quiet
-python scripts/information-needs-compare.py --world "$TMPDIR/info-needs-world" --out "$TMPDIR/info-needs-final"
+python3 scripts/information-needs-compare.py --world "$TMPDIR/info-needs-world" --out "$TMPDIR/info-needs-final"
 flock "$TMPDIR/vgi-browser-heavy.lock" env EHR_BROWSER_LOCK=off pnpm --filter agent exec tsx ../scripts/information-needs-pixels.mts "$TMPDIR/info-needs-final/summary.json"
 pnpm --filter agent exec tsc -p ../scripts/tsconfig.information-needs.json
-python scripts/test-information-needs-compare.py
+python3 scripts/test-information-needs-compare.py
 ```
 
 `summary.json` retains task completion in both arms, signed totals, source/gate
