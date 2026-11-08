@@ -469,6 +469,7 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
       state := default, trace := [], complaints := [], rng,
       interruptions := positions, actionIndex := 0, elapsedMs := offset, lastDevice := none,
       resumption := Resumption.initRuntime seed source params.role (schedule.tasks.map (·.patientId)) interruptionConfig }
+    let mut documentedMs := start
     let mut complete := !eps.isEmpty
     let mut floor := { emptyMetrics task.id with completed := true }
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
@@ -484,6 +485,7 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
         complaints := r.complaints ++ g.problems.map (fun problem => s!"{task.id}: {problem}") }
       r := playEpisode ctx params task (idx + 1 == eps.length) r
       complete := complete && (currentContext ctx r).done r.state
+      documentedMs := task.startMin * 60000 + r.elapsedMs
       if idx + 1 == eps.length then r := finishInterruptionTask ctx task r complete
       floor := addMetrics floor (floorMetrics task.id sp f user g)
     if eps.isEmpty then
@@ -505,7 +507,7 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
       clock := start + duration
       if let some (w, _) := placement then
         timings := timings ++ [Scheduling.withInterruptions
-          (Scheduling.timing windows source w start duration complete) w.endMs r.resumption.metrics]
+          (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs) w.endMs r.resumption.metrics]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   return (day, lookups)
 

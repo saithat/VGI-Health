@@ -34,6 +34,23 @@ def closed := checkpoint reviewSpec reviewProgram f actor shiftedTask draft 500 
 #guard (withInterruptions (timing [] shiftedTask {id := "tour", startMs := 0, endMs := 650000}
   600500 (closed.2.1 - 500) true) 650000 closed.2.2.metrics).overtimeMs == 38000
 
+-- Clinical documentation ends before the closure queue; its outcome endpoints
+-- do not move to the later task-service finish.
+def outcomeTask : Task :=
+  { shiftedTask with timing? := some {arrivalMs := 600000, readyMs := 600000, resultAvailableMs? := some 600000, doseWindows := [("dose",610000)]} }
+def documented := withDocumentation
+  (timing [] outcomeTask {id := "tour", startMs := 0, endMs := 650000} 600500 (closed.2.1 - 500) true) 605000
+#guard documented.finishMs?.get! > 800000
+#guard documented.overdueDoses.isEmpty
+#guard documented.resultResponseMs? == some 5000
+-- Unserviceable future work cannot be handed over before it has arrived.
+def blockedFuture := checkpoint reviewSpec reviewProgram f actor shiftedTask
+  {draft with popup? := some ("alert","key")} 500 waiting true
+#guard blockedFuture.2.1 == 200000
+#guard blockedFuture.2.2.metrics.closureWaitMs == 199500
+#guard blockedFuture.2.2.metrics.frames.all (fun frame => frame.suspendedAtMs ≤ frame.closedAtMs)
+#guard blockedFuture.2.2.queued.isEmpty
+
 -- Moving dispatch coverage cannot redraw the offered source stream.
 def source := Ehr.Sim.Resumption.Tests.scenarioTask
 def second : Task := { source with id := "next" }

@@ -173,5 +173,14 @@ def checkpoint (sp : Spec) (prog : Program) (f : Facts) (u : User) (task : Task)
     (s : State) (elapsedMs : Nat) (runtime : InterruptionRuntime) (closing := false) :
     State × Nat × InterruptionRuntime :=
   let (state, elapsed, rt) := serviceCheckpoint sp prog f u task s elapsedMs runtime closing
-  (state, elapsed, if closing then handOverPending u (task.startMin * 60000 + elapsed) rt else rt)
+  let now := task.startMin * 60000 + elapsed
+  -- Protected popups can prevent service, but closure still waits for the
+  -- offered arrivals before transferring their responsibility.
+  let finish := if closing && runtime.config.mode == .realWork then
+    rt.queued.foldl (fun clock w => max clock w.arrivedAtMs) now else now
+  let wait := finish - now
+  let rt := { rt with metrics := { rt.metrics with
+    closureWaitMs := rt.metrics.closureWaitMs + wait,
+    idle := rt.metrics.idle ++ if wait == 0 then [] else [{ readyMs := now, startMs := now, finishMs := finish }] } }
+  (state, elapsed + wait, if closing then handOverPending u finish rt else rt)
 end Ehr.Sim.Resumption

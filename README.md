@@ -2710,7 +2710,10 @@ World clinical state remains exogenous rather than being altered by a faster arm
 distinct overdue MAR occurrence count, completed-result response time (availability
 to documentation finish, including source backlog age before the schedule origin),
 active overtime and tasks handed over. Per-task timing
-and pending source IDs are retained. A dose is overdue when task documentation
+and pending source IDs are retained. Dose/result endpoints use the exact final
+clinical-event completion, before unrelated closure communication; task service
+finish and subsequent queue delay still include that communication. A dose is
+overdue when task documentation
 finishes after its existing MAR window, or that window has passed at the final
 coverage horizon. This conservative documentation proxy includes held/refused
 outcomes; it does not claim measured bedside administration time. Dashboard and
@@ -2772,8 +2775,9 @@ separately from routine requests. Urgent work preempts at the next event boundar
 time-sensitive work preempts nursing and inpatient-pharmacy work, while other
 prescriber profiles queue it. Routine
 work queues until task closure. A clinical popup must be acknowledged first;
-if it remains unresolved at task closure, queued communication is explicitly
-handed to the on-call service. Communication completion is distinct from clinical
+if it remains unresolved at task closure, the clock waits for the remaining
+offered arrivals and queued communication is explicitly handed to the on-call
+service. Communication completion is distinct from clinical
 follow-through under the existing critical-result rules: every completed urgent
 notification records a separate handover of clinical follow-through to the
 responsible clinical team; it never claims the result was resolved.

@@ -613,6 +613,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       guide,
       effort := { task := task.id }
     }
+    let mut documentedMs := start
     let mut complete := !eps.isEmpty
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
       let f := { ep.facts with receipts := facts.receipts ++ r.episode.state.receipts }
@@ -659,6 +660,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         if ctx.goals.informationNeeds.all (fun n => r.episode.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episode.episodeIndex && !a.consumed)) then
           r := loop scent ctx params task (Discovery.fuel ctx) r
       complete := complete && (currentContext ctx r.episode).done r.episode.state
+      documentedMs := task.startMin * 60000 + r.episode.elapsedMs
       if idx + 1 == eps.length then
         r := { r with episode := finishInterruptionTask ctx task r.episode complete }
     if eps.isEmpty then
@@ -684,7 +686,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       clock := start + duration
       if let some (w, _) := placement then
         timings := timings ++ [Scheduling.withInterruptions
-          (Scheduling.timing windows source w start duration complete) w.endMs r.episode.resumption.metrics]
+          (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs) w.endMs r.episode.resumption.metrics]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   let expertTravel := expert.tasks.map fun t =>
     (t.task, traceTravel prog (expert.trace.filter (·.task == t.task)))

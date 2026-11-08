@@ -121,7 +121,7 @@ def timing (windows : List Shift) (t : Task) (w : Shift) (start duration : Nat)
     overdueDoses := (a.doseWindows.filter (fun (_, deadline) => deadline < finish)).map (·.1),
     resultResponseMs? := if completed then a.resultAvailableMs?.map (fun available => finish + a.resultAgeMs - available) else none,
     disposition := if completed then "finished" else "abandoned",
-    reason? := if completed then none else some "clinical goals incomplete after bounded policy fuel" }
+    reason? := if completed then none else some "clinical goals incomplete; see task complaints" }
 
 def carry (windows : List Shift) (clock : Nat) (t : Task) : Timing :=
   let horizon := windows.foldl (fun moment w => max moment w.endMs) clock
@@ -153,6 +153,21 @@ theorem queue_work_duration (clock ready duration : Nat) :
     (queueWork clock ready duration).finishMs - (queueWork clock ready duration).startMs = duration := by
   simp [queueWork]
 
+/-- Clinical outcome endpoints precede unrelated communication at task closure.
+The task's service finish and the next dispatch still include that queued work. -/
+def withDocumentation (row : Timing) (documentedMs : Nat) : Timing :=
+  if row.disposition == "finished" then
+    { row with
+      overdueDoses := (row.arrival.doseWindows.filter (fun (_, deadline) => deadline < documentedMs)).map (·.1),
+      resultResponseMs? := row.arrival.resultAvailableMs?.map (fun available => documentedMs + row.arrival.resultAgeMs - available) }
+  else row
+
+theorem documentation_preserves_schedule (row documentedMs) :
+    (withDocumentation row documentedMs).startMs? = row.startMs? ∧
+    (withDocumentation row documentedMs).finishMs? = row.finishMs? := by
+  simp only [withDocumentation]
+  split <;> exact ⟨rfl, rfl⟩
+
 /-- Attach actual owned suspension boundaries and remove passive closure waits
 from overtime. Communication and return work remain active paid service. -/
 def withInterruptions (row : Timing) (shiftEnd : Nat) (m : Resumption.InterruptionMetrics) : Timing :=
@@ -174,6 +189,7 @@ theorem timing_accounted (ws t w start duration completed) :
      (timing ws t w start duration completed).reason?.isSome = true) := by
   cases completed <;> simp [timing]
 
+#print axioms documentation_preserves_schedule
 #print axioms queue_work_bounds
 #print axioms queue_work_duration
 #print axioms interruption_timing_preserves_finish
