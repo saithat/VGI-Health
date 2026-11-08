@@ -699,9 +699,15 @@ headline theorem axioms; lint and typecheck app, agent, world and commit;
 run fast unit suites and the information-needs Python test; run all 201
 canonical conformance scenarios and the 15-accepted/23-rejected certification
 matrix; and run commit integration/protocol traces against Postgres. Native
-checks share the current run's `ehr` artifact. The `lean` job also runs the world-to-Lean MAR
-boundary test (`world/test/administration-outcomes.test.ts`), which needs the
-Lean build; elsewhere it skips when Lean is absent. Conformance uses its stateless
+checks share the current run's `ehr` artifact. Protocol and ADT host trace checks
+invoke `ehr protocol-trace` and `ehr adt-protocol-trace`; neither requires a Lean
+toolchain at test runtime. Their standalone Lean entrypoints share those same
+compiled checkers. The `lean` job also runs the world-to-Lean MAR
+boundary test (`world/test/administration-outcomes.test.ts`) and the archived
+Synthea schedule/formulary contract (`world/test/synthea.test.ts`), which need the
+Lean build; these probes skip when Lean is absent. The Synthea archive probe also
+requires local archived data, while its remaining archive assertions run in the unit job
+when that data is present. Conformance uses its stateless
 `serve` transport to avoid one process startup per event; `EHR_CONFORMANCE_TRANSPORT=cli`
 retains the one-shot comparison path. Both dispatch to the same native
 functions. pnpm, elan/toolchain and source-keyed Lake outputs are cached. The commit service enforces the same

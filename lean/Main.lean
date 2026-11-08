@@ -7,6 +7,8 @@ import Ehr.Cli.Sim
 import Ehr.Cli.Commit
 import Ehr.Cli.Serve
 import Ehr.Render.Cli
+import Ehr.Commit.Protocol.TraceCore
+import Ehr.Commit.Protocol.AdtTraceCore
 
 /-!
 Native command-line entry point for interpreter, checker and simulator calls.
@@ -40,6 +42,8 @@ def usage : String :=
   "  step                     stdin StepInput  -> StepOutput\n" ++
   "  commit-check             stdin Commit.Request -> accept/reject (no writes)\n" ++
   "  view                     stdin ViewInput  -> ScreenView\n" ++
+  "  protocol-trace <file.json>     transaction protocol witness check\n" ++
+  "  adt-protocol-trace <file.json> administrative protocol witness check\n" ++
   "  run-batch <file.jsonl>   BatchCase per line -> BatchStep per event (JSONL)\n" ++
   "  check --spec S --program P [--prev P0] --canonical C   -> Verdict (exit 0 ok, 1 not)\n" ++
   "  check-completion --spec S --program P [--prev P0] --canonical C --scenarios FILE\n" ++
@@ -89,6 +93,12 @@ def rateChoice (i : ChoiceInput) : Ehr.Sim.Bounded.Rating :=
 /-- Entry point. -/
 def main (args : List String) : IO UInt32 := do
   match args with
+  | ["protocol-trace", file] => do
+    Ehr.Commit.Protocol.traceCommand [file]
+    return 0
+  | ["adt-protocol-trace", file] => do
+    Ehr.Commit.Protocol.AdtModel.traceCommand [file]
+    return 0
   | ["rate-programs"] => stdinCommand ChoiceInput Ehr.Sim.Bounded.Rating rateChoice
   | "simulate" :: flags => Ehr.Cli.Sim.command "simulate" flags
   | "min-clicks" :: flags => Ehr.Cli.Sim.command "min-clicks" flags

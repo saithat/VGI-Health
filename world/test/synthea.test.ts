@@ -2,7 +2,7 @@ import { runFrozenWard } from "./frozen-ward";
 import { dataReason } from "./data";
 import { historicalReleaseEventId } from "../../scripts/historical-releases.mjs";
 import { spawnSync } from "node:child_process";
-import { readFileSync, statSync } from "node:fs";
+import { readFileSync, statSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { z } from "zod";
@@ -31,6 +31,9 @@ function successor(value: unknown, ungatedServices = false) {
 }
 
 const root = resolve(__dirname, "../..");
+const noLean = spawnSync("lean", ["--version"], {encoding:"utf8"}).error !== undefined
+  || !existsSync(join(root,"lean/.lake/build/lib/lean/Ehr.olean"));
+if(noLean && process.env.VGI_REQUIRE_LEAN_TESTS === "1")throw Error("Lean toolchain or build missing but VGI_REQUIRE_LEAN_TESTS=1");
 const reason = dataReason("fixtures/synthea", "runs/world/1", "runs/world/2");
 describe.skipIf(Boolean(reason))(`archived Synthea worlds${reason ? ` (${reason})` : ""}`, () => {
 let population: ReturnType<typeof loadPopulation>;
@@ -124,7 +127,7 @@ describe("real Synthea population", () => {
 
 });
 
-it("round-trips every Synthea schedule through Lean and checks all formulary reference fields", () => {
+it.skipIf(noLean)("round-trips every Synthea schedule through Lean and checks all formulary reference fields", () => {
   const schedules = run.days.flatMap((d) => PERSONAS.map((p) => d.schedules[p]));
   // One lake process for the entire contract test. Build Lean before running this suite.
   const result = spawnSync("sh", ["-c", "ulimit -v 8000000; export LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536; exec lake env lean -j6 --run ../world/test/lean/Contract.lean"], {

@@ -180,8 +180,9 @@ export function checkAdtTrace(path: string) {
   const dir = mkdtempSync(join(tmpdir(),'adt-refinement-'));
   try {
     const program = join(dir,'program.json'); writeFileSync(program, JSON.stringify(input));
-    const checked = spawnSync('lake',['env','lean','--run','Ehr/Commit/Protocol/AdtTrace.lean',program], {
-      cwd: resolve(dirname(fileURLToPath(import.meta.url)),'../../../lean'), encoding: 'utf8', timeout: 120_000,
+    const binary = process.env.EHR_BIN ?? resolve(dirname(fileURLToPath(import.meta.url)),'../../../lean/.lake/build/bin/ehr');
+    const checked = spawnSync(binary,['adt-protocol-trace',program], {
+      encoding: 'utf8', timeout: 120_000,
       env: { ...process.env, LEAN_NUM_THREADS: '6' }, maxBuffer: 1024*1024 });
     assert.equal(checked.status,0,`Lean ADT trace checker failed: ${checked.error ?? ''}\n${checked.stdout}\n${checked.stderr}`);
     return checked.stdout.trim();

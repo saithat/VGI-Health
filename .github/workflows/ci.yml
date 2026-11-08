@@ -35,7 +35,7 @@ jobs:
       - name: World-to-Lean boundary tests (need the Lean build)
         env:
           VGI_REQUIRE_LEAN_TESTS: '1'
-        run: pnpm --filter world exec vitest run test/administration-outcomes.test.ts
+        run: pnpm --filter world exec vitest run test/administration-outcomes.test.ts test/synthea.test.ts
       - name: Generate deterministic test inputs
         working-directory: lean
         run: |

@@ -150,9 +150,9 @@ export function checkTrace(path: string) {
   const dir = mkdtempSync(join(tmpdir(), 'commit-protocol-test-'));
   try {
     const input = join(dir, 'program.json'); writeFileSync(input, JSON.stringify(program));
-    const lean = resolve(dirname(fileURLToPath(import.meta.url)), '../../../lean');
-    const checked = spawnSync('lake', ['env', 'lean', '--run', 'Ehr/Commit/Protocol/Trace.lean', input],
-      { cwd: lean, encoding: 'utf8', timeout: 60_000, env: { ...process.env, LEAN_NUM_THREADS: '6' }, maxBuffer: 1024 * 1024 });
+    const binary = process.env.EHR_BIN ?? resolve(dirname(fileURLToPath(import.meta.url)), '../../../lean/.lake/build/bin/ehr');
+    const checked = spawnSync(binary, ['protocol-trace', input],
+      { encoding: 'utf8', timeout: 60_000, env: { ...process.env, LEAN_NUM_THREADS: '6' }, maxBuffer: 1024 * 1024 });
     assert.equal(checked.status, 0, `Lean trace checker failed: ${checked.error ?? ''}\n${checked.stdout}\n${checked.stderr}`);
     return checked.stdout.trim();
   } finally { rmSync(dir, { recursive: true, force: true }); }
