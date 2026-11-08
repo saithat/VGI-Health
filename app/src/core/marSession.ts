@@ -66,6 +66,9 @@ export async function createMarSession(
     current.version,
     (version) => {
       refreshVersion = Math.max(refreshVersion, version);
+      // A delayed notification for an already adopted version must not replace
+      // the reviewed session or discard its newly entered journal.
+      if (refreshVersion <= current.version) return;
       if (!pending && !uncertain)
         void refresh(
           "MAR updated by another nurse. Review the current dose.",

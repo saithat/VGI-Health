@@ -178,6 +178,9 @@ The final native guard and locked version checks remain authoritative. Request I
 intent and allow recovery of an uncertain outcome without duplicating a write.
 An unresolved save blocks new interactions, including patient switches, until
 the original intent is reconciled.
+MAR ignores delayed notifications for a chart version already adopted, preserving
+the freshly reviewed session and its subsequent journal. Newer versions still
+refresh the chart and discard stale evidence.
 New clinical sessions recover the authenticated actor's current-day review receipts
 only while every reviewed resource version still matches the stored chart.
 The interaction endpoint checks the human event before hydrating a selected chart;

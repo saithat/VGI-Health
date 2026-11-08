@@ -118,6 +118,21 @@ describe("MAR publication and reconciliation", () => {
     await vi.waitFor(() => expect(session.getGeneration()).toBe("newest"));
     session.close();
   });
+  it("keeps the reviewed successor when equal or older notifications arrive after a save", async () => {
+    const session = await createMarSession(interp, connection);
+    vi.mocked(marCommit).mockResolvedValueOnce({state:committed, version:2});
+    vi.mocked(openMar).mockResolvedValueOnce(opened("after-save", 2));
+    await session.dispatch(click);
+    const notify = vi.mocked(subscribeMar).mock.calls[0]?.[2];
+    if (!notify) throw new Error("SSE subscription missing");
+    notify(2);
+    notify(1);
+    expect(openMar).toHaveBeenCalledTimes(2);
+    expect(session.getGeneration()).toBe("after-save");
+    await session.dispatch(entry);
+    expect(vi.mocked(marEvent).mock.calls[0]?.[0]).toMatchObject({sessionId:"after-save", version:2});
+    session.close();
+  });
   it("reports a durable save as saved when the subsequent refresh fails, and blocks another write", async () => {
     const session = await createMarSession(interp, connection);
     vi.mocked(marCommit).mockResolvedValueOnce({
