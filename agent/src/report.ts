@@ -1,3 +1,4 @@
+import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
 import { isMeasurementDay } from './protocol.js';
 /** Same-schedule canonical versus recorded costs; never feeds an overnight prompt. */
 import { existsSync } from 'node:fs';
@@ -10,7 +11,7 @@ import { addMetrics, pairedMetrics, sumMetrics, saving } from './observe.js';
 import { personalize } from './program.js';
 import { recordingEhr } from './recording-ehr.js';
 import { loadRelease, releaseForPersona } from './releases.js';
-import { dayResultSchema, type DecisionRecord } from '../../app/src/dashboard/measurement-schema.js';
+import { type DecisionRecord } from './schema.js';
 import { RunStore } from './store.js';
 import { pad2, readJson, resolveUserPath, writeJson } from './util.js';
 import { loadWorld } from './world.js';

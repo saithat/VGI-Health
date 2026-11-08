@@ -60,6 +60,17 @@ describe('ehr CLI adapter (stub binary)', () => {
     expect(lines[5]).toBe('spec-export tiny');
   });
 
+  it('passes explicit historical mode and setting profile independently of clinician policy', async () => {
+    const dir = await tmp('stub-interruptions');
+    const { bin, log } = await stub(dir, true);
+    if (!persona) throw new Error('persona');
+    await createEhr({ fake: false, binary: bin }).simulate({
+      specVersion: RELEASE_IDS.base, program, persona, schedule, worldDir: '/w', seed: 3,
+      policy: 'bounded', interruptions: 'fixedCost', interruptionProfile: 'inpatientPharmacy',
+    });
+    expect(await readFile(log, 'utf8')).toContain('--policy bounded --interruptions fixedCost --interruption-profile inpatientPharmacy');
+  });
+
   it('reads a violation from a non-zero exit, and deploy refusals as { deployed: false }', async () => {
     const dir = await tmp('stub-bad');
     const { bin } = await stub(dir, false);

@@ -1,5 +1,6 @@
 import Ehr.Multi.Critical
 import Ehr.Sim.Scheduling.Types
+import Ehr.Sim.Resumption.Types
 
 /-!
 Core data formats: hospital rules, UI programs, patient facts, state and events.
@@ -1189,6 +1190,7 @@ structure TaskMetrics where
   klmDeciSec : Nat
   completed : Bool
   wallTimeMinutes? : Option Nat := none
+  interruptions? : Option Sim.Resumption.InterruptionMetrics := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- The result of simulating one day for one persona. -/

@@ -29,7 +29,7 @@ open Lean
 namespace Ehr.Tools.GenTS
 
 /-- Modules whose types are exported. -/
-def sourceModules : List Name := [`Ehr.Sim.Scheduling.Types, `Ehr.Multi.Critical, `Ehr.Core.Types, `Ehr.Core.Json, `Ehr.Render.Types, `Ehr.Render.Json, `Ehr.Render.Fhir]
+def sourceModules : List Name := [`Ehr.Sim.Scheduling.Types, `Ehr.Sim.Resumption.Types, `Ehr.Multi.Critical, `Ehr.Core.Types, `Ehr.Core.Json, `Ehr.Render.Types, `Ehr.Render.Json, `Ehr.Render.Fhir]
 
 /-- The TypeScript name of a Lean declaration: its last component. -/
 def tsName (n : Name) : String :=

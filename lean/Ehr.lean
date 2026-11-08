@@ -62,6 +62,7 @@ import Ehr.Render.FhirAcuteTests
 import Ehr.Sim.DiscoveryTests
 import Ehr.Sim.BoundedTests
 import Ehr.Sim.PolicyTests
+import Ehr.Sim.Resumption.Tests
 import Ehr.Core.Tests
 import Ehr.Sim.MinClicksTests
 import Ehr.Sim.TaskMinimumTests

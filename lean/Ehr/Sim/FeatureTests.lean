@@ -38,7 +38,7 @@ def task : Task := {
 def replay (sp : Spec) (prog : Program) (f : Facts) (ch := choices) (interruptions := 0) : DayResult :=
   simulate sp prog params {
     day := 1, persona := "P1", load := "normal",
-    tasks := [{ task with choices := ch, interruptions }] } (fun _ => f) 123
+    tasks := [{ task with choices := ch, interruptions }] } (fun _ => f) 123 { mode := .fixedCost }
 
 def completed (day : DayResult) : Bool := day.tasks.length == 1 && day.tasks.all (·.completed)
 def withinFloor (day : DayResult) : Bool := (day.floor.zip day.tasks).all (fun (a, b) => below a b)

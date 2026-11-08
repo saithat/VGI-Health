@@ -2777,7 +2777,7 @@ the existing guarded interpreter. There are no new clinical rules or proof
 assumptions.
 
 Bounded results retain the original `tasks`, `trace`, `floor` and `complaints`.
-`expert` contains an independent BFS-policy run with the same clock mode, inputs and
+`expert` contains an independent BFS-policy run with the same clock and interruption modes, inputs and
 seed: the expert comparison, not a newly proved minimum (persona noise can make
 its cost exceed the bounded run). `floor` remains the ideal-interface clinical
 floor. `effort` adds per-task misses, visual searches, scanned items, backtracks,
@@ -3289,3 +3289,117 @@ samples before native/WASM comparison.
 - CPT is a trademark of the AMA; only a few code identifiers with original
   short labels are included.
 - Fonts: Noto Sans, Noto Sans Mono, Noto Sans Symbols 2, Noto Sans CJK SC and Noto Sans Hebrew (SIL OFL 1.1).
+
+## Interrupting work and owned resumption (owner review required)
+
+New native simulations default to `--interruptions realWork` for both expert and
+bounded policies. `--interruptions fixedCost` selects the previous seeded
+`Task.interruptions` count, goal-action positions and wait/think operators;
+archived comparisons must select it explicitly. Real work ignores that historical
+count. The clinical task trace contains only interpreter events; external
+communication is measured separately in each task's optional `interruptions`
+record (work, ordered steps, timestamps and closed frames). No synthetic clinical
+click, receipt, prescription or result resolution is inferred from a call.
+
+`lean/Ehr/Sim/Resumption/` defines patient-specific pages, urgent-result calls,
+colleague questions, family requests and pharmacy clarifications. Each executes
+patient identification, message reading, assessment, reply (or urgent escalation)
+and documentation, with distinct per-step durations. Essential care is labeled
+separately from routine requests. Urgent work preempts at the next event boundary;
+time-sensitive work preempts nursing and inpatient-pharmacy work, while other
+prescriber profiles queue it. Routine
+work queues until task closure. A clinical popup must be acknowledged first;
+if it remains unresolved at task closure, queued communication is explicitly
+handed to the on-call service. Communication completion is distinct from clinical
+follow-through under the existing critical-result rules: every completed urgent
+notification records a separate handover of clinical follow-through to the
+responsible clinical team; it never claims the result was resolved.
+
+**Draft/resumption specifications, pending owner review:** frames belong jointly
+to clinician ID, source patient ID and task ID. Foreign ownership, task or source
+facts refuse restoration, with an explicit discard reason. Frames retain draft
+values, screen/history, tabs, current slot and pending confirmations. Returning
+advances the clock and pays `3000 + 700 × draft entries + 1000 × unconfirmed
+entries` milliseconds. Current review rules filter receipts by clinician,
+data version, time and allowed role. Any clinical fact change (excluding clock,
+cached receipts and department directory) clears alert acknowledgments and makes
+all draft entries unconfirmed; the clinician must reconfirm through normal events.
+The next clinical event uses the existing guard. Named handover records transfer
+work responsibility, never another clinician's sign authority. These are new
+simulation policies, not additional clinical regulations or live UI behavior.
+
+Arrivals use an independent seed/task/minute stream with at most one arrival per
+minute, timestamp jitter, and fixed offered exposure: W1/W5 15 minutes, W3 12,
+W4 6, W6 20, W2/W7 5. Neither layout, action count, nor behavioral RNG enters the
+arrival draw. The same inputs/seed therefore offer identical work across arms.
+At closure the simulator waits for unoffered arrivals in this fixed exposure and
+services the queue; it does not erase arrivals when one UI finishes sooner.
+The exposure windows, binomial arrival approximation, urgency/type mix, triage,
+step durations, reorientation coefficients and closure policy are **provisional**.
+They require calibration; these UI-task windows are not whole-shift workloads.
+
+Default profiles are nursing/ward (5.5/hour), surgical physician (13/hour),
+emergency physician (6.9/hour) and clinic prescriber (3/hour). The clinic rate is
+an assumption. `--interruption-profile inpatientPharmacy` selects 10.6/hour;
+other profile names are `wardNurse`, `surgicalPhysician`, `emergencyPhysician`
+and `clinicPrescriber`. Profile selection does not grant a clinical role.
+[Myers & Parikh](https://pubmed.ncbi.nlm.nih.gov/28871511/) observed 259
+interruptions in 47.3 hours of trauma-center nursing, including beneficial work.
+[Bagnasco et al.](https://pubmed.ncbi.nlm.nih.gov/28697685/) observed approximately
+13/hour among doctors and nurses in six surgical units.
+[Chisholm et al.](https://pubmed.ncbi.nlm.nih.gov/11073472/) distinguished
+30.9 brief interruptions from 20.7 task switches per three hours; the emergency
+profile uses the latter denominator (6.9/hour).
+[Inpatient pharmacy observations](https://pmc.ncbi.nlm.nih.gov/articles/PMC7153068/)
+reported 10.6/hour across pharmacy employees. These populations, task definitions
+and denominators differ: transferring any rate to the profiles above is provisional,
+particularly nursing across settings and pharmacy employees to pharmacists.
+
+Metrics separate handled/deferred work, work milliseconds, suspension-to-return
+delay, reorientation, invalidated receipts/confirmations (`revalidationPrevented`,
+a prevention proxy, not observed errors), and explicitly abandoned frames. The
+merge session must regenerate new-realism day/baseline measurements, trajectories,
+information-needs measurements and dashboard aggregates; preserve historical
+fixed-cost inputs/results with their explicit mode. Lean changes also require
+fresh source-bound WASM assets before re-certification/replay. This lane does not
+run full re-certification, a live stack or the browser audit pair.
+
+The native adapter accepts `SimulateInput.interruptions` and
+`interruptionProfile`, retains the optional typed task measurements through schema
+validation, and the dashboard displays them per selected clinician, including
+incomplete tasks. Historical absence is reported as unmeasured, rather than zero.
+
+Incomplete clinical tasks explicitly discard their unsent drafts with the reason
+`clinical task ended incomplete; unsent draft explicitly discarded`. Completion
+is evaluated before this cleanup, and incomplete work remains incomplete.
+
+Task metadata binds the model version, selected profile/rate, fixed exposure and
+full offered-arrival list, even for zero arrivals. `closureWaitMs` separates
+waiting for the offered exposure from active effort: wall time includes it,
+KLM effort excludes it. Call/page content is synthetic communication input,
+not an inferred FHIR finding. Invalid patient/message inputs cannot complete
+communication and are explicitly handed over.
+
+Measurement validation is an extension in
+`app/src/dashboard/interruption-schema.ts`, also used by the native adapter and
+recording readers. The shared clinical wire schema remains unchanged, preserving
+the certified painter source boundary. Revalidation tests include changed source
+versions, expired reviews, foreign source/owner/task bindings, queued work,
+unresolved-popup handover and both policy completion paths.
+
+`InterruptionConfig.refreshFacts` is the scenario timeline hook at absolute
+milliseconds. Both policies refresh at episode entry and on return from work;
+planning and guarded events share that current snapshot. Foreign-patient
+refreshes are refused, and the episode's receipt-clock origin is preserved.
+The stock CLI supplies immutable task snapshots (identity refresh); concurrent
+chart-version updates require the world/workload timeline to supply this hook.
+The merge should feed actual actor elapsed time to `checkpoint` while keeping
+scheduled task origins fixed for the offered-arrival stream. No shared scheduler
+module is imported by this lane.
+
+Service reconsiders urgency after each communication protocol; future arrivals
+cannot cause idle waiting ahead of already-arrived routine work. Communication
+protocols are atomic; nested interruption of their individual steps is not modeled.
+
+[Lane verification and merge regeneration requirements](docs/audits/interruptions-20261108.md)
+record theorem statements, exact commands, native matched-arm cases and scope limits.

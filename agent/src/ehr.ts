@@ -1,3 +1,4 @@
+import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
 import { retryInfrastructure } from './infrastructure.js';
 import { InfrastructureError } from './errors.js';
 import {exportPopupGeometry} from './geometry-popups.js';
@@ -43,7 +44,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import type { z } from 'zod';
 import {
-  certificateSchema, dayResultSchema, minClicksResultSchema, specSchema, verdictSchema,
+  certificateSchema, minClicksResultSchema, specSchema, verdictSchema,
   type Certificate, type DayResult, type DaySchedule, type MinClicksResult, type PersonaParams, type Program, type UserMemory,
   type Spec, type Verdict,
 } from '../../app/src/dashboard/measurement-schema.js';
@@ -60,6 +61,8 @@ export interface SimulateInput {
   seed: number;
   memory?: UserMemory;
   policy?: 'expert' | 'bounded';
+  interruptions?: 'realWork' | 'fixedCost';
+  interruptionProfile?: 'wardNurse' | 'surgicalPhysician' | 'clinicPrescriber' | 'emergencyPhysician' | 'inpatientPharmacy';
 }
 export interface MinClicksInput { specVersion: string; program: Program; schedule: DaySchedule; worldDir: string }
 export interface DeployInput extends CheckInput { outDir: string }
@@ -150,6 +153,8 @@ class CliEhr implements EhrClient {
         'simulate', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
         '--schedule', p['schedule'] ?? '', '--world', i.worldDir, '--seed', String(i.seed),
         ...(i.policy ? ['--policy',i.policy] : []),
+        ...(i.interruptions ? ['--interruptions', i.interruptions] : []),
+        ...(i.interruptionProfile ? ['--interruption-profile', i.interruptionProfile] : []),
         ...(i.memory ? ['--memory-in',p['memory'] ?? ''] : []),
       ]);
       if (res.code !== 0) throw new InfrastructureError(`ehr simulate: exit ${res.code}: ${res.stderr.slice(0, 2000)}`);

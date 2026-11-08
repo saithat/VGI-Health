@@ -1,3 +1,4 @@
+import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
 import { BOUNDED_POINT_ASSUMPTION } from '../../app/src/dashboard/bounded-pointing.js';
 /** Native, model-free A/B/C comparison. Outputs data only; fixed v1 isolates discretionary releases. */
 import { mkdir, readFile, readdir, copyFile } from 'node:fs/promises';
@@ -7,7 +8,7 @@ import { parseArgs } from 'node:util';
 import { runDays } from './run.js';
 import { CADENCE_PROTOCOL } from './cadence.js';
 import { generatorOnlyBackend } from './generator-only.js';
-import { dayResultSchema, dayScheduleSchema, programSchema, decisionRecordSchema, personaParamsSchema, type DayResult } from '../../app/src/dashboard/measurement-schema.js';
+import { dayScheduleSchema, programSchema, decisionRecordSchema, personaParamsSchema, type DayResult } from './schema.js';
 import { effortCost } from './bounded-tailoring.js';
 import { pastSessions } from './session-gate.js';
 import { RunStore } from './store.js';

@@ -279,7 +279,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out", "--interruptions", "--interruption-profile"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -314,6 +314,20 @@ def command (mode : String) (args : List String) : IO UInt32 := do
       if params.id != schedule.persona then throw (IO.userError "persona does not match the schedule")
       let seedStr := (fs.lookup "--seed").getD "0"
       let seed ← ioExcept (optionExcept seedStr.toNat? "--seed must be a nonnegative integer")
+      let interruptionMode ← match (fs.lookup "--interruptions").getD "realWork" with
+        | "realWork" => pure Resumption.ResumptionMode.realWork
+        | "fixedCost" => pure Resumption.ResumptionMode.fixedCost
+        | _ => throw (IO.userError "--interruptions must be realWork or fixedCost")
+      let interruptionProfile ← match fs.lookup "--interruption-profile" with
+        | none => pure none
+        | some name => match name with
+          | "wardNurse" => pure (some Resumption.InterruptionProfile.wardNurse)
+          | "surgicalPhysician" => pure (some .surgicalPhysician)
+          | "clinicPrescriber" => pure (some .clinicPrescriber)
+          | "emergencyPhysician" => pure (some .emergencyPhysician)
+          | "inpatientPharmacy" => pure (some .inpatientPharmacy)
+          | _ => throw (IO.userError "unknown --interruption-profile")
+      let interruptionConfig : Resumption.InterruptionConfig := { mode := interruptionMode, profile? := interruptionProfile }
       let options ← readAs Bounded.Options (← required fs "--persona")
       let policy := (fs.lookup "--policy").getD options.policy
       if !["expert", "bounded"].contains policy then throw (IO.userError "--policy must be expert or bounded")
@@ -323,7 +337,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
           | none => pure {}
         if !memory.actor.isEmpty && memory.actor != prog.owner then
           throw (IO.userError "layout memory belongs to a different actor")
-        let result := Bounded.simulate sp prog params schedule factsFor seed memory Bounded.lexicalScent Discovery.helpDesk information
+        let result := Bounded.simulate sp prog params schedule factsFor seed memory Bounded.lexicalScent Discovery.helpDesk information interruptionConfig
         if let some path := fs.lookup "--memory-out" then IO.FS.writeFile path (encodeJson result.memory)
         writeCarry (fs.lookup "--carry-out") schedule result.toDayResult
         let json := if information.isSome then
@@ -334,11 +348,11 @@ def command (mode : String) (args : List String) : IO UInt32 := do
           throw (IO.userError "layout memory requires --policy bounded")
         match information with
         | none =>
-          let day := simulate sp prog params schedule factsFor seed
+          let day := simulate sp prog params schedule factsFor seed interruptionConfig
           writeCarry (fs.lookup "--carry-out") schedule day
           IO.println (encodeJson day)
         | some _ =>
-          let (day, lookups) := simulateWithInformation sp prog params schedule factsFor seed information
+          let (day, lookups) := simulateWithInformation sp prog params schedule factsFor seed information interruptionConfig
           writeCarry (fs.lookup "--carry-out") schedule day
           let json := (toJson day).setObjVal! "informationProtocol" (.str "information-needs-v1")
             |>.setObjVal! "information" (toJson (lookups.map lookupJson))

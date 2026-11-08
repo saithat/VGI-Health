@@ -1,3 +1,4 @@
+import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
 /** Arm C's only filesystem payload: explicit, train-only projections. No NightInput,
  * historical decision, holdout, world path or repository path is serialized here.
  */
@@ -10,7 +11,7 @@ import type { NightInput } from './night.js';
 import { isMeasurementDay } from './protocol.js';
 import type { PromptParts } from './prompts.js';
 import { contextSchema, type QualityContext } from './quality-context.js';
-import { dayResultSchema } from '../../app/src/dashboard/measurement-schema.js';
+
 
 export interface QueryBundle { files:Record<string,string> }
 export const QUERY_GUIDE = `## Read-only training queries (arm C, offline only)

@@ -80,6 +80,105 @@ export interface WorkloadReport {
   tasksCarriedOver: number;
 }
 
+export type ResumptionMode =
+  | "realWork"
+  | "fixedCost";
+/** All values of `ResumptionMode`. */
+export const ResumptionModeValues = ["realWork", "fixedCost"] as const;
+
+export type InterruptKind =
+  | "page"
+  | "urgentResult"
+  | "colleagueQuestion"
+  | "familyRequest"
+  | "pharmacyClarification";
+/** All values of `InterruptKind`. */
+export const InterruptKindValues = ["page", "urgentResult", "colleagueQuestion", "familyRequest", "pharmacyClarification"] as const;
+
+export type InterruptUrgency =
+  | "urgent"
+  | "timeSensitive"
+  | "routine";
+/** All values of `InterruptUrgency`. */
+export const InterruptUrgencyValues = ["urgent", "timeSensitive", "routine"] as const;
+
+export type WorkStep =
+  | "identifyPatient"
+  | "readMessage"
+  | "assess"
+  | "reply"
+  | "escalate"
+  | "document";
+/** All values of `WorkStep`. */
+export const WorkStepValues = ["identifyPatient", "readMessage", "assess", "reply", "escalate", "document"] as const;
+
+export interface InterruptWork {
+  id: string;
+  patient: string;
+  kind: InterruptKind;
+  urgency: InterruptUrgency;
+  /**
+   * Absolute milliseconds on the schedule's minute scale, independent of UI.
+   */
+  arrivedAtMs: number;
+  essential: boolean;
+  /**
+   * Synthetic communication content, not an imported clinical finding.
+   */
+  message: string;
+}
+
+export interface WorkRecord {
+  work: InterruptWork;
+  startedAtMs: number;
+  completedAtMs: number;
+  deferred: boolean;
+  steps: WorkStep[];
+  completed: boolean;
+  /**
+   * Communication completion is never clinical result resolution or prescribing.
+   */
+  outcome: string;
+}
+
+export type FrameDisposition =
+  | "resumed"
+  | "handedOver"
+  | "discarded";
+/** All values of `FrameDisposition`. */
+export const FrameDispositionValues = ["resumed", "handedOver", "discarded"] as const;
+
+export interface FrameRecord {
+  task: string;
+  owner: string;
+  patient: string;
+  suspendedAtMs: number;
+  closedAtMs: number;
+  disposition: FrameDisposition;
+  reason: string;
+}
+
+export interface InterruptionMetrics {
+  model: string;
+  profile: string;
+  ratePerHourMilli: number;
+  exposureMinutes: number;
+  offered: InterruptWork[];
+  closureWaitMs: number;
+  handled: number;
+  deferred: number;
+  resumptionDelayMs: number;
+  reorientationMs: number;
+  /**
+   * Invalidated evidence/confirmations, a prevention proxy, not observed clinical errors.
+   */
+  revalidationPrevented: number;
+  abandoned: number;
+  workMs: number;
+  work: WorkRecord[];
+  frames: FrameRecord[];
+}
+
 export interface Result {
   id: string;
   patient: string;
@@ -1728,6 +1827,7 @@ export interface TaskMetrics {
   klmDeciSec: number;
   completed: boolean;
   wallTimeMinutes?: number;
+  interruptions?: InterruptionMetrics;
 }
 
 /**

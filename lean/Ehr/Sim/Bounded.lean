@@ -212,7 +212,8 @@ def traceTravel (prog : Program) (trace : List TraceEvent) : Nat :=
 
 def act (ctx : Context) (params : PersonaParams) (task : Task) (r : Runner)
     (e : Event) (learn := true) : Runner := Id.run do
-  let mut out := r
+  let mut out := { r with episode := interruptionCheckpoint ctx task r.episode }
+  let ctx := currentContext ctx out.episode
   let c? := (eventComp e).bind (shownComp? ctx.sp ctx.prog ctx.facts out.episode.state)
   let (ops, rng) := actionOps ctx params out.episode.state e out.episode.rng
   if let some c := c? then
@@ -227,7 +228,7 @@ def act (ctx : Context) (params : PersonaParams) (task : Task) (r : Runner)
   out := { out with episode := scrollTo ctx task out.episode e }
   let goal := isGoalAction ctx out.episode.state e
   let flush := out.lastEpisode && ctx.done (ctx.next out.episode.state e)
-  let due := if goal then out.episode.interruptions.filter (fun n => n ≤ out.episode.actionIndex || flush) else []
+  let due := if out.episode.resumption.config.mode == .fixedCost && goal then out.episode.interruptions.filter (fun n => n ≤ out.episode.actionIndex || flush) else []
   out := { out with
     episode := { out.episode with
       interruptions := out.episode.interruptions.filter (!due.contains ·),
@@ -421,14 +422,18 @@ def loop (scent : Scent) (ctx : Context) (params : PersonaParams) (task : Task) 
     }
   }
   | fuel + 1, r => Id.run do
+    let ctx := currentContext ctx r.episode
     let r := { r with episode := { r.episode with state := { r.episode.state with clock := r.episode.elapsedMs / 100 } } }
     if ctx.done r.episode.state then return r
-    let mut out := { r with episode := selectTaskPatient ctx task r.episode }
+    let mut out := { r with episode := interruptionCheckpoint ctx task (selectTaskPatient ctx task r.episode) }
+    let ctx := currentContext ctx out.episode
     let selectionTrace := out.episode.trace.drop r.episode.trace.length
     if !selectionTrace.isEmpty then
       out := { out with
         effort := { out.effort with mouseTravelUnits := out.effort.mouseTravelUnits + traceTravel ctx.prog selectionTrace }
       }
+    for n in ctx.goals.informationNeeds do
+      out := lookupLoop scent ctx params task n (Discovery.fuel ctx) out
     let s := out.episode.state
     if s.screen != r.episode.state.screen then
       out := { out with stack := [], route := [] }
@@ -538,8 +543,9 @@ structure Result extends DayResult where
 def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
     (factsFor : Task → Facts) (seed : Nat) (memory : Memory := {})
     (scent : Scent := lexicalScent) (guide : Discovery.Guide := Discovery.helpDesk)
-    (displayFor? : Option (Task → Render.Display) := none) : Result := Id.run do
-  let expert := (simulateWithInformation sp prog params schedule factsFor seed displayFor?).1
+    (displayFor? : Option (Task → Render.Display) := none)
+    (interruptionConfig : Resumption.InterruptionConfig := {}) : Result := Id.run do
+  let expert := (simulateWithInformation sp prog params schedule factsFor seed displayFor? interruptionConfig).1
   let prog := if schedule.tasks.any (fun t => (factsFor t).patientDirectory?.isSome)
     then { prog with patientSelection? := some true } else prog
   let user : User := { id := prog.owner, role := params.role }
@@ -600,7 +606,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         interruptions := positions,
         actionIndex := 0,
         elapsedMs := offset,
-        lastDevice := none
+        lastDevice := none,
+        resumption := Resumption.initRuntime seed source params.role (schedule.tasks.map (·.patientId)) interruptionConfig
       },
       memory,
       guide,
@@ -609,6 +616,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     let mut complete := !eps.isEmpty
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
       let f := { ep.facts with receipts := facts.receipts ++ r.episode.state.receipts }
+      let f := Resumption.refreshAt interruptionConfig f (task.startMin * 60000 + r.episode.elapsedMs)
+      r := { r with episode := { r.episode with resumption := { r.episode.resumption with latestFacts? := none } } }
       let ctx : Context := { sp, prog, facts := f, user, goals := { g with informationOffset := Information.shiftOffset params.id, values := g.values ++ g.waivers } }
       r := { r with
         lastEpisode := idx + 1 == eps.length,
@@ -649,7 +658,12 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
             r := lookupLoop scent ctx params task n (Discovery.fuel ctx) { r with tried := [], visited := [], route := [], unsuccessful := 0 }
         if ctx.goals.informationNeeds.all (fun n => r.episode.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episode.episodeIndex && !a.consumed)) then
           r := loop scent ctx params task (Discovery.fuel ctx) r
-      complete := complete && ctx.done r.episode.state
+      complete := complete && (currentContext ctx r.episode).done r.episode.state
+      if idx + 1 == eps.length then
+        r := { r with episode := finishInterruptionTask ctx task r.episode complete }
+    if eps.isEmpty then
+      let ctx : Context := { sp, prog, facts, user, goals := default }
+      r := { r with episode := finishInterruptionTask ctx task r.episode false }
     information := information ++ r.episode.lookups.map (fun a => lookupJson { a with traceIndex := day.trace.length + a.traceIndex })
     receipts := (task.patientId, r.episode.state.receipts) :: receipts.filter (·.1 != task.patientId)
     memory := r.memory
@@ -659,8 +673,9 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     day := { day with
       trace := day.trace ++ r.episode.trace,
       tasks := day.tasks ++ [{ metrics task.id r.episode.trace complete with
-        klmDeciSec := (r.episode.elapsedMs - offset) / 100,
-        wallTimeMinutes? := some ((r.episode.elapsedMs - offset + 59999) / 60000)
+        klmDeciSec := (r.episode.elapsedMs - offset - r.episode.resumption.metrics.closureWaitMs) / 100,
+        wallTimeMinutes? := some ((r.episode.elapsedMs - offset + 59999) / 60000),
+        interruptions? := if interruptionConfig.mode == .realWork then some r.episode.resumption.metrics else none
       }],
       complaints := (day.complaints ++ r.episode.complaints).eraseDups
     }

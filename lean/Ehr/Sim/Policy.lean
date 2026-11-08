@@ -2,11 +2,13 @@ import Ehr.Core.Workspace
 import Ehr.Sim.Interaction
 import Ehr.Sim.TaskContext
 import Ehr.Sim.Scheduling.Clock
+import Ehr.Sim.Resumption.Work
 
 /-!
 Deterministic persona policy. Clinical goals are fixed outside the UI. Each
-(task seed, task ID) gets a SplitMix64 stream. Interruption positions are drawn
-before navigation, hotkey, detour or override draws. The loop has structural
+(task seed, task ID) gets a SplitMix64 stream. Historical interruption positions are drawn
+before navigation, hotkey, detour or override draws. Real-work arrivals have a
+separate clock-based stream independent of layout and action count. The loop has structural
 fuel, records stuck tasks, and never bypasses the interpreter's commit guard.
 -/
 namespace Ehr.Sim
@@ -60,6 +62,12 @@ structure EpisodeResult where
   actionIndex : Nat
   elapsedMs : Nat
   lastDevice : Option Bool
+  resumption : Resumption.InterruptionRuntime := {}
+
+/-- Resumed events and planning share the current patient snapshot; the saved
+context cannot restore stale facts after an external scenario update. -/
+def currentContext (ctx : Context) (r : EpisodeResult) : Context :=
+  { ctx with facts := r.resumption.latestFacts?.getD ctx.facts }
 
 def lookupJson (r : LookupRecord) : Lean.Json := Lean.Json.mkObj [
   ("task", Lean.toJson r.task), ("episode", Lean.toJson r.episodeIndex), ("need", Lean.toJson r.need),
@@ -152,6 +160,7 @@ def actionOps (ctx : Context) (params : PersonaParams) (s : State) (e : Event)
 /-- Execute an event with elapsed KLM time applied before the event. This lets
 an interruption expire a receipt before a commit is attempted. -/
 def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : List Op) : EpisodeResult :=
+  let ctx := currentContext ctx r
   let (ms, dev) := klmFold r.lastDevice ops
   let elapsed := r.elapsedMs + ms
   let before := { r.state with clock := elapsed / 100 }
@@ -180,9 +189,41 @@ def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : Li
     elapsedMs := elapsed
     lastDevice := dev }
 
+/-- Service work separately from clinical events. Invalidate remembered answers
+when source samples have aged; returning never manufactures a new answer. -/
+def interruptionCheckpoint (ctx : Context) (task : Task) (r : EpisodeResult)
+    (closing := false) : EpisodeResult :=
+  if r.resumption.config.mode == .fixedCost then r else
+  let ctx := currentContext ctx r
+  let (state, elapsed, runtime) := Resumption.checkpoint ctx.sp ctx.prog ctx.facts ctx.user
+    task r.state r.elapsedMs r.resumption closing
+  let ctx := { ctx with facts := runtime.latestFacts?.getD ctx.facts }
+  { r with
+    state, elapsedMs := elapsed, resumption := runtime,
+    lookups := r.lookups.filter fun a => a.consumed ||
+      ctx.goals.informationNeeds.all (fun n => n.id != a.need ||
+        a.samples == Information.selected n (Information.asOfMinute ctx.goals.informationDisplay
+          (nowMin ctx.facts state + ctx.goals.informationOffset))) }
+
+/-- Incomplete clinical tasks cannot silently lose owned drafts at a day-loop
+boundary. Complete tasks have no abandonment; queued work is always settled. -/
+def finishInterruptionTask (ctx : Context) (task : Task) (r : EpisodeResult) (complete : Bool) : EpisodeResult :=
+  let out := interruptionCheckpoint ctx task r true
+  if out.resumption.config.mode == .fixedCost || complete || out.state.captured.isEmpty then out else
+  let record : Resumption.FrameRecord := {
+    task := task.id, owner := ctx.user.id, patient := task.patientId,
+    suspendedAtMs := task.startMin * 60000 + r.elapsedMs,
+    closedAtMs := task.startMin * 60000 + out.elapsedMs,
+    disposition := .discarded, reason := "clinical task ended incomplete; unsent draft explicitly discarded" }
+  { out with
+    state := { out.state with captured := [] },
+    resumption := { out.resumption with metrics := { out.resumption.metrics with
+      abandoned := out.resumption.metrics.abandoned + 1,
+      frames := out.resumption.metrics.frames ++ [record] } } }
+
 /-- Missing or stale information cannot publish a gated interpreter action. -/
 theorem emit_blocks_unanswered (ctx task r e ops)
-    (h : needsAllow ctx r { r.state with clock := (r.elapsedMs + (klmFold r.lastDevice ops).1) / 100 } e = false) :
+    (h : needsAllow (currentContext ctx r) r { r.state with clock := (r.elapsedMs + (klmFold r.lastDevice ops).1) / 100 } e = false) :
     (emit ctx task r e ops).state =
       { r.state with clock := (r.elapsedMs + (klmFold r.lastDevice ops).1) / 100 } := by
   simp [emit, h]
@@ -296,9 +337,11 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
     Nat → EpisodeResult → Bool → Nat → EpisodeResult
   | 0, r, _, _ => { r with complaints := r.complaints ++ [s!"{task.id}: fuel exhausted; incomplete"] }
   | fuel + 1, r, arrival, failures => Id.run do
+    let ctx := currentContext ctx r
     if ctx.done r.state then return r
     if failures ≥ 4 then return { r with complaints := r.complaints ++ [s!"{task.id}: repeated blocked commits; incomplete"] }
-    let mut out := selectTaskPatient ctx task r
+    let mut out := interruptionCheckpoint ctx task (selectTaskPatient ctx task r)
+    let ctx := currentContext ctx out
     if arrival then
       let (n, next) := draw out.rng 1000
       out := { out with rng := next }
@@ -311,6 +354,8 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
           out := { out with rng := next }
           if let some c := turns[idx]? then
             out := emit ctx task out (.click c.id) [.point, .click]
+    for n in ctx.goals.informationNeeds do
+      out := lookupExpert ctx params task out n
     let e? := match out.state.popup? with
       | some p => some (.ack p.1)
       | none =>
@@ -339,7 +384,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
       out := { out with rng := next }
       let goalAction := isGoalAction ctx out.state e
       let flush := lastEpisode && ctx.done (ctx.next out.state e)
-      let due := if goalAction then out.interruptions.filter (fun n => n ≤ out.actionIndex || flush) else []
+      let due := if out.resumption.config.mode == .fixedCost && goalAction then out.interruptions.filter (fun n => n ≤ out.actionIndex || flush) else []
       let ops := List.replicate due.length [.wait, .think] |>.flatten |>.append
         ((if arrival && params.scansSidebar then [.think] else []) ++ ops)
       out := { out with
@@ -373,7 +418,8 @@ def playEpisode (ctx : Context) (params : PersonaParams) (task : Task) (lastEpis
 and commit/ack history do not. Each task has its own independent RNG stream. -/
 def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
     (factsFor : Task → Facts) (seed : Nat)
-    (displayFor? : Option (Task → Render.Display) := none) : DayResult × List LookupRecord := Id.run do
+    (displayFor? : Option (Task → Render.Display) := none)
+    (interruptionConfig : Resumption.InterruptionConfig := {}) : DayResult × List LookupRecord := Id.run do
   -- Fresh day simulations include the shared workspace even for an older UI
   -- layout. Recorded trajectory replay keeps its original program flag.
   let prog := if schedule.tasks.any (fun task => (factsFor task).patientDirectory?.isSome)
@@ -421,12 +467,15 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions nActions
     let mut r : EpisodeResult := {
       state := default, trace := [], complaints := [], rng,
-      interruptions := positions, actionIndex := 0, elapsedMs := offset, lastDevice := none }
+      interruptions := positions, actionIndex := 0, elapsedMs := offset, lastDevice := none,
+      resumption := Resumption.initRuntime seed source params.role (schedule.tasks.map (·.patientId)) interruptionConfig }
     let mut complete := !eps.isEmpty
     let mut floor := { emptyMetrics task.id with completed := true }
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
       let f := ep.facts
       let f := { f with receipts := facts.receipts ++ r.state.receipts }
+      let f := Resumption.refreshAt interruptionConfig f (task.startMin * 60000 + r.elapsedMs)
+      r := { r with resumption := { r.resumption with latestFacts? := none } }
       let ctx : Context := { sp, prog, facts := f, user, goals := { g with informationOffset := Information.shiftOffset params.id, values := g.values ++ g.waivers } }
       r := { r with
         episodeIndex := idx,
@@ -434,14 +483,21 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
           { init sp prog f user with patientContext? := r.state.patientContext? }) with clock := r.elapsedMs / 100 },
         complaints := r.complaints ++ g.problems.map (fun problem => s!"{task.id}: {problem}") }
       r := playEpisode ctx params task (idx + 1 == eps.length) r
-      complete := complete && ctx.done r.state
+      complete := complete && (currentContext ctx r).done r.state
+      if idx + 1 == eps.length then r := finishInterruptionTask ctx task r complete
       floor := addMetrics floor (floorMetrics task.id sp f user g)
+    if eps.isEmpty then
+      let ctx : Context := { sp, prog, facts, user, goals := default }
+      r := finishInterruptionTask ctx task r false
     lookups := lookups ++ r.lookups.map (fun a => { a with traceIndex := day.trace.length + a.traceIndex })
     receipts := (task.patientId, r.state.receipts) :: receipts.filter (·.1 != task.patientId)
     day := { day with
       trace := day.trace ++ r.trace
       tasks := day.tasks ++ [{ metrics task.id r.trace complete with
-        wallTimeMinutes? := some ((r.elapsedMs - offset + 59999) / 60000) }]
+        klmDeciSec := if interruptionConfig.mode == .fixedCost then (metrics task.id r.trace complete).klmDeciSec
+          else (r.elapsedMs - offset - r.resumption.metrics.closureWaitMs) / 100,
+        wallTimeMinutes? := some ((r.elapsedMs - offset + 59999) / 60000),
+        interruptions? := if interruptionConfig.mode == .realWork then some r.resumption.metrics else none }]
       floor := day.floor ++ [floor]
       complaints := (day.complaints ++ r.complaints).eraseDups }
     if !legacy then
@@ -452,10 +508,11 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   return (day, lookups)
 
-/-- Expert entry point; explicit legacy clock mode retains task-local timing. -/
+/-- Expert entry point; real work and continuous time default, with explicit legacy modes. -/
 def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
-    (factsFor : Task → Facts) (seed : Nat) : DayResult :=
-  (simulateWithInformation sp prog params schedule factsFor seed).1
+    (factsFor : Task → Facts) (seed : Nat)
+    (interruptionConfig : Resumption.InterruptionConfig := {}) : DayResult :=
+  (simulateWithInformation sp prog params schedule factsFor seed none interruptionConfig).1
 
 #guard (random 0).1.toNat == 16294208416658607535
 #guard (interruptionPositions 1 7 4).1.length == 7

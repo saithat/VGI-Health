@@ -26,3 +26,5 @@ export type LlmProposal=z.infer<typeof llmProposalSchema>;
 export function toCandidate(raw:LlmCandidate,source:Candidate['source']):Candidate {
   return candidateSchema.parse({...baseToCandidate(raw,source),...(raw.portfolio?{portfolio:raw.portfolio}:{})});
 }
+
+export { interruptionDayResultSchema as dayResultSchema } from './interruption-schema.js';

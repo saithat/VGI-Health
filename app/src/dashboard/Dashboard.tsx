@@ -1,4 +1,5 @@
 import { WorkloadClock } from "./WorkloadClock";
+import { InterruptionWork } from "./InterruptionWork";
 import { watchRun, isRunning } from "./run-refresh";
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import { RuleConformanceBadge } from "./RuleConformance";
@@ -1511,6 +1512,7 @@ export function Dashboard({
           Open EHR
         </a>
       </AppHeader>
+      {run && <InterruptionWork days={run.days} persona={persona} />}
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button
