@@ -827,6 +827,8 @@ boundary.
 The partial-index browser regression intercepts both direct and prefix-pinned
 trajectory indices, confirms fixture injection, and checks that missing saved
 controls select an available cross-day comparison.
+Compare regressions check pixel deltas against the persisted trajectory entries
+and explicitly remove geometry metadata to verify unavailable values.
 
 Summary reads show completed days immediately; expensive derived evidence
 loads separately. Active runs refresh every 30 seconds, without page reload

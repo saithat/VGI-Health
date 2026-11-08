@@ -16,12 +16,26 @@ async function counts(file: string) {
     ),
   );
   const ops = task.trace.flatMap((event) => event.ops);
+  const index = trajectoryIndexSchema.parse(
+    JSON.parse(
+      await readFile(
+        new URL("../../runs/core-10day/trajectories/index.json", import.meta.url),
+        "utf8",
+      ),
+    ),
+  );
+  const entry = index.tasks
+    .flatMap((entry) => entry.baseline ? [entry, entry.baseline] : [entry])
+    .find((entry) => entry.file === file);
+  expect(entry, `Recorded trajectory entry for ${file}`).toBeDefined();
   return {
     events: task.trace.length,
     clicks: ops.filter((op) => op === "click").length,
     scrolls: ops.filter((op) => op === "scroll").length,
     keys: ops.filter((op) => op === "key").length,
     screens: new Set(task.trace.map((event) => event.screen)).size,
+    scrollPx: entry?.metrics.scrollPx ?? null,
+    mouseTravelPx: entry?.metrics.mouseTravelPx ?? null,
   };
 }
 test("compare defaults to a saved same-task control and synchronizes fixed frames", async ({
@@ -79,10 +93,13 @@ test("compare defaults to a saved same-task control and synchronizes fixed frame
     await expect(card).toHaveAttribute("data-delta", String(r - l));
     await expect(card).toContainText(`${l} → ${r}`);
   }
-  await expect(view.locator('[data-metric="scrollPx"]')).toHaveAttribute(
-    "data-delta",
-    "unavailable",
-  );
+  for (const metric of ["scrollPx", "mouseTravelPx"] as const) {
+    const l = a[metric], r = b[metric];
+    const card = view.locator(`[data-metric="${metric}"]`);
+    await expect(card).toHaveAttribute("data-left", String(l ?? "unavailable"));
+    await expect(card).toHaveAttribute("data-right", String(r ?? "unavailable"));
+    await expect(card).toHaveAttribute("data-delta", l === null || r === null ? "unavailable" : String(r - l));
+  }
   await view.getByLabel("Compare playback speed").selectOption("4");
   for (let count = 1; count <= 10; count++) {
     await view.getByRole("button", { name: "Step", exact: true }).click();
@@ -249,7 +266,11 @@ test("a partial index without saved controls falls back to a cross-day pair", as
         ),
       ),
     );
-    for (const task of index.tasks) delete task.baseline;
+    for (const task of index.tasks) {
+      delete task.baseline;
+      delete task.metrics.scrollPx;
+      delete task.metrics.mouseTravelPx;
+    }
     // A partial run has only its first few days indexed so far.
     index.tasks = index.tasks.filter((task) => task.day <= 4);
     await route.fulfill({ json: index });
@@ -265,5 +286,11 @@ test("a partial index without saved controls falls back to a cross-day pair", as
   await expect(view.getByLabel("Right day", { exact: true })).toHaveValue("4");
   await expectRecordedWorkspace(page.frameLocator('iframe[title="Left EHR"]'));
   await expectRecordedWorkspace(page.frameLocator('iframe[title="Right EHR"]'));
+  for (const metric of ["scrollPx", "mouseTravelPx"]) {
+    const card = view.locator(`[data-metric="${metric}"]`);
+    await expect(card).toHaveAttribute("data-left", "unavailable");
+    await expect(card).toHaveAttribute("data-right", "unavailable");
+    await expect(card).toHaveAttribute("data-delta", "unavailable");
+  }
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
