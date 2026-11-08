@@ -12,7 +12,7 @@ export const candidateSchema=baseCandidate.extend({portfolio:portfolioSchema.opt
 export const evaluatedCandidateSchema=baseEvaluated.extend({candidate:candidateSchema});
 export const llmCandidateSchema=baseLlmCandidate.extend({portfolio:portfolioSchema.optional()});
 export const llmProposalSchema=baseProposal.extend({candidates:z.array(llmCandidateSchema)});
-export const decisionRecordSchema=baseDecision.extend({candidates:z.array(evaluatedCandidateSchema),exploration:z.object({
+export const decisionRecordSchema=baseDecision.extend({backend:baseDecision.shape.backend.extend({name:z.enum(['claude','codex','openai-compat','replay','scripted'])}),candidates:z.array(evaluatedCandidateSchema),exploration:z.object({
   policy:z.string(),minimumEffect:z.number(),
   checker:z.object({proposed:z.number().int().nonnegative(),rejected:z.number().int().nonnegative(),rate:z.number().nullable(),checkerRejected:z.number().int().nonnegative(),invalid:z.number().int().nonnegative()}),
   candidates:z.array(z.object({id:z.string(),gross:z.number(),net:z.number(),switchCost:z.number(),fromCurrent:z.number(),fromArchive:z.number(),explorationRank:z.number()})),

@@ -1,10 +1,11 @@
 /**
- * The agent interface the loop talks to. Every backend (claude, codex, replay,
+ * The agent interface the loop talks to. Every backend (claude, codex, openai-compat, replay,
  * and the test-only scripted one) is a `JsonLlm`; `LlmAgent` turns prompts
  * into validated Candidates and choices on top of it.
  */
 import type { RecordingLlm } from './backends/recording.js';
 import type { JsonRequest } from './backends/types.js';
+import type { RepairContext } from './prompts.js';
 import type { PromptParts } from './prompts.js';
 import {
   LLM_CHOICE_JSON_SCHEMA, LLM_PROPOSAL_JSON_SCHEMA, llmChoiceSchema, llmProposalSchema, toCandidate,
@@ -40,6 +41,7 @@ export interface Choice extends LlmChoice {
 export interface AgentBackend {
   readonly name: string;
   readonly model: string;
+  toolPrompt?(repair?:RepairContext):PromptParts;
   proposeCandidates(ctx: ProposeContext): Promise<Proposal>;
   chooseCandidates(ctx: ChooseContext): Promise<Choice>;
 }
@@ -63,22 +65,7 @@ export class LlmAgent implements AgentBackend {
       } : LLM_PROPOSAL_JSON_SCHEMA,
     };
     const res = await this.llm.complete(req);
-    const parsed = llmProposalSchema.safeParse(res.json);
-    if (!parsed.success) throw new Error(`${ctx.callId}: proposal does not match schema: ${parsed.error.issues[0]?.message ?? ''}`);
-    const seen = new Set<string>();
-    const candidates: Candidate[] = [];
-    const undecodable: Proposal['undecodable'] = [];
-    for (const raw of parsed.data.candidates.slice(0, 5)) {
-      let id = raw.id.trim() || `c${candidates.length + undecodable.length + 1}`;
-      while (seen.has(id)) id = `${id}'`;
-      seen.add(id);
-      try {
-        candidates.push(toCandidate({ ...raw, id }, ctx.source));
-      } catch (e) {
-        undecodable.push({ id, summary: raw.summary, error: errorMessage(e) });
-      }
-    }
-    return { hypothesis: parsed.data.hypothesis, decision: parsed.data.decision, candidates, undecodable, call: this.llm.ref(req, res) };
+    return { ...decodeProposalResponse(res.json, ctx.source, ctx.callId), call: this.llm.ref(req, res) };
   }
 
   async chooseCandidates(ctx: ChooseContext): Promise<Choice> {
@@ -92,4 +79,24 @@ export class LlmAgent implements AgentBackend {
     if (!parsed.success) throw new Error(`${ctx.callId}: choice does not match schema: ${parsed.error.issues[0]?.message ?? ''}`);
     return { ...parsed.data, call: this.llm.ref(req, res) };
   }
+}
+
+/** Shared decoding policy for live nights and frozen recorded-prompt comparisons. */
+export function decodeProposalResponse(json: unknown, source: Candidate['source'], callId: string): Omit<Proposal, 'call'> {
+  const parsed = llmProposalSchema.safeParse(json);
+  if (!parsed.success) throw new Error(`${callId}: proposal does not match schema: ${parsed.error.issues[0]?.message ?? ''}`);
+  const seen = new Set<string>();
+  const candidates: Candidate[] = [];
+  const undecodable: Proposal['undecodable'] = [];
+  for (const raw of parsed.data.candidates.slice(0, 5)) {
+    let id = raw.id.trim() || `c${candidates.length + undecodable.length + 1}`;
+    while (seen.has(id)) id = `${id}'`;
+    seen.add(id);
+    try {
+      candidates.push(toCandidate({ ...raw, id }, source));
+    } catch (e) {
+      undecodable.push({ id, summary: raw.summary, error: errorMessage(e) });
+    }
+  }
+  return { hypothesis: parsed.data.hypothesis, decision: parsed.data.decision, candidates, undecodable };
 }

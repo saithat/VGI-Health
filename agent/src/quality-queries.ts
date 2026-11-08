@@ -67,6 +67,7 @@ export async function writeQueryDirectory(directory:string,bundle:QueryBundle) {
     const contents=bundle.files[name];if(contents===undefined)throw new Error(`Missing ${name}`);
     JSON.parse(contents);await writeFile(path.join(directory,name),contents,{mode:0o400});
   }
+  await writeFile(path.join(directory,'query-engine.mjs'),await readFile(new URL('./query-engine.mjs',import.meta.url)),{mode:0o400});
   await writeFile(path.join(directory,'query.mjs'),await readFile(new URL('./query-cli.mjs',import.meta.url)),{mode:0o400});
   await writeFile(path.join(directory,'README.md'),QUERY_GUIDE+'\n',{mode:0o400});
 }

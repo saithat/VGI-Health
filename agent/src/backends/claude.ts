@@ -10,6 +10,7 @@
  */
 import Anthropic from '@anthropic-ai/sdk';
 import type { JsonLlm, JsonRequest, JsonResponse } from './types.js';
+import { runToolTurns } from '../tool-turns.js';
 
 export const DEFAULT_CLAUDE_MODEL = 'claude-opus-5-5';
 type Effort = 'low' | 'medium' | 'high' | 'xhigh' | 'max';
@@ -35,6 +36,23 @@ export class ClaudeLlm implements JsonLlm {
   }
 
   async complete(req: JsonRequest): Promise<JsonResponse> {
+    if(req.toolSession){
+      const session=req.toolSession,messages:Anthropic.Beta.BetaMessageParam[]=[{role:'user',content:req.prompt}];
+      const result=await runToolTurns(req,async results=>{
+        if(results.length)messages.push({role:'user',content:results.map(r=>({type:'tool_result',tool_use_id:r.id,content:JSON.stringify(r.result)}))});
+        const stream=this.client.beta.messages.stream({model:this.model,max_tokens:Math.min(16000,session.remainingTokens),system:req.system,messages,
+          thinking:{type:'adaptive'},output_config:{effort:this.effort},
+          tools:session.definitions.map(t=>({name:t.name,description:t.description,input_schema:{...t.inputSchema,type:'object'}}))},
+          {signal:AbortSignal.timeout(session.remainingMs)});
+        const message=await stream.finalMessage();
+        if(message.stop_reason!=='tool_use')throw new Error('claude: expected complete tool_use turn');
+        messages.push({role:'assistant',content:message.content});
+        return {calls:message.content.flatMap(b=>b.type==='tool_use'?[{id:b.id,name:b.name,arguments:b.input}]:[]),
+          inputTokens:message.usage.input_tokens+(message.usage.cache_read_input_tokens??0)+(message.usage.cache_creation_input_tokens??0),
+          outputTokens:message.usage.output_tokens,cachedInputTokens:message.usage.cache_read_input_tokens??0,servedBy:message.model,raw:message};
+      });
+      return {...result,backend:this.name,model:this.model,replayOf:null,promptMatched:null};
+    }
     let message: Anthropic.Beta.BetaMessage;
     try {
       const stream = this.client.beta.messages.stream({

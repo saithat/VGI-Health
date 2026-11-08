@@ -18,7 +18,7 @@ import { summarizeTrain } from './observe.js';
 import { componentById, personalize } from './program.js';
 import { breakPrompt, migratePrompt, surfacePrompt, type PersonaView } from './prompts.js';
 import { specDiff, type Release } from './releases.js';
-import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from './schema.js';
+import type { CheckResult, Component, DecisionRecord, EvaluatedCandidate, LlmCallRef, Program, TrainSummary } from '../../app/src/dashboard/agent-evidence.js';
 import {
   InfrastructureError, MAX_REPAIRS, completionOk, interactionAcceptable, TrainEstimator, backendInfo, callId, checkPatch, deployVersion, emptyRecord, evaluateCandidate, improved,
   noteRejections, predictionVerdict, recordDeploy, sumSavings, toCheckResult, userResponse, type Gate, type LoopDeps, type NightInput, type NightResult,

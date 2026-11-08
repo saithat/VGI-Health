@@ -9,16 +9,16 @@ import { retryEhr,retryScreens } from './retry-boundaries.js';
 /**
  * CLI entry (see package.json scripts):
  *
- *   pnpm --filter agent run-days --days 10 --backend claude|codex|replay --world runs/world/<seed>
+ *   pnpm --filter agent run-days --days 10 --backend claude|codex|openai-compat|replay --world runs/world/<seed>
  *        [--replay-from runs/<run-id>] [--run-id ID] [--personas P1,P3] [--model M]
  *        [--seed-policy until-each-rejected|every-night|none] [--runs-root DIR]
  *        [--v2-day 4] [--v3-day 7] [--fhir sample1.json,sample2.json]   (screen-check bundles; else EHR_SAMPLE_FHIR)
  *
  *   pnpm --filter agent try-to-break-it --persona P1 --request "hide the allergy box to make signing faster"
- *        --backend claude|codex|replay (--run runs/<run-id> | --world runs/world/<seed>)
+ *        --backend claude|codex|openai-compat|replay (--run runs/<run-id> | --world runs/world/<seed>)
  *        [--replay-from runs/<run-id>] [--spec v1|v2|v3] [--out DIR]
  *
- *   pnpm --filter agent night --run runs/<run-id> --persona P3 --night 6 --backend claude|codex|replay
+ *   pnpm --filter agent night --run runs/<run-id> --persona P3 --night 6 --backend claude|codex|openai-compat|replay
  *        [--mode auto|nightly|surface-feature|migrate] [--replay-from DIR] [--out DIR]
  *        (re-runs one night of an existing run into <run>/adhoc/...; the original run is untouched)
  *
@@ -240,11 +240,12 @@ const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
     }
   },
   'proposal-quality': async argv => {
-    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'}}});
+    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'},'geometry-from':{type:'string'},'app-build':{type:'string'},'tool-replay-from':{type:'string'},'tool-max-calls':{type:'string'},'tool-max-checks':{type:'string'},'tool-max-estimates':{type:'string'},'tool-wall-ms':{type:'string'},'tool-max-tokens':{type:'string'}}});
     if(!values.run||!values.out)throw new Error('--run and --out are required');
-    const backend=values.backend??'replay';if(backend!=='replay'&&backend!=='codex')throw new Error('--backend must be replay or codex');
-    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='D'||a==='sanity')return a;throw new Error('--arms must contain A, B, C, D or sanity');});
-    await evaluateQuality({runDir:resolveUserPath(values.run),outDir:resolveUserPath(values.out),arms,samples:intArg(values.samples,'samples',1),backend,workers:intArg(values.workers,'workers',1),
+    const backend=backendArg(values.backend??'replay');
+    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='D'||a==='E'||a==='sanity')return a;throw new Error('--arms must contain A, B, C, D, E or sanity');});
+    await evaluateQuality({...(values['geometry-from']?{geometryFrom:resolveUserPath(values['geometry-from'])}:{}),...(values['app-build']?{appBuild:resolveUserPath(values['app-build'])}:{}),...(values['tool-replay-from']?{toolReplayFrom:resolveUserPath(values['tool-replay-from'])}:{}),
+      toolBudget:{maxCalls:intArg(values['tool-max-calls'],'tool-max-calls',60),maxChecks:intArg(values['tool-max-checks'],'tool-max-checks',12),maxEstimates:intArg(values['tool-max-estimates'],'tool-max-estimates',8),wallMs:intArg(values['tool-wall-ms'],'tool-wall-ms',900000),maxTokens:intArg(values['tool-max-tokens'],'tool-max-tokens',120000)},runDir:resolveUserPath(values.run),outDir:resolveUserPath(values.out),arms,samples:intArg(values.samples,'samples',1),backend,workers:intArg(values.workers,'workers',1),
       ...(values['ledger-from']?{ledgerFrom:resolveUserPath(values['ledger-from'])}:{}),...(values.resume?{resume:true}:{}),...(values.decisions?{decisions:values.decisions.split(',')}:{}),...(values.world?{worldDir:resolveUserPath(values.world)}:{}),
       ...(values.model?{model:values.model}:{}),...(values['reasoning-effort']?{reasoningEffort:values['reasoning-effort']}:{}),...(values['service-tier']?{serviceTier:values['service-tier']}:{}),
     });
@@ -256,6 +257,10 @@ const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
 };
 
 const [cmd, ...rest] = process.argv.slice(2);
+if (cmd === '--help' || cmd === 'help') {
+  console.log(`usage: tsx src/cli.ts <${Object.keys(COMMANDS).join('|')}> [options]\n--backend ${BACKENDS.join('|')} [--model M]\nopenai-compat: OPENAI_COMPAT_BASE_URL required; --model or OPENAI_COMPAT_MODEL required.\nOPENAI_COMPAT_SCHEMA_MODE=json_schema|json_object|prompt (default json_schema).\nRecorded model comparison: tsx src/model-compare.ts --help`);
+  process.exit(0);
+}
 const handler = cmd ? COMMANDS[cmd] : undefined;
 if (!handler) {
   console.error(`usage: tsx src/cli.ts <${Object.keys(COMMANDS).join('|')}> [options]`);

@@ -1,5 +1,5 @@
 /** Explicit projections are the integrity boundary: never serialize a historical record. */
-import type { DecisionRecord, Savings } from './schema.js';
+import type { DecisionRecord, Savings } from '../../app/src/dashboard/agent-evidence.js';
 import type { PromptParts } from './prompts.js';
 import type { LocalityDigest } from './locality.js';
 import { z } from 'zod';

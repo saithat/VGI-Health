@@ -4,7 +4,7 @@ import type {
   DecisionRecord,
   JsonPatchOp,
   Program,
-} from "../../../agent/src/schema";
+} from "../dashboard/agent-evidence";
 import { fieldCaption, sectionCaption } from "../ehr/ui/clinical-display";
 
 export interface RevisionChange {

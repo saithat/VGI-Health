@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { llmRecordPath, llmRecordSchema } from '../src/backends/recording.js';
-import { personaParamsSchema, specSchema, type DecisionRecord } from '../src/schema.js';
+import { personaParamsSchema, specSchema, type DecisionRecord } from '../../app/src/dashboard/agent-evidence.js';
 import { RunStore } from '../src/store.js';
 import { REPO_ROOT, readJson } from '../src/util.js';
 import { historyItem } from '../src/run.js';

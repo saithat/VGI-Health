@@ -6,7 +6,7 @@ import { z } from 'zod';
 import { isMeasurementDay, trainEstimateWindow } from './protocol.js';
 import { readJson } from './util.js';
 import { physicalSaving, type MeasuredSavings } from './quality-context.js';
-import { decisionRecordSchema, type DecisionRecord } from './schema.js';
+import { decisionRecordSchema, type DecisionRecord } from '../../app/src/dashboard/agent-evidence.js';
 
 export const ledgerKey = (r:Pick<DecisionRecord,'night'|'persona'>,id:string) => `${r.night}/${r.persona}/${id}`;
 const bindingSchema=z.object({

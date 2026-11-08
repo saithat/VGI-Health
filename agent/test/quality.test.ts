@@ -26,7 +26,7 @@ import { writeJson } from '../src/util.js';
 import { loadWorld } from '../src/world.js';
 import { calibrationPartition } from '../src/protocol.js';
 import { summarizeTrain } from '../src/observe.js';
-import type { DayResult, DecisionRecord, TraceEvent } from '../src/schema.js';
+import type { DayResult, DecisionRecord, TraceEvent } from '../../app/src/dashboard/agent-evidence.js';
 
 const program=fakeCanonical('v1'),spec=fakeSpec('v1');
 const persona={id:'P1',userId:'P1',params:FAKE_PERSONAS.find(p=>p.id==='P1')??{id:'P1',role:'physician',keyboardShare:80,reviewsAllergiesEarly:true,scansSidebar:true,backtrackRate:60,searchWhenBuried:true,overrideRate:700}};

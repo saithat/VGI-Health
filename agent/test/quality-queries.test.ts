@@ -29,7 +29,7 @@ it('writes only train projections even when the containing context holds holdout
  const bundle=trainingQueryBundle(input,[poisonedAtlas],quality);
  await writeQueryDirectory(dir,bundle);
  const files=await readdir(dir),bytes=(await Promise.all(files.map(f=>readFile(path.join(dir,f),'utf8')))).join('\n');
- expect(files.sort()).toEqual(['README.md','attribution.json','geometry.json','ledger.json','locality.json','query.mjs','traces.json'].sort());
+ expect(files.sort()).toEqual(['README.md','attribution.json','geometry.json','ledger.json','locality.json','query-engine.mjs','query.mjs','traces.json'].sort());
  expect(bytes).not.toMatch(/VALIDATION_SECRET|TEST_SECRET|\/home\/private|987654321|123456789|klmDeciSec/);
  const parts={system:'unchanged',prompt:'unchanged'};expect(withQueries(parts)).toBe(parts);
  expect(withQueries(parts,bundle).prompt).toContain('node query.mjs');

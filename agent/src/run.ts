@@ -163,7 +163,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const simulationModes=simulationModesSchema.parse(opts.simulationModes??realWorkModes);
   const underlyingEhr = withSimulationModes(opts.ehr ?? createEhr(),simulationModes);
   const world = await loadWorld(opts.worldDir);
-  if (['codex','claude'].includes(llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
+  if (['codex','claude','openai-compat'].includes(llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
   const personaIds = opts.personas ?? world.manifest.personas;
   if (personaIds.length === 0 || new Set(personaIds).size !== personaIds.length || personaIds.some((id) => !world.personas.has(id)))
     throw new Error('Every requested persona must occur exactly once in the world');

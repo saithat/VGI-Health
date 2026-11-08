@@ -249,7 +249,7 @@ export function predictionVerdict(predicted:Savings|null,measured:ReplayDay|null
 
 export function backendInfo(agent: AgentBackend, calls: readonly LlmCallRef[]): DecisionRecord['backend'] {
   const first = calls[0];
-  const name = agent.name === 'claude' || agent.name === 'codex' || agent.name === 'replay' || agent.name === 'scripted' ? agent.name : 'scripted';
+  const name = agent.name === 'claude' || agent.name === 'codex' || agent.name === 'openai-compat' || agent.name === 'replay' || agent.name === 'scripted' ? agent.name : 'scripted';
   if (first?.replayOf) return { name, model: first.replayOf.model, replayOf: first.replayOf };
   return { name, model: first?.model ?? agent.model, replayOf: null };
 }
@@ -406,7 +406,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   try {
     proposal = await deps.agent.proposeCandidates({
       callId: callId(night, persona.id, 'propose-0'), purpose: 'propose', source: 'llm',
-      parts: withQueries(withQuality(structure ? structurePrompt(nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }),current,hotspots,structure.minimumEffect) : nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }), quality),options.queryBundle),
+      parts: deps.agent.toolPrompt?.() ?? withQueries(withQuality(structure ? structurePrompt(nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }),current,hotspots,structure.minimumEffect) : nightlyPrompt({ night, persona, spec: release.spec, program: current, evidence, history: input.history }), quality),options.queryBundle),
     });
   } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;
@@ -477,7 +477,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
   } else try {
     const choice = await deps.agent.chooseCandidates({
       callId: callId(night, persona.id, 'choose-0'),
-      parts: withQueries(withQuality(choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }), options.quality),options.queryBundle),
+      parts: deps.agent.toolPrompt?.() ?? withQueries(withQuality(choosePrompt({ night, persona, spec: release.spec, program: current, stabilityBudget: release.spec.design.stabilityBudget, hypothesis: proposal.hypothesis, candidates: rec.candidates }), options.quality),options.queryBundle),
     });
     calls.push(choice.call);
     const byId = new Map(eligible.map((e) => [e.candidate.id, e.candidate]));
@@ -529,7 +529,7 @@ export async function runNight(deps: LoopDeps, input: NightInput, options: { off
     try {
       repair = await deps.agent.proposeCandidates({
         callId: callId(night, persona.id, `repair-${r}`), purpose: 'repair', source: 'repair',
-        parts: withQueries(withQuality(repairPrompt({ night, persona, spec: release.spec, program: current, attempt: r, maxAttempts: MAX_REPAIRS, failedSummaries: failed.ids, failedPatch: failed.patch, check: failed.check }), options.quality),options.queryBundle),
+        parts: deps.agent.toolPrompt?.({night,persona,spec:release.spec,program:current,attempt:r,maxAttempts:MAX_REPAIRS,failedSummaries:failed.ids,failedPatch:failed.patch,check:failed.check}) ?? withQueries(withQuality(repairPrompt({ night, persona, spec: release.spec, program: current, attempt: r, maxAttempts: MAX_REPAIRS, failedSummaries: failed.ids, failedPatch: failed.patch, check: failed.check }), options.quality),options.queryBundle),
       });
     } catch (e) {
     if(e instanceof InfrastructureError || e instanceof ReplayDivergedError || e instanceof ReplayMissingError)throw e;

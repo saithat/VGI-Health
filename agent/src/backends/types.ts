@@ -1,7 +1,8 @@
 import type { QueryBundle } from '../quality-queries.js';
+import type { ToolSession } from '../tool-session.js';
 /** Transport-level interface every LLM backend implements: one JSON-schema-constrained call. */
 
-export type BackendName = 'claude' | 'codex' | 'replay' | 'scripted';
+export type BackendName = 'claude' | 'codex' | 'openai-compat' | 'replay' | 'scripted';
 
 export interface JsonRequest {
   /** Stable id, e.g. "night-03/P1/propose-0"; the replay backend looks recordings up by it. */
@@ -12,6 +13,8 @@ export interface JsonRequest {
   schemaName: string;
   schema: Record<string, unknown>;
   queryBundle?: QueryBundle;
+  /** Host-owned capability object. Never serialized into a prompt or recording. */
+  toolSession?: ToolSession;
 }
 
 export interface JsonResponse {
@@ -24,6 +27,7 @@ export interface JsonResponse {
   replayOf: { backend: string; model: string; source: string } | null;
   promptMatched: boolean | null;
   usage: unknown;
+  finishReason?: string;
   transcript?: unknown;
 }
 

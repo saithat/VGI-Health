@@ -1,3 +1,5 @@
+import { auditNightTranscript } from './night-mcp.js';
+import { NIGHT_TOOLS } from '../agent-loop.js';
 import { auditQueryTranscript, queryAuditSchema } from './query-audit.js';
 import { z } from 'zod';
 import { existsSync } from 'node:fs';
@@ -40,11 +42,11 @@ export async function auditRunTranscripts(dir: string) {
       const file = path.join(root,entry.name);
       if (entry.isDirectory()) await visit(file);
       else if (entry.name.endsWith('.json')) {
-        const record = z.object({transcript:z.object({stdout:z.string().optional()}).optional(),audit:z.unknown().optional(),usage:z.unknown().optional()}).parse(JSON.parse(await readFile(file,'utf8')));
+        const record = z.object({transcript:z.object({stdout:z.string().optional(),toolEvents:z.array(z.unknown()).optional()}).optional(),audit:z.unknown().optional(),usage:z.unknown().optional()}).parse(JSON.parse(await readFile(file,'utf8')));
         if (record.transcript?.stdout) {
           const query=z.object({isolationAudit:queryAuditSchema}).safeParse(record.usage??{isolationAudit:record.audit});
           const truncated=z.object({transcriptTruncated:z.literal(true)}).safeParse(record.audit);
-          audits.push({ file:path.relative(dir,file), ...auditTranscript(record.transcript.stdout,query.success?query.data.isolationAudit.requestDirectory:undefined),...(truncated.success?{status:'fail',transcriptTruncated:true}:{}) });
+          audits.push({ file:path.relative(dir,file), ...(record.transcript.toolEvents?auditNightTranscript(record.transcript.stdout,NIGHT_TOOLS.map(t=>t.name)):auditTranscript(record.transcript.stdout,query.success?query.data.isolationAudit.requestDirectory:undefined)),...(truncated.success?{status:'fail',transcriptTruncated:true}:{}) });
         }
         else if (record.audit) audits.push(record.audit);
       }

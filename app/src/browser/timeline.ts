@@ -1,4 +1,4 @@
-import type { DecisionRecord } from "../../../agent/src/schema";
+import type { DecisionRecord } from "../dashboard/agent-evidence";
 import type { RunData } from "../dashboard/data";
 import { workloadAt } from "../dashboard/workload";
 import type { Catalog, ProgramEntry } from "./data";

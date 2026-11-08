@@ -1,7 +1,7 @@
 /** Infrastructure attempts are audit metadata; they never select a clinical outcome. */
 import { existsSync } from 'node:fs';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { InfrastructureError,InfrastructureExhaustedError } from './errors.js';
+import { BackendRequestError,InfrastructureError,InfrastructureExhaustedError } from './errors.js';
 import { errorMessage, writeJson } from './util.js';
 import path from 'node:path';
 export interface InfrastructureRetry { op:string; persona:string|null; day:number|null; night:number|null; attempts:number; messages:string[] }
@@ -20,7 +20,7 @@ export async function retryInfrastructure<T>(op:string,work:()=>Promise<T>,allEr
  const retries=infrastructureRetries();
  for(let attempt=1;;attempt++){
   try{return await work();}catch(error){
-   if(error instanceof InfrastructureExhaustedError)throw error;
+   if(error instanceof InfrastructureExhaustedError || error instanceof BackendRequestError)throw error;
    if(error instanceof Error&&['ReplayDivergedError','ReplayMissingError'].includes(error.constructor.name))throw error;
    if(!allErrors&&!(error instanceof InfrastructureError))throw error;
    messages.push(errorMessage(error));
