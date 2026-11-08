@@ -1512,7 +1512,7 @@ export function Dashboard({
           Open EHR
         </a>
       </AppHeader>
-      {run && <InterruptionWork days={run.days} persona={persona} />}
+      {run && <InterruptionWork days={run.days.filter(d => !run.manifest.measurementProtocol || d.day % 2 === 0)} persona={persona} />}
       <nav className="dash-tabs" aria-label="Dashboard areas">
         {views.map((name) => (
           <button

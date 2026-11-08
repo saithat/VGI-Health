@@ -2827,7 +2827,8 @@ wall time and are excluded from active KLM effort and overtime.
 The native adapter accepts `SimulateInput.interruptions` and
 `interruptionProfile`, retains the optional typed task measurements through schema
 validation, and the dashboard displays them per selected clinician, including
-incomplete tasks. Historical absence is reported as unmeasured, rather than zero.
+incomplete tasks. Workload and interruption headline metrics use the same blind
+even-day partition when the recording declares that measurement protocol. Historical absence is reported as unmeasured, rather than zero.
 
 Incomplete clinical tasks explicitly discard their unsent drafts with the reason
 `clinical task ended incomplete; unsent draft explicitly discarded`. Completion
