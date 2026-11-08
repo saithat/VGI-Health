@@ -1,12 +1,14 @@
-# Terminology and fictional identities
+# Terminology and organization names
 
 [Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
 
 Screens use neutral clinical terms: Patient sidebar, Inbox, workflow, Chart
-History, Activities and Order favorites. Synthea and Synthetic Hospital keep
-their fictional patient identities and IDs; `scripts/fictional-identities.mjs`
-replaces every facility, location, practitioner, payer and contact detail with
-seeded fictional values in the fixture pipeline, and
+History, Activities and Order favorites. Synthea and Synthetic Hospital patient data
+is synthetic and is used as generated, with no de-identification. Real
+organization names are replaced so the fixtures do not imply any real
+organization's involvement: `scripts/fictional-identities.mjs` replaces every
+facility, location, practitioner, payer and contact detail that the generators
+draw from public directories with seeded fictional values, and
 `scripts/fictional-identities.test.mjs` fails on any name outside that
 generator.
 

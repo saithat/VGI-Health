@@ -1,4 +1,4 @@
-_README last reviewed against commit `45e3f83c` (2026-11-08)._
+_README last reviewed against commit `687de19d` (2026-11-08)._
 
 # VGI Health
 
@@ -192,7 +192,7 @@ uncalibrated rates remain for owner review in this single decision list.
 | Commit and ADT protocol assumptions | [Models and storage contract](docs/methods/commit-protocol.md): sole writer, consistent imports, locked current snapshots and atomic durable publication; host refinement remains tested. |
 | Completion interaction rules | [Scenario checker](docs/methods/completion-checker.md): acknowledgment before commit and Back retention; general property 6 and patient-switch durability remain open. |
 | Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G9, safety-text preservation and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |
-| Release and user-model choices | [Cadence](docs/methods/discovery-and-cadence.md) uses a provisional effect floor, movement proxy and auto-approval; [bounded learning and preferences](docs/methods/simulation.md) are uncalibrated. [Tool-driven arm E](docs/methods/agent-loop.md) stays opt-in pending owner review. |
+| Release and user-model choices | [Cadence](docs/methods/discovery-and-cadence.md) uses a provisional effect floor, movement proxy and auto-approval; [bounded learning and preferences](docs/methods/simulation.md) are uncalibrated. [Tool-driven arm E](docs/methods/agent-loop.md) stays opt-in: in the 35-decision paired run B accepted 88.6% and E 0%, because every E sample hit its 120K cumulative token ceiling before submitting, a ceiling B did not have. |
 
 
 ## Open problems
@@ -247,7 +247,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
 | Interface research | [UI library](docs/methods/ui-library.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |
 | Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md) |
-| Local evidence and data | [Run data](docs/methods/run-data.md), [conformance](docs/methods/conformance.md), [fictional identities and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
+| Local evidence and data | [Run data](docs/methods/run-data.md), [conformance](docs/methods/conformance.md), [organization names and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
 
 ## Data sources
 
