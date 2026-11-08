@@ -154,19 +154,19 @@
     {
       "path": "shots/realism/live-select/P1-inboxResults-chart.png",
       "source": "shots/realism/live-select/P1-inboxResults-chart.ui.json",
-      "sha256": "7b2204420d2b0367b62fb3dc00a4993335aa1f327aa976d9d11c7db66ed72d92",
+      "sha256": "90f59b0094b0d35896b333a5c229c2f506f193476f7ef186c9ce626d3ac1956b",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P1-inboxResults-landing.png",
       "source": "shots/realism/live-select/P1-inboxResults-landing.ui.json",
-      "sha256": "049c685cb4446ea0040e69fd21966873735a6324f81015d63104b8bbdfa57085",
+      "sha256": "af7678924ae22039e2f86a60434dfef0666aef7e2ade0b7fd51721a7f38f2a01",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P1-lookup-chart.png",
       "source": "shots/realism/live-select/P1-lookup-chart.ui.json",
-      "sha256": "cc3daaef167cba9ee9072b70495569165aed789a0bf1dfd8e97fb62b65a6ad40",
+      "sha256": "f37efcafd74ba1ec26455909a9f70cd0a6fce59a3e568c4a79131e77929ef829",
       "mode": "live"
     },
     {
@@ -190,43 +190,43 @@
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-chart.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-chart.ui.json",
-      "sha256": "00ed6acb11e2843aee57ce0c1d87eb75636d7ff54ea238ffbd2d6cd43a827903",
+      "sha256": "269f8561dee2992289c26b98cfaee31dc5e77110576683c5a024603b7a50fec2",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-landing.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-landing.ui.json",
-      "sha256": "e903f439be630160b77e151d12a0c8a642e7f246e802fe0743a73c7ebcc26f0c",
+      "sha256": "21960ad5723832ab0eecb19d5a89632ae5adb22c9ee05598d5f234c041857650",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-chart.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-chart.ui.json",
-      "sha256": "0db24261dfe70afb6b04cd22d2c35ca08b2b4cdeb0e1ae240b06489fca5b4a5d",
+      "sha256": "ea2aa0e017603202490e1e68aac8f9d3fc470c55ab38b21d128bdf6f1a0a3a53",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-landing.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-landing.ui.json",
-      "sha256": "6a18119368ae32a574f58da302dec6e2af29aaf1b7d1472ef5c585b0a6bbf000",
+      "sha256": "b35d3c94070c5698b50cef23e65647a9398a44e495ffbf7550b48e5c36faaa1b",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-unitCensus-chart.png",
       "source": "shots/realism/live-select/P3-unitCensus-chart.ui.json",
-      "sha256": "0db24261dfe70afb6b04cd22d2c35ca08b2b4cdeb0e1ae240b06489fca5b4a5d",
+      "sha256": "ea2aa0e017603202490e1e68aac8f9d3fc470c55ab38b21d128bdf6f1a0a3a53",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P3-unitCensus-landing.png",
       "source": "shots/realism/live-select/P3-unitCensus-landing.ui.json",
-      "sha256": "1cae8d952326ef00c419555f78ccd0ce91be177d9b9394ead68e800d481bf484",
+      "sha256": "bc8b978896401e20bcc4598c519e58f4d9bb2d1ec6771130e940fcef6b7760df",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P4-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P4-scheduleTasks-chart.ui.json",
-      "sha256": "2671faa7db227730eb6ebd3b95390ac3b937b702242385a6448bae0d07786d13",
+      "sha256": "9cd331da62420caad4fd3eadf4302715e5c3108bbf48ba9620c42e94a09453f1",
       "mode": "live"
     },
     {
@@ -244,13 +244,13 @@
     {
       "path": "shots/realism/live-select/P5-consultList-landing.png",
       "source": "shots/realism/live-select/P5-consultList-landing.ui.json",
-      "sha256": "d21aa6037deb67d02b6475ccaf2a6c4976dd41cc71399126e2ad126b1ea5bd18",
+      "sha256": "bba574e568ac7cc78fd21cc05270525d5189fe424408893215d0264738709cef",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P5-orSchedule-chart.png",
       "source": "shots/realism/live-select/P5-orSchedule-chart.ui.json",
-      "sha256": "59b2ad5bd6b012e6e9432dbea7ee9cb510fc0677b80c08e73facd0e2f995e0d2",
+      "sha256": "f6cff010f3fba1a9d80a070c14b2505af374d5ec4271a04028c974543078dc41",
       "mode": "live"
     },
     {

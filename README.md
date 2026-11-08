@@ -1,4 +1,4 @@
-_README last reviewed against commit `b687d2cc` (2026-11-07)._
+_README last reviewed against commit `68019921` (2026-11-08)._
 
 # VGI Health
 
@@ -2709,8 +2709,8 @@ acuity, clinic slots, inbox resources/backlog and medication passes. Exogenous
 source tasks and arrival metadata have no UI or policy input: comparison arms
 receive the same world seed and schedule, while their actual starts and outcomes
 can differ. Successor coverage continues through nights and weekends for hospital
-work. The current world generates weekday daytime clinical cases; this change does
-not fabricate independent night/weekend cases or claim calibrated 24-hour demand.
+work. The current world generates weekday daytime clinical cases. Independent night/weekend
+cases and calibrated 24-hour demand remain outside its scope.
 World clinical state remains exogenous rather than being altered by a faster arm.
 
 `DayResult.workload` adds total queue delay (start minus max(arrival, ready)),
@@ -2890,6 +2890,48 @@ protocols are atomic; nested interruption of their individual steps is not model
 
 [Interruption verification and scope](docs/audits/interruptions-20261108.md)
 record theorem statements, exact commands, native matched-arm cases and scope limits.
+
+### Local measurement cohorts
+
+The retained `runs/core-10day` control uses frozen world 2 with `legacy` / `fixedCost`.
+The successor world `runs/world/realism-wave2-seed-1` supplies both
+`runs/realism-wave2-workload-control` (`continuous` / `fixedCost`) and
+`runs/realism-wave2-real-work` (`continuous` / `realWork`). The latter is the newest
+completed real run and the default review catalog selection unless `VGI_RUN` overrides it.
+Seeds 1, 2 and 3 also have separately named successor worlds under
+`runs/world/realism-wave2-seed-{1,2,3}`, each regenerated twice byte-identically.
+Frozen worlds 1/2 remain unchanged. All data stays local and gitignored.
+
+These are offline executions of recorded layout choices, with no new model calls
+or optimization choices. Each run has 150 actual/canonical/no-agent day outputs
+plus 25 train and 25 validation outputs, regenerated summaries/trajectories and
+three same-task canonical controls. Historical prompts and decision estimates remain
+historical. New raw calibration and blind measurements are distinguished explicitly.
+Native execution is recomputed; matching current-build geometry captures may be reused
+through the existing browser/font/source/tree/presentation cache fingerprints.
+
+Headline actual-layout totals below use blind even days 2, 4, 6, 8 and 10 across
+all five clinicians. Queue means include every started task; completion remains explicit.
+The archived and successor cohorts differ. Only the two successor rows share identical
+source tasks; their difference isolates the interruption model within this fixed-layout experiment.
+
+| Recording | Completed/tasks | Mean queue (min) | Overdue doses | Active overtime (min) | Communication (min) | Reorientation (min) |
+|---|---:|---:|---:|---:|---:|---:|
+| Retained control | 626/630 | Unavailable | Unavailable | Unavailable | Not separately modeled | Not separately modeled |
+| Successor fixed cost | 660/662 | 1.19 | 2 | 0.00 | Not separately modeled | Not separately modeled |
+| Successor real work (default) | 660/662 | 1.73 | 2 | 0.00 | 510.75 | 15.22 |
+
+Fixed-cost waits/thinks have no separate typed communication or return-cost measurement.
+Missing workload/service metadata is unavailable, never a measured zero. Real-work passive
+closure waiting advances the queue while remaining outside active effort and overtime.
+Rates, exposure and closure behavior remain provisional; these are simulation results,
+not observed clinician performance. The
+[verification report](docs/audits/realism-wave2-verification-20261108.md)
+records per-persona totals, completion, return delays, exact commands and timings.
+
+![Real-work queue and shift metrics](app/shots/final/real-work-workload.png)
+
+![Real-work interruptions and resumption](app/shots/final/real-work-interruptions.png)
 
 ## Bounded clinician simulation
 
@@ -3237,18 +3279,24 @@ settling waits. Batching popups and removing those waits cut a cold P1/v1 sample
 with identical verdicts, geometry and 8,046 measurement records. Measurements at
 earlier app hashes are kept in [docs/audits/](docs/audits/).
 
-The retained recording has 33 current certificate bindings and 50 remeasured
-shifts. Full re-certification took 196.86 minutes, including
-a 106.46-minute batch gate.
-Fresh native/WASM strict replay verified 1,284 tasks and
-72,636 events with zero mismatches. Frozen inputs, schedules,
-model decisions and worlds 1/2 are preserved. Two legacy patient-refusal captures
-are corrected from held to refused; the other clinical trace events are unchanged.
-The sequential template and persona audits checked 1,826 and
-1,296 distinct trees with zero findings. The
-[verified-build report](docs/audits/realism-wave1-verification-20261107.md) records
-exact commands, bindings, coverage, captures and timings. Earlier measurements
-and verification receipts remain in [docs/audits/](docs/audits/).
+The retained recording has 33 current certificate bindings and 200 refreshed
+measurement outputs across 50 source shifts. Full re-certification took 209.29
+minutes, including a 107.37-minute batch gate. Saved and freshly regenerated
+native/WASM strict replay verified 1,284 tasks and
+72,636 events with zero mismatches, preserving three
+same-task controls. Frozen programs/specification inputs, model decisions,
+schedules and worlds 1/2 are preserved. Four stale canonical/no-agent refusal
+captures on P3 days 2 and 10 now use the legacy refusal decoding already present
+in the pre-change binary; every other native field in the 150 saved day outputs
+is unchanged. Original enriched files are retained locally. Independently,
+all 150 pre-change versus paired-opt-out native outputs are byte-identical.
+
+The full template and persona audit pair ran once, sequentially, checking
+1,826 and 1,296 distinct trees with zero findings. The
+[current verified-build report](docs/audits/realism-wave2-verification-20261108.md)
+records commands, bindings, coverage, captures and timings. The
+[prior verification report](docs/audits/realism-wave1-verification-20261107.md)
+retains the earlier evidence and measurements.
 
 Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:
