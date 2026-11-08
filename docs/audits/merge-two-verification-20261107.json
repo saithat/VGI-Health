@@ -1,0 +1,836 @@
+{
+  "reviewedCodeCommit": "c27db794bceb2893ed4aa2a314613b0ae0d6ba43",
+  "date": "2026-11-07",
+  "environment": {
+    "node": "22.23.1",
+    "pnpm": "11.8.0",
+    "lean": "4.35.0",
+    "TMPDIR": "/home/saithat/Projects/run-tmp",
+    "CI": "true",
+    "LEAN_NUM_THREADS": 6,
+    "EHR_SCREEN_WORKERS": 4,
+    "playwrightWorkersMax": 4
+  },
+  "build": {
+    "schemaVersion": 1,
+    "appSha256": "b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7",
+    "nativeSha256": "f0f036ae502fc299590bc5485e9c3bc856c33c69baa81037fc75c192c139b75b",
+    "wasmSha256": "eadbb1ff65a394fe341ec384625a455a60fd93487fda1d12946aa18313236a2d",
+    "leanSourceHash": "fff84869bda9b3587550f98e0ce8919b9a1bd1e7f56e24e927aab4b175e2fb58"
+  },
+  "axiomClosures": {
+    "adt-axioms": {
+      "withPermittedAxioms": 45,
+      "axiomFree": 1,
+      "total": 46
+    },
+    "ui-targets": {
+      "withPermittedAxioms": 551,
+      "axiomFree": 592,
+      "total": 1143
+    }
+  },
+  "recording": {
+    "measurementCheckpoint": {
+      "savedReplayVerifiedAt": 1794092748.630625,
+      "lastMeasuredShiftWriteAt": 1794094797.516124,
+      "shifts": 50
+    },
+    "screenGate": {
+      "policyStatus": "APPROVED by the owner on 2026-11-02",
+      "elapsedMs": 6186564,
+      "expectedStates": 24353,
+      "states": 24353,
+      "measurements": 219177,
+      "findings": 0
+    },
+    "certificates": 33,
+    "shifts": 50,
+    "replay": {
+      "replay": {
+        "status": "passed",
+        "tasks": 1284,
+        "events": 72636,
+        "mismatches": [],
+        "nativeEventsVerified": 72636,
+        "wasmEventsVerified": 72636,
+        "baselineTasks": 3,
+        "baselineEvents": 79,
+        "baselineNativeEventsVerified": null,
+        "baselineWasmEventsVerified": 79,
+        "verificationMode": "saved-context-wasm",
+        "nativeVerificationSource": "Recorded during native context extraction; not rerun by --verify-only"
+      },
+      "regeneratedReplay": {
+        "status": "passed",
+        "tasks": 1284,
+        "events": 72636,
+        "mismatches": [],
+        "nativeEventsVerified": 72636,
+        "wasmEventsVerified": 72636,
+        "baselineTasks": 3,
+        "baselineEvents": null,
+        "baselineNativeEventsVerified": null,
+        "baselineWasmEventsVerified": null,
+        "verificationMode": null,
+        "nativeVerificationSource": null
+      }
+    },
+    "contentDigest": "18d4337f018705bd711120dc190c30d9de2f8e3bec0304f35951fa0cbce493a9",
+    "inputIntegrity": {
+      "events": 72636,
+      "preserved": {
+        "clinicalDays": 50,
+        "decisions": 45,
+        "frozen": 132,
+        "schedules": 50
+      },
+      "snapshotSha256": "ce75c3c712c6d9bad4bba55b0bd6981f7db60a88bad6a535cbc5090eb36fc422",
+      "status": "pass",
+      "tasks": 1284
+    }
+  },
+  "audits": {
+    "templates": {
+      "exportedOccurrences": 4813,
+      "checkedTrees": 1826,
+      "controlsStatus": "pass",
+      "physicalMeasurements": 16434,
+      "status": "pass",
+      "cache": {
+        "hits": 313,
+        "misses": 1513
+      },
+      "elapsedMs": 1494536
+    },
+    "personas": {
+      "exportedOccurrences": 3619,
+      "checkedTrees": 1296,
+      "controlsStatus": "pass",
+      "physicalMeasurements": 11664,
+      "status": "pass",
+      "cache": {
+        "hits": 658,
+        "misses": 638
+      },
+      "elapsedMs": 682461
+    }
+  },
+  "marAdt": {
+    "startTime": "2026-11-08T00:36:43.261Z",
+    "duration": 9975.673,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "desktopRequired": {
+    "stats": {
+      "startTime": "2026-11-08T00:26:20.353Z",
+      "duration": 622045.257,
+      "expected": 183,
+      "skipped": 21,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "requiredPassed": 44,
+    "requiredFiles": {
+      "live-search.spec.ts": 2,
+      "live-login.spec.ts": 4,
+      "live-selection.spec.ts": 9,
+      "ambulatory-live-host.spec.ts": 4,
+      "workflows-live.spec.ts": 10,
+      "live-ehr.spec.ts": 3,
+      "live-dashboard.spec.ts": 2,
+      "dashboard-performance.spec.ts": 2,
+      "surgery-live-realism.spec.ts": 2,
+      "commit-live.spec.ts": 6
+    },
+    "optionalSkipped": [
+      {
+        "file": "adt-service.spec.ts",
+        "title": "bed manager admits, transfers, releases/reassigns, discharges and cleans; a second charge nurse sees atomic board updates; 4 West RN opens service MAR",
+        "status": "skipped"
+      },
+      {
+        "file": "adt-service.spec.ts",
+        "title": "an ambiguous ADT response reconciles the identical request before permitting a new command",
+        "status": "skipped"
+      },
+      {
+        "file": "browse.spec.ts",
+        "title": "timeline change comparison screenshot",
+        "status": "skipped"
+      },
+      {
+        "file": "content2-realism.spec.ts",
+        "title": "world content screenshots and ARIA",
+        "status": "skipped"
+      },
+      {
+        "file": "dense-shell.spec.ts",
+        "title": "curated dense shell review and semantic fidelity",
+        "status": "skipped"
+      },
+      {
+        "file": "mar-service.spec.ts",
+        "title": "Keycloak login \u2192 MAR \u2192 administer \u2192 second nurse receives the persisted dose and a refreshed chart",
+        "status": "skipped"
+      },
+      {
+        "file": "neutral-shots.spec.ts",
+        "title": "regenerate neutral clinical screenshots from native semantic snapshots",
+        "status": "skipped"
+      },
+      {
+        "file": "neutral-shots.spec.ts",
+        "title": "migrated recorded run verifies its current binding and renders in the dashboard",
+        "status": "skipped"
+      },
+      {
+        "file": "polish.spec.ts",
+        "title": "shared clinical display polish review",
+        "status": "skipped"
+      },
+      {
+        "file": "punch.spec.ts",
+        "title": "populated native clinician screen review",
+        "status": "skipped"
+      },
+      {
+        "file": "punch.spec.ts",
+        "title": "clinician punchlist screen review",
+        "status": "skipped"
+      },
+      {
+        "file": "realism.spec.ts",
+        "title": "shared shell and browser visual review",
+        "status": "skipped"
+      },
+      {
+        "file": "surg-integration-review.spec.ts",
+        "title": "integrated ambulatory/surgery review: p1-home",
+        "status": "skipped"
+      },
+      {
+        "file": "surg-integration-review.spec.ts",
+        "title": "integrated ambulatory/surgery review: p4-growth",
+        "status": "skipped"
+      },
+      {
+        "file": "surg-integration-review.spec.ts",
+        "title": "integrated ambulatory/surgery review: p5-or-schedule",
+        "status": "skipped"
+      },
+      {
+        "file": "surg-integration-review.spec.ts",
+        "title": "integrated ambulatory/surgery review: p5-op-note",
+        "status": "skipped"
+      },
+      {
+        "file": "ui-shots.spec.ts",
+        "title": "review shot: p1-rooming",
+        "status": "skipped"
+      },
+      {
+        "file": "ui-shots.spec.ts",
+        "title": "review shot: p1-orders",
+        "status": "skipped"
+      },
+      {
+        "file": "ui-shots.spec.ts",
+        "title": "review shot: p1-sign",
+        "status": "skipped"
+      },
+      {
+        "file": "ui-shots.spec.ts",
+        "title": "review shot: p1-alert",
+        "status": "skipped"
+      },
+      {
+        "file": "ui-shots.spec.ts",
+        "title": "review shot: bad-sign",
+        "status": "skipped"
+      }
+    ]
+  },
+  "screenshots": {
+    "live": 18,
+    "dashboard": {
+      "viewport": [
+        1440,
+        900
+      ],
+      "run": "core-10day",
+      "build": {
+        "schemaVersion": 1,
+        "appSha256": "b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7"
+      },
+      "captures": [
+        {
+          "path": "app/shots/final/dashboard.png",
+          "route": "/dashboard?run=core-10day&persona=P3&view=Evolution",
+          "sha256": "84f90e805a86c0156f95363647352bc34999498087914dee2737ed4438a63279"
+        },
+        {
+          "path": "app/shots/final/ui-browser-timeline.png",
+          "route": "/browse?run=core-10day",
+          "sha256": "dff8572644ff6daffc79b98cd242500f98894851ccdcc39e7a6efae32d490751"
+        },
+        {
+          "path": "app/shots/final/compare.png",
+          "route": "/dashboard?run=core-10day&persona=P3&view=Compare&workflow=W4",
+          "sha256": "04914b9e88c5f5f69154d03f1adfa1b221fa140d083d80027fe777a111231ffe"
+        },
+        {
+          "path": "app/shots/final/trajectory-playback.png",
+          "source": "app/e2e/trajectories.spec.ts: recorded P3 second-nurse step, desktop",
+          "sha256": "d2741aef6e495006b232d36055f45e106ac12d2f3a4126fe4bcc1a0a5f828800"
+        },
+        {
+          "path": "app/shots/final/trajectory-playback-fullscreen.png",
+          "source": "app/e2e/trajectories.spec.ts: recorded P3 second-nurse step, desktop",
+          "sha256": "9a366826052ff50be2f213dfb07b7570f39c430d6d17ba6b9611dd416281a9db"
+        }
+      ]
+    }
+  },
+  "commands": [
+    {
+      "name": "ui-lean",
+      "command": "cd lean && lake build && lake build ui-layout ui-port-audit",
+      "exit": 0,
+      "seconds": 187.812,
+      "started": 1794071881.8497667,
+      "log": "ui-lean.log",
+      "sha256": "cc809912e83514d6fb382caf4a4adf83d164f0c87ccf3ff311a7e3565b94c3bc"
+    },
+    {
+      "name": "ui-lint-types",
+      "command": "pnpm --filter app --filter agent --filter world --filter @vgi/commit lint && pnpm --filter app --filter agent --filter world --filter @vgi/commit typecheck",
+      "exit": 0,
+      "seconds": 9.43,
+      "started": 1794071881.8503962,
+      "log": "ui-lint-types.log",
+      "sha256": "14e57cca24965be909f992264f6aea3a1bed01d8c68599697a614a21123702a8"
+    },
+    {
+      "name": "ui-targets",
+      "command": "set -e; cd lean; lake env lean \"$TMPDIR/merge-two-20261107/ui-axioms.lean\"; cd ..; node --test scripts/ui-library/native.test.mjs scripts/ui-library/family.test.mjs scripts/ui-library/structural.test.mjs scripts/ui-library/program.test.mjs scripts/ui-library/fonts.test.mjs; node scripts/ui-library/port-audit.mjs --all-screens; flock \"$TMPDIR/vgi-browser-heavy.lock\" pnpm --filter app exec playwright test --config src/browser/ui-library/playwright.config.ts; pnpm --filter @vgi/commit test:integration",
+      "exit": 0,
+      "seconds": 174.77,
+      "started": 1794072080.42739,
+      "log": "ui-targets.log",
+      "sha256": "7cc3afbb84b9b08306c374cfdf82c80231a5cc6761227dc119a271f4e88c6b70"
+    },
+    {
+      "name": "adt-axioms",
+      "command": "cd lean && for module in Proofs Cache AdtProofs LockOrder; do lake env lean \"Ehr/Commit/Protocol/$module.lean\" || exit; done",
+      "exit": 0,
+      "seconds": 2.4,
+      "started": 1794071839.6132145,
+      "log": "adt-axioms.log",
+      "sha256": "5d42e8dd13cab84a07d152c4e5b205e3287a109c448e5bb2fd29bd2216e9684a"
+    },
+    {
+      "name": "rebuilt-assets",
+      "command": "set -e; cd lean; lake build; cd ..; JOBS=6 EM_CACHE=\"$TMPDIR/fingerprint-em-cache\" make wasm; node scripts/wasm-assets.mjs; pnpm --filter app build; cat app/dist/build.json",
+      "exit": 0,
+      "seconds": 15.272,
+      "started": 1794072307.4534998,
+      "log": "rebuilt-assets.log",
+      "sha256": "dfc3778bceba2c51681fbf03496a30264f97e6fd069ce3aa410d11bf3c29c48a"
+    },
+    {
+      "name": "proofs-final",
+      "command": "set -e; bash scripts/audit-verification.sh; make verify; cd lean; lake env lean --run Ehr/Tools/ExportContent.lean \"$TMPDIR/ci-content\"; lake env lean --run ../services/commit/test/Fixture.lean > \"$TMPDIR/commit-fixture.json\"; tar -czf \"$TMPDIR/ehr-test-inputs.tar.gz\" -C \"$PWD/.lake/build/bin\" ehr -C \"$TMPDIR\" ci-content/programs commit-fixture.json; lake env lean --run Ehr/Commit/Protocol/Check.lean; lake env lean --run Ehr/Commit/Protocol/AdtCheck.lean; lake build completion-bench; lake env lean --run Ehr/Render/ExportTests.lean \"$TMPDIR/merge-two-20261107/wasm-api\"; cd ..; lean/.lake/build/bin/completion-bench \"$PWD\" \"$TMPDIR/merge-two-20261107/completion-bench\"",
+      "exit": 0,
+      "seconds": 145.846,
+      "started": 1794072466.055188,
+      "log": "proofs-final.log",
+      "sha256": "7bb0d6afd347a3ba32a49f6efa550a4abc62941511f7f8b675fa103b041005f2"
+    },
+    {
+      "name": "ci-lean-build",
+      "command": "set -e; cd lean; lake build 2>&1 | tee \"$TMPDIR/lean-build.log\"; if grep -E \"warning:.*(sorry|declaration uses)\" \"$TMPDIR/lean-build.log\"; then exit 1; fi",
+      "exit": 0,
+      "seconds": 0.158,
+      "started": 1794072927.5454113,
+      "log": "ci-lean-build.log",
+      "sha256": "8c0db32e47e792dd8e27832b132c6b217b24849687c9a7fea54fb236e3afc3e1"
+    },
+    {
+      "name": "ci-fast-final",
+      "command": "set -e; pnpm --filter agent test --maxWorkers=2; pnpm --filter app test --maxWorkers=2; pnpm --filter world exec vitest run --maxWorkers=2; node --test world/realism/*.test.mjs; pnpm --filter @vgi/commit test; python3 scripts/test-information-needs-compare.py",
+      "exit": 0,
+      "seconds": 250.096,
+      "started": 1794072349.9487174,
+      "log": "ci-fast-final.log",
+      "sha256": "9d7859db2b0098e7d51dff3e0473f9e336330b872f68910a334e39e4b9325402"
+    },
+    {
+      "name": "ci-script-units",
+      "command": "set -e; node conformance/cures-probe.mjs; mapfile -t tests < <(find scripts conformance -name \"*.test.mjs\" ! -name \"completion-check.test.mjs\" ! -name \"screen-cache-browser.test.mjs\" ! -path \"scripts/ui-library/*\" | sort); node --import ./agent/node_modules/tsx/dist/loader.mjs --test --test-concurrency=2 \"${tests[@]}\"",
+      "exit": 0,
+      "seconds": 146.358,
+      "started": 1794072648.743864,
+      "log": "ci-script-units.log",
+      "sha256": "86cbaad71ae21d06eda265f61393e0e09c5ba8bb61ab602d8a3673c3c77e0cbe"
+    },
+    {
+      "name": "ci-conformance",
+      "command": "set -e; cp -R \"$TMPDIR/ci-content/programs/.\" programs/; EHR_CONFORMANCE_TRANSPORT=serve node conformance/index.mjs --canonical --jobs 2 --out \"$TMPDIR/conformance.json\"; node --test scripts/completion-check.test.mjs; python3 lean/Ehr/Check/certify.py; python3 -c 'import json,os; from pathlib import Path; c=json.loads((Path(os.environ[\"TMPDIR\"])/\"conformance.json\").read_text())[\"summary\"]; assert (c[\"targets\"],c[\"scenarios\"],c[\"failed\"])==(15,201,0),c; r=json.loads(Path(\"lean/Ehr/Check/certification-report.json\").read_text()); assert (r[\"personaAccepted\"],r[\"personaCount\"],r[\"badRejected\"],r[\"badCount\"])==(15,15,23,23),r; print(c); print(\"certification matrix: 15 accepted; 23 rejected\")'",
+      "exit": 0,
+      "seconds": 254.083,
+      "started": 1794072648.7391598,
+      "log": "ci-conformance.log",
+      "sha256": "3fd98a1c60c51b62c8e3c77b3663af6b8b56c73816f0bfec40db2a7d3627696f"
+    },
+    {
+      "name": "fresh-integration",
+      "command": "DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit pnpm --filter @vgi/commit test:integration",
+      "exit": 0,
+      "seconds": 40.537,
+      "started": 1794072696.757691,
+      "log": "fresh-integration.log",
+      "sha256": "40d0d8f1002c00e44cf70fa7c2aac0d6ff2a76dac20b87db3dfee3213f521f9e"
+    },
+    {
+      "name": "targeted-trace-commands",
+      "command": "set -e; pnpm --filter @vgi/commit test:protocol; pnpm --filter @vgi/commit test:adt-protocol; pnpm --filter @vgi/commit check:trace \"$TMPDIR/commit-model-trace-q5ypsF/trace.jsonl\"; pnpm --filter @vgi/commit check:adt-trace \"$TMPDIR/adt-model-trace-5Laqo3/trace.jsonl\"; pnpm --filter @vgi/commit check:adt-trace \"$TMPDIR/clinical-adt-trace-3pbsLI/trace.jsonl\"",
+      "exit": 0,
+      "seconds": 23.351,
+      "started": 1794075476.4107,
+      "log": "targeted-trace-commands.log",
+      "sha256": "5402efe4915747d8073dae44be41503427ca9be0bd95ef275a88914efaf29085"
+    },
+    {
+      "name": "native-wasm",
+      "command": "python3 \"$TMPDIR/merge-two-20261107/wasm-shards.py\"",
+      "exit": 0,
+      "seconds": 677.406,
+      "started": 1794072648.7432597,
+      "log": "native-wasm.log",
+      "sha256": "0e5cf0dd6857a56e0138c0c8d05619285a1edf4985851ae52ea56d3b1d6cfb71"
+    },
+    {
+      "name": "recertification",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day",
+      "exit": 0,
+      "seconds": 11813.414,
+      "started": 1794085665.4532173,
+      "log": "recertification.log",
+      "sha256": "d70e102adfda23564acc9bf24067e78075ef7f97c6bbedbec6cd5d25f2449183"
+    },
+    {
+      "name": "screen-cache",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node --test scripts/screen-cache-browser.test.mjs",
+      "exit": 0,
+      "seconds": 37.514,
+      "started": 1794097478.902729,
+      "log": "screen-cache.log",
+      "sha256": "1c2345bd10dded67aff140378682b108bf2fcd0628d6342e17b7834cce34ab5b"
+    },
+    {
+      "name": "live-load",
+      "command": "set -e; unset DATABASE_URL; export COMPOSE_PROJECT_NAME=vgi-final-20261107; make load SYNTHETIC_HOSPITAL=1; docker compose --env-file .env -f infra/docker-compose.yml --profile app up -d commit; node infra/scripts/wait-healthy.mjs",
+      "exit": 0,
+      "seconds": 28.759,
+      "started": 1794097550.758937,
+      "log": "live-load.log",
+      "sha256": "d4440856836da4eb571cdd6589e22f9f290db5633cd942eaea3d1c78eb49ae33"
+    },
+    {
+      "name": "desktop",
+      "command": "PLAYWRIGHT_JSON_OUTPUT_NAME=\"/home/saithat/Projects/run-tmp/merge-two-20261107/desktop-playwright.json\" APP_TEST_PREVIEW=1 AUDIT_RUN=core-10day flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test --project=desktop --workers=1 --reporter=list,json",
+      "exit": 0,
+      "seconds": 622.893,
+      "started": 1794097579.540499,
+      "log": "desktop.log",
+      "sha256": "5065ad5d71d217a295fd1ec4db58903a605ed136e6e43cb9ead142edb7e8409c"
+    },
+    {
+      "name": "mar-adt",
+      "command": "PLAYWRIGHT_JSON_OUTPUT_NAME=\"/home/saithat/Projects/run-tmp/merge-two-20261107/mar-adt-playwright.json\" DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --workers=1 --reporter=list,json",
+      "exit": 0,
+      "seconds": 10.808,
+      "started": 1794098202.4577882,
+      "log": "mar-adt.log",
+      "sha256": "90144c2fd7797245fb9a95773284555a51c8ce4f3e15931c61c2e93d3e422560"
+    },
+    {
+      "name": "dashboard-shots",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node \"$TMPDIR/merge-two-20261107/refresh-dashboard.mjs\"",
+      "exit": 0,
+      "seconds": 9.309,
+      "started": 1794098617.6110892,
+      "log": "dashboard-shots.log",
+      "sha256": "509c7eb0c5c99aabd08f09741c0838c90a0567f34e9c16fb5cb1009749f33b9c"
+    },
+    {
+      "name": "audit-templates",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs \"$TMPDIR/merge-two-20261107/audit-templates\"",
+      "exit": 0,
+      "seconds": 1506.796,
+      "started": 1794098626.9417377,
+      "log": "audit-templates.log",
+      "sha256": "f839e0f87e926ea13f5c3068092d3e778815f9fdb7eb9124237b7116614e435d"
+    },
+    {
+      "name": "audit-personas",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/audit-alert-policy.mjs \"$TMPDIR/merge-two-20261107/audit-personas\" --personas",
+      "exit": 0,
+      "seconds": 699.21,
+      "started": 1794100133.7656035,
+      "log": "audit-personas.log",
+      "sha256": "c450a5b4c1845939c22119544a3ef9b2e746f9b9d1b751dfa081e91ef92231d9"
+    },
+    {
+      "name": "final-integrity",
+      "command": "bash \"/home/saithat/Projects/run-tmp/merge-two-20261107/final-integrity.sh\"",
+      "exit": 0,
+      "seconds": 666.124,
+      "started": 1794100855.5272844,
+      "log": "final-integrity.log",
+      "sha256": "62a6e7f8673d21c367a631692a510daee44e66e76b5cf6889662b801ecb081e3"
+    },
+    {
+      "name": "urgent-lint",
+      "command": "pnpm --filter app --filter agent --filter world --filter @vgi/commit lint && pnpm --filter app --filter agent --filter world --filter @vgi/commit typecheck",
+      "exit": 0,
+      "seconds": 9.267,
+      "started": 1794085487.0495157,
+      "log": "urgent-lint.log",
+      "sha256": "14e57cca24965be909f992264f6aea3a1bed01d8c68599697a614a21123702a8"
+    },
+    {
+      "name": "urgent-app-unit",
+      "command": "pnpm --filter app test --maxWorkers=2",
+      "exit": 0,
+      "seconds": 103.325,
+      "started": 1794085537.1074393,
+      "log": "urgent-app-unit.log",
+      "sha256": "c4a64275494ed4a71ce084f47eb4d4e99901b484b6c81bd3f704a1f1ebee2743"
+    },
+    {
+      "name": "urgent-transition",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test urgent-transition.spec.ts --project desktop",
+      "exit": 0,
+      "seconds": 3.595,
+      "started": 1794085517.5024438,
+      "log": "urgent-transition.log",
+      "sha256": "2bea6200e646299b385047d3f26a703adb5945836a3e10913e2e84184a0af70a"
+    },
+    {
+      "name": "urgent-controls",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env APP_TEST_PREVIEW=1 EHR_UI_FILES=\"[]\" pnpm --filter app exec playwright test ui-check.spec.ts urgent-transition.spec.ts --project desktop --grep \"urgent|patient identity\"",
+      "exit": 0,
+      "seconds": 3.841,
+      "started": 1794085538.2650635,
+      "log": "urgent-controls.log",
+      "sha256": "08e1c173d42aad2e45bc6a971a1c6bb890dfe031d057e846705a4128bd5cd401"
+    },
+    {
+      "name": "urgent-rebuild",
+      "command": "pnpm --filter app build && node scripts/wasm-assets.mjs",
+      "exit": 0,
+      "seconds": 9.623,
+      "started": 1794085649.3148417,
+      "log": "urgent-rebuild.log",
+      "sha256": "1d1120032eb5377ce801332e1b7e5aa129da1f3be823eacfa98ce6ef271d895d"
+    },
+    {
+      "name": "final-fresh-integration",
+      "command": "DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit pnpm --filter @vgi/commit test:integration",
+      "exit": 0,
+      "seconds": 34.296,
+      "started": 1794097516.4389682,
+      "log": "final-fresh-integration.log",
+      "sha256": "e98722a842d35b3fe17cd3634d330462d83abb64bf13fcb2778719dafd8ce3a6"
+    },
+    {
+      "name": "final-proof-audit",
+      "command": "set -e; cd lean; lake build 2>&1 | tee \"$TMPDIR/lean-build.log\"; if grep -E \"warning:.*(sorry|declaration uses)\" \"$TMPDIR/lean-build.log\"; then exit 1; fi; cd ..; bash scripts/audit-verification.sh",
+      "exit": 0,
+      "seconds": 5.136,
+      "started": 1794085728.5097177,
+      "log": "final-proof-audit.log",
+      "sha256": "fcf2dfddd61a62ff27a98f46ecb92f3cd02d32cb8beffd963729e21645cbbdec"
+    },
+    {
+      "name": "fresh-stack",
+      "command": "set -e; export COMPOSE_PROJECT_NAME=vgi-merged-20261107; unset DATABASE_URL; make setup; make infra-up; node infra/scripts/wait-healthy.mjs --identity",
+      "exit": 0,
+      "seconds": 14.267,
+      "started": 1794072170.255989,
+      "log": "fresh-stack.log",
+      "sha256": "a35445d8a4d4127a462c0f4eb106941b866c44aec97b81ce5fa7e47970cc9c8a"
+    },
+    {
+      "name": "viewer-build",
+      "command": "pnpm --filter app build && node -e 'const fs=require(\"node:fs\"); const b=JSON.parse(fs.readFileSync(\"app/dist/build.json\")); if(b.appSha256!==\"b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7\") throw Error(JSON.stringify(b)); console.log(\"Certified app hash unchanged:\", b.appSha256)'",
+      "exit": 0,
+      "seconds": 9.553,
+      "started": 1794098296.9136503,
+      "log": "viewer-build.log",
+      "sha256": "0d9e0a61b031ecbb7aa9f875a7896f08abcd22ddb85425bf75d7e79f93c26b8b"
+    },
+    {
+      "name": "viewer-final-build",
+      "command": "pnpm --filter app build && node scripts/wasm-assets.mjs && node -e 'const fs=require(\"node:fs\"); const b=JSON.parse(fs.readFileSync(\"app/dist/build.json\")); if(b.appSha256!==\"b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7\") throw Error(JSON.stringify(b)); console.log(\"Certified app hash unchanged:\", b.appSha256)'",
+      "exit": 0,
+      "seconds": 9.701,
+      "started": 1794098516.1975422,
+      "log": "viewer-final-build.log",
+      "sha256": "2b8dc20fefbff9ab2dbfbbd9082938b809dfc1f36b2f10e3079eec5f3750f98d"
+    },
+    {
+      "name": "viewer-lint",
+      "command": "pnpm --filter app --filter agent --filter world --filter @vgi/commit lint && pnpm --filter app --filter agent --filter world --filter @vgi/commit typecheck",
+      "exit": 0,
+      "seconds": 9.459,
+      "started": 1794098324.9362826,
+      "log": "viewer-lint.log",
+      "sha256": "89d6df30d76e9a922be4b4786d51370c63c3671ae011e15ff1c23464af7ea550"
+    },
+    {
+      "name": "viewer-app-unit",
+      "command": "pnpm --filter app test --maxWorkers=2",
+      "exit": 0,
+      "seconds": 105.086,
+      "started": 1794098324.9362695,
+      "log": "viewer-app-unit.log",
+      "sha256": "a2ea850d185e76ceb11fdaa6666ee79d5330c954363d36688123ceaa1dc687b2"
+    },
+    {
+      "name": "viewer-contrast-after",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" node \"$TMPDIR/merge-two-20261107/fullscreen-contrast.mjs\" \"$TMPDIR/merge-two-20261107/viewer-contrast-observation-after.json\"",
+      "exit": 0,
+      "seconds": 5.394,
+      "started": 1794098345.8869448,
+      "log": "viewer-contrast-after.log",
+      "sha256": "b5029cda1f462b17a1b743bfdc49fa79b1386b7e0722ac8abdf0c135877af2ab"
+    },
+    {
+      "name": "viewer-targets",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test trajectories.spec.ts compare.spec.ts --project desktop --workers=1",
+      "exit": 0,
+      "seconds": 75.983,
+      "started": 1794098347.0461886,
+      "log": "viewer-targets.log",
+      "sha256": "062a7b29b91327ca57bcd681280df15c964c10f09526a27a1c6f95bc1ccbd911"
+    },
+    {
+      "name": "viewer-proof-audit",
+      "command": "bash scripts/audit-verification.sh",
+      "exit": 0,
+      "seconds": 4.93,
+      "started": 1794098516.1985762,
+      "log": "viewer-proof-audit.log",
+      "sha256": "10947ec852ab950417405d837d67daa27a2250cc50f283d1a6d5ebe813929001"
+    }
+  ],
+  "urgentTransitionBeforeFix": {
+    "source": "Observed Playwright tool output before renderer edits; initial regression invocation",
+    "command": "CI=true TMPDIR=/home/saithat/Projects/run-tmp flock /home/saithat/Projects/run-tmp/vgi-browser-heavy.lock env APP_TEST_PREVIEW=1 pnpm --filter app exec playwright test urgent-transition.spec.ts --project desktop",
+    "codeCommit": "cbc1bc79",
+    "appSha256": "4a510587c2f2ba9a60f2213691764eeb91ff562b2e63b8c7ad64b9d069c714c3",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "test": "late urgent alerts reserve space and preserve patient identity through scroll and resize",
+    "exit": 1,
+    "assertion": {
+      "patientBannerY": 0,
+      "minimumExpectedYWithOnePixelTolerance": 62.96875
+    },
+    "rootCause": "An initially empty UrgentStrip returned without measuring; its mount-only effect did not run on later visibility. The pinned-banner selector also overrode the intended strip offset."
+  },
+  "afterAdtSquash": [
+    {
+      "command": "cd lean && lake build",
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/merge-adt-lean.log",
+      "sha256": "8f0a982e1ba52b8814d2fa15694777d7c6f6486053ae9b8342237a998e47ddb4",
+      "phase": "after ADT squash",
+      "seconds": null
+    },
+    {
+      "command": "pnpm --filter app --filter agent --filter world --filter @vgi/commit lint",
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/merge-adt-ci-lint.log",
+      "sha256": "5d01b1a1e0192d097c34756310b9af65858d6eed9e1ec1b9b74bceeb3b241d9e",
+      "phase": "after ADT squash",
+      "seconds": null
+    },
+    {
+      "command": "pnpm --filter app --filter agent --filter world --filter @vgi/commit typecheck",
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/merge-adt-ci-types.log",
+      "sha256": "5fa36dd39631e174c772afbee7727b174058ff27be20790834ffd8e704d3611d",
+      "phase": "after ADT squash",
+      "seconds": null
+    },
+    {
+      "command": "pnpm --filter @vgi/commit test",
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/merge-adt-unit.log",
+      "sha256": "365d6f492a49d921f29c874667f75fa30ad19020eeb36c7cd452288d2491771d",
+      "phase": "after ADT squash",
+      "seconds": null
+    },
+    {
+      "command": "pnpm --filter @vgi/commit test:integration",
+      "result": "passed",
+      "log": "/home/saithat/Projects/run-tmp/merge-adt-integration.log",
+      "sha256": "5c627d784d9ce530fb1ee964e2b47d83f8426702ec11745b8603e625fe577465",
+      "phase": "after ADT squash",
+      "seconds": null
+    }
+  ],
+  "supersededRendererVerification": {
+    "buildSha256": "4a510587c2f2ba9a60f2213691764eeb91ff562b2e63b8c7ad64b9d069c714c3",
+    "receipts": [
+      {
+        "name": "recertification",
+        "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node scripts/migrate-neutral-terms.mjs --recertify-only --runs core-10day",
+        "exit": 0,
+        "seconds": 11812.514,
+        "started": 1794072348.792335,
+        "log": "recertification.log",
+        "sha256": "c6a2669ccbe1ede0671a9a57278c5e2e6a0195bffc8ca6aeafb94f9e363da53a"
+      },
+      {
+        "name": "screen-cache",
+        "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node --test scripts/screen-cache-browser.test.mjs",
+        "exit": 0,
+        "seconds": 37.605,
+        "started": 1794084161.339535,
+        "log": "screen-cache.log",
+        "sha256": "70d4163cba72c7cd96d9ccbdb9f07969bccd044502f3778298226298342e2bb1"
+      },
+      {
+        "name": "live-load",
+        "command": "set -e; unset DATABASE_URL; export COMPOSE_PROJECT_NAME=vgi-merged-20261107; make load SYNTHETIC_HOSPITAL=1; docker compose --env-file .env -f infra/docker-compose.yml --profile app up -d commit; node infra/scripts/wait-healthy.mjs",
+        "exit": 0,
+        "seconds": 30.43,
+        "started": 1794084198.9665735,
+        "log": "live-load.log",
+        "sha256": "e73352ee1345b7d81304bd0af94c7c42ae73a5cf31446957858cc3c8c05298fb"
+      },
+      {
+        "name": "desktop",
+        "command": "PLAYWRIGHT_JSON_OUTPUT_NAME=\"/home/saithat/Projects/run-tmp/merge-two-20261107/desktop-playwright.json\" APP_TEST_PREVIEW=1 AUDIT_RUN=core-10day flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test --project=desktop --workers=1 --reporter=list,json",
+        "exit": 0,
+        "seconds": 616.748,
+        "started": 1794084229.4188793,
+        "log": "desktop.log",
+        "sha256": "2917f9135c0b6e9fe86ec3b0588cdc328009f6fd56882cd67bd578afdb2ff1ee"
+      },
+      {
+        "name": "mar-adt",
+        "command": "PLAYWRIGHT_JSON_OUTPUT_NAME=\"/home/saithat/Projects/run-tmp/merge-two-20261107/mar-adt-playwright.json\" DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --workers=1 --reporter=list,json",
+        "exit": 0,
+        "seconds": 10.996,
+        "started": 1794084846.1911263,
+        "log": "mar-adt.log",
+        "sha256": "963e06292102d1f98ff2f53b58c0c0d93ec6aee33978cf7774790a8c56d2cc62"
+      },
+      {
+        "name": "dashboard-shots",
+        "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node \"$TMPDIR/merge-two-20261107/refresh-dashboard.mjs\"",
+        "exit": 0,
+        "seconds": 9.342,
+        "started": 1794084874.0600965,
+        "log": "dashboard-shots.log",
+        "sha256": "632fc31b8e663fc87ebbc40a6ef5bedb1484bf80bd2fb88809c01a1285c4c3e4"
+      }
+    ],
+    "partialTemplateAuditLogSha256": "ec433714ce00fd66bde49a38c87b8d39f66aeccb8d757a4ed03fcc1c46ccad0e",
+    "reason": "Visual QA found a late urgent-strip transition overlap; fix b09f6788 changes the clinical renderer hash. Partial template audit stopped; full pair subsequently run on the final binding.",
+    "receiptDirectory": "before-urgent-fix"
+  },
+  "batchCertification": {
+    "build": {
+      "ehrSha256": "f0f036ae502fc299590bc5485e9c3bc856c33c69baa81037fc75c192c139b75b",
+      "appSha256": "b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7",
+      "wasmSha256": "eadbb1ff65a394fe341ec384625a455a60fd93487fda1d12946aa18313236a2d",
+      "componentsSha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    "workers": 4,
+    "elapsedMs": 6397040,
+    "batches": [
+      {
+        "key": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+        "code": 0,
+        "status": "pass",
+        "controlsStatus": "pass",
+        "cache": {
+          "hits": 0,
+          "misses": 27371
+        },
+        "coverage": {
+          "states": 27371,
+          "distinctTrees": 5739
+        },
+        "elapsedMs": 6186568
+      }
+    ]
+  },
+  "resolvedAttempts": [
+    {
+      "name": "ci-fast-units",
+      "command": "set -e; pnpm --filter agent test --maxWorkers=2; pnpm --filter app test --maxWorkers=2; pnpm --filter world exec vitest run --maxWorkers=2; node --test world/realism/*.test.mjs; pnpm --filter @vgi/commit test; python3 scripts/test-information-needs-compare.py",
+      "exit": 1,
+      "seconds": 118.51,
+      "started": 1794071968.854129,
+      "log": "ci-fast-units.log",
+      "sha256": "519e3808d279b48a3d3320154a40586a3271c735af25c1bebc78071112dec86b"
+    },
+    {
+      "name": "proofs-and-ci-inputs",
+      "command": "set -e; bash scripts/audit-verification.sh; make verify; cd lean; lake env lean --run Ehr/Tools/ExportContent.lean \"$TMPDIR/ci-content\"; lake env lean --run ../services/commit/test/Fixture.lean > \"$TMPDIR/commit-fixture.json\"; tar -czf \"$TMPDIR/ehr-test-inputs.tar.gz\" -C \"$PWD/.lake/build/bin\" ehr -C \"$TMPDIR\" ci-content/programs commit-fixture.json; lake env lean --run Ehr/Commit/Protocol/Check.lean; lake env lean --run Ehr/Commit/Protocol/AdtCheck.lean; lake build completion-bench; lake env lean --run Ehr/Render/ExportTests.lean \"$TMPDIR/merge-two-20261107/wasm-api\"; cd ..; lean/.lake/build/bin/completion-bench \"$PWD\" \"$TMPDIR/merge-two-20261107/completion-bench\"",
+      "exit": 1,
+      "seconds": 100.239,
+      "started": 1794072351.1116107,
+      "log": "proofs-and-ci-inputs.log",
+      "sha256": "6886d0cdc481c9359df5ed430b683bdcb7b2457666581100c39c040a646f482a"
+    },
+    {
+      "name": "viewer-contrast-before",
+      "command": "flock \"$TMPDIR/vgi-browser-heavy.lock\" node \"$TMPDIR/merge-two-20261107/fullscreen-contrast.mjs\" \"$TMPDIR/merge-two-20261107/viewer-contrast-observation-before.json\"",
+      "exit": 1,
+      "seconds": 5.257,
+      "started": 1794098268.0384924,
+      "log": "viewer-contrast-before.log",
+      "sha256": "ffa967345585a15e741281f0ab19a059b3242bbee4218449abb01e25b598c684"
+    }
+  ],
+  "viewerContrast": {
+    "before": {
+      "background": "rgb(255, 255, 255)",
+      "foreground": "rgb(237, 247, 250)",
+      "paddingBottom": "12px",
+      "text": "0 clicks \u00b7 0 keys \u00b7 0 scrolls \u00b7 0 events \u00b7 0 px mouse travel",
+      "contrast": 1.0888932965295839
+    },
+    "after": {
+      "background": "rgb(16, 36, 45)",
+      "foreground": "rgb(237, 247, 250)",
+      "paddingBottom": "76px",
+      "text": "0 clicks \u00b7 0 keys \u00b7 0 scrolls \u00b7 0 events \u00b7 0 px mouse travel",
+      "contrast": 14.696341359837419
+    }
+  },
+  "auditSources": {
+    "ui-axioms.lean": "import Ehr.Layout.Range\nimport Ehr.Layout.Structural\nimport Ehr.Layout.Examples\nimport Ehr.Layout.Keyboard\nopen Lean Elab Command\nelab \"#auditLayout\" : command => do\n  let env \u2190 getEnv\n  let names := env.constants.toList.filterMap fun (name, info) =>\n    match info with\n    | .thmInfo _ => if name.toString.startsWith \"Ehr.Layout.\" || name.toString.startsWith \"_private.Ehr.Layout.\" then some name else none\n    | _ => none\n  for name in names do\n    elabCommand (\u2190 `(#print axioms $(mkIdent name)))\n#auditLayout\n",
+    "wasm-shards.py": "import os,json,concurrent.futures,subprocess,pathlib,hashlib\nroot=pathlib.Path(__file__).parent\nstates=json.load(open(root/'wasm-api/states.json'))\nfor i in range(4):\n (root/f'wasm-shard-{i}.json').write_text(json.dumps({'total':len(states),'shardIndex':i,'shardCount':4,'stateIndices':list(range(i,len(states),4)),'states':states[i::4],'scanStates':[s for s in states if s[0].endswith('-expanded')]}))\ndef run(i):\n env=os.environ|dict(EHR_RENDER_SHARD_COUNT='4',EHR_RENDER_SHARD_INDEX=str(i),EHR_RENDER_SHARD_INPUT=str(root/f'wasm-shard-{i}.json'),EHR_RENDER_SHARD_REPORT=str(root/f'wasm-shard-{i}-report.json'))\n with (root/f'wasm-shard-{i}.log').open('w') as out:\n  p=subprocess.run(['node','lean/Ehr/Render/test-wasm.mjs',str(root/'wasm-api')],stdout=out,stderr=subprocess.STDOUT,env=env)\n print(i,p.returncode,flush=True)\n return p.returncode\nwith concurrent.futures.ThreadPoolExecutor(max_workers=4) as ex: codes=list(ex.map(run,range(4)))\nassert not any(codes),codes\nreports=[json.load(open(root/f'wasm-shard-{i}-report.json')) for i in range(4)]\nindices=[n for r in reports for n in r['stateIndices']]\nassert sorted(indices)==list(range(len(states))) and len(indices)==len(set(indices))\nassert len({r['nativeSha256'] for r in reports})==1 and len({r['wasmSha256'] for r in reports})==1\nprint(json.dumps({'status':'passed','states':len(states),'bundlesPerShard':[r['bundleCount'] for r in reports],'nativeSha256':reports[0]['nativeSha256'],'wasmSha256':reports[0]['wasmSha256']}))\n",
+    "integrity.py": "import hashlib, json, pathlib, sys\nroot=pathlib.Path('/home/saithat/Projects/VGI-Health')\nout=pathlib.Path(__file__).parent\nrun=root/'runs/core-10day'\ncanonical=lambda value: json.dumps(value,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()\ndigest=lambda value:hashlib.sha256(value).hexdigest()\nsnapshot={'frozen':{},'decisions':{},'clinicalDays':{},'schedules':{}}\nfor p in sorted((run/'certifications').glob('P*/v*/*.json')):\n if p.name in ['spec.json','inputs.json']:snapshot['frozen'][str(p.relative_to(root))]=digest(canonical(json.loads(p.read_bytes())))\nfor p in sorted((run/'programs').glob('P*/v*.json')):\n if p.name.endswith('.components.json'):continue\n snapshot['frozen'][str(p.relative_to(root))]=digest(canonical(json.loads(p.read_bytes())))\nfor p in sorted((run/'decisions').glob('night-*/P*.json')):\n snapshot['decisions'][str(p.relative_to(root))]=digest(p.read_bytes())\nmanifest=json.loads((run/'manifest.json').read_bytes())\nfor p in sorted((run/'days').glob('day-*/P*.json')):\n d=json.loads(p.read_bytes())\n clinical={'day':d['day'],'persona':d['persona'],'programVersion':d['programVersion'],'tasks':[t['task'] for t in d['tasks']], 'trace':[{k:t[k] for k in ['task','event','screen','result'] if k in t} for t in d['trace']]}\n snapshot['clinicalDays'][str(p.relative_to(root))]={'sha256':digest(canonical(clinical)),'tasks':len(d['tasks']),'events':len(d['trace'])}\n world=pathlib.Path(manifest['world'])/'schedules'/p.parent.name/p.name\n snapshot['schedules'][str(world.relative_to(root))]=digest(world.read_bytes())\nif sys.argv[1]=='before':\n (out/'integrity-before.json').write_bytes(canonical(snapshot)+b'\\n')\n print({key:len(value) for key,value in snapshot.items()})\nelse:\n before=json.loads((out/'integrity-before.json').read_bytes())\n for key,value in snapshot.items():\n  assert value==before[key], key+': changed entries '+str([p for p in set(value)|set(before[key]) if value.get(p)!=before[key].get(p)])\n report={'status':'pass','preserved':{key:len(value) for key,value in snapshot.items()},'tasks':sum(d['tasks'] for d in snapshot['clinicalDays'].values()),'events':sum(d['events'] for d in snapshot['clinicalDays'].values()),'snapshotSha256':digest(canonical(snapshot))}\n if sys.argv[1]=='after':(out/'integrity-after.json').write_bytes(canonical(report)+b'\\n')\n print(json.dumps(report))\n",
+    "refresh-dashboard.mjs": "import { spawn, execFileSync } from 'node:child_process';\nimport { resolve } from 'node:path';\nimport { pathToFileURL } from 'node:url';\nimport { readFile, writeFile, stat } from 'node:fs/promises';\nimport { createHash } from 'node:crypto';\nimport assert from 'node:assert/strict';\nexecFileSync('python3',[resolve(process.env.TMPDIR,'merge-two-20261107/check-desktop.py')],{stdio:'inherit'});\nconst { chromium, expect } = await import(pathToFileURL(resolve('app/node_modules/@playwright/test/index.mjs')));\nconst server=spawn(process.execPath,[resolve('app/node_modules/vite/bin/vite.js'),'preview','--host','127.0.0.1','--port','4186','--strictPort'],{cwd:resolve('app'),stdio:['ignore','pipe','pipe']});\nlet serverLog=''; server.stdout.on('data',d=>serverLog+=d); server.stderr.on('data',d=>serverLog+=d);\nlet browser;\ntry {\n let healthy=false;\n for(let i=0;i<200;i++) {if(server.exitCode!==null) throw Error(serverLog);try {if((await fetch('http://127.0.0.1:4186/screen-check.html')).ok){healthy=true;break;}}catch{} await new Promise(r=>setTimeout(r,100));}\n assert.ok(healthy,serverLog);\n browser=await chromium.launch();\n const page=await browser.newPage({viewport:{width:1440,height:900},deviceScaleFactor:1,reducedMotion:'reduce',locale:'en-US',timezoneId:'America/Los_Angeles',colorScheme:'light'});\n const errors=[];page.on('pageerror',e=>errors.push(e.message));\n const summary=await (await page.request.get('http://127.0.0.1:4186/runs/core-10day/summary.json')).json();\n assert.equal(summary.manifest.runId,'core-10day');assert.equal(summary.manifest.daysCompleted,10);assert.equal(summary.manifest.nightsCompleted,9);\n const captures=[];\n for(const [name,route,kind] of [\n  ['dashboard','/dashboard?run=core-10day&persona=P3&view=Evolution','evolution'],\n  ['ui-browser-timeline','/browse?run=core-10day','browser'],\n  ['compare','/dashboard?run=core-10day&persona=P3&view=Compare&workflow=W4','compare'],\n ]) {\n  await page.goto('http://127.0.0.1:4186'+route);\n  if(kind==='evolution') {\n   await expect(page.getByRole('heading',{name:'UI evolution',exact:true})).toBeVisible({timeout:90000});\n   await expect(page.locator('.evolution-summary')).toBeVisible({timeout:90000});\n   await expect(page.locator('.version-history')).toBeVisible({timeout:90000});\n  }\n  else if(kind==='compare') {\n   await expect(page.getByRole('region',{name:'Compare trajectories',exact:true})).toBeVisible({timeout:90000});\n   await expect(page.getByLabel('Trajectory workload delta')).toBeVisible({timeout:90000});\n   await expect(page.locator('iframe').first()).toBeVisible({timeout:90000});\n  }\n  else {\n   await expect(page.getByRole('heading',{name:'One EHR. Five personal forks.',exact:true})).toBeVisible({timeout:90000});\n   await expect(page.getByLabel('Branching persona timeline')).toBeVisible({timeout:90000});\n  }\n  await page.evaluate(async()=>{await document.fonts.ready;await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});\n  await page.mouse.move(1,1);\n  const path=`app/shots/final/${name}.png`;await page.screenshot({path,animations:'disabled'});\n  captures.push({path,route,sha256:createHash('sha256').update(await readFile(path)).digest('hex')});\n\n }\n const desktop=JSON.parse(await readFile(resolve(process.env.TMPDIR,'merge-two-20261107/desktop.json'),'utf8'));\n for(const name of ['trajectory-playback','trajectory-playback-fullscreen']) {\n  const path=`app/shots/final/${name}.png`;\n  assert.ok((await stat(path)).mtimeMs>=desktop.started*1000,`${path}: not refreshed by the desktop suite`);\n  captures.push({path,source:'app/e2e/trajectories.spec.ts: recorded P3 second-nurse step, desktop',sha256:createHash('sha256').update(await readFile(path)).digest('hex')});\n }\n assert.deepEqual(errors,[]);\n const report={viewport:[1440,900],run:'core-10day',build:JSON.parse(await readFile('app/dist/build.json','utf8')),captures};\n await writeFile(resolve(process.env.TMPDIR,'merge-two-20261107/dashboard-screens.json'),JSON.stringify(report,null,2)+'\\n');\n console.log(JSON.stringify(report));\n}finally {await browser?.close();server.kill('SIGTERM');}\n",
+    "final-integrity.sh": "#!/usr/bin/env bash\nset -euo pipefail\n# Restore the locally produced CI artifact only after all active checks finish.\ntar -xzf \"$TMPDIR/ehr-test-inputs.tar.gz\" -C \"$TMPDIR\"\ncmp \"$TMPDIR/ehr\" lean/.lake/build/bin/ehr\ninstall -D -m 755 \"$TMPDIR/ehr\" lean/.lake/build/bin/ehr\nmkdir -p runs\nnode scripts/wasm-assets.mjs\npython3 \"$TMPDIR/merge-two-20261107/integrity.py\" after\npnpm --filter agent exec tsx \"$TMPDIR/merge-two-20261107/verify-run-digest.mts\"\ngit diff d63be31d --exit-code -- lean/Ehr/Specs lean/Ehr/Props lean/Statements.lean lean/comparator.json\ngit diff --check\npython3 - <<'PY'\nfrom pathlib import Path\nimport hashlib,json,re,subprocess\nexpected='b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7'\nassert json.loads(Path('app/dist/build.json').read_text())['appSha256']==expected\nconfig=json.loads(Path('.cache/commit/config.json').read_text()); versions={p:config['releases'][p]['program']['version'] for p in ['P1','P2','P3','P4','P5']}\nassert versions=={'P1':5,'P2':7,'P3':4,'P4':8,'P5':4},versions\nmanifest=json.loads(Path('runs/core-10day/manifest.json').read_text());assert manifest['recertification']['status']=='passed' and manifest['recertification']['currentMeasurementsRegenerated']\nbindings=list(Path('runs/core-10day/certs').glob('P*/v*.build.json'));assert len(bindings)==33\nfor p in bindings:\n b=json.loads(p.read_text());assert b['appSha256']==expected,(str(p),b)\n assert b['ehrSha256']==hashlib.sha256(Path('lean/.lake/build/bin/ehr').read_bytes()).hexdigest(),str(p)\n assert b['wasmSha256']==hashlib.sha256(Path('app/public/ehr/ehr-interp.wasm').read_bytes()).hexdigest(),str(p)\ns=Path('README.md').read_text();assert s.splitlines()[0]=='_README last reviewed against commit `c27db794` (2026-11-07)._'\nassert '/home/' not in s\nheadings=re.findall(r'^##+ .+$',s,re.M);assert len(headings)==len(set(headings))\nfor _,target in re.findall(r'\\[([^\\]]*)\\]\\(([^)]+)\\)',s):\n if '://' not in target and not target.startswith('#'):assert Path(target.split('#')[0]).exists(),target\nprint('App hash, recorded release versions, certificate bindings, README marker/links and protected statements verified.')\nprint(json.dumps(versions))\nPY\n",
+    "after-recert.sh": "#!/usr/bin/env bash\nset -euo pipefail\nexport TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=6 EHR_SCREEN_WORKERS=4\nreceipt=\"$TMPDIR/merge-two-20261107/run.py\"\nflock \"$TMPDIR/vgi-browser-heavy.lock\" python3 -c 'import json; m=json.load(open(\"runs/core-10day/manifest.json\")); assert m[\"recertification\"][\"status\"]==\"passed\",m[\"recertification\"]'\npython3 \"$receipt\" screen-cache 'flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off node --test scripts/screen-cache-browser.test.mjs'\npython3 \"$receipt\" final-fresh-integration 'DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit pnpm --filter @vgi/commit test:integration'\npython3 \"$receipt\" live-load 'set -e; unset DATABASE_URL; export COMPOSE_PROJECT_NAME=vgi-final-20261107; make load SYNTHETIC_HOSPITAL=1; docker compose --env-file .env -f infra/docker-compose.yml --profile app up -d commit; node infra/scripts/wait-healthy.mjs'\npython3 \"$receipt\" desktop 'APP_TEST_PREVIEW=1 AUDIT_RUN=core-10day flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test --project=desktop --workers=1 --reporter=list,json'\npython3 \"$receipt\" mar-adt 'DATABASE_URL=postgres://vgi:vgi-dev-only@127.0.0.1:55532/vgi_commit COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1 flock \"$TMPDIR/vgi-browser-heavy.lock\" env EHR_BROWSER_LOCK=off pnpm --filter app exec playwright test mar-service.spec.ts adt-service.spec.ts --project=desktop --workers=1 --reporter=list,json'\n",
+    "run.py": "import subprocess, time, json, os, sys, hashlib\nfrom pathlib import Path\nroot=Path('/home/saithat/Projects/run-tmp/merge-two-20261107')\nname,command=sys.argv[1:3]\nif name == \"mar-adt\":\n command = command.replace(\"COMMIT_INTERNAL_URL=http://127.0.0.1:18090\", \"COMMIT_INTERNAL_URL=http://127.0.0.1:8091\")\nenv=os.environ|dict(TMPDIR=str(root.parent), CI='true', LEAN_NUM_THREADS='6', EHR_SCREEN_WORKERS='4', COMMIT_FIXTURE=str(root.parent/'commit-fixture.json'), DATABASE_URL='postgres://vgi:vgi-dev-only@127.0.0.1:55438/vgi_commit', COMMIT_PROTOCOL_TRACE_KEEP='1')\nif name in {\"desktop\", \"mar-adt\"}:\n command = 'PLAYWRIGHT_JSON_OUTPUT_NAME=\"' + str(root/(name+\"-playwright.json\")) + '\" ' + command\nif name in {'dashboard-shots','audit-templates','audit-personas'} and not (root/'allow-final-audits').exists():\n raise SystemExit('Dashboard contrast validation: final screenshots and audits are gated pending review-only styling checks.')\nstart=time.time(); path=root/(name+'.log')\nwith path.open('w') as f:\n p=subprocess.run(['bash','-o','pipefail','-c',command],env=env,stdout=f,stderr=subprocess.STDOUT)\nreceipt=dict(name=name,command=command,exit=p.returncode,seconds=round(time.time()-start,3),started=start,log=path.name,sha256=hashlib.sha256(path.read_bytes()).hexdigest())\n(root/(name+'.json')).write_text(json.dumps(receipt,indent=2)+'\\n')\nprint(json.dumps(receipt),flush=True)\nprint('\\n'.join(path.read_text(errors='replace').splitlines()[-12:]),flush=True)\nsys.exit(p.returncode)\n",
+    "fullscreen-contrast.mjs": "import { spawn } from 'node:child_process';\nimport { resolve } from 'node:path';\nimport { pathToFileURL } from 'node:url';\nimport { writeFile } from 'node:fs/promises';\nimport assert from 'node:assert/strict';\nconst { chromium, expect } = await import(pathToFileURL(resolve('app/node_modules/@playwright/test/index.mjs')));\nconst server=spawn(process.execPath,[resolve('app/node_modules/vite/bin/vite.js'),'preview','--host','127.0.0.1','--port','4187','--strictPort'],{cwd:resolve('app'),stdio:['ignore','pipe','pipe']});\nlet log='';server.stdout.on('data',d=>log+=d);server.stderr.on('data',d=>log+=d);\nlet browser;\ntry {\n let ready=false;\n for(let i=0;i<200;i++){if(server.exitCode!==null)throw Error(log);try{if((await fetch('http://127.0.0.1:4187/screen-check.html')).ok){ready=true;break;}}catch{}await new Promise(r=>setTimeout(r,100));}\n assert.ok(ready,log);\n browser=await chromium.launch();\n const page=await browser.newPage({viewport:{width:1440,height:900},locale:'en-US',timezoneId:'America/Los_Angeles',reducedMotion:'reduce',colorScheme:'light'});\n const errors=[];page.on('pageerror',error=>errors.push(error.message));\n await page.goto('http://127.0.0.1:4187/dashboard?run=core-10day&persona=P3&view=Trajectories');\n const view=page.getByRole('region',{name:'All task trajectories'});\n await expect(view.locator('.trajectory-counters')).toBeVisible({timeout:90000});\n await view.getByRole('button',{name:'Fullscreen',exact:true}).click();\n await expect.poll(()=>page.evaluate(()=>Boolean(document.fullscreenElement))).toBe(true);\n const observed=await page.locator('.trajectory-playback:fullscreen').evaluate(root=>{\n  const counter=root.querySelector('.trajectory-counters');\n  if(!counter)throw Error('Missing visible metrics');\n  const style=getComputedStyle(root);const text=getComputedStyle(counter);\n  return {background:style.backgroundColor,foreground:text.color,paddingBottom:style.paddingBottom,text:counter.textContent};\n });\n const rgb=value=>{const result=value.match(/^rgba?\\((\\d+),\\s*(\\d+),\\s*(\\d+)(?:,\\s*([\\d.]+))?\\)$/);assert.ok(result,value);assert.ok(!result[4]||Number(result[4])===1,value);return result.slice(1,4).map(Number);};\n const luminance=values=>values.map(v=>v/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4).reduce((sum,v,i)=>sum+v*[.2126,.7152,.0722][i],0);\n const a=luminance(rgb(observed.foreground)),b=luminance(rgb(observed.background));\n observed.contrast=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);\n await writeFile(process.argv[2],JSON.stringify(observed,null,2)+'\\n');console.log(JSON.stringify(observed));\n assert.ok(observed.contrast>=4.5,`Fullscreen metrics contrast ${observed.contrast.toFixed(2)}:1 is below 4.5:1`);\n assert.ok(Number.parseFloat(observed.paddingBottom)>=76,'Fullscreen transport must retain its reserved bottom padding');\n assert.deepEqual(errors,[]);\n}finally{await browser?.close();server.kill('SIGTERM');}\n"
+  }
+}

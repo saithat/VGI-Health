@@ -1,4 +1,4 @@
-_README last reviewed against commit `b09f6788` (2026-11-07)._
+_README last reviewed against commit `c27db794` (2026-11-07)._
 
 # VGI Health
 
@@ -1964,17 +1964,15 @@ settling waits. Batching popups and removing those waits cut a cold P1/v1 sample
 with identical verdicts, geometry and 8,046 measurement records. Measurements at
 earlier app hashes are kept in [docs/audits/](docs/audits/).
 
-At the earlier `a53258c9` app hash, an isolated cold P1/v1 check took 632.73s: 19.89s
-native preparation and 610.87s browser validation, covering the same 981 inputs,
-819 distinct trees and 8,046 physical measurements with zero findings. The
-fully warm 33-revision batch gate took 176.37s (27,371 hits, zero misses).
-The complete installation command took 92m30s, installed all 33 matching
-bindings and remeasured all 50 shifts. Fresh native/WASM strict replay verified
-1,284 tasks and 72,636 events with zero mismatches; independent content-digest
-and frozen-clinical-input checks also passed. Full template and persona audits
-covered 1,826 and 1,296 states respectively, with zero findings. The
-[verification report](docs/audits/merge-six-verification-20261106.md) records
-commands, build bindings, audit coverage and timing limits.
+The retained recording has 33 current certificate bindings and 50 remeasured
+shifts. Full re-certification took 196.89 minutes, including a
+106.62-minute batch gate. Fresh native/WASM strict replay verified
+1,284 tasks and 72,636 events with zero mismatches. Frozen clinical inputs,
+schedules and model choices are preserved. Full sequential template and persona
+audits checked 1,826 and 1,296 distinct trees respectively, with zero findings.
+The [verified-build report](docs/audits/merge-two-verification-20261107.md) records
+exact commands, bindings, coverage, screenshots and timings. Earlier profiling
+and verification receipts remain in [the historical report](docs/audits/merge-six-verification-20261106.md).
 
 Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:

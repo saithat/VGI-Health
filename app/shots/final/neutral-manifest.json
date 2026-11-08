@@ -1,8 +1,4 @@
 {
-  "viewport": [
-    1440,
-    900
-  ],
   "source": "current native semantic exports and fresh live-selection UI snapshots; fictional identity seed v1",
   "captures": [
     {
@@ -170,7 +166,7 @@
     {
       "path": "shots/realism/live-select/P1-lookup-chart.png",
       "source": "shots/realism/live-select/P1-lookup-chart.ui.json",
-      "sha256": "5a2b9b4e3cd64fce8d8ffdbc262b861e73a57e3ca45de2c3b69d86945d1fe560",
+      "sha256": "cc3daaef167cba9ee9072b70495569165aed789a0bf1dfd8e97fb62b65a6ad40",
       "mode": "live"
     },
     {
@@ -182,7 +178,7 @@
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-chart.ui.json",
-      "sha256": "a1c538625a67f0691cee3663b83f0f0b80808b9e7b781d883c62543b949f33ca",
+      "sha256": "b0cf20e41d10c677af8683c82fc38e7f5b36b187a418fb73a5e2d1b26ed0db7f",
       "mode": "live"
     },
     {
@@ -194,7 +190,7 @@
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-chart.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-chart.ui.json",
-      "sha256": "48d8b9f1b549fdffb69f7ca9d3d9d688f51d0545623122606990bccf4f29c855",
+      "sha256": "3b508fa24ce1d98b55611d2e783ef6f9538daec9386cfa21b14d05925bad2279",
       "mode": "live"
     },
     {
@@ -206,7 +202,7 @@
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-chart.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-chart.ui.json",
-      "sha256": "80a8a5f7181193bc1c6d6e2dd6e8910b0393885c8028c3f962224d07958c1af5",
+      "sha256": "6cb74d219d6860ac79f3d74c47999ddf85b0e68cd512784d823320459f47cc7d",
       "mode": "live"
     },
     {
@@ -218,7 +214,7 @@
     {
       "path": "shots/realism/live-select/P3-unitCensus-chart.png",
       "source": "shots/realism/live-select/P3-unitCensus-chart.ui.json",
-      "sha256": "80a8a5f7181193bc1c6d6e2dd6e8910b0393885c8028c3f962224d07958c1af5",
+      "sha256": "82bc20203d4a0421ff70f8af604c7eafa43e572ad78ded9e992499693601c968",
       "mode": "live"
     },
     {
@@ -242,19 +238,19 @@
     {
       "path": "shots/realism/live-select/P5-consultList-chart.png",
       "source": "shots/realism/live-select/P5-consultList-chart.ui.json",
-      "sha256": "b30147aa8af5e22bb405d607815e315a6adee53371afa908231d6e5f998d7811",
+      "sha256": "88bcfe7fcca137d76914d8399ab5740c12c63a0b37097864b723fd7e5ac156ea",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P5-consultList-landing.png",
       "source": "shots/realism/live-select/P5-consultList-landing.ui.json",
-      "sha256": "bba574e568ac7cc78fd21cc05270525d5189fe424408893215d0264738709cef",
+      "sha256": "d21aa6037deb67d02b6475ccaf2a6c4976dd41cc71399126e2ad126b1ea5bd18",
       "mode": "live"
     },
     {
       "path": "shots/realism/live-select/P5-orSchedule-chart.png",
       "source": "shots/realism/live-select/P5-orSchedule-chart.ui.json",
-      "sha256": "8b3a794ea0f7131e397ecb96866c763dc14e91405dec859db33c6ecfed5191d6",
+      "sha256": "6b8caa7e686c283c53f8ef7f279cf996bed7b4fbda6520dae8e09a7939e15694",
       "mode": "live"
     },
     {
@@ -453,5 +449,9 @@
       "source": "shots/realism/present/integration/p5-or-schedule.ui.json",
       "sha256": "6f1f2181799879b0e03d8025b8c9a39618cf5d52bdac299350fed21d5f303956"
     }
+  ],
+  "viewport": [
+    1440,
+    900
   ]
 }
