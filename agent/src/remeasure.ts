@@ -1,6 +1,7 @@
 /** Offline replay of fixed recorded layout choices; never proposes or deploys.
  * Each arm and calibration partition owns its own clinician memory. */
 import {existsSync} from 'node:fs';
+import {rm} from 'node:fs/promises';
 import path from 'node:path';
 import {z} from 'zod';
 import {interruptionDayResultSchema as dayResultSchema} from '../../app/src/dashboard/interruption-schema.js';
@@ -13,14 +14,15 @@ import {readJson,writeJson,pad2} from './util.js';
 import {withSimulationModes,type SimulationModes} from './simulation-modes.js';
 
 const manifestSchema=z.object({days:z.number().int().positive(),personas:z.array(z.string()),world:z.string(),worldSeed:z.number()});
-/** Adopt copied choices into their review container without rewriting historical evidence. */
-export async function rebindRecordedChoices(directory:string,sourceRunId:string,runId:string,days:number,personas:string[]) {
+/** Preserve historical choices, but publish only newly measured day fences. */
+export async function prepareRemeasurementCopy(directory:string,sourceRunId:string,runId:string,days:number,personas:string[]) {
   for(let night=1;night<days;night++)for(const persona of personas) {
     const file=path.join(directory,'decisions',`night-${pad2(night)}`,`${persona}.json`);
     const record=await readJson(file,z.object({runId:z.string(),sourceRunId:z.string().optional()}).passthrough());
     if(record.runId!==sourceRunId)throw Error(`Foreign recorded choice: ${night}/${persona}`);
     await writeJson(file,{...record,runId,sourceRunId:record.sourceRunId??sourceRunId});
   }
+  for(let day=1;day<=days;day++)await rm(path.join(directory,'days',`day-${pad2(day)}`,'digest.json'),{force:true});
 }
 export async function remeasureRun(directory:string,inner:EhrClient,modes:SimulationModes,worldOverride?:string) {
   const manifest=await readJson(path.join(directory,'manifest.json'),manifestSchema);

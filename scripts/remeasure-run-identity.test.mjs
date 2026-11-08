@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {mkdtemp,mkdir,writeFile,readFile,cp,rm} from 'node:fs/promises';
 import path from 'node:path';
 import {tmpdir} from 'node:os';
-import {rebindRecordedChoices} from '../agent/src/remeasure.ts';
+import {prepareRemeasurementCopy} from '../agent/src/remeasure.ts';
 import {writeDayDigest,writeNightDigest} from '../agent/src/content-digest.ts';
 import {completedPrefix} from './run-prefix.mjs';
 
@@ -17,12 +17,19 @@ test('copied historical choices expose a complete new review prefix without chan
       hypothesis:'Control prompt and estimates are historical',measured:{validation:{before:17,after:11}}};
     const decision=path.join('decisions','night-01','P1.json');
     await save(path.join(source,decision),original);
+    await save(path.join(source,'manifest.json'),{runId:'control',days:2,personas:['P1'],completionProtocol:'atomic-prefix-v1'});
+    for(const day of [1,2]) {
+      await save(path.join(source,'days',`day-0${day}`,'P1.json'),{day,persona:'P1',programVersion:day-1});
+      await writeDayDigest(source,day,['P1']);
+    }
     await cp(source,copy,{recursive:true});
-    await rebindRecordedChoices(copy,'control','real-work',2,['P1']);
+    await prepareRemeasurementCopy(copy,'control','real-work',2,['P1']);
     const adopted=JSON.parse(await readFile(path.join(copy,decision),'utf8'));
     assert.deepEqual(adopted,{...original,runId:'real-work'});
     assert.deepEqual(JSON.parse(await readFile(path.join(source,decision),'utf8')),original);
     await save(path.join(copy,'manifest.json'),{runId:'real-work',days:2,personas:['P1'],completionProtocol:'atomic-prefix-v1'});
+    assert.equal((await completedPrefix(copy)).manifest.daysCompleted,0);
+    assert.equal((await completedPrefix(source)).manifest.daysCompleted,1);
     for(const day of [1,2]) {
       await save(path.join(copy,'days',`day-0${day}`,'P1.json'),{day,persona:'P1',programVersion:day-1});
       await writeDayDigest(copy,day,['P1']);
@@ -31,6 +38,6 @@ test('copied historical choices expose a complete new review prefix without chan
     const prefix=await completedPrefix(copy);
     assert.equal(prefix.manifest.daysCompleted,2);
     assert.equal(prefix.manifest.nightsCompleted,1);
-    await assert.rejects(rebindRecordedChoices(copy,'foreign','other',2,['P1']),/Foreign recorded choice/);
+    await assert.rejects(prepareRemeasurementCopy(copy,'foreign','other',2,['P1']),/Foreign recorded choice/);
   } finally {await rm(scratch,{recursive:true,force:true});}
 });

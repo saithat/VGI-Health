@@ -466,7 +466,7 @@ uncalibrated rates remain for owner review in this single decision list.
 | ADT simulation and transport | Provisional movement/error rates and cleaning/transport delays; `adt.json` is an administrative stream, with physical transport represented separately and no change to bedside clinical effort. |
 | Workload dispatch and coverage | One serial clinician/coverage chain; priority/deadline/arrival ordering; task-boundary dispatch with event-boundary communication preemption; 15-minute hospital overlap; finite successor coverage and clinic weekend closure. ESI queue deadlines are 10/30/60 minutes for ESI ≤2/3/≥4. |
 | Workload scope and endpoints | Source worlds supply weekday daytime cases; extended queues do not merge subsequent days' arrivals or create independent night/weekend demand. Successor actor knowledge and live handoff acceptance remain outside this model. Result response and MAR lateness end at documentation completion; missing source timing uses planned readiness. |
-| Draft ownership and authority | Frames bind clinician, source patient and task; current receipt rules filter stale evidence; changed chart data requires reconfirmation. Incomplete unsent drafts are discarded with reasons. Named handover transfers responsibility, without sign authority or another clinician's draft. |
+| Draft ownership and authority | Frames bind clinician, source patient and task; any workspace must remain selected and bound to that patient to restore. Current receipt rules filter stale evidence; changed chart data requires reconfirmation. Incomplete unsent drafts are discarded with reasons. Named handover transfers responsibility, without sign authority or another clinician's draft. |
 | Interruption service and calibration | Role/setting profiles, minute-bin rates, fixed task exposure, urgency/type mix, protected-popup triage, semantic communication steps and return costs are provisional. Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
 
 ## Information needs methodology
@@ -474,8 +474,8 @@ uncalibrated rates remain for owner review in this single decision list.
 `information-needs-v1` is an opt-in simulator specification in
 `lean/Ehr/Sim/InformationNeeds.lean`, separate from the certified clinical
 rulebook. `simulate --information-needs v1` performs chart lookups before each
-episode's entries and commits. Omission or `off` retains the historical
-protocol. Needs bind a typed question, its gated commit or exact entry slot,
+episode's entries and commits. Omission or `off` disables the lookup stage;
+clock and interruption modes are selected independently. Needs bind a typed question, its gated commit or exact entry slot,
 source information IDs, trusted patient data and an authority classification.
 A failed lookup leaves the episode incomplete; the event boundary also refuses
 missing or stale answers. No lookup creates a clinical review receipt.
@@ -777,8 +777,9 @@ author isolation, date expiry and target-version invalidation.
 
 `runs/<id>` is the single recording for a run, during execution and after it
 stops. The dashboard, UI browser and trajectory player read that directory
-through the local Vite dev/preview data layer. There is no second recording
-or copy step. The retained recording is `core-10day`.
+through the local Vite dev/preview data layer. Serving a run needs no second
+recording or copy step. `core-10day` is the retained historical recording;
+explicit offline remeasurement creates a new labeled experiment directory.
 Fullscreen playback retains its dark metrics background and reserved transport
 space; the recorded EHR keeps its fixed 1440×900 logical viewport.
 Catalog discovery ignores unrelated research manifests under `runs/` and validates
@@ -1702,7 +1703,8 @@ version-bound journal caches separately. `AdtModel.lean`, `AdtProofs.lean` and
 [Verification evidence](docs/audits/commit-model-20261106.md)
 records exact commands, finite bounds and outcomes. These new statements are
 not entries in the clinical Comparator catalog. The default `CommitProtocol`
-library checks them without importing them into the clinical executable. They do not change clinical
+library checks these proofs. The native executable includes the shared model
+checkers for the protocol trace commands. They do not change clinical
 specifications or claim verification of TypeScript/SQL.
 
 The machine represents arbitrary finite client/request sets, actor-scoped request
@@ -2742,8 +2744,9 @@ explicit `simulationModes` metadata, independent actual/canonical/no-agent actor
 memories, and separate train/validation partitions. It preserves layout choices
 and makes no model calls. `pnpm --filter agent exec tsx src/remeasure-cli.ts
 --source runs/core-10day --out runs/<new-label> --world runs/world/<successor>`
-creates a separately labeled real-work measurement; add both legacy flags for
-a matched successor-task control. The command refuses an existing output and a
+creates a separately labeled real-work measurement. Use `--clock-mode continuous
+--interruptions fixedCost` for a matched successor-clock control; select both
+legacy flags for the archived task-clock protocol. The command refuses an existing output and a
 world with a different seed, insufficient days or missing clinicians. It refreshes
 world/runtime fingerprints, labels the serial execution `OFFLINE`, and records
 the source recording digest. Copied decision/prompt evidence is explicitly
@@ -2752,6 +2755,8 @@ Calibration measurements are recomputed evidence;
 recorded historical decision estimates remain historical inputs.
 Copied decisions adopt the new review run ID and retain their source run ID;
 their prompts, choices and historical estimates are preserved.
+Copied day-completion markers are withheld until the new measurements are durable,
+so an in-progress copy cannot expose source measurements as its own completed work.
 Successor world schedules and real-work measurements belong in separately labeled local outputs;
 frozen worlds 1/2 are never regenerated in place. Source-bound native/WASM assets
 and certificate bindings must match before replay.
@@ -2786,7 +2791,9 @@ responsible clinical team; it never claims the result was resolved.
 
 Draft/resumption specifications: frames belong jointly
 to clinician ID, source patient ID and task ID. Foreign ownership, task or source
-facts refuse restoration, with an explicit discard reason. Frames retain draft
+facts refuse restoration, with an explicit discard reason. An existing patient
+workspace must still be selected and bound to that source; an unselected or
+unbound frame is discarded too. Frames retain draft
 values, screen/history, tabs, current slot and pending confirmations. Returning
 advances the clock and pays `3000 + 700 × draft entries + 1000 × unconfirmed
 entries` milliseconds. Current review rules filter receipts by clinician,
@@ -2848,7 +2855,7 @@ Task metadata binds the model version, selected profile/rate, fixed exposure and
 full offered-arrival list, even for zero arrivals. `closureWaitMs` separates
 waiting for the offered exposure from active effort: wall time includes it,
 KLM effort excludes it. Call/page content is synthetic communication input,
-not an inferred FHIR finding. Invalid patient/message inputs cannot complete
+not an inferred FHIR finding. Empty patient/message inputs cannot complete
 communication and are explicitly handed over.
 
 Measurement validation is an extension in
@@ -3006,7 +3013,7 @@ weakest parts.
   An opt-in bounded-knowledge clinician (`lean/Ehr/Sim/Bounded.lean`,
   `Discovery.lean`) remembers where controls were, misses after a move,
   searches by label and falls back to charged help; it measures discovery and
-  relearning cost, and the BFS result is kept as the expert floor. Its search,
+  relearning cost, and the BFS run is retained as an independent expert comparison. Its search,
   memory, timing, help and preference parameters are simulation assumptions,
   not estimates from clinician observations. Completion parity with the expert
   is a regression requirement on the sampled and full persona workdays, not a
@@ -3188,7 +3195,8 @@ through the existing stateless `ehr serve` renderer. Every response must match
 its request index; partial, reordered or errored batches fail before supplying
 geometry. This avoids starting an interpreter for each popup. A three-bundle
 P1 revision comparison preserved all 87 popup files byte-for-byte.
-`core-10day` is the single retained recording.
+`core-10day` is the retained historical recording; separately labeled successor
+measurements preserve its layout choices and identify their source lineage.
 
 The current certified app SHA-256 is
 `030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`.

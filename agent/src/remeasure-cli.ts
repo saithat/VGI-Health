@@ -9,7 +9,7 @@ import {runFingerprints} from './fingerprints.js';
 import {loadWorld} from './world.js';
 import {browserGeometry} from './browser-geometry.js';
 import {geometryEhr} from './geometry.js';
-import {rebindRecordedChoices,remeasureRun} from './remeasure.js';
+import {prepareRemeasurementCopy,remeasureRun} from './remeasure.js';
 import {simulationModesSchema} from './simulation-modes.js';
 import {contentDigest,writeDayDigest,writeNightDigest} from './content-digest.js';
 import {REPO_ROOT,readJson,writeJson} from './util.js';
@@ -34,7 +34,7 @@ for(const item of ['programs','certs','certifications','decisions','days','basel
 }
 for(const item of ['llm','archives'])if(existsSync(path.join(source,item)))
   await cp(path.join(source,item),path.join(out,item),{recursive:true});
-await rebindRecordedChoices(out,original.runId,path.basename(out),manifest.days,manifest.personas);
+await prepareRemeasurementCopy(out,original.runId,path.basename(out),manifest.days,manifest.personas);
 await rm(path.join(out,'no-agent','geometry'),{recursive:true,force:true});
 const clockLabel=modes.clockMode==='legacy'?'legacy task clock':'shared workload clock';
 const workLabel=modes.interruptions==='fixedCost'?'fixed-cost interruptions':'typed interruption work';
