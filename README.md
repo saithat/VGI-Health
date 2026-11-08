@@ -2740,7 +2740,11 @@ memories, and separate train/validation partitions. It preserves layout choices
 and makes no model calls. `pnpm --filter agent exec tsx src/remeasure-cli.ts
 --source runs/core-10day --out runs/<new-label> --world runs/world/<successor>`
 creates a separately labeled real-work measurement; add both legacy flags for
-a matched successor-task control. The command refuses an existing output.
+a matched successor-task control. The command refuses an existing output and a
+world with a different seed, insufficient days or missing clinicians. It refreshes
+world/runtime fingerprints, labels the serial execution `OFFLINE`, and records
+the source recording digest. Copied decision/prompt evidence is explicitly
+historical. Relative paths are repository-relative.
 Calibration measurements are recomputed evidence;
 recorded historical decision estimates remain historical inputs. Successor world
 schedules and real-work measurements belong in separately labeled local outputs;
