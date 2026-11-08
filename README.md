@@ -15,6 +15,8 @@ three parts:
    vendor releases that change the rules. It runs on synthetic FHIR patients.
    Simulated clinicians work through generated clinical days in it, so any
    change to the screens can be measured in clicks, scrolls and mouse travel.
+   A shared clock tracks queues, shift coverage and interrupting work; returning
+   to a draft revalidates its evidence before the next guarded interaction.
 2. **Lean proofs of what a clinician-facing interface must preserve.** The
    hospital's rules (law, regulators and hospital policy) are written in Lean,
    and a Lean interpreter runs every click. The theorems hold for every screen
@@ -2725,6 +2727,8 @@ the clinical enum/type module remains byte-stable. Simulator-only schemas
 live under `app/src/dashboard/measurement-schema.ts` so source timing survives
 agent load/store parsing without editing the clinical wire schema. Trajectory
 extraction follows recorded dispatch order and seeds the actual subminute start.
+Trajectory metadata distinguishes this clock/guard reconstruction from the physical
+effort used in comparative UI scores; timing coefficients remain uncalibrated.
 
 The [owner decision list](#policies-awaiting-owner-review) collects the provisional
 workload and interruption policies with the existing MAR and ADT decisions.
@@ -2768,8 +2772,10 @@ the bounded-check scope, source coverage limits and exact verification commands.
 New native simulations default to `--interruptions realWork` for both expert and
 bounded policies. `--interruptions fixedCost` selects the previous seeded
 `Task.interruptions` count, goal-action positions and wait/think operators;
-archived comparisons must select it explicitly. Real work ignores that historical
-count. The clinical task trace contains only interpreter events; external
+archived comparisons must select it explicitly. Real-work arrivals and service
+ignore that historical count. Behavioral RNG initialization retains the archived
+draw advancement for matched baseline noise; the offered-work hash stream is separate.
+The clinical task trace contains only interpreter events; external
 communication is measured separately in each task's optional `interruptions`
 record (work, ordered steps, timestamps and closed frames). No synthetic clinical
 click, receipt, prescription or result resolution is inferred from a call.
