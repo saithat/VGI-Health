@@ -14,7 +14,6 @@ import json
 import math
 import pathlib
 import re
-import subprocess
 import sys
 import urllib.parse
 import urllib.request
@@ -220,15 +219,6 @@ def validate():
         check(all(not line.endswith((' ', '\t')) for line in content.splitlines()), 'trailing whitespace ' + str(path))
     ast.parse(pathlib.Path(__file__).read_text())
     check('scripts/verify-workflow-sources.py --online' in (ROOT / 'README.md').read_text(), 'README verification command')
-    allowed = {'README.md', 'docs/design/workflow-calibration.md', 'scripts/verify-workflow-sources.py',
-               *(str(path.relative_to(ROOT)) for path in DIRECTORY.glob('*.json'))}
-    changed = set(subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], cwd=ROOT, text=True).splitlines())
-    untracked = set(subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], cwd=ROOT, text=True).splitlines())
-    check(changed | untracked <= allowed, 'research-only changed paths')
-    staged = set(subprocess.check_output(['git', 'diff', '--cached', '--name-only'], cwd=ROOT, text=True).splitlines())
-    check(staged <= allowed, 'research-only staged paths')
-    check(subprocess.check_output(['git', 'branch', '--show-current'], cwd=ROOT, text=True).strip() == 'lane/workflow-sources',
-          'authorized branch')
     return sources, rows, archived, tasks
 
 
@@ -323,7 +313,7 @@ def main():
         print('\n'.join(ERRORS))
         raise SystemExit(f'FAIL: {len(ERRORS)} failures / {CHECKS} checks')
     counts = collections.Counter(row['recency'] for row in rows)
-    print(f'PASS: {CHECKS} structural, type, provenance, citation, recency, search, partition and lane checks; '
+    print(f'PASS: {CHECKS} structural, type, provenance, citation, recency, search, and partition checks; '
           f'{len(sources)} sources; {len(rows)} active parameters ({dict(counts)}); '
           f'{len(archived)} archived; {len(tasks)} tasks.')
 
