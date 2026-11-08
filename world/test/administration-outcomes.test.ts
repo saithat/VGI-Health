@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { DayBuild } from "../src/build";
@@ -117,7 +118,15 @@ it("generated seeds have explicit outcomes, stable attempts and at most one give
   }
 });
 
-describe("world → Lean goals → MAR reducer boundary", () => {
+// Needs the Lean toolchain and compiled modules: CI runs this in the `lean` job
+// with VGI_REQUIRE_LEAN_TESTS=1 (fail instead of skip); the `unit` job has only
+// the native binary, so it skips there.
+const leanRoot = resolve(import.meta.dirname, "../../lean");
+const noLean = spawnSync("lean", ["--version"], { encoding: "utf8" }).error !== undefined
+  || !existsSync(resolve(leanRoot, ".lake/build/lib/lean/Ehr.olean"));
+if (noLean && process.env.VGI_REQUIRE_LEAN_TESTS === "1") throw new Error("Lean toolchain or build missing but VGI_REQUIRE_LEAN_TESTS=1");
+
+describe.skipIf(noLean)(`world → Lean goals → MAR reducer boundary${noLean ? " (Lean toolchain or build unavailable)" : ""}`, () => {
   it("checks every controlled path and generated seed 1/2/3 outcome with the real Lean decoder", () => {
     const medicines = [...cases.flatMap(c => c.attempts.map(administration => ({ ...c.med, administration }))), ...generated];
     const result = spawnSync("lean", ["-j6", "--run", "../world/test/lean/Administration.lean"], {
