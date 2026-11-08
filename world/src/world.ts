@@ -226,7 +226,7 @@ export interface DayOutput {
 }
 
 /** Advance the world one day. `prev` is not modified. */
-export function advanceDay(prev: WorldState, pop: PopIndex): DayOutput {
+export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void = runWard): DayOutput {
   const day = prev.day + 1;
   // Presentation names and serialized vocabulary do not redraw clinical scenarios.
   const prevStateHash = hashHex(stableStringify(seedState(prev)));
@@ -244,7 +244,7 @@ export function advanceDay(prev: WorldState, pop: PopIndex): DayOutput {
   dischargeMedicine(b);
   runEd(b);
   runSurgery(b);
-  runWard(b);
+  wardFlow(b);
   runP1(b);
   runPeds(b);
 
@@ -288,14 +288,17 @@ export interface WorldRun {
   days: DayOutput[];
 }
 
-/** Generate `days` days for a seed. Day d's output does not depend on how many days are generated. */
-export function generateWorld(seed: number, days: number, patients: PatientProfile[]): WorldRun {
+/** Generate `days` days for a seed, independently of the horizon.
+ * `wardFlow` is an explicit test seam for immutable pre-outcome archives;
+ * production callers use the current ward model. */
+export function generateWorld(seed: number, days: number, patients: PatientProfile[],
+  wardFlow: (b: DayBuild) => void = runWard): WorldRun {
   const pop = worldPopulation(patients, seed);
   const initial = initialState(seed, pop);
   const out: DayOutput[] = [];
   let prev = initial;
   for (let d = 1; d <= days; d++) {
-    const r = advanceDay(prev, pop);
+    const r = advanceDay(prev, pop, wardFlow);
     out.push(r);
     prev = r.state;
   }

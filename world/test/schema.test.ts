@@ -173,7 +173,7 @@ function weightKg(t: { todayResources: unknown[] }): { value: number; unit: stri
     expect(p3.some((t) => t.choices.administer.some((o) => drugDef(o.drug)?.highAlert === true))).toBe(true);
     expect(p3.some((t) => t.choices.administer.some((o) => o.prn) && t.choices.painScore !== undefined)).toBe(true);
     expect(p3.some((t) => t.choices.noteSections.includes("painReassessment") && t.choices.painScore !== undefined)).toBe(true);
-    expect(p3.some((t) => t.choices.administer.some((o) => o.holdReason !== undefined))).toBe(true);
+    expect(p3.some((t) => t.choices.administer.some((o) => o.administration?.outcome === "held"))).toBe(true);
     expect(p3.some((t) => t.choices.noteSections.includes("handoff"))).toBe(true);
   });
 

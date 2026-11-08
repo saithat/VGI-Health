@@ -175,10 +175,15 @@ export const eventSchema: z.ZodType<L.Event> = z.union([
 const stepResultSchema: z.ZodType<L.StepResult> = z.union([z.enum(['ok', 'ignored']), z.object({ blocked: z.object({ reason: str }) })]);
 
 // ---------------------------------------------------------------- simulation
-const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'kind', 'code', 'supplyDays', 'curesExemptReason', 'holdReason'], z.object({
+const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'kind', 'code', 'supplyDays', 'curesExemptReason', 'holdReason', 'administration'], z.object({
   drug: str, doseTenths: nat, unit: unitKindSchema, route: str, freq: str, indication: str.exactOptional(), prn: z.boolean(),
   kind: z.enum(['medication', 'imaging', 'procedure']).exactOptional(), code: str.exactOptional(),
   supplyDays: nat.exactOptional(), curesExemptReason: str.exactOptional(), holdReason: str.exactOptional(),
+  administration: z.object({
+    outcome: z.enum(['given', 'held', 'refused', 'notGiven', 'delayed']),
+    reason: str, occurrence: str, scheduledMin: nat, windowEndMin: nat, attemptMin: nat,
+    reoffer: z.boolean(), notifyPrescriber: z.boolean(),
+  }).exactOptional(),
 }));
 const taskSchema: z.ZodType<L.Task> = z.object({
   id: str,

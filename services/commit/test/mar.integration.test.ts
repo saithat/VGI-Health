@@ -27,9 +27,9 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
   const config = configSchema.parse({ tenant, oidc: { issuer, audience: 'vgi-commit', clientId: 'vgi-mar' },
     // These metadata roles deliberately disagree with the token: claims are authoritative.
     actors: ['nurse-a', 'nurse-b', 'doctor'].map((subject, i) => ({ subject, user: { id: `unused-${i}`, role: 'physician' }, modelId: i + 1,
-      patients: ['mar-patient', 'held-patient', 'refused-patient', 'high-patient', 'failure-patient'] })),
+      patients: ['mar-patient', 'held-patient', 'refused-patient', 'not-given-patient', 'delayed-patient', 'high-patient', 'failure-patient'] })),
     releases: { nurse: { spec: f.hospitalSpec, program: f.nurseProgram, workflows: Object.fromEntries(
-      ['mar', 'held', 'refused', 'high', 'failure'].map((kind, i) => [kind, { commit: 'administerMed', shared: { kind: 'dose', order: i + 1, occurrence: 600 },
+      ['mar', 'held', 'refused', 'high', 'failure', 'not-given', 'delayed'].map((kind, i) => [kind, { commit: 'administerMed', shared: { kind: 'dose', order: i + 1, occurrence: 600 },
         mar: { patient: `${kind}-patient`, medicationRequest: 'mar-order', encounter: 'enc-1', scheduledTime } }])) } } });
   const token = async (sub: string, roles = ['rn'], extra: Obj = {}) => new SignJWT({ typ: 'Bearer', azp: 'vgi-mar', realm_access: { roles }, ...extra })
     .setProtectedHeader({ alg: 'RS256', kid: 'test-key' }).setSubject(sub).setIssuer(issuer).setAudience('vgi-commit')
@@ -39,7 +39,7 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
   const nurseA = await actor(0); const nurseB = await actor(1);
   try {
     await migrate(a.db);
-    for (const [i, kind] of ['mar', 'held', 'refused', 'high', 'failure'].entries()) {
+    for (const [i, kind] of ['mar', 'held', 'refused', 'high', 'failure', 'not-given', 'delayed'].entries()) {
       const p = patient(f, `${kind}-patient`, i + 1, true);
       obj(obj(array(obj(p.bundle).entry)[1]).resource).class = { code: 'IMP' };
       objs(obj(p.bundle).entry).push({ resource: { resourceType: 'MedicationRequest', id: 'mar-order', meta: { versionId: '1' }, status: 'active', intent: 'order',
@@ -105,8 +105,8 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
       assert.equal(consumed.status, 409); assert.equal(consumed.body.reason, 'dose_already_administered');
       assert.equal((await api(a.base, nurseB, `/sessions/${s2.sessionId}/events`, { revision: s2.revision, event: f.adminEvents[0] })).status, 409);
     });
-    await t.test('held/refused are clinical not-done records, retain reason and do not consume a dose', async () => {
-      for (const kind of ['held', 'refused']) {
+    await t.test('all nonadministration outcomes retain reason, consume nothing and permit one later administration', async () => {
+      for (const kind of ['held', 'refused', 'not-given', 'delayed']) {
         const p = `${kind}-patient`;
         const events = adminEvents(f, p).map((e: Obj) => maybeObj(e.enter)?.comp === 'w4Admin.adminStatus' ? { enter: { ...obj(e.enter), value: { code: { c: kind } } } } : e);
         const s = await ready(a.base, nurseA, p, 'nurse', kind, events);
@@ -114,7 +114,9 @@ test('OIDC MAR: two nurses, exactly one dose; stale rejection, evidence reductio
         const read = (await api(a.base, nurseB, `/patients/${p}`)).body;
         assert.equal(objs(obj(obj(obj(read.snapshot).mar).shared).administrations).length, 0);
         const resource = required(objs(obj(obj(read.snapshot).bundle).entry).at(-1)).resource;
-        assert.equal(obj(resource).status, 'not-done'); assert.equal(obj(array(obj(array(obj(resource).statusReason)[0]).coding)[0]).code, kind);
+        assert.equal(obj(resource).status, kind === 'delayed' ? 'on-hold' : 'not-done');
+        assert.equal(obj(resource).dosage, undefined);
+        assert.equal(obj(array(obj(array(obj(resource).statusReason)[0]).coding)[0]).code, kind);
         const fresh = await ready(a.base, nurseA, p, 'nurse', kind, adminEvents(f, p));
         assert.equal((await api(a.base, nurseA, '/commands', { ...intent(fresh, `${kind}-stale`, administer), expectedVersion: 1 })).status, 409);
         assert.equal((await api(a.base, nurseA, '/commands', intent(fresh, `${kind}-then-given`, administer))).status, 201);

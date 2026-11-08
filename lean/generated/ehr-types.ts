@@ -1473,6 +1473,33 @@ export type W6Step =
 export const W6StepValues = ["consult", "preop", "postop", "rounding", "discharge"] as const;
 
 /**
+ * Scheduled-dose documentation outcomes; delayed is an unresolved attempt.
+ */
+export type AdministrationOutcome =
+  | "given"
+  | "held"
+  | "refused"
+  | "notGiven"
+  | "delayed";
+/** All values of `AdministrationOutcome`. */
+export const AdministrationOutcomeValues = ["given", "held", "refused", "notGiven", "delayed"] as const;
+
+/**
+ * Simulation policy (owner review): linked attempts retain one occurrence.
+ * Times are minutes since midnight; the generated window is a local assumption.
+ */
+export interface AdministrationDecision {
+  outcome: AdministrationOutcome;
+  reason: string;
+  occurrence: string;
+  scheduledMin: number;
+  windowEndMin: number;
+  attemptMin: number;
+  reoffer: boolean;
+  notifyPrescriber: boolean;
+}
+
+/**
  * A clinical decision, fixed per scenario (independent of the UI).
  */
 export interface OrderChoice {
@@ -1501,9 +1528,10 @@ export interface OrderChoice {
    */
   curesExemptReason?: string;
   /**
-   * Reason this administration is held or refused.
+   * Historical order hold; administration decisions use `administration?`.
    */
   holdReason?: string;
+  administration?: AdministrationDecision;
   indication?: string;
   prn: boolean;
 }

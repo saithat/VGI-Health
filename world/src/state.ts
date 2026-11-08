@@ -60,7 +60,7 @@ export interface Inpatient {
   /** Mean PRN analgesic doses per shift. */
   prnPerShift: number;
   caseId: string | null;
-  /** Off the ward (pre-op holding, OR, PACU): no ward med passes in these windows. */
+  /** Off the ward (pre-op holding, OR, PACU): scheduled doses are documented as delayed in these windows. */
   offWard: { day: number; fromClock: number; toClock: number }[];
   /** NPO until this clock on this day (before surgery). */
   npo: { day: number; untilClock: number }[];

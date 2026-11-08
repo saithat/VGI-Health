@@ -3,18 +3,18 @@
  * inpatient admitted before today. Scheduled meds are given at fixed pass
  * times; PRN analgesics need a pain score and a later reassessment;
  * high-alert meds (insulin, heparin) appear in the passes; some doses are
- * held or refused with a reason; every patient gets a handoff.
+ * held, refused, delayed or missed with a reason; every patient gets a handoff.
  *
- * Typed pain scores and per-order hold reasons describe administration decisions.
+ * Typed pain scores and linked dose outcomes describe administration decisions.
  * Reassessment is a note section plus a typed pain score; PRN reasons and
  * sedation scores use structured FHIR observations.
  */
 import type { DayBuild } from "../build";
 import { SHIFTS } from "../calendar";
 import { hasClass } from "../formulary";
-import type { Rng } from "../rng";
 import type { OrderChoice } from "../schema";
 import type { Inpatient } from "../state";
+import { criticalMedication, doseAttempts } from "../medication/outcomes";
 import { activeOrders, dischargeInpatient } from "./common";
 
 const P3_START = SHIFTS.P3.startClock;
@@ -60,23 +60,8 @@ function offWard(ip: Inpatient, day: number, clock: number): boolean {
   return ip.offWard.some((w) => w.day === day && clock >= w.fromClock && clock < w.toClock);
 }
 
-function npo(ip: Inpatient, day: number, clock: number): boolean {
-  return ip.npo.some((w) => w.day === day && clock < w.untilClock);
-}
-
 function gone(ip: Inpatient, day: number, clock: number): boolean {
   return ip.plannedDischargeDay === day && clock >= ip.dischargeClock;
-}
-
-/** Hold or refusal decision for one due dose (fixed clinical fact, not UI-dependent). */
-function holdReason(o: OrderChoice, ip: Inpatient, day: number, clock: number, rng: Rng): string | null {
-  if (o.drug === "insulin lispro" && npo(ip, day, clock)) return "npo";
-  if (o.drug === "lisinopril" && rng.chance(0.08)) return "sbp-below-100";
-  if (o.drug === "insulin lispro" && rng.chance(0.08)) return "poor-oral-intake";
-  if (o.drug === "warfarin" && rng.chance(0.05)) return "inr-above-range";
-  if ((o.drug === "heparin" || o.drug === "enoxaparin") && rng.chance(0.02)) return "platelets-low";
-  if (o.route === "PO" && rng.chance(0.025)) return "patient-refused";
-  return null;
 }
 
 /** Discharge today's planned medical discharges (no hospitalist persona; the world does it). */
@@ -96,24 +81,34 @@ export function runWard(b: DayBuild): void {
     let first = true;
     // Scheduled passes.
     for (const clock of PASS_CLOCKS) {
-      if (gone(ip, day, clock) || offWard(ip, day, clock)) continue;
+      if (gone(ip, day, clock)) continue;
       const due = activeOrders(ip, day, clock).filter((o) => dueClocks(o).includes(clock));
       const administer: OrderChoice[] = [];
       const notes: string[] = [];
-      if (first) {
+      if (first && !offWard(ip, day, clock)) {
         notes.push("vitals", "assessment");
         if (ip.admitDay === day - 1) notes.push("newOrdersReview");
-      } else if (clock === 840) {
+      } else if (clock === 840 && !offWard(ip, day, clock)) {
         notes.push("vitals"); // afternoon flowsheet vitals
       }
-      for (const o of due) {
-        const hold = holdReason(o, ip, day, clock, prng);
-        if (hold === null) administer.push(o);
-        else administer.push({ ...o, holdReason: hold });
+      for (const [orderIndex, o] of due.entries()) {
+        const occurrence = `${ip.admissionId}:${day}:${clock}:${orderIndex}:${o.drug}`;
+        const attempts = doseAttempts(o, ip, day, clock, occurrence, prng.fork(`outcome:${occurrence}`));
+        for (const [attemptIndex, administration] of attempts.entries()) {
+          const decision = attemptIndex > 0 && administration.outcome === "given" &&
+            !activeOrders(ip, day, administration.attemptMin).includes(o)
+            ? { ...administration, outcome: "notGiven" as const, reason: "order-no-longer-active",
+              notifyPrescriber: criticalMedication(o) }
+            : administration;
+          const medication = { ...o, administration: decision };
+          if (attemptIndex === 0 && administration.attemptMin === clock) administer.push(medication);
+          else b.addTask("P3", "W4", ip.patientId, toMin(administration.attemptMin),
+            { administer: [medication] }, [], b.interruptions("P3", prng.fork(`followup:${occurrence}`)));
+        }
       }
       if (administer.length === 0 && notes.length === 0) continue;
       b.addTask("P3", "W4", ip.patientId, toMin(clock) + (idx % 6) * 3, { administer, noteSections: notes }, [], b.interruptions("P3", prng));
-      first = false;
+      if (notes.includes("assessment")) first = false;
     }
     // Every patient on the census gets at least an assessment, even if off the ward for the morning passes.
     if (first) {

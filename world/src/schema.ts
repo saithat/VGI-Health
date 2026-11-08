@@ -50,6 +50,23 @@ export const PERSONAS: readonly Persona[] = PersonaSchema.options;
  *
  * `drug`: the lowercase generic formulary name, as defined in lean/Ehr/Formulary.lean.
  */
+export const AdministrationDecisionSchema = z.strictObject({
+  outcome: z.enum(["given", "held", "refused", "notGiven", "delayed"]),
+  reason: z.string().min(1),
+  occurrence: z.string().min(1),
+  scheduledMin: Nat,
+  windowEndMin: Nat,
+  attemptMin: Nat,
+  reoffer: z.boolean(),
+  notifyPrescriber: z.boolean(),
+}).superRefine((a, ctx) => {
+  if (a.windowEndMin < a.scheduledMin || a.attemptMin < a.scheduledMin ||
+      ((a.outcome === "given" || a.outcome === "delayed") && a.attemptMin > a.windowEndMin)) {
+    ctx.addIssue({ code: "custom", message: "Administration attempt outside its declared window" });
+  }
+});
+export type AdministrationDecision = z.infer<typeof AdministrationDecisionSchema>;
+
 export const OrderChoiceSchema = z.strictObject({
   drug: z.string(),
   kind: opt(z.enum(OrderKindValues)),
@@ -61,11 +78,15 @@ export const OrderChoiceSchema = z.strictObject({
   supplyDays: opt(Nat),
   curesExemptReason: opt(z.string().min(1)),
   holdReason: opt(z.string().min(1)),
+  administration: opt(AdministrationDecisionSchema),
   indication: opt(z.string().min(1)),
   prn: z.boolean(),
 }).superRefine((o, ctx) => {
+  if (o.holdReason != null && o.administration != null) {
+    ctx.addIssue({ code: "custom", message: "Order hold and administration decision must be separate" });
+  }
   const service = o.kind === "imaging" || o.kind === "procedure";
-  if (service ? o.drug !== "" || !o.code || o.doseTenths !== 0 || o.unit !== "none" || o.route !== "" || o.freq !== "" || o.prn || o.supplyDays != null || o.curesExemptReason != null || o.holdReason != null : o.drug === "" || o.route === "" || o.freq === "") {
+  if (service ? o.drug !== "" || !o.code || o.doseTenths !== 0 || o.unit !== "none" || o.route !== "" || o.freq !== "" || o.prn || o.supplyDays != null || o.curesExemptReason != null || o.holdReason != null || o.administration != null : o.drug === "" || o.route === "" || o.freq === "") {
     ctx.addIssue({ code: "custom", message: "Expected a medication or a coded, nondrug service order" });
   }
 });

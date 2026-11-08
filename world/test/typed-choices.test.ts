@@ -17,8 +17,8 @@ import { allTasks, FIXTURE_INDEX, run, SYNTHEA_INDEX } from "./helpers";
 
   it("uses typed pain, holds/refusals, surgical stages and refill reasons", () => {
     expect(tasks.some((t) => t.choices.painScore !== undefined)).toBe(true);
-    expect(tasks.some((t) => t.choices.administer.some((o) => o.holdReason === "patient-refused"))).toBe(true);
-    expect(tasks.some((t) => t.choices.administer.some((o) => o.holdReason !== undefined && o.holdReason !== "patient-refused"))).toBe(true);
+    expect(tasks.some((t) => t.choices.administer.some((o) => o.administration?.outcome === "refused"))).toBe(true);
+    expect(tasks.some((t) => t.choices.administer.some((o) => o.administration?.outcome === "held"))).toBe(true);
     for (const t of tasks) {
       if (t.workflow === "W6") expect(t.choices.w6Step).toBeDefined();
       if (t.workflow === "W7" && t.choices.refill !== "approve") expect(t.choices.refillReason).toBeTruthy();

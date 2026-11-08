@@ -89,7 +89,7 @@ def admin : Screen :=
       field s "highAlertCosign" "highAlertCosign" "Second nurse — independent check" (parent := some "independentCheck"),
       field s "painScore" "painScore" "Pain score before dose (0–10)" (parent := some "independentCheck"),
       group s "documentation" "Administration documentation" (collapsible := false),
-      field s "adminStatus" "adminStatus" "Action: given / held / refused" (parent := some "documentation"),
+      field s "adminStatus" "adminStatus" "Action: given / held / refused / delayed / not-given" (parent := some "documentation"),
       field s "adminSite" "adminSite" "Administration site (or not applicable)" (parent := some "documentation"),
       field s "adminReason" "adminReason" "Reason / administration comment" (parent := some "documentation"),
       macroBtn s "heldNpo" "w4HeldNpo" "Document held: NPO",

@@ -14,6 +14,8 @@ inductive Event where
   | administered (dose : Multi.DoseKey) (actor : Nat) (user : String)
   | held (dose : Multi.DoseKey) (user reason : String)
   | refused (dose : Multi.DoseKey) (user reason : String)
+  | notGiven (dose : Multi.DoseKey) (user reason : String)
+  | delayed (dose : Multi.DoseKey) (user reason : String)
   | barcodeScanned (dose : Multi.DoseKey) (user target value : String)
   | doubleCheckCosign (dose : Multi.DoseKey) (user cosigner : String)
   deriving DecidableEq, Repr, ToJson, FromJson
@@ -23,7 +25,7 @@ structure State where
   events : List Event := []
   deriving DecidableEq, Repr, ToJson, FromJson
 
-/-- Held/refused doses and evidence never consume a scheduled occurrence. -/
+/-- Held/refused/not-given/delayed doses and evidence never consume a scheduled occurrence. -/
 def applyEvent (s : State) (e : Event) : State :=
   { shared := match e with
       | .administered dose actor _ => Multi.step s.shared (.administer actor dose)
@@ -43,6 +45,20 @@ theorem reduce_invariant (s : State) (events : List Event) (h : Invariant s) :
   induction events generalizing s with
   | nil => exact h
   | cons e rest ih => exact ih _ (applyEvent_invariant s e h)
+
+/-- New outcome states are documentation only; a later offer uses the same key. -/
+theorem nonadministration_preserves_shared (s : State) (dose : Multi.DoseKey)
+    (user reason : String) :
+    (applyEvent s (.held dose user reason)).shared = s.shared ∧
+    (applyEvent s (.refused dose user reason)).shared = s.shared ∧
+    (applyEvent s (.notGiven dose user reason)).shared = s.shared ∧
+    (applyEvent s (.delayed dose user reason)).shared = s.shared := by
+  exact ⟨rfl, rfl, rfl, rfl⟩
+
+/-- Any finite history, including repeated offers, has at most one administration
+per occurrence when the starting store satisfies the existing invariant. -/
+theorem reoffers_doses_unique (s : State) (events : List Event) (h : Invariant s) :
+    Multi.DosesUnique (reduce s events).shared := (reduce_invariant s events h).1
 
 structure Input where
   state : State
@@ -85,6 +101,8 @@ def outcomeEvent (i : Input) (s : Ehr.State) : Option Event :=
   | "given" => some (.administered i.dose i.actor i.request.user.id)
   | "held" => some (.held i.dose i.request.user.id (capturedText s "adminReason"))
   | "refused" => some (.refused i.dose i.request.user.id (capturedText s "adminReason"))
+  | "not-given" => some (.notGiven i.dose i.request.user.id (capturedText s "adminReason"))
+  | "delayed" => some (.delayed i.dose i.request.user.id (capturedText s "adminReason"))
   | _ => none
 
 private def ref (value : String) : Json := Json.mkObj [("reference", .str value)]
@@ -109,7 +127,7 @@ def resource (i : Input) (s : Ehr.State) : Json := Id.run do
     ("resourceType", .str "MedicationAdministration"), ("id", .str i.resourceId),
     ("meta", Json.mkObj [("versionId", .str (toString (i.version + 1)))]),
     ("identifier", toJson [Json.mkObj [("system", .str "urn:vgi:mar-event"), ("value", .str i.resourceId)]]),
-    ("status", .str (if status == "given" then "completed" else "not-done")),
+    ("status", .str (if status == "given" then "completed" else if status == "delayed" then "on-hold" else "not-done")),
     ("statusReason", if status == "given" then .null else
       toJson [Json.mkObj [("coding", toJson [Json.mkObj [("system", .str "urn:vgi:mar-status"),
         ("code", .str status)]]), ("text", .str (capturedText s "adminReason"))]]),
@@ -122,7 +140,7 @@ def resource (i : Input) (s : Ehr.State) : Json := Id.run do
     ("performer", toJson [Json.mkObj [("actor", ref ("Practitioner/" ++ i.request.user.id))]]),
     ("extension", toJson [Json.mkObj [("url", .str "urn:vgi:scheduled-dose"), ("valueString", .str (toJson i.dose).compress)],
       Json.mkObj [("url", .str "urn:vgi:mar-evidence"), ("valueString", .str (toJson (evidence i s)).compress)]])] ++
-    (if dosage.isEmpty then [] else [("dosage", Json.mkObj dosage)])).filter (fun pair => pair.2 != .null))
+    (if status != "given" || dosage.isEmpty then [] else [("dosage", Json.mkObj dosage)])).filter (fun pair => pair.2 != .null))
 
 structure ContextInput where
   bundle : Json
@@ -218,6 +236,8 @@ theorem accepted_guard_at_written_version (i : Input) (a : Accepted)
   obtain ⟨current, hp, hg, _⟩ := accepted_current_guard i.request ps staged checked
   exact ⟨hv, congrArg (· + 1) hv, current, hp, hg⟩
 
+#print axioms nonadministration_preserves_shared
+#print axioms reoffers_doses_unique
 #print axioms applyEvent_invariant
 #print axioms reduce_invariant
 #print axioms commit_invariant

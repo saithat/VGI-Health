@@ -26,6 +26,17 @@ describe('validators vs Lean-written samples', () => {
     expect(sampleTask.id.length).toBeGreaterThan(0);
   });
 
+  it.each(['given', 'held', 'refused', 'delayed', 'notGiven'])('preserves %s administration decisions and linked follow-up', outcome => {
+    const medication = { drug: 'amoxicillin', doseTenths: 5000, unit: 'mg', route: 'PO', freq: 'BID', prn: false,
+      administration: { outcome, reason: 'documented-reason', occurrence: 'order9:600', scheduledMin: 600,
+        windowEndMin: 630, attemptMin: 620, reoffer: true, notifyPrescriber: true } };
+    const day = { ...sampleDay, tasks: [{ ...sampleTask, choices: { ...sampleTask.choices, administer: [medication] } }] };
+    same(dayScheduleSchema.parse(day), day);
+    const legacy = { ...day, tasks: [{ ...day.tasks[0], choices: { ...sampleTask.choices,
+      administer: [{ ...medication, administration: null }] } }] };
+    expect(dayScheduleSchema.parse(legacy).tasks[0]?.choices.administer[0]).not.toHaveProperty('administration');
+  });
+
   it('real vendor specs and programs round-trip without dropping constrained values or release actions', () => {
     for (const version of [RELEASE_IDS.base, RELEASE_IDS.feature, RELEASE_IDS.migration]) {
       const spec: unknown = JSON.parse(readFileSync(`${REPO_ROOT}/releases/${version}/spec.json`, 'utf8'));

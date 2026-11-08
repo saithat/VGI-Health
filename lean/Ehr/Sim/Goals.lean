@@ -105,6 +105,32 @@ def immunizationElements : List ElementId := ["vaccine", "immunization", "cvx"]
 /-- The text typed for a note section. -/
 def noteText (sec : String) : String := sec ++ ": reviewed, see plan."
 
+/-- Explicit administration outcomes take priority. Frozen schedules keep their
+historical hold data, including the former refusal sentinel, without redrawing them. -/
+def administrationOutcome (m : OrderChoice) : AdministrationOutcome :=
+  match m.administration? with
+  | some a => a.outcome
+  | none => if m.holdReason? == some "patient-refused" then .refused
+    else if m.holdReason?.isSome then .held else .given
+
+def administrationStatus (m : OrderChoice) : String :=
+  match administrationOutcome m with
+  | .given => "given" | .held => "held" | .refused => "refused"
+  | .notGiven => "not-given" | .delayed => "delayed"
+
+/-- Document the reason and performed follow-up, without converting refusal to hold. -/
+def administrationReason (m : OrderChoice) : String :=
+  match m.administration? with
+  | none => m.holdReason?.getD "scheduled"
+  | some a => a.reason ++ (if a.reoffer then "; re-offered within window" else "") ++
+    (if a.notifyPrescriber then "; prescriber notified" else "")
+
+def administrationFollowup (m : OrderChoice) : String :=
+  match m.administration? with
+  | none => ""
+  | some a => s!"Dose {a.occurrence}: {administrationStatus m}; {administrationReason m}. " ++
+    s!"Scheduled {a.scheduledMin}; attempt {a.attemptMin}; window ends {a.windowEndMin}."
+
 /-- The value of a task-level element. `med?` is the medication given in this
 episode (W4), used for order-element names on an administration. -/
 def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Option OrderChoice)
@@ -127,8 +153,11 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
       (taskCuresReason choices).map .code
     else if el.id == "naloxoneOffer" then some (.code
       (if facts.record.lookup "naloxoneOffer" == some "accepted" then "prescribed" else "offered-declined"))
-    else if el.id == "adminStatus" then med?.map fun m => .code (if m.holdReason?.isSome then "held" else "given")
-    else if el.id == "adminReason" then med?.map fun m => .code (m.holdReason?.getD "scheduled")
+    else if el.id == "adminStatus" then med?.map fun m => .code (administrationStatus m)
+    else if el.id == "adminReason" then med?.map fun m => .code (administrationReason m)
+    else if ["nursingAssessment", "nursingIntervention", "nursingIncidents"].contains el.id &&
+        med?.any (fun m => m.administration?.any (·.notifyPrescriber)) then
+      med?.map fun m => .text (administrationFollowup m)
     else if el.id == "refillDecision" then choices.refill?.map .code
     else if el.id == "disposition" || el.id == "dispositionChoice" then choices.disposition?.map .code
     else if choices.noteSections.contains el.id then some (.text (noteText el.id))
@@ -443,7 +472,13 @@ def episodes (facts : Facts) (wf : Workflow) (ch : TaskChoices) : List Episode :
         choices := { ch with administer := [m], noteSections := [] }, orders := [], med? := some m : Episode }
     let assessment := if ch.noteSections.isEmpty && (!ch.administer.isEmpty || ch.painScore?.isNone) then [] else
       [{ facts, choices := { ch with administer := [] }, orders := [] }]
-    meds ++ assessment
+    let followups := ch.administer.filterMap fun m =>
+      if m.administration?.any (·.notifyPrescriber) then
+        some ({ facts := facts
+                choices := { ch with administer := [], noteSections := ["nursingAssessment"] }
+                orders := [], med? := some m } : Episode)
+      else none
+    meds ++ followups ++ assessment
   | .W5 =>
     let medical := if ch.orders.isEmpty && (ch.noteSections.filter (· != "visGiven")).isEmpty &&
       (!ch.immunizations.isEmpty || ch.noteSections.isEmpty) then [] else

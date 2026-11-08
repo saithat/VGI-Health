@@ -1615,7 +1615,8 @@ def acuteAdministrationStatus (r : Json) : String :=
     let reasons := (arr r "statusReason").map firstCode
     if reasons.contains "refused" then "Refused"
     else if reasons.contains "held" then "Held" else "Not given"
-  | "on-hold" => "Held"
+  | "on-hold" =>
+    if ((arr r "statusReason").map firstCode).contains "delayed" then "Delayed" else "Held"
   | "in-progress" => "In progress"
   | other => other
 

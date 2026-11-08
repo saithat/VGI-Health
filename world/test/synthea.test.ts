@@ -1,3 +1,4 @@
+import { runFrozenWard } from "./frozen-ward";
 import { dataReason } from "./data";
 import { historicalReleaseEventId } from "../../scripts/historical-releases.mjs";
 import { spawnSync } from "node:child_process";
@@ -34,20 +35,22 @@ const reason = dataReason("fixtures/synthea", "runs/world/1", "runs/world/2");
 describe.skipIf(Boolean(reason))(`archived Synthea worlds${reason ? ` (${reason})` : ""}`, () => {
 let population: ReturnType<typeof loadPopulation>;
 let run: ReturnType<typeof generateWorld>;
+let frozen: ReturnType<typeof generateWorld>;
 beforeAll(() => {
   population = loadPopulation(join(root, "fixtures/synthea/index.json"));
   run = generateWorld(1, 10, population.patients);
+  frozen = generateWorld(1, 10, population.patients, runFrozenWard);
 });
 
-it("keeps the regenerated seed-1 snapshot and below 20 MB", () => {
+it("keeps the frozen-ward seed-1 snapshot and below 20 MB", () => {
   const dir = join(root, "runs/world/2");
   const read = (file: string): unknown => JSON.parse(readFileSync(join(dir, file), "utf8"));
   const manifest = z.object({ seed: z.number(), days: z.number(), files: z.array(z.string()) }).parse(read("manifest.json"));
   expect(manifest.seed).toBe(1);
   expect(manifest.days).toBe(10);
   expect(manifest.files.reduce((bytes, file) => bytes + statSync(join(dir, file)).size, 0)).toBeLessThan(20_000_000);
-  expect(read("state-day-0.json")).toEqual(run.initial);
-  for (const d of run.days) {
+  expect(read("state-day-0.json")).toEqual(frozen.initial);
+  for (const d of frozen.days) {
     expect(read(`state-day-${d.state.day}.json`)).toEqual(d.state);
     for (const p of PERSONAS) {
       expect(successor(read(`day-${d.state.day}-${p}.json`))).toEqual(d.schedules[p]);
@@ -57,7 +60,7 @@ it("keeps the regenerated seed-1 snapshot and below 20 MB", () => {
 });
 
 it("preserves world 1 state and random draws through the explicit service-release and critical-result successors", () => {
-  for (const d of run.days) {
+  for (const d of frozen.days) {
     const legacy = JSON.parse(readFileSync(join(root, `runs/world/1/state-day-${d.state.day}.json`), "utf8"));
     legacy.context.scriptedEvents = legacy.context.scriptedEvents.map(historicalReleaseEventId);
     expect(legacy).toEqual(d.state);

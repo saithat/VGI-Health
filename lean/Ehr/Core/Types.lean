@@ -1078,6 +1078,24 @@ inductive W6Step
   | consult | preop | postop | rounding | discharge
   deriving DecidableEq, Repr, Inhabited
 
+/-- Scheduled-dose documentation outcomes; delayed is an unresolved attempt. -/
+inductive AdministrationOutcome where
+  | given | held | refused | notGiven | delayed
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Simulation policy (owner review): linked attempts retain one occurrence.
+Times are minutes since midnight; the generated window is a local assumption. -/
+structure AdministrationDecision where
+  outcome : AdministrationOutcome
+  reason : String
+  occurrence : String
+  scheduledMin : Nat
+  windowEndMin : Nat
+  attemptMin : Nat
+  reoffer : Bool
+  notifyPrescriber : Bool
+  deriving DecidableEq, Repr, Inhabited
+
 /-- A clinical decision, fixed per scenario (independent of the UI). -/
 structure OrderChoice where
   /-- Formulary name (lowercase generic), e.g. `"amoxicillin"`. -/
@@ -1094,8 +1112,9 @@ structure OrderChoice where
   supplyDays? : Option Nat := none
   /-- Documented CURES exemption reason, if applicable to this prescription. -/
   curesExemptReason? : Option String := none
-  /-- Reason this administration is held or refused. -/
+  /-- Historical order hold; administration decisions use `administration?`. -/
   holdReason? : Option String := none
+  administration? : Option AdministrationDecision := none
   indication? : Option String := none
   prn : Bool := false
   deriving DecidableEq, Repr, Inhabited
