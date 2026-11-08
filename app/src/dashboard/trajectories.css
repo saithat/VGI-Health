@@ -358,7 +358,7 @@
   flex-direction: column;
   gap: 12px;
 }
-.dashboard .trajectory-playback {
+.dashboard .trajectory-playback:not(:fullscreen) {
   border: 1px solid var(--clinical-border);
   border-radius: 6px;
   background: var(--clinical-surface);

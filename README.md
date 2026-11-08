@@ -1,4 +1,4 @@
-_README last reviewed against commit `cbc1bc79` (2026-11-07)._
+_README last reviewed against commit `b09f6788` (2026-11-07)._
 
 # VGI Health
 
@@ -737,6 +737,8 @@ author isolation, date expiry and target-version invalidation.
 stops. The dashboard, UI browser and trajectory player read that directory
 through the local Vite dev/preview data layer. There is no second recording
 or copy step. The retained recording is `core-10day`.
+Fullscreen playback retains its dark metrics background and reserved transport
+space; the recorded EHR keeps its fixed 1440×900 logical viewport.
 Catalog discovery ignores unrelated research manifests under `runs/` and validates
 recordings before exposing their completed prefixes. The authored `mock` fixture
 uses the same day/night fences; conformance evidence loads separately from the summary.
@@ -1581,8 +1583,8 @@ font tests) and seven Playwright tests (one worker under the shared lock, after
 the refreshed port audit). The differential compared
 228 boxes, 153 text lines and 6,861 intrinsic glyph advances: all worst
 deviations were 0 CSS px. The named-declaration audit covers 186 theorems. Environment-wide inspection
-also checks generated helper lemmas: 551 theorem closures use only `propext`,
-`Classical.choice` and `Quot.sound`.
+also checks generated helper lemmas: 1,143 theorem declarations, of which 592
+are axiom-free and 551 use only `propext`, `Classical.choice` and `Quot.sound`.
 
 The targeted browser command also paints the audit's W1 sample when present
 and verifies vertical scrolling/preservation of a 70,000-character safety value
