@@ -467,7 +467,7 @@ uncalibrated rates remain for owner review in this single decision list.
 | Swap compatibility | Two distinct admitted patients owning distinct active occupied beds; complete signed board scope; no additional unit/service compatibility restriction. |
 | ADT simulation and transport | Provisional movement/error rates and cleaning/transport delays; `adt.json` is an administrative stream, with physical transport represented separately and no change to bedside clinical effort. |
 | Workload dispatch and coverage | One serial clinician/coverage chain; priority/deadline/arrival ordering; task-boundary dispatch with event-boundary communication preemption; 15-minute hospital overlap; finite successor coverage and clinic weekend closure. ESI queue deadlines are 10/30/60 minutes for ESI ≤2/3/≥4. |
-| Workload scope and endpoints | Source worlds supply weekday daytime cases; extended queues do not merge subsequent days' arrivals or create independent night/weekend demand. Successor actor knowledge and live handoff acceptance remain outside this model. Result response and MAR lateness end at documentation completion; missing source timing uses planned readiness. |
+| Workload scope and endpoints | Source worlds supply weekday daytime cases; extended queues do not merge subsequent days' arrivals or create independent night/weekend demand. Successor actor knowledge and live handoff acceptance remain outside this model. Completed tasks use documentation endpoints; abandoned MAR attempts use service finish, carried doses use the coverage horizon. Result response requires completion. Missing source timing uses planned readiness. |
 | Draft ownership and authority | Frames bind clinician, source patient and task; any workspace must remain selected and bound to that patient to restore. Current receipt rules filter stale evidence; changed chart data requires reconfirmation. Incomplete unsent drafts are discarded with reasons. Named handover transfers responsibility, without sign authority or another clinician's draft. |
 | Interruption service and calibration | Role/setting profiles, minute-bin rates, fixed task exposure, urgency/type mix, protected-popup triage, semantic communication steps and return costs are provisional. Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
 
@@ -2714,12 +2714,12 @@ World clinical state remains exogenous rather than being altered by a faster arm
 distinct overdue MAR occurrence count, completed-result response time (availability
 to documentation finish, including source backlog age before the schedule origin),
 active overtime and tasks handed over. Per-task timing
-and pending source IDs are retained. Dose/result endpoints use the exact final
-clinical-event completion, before unrelated closure communication; task service
-finish and subsequent queue delay still include that communication. A dose is
-overdue when task documentation
-finishes after its existing MAR window, or that window has passed at the final
-coverage horizon. This conservative documentation proxy includes held/refused
+and pending source IDs are retained. Completed dose/result endpoints use the exact
+final clinical-event completion, before unrelated closure communication; task service
+finish and subsequent queue delay still include that communication. A completed
+task's dose is overdue when documentation finishes after its existing MAR window.
+Abandoned attempts use service finish; carried work uses the final coverage horizon.
+This timing proxy includes held/refused
 outcomes; it does not claim measured bedside administration time. Dashboard and
 measurement reports expose these values separately from physical effort. Legacy
 recordings without this envelope show timing as unavailable. Simulator type augmentation is generated in `lean/generated/sim-types.ts`;
@@ -3287,7 +3287,9 @@ use a new active `geometry/` namespace. The adapter still refuses mismatched
 program/component/build bindings. Status remains pending until measurement and
 regenerated replay verification finish.
 The final status is written before computing the run digest, so the digest covers
-the passed manifest as well as the remeasured files.
+the passed manifest as well as the remeasured files. Canonical hashing emits
+sorted JSON incrementally, preserving the digest protocol without duplicating
+large retained screen exports into another tree and full serialized string.
 Rejected recertifications cannot supply conformance targets.
 
 The native offline A/B/C harness creates independent archives and memories for

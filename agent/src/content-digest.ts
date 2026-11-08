@@ -4,6 +4,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { gunzipSync } from 'node:zlib';
+import { createHash } from 'node:crypto';
 import path from 'node:path';
 import { sha256,stableStringify } from './program.js';
 import { writeJson } from './util.js';
@@ -40,6 +41,28 @@ export function canonicalContent(value:unknown,file:string,runDir:string):unknow
   return item;
  };return visit(value);
 }
+/** Emit the same canonical bytes without cloning a large export or joining it
+ * into a second complete JSON string. The parsed input is the only full tree.
+ */
+export function hashCanonicalContent(value:unknown,file:string,runDir:string):string {
+ const keys=new Set(VOLATILE_FIELDS.filter(rule=>rule.file.test(file)).flatMap(rule=>rule.keys));
+ const hash=createHash('sha256');let chunks:string[]=[],length=0;
+ const emit=(text:string):void=>{
+  chunks.push(text);length+=text.length;
+  if(length>=65536){hash.update(chunks.join(''));chunks=[];length=0;}
+ };
+ const visit=(item:unknown):void=>{
+  if(Array.isArray(item)){
+   emit('[');for(let i=0;i<item.length;i++){if(i)emit(',');if(i in item)visit(item[i]);}emit(']');
+  } else if(item&&typeof item==='object'){
+   emit('{');let first=true;
+   for(const key of Object.keys(item).filter(key=>!keys.has(key)&&Reflect.get(item,key)!==undefined).sort()){
+    if(!first)emit(',');first=false;emit(JSON.stringify(key));emit(':');visit(Reflect.get(item,key));
+   }emit('}');
+  } else emit(JSON.stringify(typeof item==='string'?normalizeMetadataPaths(item,runDir):item)??'null');
+ };
+ visit(value);if(length)hash.update(chunks.join(''));return hash.digest('hex');
+}
 export interface ContentDigest { contentDigest:string; files:Record<string,{sha256:string;content?:unknown}> }
 export async function contentDigest(dir:string,include:(file:string)=>boolean=()=>true,retainContent=false):Promise<ContentDigest>{
  const files:ContentDigest['files']={};
@@ -56,7 +79,7 @@ export async function contentDigest(dir:string,include:(file:string)=>boolean=()
    else if(/\.json(?:\.gz)?$/.test(file))value=JSON.parse(text);
    else if(/\.(txt|md|tsx?|html|css|svg)$/.test(file))value=text;
    else value={bytes:bytes.toString('base64')};
-   const content=canonicalContent(value,file,dir);files[file]={sha256:sha256(stableStringify(content)),...(retainContent?{content}:{})};
+   files[file]={sha256:hashCanonicalContent(value,file,dir),...(retainContent?{content:canonicalContent(value,file,dir)}:{})};
   }
  }await walk(dir);
  return {contentDigest:sha256(stableStringify(Object.fromEntries(Object.entries(files).map(([file,entry])=>[file,entry.sha256])))),files};

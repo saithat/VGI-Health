@@ -8,7 +8,8 @@ import { retryInfrastructure,infrastructureContext } from '../src/infrastructure
 import { InfrastructureError } from '../src/errors.js';
 import { recordingEhr } from '../src/recording-ehr.js';
 import { createFakeEhr } from '../src/fake/ehr-fake.js';
-import { contentDigest,firstDifference } from '../src/content-digest.js';
+import { canonicalContent,contentDigest,firstDifference,hashCanonicalContent } from '../src/content-digest.js';
+import { sha256,stableStringify } from '../src/program.js';
 import { armCrashHook } from '../src/crash-hook.js';
 import { tmp } from './helpers.js';
 import { writeJson } from '../src/util.js';
@@ -57,6 +58,15 @@ it('digests exclude declared provenance but detect clinical time and array order
  await writeJson(path.join(a,'attempt.error.json'),{error:'a'});await writeJson(path.join(b,'digest.json'),{contentDigest:'b'});
  expect((await contentDigest(a)).contentDigest).toBe((await contentDigest(b)).contentDigest);
  await writeJson(path.join(b,'trace.json'),{events:[{time:2},{time:1}]});expect(firstDifference(await contentDigest(a,undefined,true),await contentDigest(b,undefined,true))).toContain('trace.json $.events.0.time');
+});
+it('incremental content hashing preserves the established canonical byte protocol',()=>{
+ const dir='/recorded-run';
+ const cases:unknown[]=[null,17,-0,true,'escape\n"\\😀\ud800',
+  {z:undefined,a:[null,undefined,{createdAt:'ignored',time:42,runId:'identity',path:dir+'/days/task.json'}]},
+  Array.from({length:5000},(_,i)=>({z:i,createdAt:String(i),a:'é😀'.repeat(i%11),nested:{b:false,a:null}}))];
+ for(const file of ['trace.json','manifest.json','decisions/night-01/P1.json','certs/P1/v1.build.json'])
+  for(const value of cases)
+   expect(hashCanonicalContent(value,file,dir)).toBe(sha256(stableStringify(canonicalContent(value,file,dir))));
 });
 it('crash hook refuses live backends before any write',()=>{
  vi.stubEnv('EHR_CRASH_TEST','1');vi.stubEnv('EHR_CRASH_AFTER_WRITES','1');
