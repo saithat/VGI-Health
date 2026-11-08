@@ -308,7 +308,13 @@ const itemSchema = z.object({
       status: z.string(),
       effectiveDateTime: z.string(),
       statusReason: z
-        .array(z.object({ text: z.string().optional() }))
+        .array(z.object({
+          text: z.string().optional(),
+          coding: z.array(z.object({
+            system: z.string().optional(),
+            code: z.string().optional(),
+          })).optional(),
+        }))
         .optional(),
     }),
   ),

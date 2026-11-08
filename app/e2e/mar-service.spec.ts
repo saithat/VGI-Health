@@ -104,7 +104,7 @@ async function login(page: Page, username: string) {
   ).toBeVisible();
 }
 
-test("Keycloak login → MAR → administer → second nurse receives the persisted dose and a refreshed chart", async ({
+test("Keycloak MAR preserves each nonadministration outcome, re-offers the same dose and refreshes both nurses", async ({
   browser,
   baseURL,
   viewport,
@@ -134,25 +134,35 @@ test("Keycloak login → MAR → administer → second nurse receives the persis
       await action(page, "w4Worklist.review.allergyList");
       await action(page, "w4Worklist.toMar");
     }
-    await action(first, "w4Mar.openDue");
-    await enter(first, "w4Admin.wristbandScan", "mar-patient");
-    await enter(first, "w4Admin.medScan", "amoxicillin");
-    await enter(first, "w4Admin.adminStatus", "given");
-    await enter(first, "w4Admin.adminReason", "scheduled");
-    const saved = first.waitForResponse((res) =>
-      res.url().endsWith("/commit/commands"),
-    );
-    await component(first, "w4Admin.commit.administerMed").click();
-    expect((await (await saved).json()).version).toBe(2);
-    await expect(
-      first.getByText("Administration saved. MAR refreshed."),
-    ).toBeVisible();
-    await expect(second.getByTestId("mar-history")).toContainText("Given");
-    await expect(second.getByRole("status")).toContainText(
-      "MAR updated by another nurse",
-    );
-    // Stale evidence was discarded; a fresh review starts from home.
-    await expect(component(second, "home.work.w4Worklist")).toBeVisible();
+    const outcomes = [
+      ["held", "Held"], ["refused", "Refused"], ["not-given", "Not given"],
+      ["delayed", "Delayed"], ["given", "Given"],
+    ] as const;
+    for (const [index, [status, label]] of outcomes.entries()) {
+      if (index > 0) {
+        await action(first, "home.work.w4Worklist");
+        await action(first, "w4Worklist.review.allergyList");
+        await action(first, "w4Worklist.toMar");
+      }
+      await action(first, "w4Mar.openDue");
+      await enter(first, "w4Admin.wristbandScan", "mar-patient");
+      await enter(first, "w4Admin.medScan", "amoxicillin");
+      await enter(first, "w4Admin.adminStatus", status);
+      await enter(first, "w4Admin.adminReason", `live-${status}-reason`);
+      const saved = first.waitForResponse((res) => res.url().endsWith("/commit/commands"));
+      await component(first, "w4Admin.commit.administerMed").click();
+      expect((await (await saved).json()).version).toBe(index + 2);
+      await expect(first.getByText("Administration saved. MAR refreshed.")).toBeVisible();
+      for (const page of [first, second]) {
+        await expect(page.getByTestId("mar-history")).toContainText(`${label} ·`);
+        if (status !== "given")
+          await expect(page.getByTestId("mar-history")).toContainText(`live-${status}-reason`);
+      }
+      await expect(second.getByRole("status")).toContainText("MAR updated by another nurse");
+      // Each accepted attempt discards stale evidence, including nonconsuming outcomes.
+      await expect(component(first, "home.work.w4Worklist")).toBeVisible();
+      await expect(component(second, "home.work.w4Worklist")).toBeVisible();
+    }
     expect(errors).toEqual([]);
   } finally {
     await c1.close();

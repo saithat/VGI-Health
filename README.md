@@ -2572,7 +2572,12 @@ with a delayed reason for pending attempts, and not-done with the distinct
 held/refused/not-given reason for terminal nonadministration. Only given records
 contain dosage. Later giving the same occurrence consumes it once, even after
 multiple nonadministration attempts; a consumed occurrence rejects further MAR
-commits. The live reducer enforces occurrence uniqueness; timing and escalation
+commits. The live MAR directory retains the native outcome codes and displays Given,
+Held, Refused, Delayed and Not given distinctly, with nonadministration reasons.
+The live two-nurse regression documents all four nonconsuming outcomes before
+one administration of the same occurrence. The board browser regression exercises
+swap and all three linked cancellations through real authenticated commands.
+The live reducer enforces occurrence uniqueness; timing and escalation
 remain generated scenario policy, rather than new live authorization guards.
 No theorem statement in Specs, Props, Statements or comparator changed.
 The existing four MAR invariant/guard theorems keep their statements and now range
@@ -2622,7 +2627,7 @@ successor worlds/schedules, simulator measurements, trajectories and task contro
 and re-certify all 33 retained `core-10day` revision bindings against the changed
 Lean source and canonical MAR label, then remeasure/replay preserved inputs; a
 frozen run does not acquire new outcome scenarios by re-certification alone.
-The outcome model itself changes no app source or app hash input.
+MAR history and board display changes require matching app certificate bindings.
 
 ## Bounded clinician simulation
 

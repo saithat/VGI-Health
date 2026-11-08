@@ -19,6 +19,20 @@ const messageOf = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
 let restored: Promise<MarUser | undefined> | undefined;
 
+function administrationLabel(administration: MarItem["administrations"][number]) {
+  const outcome = administration.statusReason
+    ?.flatMap((reason) => reason.coding ?? [])
+    .find((coding) => coding.system === "urn:vgi:mar-status")?.code;
+  switch (administration.status) {
+    case "completed": return "Given";
+    case "on-hold": return outcome === "delayed" ? "Delayed" : "Held";
+    case "not-done":
+      return outcome === "held" ? "Held" : outcome === "refused" ? "Refused" : "Not given";
+    case "in-progress": return "In progress";
+    default: return administration.status;
+  }
+}
+
 function MarChart({ session, viewer }: { session: Session; viewer: string }) {
   const snapshot = useSyncExternalStore(session.subscribe, session.getSnapshot);
   const [error, setError] = useState("");
@@ -218,9 +232,7 @@ export function MarApp() {
                 {item.administrations.length ? (
                   item.administrations.map((administration) => (
                     <Text key={administration.id}>
-                      {administration.status === "completed"
-                        ? "Given"
-                        : "Not given"}{" "}
+                      {administrationLabel(administration)}{" "}
                       · {administration.effectiveDateTime}
                       {administration.statusReason
                         ?.map((reason) => reason.text)

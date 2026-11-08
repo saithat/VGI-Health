@@ -90,7 +90,7 @@ async function command(
   expect((await saved).status()).toBe(201);
 }
 
-test("bed manager admits, transfers, releases/reassigns, discharges and cleans; a second charge nurse sees atomic board updates; 4 West RN opens service MAR", async ({
+test("bed manager swaps, cancels all three movements and manages turnover; a second charge nurse sees board updates; 4 West RN opens service MAR", async ({
   browser,
   baseURL,
   viewport,
@@ -130,6 +130,33 @@ test("bed manager admits, transfers, releases/reassigns, discharges and cleans; 
     );
     await command(first, "assign", "Assign bed", "401");
     await expect(second.getByTestId("bed-401")).toContainText("mar-patient");
+    await first.getByLabel("Patient", { exact: true }).selectOption("adt-patient");
+    await command(first, "admit", "Admit", "402");
+    await first.getByLabel("Patient", { exact: true }).selectOption("mar-patient");
+    await first.getByLabel("Action", { exact: true }).selectOption("swap");
+    await first.getByLabel("Other patient", { exact: true }).selectOption("adt-patient");
+    await command(first, "swap", "Swap beds (A17)");
+    await expect(second.getByTestId("bed-401")).toContainText("adt-patient");
+    await expect(second.getByTestId("bed-402")).toContainText("mar-patient");
+    await command(first, "swap", "Swap beds (A17)");
+    await expect(second.getByTestId("bed-401")).toContainText("mar-patient");
+    await expect(second.getByTestId("bed-402")).toContainText("adt-patient");
+    await first.getByLabel("Patient", { exact: true }).selectOption("adt-patient");
+    await command(first, "discharge", "Discharge");
+    await command(first, "clean", "Start cleaning", "402");
+    await command(first, "ready", "Mark ready", "402");
+    await command(first, "cancelDischarge", "Cancel discharge (A13)", "402");
+    await expect(second.getByTestId("patient-adt-patient")).toContainText("Admitted · Bed 402");
+    await command(first, "discharge", "Discharge");
+    await command(first, "clean", "Start cleaning", "402");
+    await command(first, "ready", "Mark ready", "402");
+    await command(first, "admit", "Admit", "402");
+    await command(first, "cancelAdmit", "Cancel admission (A11)");
+    await expect(second.getByTestId("patient-adt-patient")).toContainText("Not admitted · No bed");
+    await command(first, "clean", "Start cleaning", "402");
+    await command(first, "ready", "Mark ready", "402");
+    await first.getByLabel("Action", { exact: true }).selectOption("transfer");
+    await first.getByLabel("Patient", { exact: true }).selectOption("mar-patient");
     await command(first, "transfer", "Transfer", "402");
     await expect(second.getByTestId("bed-401")).toContainText("dirty");
     await expect(second.getByTestId("bed-402")).toContainText("mar-patient");
@@ -140,6 +167,14 @@ test("bed manager admits, transfers, releases/reassigns, discharges and cleans; 
       path: testInfo.outputPath("bed-board.png"),
       fullPage: true,
     });
+    await command(first, "clean", "Start cleaning", "401");
+    await command(first, "ready", "Mark ready", "401");
+    await command(first, "cancelTransfer", "Cancel transfer (A12)");
+    await expect(second.getByTestId("patient-mar-patient")).toContainText("Bed 401");
+    await expect(second.getByTestId("bed-402")).toContainText("dirty");
+    await command(first, "clean", "Start cleaning", "402");
+    await command(first, "ready", "Mark ready", "402");
+    await command(first, "transfer", "Transfer", "402");
     await command(first, "release", "Release bed");
     await expect(second.getByTestId("patient-mar-patient")).toContainText(
       "Admitted · No bed",
