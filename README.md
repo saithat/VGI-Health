@@ -2947,6 +2947,12 @@ geometry. This avoids starting an interpreter for each popup. A three-bundle
 P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
+The installed app SHA-256 is
+`030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`.
+The MAR outcome display, notification-version handling and ADT board controls
+change the certified source boundary. Recordings require re-certification,
+remeasurement and strict replay against this binding before live use.
+
 Changes to the bound clinical sources require a new app hash and matching
 recording certificates, geometry measurements and strict replay evidence. The
 board controls are included in that boundary. `pnpm-lock.yaml` also participates
