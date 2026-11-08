@@ -13,6 +13,15 @@ import {readJson,writeJson,pad2} from './util.js';
 import {withSimulationModes,type SimulationModes} from './simulation-modes.js';
 
 const manifestSchema=z.object({days:z.number().int().positive(),personas:z.array(z.string()),world:z.string(),worldSeed:z.number()});
+/** Adopt copied choices into their review container without rewriting historical evidence. */
+export async function rebindRecordedChoices(directory:string,sourceRunId:string,runId:string,days:number,personas:string[]) {
+  for(let night=1;night<days;night++)for(const persona of personas) {
+    const file=path.join(directory,'decisions',`night-${pad2(night)}`,`${persona}.json`);
+    const record=await readJson(file,z.object({runId:z.string(),sourceRunId:z.string().optional()}).passthrough());
+    if(record.runId!==sourceRunId)throw Error(`Foreign recorded choice: ${night}/${persona}`);
+    await writeJson(file,{...record,runId,sourceRunId:record.sourceRunId??sourceRunId});
+  }
+}
 export async function remeasureRun(directory:string,inner:EhrClient,modes:SimulationModes,worldOverride?:string) {
   const manifest=await readJson(path.join(directory,'manifest.json'),manifestSchema);
   const world=worldOverride??manifest.world;

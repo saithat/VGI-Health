@@ -2749,8 +2749,10 @@ world/runtime fingerprints, labels the serial execution `OFFLINE`, and records
 the source recording digest. Copied decision/prompt evidence is explicitly
 historical. Relative paths are repository-relative.
 Calibration measurements are recomputed evidence;
-recorded historical decision estimates remain historical inputs. Successor world
-schedules and real-work measurements belong in separately labeled local outputs;
+recorded historical decision estimates remain historical inputs.
+Copied decisions adopt the new review run ID and retain their source run ID;
+their prompts, choices and historical estimates are preserved.
+Successor world schedules and real-work measurements belong in separately labeled local outputs;
 frozen worlds 1/2 are never regenerated in place. Source-bound native/WASM assets
 and certificate bindings must match before replay.
 The [workload verification receipt](docs/audits/workload-clock-20261108.md) records

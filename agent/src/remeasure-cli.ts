@@ -9,7 +9,7 @@ import {runFingerprints} from './fingerprints.js';
 import {loadWorld} from './world.js';
 import {browserGeometry} from './browser-geometry.js';
 import {geometryEhr} from './geometry.js';
-import {remeasureRun} from './remeasure.js';
+import {rebindRecordedChoices,remeasureRun} from './remeasure.js';
 import {simulationModesSchema} from './simulation-modes.js';
 import {contentDigest,writeDayDigest,writeNightDigest} from './content-digest.js';
 import {REPO_ROOT,readJson,writeJson} from './util.js';
@@ -20,7 +20,7 @@ if(!values.source||!values.out||!values.world)throw Error('Required: --source ru
 const source=path.resolve(REPO_ROOT,values.source),out=path.resolve(REPO_ROOT,values.out),world=path.resolve(REPO_ROOT,values.world);
 if(path.dirname(out)!==path.join(REPO_ROOT,'runs')||out===source||existsSync(out))throw Error('Output must be a new recording directly under runs/');
 const modes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork'});
-const original=await readJson(path.join(source,'manifest.json'),z.object({days:z.number().int().positive(),personas:z.array(z.string()),worldSeed:z.number().int(),contentDigest:z.string().optional(),ehr:z.object({mode:z.literal('real')})}).passthrough());
+const original=await readJson(path.join(source,'manifest.json'),z.object({runId:z.string(),days:z.number().int().positive(),personas:z.array(z.string()),worldSeed:z.number().int(),contentDigest:z.string().optional(),ehr:z.object({mode:z.literal('real')})}).passthrough());
 const manifest=original;
 const generated=await loadWorld(world);
 if(generated.manifest.seed!==manifest.worldSeed||generated.manifest.days<manifest.days||
@@ -34,6 +34,7 @@ for(const item of ['programs','certs','certifications','decisions','days','basel
 }
 for(const item of ['llm','archives'])if(existsSync(path.join(source,item)))
   await cp(path.join(source,item),path.join(out,item),{recursive:true});
+await rebindRecordedChoices(out,original.runId,path.basename(out),manifest.days,manifest.personas);
 await rm(path.join(out,'no-agent','geometry'),{recursive:true,force:true});
 const clockLabel=modes.clockMode==='legacy'?'legacy task clock':'shared workload clock';
 const workLabel=modes.interruptions==='fixedCost'?'fixed-cost interruptions':'typed interruption work';
