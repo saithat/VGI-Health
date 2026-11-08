@@ -41,3 +41,23 @@ test('fixed persona workflow contracts cover every commit exposed by all 15 cano
       [...personaWorkflows[persona], 'chart'].sort(), `${release}/${persona} workflow scope`);
   }
 });
+
+test('critical-result applicability preserves the frozen spec boundary and current obligations', () => {
+  const scenario = scenarioCatalog.find(s => s.id === 'alert.passive.criticalResult');
+  const target = {persona:'P4',program:read('releases/v1/personas/P4.json'),spec:read('releases/v1/spec.json')};
+  assert.equal(scenario.applies(target),true);
+  target.spec.alerts = target.spec.alerts.filter(a => a.id !== 'criticalResult');
+  assert.equal(scenario.applies({...target,frozenSpec:true,archived:false}),false);
+  assert.equal(scenario.applies(target),true,'A current missing alert must still fail the behavioral case');
+});
+
+test('optional service applicability distinguishes absent surfaces from a missing control', () => {
+  const scenario = scenarioCatalog.find(s => s.id === 'v2.prior-auth.imaging');
+  const target = {persona:'P5',program:read('releases/v2/personas/P5.json'),spec:read('releases/v2/spec.json')};
+  assert.equal(scenario.applies(target),true);
+  for(const s of target.program.screens)s.components=s.components.filter(c => c.kind?.field?.element !== 'orderKind');
+  assert.equal(scenario.applies(target),true,'An incomplete surfaced feature must still be exercised');
+  for(const s of target.program.screens)s.components=s.components.filter(c =>
+    !['orderCode','priorAuthRequest'].includes(c.kind?.field?.element) && c.kind?.button?.action !== 'requestPriorAuth');
+  assert.equal(scenario.applies(target),false);
+});

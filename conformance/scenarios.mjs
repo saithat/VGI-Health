@@ -61,6 +61,16 @@ for (const [id, fields] of Object.entries(entries)) {
         const d = f.prefix(ctx, element);
         const c = d.find(field(element), `element ${element}`);
         if (c.kind.field.prefill?.linked) {
+          if (!d.capture(element)) {
+            // Prefills run on screen entry. A revision may put source and
+            // destination together, so entering the source need not navigate.
+            // Revisit through actual controls before inspecting the link.
+            const screen = d.state.screen;
+            const leave = d.find(c => c.kind?.button?.action?.goto?.screen && c.kind.button.action.goto.screen !== screen,
+              'navigation away from linked field');
+            assert(d.step({click:{comp:leave.id}}, 'leave screen before linked prefill') === 'ok', 'Linked-field navigation refused');
+            d.find(field(element), `linked element ${element} after screen entry`);
+          }
           d.assertCaptured(element, sample(element, ctx, d));
           assert(d.capture(element).provenance === `linked:${linked[element]}`, `Wrong declared-link provenance for ${element}`);
           return { d, observed: `${element} confirmed from declared source ${linked[element]}` };
@@ -239,7 +249,8 @@ add('v3.mar-indication-shown', 'Release v3 antibiotic MAR review', 'Antibiotic i
 
 for (const service of ['imaging', 'procedure']) add(`v2.prior-auth.${service}`, 'Release v2 optional service prior auth',
   'Service has no drug line/alerts; human request captured; repeated request preserves it',
-  t => ['P1', 'P5'].includes(t.persona) && hasElement(t, 'priorAuthRequest'), f => {
+  t => ['P1', 'P5'].includes(t.persona) && hasElement(t, 'priorAuthRequest') &&
+    t.program.screens.some(s => s.components.some(c => ['orderKind','orderCode','priorAuthRequest'].includes(c.kind?.field?.element) || c.kind?.button?.action === 'requestPriorAuth')), f => {
     const ctx = context('signOrders', { service }), d = f.driver(ctx);
     d.enter('orderKind', code(service)); d.enter('orderCode', code('70551'));
     assert(!d.state.captured.some(x => x.element === 'drug'), 'Service incorrectly became a medication');
@@ -252,7 +263,7 @@ for (const service of ['imaging', 'procedure']) add(`v2.prior-auth.${service}`, 
     assert(JSON.stringify(d.capture('priorAuthRequest')) === saved, 'Request overwrote confirmed prior auth');
     assert(!d.view.items.some(i => i.shown && i.firing && i.comp.kind?.alert), 'Service triggered a drug alert');
     return { d, observed: `${service} request captured as human; no drug line or drug alert; repeat preserved value` };
-  });
+  }, {notApplicableReason:'Outside P1/P5 service prior auth, or this optional service surface is absent from the tested program/spec'});
 
 const interruptive = [
   ['drugAllergyOrder', 'signOrders', { drug: 'amoxicillin', facts: facts({ allergyClasses: ['penicillin'] }) }],
@@ -305,7 +316,7 @@ for (const [id, cm, variant] of [
 // available and unresolved only. UI acknowledgment is not clinical resolution.
 add('alert.passive.criticalResult', 'CriticalResults.alert / AlertUrgency approved policy (2026-11-02)',
   'Available unresolved critical result stays urgent inline after UI acknowledgment; future and resolved results do not fire',
-  t => supports(t, 'ackResult'), f => {
+  t => supports(t, 'ackResult') && !(t.frozenSpec && !t.spec.alerts.some(a => a.id === 'criticalResult')), f => {
     const result = {id:'heldout-critical', patient:'heldout-A', label:'Critical potassium',
       responsible:f.target.program.owner, covering:'heldout-covering', availableAt:19990, limit:30};
     const ctx = context('ackResult', {facts:facts({abnormalResult:true, criticalResults:[{result, receivedBy:[], acknowledgedBy:[]}]})});
@@ -336,7 +347,8 @@ add('alert.passive.criticalResult', 'CriticalResults.alert / AlertUrgency approv
       assert(!nodes(other.render(), 'alert').some(a => a.alertId === 'criticalResult'), `${name} critical result fired`);
     }
     return {d, observed:'Unresolved available critical result urgent inline; UI ack and inbox commit preserve clinical resolution obligation; future/resolved suppressed'};
-  }, {sources:['lean/Ehr/Specs/CriticalResults.lean:alert', 'lean/Ehr/Specs/AlertUrgency.lean:approvedAssignments', 'lean/Ehr/Core/Alerts.lean:keys', 'lean/Ehr/Multi/Critical.lean']});
+  }, {notApplicableReason:'Outside result review, or the immutable archived spec predates the critical-result lifecycle alert',
+    sources:['lean/Ehr/Specs/CriticalResults.lean:alert', 'lean/Ehr/Specs/AlertUrgency.lean:approvedAssignments', 'lean/Ehr/Core/Alerts.lean:keys', 'lean/Ehr/Multi/Critical.lean']});
 
 add('alerts.no-false-alarms', 'A2 false alarms', 'No allergy, interaction, care gap or dose trigger means no corresponding alert shown', () => true, f => {
   const ctx = context(supports(f.target, 'administerMed') ? 'administerMed' : 'signOrders', supports(f.target, 'administerMed') ? { facts: facts({ medToGive: 'metformin' }) } : {});

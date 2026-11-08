@@ -50,16 +50,16 @@ export function runTargets(id, files) {
       if (candidates.some(c => !equal(c.spec, candidates[0].spec))) throw new Error(`Ambiguous archived spec ${program.specVersion}`);
       // Frozen deployment inputs outrank trajectories and archived replay. Never
       // relabel an archived release into today's rules and silently retest it.
-      let spec, specPath;
+      let spec, specPath, frozenSpec = true;
       if (existsSync(frozenPath)) { spec = read(frozenPath); specPath = frozenPath; }
       else if (existsSync(trajectoryPath)) { spec = read(trajectoryPath); specPath = trajectoryPath; }
       else if (candidates.length) { spec = candidates[0].spec; specPath = path.join(dir, 'replay.json'); }
       else if (historicalRunIds.has(id)) throw new Error(`No immutable archived spec for ${id}/${program.specVersion}`);
-      else { specPath = path.join(root, 'releases', program.specVersion, 'spec.json'); spec = read(specPath); }
+      else { specPath = path.join(root, 'releases', program.specVersion, 'spec.json'); spec = read(specPath); frozenSpec = false; }
       if (spec.version !== program.specVersion) throw new Error(`Spec version mismatch: ${rel(programPath)}`);
       result.push({ id: `${id}/${persona}/${version.slice(0, -5)}`, persona, kind: 'deployed', revision: program.version,
         release: program.specVersion, semanticRelease: historicalRunIds.has(id) ? historicalReleaseId(program.specVersion) : program.specVersion,
-        archived: historicalRunIds.has(id), programPath, specPath, program, spec, certificate,
+        archived: historicalRunIds.has(id), frozenSpec, programPath, specPath, program, spec, certificate,
         certification: `recorded ${rel(certPath)}; not a new certification` });
     }
   }

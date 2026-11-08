@@ -3387,7 +3387,14 @@ checkout's built `ehr` before the optional cached binary.
 
 The critical-result case checks
 available/unresolved urgency, non-resolution by UI acknowledgment or inbox
-signing, and the separate receive/document/resolve path. The shared `chart`
+signing, and the separate receive/document/resolve path. Immutable recorded
+specifications predating that alert are explicitly inapplicable; current rules
+still require the case. Optional service prior-auth cases require a surfaced
+service control; a partially missing surface remains a failure. Declared-link
+cases revisit through real navigation when source and destination share a screen,
+so screen-entry prefills are tested without injecting captures. Target metadata
+distinguishes frozen specification evidence from historical release-name aliases.
+The shared `chart`
 scope is part of every persona's workflow contract. The CURES-removal audit is
 bound to the current program/spec/binary and must fail `completable` when neither
 the report nor a reachable waiver is available; stored checker evidence never

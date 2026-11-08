@@ -23,6 +23,7 @@ test('recorded deployment inputs retain exact certificate hashes and frozen spec
   assert.equal(targets.length, 33);
   assert.deepEqual([...new Set(targets.map(t => t.persona))], ['P1','P2','P3','P4','P5']);
   for (const t of targets) {
+    assert.equal(t.frozenSpec,true,t.id);
     assert.equal(legacyJsonHash(t.program), t.certificate.programHash, t.id);
     assert.equal(legacyJsonHash(t.spec), t.certificate.specHash, t.id);
     assert.equal(t.spec.version, t.program.specVersion);

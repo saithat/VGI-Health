@@ -12,6 +12,29 @@ import { fixtures, scenarioCatalog } from './scenarios.mjs';
 const root = path.resolve(import.meta.dirname, '..');
 const binary = process.env.EHR_BIN ?? [path.join(root, 'lean/.lake/build/bin/ehr'), path.join(root, '.cache/conformance/ehr')].find(existsSync);
 const read = file => JSON.parse(readFileSync(path.join(root, file), 'utf8'));
+for(const broken of [false,true])test(`declared-link conformance revisits a colocated source without manufacturing captures (${broken?'broken':'valid'} link)`, {skip:!binary||!existsSync(binary)},async()=>{
+  const program=read('releases/v1/personas/P2.json'),spec=read('releases/v1/spec.json');
+  const origin=program.screens.find(s=>s.components.some(c=>c.kind?.field?.element==='visitDiagnosis'));
+  const destination=program.screens.find(s=>s.components.some(c=>c.kind?.field?.element==='claimDiagnosis'));
+  const source=origin.components.find(c=>c.kind?.field?.element==='visitDiagnosis');
+  const linked=destination.components.find(c=>c.kind?.field?.element==='claimDiagnosis');
+  origin.components=origin.components.filter(c=>c!==source);
+  destination.components.unshift({...source,parent:linked.parent,tab:linked.tab});
+  if(broken)linked.kind.field.prefill.linked.element='chiefComplaint';
+  const native=new Native(binary,{transport:'serve'});
+  try{
+    const scenario=scenarioCatalog.find(s=>s.id==='entry.signNote.claimDiagnosis');
+    const fixture=fixtures(native,{program,spec,persona:'P2',semanticRelease:'v1'});
+    if(broken)assert.throws(()=>scenario.run(fixture),/claimDiagnosis not confirmed/);
+    else {
+      const {d}=scenario.run(fixture);
+      assert.equal(d.capture('claimDiagnosis').provenance,'linked:visitDiagnosis');
+      assert.equal(d.capture('claimDiagnosis').byHuman,false);
+      assert.ok(d.trace.some(t=>t.intent==='leave screen before linked prefill'));
+      assert.ok(!d.trace.some(t=>t.event.enter?.comp===linked.id));
+    }
+  }finally{await native.close();}
+});
 for (const condition of ['interaction', 'minorInteraction']) {
   test(`optional nursing alert fixture triggers the ${condition} source contract`, { skip: !binary || !existsSync(binary) }, () => {
     const program = read('releases/v1/personas/P3.json'), spec = read('releases/v1/spec.json');
