@@ -683,7 +683,8 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
       let duration := r.episode.elapsedMs - offset
       clock := start + duration
       if let some (w, _) := placement then
-        timings := timings ++ [Scheduling.timing windows source w start duration complete]
+        timings := timings ++ [Scheduling.withInterruptions
+          (Scheduling.timing windows source w start duration complete) w.endMs r.episode.resumption.metrics]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   let expertTravel := expert.tasks.map fun t =>
     (t.task, traceTravel prog (expert.trace.filter (·.task == t.task)))

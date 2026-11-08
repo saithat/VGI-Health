@@ -1,3 +1,4 @@
+import {simulationModesSchema} from './simulation-modes.js';
 import { programSchema } from './schema.js';
 import { structurePolicySchema } from './structure-policy.js';
 import { generatorOnlyBackend } from './generator-only.js';
@@ -75,6 +76,7 @@ async function cmdRunDays(argv: string[]): Promise<void> {
   const { values } = parseArgs({
     args: argv,
     options: {
+      'clock-mode':{type:'string'},'interruptions':{type:'string'},
       'minimum-effect':{type:'string'},'novelty-weight':{type:'string'},'hotspots':{type:'string'},'offline-archive':{type:'string'},'historical-nightly':{type:'boolean',default:false},
       'generator-only':{type:'boolean',default:false}, 'discovery-nights':{type:'string'}, 'bounded-costs':{type:'boolean',default:false}, 'tailoring-sessions':{type:'boolean',default:false},
       protocol: { type: 'string' }, cadence: { type: 'string' }, departments: { type: 'string' },
@@ -92,7 +94,8 @@ async function cmdRunDays(argv: string[]): Promise<void> {
     ...(values.hotspots!==undefined?{topK:Number(values.hotspots)}:{}),
   });
   const offlineArchive=values['offline-archive']?await readJson(resolveUserPath(values['offline-archive']),z.object({programs:z.array(programSchema)})):undefined;
-  const summary = await runDays({ structurePolicy,...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
+  const simulationModes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork'});
+  const summary = await runDays({ simulationModes,structurePolicy,...(offlineArchive?{offlineArchive:offlineArchive.programs}:{}),
     ...(useArchive ? { protocol: CADENCE_PROTOCOL } : {}),
     ...(values['generator-only'] ? {generatorOnly:true}:{}),
     ...(values['discovery-nights'] ? {discoveryNights:intArg(values['discovery-nights'],'discovery-nights',3)}:{}),

@@ -4,181 +4,6 @@
 // The types mirror Lean's derived JSON encoding exactly.
 /* eslint-disable */
 
-export interface Arrival {
-  arrivalMs: number;
-  readyMs: number;
-  /**
-   * Smaller values have higher priority; zero is urgent.
-   */
-  priority: number;
-  deadlineMs?: number;
-  /**
-   * Result availability; response is measured to task completion.
-   */
-  resultAvailableMs?: number;
-  /**
-   * Age before the nonnegative schedule origin (e.g. inbox backlog).
-   */
-  resultAgeMs: number;
-  /**
-   * Distinct occurrence keys and their MAR window ends.
-   */
-  doseWindows: [string, number][];
-}
-
-export interface Shift {
-  id: string;
-  startMs: number;
-  endMs: number;
-}
-
-/**
- * Optional suspend/resume boundary for a cooperating policy. The scheduler
- * never synthesizes suspended work or grants clinical completion.
- */
-export interface Suspension {
-  suspendedMs: number;
-  resumedMs: number;
-  reason: string;
-}
-
-export interface Timing {
-  task: string;
-  arrival: Arrival;
-  startMs?: number;
-  finishMs?: number;
-  shift?: string;
-  suspensions: Suspension[];
-  queueDelayMs: number;
-  overtimeMs: number;
-  /**
-   * Number of shift ends crossed while waiting, including the final horizon.
-   */
-  handovers: number;
-  overdueDoses: string[];
-  resultResponseMs?: number;
-  /**
-   * finished | carried | abandoned; abandonment requires a reason.
-   */
-  disposition: string;
-  reason?: string;
-}
-
-export interface WorkloadReport {
-  protocol: string;
-  shifts: Shift[];
-  timings: Timing[];
-  /**
-   * Full source tasks remain in the input schedule, indexed by these IDs.
-   */
-  pending: string[];
-  queueDelayMs: number;
-  overdueScheduledDoses: number;
-  resultResponseMs: number;
-  resultsResponded: number;
-  overtimeMs: number;
-  tasksCarriedOver: number;
-}
-
-export type ResumptionMode =
-  | "realWork"
-  | "fixedCost";
-/** All values of `ResumptionMode`. */
-export const ResumptionModeValues = ["realWork", "fixedCost"] as const;
-
-export type InterruptKind =
-  | "page"
-  | "urgentResult"
-  | "colleagueQuestion"
-  | "familyRequest"
-  | "pharmacyClarification";
-/** All values of `InterruptKind`. */
-export const InterruptKindValues = ["page", "urgentResult", "colleagueQuestion", "familyRequest", "pharmacyClarification"] as const;
-
-export type InterruptUrgency =
-  | "urgent"
-  | "timeSensitive"
-  | "routine";
-/** All values of `InterruptUrgency`. */
-export const InterruptUrgencyValues = ["urgent", "timeSensitive", "routine"] as const;
-
-export type WorkStep =
-  | "identifyPatient"
-  | "readMessage"
-  | "assess"
-  | "reply"
-  | "escalate"
-  | "document";
-/** All values of `WorkStep`. */
-export const WorkStepValues = ["identifyPatient", "readMessage", "assess", "reply", "escalate", "document"] as const;
-
-export interface InterruptWork {
-  id: string;
-  patient: string;
-  kind: InterruptKind;
-  urgency: InterruptUrgency;
-  /**
-   * Absolute milliseconds on the schedule's minute scale, independent of UI.
-   */
-  arrivedAtMs: number;
-  essential: boolean;
-  /**
-   * Synthetic communication content, not an imported clinical finding.
-   */
-  message: string;
-}
-
-export interface WorkRecord {
-  work: InterruptWork;
-  startedAtMs: number;
-  completedAtMs: number;
-  deferred: boolean;
-  steps: WorkStep[];
-  completed: boolean;
-  /**
-   * Communication completion is never clinical result resolution or prescribing.
-   */
-  outcome: string;
-}
-
-export type FrameDisposition =
-  | "resumed"
-  | "handedOver"
-  | "discarded";
-/** All values of `FrameDisposition`. */
-export const FrameDispositionValues = ["resumed", "handedOver", "discarded"] as const;
-
-export interface FrameRecord {
-  task: string;
-  owner: string;
-  patient: string;
-  suspendedAtMs: number;
-  closedAtMs: number;
-  disposition: FrameDisposition;
-  reason: string;
-}
-
-export interface InterruptionMetrics {
-  model: string;
-  profile: string;
-  ratePerHourMilli: number;
-  exposureMinutes: number;
-  offered: InterruptWork[];
-  closureWaitMs: number;
-  handled: number;
-  deferred: number;
-  resumptionDelayMs: number;
-  reorientationMs: number;
-  /**
-   * Invalidated evidence/confirmations, a prevention proxy, not observed clinical errors.
-   */
-  revalidationPrevented: number;
-  abandoned: number;
-  workMs: number;
-  work: WorkRecord[];
-  frames: FrameRecord[];
-}
-
 export interface Result {
   id: string;
   patient: string;
@@ -1827,7 +1652,6 @@ export interface TaskMetrics {
   klmDeciSec: number;
   completed: boolean;
   wallTimeMinutes?: number;
-  interruptions?: InterruptionMetrics;
 }
 
 /**
@@ -1847,7 +1671,6 @@ export interface DayResult {
    * Prompts a receipt could not satisfy, with reasons.
    */
   complaints: string[];
-  workload?: WorkloadReport;
 }
 
 /**
@@ -1898,7 +1721,6 @@ export interface Task {
    */
   todayResources: unknown[];
   interruptions: number;
-  timing?: Arrival;
 }
 
 /**
@@ -1912,11 +1734,6 @@ export interface DaySchedule {
    */
   load: string;
   tasks: Task[];
-  /**
-   * Omitted selects continuous; legacy retains archived task-local clocks.
-   */
-  clockMode?: string;
-  shifts?: Shift[];
 }
 
 /**

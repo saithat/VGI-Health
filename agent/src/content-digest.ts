@@ -76,7 +76,7 @@ export function firstDifference(left:ContentDigest,right:ContentDigest):string|n
 }
 export async function writeDayDigest(dir:string,day:number,personas:string[]):Promise<void>{
  const padded=String(day).padStart(2,'0'),prefix=`days/day-${padded}/`;
- const daily=(file:string)=>[prefix,`baselines/day-${padded}/`,`no-agent/days/day-${padded}/`,`training/day-${day}/`].some(p=>file.startsWith(p));
+ const daily=(file:string)=>[prefix,`baselines/day-${padded}/`,`no-agent/days/day-${padded}/`,`training/day-${day}/`,`validation/day-${day}/`].some(p=>file.startsWith(p));
  const combined=await contentDigest(dir,daily);
  const perPersona=Object.fromEntries(await Promise.all(personas.map(async persona=>[persona,(await contentDigest(dir,file=>daily(file)&&path.basename(file).startsWith(persona+'.'))).contentDigest])));
  await writeJson(path.join(dir,prefix,'digest.json'),{schemaVersion:1,personas:perPersona,contentDigest:combined.contentDigest});

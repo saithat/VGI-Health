@@ -61,6 +61,7 @@ export interface SimulateInput {
   seed: number;
   memory?: UserMemory;
   policy?: 'expert' | 'bounded';
+  clockMode?: 'continuous' | 'legacy';
   interruptions?: 'realWork' | 'fixedCost';
   interruptionProfile?: 'wardNurse' | 'surgicalPhysician' | 'clinicPrescriber' | 'emergencyPhysician' | 'inpatientPharmacy';
 }
@@ -153,6 +154,7 @@ class CliEhr implements EhrClient {
         'simulate', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--persona', p['persona'] ?? '',
         '--schedule', p['schedule'] ?? '', '--world', i.worldDir, '--seed', String(i.seed),
         ...(i.policy ? ['--policy',i.policy] : []),
+        ...(i.clockMode ? ['--clock-mode', i.clockMode] : []),
         ...(i.interruptions ? ['--interruptions', i.interruptions] : []),
         ...(i.interruptionProfile ? ['--interruption-profile', i.interruptionProfile] : []),
         ...(i.memory ? ['--memory-in',p['memory'] ?? ''] : []),

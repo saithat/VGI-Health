@@ -1,3 +1,4 @@
+import type {} from "../../../lean/generated/sim-types.js";
 /** Simulator-only extensions. Keeping these in the review source boundary
  * preserves the certified clinical app's runtime schema bytes. */
 import {z} from 'zod';

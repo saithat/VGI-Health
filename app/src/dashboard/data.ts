@@ -33,6 +33,8 @@ export const manifestSchema = z.object({
   days: z.number().int().positive(),
   personas: z.array(z.string()),
   warning: z.string().nullable().optional(),
+  measurementLabel: z.string().optional(),
+  simulationModes: z.object({clockMode:z.enum(["continuous","legacy"]),interruptions:z.enum(["realWork","fixedCost"])}).optional(),
   buildBindingRequired: z.boolean().optional(),
   measurementProtocol: z.object({ name: z.string() }).optional(),
   status: z.string().optional(),

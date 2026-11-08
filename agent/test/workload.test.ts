@@ -1,5 +1,6 @@
 import {describe,it,expect} from 'vitest';
-import {dayResultSchema,dayScheduleSchema} from '../../app/src/dashboard/measurement-schema.js';
+import {dayScheduleSchema} from '../../app/src/dashboard/measurement-schema.js';
+import {interruptionDayResultSchema as dayResultSchema} from '../../app/src/dashboard/interruption-schema.js';
 const arrival={arrivalMs:0,readyMs:1000,priority:0,doseWindows:[['dose',2000]],resultAgeMs:0};
 const workload={protocol:'continuous-workload-v1',shifts:[{id:'day',startMs:0,endMs:5000}],
   timings:[{task:'a',arrival,startMs:1000,finishMs:3000,shift:'day',suspensions:[],queueDelayMs:0,
@@ -9,6 +10,9 @@ const day={day:1,persona:'P1',programVersion:0,trace:[],tasks:[],floor:[],compla
 describe('measurement-only workload fields',()=>{
   it('retains timestamps and denominators through persisted schema parsing',()=>{
     expect(dayResultSchema.parse({...day,workload}).workload).toEqual(workload);
+  });
+  it('retains independently scheduled expert workload through the composed codec',()=>{
+    expect(dayResultSchema.parse({...day,workload,expert:{...day,workload}}).expert?.workload).toEqual(workload);
   });
   it('keeps historical missing measurements unavailable',()=>{
     expect(dayResultSchema.parse(day).workload).toBeUndefined();

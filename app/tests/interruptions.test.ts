@@ -3,7 +3,7 @@ import { interruptionTotals } from '../src/dashboard/interruptions';
 import { dayResultSchema, type DayResult } from '../src/dashboard/agent-evidence';
 
 const metadata = {
-  model: 'interrupting-work-v1', profile: 'wardNurse', ratePerHourMilli: 5500, exposureMinutes: 6, offered: [], closureWaitMs: 0,
+  model: 'interrupting-work-v1', profile: 'wardNurse', ratePerHourMilli: 5500, exposureMinutes: 6, offered: [], closureWaitMs: 0, idle: [], reorientations: [],
   handled: 2, deferred: 1, workMs: 80000, resumptionDelayMs: 45000, reorientationMs: 5000,
   revalidationPrevented: 1, abandoned: 0,
   work: [{ work: { id: 'call', patient: 'B', kind: 'page', urgency: 'urgent', arrivedAtMs: 0, essential: true, message: 'Care-team call' },

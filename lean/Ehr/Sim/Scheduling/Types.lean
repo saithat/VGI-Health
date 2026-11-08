@@ -24,6 +24,13 @@ structure Shift where
   endMs : Nat
   deriving DecidableEq, BEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
 
+/-- A serial work item, released at readyMs and served on the shared clock. -/
+structure WorkInterval where
+  readyMs : Nat
+  startMs : Nat
+  finishMs : Nat
+  deriving DecidableEq, BEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
+
 /-- Optional suspend/resume boundary for a cooperating policy. The scheduler
 never synthesizes suspended work or grants clinical completion. -/
 structure Suspension where

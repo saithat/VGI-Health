@@ -504,7 +504,8 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
       let duration := r.elapsedMs - offset
       clock := start + duration
       if let some (w, _) := placement then
-        timings := timings ++ [Scheduling.timing windows source w start duration complete]
+        timings := timings ++ [Scheduling.withInterruptions
+          (Scheduling.timing windows source w start duration complete) w.endMs r.resumption.metrics]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   return (day, lookups)
 

@@ -1,3 +1,4 @@
+import {simulationModesSchema,realWorkModes,legacyModes,withSimulationModes,type SimulationModes} from './simulation-modes.js';
 import { structurePolicySchema, STRUCTURE_POLICY, type StructurePolicy } from './structure-policy.js';
 import { generatorOnlyBackend } from './generator-only.js';
 import { BOUNDED_COST_MODEL } from './bounded-tailoring.js';
@@ -51,6 +52,7 @@ import { loadWorld } from './world.js';
 import { REPO_ROOT, readJson, writeJson } from './util.js';
 
 export interface RunOptions {
+  simulationModes?: SimulationModes;
   structurePolicy?: Partial<StructurePolicy> | false;
   offlineArchive?: readonly Program[];
   /** Omit for the historical nightly protocol. Cadence runs have a separate name. */
@@ -158,7 +160,8 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   armCrashHook(llm.name);
   if(opts.verificationRelease&&llm.name!=='scripted'&&llm.name!=='replay')throw new Error('Verification release refuses live models');
   const log = opts.log ?? (() => undefined);
-  const underlyingEhr = opts.ehr ?? createEhr();
+  const simulationModes=simulationModesSchema.parse(opts.simulationModes??realWorkModes);
+  const underlyingEhr = withSimulationModes(opts.ehr ?? createEhr(),simulationModes);
   const world = await loadWorld(opts.worldDir);
   if (['codex','claude'].includes(llm.name) && (underlyingEhr.mode === 'fake' || world.manifest.fake)) throw new Error('Live LLM runs require a real EHR and real world; fake/replay verification uses no live backend');
   const personaIds = opts.personas ?? world.manifest.personas;
@@ -191,6 +194,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
   const fingerprints = {...await runFingerprints(ehr, world.dir),...(archiveMode||structure?{explore:await treeHash(path.join(REPO_ROOT,'explore'))}:{}),...(opts.verificationRelease?{verificationRelease:sha256(stableStringify(opts.verificationRelease)),scripted:await fileHash(path.join(REPO_ROOT,'agent/test/scripted.ts'))}:{})};
   const manifestFile = path.join(dir, 'manifest.json');
   const resumeManifestSchema = z.object({
+    simulationModes:simulationModesSchema.optional(),
     nightlyDiscovery:z.unknown().optional(),
     releasePolicy:z.unknown().optional(),
     infrastructureRetries:z.array(z.custom<InfrastructureRetry>()).optional(), replayAllowDrift:z.boolean().optional(),driftedCallIds:z.array(z.string()).optional(),
@@ -209,6 +213,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     if (stableStringify(previous.releasePolicy ?? null) !== stableStringify(releasePolicy)) throw Error('Resume release cadence/department/review/switch-cost policy must match');
     if (JSON.stringify(previous.fingerprints) !== JSON.stringify(fingerprints)) throw new Error('Resume refused: ehr/release/world/app/WASM fingerprints changed');
     if (previous.releaseIds && JSON.stringify(previous.releaseIds) !== JSON.stringify(RELEASE_IDS)) throw new Error('Release identities changed; start a new run after the rename');
+    if(stableStringify(previous.simulationModes??legacyModes)!==stableStringify(simulationModes))throw Error('Resume simulation modes must match the recording');
     if((previous.parallel??false)!==(opts.parallel??false))throw new Error('Resume parallel mode must match the recorded run');
     if((previous.replayAllowDrift??false)!==(llm instanceof ReplayLlm?llm.options.allowDrift??false:false))throw new Error('Resume replay drift policy must match');
     if (previous.world !== world.dir || previous.backend !== llm.name || previous.model !== llm.model || previous.ehr.mode !== ehr.mode ||
@@ -218,7 +223,7 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
     }
   }
   const manifestData = {
-    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', releasePolicy, nightlyDiscovery,
+    protocol: archiveMode ? CADENCE_PROTOCOL : 'core-10day', releasePolicy, nightlyDiscovery, simulationModes,
     verificationFixture:opts.verificationRelease?'native-tiny-v1':null,
     replayAllowDrift:llm instanceof ReplayLlm?llm.options.allowDrift??false:false,
     driftedCallIds:previous?.driftedCallIds??[],

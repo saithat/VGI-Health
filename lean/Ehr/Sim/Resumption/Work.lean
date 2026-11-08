@@ -1,5 +1,6 @@
 import Ehr.Sim.Resumption.Arrivals
 import Ehr.Sim.Resumption.Workspace
+import Ehr.Sim.Scheduling.Clock
 
 namespace Ehr.Sim.Resumption
 open Ehr
@@ -82,46 +83,48 @@ def handleNow (role : Role) (w : InterruptWork) (setting? : Option InterruptionP
 No claim that these coefficients describe measured clinicians. -/
 def reorientationCost (s : State) : Nat := 3000 + 700 * s.captured.length + 1000 * (s.captured.filter (! ·.confirmed)).length
 
-/-- One service checkpoint. Routine work queues until task close; clinical
-popups defer all work until acknowledged. Arrivals keep original timestamps.
-A close checkpoint waits for remaining offered arrivals rather than dropping
-work because one arm completed its clinical UI sooner. -/
+/-- Communication and resumption share the clinician's serial clock. Reconsider
+arrived work after every atomic communication; only then run queued reorientation.
+Routine work queues until close; a clinical popup protects the current task. -/
 def serviceCheckpoint (sp : Spec) (prog : Program) (f : Facts) (u : User) (task : Task)
     (s : State) (elapsedMs : Nat) (runtime : InterruptionRuntime) (closing := false) :
     State × Nat × InterruptionRuntime := Id.run do
   if runtime.config.mode == .fixedCost then return (s, elapsedMs, runtime)
-  let now := task.startMin * 60000 + elapsedMs
-  let due := runtime.arrivals.filter fun w => closing || w.arrivedAtMs ≤ now
-  let mut rt := { runtime with arrivals := runtime.arrivals.filter (fun w => !due.contains w) }
+  let origin := task.startMin * 60000
+  let mut rt := runtime
   let mut state := s
-  let mut currentFacts := f
   let mut elapsed := elapsedMs
-  let mut ready := []
-  for w in due do
-    if !state.popup?.isSome && (closing || handleNow u.role w runtime.config.profile?) then
-      ready := ready ++ [(w, false)]
-    else
-      rt := { rt with queued := rt.queued ++ [w], metrics := { rt.metrics with deferred := rt.metrics.deferred + 1 } }
-  if closing && !state.popup?.isSome then
-    ready := ready ++ rt.queued.map (fun w => (w, true))
-    rt := { rt with queued := [] }
-  -- Reconsider urgency at each service boundary. Future arrivals cannot make
-  -- the actor idle while already-arrived routine work is waiting.
-  for _ in List.range ready.length do
-    let serviceNow := task.startMin * 60000 + elapsed
+  let mut ready : List (InterruptWork × Bool) := []
+  let mut saved? : Option DraftFrame := none
+  -- Every service consumes one offered/queued item. The extra boundary collects
+  -- arrivals during the final communication before releasing return work.
+  for _ in List.range (runtime.arrivals.length + runtime.queued.length + 1) do
+    let now := origin + elapsed
+    let due := rt.arrivals.filter fun w => closing || w.arrivedAtMs ≤ now
+    rt := { rt with arrivals := rt.arrivals.filter (fun w => !due.contains w) }
+    for w in due do
+      if !state.popup?.isSome && (closing || handleNow u.role w runtime.config.profile?) then
+        ready := ready ++ [(w, false)]
+      else
+        rt := { rt with queued := rt.queued ++ [w], metrics := { rt.metrics with deferred := rt.metrics.deferred + 1 } }
+    if !state.popup?.isSome then
+      let pending := rt.queued.filter fun w => closing || handleNow u.role w runtime.config.profile?
+      ready := ready ++ pending.map (fun w => (w, true))
+      rt := { rt with queued := rt.queued.filter (fun w => !pending.contains w) }
     ready := ready.mergeSort (fun a b =>
       let rank := fun (w : InterruptWork) => match w.urgency with | .urgent => 0 | .timeSensitive => 1 | .routine => 2
-      let atA := max serviceNow a.1.arrivedAtMs
-      let atB := max serviceNow b.1.arrivedAtMs
+      let atA := max now a.1.arrivedAtMs
+      let atB := max now b.1.arrivedAtMs
       if atA == atB then rank a.1 ≤ rank b.1 else atA ≤ atB)
-    let some (w, deferred) := ready.head? | continue
+    let some (w, deferred) := ready.head? | break
     ready := ready.drop 1
-    let before := task.startMin * 60000 + elapsed
-    let start := max before w.arrivedAtMs
-    rt := { rt with metrics := { rt.metrics with closureWaitMs := rt.metrics.closureWaitMs + start - before } }
-    let frame := suspend u task.patientId task.id currentFacts state start
-    -- External communication receives only its own patient/message identity;
-    -- it never receives the suspended interpreter state.
+    let start := (Scheduling.queueWork now w.arrivedAtMs 0).startMs
+    if now < start then
+      rt := { rt with metrics := { rt.metrics with
+        closureWaitMs := rt.metrics.closureWaitMs + start - now,
+        idle := rt.metrics.idle ++ [{ readyMs := now, startMs := now, finishMs := start }] } }
+    if !closing && saved?.isNone then saved? := some (suspend u task.patientId task.id f state start)
+    -- The interrupting workspace receives no saved clinical state or receipts.
     let record := executeWork w start deferred
     if record.completed && w.kind == .urgentResult then
       rt := { rt with metrics := { rt.metrics with frames := rt.metrics.frames ++ [{
@@ -133,28 +136,28 @@ def serviceCheckpoint (sp : Spec) (prog : Program) (f : Facts) (u : User) (task 
         task := w.id, owner := u.id, patient := w.patient, suspendedAtMs := start,
         closedAtMs := record.completedAtMs, disposition := .handedOver,
         reason := "on-call service: communication could not verify patient or message" }] } }
-    let orientation := if closing then 0 else reorientationCost state
-    let endMs := record.completedAtMs + orientation
-    elapsed := endMs - task.startMin * 60000
-    if !closing then
-      currentFacts := refreshAt runtime.config currentFacts endMs
-      rt := { rt with latestFacts? := some currentFacts }
-    let (restored, closed) := if closing then (some state, {
-        task := task.id, owner := u.id, patient := task.patientId, suspendedAtMs := start,
-        closedAtMs := endMs, disposition := FrameDisposition.resumed, reason := "task already complete" })
-      else closeFrame sp currentFacts u task.patientId task.id (elapsed / 100) endMs frame
+    elapsed := record.completedAtMs - origin
+    rt := { rt with metrics := { rt.metrics with
+      handled := rt.metrics.handled + if record.completed then 1 else 0,
+      workMs := rt.metrics.workMs + record.completedAtMs - record.startedAtMs,
+      work := rt.metrics.work ++ [record] } }
+  if let some frame := saved? then
+    let now := origin + elapsed
+    let returning := Scheduling.queueWork now now (reorientationCost state)
+    elapsed := returning.finishMs - origin
+    let currentFacts := refreshAt runtime.config f returning.finishMs
+    let (restored, closed) := closeFrame sp currentFacts u task.patientId task.id (elapsed / 100) returning.finishMs frame
     let next := restored.getD (Workspace.init prog)
     let invalidated := (state.receipts.length - next.receipts.length) +
       ((state.captured.filter (·.confirmed)).length - (next.captured.filter (·.confirmed)).length)
     state := next
-    rt := { rt with metrics := { rt.metrics with
-      handled := rt.metrics.handled + if record.completed then 1 else 0,
-      workMs := rt.metrics.workMs + record.completedAtMs - record.startedAtMs,
-      reorientationMs := rt.metrics.reorientationMs + orientation,
-      resumptionDelayMs := rt.metrics.resumptionDelayMs + if closing || restored.isNone then 0 else endMs - start,
+    rt := { rt with latestFacts? := some currentFacts, metrics := { rt.metrics with
+      reorientationMs := rt.metrics.reorientationMs + returning.finishMs - returning.startMs,
+      reorientations := rt.metrics.reorientations ++ [returning],
+      resumptionDelayMs := rt.metrics.resumptionDelayMs + if restored.isNone then 0 else returning.finishMs - frame.suspendedAtMs,
       revalidationPrevented := rt.metrics.revalidationPrevented + invalidated,
       abandoned := rt.metrics.abandoned + if restored.isNone then 1 else 0,
-      work := rt.metrics.work ++ [record], frames := rt.metrics.frames ++ if closing then [] else [closed] } }
+      frames := rt.metrics.frames ++ [closed] } }
   return (state, elapsed, rt)
 
 /-- Explicit terminal accounting for communication that cannot safely preempt

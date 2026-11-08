@@ -139,6 +139,34 @@ def report (windows : List Shift) (rows : List Timing) : WorkloadReport :=
     overtimeMs := (rows.map (·.overtimeMs)).foldl (· + ·) 0,
     tasksCarriedOver := (rows.filter (fun r => r.handovers > 0 || r.disposition == "carried")).length }
 
+/-- Communication and return work use the same serial clock as clinical work. -/
+def queueWork (clock ready duration : Nat) : WorkInterval :=
+  { readyMs := ready, startMs := max clock ready, finishMs := max clock ready + duration }
+
+theorem queue_work_bounds (clock ready duration : Nat) :
+    clock ≤ (queueWork clock ready duration).startMs ∧
+    ready ≤ (queueWork clock ready duration).startMs ∧
+    (queueWork clock ready duration).finishMs = (queueWork clock ready duration).startMs + duration := by
+  exact ⟨Nat.le_max_left clock ready, Nat.le_max_right clock ready, rfl⟩
+
+theorem queue_work_duration (clock ready duration : Nat) :
+    (queueWork clock ready duration).finishMs - (queueWork clock ready duration).startMs = duration := by
+  simp [queueWork]
+
+/-- Attach actual owned suspension boundaries and remove passive closure waits
+from overtime. Communication and return work remain active paid service. -/
+def withInterruptions (row : Timing) (shiftEnd : Nat) (m : Resumption.InterruptionMetrics) : Timing :=
+  { row with
+    suspensions := m.frames.filterMap fun f =>
+      if f.task == row.task && f.disposition == .resumed then
+        some { suspendedMs := f.suspendedAtMs, resumedMs := f.closedAtMs, reason := f.reason } else none
+    overtimeMs := row.overtimeMs - (m.idle.map (fun w => w.finishMs - max w.startMs shiftEnd)).foldl (· + ·) 0 }
+
+theorem interruption_timing_preserves_finish (row shiftEnd m) :
+    (withInterruptions row shiftEnd m).startMs? = row.startMs? ∧
+    (withInterruptions row shiftEnd m).finishMs? = row.finishMs? := by
+  exact ⟨rfl, rfl⟩
+
 /-- Every finalized policy attempt has an explicit terminal classification. -/
 theorem timing_accounted (ws t w start duration completed) :
     (timing ws t w start duration completed).disposition = "finished" ∨
@@ -146,6 +174,9 @@ theorem timing_accounted (ws t w start duration completed) :
      (timing ws t w start duration completed).reason?.isSome = true) := by
   cases completed <;> simp [timing]
 
+#print axioms queue_work_bounds
+#print axioms queue_work_duration
+#print axioms interruption_timing_preserves_finish
 #print axioms exogenous_arm_independent
 #print axioms start_bounds
 #print axioms clock_monotone

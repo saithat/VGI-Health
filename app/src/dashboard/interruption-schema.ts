@@ -1,8 +1,10 @@
 import { z } from 'zod';
-import type { InterruptionMetrics } from '../../../lean/generated/ehr-types.js';
+import type { InterruptionMetrics } from '../../../lean/generated/sim-types.js';
 const nat = z.number().int().nonnegative();
 export const interruptionMetricsSchema: z.ZodType<InterruptionMetrics> = z.object({
   model: z.string(), profile: z.string(), ratePerHourMilli: nat, exposureMinutes: nat, closureWaitMs: nat,
+  idle: z.array(z.object({readyMs: nat, startMs: nat, finishMs: nat})).default([]),
+  reorientations: z.array(z.object({readyMs: nat, startMs: nat, finishMs: nat})).default([]),
   offered: z.array(z.object({ id: z.string(), patient: z.string(),
     kind: z.enum(['page', 'urgentResult', 'colleagueQuestion', 'familyRequest', 'pharmacyClarification']),
     urgency: z.enum(['urgent', 'timeSensitive', 'routine']), arrivedAtMs: nat, essential: z.boolean(), message: z.string() })),
@@ -25,7 +27,7 @@ export const interruptionMetricsSchema: z.ZodType<InterruptionMetrics> = z.objec
 });
 
 // Keep review measurements outside the clinical wire schema and certified hash.
-// Intersection retains native metadata which the historical schema strips.
+// Independent validation retains metadata which the historical schema strips.
 import { dayResultSchema as baseDayResultSchema } from './measurement-schema.js';
 const taskWork = z.object({ interruptions: interruptionMetricsSchema.exactOptional() });
 export const interruptionDayResultSchema = z.intersection(baseDayResultSchema, z.object({

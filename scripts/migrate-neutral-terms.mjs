@@ -152,6 +152,8 @@ async function main() {
   const { compilePresentations }=await import('../agent/src/presentation-compiler.ts');
   const { runFingerprints }=await import('../agent/src/fingerprints.ts');
   const { createEhr }=await import('../agent/src/ehr.ts');
+  const { legacyModes, withSimulationModes }=await import('../agent/src/simulation-modes.ts');
+  const { remeasureRun }=await import('../agent/src/remeasure.ts');
   const { createScreenChecker }=await import('../agent/src/screencheck.ts');
   const { browserGeometry }=await import('../agent/src/browser-geometry.ts');
   const { geometryEhr }=await import('../agent/src/geometry.ts');
@@ -170,12 +172,14 @@ async function main() {
     if(manifest.ehr?.mode!=='real')continue;
     const baselineIds=await exists(join(dir,'trajectories/index.json'))?(await read(join(dir,'trajectories/index.json'))).tasks.filter(t=>t.baseline).map(t=>t.id):[];
     const item={run:name,certificates:[],replay:null,measurements:[]};report.runs.push(item);
+    manifest.simulationModes ??= legacyModes;
+    manifest.measurementLabel ??= 'Fixed-cost interruptions / legacy task clock control';
     manifest.buildBindingRequired=true;
     manifest[recertifyOnly?'recertification':'neutralMigration']={...migrationCode,status:'pending',currentMeasurementsRegenerated:false};
     await write(manifestFile,manifest);
     try {
     // A migration is a new certification. Every version receives the current gates.
-    const ehr=createEhr({fake:false,binary}),screens=createScreenChecker(ehr,{artifactsDir:join(dir,'migration/screens')});
+    const ehr=withSimulationModes(createEhr({fake:false,binary}),manifest.simulationModes),screens=createScreenChecker(ehr,{artifactsDir:join(dir,'migration/screens')});
     const batched=recertifyOnly?await recertifyRuns({runs:[name],output:join(dir,'migration/batch-screen-check')}):null;
     for(const persona of manifest.personas) {
       const folder=join(dir,'programs',persona);
@@ -231,15 +235,7 @@ async function main() {
     const geometry=browserGeometry(ehr,[join(root,'fixtures/synthea',fixtureIndex.patients[0].file)],join(dir,'migration/geometry-cache'));
     const measured=geometryEhr(ehr,geometry.provider,dir);
     try {
-      for(let day=1;day<=manifest.days;day++)for(const persona of manifest.personas) {
-        const folder=`day-${String(day).padStart(2,'0')}`,dayFile=join(dir,'days',folder,`${persona}.json`);
-        if(!await exists(dayFile))continue;
-        const recorded=await read(dayFile),program=await read(join(dir,'programs',persona,`v${recorded.programVersion}.json`));
-        const specVersion=join(dir,'certifications',persona,`v${recorded.programVersion}`,'spec.json');
-        const params=await read(join(manifest.world,'personas',`${persona}.json`)),schedule=await read(join(manifest.world,'schedules',folder,`${persona}.json`));
-        const result=await measured.simulate({specVersion,program,persona:params,schedule,worldDir:manifest.world,seed:manifest.worldSeed*1000+day});
-        await write(dayFile,result);item.measurements.push({day,persona,tasks:result.tasks.length,geometry:result.geometry});
-      }
+      item.measurements=await remeasureRun(dir,measured,manifest.simulationModes);
     } finally {await geometry.close();}
     const regenerated=await indexTrajectories({root,runId:name,binary,baseline:baselineIds});
     item.regeneratedReplay=regenerated.verification;await verifySavedTrajectories(name,root);

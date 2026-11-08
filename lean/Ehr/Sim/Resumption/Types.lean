@@ -1,4 +1,5 @@
 import Lean.Data.Json
+import Ehr.Sim.Scheduling.Types
 
 /-! Simulation-only communication work and measurement vocabulary. No clinical authority. -/
 namespace Ehr.Sim.Resumption
@@ -54,6 +55,10 @@ structure InterruptionMetrics where
   exposureMinutes : Nat := 0
   offered : List InterruptWork := []
   closureWaitMs : Nat := 0
+  /-- Passive closure waits; excluded from active effort and overtime. -/
+  idle : List Scheduling.WorkInterval := []
+  /-- Explicit queued return work, after communication and before clinical events. -/
+  reorientations : List Scheduling.WorkInterval := []
   handled : Nat := 0
   deferred : Nat := 0
   resumptionDelayMs : Nat := 0

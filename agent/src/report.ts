@@ -1,3 +1,4 @@
+import {simulationModesSchema,withSimulationModes,legacyModes} from './simulation-modes.js';
 import { interruptionDayResultSchema as dayResultSchema } from '../../app/src/dashboard/interruption-schema.js';
 import { isMeasurementDay } from './protocol.js';
 /** Same-schedule canonical versus recorded costs; never feeds an overnight prompt. */
@@ -19,7 +20,7 @@ import { loadWorld } from './world.js';
 const { values } = parseArgs({ options: { run: { type: 'string' } } });
 if (!values.run) throw new Error('Usage: pnpm --filter agent report --run runs/<id>');
 const directory = resolveUserPath(values.run);
-const manifest = await readJson(path.join(directory, 'manifest.json'), z.object({ runId: z.string(), days: z.number(), personas: z.array(z.string()), world: z.string(), ehr: z.object({ mode: z.literal('real') }), noAgentRequired:z.boolean().optional(), measurementProtocol: z.unknown().optional() }));
+const manifest = await readJson(path.join(directory, 'manifest.json'), z.object({ runId: z.string(), days: z.number(), personas: z.array(z.string()), world: z.string(), ehr: z.object({ mode: z.literal('real') }), noAgentRequired:z.boolean().optional(), measurementProtocol: z.unknown().optional(), simulationModes:simulationModesSchema.optional() }));
 const store = new RunStore(directory);
 const conformanceFile = path.join(directory, 'conformance.json');
 const conformance = existsSync(conformanceFile) ? await readJson(conformanceFile, z.object({
@@ -33,7 +34,7 @@ console.log('Rule conformance (read-only; never a deployment gate):');
 if (ruleConformance) for (const revision of ruleConformance.revisions) console.log(`${revision.id}: ${revision.failed ? `${revision.failed} failures` : 'all pass'} (${revision.passed} passed, ${revision.notApplicable} not applicable)`);
 else console.log('Unavailable: run pnpm conformance --run <id> to record behavioral evidence.');
 const world = await loadWorld(manifest.world);
-const ehr = recordingEhr(createEhr({ fake: false }), path.join(directory, 'metrics/ehr'));
+const ehr = recordingEhr(withSimulationModes(createEhr({ fake: false }),manifest.simulationModes??legacyModes), path.join(directory, 'metrics/ehr'));
 const rows = [];
 for (const persona of manifest.personas) {
   const params = world.personas.get(persona);
