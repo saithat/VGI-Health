@@ -1,6 +1,6 @@
-"""Write (or check) the generated proof-map section of README.md.
+"""Write (or check) the generated section of docs/proof-map.md.
 
-usage: readme.py <data.json> <README.md> [--check]
+usage: readme.py <data.json> <docs/proof-map.md> [--check]
 The section sits between the PROOF-MAP markers. With --check, exit 1 if it is
 out of date instead of rewriting it. Output is Mermaid charts with no line
 numbers or commit hashes, so it only changes when the proof structure changes."""
@@ -124,10 +124,10 @@ a, b = text.index(BEGIN), text.index(END) + len(END)
 new = text[:a] + section() + text[b:]
 if check:
     if new != text:
-        sys.exit('README proof-map section is out of date; run scripts/proof-map/build.sh --readme')
-    print('README proof-map section is current')
+        sys.exit('docs/proof-map.md generated section is out of date; run scripts/proof-map/build.sh --readme')
+    print('docs/proof-map.md generated section is current')
 elif new != text:
     open(readme_path, 'w').write(new)
-    print('README proof-map section updated')
+    print('docs/proof-map.md generated section updated')
 else:
-    print('README proof-map section already current')
+    print('docs/proof-map.md generated section already current')
