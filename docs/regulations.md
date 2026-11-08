@@ -2,7 +2,7 @@
 
 This file maps each rule in the hospital governance spec (BRIEF sections 5, 5a, 7.5, 9a, 9b) to a real, public source, or says plainly that the rule is our own design.
 
-**Status.** Hospital rules live in `lean/Ehr/Specs/V1.lean`, `V2.lean` and `V3.lean`; JSON exports live in `releases/<version>/spec.json`. Docstrings identify law, entrenched practice and Hospital policy (not law). Current releases use the core profile. See [VERIFICATION](VERIFICATION.md) for certification scope and full-catalog limits.
+**Status.** Hospital rules live in `lean/Ehr/Specs/V1.lean`, `V2.lean` and `V3.lean`; JSON exports live in `releases/<version>/spec.json`. Docstrings identify law, entrenched practice and Hospital policy (not law). Current releases use the core profile. See [assurance](assurance.md), [completion methodology](methods/completion-checker.md) and [historical verification scope](https://github.com/saithat/VGI-Health/blob/b63095a7de4532aba59f998277d37b5ddef21167/docs/VERIFICATION.md) for certification scope and full-catalog limits.
 
 **This is not legal advice.** It is a research note for a demo. Quotes are short excerpts (about 25 words at most). Read the source before you rely on a row.
 

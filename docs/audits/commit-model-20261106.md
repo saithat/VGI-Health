@@ -80,7 +80,7 @@ main before handoff. Nothing was pushed.
 
 The full audit pair, broad Playwright suites, Comparator runs, WASM rebuild and
 retained-recording re-certification were intentionally deferred to the owner's
-merged check. See [protocol methodology](../../README.md#commit-protocol-methodology).
+merged check. See [protocol methodology](../methods/commit-protocol.md#commit-protocol-methodology).
 Open owner-review points are the new specification statements, the explicit
 Postgres/fresh-input assumptions, and whether the next refinement should cover
 rich administrative ADT, dynamic directory/time facts or full FHIR projection

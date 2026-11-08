@@ -1,6 +1,6 @@
 # Core model: data formats and interpreter semantics
 
-This is the contract every lane builds against. Its original scope is recorded in the [hackathon brief](../hackathon/BRIEF.md). The Lean types below give the **authoritative shape**: fix syntax and deriving details as needed, but get orchestrator/owner approval for any change in meaning. Once implemented, the Lean files (`lean/Ehr/Core/*.lean`) are the source of truth, and TS types are generated from them.
+This is the contract every lane builds against. Its original scope is recorded in the [historical project brief](https://github.com/saithat/VGI-Health/blob/b63095a7de4532aba59f998277d37b5ddef21167/docs/hackathon/BRIEF.md). The Lean types below give the **authoritative shape**: fix syntax and deriving details as needed, but get orchestrator/owner approval for any change in meaning. Once implemented, the Lean files (`lean/Ehr/Core/*.lean`) are the source of truth, and TS types are generated from them.
 
 One canonical EHR serves everyone. Each persona starts at v0 with that canonical's
 role permissions and pre-set view (`forPersona`). The overnight agent edits only

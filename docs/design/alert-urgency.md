@@ -229,7 +229,7 @@ fixture (P4 pediatric, other personas adult allergic). Add `--export-only` to
 prepare the native state manifest without starting another browser batch.
 
 Canonical release findings and exact verification commands are recorded in
-[alert-urgency-findings.md](alert-urgency-findings.md).
+[historical alert findings](https://github.com/saithat/VGI-Health/blob/b63095a7de4532aba59f998277d37b5ddef21167/docs/design/alert-urgency-findings.md).
 
 [onc]: https://www.ecfr.gov/current/title-45/section-170.315#p-170.315(a)(4)
 [cms]: https://www.ecfr.gov/current/title-42/section-482.23#p-482.23(c)(1)
@@ -246,5 +246,5 @@ all critical workflow snapshots. `urgency-selection.json` records the full
 membership and chosen cases. This focused audit measures urgency; it also
 reports physical findings for those representatives. It is not whole-version
 approval. Omit the flag for the full supplied-state physical matrix owned by the
-physical-policy lane. The tracked [follow-through report](urgency-follow-through.md)
+physical-policy lane. The tracked [historical follow-through report](https://github.com/saithat/VGI-Health/blob/b63095a7de4532aba59f998277d37b5ddef21167/docs/design/urgency-follow-through.md)
 records this lane's final scope and results.

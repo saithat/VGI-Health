@@ -21,7 +21,13 @@ for f in ['lean/comparator.json', 'lean/Ehr/Check/comparator.json', 'lean/Ehr/Ch
     p = repo / f
     if p.exists(): comp |= set(json.load(open(p)).get('theorem_names', []))
 audit = set(re.findall(r'^#audit_axioms\s+(\S+)', (repo / 'lean/Audit/SpecSurface.lean').read_text(), re.M))
-ticks = set(re.findall(r"`([A-Za-z_][\w.'₀-₉]*)`", (repo / 'README.md').read_text()))
+# R marks headline claims documented in the overview or its topic pages.
+# Exclude the generated map itself: its output must not select its own inputs.
+# Existing audit/design records remain separate evidence rather than headlines.
+pages = [repo / 'README.md', repo / 'docs/architecture.md',
+         repo / 'docs/assurance.md', repo / 'docs/reproduction.md',
+         *sorted((repo / 'docs/methods').glob('*.md'))]
+ticks = set(re.findall(r"`([A-Za-z_][\w.'₀-₉]*)`", '\n'.join(p.read_text() for p in pages)))
 short = collections.defaultdict(list)
 for r in decls:
     if r['kind'] == 'theorem': short[r['name'].split('.')[-1]].append(r['name'])

@@ -3,8 +3,8 @@
 # usage: scripts/proof-map/build.sh [--readme | --check-readme] [out-dir]
 # Run after `cd lean && lake build` (CI also builds extra-modules.txt).
 # Writes <out-dir>/index.html and <out-dir>/data.json (default: lean/.lake/proof-map).
-# --readme rewrites README.md's generated proof-map section; --check-readme fails
-# if that section is out of date.
+# --readme rewrites docs/proof-map.md; --check-readme fails if its generated
+# section is out of date. The flag names remain compatible with existing callers.
 set -euo pipefail
 root="$(cd "$(dirname "$0")/../.." && pwd)"
 readme=""
@@ -24,6 +24,6 @@ lake env lean --run "$root/scripts/proof-map/Extract.lean" "$tmp/full.json" "${m
 python3 "$root/scripts/proof-map/shape.py" "$tmp/full.json" "$root" "$out"
 cp "$root/scripts/proof-map/index.html" "$out/index.html"
 case "$readme" in
-  write) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/README.md" ;;
-  check) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/README.md" --check ;;
+  write) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/docs/proof-map.md" ;;
+  check) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/docs/proof-map.md" --check ;;
 esac
