@@ -11,14 +11,14 @@
       "name": "P1-summary",
       "file": "P1-chart.png",
       "screen": "chartSummary",
-      "sha256": "2c4bf36c7568ee956b13a4880037d5e24f2e71f7b7bc0f048937abd3a8201b46",
+      "sha256": "7aeb9d27cb1629cb97e26145871c3fefafcad3cac3d3c09a5bfda27ee331d030",
       "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a"
     },
     {
       "name": "P1-orders",
       "file": "P1-orders.png",
       "screen": "w1Orders",
-      "sha256": "66d5ca38483ef252f9d4b36ca1e99fe7a6efd6ebb2168f28d0e63e5d2ea39192",
+      "sha256": "52ab5a4448b4ad8a4aff9d935b4c8c57e3145639fad61365190004bfe2633a7d",
       "programSha256": "745efd0a9edce3e3fa906800837c30bfd3154e4f82e732ed5510408d51a9502a"
     },
     {
@@ -40,13 +40,13 @@
       "file": "P3-chart.png",
       "screen": "w4Mar",
       "sha256": "48d2e86dfc3ca3964f25f11d02ac475088015e9d7e8ec28a334c7b36f562ba06",
-      "programSha256": "14b669e8048780bd002032cf99364884f70d5a9292a42ee77f99ae5d6f929c02"
+      "programSha256": "fe06122b47a633e6ea7b2be2c16a1b255e8eca9b4eb24ed2a9a303d2b6195e26"
     },
     {
       "name": "P4-growth",
       "file": "P4-chart.png",
       "screen": "w5Growth",
-      "sha256": "39c240057766ece286b05bae747f4ad13ff9f4222eb574cba5f2cb211e67323e",
+      "sha256": "f086570f33fe2f2cd87ca58b231cb2172c56b6f0ebcf858bf3a90ba345c197b0",
       "programSha256": "6174174edd60a5f4643dd4141808f0248c039d2f02f593a531c206852a41adbc"
     },
     {
@@ -60,7 +60,7 @@
       "name": "P5-op-note",
       "file": "P5-chart.png",
       "screen": "w6OpNote",
-      "sha256": "29ac5a48004a95793582e7d54e1686309186bad59945e1d19e18c9602473d2ae",
+      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68",
       "programSha256": "201797186808411a6f9c5dae752757e0abe411a9f20e921be1304cc6d4791ae6"
     },
     {
@@ -75,7 +75,7 @@
       "file": "P3-landing.png",
       "screen": "workspace:shiftWorklist",
       "sha256": "b53521c11728332d2208c89f96570ed03bac4ec427e9d18649b23cacfb9f0ef8",
-      "programSha256": "14b669e8048780bd002032cf99364884f70d5a9292a42ee77f99ae5d6f929c02"
+      "programSha256": "fe06122b47a633e6ea7b2be2c16a1b255e8eca9b4eb24ed2a9a303d2b6195e26"
     },
     {
       "name": "P4-landing",

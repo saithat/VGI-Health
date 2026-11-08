@@ -1,4 +1,4 @@
-_README last reviewed against commit `c27db794` (2026-11-07)._
+_README last reviewed against commit `b687d2cc` (2026-11-07)._
 
 # VGI Health
 
@@ -460,7 +460,7 @@ uncalibrated rates remain for owner review in this single decision list.
 |---|---|
 | MAR outcomes and timing | [Outcome policy](#medication-administration-outcomes): conditional rates, critical-drug classification, 30/60/120-minute windows, 20/45-minute re-offers, escalation thresholds and 18:59 cutoff. |
 | MAR follow-up scope | Prescriber notification is nursing documentation only; live delivery and cross-shift dose ownership remain future work. |
-| ADT cancellation eligibility | [Administrative rules](#administrative-adt-extension): latest matching ADT event only; positive exact ordinal; active destination beds; transfer cancellation requires the original bed empty and ready after cleaning. |
+| ADT cancellation eligibility | [Administrative rules](#administrative-adt-extension): patient's latest ADT event, of the matching kind; positive exact ordinal; active destination beds; transfer cancellation requires the original bed empty and ready after cleaning. |
 | Clinical work after cancellation | Retain all documentation, orders and administrations with their original encounter links, including an encounter marked entered-in-error; append cancellation provenance. |
 | Swap compatibility | Two distinct admitted patients owning distinct active occupied beds; complete signed board scope; no additional unit/service compatibility restriction. |
 | ADT simulation and transport | Provisional movement/error rates and cleaning/transport delays; `adt.json` is an administrative stream, with physical transport represented separately and no change to bedside clinical effort. |
@@ -1861,7 +1861,8 @@ The generic unbounded protocol invariants quantify over the expanded command
 type, so their fold, exclusivity, request-uniqueness and atomic-publication claims
 include swap and all three cancellations. `swap_atomic` specifies the complete
 exchange successor; `cancellation_references_latest` binds every accepted
-cancellation to the latest matching event; `cancellation_preserves_encounters`
+cancellation to the patient's latest ADT event, of the matching kind;
+`cancellation_preserves_encounters`
 preserves the complete patient-ID/encounter-identity projection under all three
 compensations. `swap_active` requires both beds active at acceptance. Lock-order
 exclusion remains the conditional unbounded `LockOrder.no_wait_cycle`; executable machine/host lock
@@ -2947,11 +2948,11 @@ geometry. This avoids starting an interpreter for each popup. A three-bundle
 P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
-The installed app SHA-256 is
+The current certified app SHA-256 is
 `030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`.
 The MAR outcome display, notification-version handling and ADT board controls
-change the certified source boundary. Recordings require re-certification,
-remeasurement and strict replay against this binding before live use.
+change the certified source boundary. All 33 retained revision bindings have
+passed re-certification, remeasurement and strict replay against this build.
 
 Changes to the bound clinical sources require a new app hash and matching
 recording certificates, geometry measurements and strict replay evidence. The
@@ -2978,14 +2979,17 @@ with identical verdicts, geometry and 8,046 measurement records. Measurements at
 earlier app hashes are kept in [docs/audits/](docs/audits/).
 
 The retained recording has 33 current certificate bindings and 50 remeasured
-shifts. Full re-certification took 196.89 minutes, including a
-106.62-minute batch gate. Fresh native/WASM strict replay verified
-1,284 tasks and 72,636 events with zero mismatches. Frozen clinical inputs,
-schedules and model choices are preserved. Full sequential template and persona
-audits checked 1,826 and 1,296 distinct trees respectively, with zero findings.
-The [verified-build report](docs/audits/merge-two-verification-20261107.md) records
-exact commands, bindings, coverage, screenshots and timings. Earlier profiling
-and verification receipts remain in [the historical report](docs/audits/merge-six-verification-20261106.md).
+shifts. Full re-certification took 196.86 minutes, including
+a 106.46-minute batch gate.
+Fresh native/WASM strict replay verified 1,284 tasks and
+72,636 events with zero mismatches. Frozen inputs, schedules,
+model decisions and worlds 1/2 are preserved. Two legacy patient-refusal captures
+are corrected from held to refused; the other clinical trace events are unchanged.
+The sequential template and persona audits checked 1,826 and
+1,296 distinct trees with zero findings. The
+[verified-build report](docs/audits/realism-wave1-verification-20261107.md) records
+exact commands, bindings, coverage, captures and timings. Earlier measurements
+and verification receipts remain in [docs/audits/](docs/audits/).
 
 Compare cold and warm certification with one shared lock, sequential commands
 and a fresh cache root for each cold experiment:
@@ -3130,8 +3134,7 @@ bound to the current program/spec/binary and must fail `completable` when neithe
 the report nor a reachable waiver is available; stored checker evidence never
 supplies behavioral expectations. Saved reports retain source-digested refresh
 provenance for the complete critical-result path and version-bound nursing
-fixture, alongside the independently rerun full-suite evidence. No clinical or
-design rule was changed.
+fixture, alongside the independently rerun full-suite evidence.
 
 
 ## Terminology and fictional identities

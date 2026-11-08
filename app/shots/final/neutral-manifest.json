@@ -4,7 +4,7 @@
     {
       "path": "shots/final/P1-chart.png",
       "source": "shots/final/P1-chart.ui.json",
-      "sha256": "2c4bf36c7568ee956b13a4880037d5e24f2e71f7b7bc0f048937abd3a8201b46"
+      "sha256": "7aeb9d27cb1629cb97e26145871c3fefafcad3cac3d3c09a5bfda27ee331d030"
     },
     {
       "path": "shots/final/P1-landing.png",
@@ -14,7 +14,7 @@
     {
       "path": "shots/final/P1-orders.png",
       "source": "shots/final/P1-orders.ui.json",
-      "sha256": "66d5ca38483ef252f9d4b36ca1e99fe7a6efd6ebb2168f28d0e63e5d2ea39192"
+      "sha256": "52ab5a4448b4ad8a4aff9d935b4c8c57e3145639fad61365190004bfe2633a7d"
     },
     {
       "path": "shots/final/P1-summary.png",
@@ -54,7 +54,7 @@
     {
       "path": "shots/final/P4-chart.png",
       "source": "shots/final/P4-chart.ui.json",
-      "sha256": "39c240057766ece286b05bae747f4ad13ff9f4222eb574cba5f2cb211e67323e"
+      "sha256": "f086570f33fe2f2cd87ca58b231cb2172c56b6f0ebcf858bf3a90ba345c197b0"
     },
     {
       "path": "shots/final/P4-growth.png",
@@ -74,7 +74,7 @@
     {
       "path": "shots/final/P5-chart.png",
       "source": "shots/final/P5-chart.ui.json",
-      "sha256": "29ac5a48004a95793582e7d54e1686309186bad59945e1d19e18c9602473d2ae"
+      "sha256": "99f7daf92158384f47e3a74f55a186815e2726e703a1fb77a8e3647e8d95ca68"
     },
     {
       "path": "shots/final/P5-landing.png",
@@ -178,7 +178,7 @@
     {
       "path": "shots/realism/live-select/P1-scheduleTasks-chart.png",
       "source": "shots/realism/live-select/P1-scheduleTasks-chart.ui.json",
-      "sha256": "b0cf20e41d10c677af8683c82fc38e7f5b36b187a418fb73a5e2d1b26ed0db7f",
+      "sha256": "340a29eef6ba4865fc8b3500d2d7a0ddd0d50ef49a2916423979370b8a6118c8",
       "mode": "live"
     },
     {
@@ -190,7 +190,7 @@
     {
       "path": "shots/realism/live-select/P2-edTrackBoard-chart.png",
       "source": "shots/realism/live-select/P2-edTrackBoard-chart.ui.json",
-      "sha256": "3b508fa24ce1d98b55611d2e783ef6f9538daec9386cfa21b14d05925bad2279",
+      "sha256": "00ed6acb11e2843aee57ce0c1d87eb75636d7ff54ea238ffbd2d6cd43a827903",
       "mode": "live"
     },
     {
@@ -202,7 +202,7 @@
     {
       "path": "shots/realism/live-select/P3-shiftWorklist-chart.png",
       "source": "shots/realism/live-select/P3-shiftWorklist-chart.ui.json",
-      "sha256": "6cb74d219d6860ac79f3d74c47999ddf85b0e68cd512784d823320459f47cc7d",
+      "sha256": "0db24261dfe70afb6b04cd22d2c35ca08b2b4cdeb0e1ae240b06489fca5b4a5d",
       "mode": "live"
     },
     {
@@ -214,7 +214,7 @@
     {
       "path": "shots/realism/live-select/P3-unitCensus-chart.png",
       "source": "shots/realism/live-select/P3-unitCensus-chart.ui.json",
-      "sha256": "82bc20203d4a0421ff70f8af604c7eafa43e572ad78ded9e992499693601c968",
+      "sha256": "0db24261dfe70afb6b04cd22d2c35ca08b2b4cdeb0e1ae240b06489fca5b4a5d",
       "mode": "live"
     },
     {
@@ -250,7 +250,7 @@
     {
       "path": "shots/realism/live-select/P5-orSchedule-chart.png",
       "source": "shots/realism/live-select/P5-orSchedule-chart.ui.json",
-      "sha256": "6b8caa7e686c283c53f8ef7f279cf996bed7b4fbda6520dae8e09a7939e15694",
+      "sha256": "59b2ad5bd6b012e6e9432dbea7ee9cb510fc0677b80c08e73facd0e2f995e0d2",
       "mode": "live"
     },
     {
