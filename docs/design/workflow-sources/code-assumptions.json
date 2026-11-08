@@ -1,0 +1,2109 @@
+{
+  "schema_version": 1,
+  "base_commit": "a9d27384c7f4989e35eda7809356eb374df6816b",
+  "families": [
+    {
+      "id": "A01",
+      "parameter": "KLM operators",
+      "current": "K=200, P=1100, C=100, H=400, M=1350 milliseconds; homing inferred on device change; ideal-interface floor gives shown reviews zero time/travel",
+      "code_refs": [
+        "lean/Ehr/Sim/Metrics.lean:14",
+        "lean/Ehr/Sim/Metrics.lean:33",
+        "lean/Ehr/Sim/Metrics.lean:102"
+      ],
+      "disposition": "Keep skilled-operator baseline; fit cognitive/service layers separately against U1-U5, K1/K2 conceptual only",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Metrics.lean:14, lean/Ehr/Sim/Metrics.lean:33; lean/Ehr/Sim/Metrics.lean:102"
+    },
+    {
+      "id": "A02",
+      "parameter": "Barcode scan",
+      "current": "1500 ms fixed; no typed characters or activation",
+      "code_refs": [
+        "lean/Ehr/Sim/Metrics.lean:19",
+        "lean/Ehr/Sim/Metrics.lean:54"
+      ],
+      "disposition": "Unidentified from selected certification tasks; use U5 matched composite and separate observed scanner data",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Metrics.lean:19, lean/Ehr/Sim/Metrics.lean:54"
+    },
+    {
+      "id": "A03",
+      "parameter": "Cosign/help wait",
+      "current": "60000 ms fixed; cosign adds this wait and M; help adds wait+M plus typing/instructions/route",
+      "code_refs": [
+        "lean/Ehr/Sim/Metrics.lean:20",
+        "lean/Ehr/Sim/Policy.lean:150",
+        "lean/Ehr/Sim/Bounded.lean:299"
+      ],
+      "disposition": "Separate cosigner queue from help; no defensible replacement point estimates",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Metrics.lean:20, lean/Ehr/Sim/Policy.lean:150, lean/Ehr/Sim/Bounded.lean:299"
+    },
+    {
+      "id": "A04",
+      "parameter": "Scrolling/viewport",
+      "current": "1100 ms/scroll; first 12 ordinal components then 10/page; directory/source rows 10/page",
+      "code_refs": [
+        "lean/Ehr/Sim/Metrics.lean:21",
+        "lean/Ehr/Sim/Policy.lean:263",
+        "lean/Ehr/Sim/Policy.lean:275",
+        "lean/Ehr/Sim/Policy.lean:293"
+      ],
+      "disposition": "Fit measured task route; do not call ordinal positions pixels",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Metrics.lean:21, lean/Ehr/Sim/Policy.lean:263, lean/Ehr/Sim/Policy.lean:275, lean/Ehr/Sim/Policy.lean:293"
+    },
+    {
+      "id": "A05",
+      "parameter": "Typing and synthetic notes",
+      "current": "Code value min(length,4)+1 keystrokes; note text section + fixed phrase",
+      "code_refs": [
+        "lean/Ehr/Sim/Metrics.lean:45",
+        "lean/Ehr/Sim/Goals.lean:106"
+      ],
+      "disposition": "Separate authoring from navigation; L1-L3 time allocation validates complete workload only",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Metrics.lean:45, lean/Ehr/Sim/Goals.lean:106"
+    },
+    {
+      "id": "A06",
+      "parameter": "Persona action probabilities",
+      "current": "P1-P5 keyboard percentages 80/20/10/50/30; backtrack per mille 60/30/90/40/20; removable-alert no-think rates 700/850/400/500/900; review/sidebar/search booleans differ; P1..P5 (early allergy review,sidebar scan,buried search)=(true,true,true)/(false,false,false)/(true,true,false)/(true,false,true)/(false,false,false)",
+      "code_refs": [
+        "world/src/personas.ts:5",
+        "lean/Ehr/Sim/Policy.lean:134",
+        "lean/Ehr/Sim/Policy.lean:346"
+      ],
+      "disposition": "Estimate route/shortcut use from matched studies; no source supports these exact persona values; overrideRate is not clinical override incidence",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/personas.ts:5, lean/Ehr/Sim/Policy.lean:134, lean/Ehr/Sim/Policy.lean:346"
+    },
+    {
+      "id": "A07",
+      "parameter": "Historical interruptions",
+      "current": "Poisson means P1=.3 P2=.8 P3=1 P4=.4 P5=.6 per task, scaled, capped 6; placed among goal actions; each wait+think",
+      "code_refs": [
+        "world/src/build.ts:121",
+        "world/src/build.ts:159",
+        "lean/Ehr/Sim/Policy.lean:33",
+        "lean/Ehr/Sim/Bounded.lean:231"
+      ],
+      "disposition": "Keep selectable historical mode; never mix its count with external per-hour rate",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/build.ts:121, world/src/build.ts:159, lean/Ehr/Sim/Policy.lean:33, lean/Ehr/Sim/Bounded.lean:231"
+    },
+    {
+      "id": "A08",
+      "parameter": "Serial visual scan",
+      "current": "180 ms/unseen item, prefix includes target; repeated recognized labels use decisionMs",
+      "code_refs": [
+        "lean/Ehr/Sim/Bounded.lean:186"
+      ],
+      "disposition": "Fit joint path/time moments from U1-U3, not a universal novice multiplier",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Bounded.lean:186"
+    },
+    {
+      "id": "A09",
+      "parameter": "Recall latency",
+      "current": "150 + 150*(floor(log2(items+1))+1) + 600/max(1,floor(sqrt(practice*100))) ms",
+      "code_refs": [
+        "lean/Ehr/Sim/Bounded.lean:168"
+      ],
+      "disposition": "K2 motivates structure, not numbers; partial identification with scan and typing",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Bounded.lean:168"
+    },
+    {
+      "id": "A10",
+      "parameter": "Memory strength",
+      "current": "floor(sqrt(exposures*1000000/(1+ageDays))); confident >=1400; changed placement resets practice to 1",
+      "code_refs": [
+        "lean/Ehr/Sim/Bounded.lean:79",
+        "lean/Ehr/Sim/Bounded.lean:86"
+      ],
+      "disposition": "Repeated-use/revision study required; aggregate task times cannot identify forgetting",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Bounded.lean:79, lean/Ehr/Sim/Bounded.lean:86"
+    },
+    {
+      "id": "A11",
+      "parameter": "Visual cache/search state",
+      "current": "Episode-scoped cache, stable labels not reread; local screen/tab/expanded key; no full cross-screen tab Cartesian key",
+      "code_refs": [
+        "lean/Ehr/Sim/Bounded.lean:181",
+        "lean/Ehr/Sim/Bounded.lean:244"
+      ],
+      "disposition": "Retain explicitly provisional; validate revisits with path traces",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Bounded.lean:181, lean/Ehr/Sim/Bounded.lean:244"
+    },
+    {
+      "id": "A12",
+      "parameter": "Miss/backtrack cognitive costs",
+      "current": "450 ms remembered-location miss plus attempted pointing/click; 300 ms backtrack plus real UI event",
+      "code_refs": [
+        "lean/Ehr/Sim/Bounded.lean:476",
+        "lean/Ehr/Sim/Bounded.lean:515"
+      ],
+      "disposition": "Fit with path excess; cannot identify both constants from mean time alone",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Bounded.lean:476, lean/Ehr/Sim/Bounded.lean:515"
+    },
+    {
+      "id": "A13",
+      "parameter": "Scent and intentions",
+      "current": "Lexical token overlap plus hardcoded clinical vocabulary; first unmet intention; then unvisited views; stable tie breaking",
+      "code_refs": [
+        "lean/Ehr/Sim/Bounded.lean:105",
+        "lean/Ehr/Sim/Bounded.lean:264",
+        "lean/Ehr/Sim/Bounded.lean:275"
+      ],
+      "disposition": "Estimate discovery/path failure jointly; no source supports current lexical coefficients",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Bounded.lean:105, lean/Ehr/Sim/Bounded.lean:264, lean/Ehr/Sim/Bounded.lean:275"
+    },
+    {
+      "id": "A14",
+      "parameter": "Help/fuel",
+      "current": "Patience max(2,floor(log2(screens+1))); fuel 32*(1+component count)*(2+value goals+commits); help desk BFS route",
+      "code_refs": [
+        "lean/Ehr/Sim/Discovery.lean:16",
+        "lean/Ehr/Sim/Discovery.lean:20",
+        "lean/Ehr/Sim/Discovery.lean:25"
+      ],
+      "disposition": "Bounds are computation limits, not clinician traits; report bound exhaustion separately from human failure",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Discovery.lean:16, lean/Ehr/Sim/Discovery.lean:20, lean/Ehr/Sim/Discovery.lean:25"
+    },
+    {
+      "id": "A15",
+      "parameter": "Ordinal travel and hidden taste",
+      "current": "400 screen-switch units+40*ordinal displacement; unknown directory position=0; optional weight 1..3 and sensitivity 100..900 per mille; missing placement=1000 units; disruption=1+recent use count, weighted by change sensitivity",
+      "code_refs": [
+        "lean/Ehr/Sim/Bounded.lean:58",
+        "lean/Ehr/Sim/Bounded.lean:199",
+        "world/src/personas.ts:17",
+        "lean/Ehr/Sim/Bounded.lean:726"
+      ],
+      "disposition": "Do not fit clinical seconds or pixel travel to these units; hidden tastes remain optional/unmeasured",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Bounded.lean:58, lean/Ehr/Sim/Bounded.lean:199, world/src/personas.ts:17; lean/Ehr/Sim/Bounded.lean:726"
+    },
+    {
+      "id": "A16",
+      "parameter": "Information recency and thresholds",
+      "current": "Glucose 120min; INR, potassium and renal 1440min; SBP 60min and <100 mmHg (1000 tenths); result trend/flags 10080min",
+      "code_refs": [
+        "lean/Ehr/Sim/InformationNeeds.lean:194",
+        "lean/Ehr/Sim/InformationNeeds.lean:197",
+        "lean/Ehr/Sim/InformationNeeds.lean:200",
+        "lean/Ehr/Sim/InformationNeeds.lean:207",
+        "lean/Ehr/Sim/InformationNeeds.lean:213"
+      ],
+      "disposition": "Do not promote to universal clinical defaults; monitoring indication does not determine these UI windows",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/InformationNeeds.lean:194, lean/Ehr/Sim/InformationNeeds.lean:197, lean/Ehr/Sim/InformationNeeds.lean:200, lean/Ehr/Sim/InformationNeeds.lean:207, lean/Ehr/Sim/InformationNeeds.lean:213"
+    },
+    {
+      "id": "A17",
+      "parameter": "Information lookup sequencing/cost",
+      "current": "Needs off by default; all lookups before episode actions, catalog order, reading 1350ms/item, memory-carry source-items*screen transitions, reset each episode",
+      "code_refs": [
+        "lean/Ehr/Sim/Goals.lean:376",
+        "lean/Ehr/Sim/Policy.lean:280",
+        "lean/Ehr/Sim/InformationMinimum.lean:1"
+      ],
+      "disposition": "Introduce interleaved decision-linked lookups after validation; cognitive carry has no time conversion",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Goals.lean:376, lean/Ehr/Sim/Policy.lean:280, lean/Ehr/Sim/InformationMinimum.lean:1"
+    },
+    {
+      "id": "A18",
+      "parameter": "External interruption rates",
+      "current": "Ward 5.5/h; surgery 13/h; clinic 3/h; ED 6.9/h; pharmacy 10.6/h",
+      "code_refs": [
+        "lean/Ehr/Sim/Resumption/Arrivals.lean:26"
+      ],
+      "disposition": "ED overall 7.9/h from I2; others role/setting-specific and partly transferred; clinic unresolved",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Resumption/Arrivals.lean:26"
+    },
+    {
+      "id": "A19",
+      "parameter": "Interruption exposure",
+      "current": "Fixed minutes W1/W5=15,W3=12,W4=6,W6=20,W2/W7=5; independent of actual task duration",
+      "code_refs": [
+        "lean/Ehr/Sim/Resumption/Arrivals.lean:31"
+      ],
+      "disposition": "Replace with common absolute shift timeline while preserving paired offered work",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Resumption/Arrivals.lean:31"
+    },
+    {
+      "id": "A20",
+      "parameter": "Interruption count/type/urgency",
+      "current": "Bernoulli minute bins p=rateMilli/60000; at most 1/min; uniform jitter; five equal type branches; result urgent, page urgent 1/3 else time-sensitive, pharmacy time-sensitive, others routine",
+      "code_refs": [
+        "lean/Ehr/Sim/Resumption/Arrivals.lean:42",
+        "lean/Ehr/Sim/Resumption/Arrivals.lean:52"
+      ],
+      "disposition": "Use source-specific marked arrival process; type/urgency proportions not identified",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Resumption/Arrivals.lean:42, lean/Ehr/Sim/Resumption/Arrivals.lean:52"
+    },
+    {
+      "id": "A21",
+      "parameter": "Communication duration",
+      "current": "Identify=3s, read=5s, assess=8/20/25s, reply=10/15/20s, escalate=30s, document=7s; five atomic steps",
+      "code_refs": [
+        "lean/Ehr/Sim/Resumption/Work.lean:9",
+        "lean/Ehr/Sim/Resumption/Work.lean:15"
+      ],
+      "disposition": "Pharmacy aggregate mean80.4 SD85.8s from I7; no observed per-step split",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Resumption/Work.lean:9, lean/Ehr/Sim/Resumption/Work.lean:15"
+    },
+    {
+      "id": "A22",
+      "parameter": "Interruption triage and closure",
+      "current": "Urgent preempts event boundary; time-sensitive preempts RN/pharmacy only; routine waits for task closure; popups protect task; fixed exposure closure waits and on-call handover",
+      "code_refs": [
+        "lean/Ehr/Sim/Resumption/Work.lean:78",
+        "lean/Ehr/Sim/Resumption/Work.lean:89",
+        "lean/Ehr/Sim/Resumption/Work.lean:163"
+      ],
+      "disposition": "Model care-dependent deferral; I4 warns deferral can relocate interruptions; never erase offered work",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Resumption/Work.lean:78, lean/Ehr/Sim/Resumption/Work.lean:89, lean/Ehr/Sim/Resumption/Work.lean:163"
+    },
+    {
+      "id": "A23",
+      "parameter": "Reorientation",
+      "current": "3000+700*captured entries+1000*unconfirmed entries ms; protocols/reorientation atomic",
+      "code_refs": [
+        "lean/Ehr/Sim/Resumption/Work.lean:84"
+      ],
+      "disposition": "I3 supports distinct resumption lag; 3.8s lab reference only; draft-size coefficients unidentified",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Resumption/Work.lean:84"
+    },
+    {
+      "id": "A24",
+      "parameter": "Draft/fact refresh",
+      "current": "Owner+patient+task binding; fact change clears alert acknowledgments and confirmations; stock CLI identity refresh, current receipts filter stale evidence",
+      "code_refs": [
+        "lean/Ehr/Sim/Resumption/Workspace.lean:1",
+        "lean/Ehr/Sim/Resumption/Work.lean:73"
+      ],
+      "disposition": "Add exogenous concurrent chart updates and observe revalidation; do not weaken clinical guards",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Resumption/Workspace.lean:1, lean/Ehr/Sim/Resumption/Work.lean:73"
+    },
+    {
+      "id": "A25",
+      "parameter": "Scheduling/dispatch",
+      "current": "One serial server per persona; ready tasks priority then deadline then arrival; clinical tasks atomic, communication event-preemptive; missing timing uses planned start",
+      "code_refs": [
+        "lean/Ehr/Sim/Scheduling/Clock.lean:8",
+        "lean/Ehr/Sim/Scheduling/Clock.lean:42",
+        "lean/Ehr/Sim/Policy.lean:449"
+      ],
+      "disposition": "Add bedside/service phases and independent actor queues; preserve exogenous arrivals",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Scheduling/Clock.lean:8, lean/Ehr/Sim/Scheduling/Clock.lean:42, lean/Ehr/Sim/Policy.lean:449"
+    },
+    {
+      "id": "A26",
+      "parameter": "Shifts/successors",
+      "current": "Tours P1=660,P2=600,P3=720,P4=570,P5=660min; ED/ward 15min overlap,16 windows; clinic nine calendar days filtered to weekdays",
+      "code_refs": [
+        "world/src/calendar.ts:16",
+        "world/src/timing/arrivals.ts:11",
+        "lean/Ehr/Sim/Scheduling/Clock.lean:71"
+      ],
+      "disposition": "Overlap is not handover effort; E2 mean RN15min start/13min end is cohort benchmark only",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/calendar.ts:16, world/src/timing/arrivals.ts:11, lean/Ehr/Sim/Scheduling/Clock.lean:71"
+    },
+    {
+      "id": "A27",
+      "parameter": "Ready/priority/deadline",
+      "current": "Ready=max(source planned,arrival); ESI <=2/3/>=4 deadlines+10/30/60min; urgency and abnormal-result priorities; combined results actionable at last issue time",
+      "code_refs": [
+        "world/src/timing/arrivals.ts:26",
+        "world/src/timing/arrivals.ts:49",
+        "world/src/timing/arrivals.ts:57"
+      ],
+      "disposition": "Measure actual arrival-to-provider separately; S15 median16 mean38.1min is validation, not new acuity guarantee",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/timing/arrivals.ts:26, world/src/timing/arrivals.ts:49, world/src/timing/arrivals.ts:57"
+    },
+    {
+      "id": "A28",
+      "parameter": "Workload endpoints",
+      "current": "Overdue MAR uses whole-task final documentation; completed-result response ends there; abandoned=service finish, carried=coverage horizon; distinct occurrences de-duplicated",
+      "code_refs": [
+        "lean/Ehr/Sim/Scheduling/Clock.lean:113",
+        "lean/Ehr/Sim/Scheduling/Clock.lean:126",
+        "lean/Ehr/Sim/Scheduling/Clock.lean:158"
+      ],
+      "disposition": "Separate administration, documentation, first-view, acknowledgment, action and communication endpoints",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Scheduling/Clock.lean:113, lean/Ehr/Sim/Scheduling/Clock.lean:126, lean/Ehr/Sim/Scheduling/Clock.lean:158"
+    },
+    {
+      "id": "A29",
+      "parameter": "Calendar/day volume",
+      "current": "Weekdays only; Monday base1.22,Tue/Wed1,Thu.98,Fri.93; quiet*.8,flu*1.1; clipped normal day/persona noise; flu week2 p=.7; allergy.12-.4,lb.15-.4,interruptionFactor.6-1.5",
+      "code_refs": [
+        "world/src/calendar.ts:24",
+        "world/src/context.ts:27",
+        "world/src/context.ts:42",
+        "world/src/context.ts:84"
+      ],
+      "disposition": "24h/7d ED demand; fit activity-specific weekday/hour shapes, not a shared multiplier",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/calendar.ts:24, world/src/context.ts:27, world/src/context.ts:42, world/src/context.ts:84"
+    },
+    {
+      "id": "A30",
+      "parameter": "Adult visit volume/slots",
+      "current": "Quiet16-17,busy19-20,normal17-19; no-show .10,follow-up .05; add-ons Monday2-4 else0-2 plus flu1-2; urgent-care18-22",
+      "code_refs": [
+        "world/src/flows/clinic.ts:227",
+        "world/src/flows/clinic.ts:246",
+        "world/src/flows/clinic.ts:251",
+        "world/src/flows/clinic.ts:311"
+      ],
+      "disposition": "L1-L3 validate whole-day allocation; appointment counts and no-shows remain local uncalibrated scenarios",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/clinic.ts:227, world/src/flows/clinic.ts:246, world/src/flows/clinic.ts:251, world/src/flows/clinic.ts:311"
+    },
+    {
+      "id": "A31",
+      "parameter": "Inbox/refill arrivals and service",
+      "current": "Refills clamp Poisson(5*volume*Monday1.6) to2..12; early controlled requests .04; bursts at0/272/590min capacities6/6/10 or urgent-care630 cap5; normal-result message .6; labs at07:15",
+      "code_refs": [
+        "world/src/flows/clinic.ts:405",
+        "world/src/flows/clinic.ts:438",
+        "world/src/flows/clinic.ts:451",
+        "world/src/flows/clinic.ts:491"
+      ],
+      "disposition": "Use arrival streams and message categories, no artificial daily cap; L4 33.8/day reference, L1 85min/day validation",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/clinic.ts:405, world/src/flows/clinic.ts:438, world/src/flows/clinic.ts:451, world/src/flows/clinic.ts:491"
+    },
+    {
+      "id": "A32",
+      "parameter": "ED arrival/load/wait/stay",
+      "current": "12..22 tasks centered16*volume; hours7..16 weights1,2,3,4,4,4,4,3,3,1.5; minute uniform; source ready +U(5,25); admitted stay240..420,discharged90..240min",
+      "code_refs": [
+        "world/src/flows/ed.ts:446",
+        "world/src/flows/ed.ts:490",
+        "world/src/flows/ed.ts:540",
+        "world/src/flows/ed.ts:608",
+        "world/src/flows/ed.ts:613"
+      ],
+      "disposition": "E4 supports conditional Poisson; S15 validates after-hours share and waits; distinguish facility demand from assigned clinician load",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/ed.ts:446, world/src/flows/ed.ts:490, world/src/flows/ed.ts:540, world/src/flows/ed.ts:608, world/src/flows/ed.ts:613"
+    },
+    {
+      "id": "A33",
+      "parameter": "Nursing passes",
+      "current": "07:30,09:00,12:00,14:00,17:00,18:00; fixed regimen/pass mapping; census-order offset(idx%6)*3min; whole-census assignment",
+      "code_refs": [
+        "world/src/flows/ward.ts:24",
+        "world/src/flows/ward.ts:27",
+        "world/src/flows/ward.ts:110"
+      ],
+      "disposition": "Order-relative scheduled occurrences across shifts; S14 does not mandate these clock times or nurse assignment",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/ward.ts:24, world/src/flows/ward.ts:27, world/src/flows/ward.ts:110"
+    },
+    {
+      "id": "A34",
+      "parameter": "PRN/reassessment/handoff",
+      "current": "PRN count<=4 Poisson(prnPerShift*busy1.1), time08:00..18:15,spacing>=200min; IV reassess30,other60min; nausea .35 surgery/.12 medicine,benzo .45; handoff18:30+idx*2",
+      "code_refs": [
+        "world/src/flows/ward.ts:120",
+        "world/src/flows/ward.ts:134",
+        "world/src/flows/ward.ts:142",
+        "world/src/flows/ward.ts:149",
+        "world/src/flows/ward.ts:155"
+      ],
+      "disposition": "Medication/route-specific reassessment and real handover task; no universal numeric replacement supported",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/ward.ts:120, world/src/flows/ward.ts:134, world/src/flows/ward.ts:142, world/src/flows/ward.ts:149, world/src/flows/ward.ts:155"
+    },
+    {
+      "id": "A35",
+      "parameter": "Pediatric schedule",
+      "current": "12..22 centered16*volume;20min slots08-12/13-17;1..3 add-ons plus Monday1;no-show .08 recheck/.10 routine;flu vaccines2..4",
+      "code_refs": [
+        "world/src/flows/peds.ts:116",
+        "world/src/flows/peds.ts:126",
+        "world/src/flows/peds.ts:134",
+        "world/src/flows/peds.ts:151"
+      ],
+      "disposition": "Visit length, immunization and no-show rates remain assumptions; selected SED tasks do not cover immunization workflow",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/peds.ts:116, world/src/flows/peds.ts:126, world/src/flows/peds.ts:134, world/src/flows/peds.ts:151"
+    },
+    {
+      "id": "A36",
+      "parameter": "Surgery timing/load",
+      "current": "Procedures50/70/85/95min plusU(-10,20);consult after ED U(60,120);clinic9..15 centered12*volume in25min slots;odd clinic/even OR;postop end+5",
+      "code_refs": [
+        "world/src/flows/surgery.ts:40",
+        "world/src/flows/surgery.ts:115",
+        "world/src/flows/surgery.ts:311",
+        "world/src/flows/surgery.ts:430",
+        "world/src/flows/surgery.ts:433",
+        "world/src/context.ts:23"
+      ],
+      "disposition": "Clinical operation duration is external service, not surgical note typing; no supported replacement distribution in selected sources",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/surgery.ts:40, world/src/flows/surgery.ts:115, world/src/flows/surgery.ts:311, world/src/flows/surgery.ts:430, world/src/flows/surgery.ts:433, world/src/context.ts:23"
+    },
+    {
+      "id": "A37",
+      "parameter": "MAR criticality/windows",
+      "current": "Insulin/systemic antibiotics/anticoagulants always critical; +30 critical,+120 daily,+60 others; cap18:59",
+      "code_refs": [
+        "world/src/medication/outcomes.ts:8",
+        "world/src/medication/outcomes.ts:20"
+      ],
+      "disposition": "S14 symmetric +/-30/60/120 local classification; cross-shift occurrence responsibility, not calendar expiry",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/medication/outcomes.ts:8, world/src/medication/outcomes.ts:20"
+    },
+    {
+      "id": "A38",
+      "parameter": "MAR clinical holds",
+      "current": "NPO oral/lispro always held; lisinopril SBP .08; poor intake .08; warfarin high INR .05; heparin/enoxaparin low platelets .02",
+      "code_refs": [
+        "world/src/medication/outcomes.ts:26"
+      ],
+      "disposition": "Do not fit drug safety thresholds from usability reports; use explicit synthetic physiology/order parameters; values remain scenario assumptions",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/medication/outcomes.ts:26"
+    },
+    {
+      "id": "A39",
+      "parameter": "MAR branch rates",
+      "current": "Conditional order:absence,unavailable .02 (resolve .70),refusal SC.05/PO.025/other.005 (accept.60),expired .005,else given",
+      "code_refs": [
+        "world/src/medication/outcomes.ts:33",
+        "world/src/medication/outcomes.ts:40"
+      ],
+      "disposition": "Fit competing transitions conditional on denominators; E5-E8 are different selected populations/outcomes",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/medication/outcomes.ts:33, world/src/medication/outcomes.ts:40"
+    },
+    {
+      "id": "A40",
+      "parameter": "MAR retry/escalation",
+      "current": "One retry at+20min critical/+45 others or off-unit return; expiry/discharge/inactive order stops retry; recurrent refusal or critical nonadministration notification",
+      "code_refs": [
+        "world/src/medication/outcomes.ts:35",
+        "world/src/medication/outcomes.ts:51",
+        "world/src/medication/outcomes.ts:59"
+      ],
+      "disposition": "Model pharmacy/prescriber response and accepted ownership; no source establishes exact retry count or delays",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/medication/outcomes.ts:35, world/src/medication/outcomes.ts:51, world/src/medication/outcomes.ts:59"
+    },
+    {
+      "id": "A41",
+      "parameter": "ADT rates/capacity/delays",
+      "current": "Transfer.03/patient-day,swap.05/board-day,error admission.01,transfer.02,discharge.002/patient-day;12 beds each unit;transportU(5,20),clean30min",
+      "code_refs": [
+        "world/src/adt.ts:47",
+        "world/src/adt.ts:55",
+        "world/src/adt.ts:83",
+        "world/src/adt.ts:89"
+      ],
+      "disposition": "Retain as stress scenarios; MIMIC transfers do not identify erroneous transaction or bed-cleaning rates",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/adt.ts:47, world/src/adt.ts:55, world/src/adt.ts:83, world/src/adt.ts:89"
+    },
+    {
+      "id": "A42",
+      "parameter": "Lookup observation fabrication",
+      "current": "Observation effective task time-5min, issued-4min; defaults glucose142,INR2.4,K3.2,creatinine1.1,SBP118; generated trend values",
+      "code_refs": [
+        "world/src/information-needs.ts:29",
+        "world/src/information-needs.ts:45",
+        "world/src/information-needs.ts:53",
+        "world/src/information-needs.ts:56"
+      ],
+      "disposition": "Include missing/stale/conflicting information; synthetic enrichment is not evidence of clinical availability",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/information-needs.ts:29, world/src/information-needs.ts:45, world/src/information-needs.ts:53, world/src/information-needs.ts:56"
+    },
+    {
+      "id": "A43",
+      "parameter": "Clinical scenario mix and transitions",
+      "current": "Disease-specific acuity,admission,follow-up,complication,LOS,lab abnormality and result-lag draws; initial census and refill backlog; extracted callsites retain expressions",
+      "code_refs": [
+        "world/src/flows/ed.ts:69",
+        "world/src/flows/common.ts:52",
+        "world/src/flows/clinic.ts:194",
+        "world/src/world.ts:76"
+      ],
+      "disposition": "Unfitted long tail: no new population values proposed; M1 is an adult single-center comparison only",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/flows/ed.ts:69, world/src/flows/common.ts:52, world/src/flows/clinic.ts:194, world/src/world.ts:76"
+    },
+    {
+      "id": "A44",
+      "parameter": "World exogeneity and actor handoff",
+      "current": "Source clinical choices do not change with UI speed; later-day arrivals not merged into extended queue; successor has serial coverage but no independently learned actor memory",
+      "code_refs": [
+        "world/src/timing/arrivals.ts:65",
+        "lean/Ehr/Sim/Policy.lean:419",
+        "lean/Ehr/Sim/Bounded.lean:543"
+      ],
+      "disposition": "Future multi-day timeline must preserve matched arrivals while allowing actor ownership and pending clinical follow-through",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/timing/arrivals.ts:65, lean/Ehr/Sim/Policy.lean:419, lean/Ehr/Sim/Bounded.lean:543"
+    },
+    {
+      "id": "A45",
+      "parameter": "Goal placeholders and implicit patient choice",
+      "current": "Synthetic note sections, fallback values, deterministic second actor; unspecified naloxone response defaults offered-declined",
+      "code_refs": [
+        "lean/Ehr/Sim/Goals.lean:46",
+        "lean/Ehr/Sim/Goals.lean:106",
+        "lean/Ehr/Sim/Goals.lean:170",
+        "lean/Ehr/Sim/Goals.lean:439"
+      ],
+      "disposition": "Keep clinical decision quality distinct from navigation completion; no empirical refusal inference",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Goals.lean:46, lean/Ehr/Sim/Goals.lean:106, lean/Ehr/Sim/Goals.lean:170, lean/Ehr/Sim/Goals.lean:439"
+    },
+    {
+      "id": "A46",
+      "parameter": "Planning bounds and expert floor",
+      "current": "BFS max(128,64*screens); separate bounded fuel and policy episode bounds; per-episode reset; expert is goal-directed planning baseline",
+      "code_refs": [
+        "lean/Ehr/Sim/Interaction.lean:139",
+        "lean/Ehr/Sim/Policy.lean:400",
+        "lean/Ehr/Sim/Goals.lean:466"
+      ],
+      "disposition": "Report computational failure; do not call expert an observed clinician optimum",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; lean/Ehr/Sim/Interaction.lean:139, lean/Ehr/Sim/Policy.lean:400, lean/Ehr/Sim/Goals.lean:466"
+    },
+    {
+      "id": "A47",
+      "parameter": "Scripted releases and scenario days",
+      "current": "Urgent care day5,releases4/7,appendicitis day1,flu week1or2; scenario clocks intentionally orchestrated",
+      "code_refs": [
+        "world/src/context.ts:14",
+        "world/src/context.ts:27"
+      ],
+      "disposition": "Retain selectable challenge fixtures, distinct from calibrated stochastic workloads",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; world/src/context.ts:14, world/src/context.ts:27"
+    },
+    {
+      "id": "A48",
+      "parameter": "Release movement proxy",
+      "current": "One extra click-equivalent per displaced observed use/day; not measured learning",
+      "code_refs": [
+        "agent/src/cadence.ts:55"
+      ],
+      "disposition": "Retain as a labeled selection-policy proxy; SED aggregate times cannot validate movement relearning.",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; agent/src/cadence.ts:55"
+    },
+    {
+      "id": "A49",
+      "parameter": "Relearning reference and pixel projection",
+      "current": "Latest two matched train schedules; three practice blocks then a fourth warm reference; signed first-k excess. Ignored remembered clicks project an ordinal-slot reveal point, with no extra clinical event",
+      "code_refs": [
+        "agent/src/bounded-tailoring.ts:38",
+        "app/src/dashboard/bounded-pointing.ts:9"
+      ],
+      "disposition": "Sensitivity/measurement convention only; require repeated relocation and measured pointer data before replacement.",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; agent/src/bounded-tailoring.ts:38, app/src/dashboard/bounded-pointing.ts:9"
+    },
+    {
+      "id": "A50",
+      "parameter": "Off-shift preferences and fallback time",
+      "current": "Fallback 0.5min/move+0.25min/other change; seeded chooser click weight[.5,1.5),scroll[1,4),relearning[1,6),threshold[0,2); optional offline local allergy/dose preference weights and sensitivity1..3",
+      "code_refs": [
+        "agent/src/session.ts:295",
+        "agent/src/session-simulator.ts:9",
+        "agent/src/offline-preferences.ts:17"
+      ],
+      "disposition": "No fitted clinician preference or review-session duration is established; keep named optional assumptions.",
+      "citation": "repository at a9d27384c7f4989e35eda7809356eb374df6816b; agent/src/session.ts:295, agent/src/session-simulator.ts:9, agent/src/offline-preferences.ts:17"
+    }
+  ],
+  "explicit_assumption_markers": [
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:11",
+      "excerpt": "ordinal geometry, scent, fuel and preference weights are simulation assumptions."
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:41",
+      "excerpt": "/-- Per-mille change aversion; zero is neutral (simulation assumption). -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:57",
+      "excerpt": "/-- Optional seeded preferences; simulation assumption, never a default. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:124",
+      "excerpt": "/-- Synthetic ordinal units, not browser pixels (simulation assumption). -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:167",
+      "excerpt": "practice^-1/2 term. Coefficients are simulation assumptions. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:183",
+      "excerpt": "practice still strengthens only on use. Cache behavior is a simulation assumption. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:203",
+      "excerpt": "Unknown workspace controls use position zero; this is a simulation assumption. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:243",
+      "excerpt": "unrelated tabs on every screen (simulation assumption). -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:262",
+      "excerpt": "/-- Clinical vocabulary, not a layout map; simulation assumption. A layout can"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Bounded.lean:301",
+      "excerpt": "waitMs (60 s) plus mentalMs is an uncalibrated simulation assumption for help,"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Discovery.lean:9",
+      "excerpt": "This help mechanism and its availability are simulation assumptions."
+    },
+    {
+      "citation": "lean/Ehr/Sim/Discovery.lean:19",
+      "excerpt": "asking. Logarithmic menu-depth proxy; simulation assumption, not fitted data. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Discovery.lean:23",
+      "excerpt": "work, not only screen count. This is a simulation assumption, not a proof of"
+    },
+    {
+      "citation": "lean/Ehr/Sim/InformationNeeds.lean:180",
+      "excerpt": "/-- Small sourced catalog; recency windows are simulation assumptions. No"
+    },
+    {
+      "citation": "lean/Ehr/Sim/InformationNeeds.lean:192",
+      "excerpt": "({ id, question := .latest measure unit minutes, gate := .commit cm, reads := [\"labs\", \"labResults\", \"resultTrend\"], samples, source := { authority := .drugLabel, citation := citation, «assumption» := \"Fixed window and lookup before episode actions are simulation assumptions; labeling requires monitoring, not this UI sequence.\" } } : Need)"
+    },
+    {
+      "citation": "lean/Ehr/Sim/InformationNeeds.lean:207",
+      "excerpt": "ns := ns ++ [{ id := \"mar-bp-hold\", question := .threshold measure \"mmHg\" 60 1000, gate := .entry \"adminStatus\" 0, reads := [\"vitals\", \"flowsheetHistory\", \"flowsheet\"], samples := (displaySamples d).filter (·.code == \"8480-6\"), source := { authority := .hospitalPolicy, citation := \"hospital policy (not law): fictional SBP <100 hold example\", «assumption» := \"Simulation assumption: illustrative local hold threshold, not a universal clinical standard; does not change the chosen administration decision.\" } }]"
+    },
+    {
+      "citation": "lean/Ehr/Sim/InformationNeeds.lean:209",
+      "excerpt": "-- Two explicit assumptions exercise review questions without inventing a law."
+    },
+    {
+      "citation": "lean/Ehr/Sim/InformationNeeds.lean:214",
+      "excerpt": "ns := ns ++ [{ id, question := q, gate := .commit \"ackResult\", reads := [\"labs\", \"labResults\", \"resultTrend\"], samples := (displaySamples d).filter (·.code == s.code), source := { authority := .simulationAssumption, citation := \"simulation assumption\", «assumption» := \"Review seven-day trend and flags before acknowledging a numeric result; not a legal obligation.\" } }]"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Metrics.lean:7",
+      "excerpt": "wait and scroll are explicitly labeled modeling assumptions. Homing is inferred"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Metrics.lean:13",
+      "excerpt": "/-- K, P, C, H, M and the three modeling assumptions, all in milliseconds. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Policy.lean:279",
+      "excerpt": "per page. This ordinal viewport is a simulation assumption, not browser geometry. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Resumption/Arrivals.lean:6",
+      "excerpt": "/-- Names bind role AND setting. Transfers and exposure windows are provisional. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Resumption/Arrivals.lean:25",
+      "excerpt": "Clinic 3/h is an explicit assumption, not an estimate from nursing/pharmacy. -/"
+    },
+    {
+      "citation": "lean/Ehr/Sim/Resumption/Work.lean:13",
+      "excerpt": "/-- Per-step milliseconds are uncalibrated scenario assumptions; the kind"
+    },
+    {
+      "citation": "world/src/adt.ts:46",
+      "excerpt": "/** Provisional scenario assumptions, not measured incidence estimates. */"
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:1",
+      "excerpt": "/** Provisional local policy and uncalibrated rates: README administration outcomes. */"
+    },
+    {
+      "citation": "world/src/personas.ts:15",
+      "excerpt": "/** Simulation assumption: independently seeded hidden tastes. Default output"
+    },
+    {
+      "citation": "world/src/timing/arrivals.ts:10",
+      "excerpt": "* is provisional; there is still one serial server per persona. */"
+    },
+    {
+      "citation": "world/src/timing/arrivals.ts:56",
+      "excerpt": "// ESI-based queue targets are modeling assumptions, not clinical guarantees."
+    }
+  ],
+  "world_stochastic_callsites": [
+    {
+      "citation": "world/src/adt.ts:83",
+      "expression": "const done = instant + new Rng(`${run.seed}:adt-transport:${id}:${p.id}`).int(5,20);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/adt.ts:111",
+      "expression": "if (!r.chance(rates.swapPerBoardDay)) continue;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/adt.ts:134",
+      "expression": "if (r.chance(rates.erroneousAdmission)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/adt.ts:142",
+      "expression": "if (r.chance(rates.erroneousDischargePerPatientDay)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/adt.ts:150",
+      "expression": "if (r.chance(rates.transferPerPatientDay)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/adt.ts:156",
+      "expression": "if (r.chance(rates.erroneousTransfer)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/build.ts:81",
+      "expression": "if (allergic.length > 0 && other.length > 0) pool = rng.chance(allergyShare) ? allergic : other;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/build.ts:83",
+      "expression": "const chosen = rng.pick(pool);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/build.ts:161",
+      "expression": "return Math.min(6, rng.poisson(INTERRUPTION_MEAN[persona] * this.ctx.interruptionFactor * scale));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/clinical.ts:77",
+      "expression": "if (p.tags.includes(\"ckd\") || p.ageYears >= 80 || rng.chance(0.4)) return order(\"heparin\", 5000, \"units\", \"SC\", \"q8h\");",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/context.ts:28",
+      "expression": "return new Rng(`${seed}:flu-week`).chance(0.7) ? 2 : 1;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/context.ts:33",
+      "expression": "return new Rng(`${seed}:quiet:${week}`).pick([2, 3, 4]);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/context.ts:54",
+      "expression": "volume *= Math.min(1.12, Math.max(0.9, rng.normal(1, 0.05)));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/context.ts:60",
+      "expression": "return Math.round(volume * fluBoost * Math.min(1.08, Math.max(0.92, rng.normal(1, 0.04))) * 1000) / 1000;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/context.ts:84",
+      "expression": "allergyShare: Math.round(rng.real(0.12, 0.4) * 100) / 100,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/context.ts:85",
+      "expression": "lbShare: Math.round(rng.real(0.15, 0.4) * 100) / 100,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/context.ts:86",
+      "expression": "interruptionFactor: Math.round(Math.min(1.5, Math.max(0.6, volume * rng.normal(1, 0.1))) * 100) / 100,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/controlled.ts:48",
+      "expression": "return naloxoneCheck(rx, home).applies ? [{ code: \"naloxoneOffer\", value: rng.chance(0.65) ? \"accepted\" : \"declined\" }] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/controlled.ts:53",
+      "expression": "return rng.chance(longChance) ? long : rng.pick(short);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:76",
+      "expression": "return options.length === 0 ? \"wellness\" : rng.pick(options);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:83",
+      "expression": "const uncontrolled = rng.chance(0.35);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:84",
+      "expression": "const orders = uncontrolled ? [lis !== undefined ? titrated(lis, 1) : order(\"lisinopril\", 10, \"mg\", \"PO\", \"daily\")] : lis !== undefined && rng.chance(0.4) ? [homeOrder(lis)] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:85",
+      "expression": "return { orders, notes: [...DOC, ...(rng.chance(0.3) ? [\"depressionScreen\"] : [])], labs: rng.chance(0.6) ? [{ lab: \"potassium\", abnormalProb: 0.1 }, { lab: \"creatinine\", abnormalProb: 0.1 }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:91",
+      "expression": "if (rng.chance(0.45)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:96",
+      "expression": "} else if (met !== undefined && rng.chance(0.4)) orders = [homeOrder(met)];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:97",
+      "expression": "return { orders, notes: [...DOC, \"footExam\"], labs: rng.chance(0.7) ? [{ lab: \"a1c\", abnormalProb: 0.65 }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:101",
+      "expression": "const orders = ator === undefined ? (rng.chance(0.5) ? [order(\"atorvastatin\", 20, \"mg\", \"PO\", \"daily\")] : []) : rng.chance(0.3) ? [titrated(ator, 1)] : rng.chance(0.4) ? [homeOrder(ator)] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:102",
+      "expression": "return { orders, notes: DOC, labs: rng.chance(0.5) ? [{ lab: \"ldl\", abnormalProb: 0.45, followUp: (ab) => (ab && ator !== undefined ? [titrated(ator, 1)] : []) }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:106",
+      "expression": "const orders = w !== undefined && rng.chance(0.4) ? [homeOrder(w)] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:107",
+      "expression": "return { orders, notes: [...DOC, \"anticoagulationReview\"], labs: rng.chance(0.9) ? [{ lab: \"inr\", abnormalProb: 0.4, warfarin: true }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:111",
+      "expression": "return { orders: a !== undefined && rng.chance(0.5) ? [homeOrder(a)] : [], notes: [...DOC, \"anticoagulationReview\"], labs: rng.chance(0.4) ? [{ lab: \"creatinine\", abnormalProb: 0.1 }, { lab: \"hemoglobin\", abnormalProb: 0.1 }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:114",
+      "expression": "return { orders: rng.chance(0.6) ? [order(\"albuterol\", 180, \"mcg\", \"INH\", \"q4h\", { prn: true })] : [], notes: [...DOC, \"asthmaControlTest\"], labs: [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:116",
+      "expression": "return { orders: [], notes: [...DOC, \"lifestyleCounseling\"], labs: rng.chance(0.6) ? [{ lab: \"a1c\", abnormalProb: 0.3 }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:120",
+      "expression": "const taper = rng.chance(0.2);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:126",
+      "expression": "return { orders: [], notes: [...DOC, \"depressionScreen\", \"careGaps\"], labs: rng.chance(0.5) ? [{ lab: rng.pick<LabKey>([\"glucose\", \"tsh\", \"hemoglobin\"]), abnormalProb: 0.15 }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:181",
+      "expression": "const labs: VisitPlan[\"labs\"] = rng.chance(0.7) ? [{ lab: \"a1c\", abnormalProb: isDiabetic(p) ? 0.6 : 0.1 }, { lab: \"ldl\", abnormalProb: 0.35 }] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:188",
+      "expression": "const renew = renewable.length > 0 && rng.chance(0.5) ? [homeOrder(rng.pick(renewable))] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:189",
+      "expression": "return { orders: renew, notes: [\"hpi\", \"dischargeReview\", \"medRec\", \"exam\", \"assessmentPlan\"], labs: rng.chance(0.4) ? [{ lab: \"potassium\", abnormalProb: 0.1 }, { lab: \"creatinine\", abnormalProb: 0.15 }] : [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:194",
+      "expression": "const abnormal = rng.chance(l.abnormalProb);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:199",
+      "expression": "const kind = !abnormal ? \"therapeutic\" : rng.chance(0.5) ? \"high\" : \"low\";",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:207",
+      "expression": "addPendingLab(b, { patientId: p.id, lab: l.lab, resultDay: b.day + rng.int(1, 2), recipient: \"P1\", source, result, followUp });",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:227",
+      "expression": "const target = load === \"quiet\" ? rng.int(16, 17) : load === \"busy\" ? rng.int(19, 20) : rng.int(17, 19);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:246",
+      "expression": "visits.push({ patient: b.patient(a.patientId), kind: a.kind === \"ed-followup\" ? \"ed-followup\" : \"post-discharge\", noShow: rng.chance(0.05), source: a.id });",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:251",
+      "expression": "let addOns = (b.ctx.monday ? rng.int(2, 4) : rng.int(0, 2)) + (b.ctx.fluWeek ? rng.int(1, 2) : 0);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:260",
+      "expression": "const isNew = rng.chance(newShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:262",
+      "expression": "if (isNew) p = b.picker.pick(rng, (q) => q.ageYears >= 18 && !panel.has(q.id), b.ctx.allergyShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:264",
+      "expression": "p ??= b.picker.pick(rng, (q) => q.ageYears >= 18 && panel.has(q.id), b.ctx.allergyShare) ?? b.picker.pick(rng, (q) => q.ageYears >= 18);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:266",
+      "expression": "const noShow = rng.chance(0.1);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:279",
+      "expression": "const p = b.picker.pick(rng, (q) => q.ageYears >= 18 && (rng.chance(0.75) ? panel.has(q.id) : true), b.ctx.allergyShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:311",
+      "expression": "const n = rng.int(18, 22);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:317",
+      "expression": "const wantNew = vr.chance(0.5);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:318",
+      "expression": "const p = (wantNew ? b.picker.pick(vr, (q) => q.ageYears >= 18 && !panel.has(q.id), b.ctx.allergyShare) : undefined) ?? b.picker.pick(vr, (q) => q.ageYears >= 18, b.ctx.allergyShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:323",
+      "expression": "const start = 30 + Math.round((k * 590) / n) + vr.int(0, 8);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:341",
+      "expression": "return { lab, value: r.value, interpretation: interp, daysAgo: rng.int(20, 150) };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:356",
+      "expression": "const highK = rng.chance(0.1);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:358",
+      "expression": "if (highK) return rng.chance(0.5) ? { decision: \"deny\", modified: null, reason: \"hyperkalemia-needs-visit\", labs } : { decision: \"modify\", modified: titrated(m, -1), reason: \"hyperkalemia-dose-reduction\", labs };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:359",
+      "expression": "if (rng.chance(0.1)) return { decision: \"modify\", modified: titrated(m, 1), reason: \"bp-above-goal\", labs };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:363",
+      "expression": "const highA1c = rng.chance(0.3);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:364",
+      "expression": "const highCr = !highA1c && rng.chance(0.05);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:377",
+      "expression": "const labs: RefillLab[] = [{ lab: \"inr\", value: inr.value, interpretation: \"H\", daysAgo: rng.int(3, 20) }];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:382",
+      "expression": "const labs = refillLabs(rng, [{ lab: \"ldl\", abnormal: rng.chance(0.3) }]);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:389",
+      "expression": "const lowHgb = rng.chance(0.1);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:394",
+      "expression": "const highA1c = rng.chance(0.3);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:399",
+      "expression": "return rng.chance(0.2) ? { decision: \"deny\", modified: null, reason: \"overuse-needs-asthma-visit\", labs: [] } : { decision: \"approve\", modified: null, reason: \"ok\", labs: [] };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:407",
+      "expression": "const n = Math.max(2, Math.min(12, rng.poisson(5 * vol * (b.ctx.monday ? 1.6 : 1))));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:427",
+      "expression": "lastFilledDaysAgo: early ? r.int(14, 22) : r.int(26, 34),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:438",
+      "expression": "else if (r.chance(0.04)) make(p, m, true, r);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/clinic.ts:453",
+      "expression": "const notes = abnormal ? [\"resultNote\", \"patientMessage\"] : rng.chance(0.6) ? [\"patientMessage\"] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:42",
+      "expression": "losNights: number;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:45",
+      "expression": "prnPerShift: number;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:63",
+      "expression": "dischargeClock: rng.int(11 * 60, 15 * 60),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:68",
+      "expression": "prnPerShift: a.prnPerShift,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:155",
+      "expression": "return { value: Math.round(rng.real(range[0], range[1]) * scale) / scale, interpretation };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:161",
+      "expression": "return { value: Math.round(rng.real(range[0], range[1]) * 10) / 10, interpretation: \"H\" };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:195",
+      "expression": "return day + rng.int(3, 6);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:211",
+      "expression": "followUps.push(addAppointment(b, \"P5\", ip.patientId, b.day + rng.int(5, 8), \"postop\", `post-op check: ${ip.diagnosis}`, id).id);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:213",
+      "expression": "const labs: LabKey[] = rng.chance(0.5) ? [\"potassium\", \"hemoglobin\"] : [\"creatinine\"];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:216",
+      "expression": "const abnormal = rng.chance(key === \"bloodCulture\" ? 0.1 : 0.35);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:221",
+      "expression": "resultDay: b.day + (key === \"bloodCulture\" ? rng.int(2, 4) : rng.int(1, 2)),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:251",
+      "expression": "const followUps = [addAppointment(b, \"P5\", patientId, b.day + rng.int(7, 10), \"postop\", `post-op check: ${procedure}`, id).id];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/common.ts:252",
+      "expression": "if (b.state.p1Panel.includes(patientId) && rng.chance(0.5)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:32",
+      "expression": "losNights: number;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:36",
+      "expression": "prnPerShift: number;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:48",
+      "expression": "admitProb: number;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:52",
+      "expression": "followupProb: number;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:72",
+      "expression": "weight: (p) => (p.ageYears >= 35 ? 12 : 4),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:78",
+      "expression": "stat: x.rng.chance(0.4) ? [order(\"morphine\", 2, \"mg\", \"IV\", \"once\")] : [],",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:79",
+      "expression": "admitProb: 0.35,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:82",
+      "expression": "followupProb: 0.6,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:87",
+      "expression": "weight: () => 10,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:94",
+      "expression": "admitProb: 0.15,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:95",
+      "expression": "admit: { diagnosis: \"abdominal pain, nonspecific\", losNights: x.rng.int(1, 2), specific: [], prns: [prn.morphineIV(2), oxyPrn(x), prn.ondansetronIV(), prn.acetaminophen()], prnPerShift: 1.2 },",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:97",
+      "expression": "followupProb: 0.3,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:102",
+      "expression": "weight: (p, flu) => (flu ? 13 : 8) * (p.ageYears >= 65 ? 1.4 : 1),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:113",
+      "expression": "admitProb: x.p.ageYears >= 65 ? 0.75 : 0.5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:116",
+      "expression": "losNights: x.rng.int(2, 4),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:122",
+      "expression": "prnPerShift: 0.4,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:127",
+      "expression": "followupProb: 0.7,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:132",
+      "expression": "weight: (p) => (p.gender === \"female\" ? 8 : 4),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:139",
+      "expression": "admitProb: 0.3,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:142",
+      "expression": "losNights: x.rng.int(1, 3),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:145",
+      "expression": "prnPerShift: 0.6,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:148",
+      "expression": "followupProb: 0.5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:153",
+      "expression": "weight: (p) => (p.tags.includes(\"dm2\") ? 9 : 6),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:160",
+      "expression": "admitProb: 0.4,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:163",
+      "expression": "losNights: x.rng.int(2, 3),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:166",
+      "expression": "prnPerShift: 0.8,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:171",
+      "expression": "followupProb: 0.7,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:176",
+      "expression": "weight: (p, flu) => (p.tags.includes(\"asthma\") || p.tags.includes(\"copd\") ? 10 : 1.5) * (flu ? 1.5 : 1),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:186",
+      "expression": "admitProb: copd ? 0.35 : 0.15,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:189",
+      "expression": "losNights: x.rng.int(2, 3),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:195",
+      "expression": "prnPerShift: 0.2,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:198",
+      "expression": "followupProb: 0.6,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:204",
+      "expression": "weight: (p) => (isDiabetic(p) ? 6 : 0),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:211",
+      "expression": "admitProb: 0.5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:214",
+      "expression": "losNights: x.rng.int(1, 2),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:220",
+      "expression": "prnPerShift: 0.2,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:223",
+      "expression": "followupProb: 0.9,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:228",
+      "expression": "weight: (p) => (anticoagulant(p) === undefined ? 3 : 0),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:235",
+      "expression": "admitProb: 1,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:238",
+      "expression": "losNights: x.rng.int(2, 3),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:241",
+      "expression": "prnPerShift: 0.5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:245",
+      "expression": "followupProb: 1,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:250",
+      "expression": "weight: (p) => (p.ageYears < 60 ? 5 : 1),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:257",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:259",
+      "expression": "followupProb: 0.2,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:264",
+      "expression": "weight: () => 9,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:266",
+      "expression": "const fracture = x.rng.chance(0.35);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:270",
+      "expression": "esi: fracture ? 3 : x.rng.chance(0.5) ? 4 : 5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:275",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:277",
+      "expression": "followupProb: fracture ? 0.5 : 0.2,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:284",
+      "expression": "weight: (p) => (p.ageYears >= 25 && p.ageYears <= 70 ? 5 : 1),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:286",
+      "expression": "const tramadol = x.rng.chance(0.45);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:293",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:295",
+      "expression": "followupProb: 0.4,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:302",
+      "expression": "weight: (p) => (p.ageYears < 65 ? 3 : 1),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:309",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:310",
+      "expression": "dischargeRx: x.rng.chance(0.4) ? [order(\"lorazepam\", 0.5, \"mg\", \"PO\", \"BID\", { prn: true })] : [],",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:311",
+      "expression": "followupProb: 0.7,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:317",
+      "expression": "weight: (p) => (opioidTolerant(p) ? 6 : 0),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:324",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:326",
+      "expression": "dischargeRx: x.rng.chance(0.5) ? [order(\"oxycodone\", 5, \"mg\", \"PO\", \"q6h\", { prn: true })] : [],",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:327",
+      "expression": "followupProb: 1,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:333",
+      "expression": "weight: (p) => (p.ageYears < 70 ? 4 : 1),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:339",
+      "expression": "stat: [x.rng.chance(0.5) ? order(\"morphine\", 4, \"mg\", \"IV\", \"once\") : order(\"hydromorphone\", 1, \"mg\", \"IV\", \"once\"), order(\"ondansetron\", 4, \"mg\", \"IV\", \"once\")],",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:340",
+      "expression": "admitProb: 0.15,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:343",
+      "expression": "followupProb: 0.4,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:349",
+      "expression": "weight: (_p, flu) => (flu ? 16 : 3),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:356",
+      "expression": "admitProb: x.p.ageYears >= 75 ? 0.3 : 0.03,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:357",
+      "expression": "admit: { diagnosis: \"influenza\", losNights: x.rng.int(1, 2), specific: [], prns: [prn.acetaminophen()], prnPerShift: 0.3 },",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:359",
+      "expression": "followupProb: 0.2,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:364",
+      "expression": "weight: (p) => (p.ageYears >= 50 ? 4 : 2),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:371",
+      "expression": "admitProb: 0.3,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:372",
+      "expression": "admit: { diagnosis: \"syncope\", losNights: 1, specific: [], prns: [prn.acetaminophen()], prnPerShift: 0.1, holdAntihypertensive: x.rng.chance(0.5) },",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:374",
+      "expression": "followupProb: 0.6,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:379",
+      "expression": "weight: () => 4,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:385",
+      "expression": "stat: x.rng.chance(0.5) ? [order(\"acetaminophen\", 1000, \"mg\", \"PO\", \"once\")] : [],",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:386",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:388",
+      "expression": "followupProb: 0.1,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:396",
+      "expression": "weight: 6,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:402",
+      "expression": "stat: [x.rng.chance(0.6) || x.p.ageYears < 1 ? order(\"acetaminophen\", weightDose(\"acetaminophen\", 15, x.kg, 10, 1000), \"mg\", \"PO\", \"once\") : order(\"ibuprofen\", weightDose(\"ibuprofen\", 10, x.kg, 10, 400), \"mg\", \"PO\", \"once\")],",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:403",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:405",
+      "expression": "followupProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:410",
+      "expression": "weight: 3,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:417",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:419",
+      "expression": "followupProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:424",
+      "expression": "weight: 3,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:431",
+      "expression": "admitProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:433",
+      "expression": "followupProb: 0,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:460",
+      "expression": "return hour * 60 + rng.int(0, 59);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:480",
+      "expression": "const anxiety = !hasBenzo && rng.chance(0.1) ? [prn.lorazepamPO()] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:490",
+      "expression": "const n = Math.max(12, Math.min(22, Math.round(16 * vol) + rng.int(-1, 1)));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:494",
+      "expression": "if (SCRIPTED_APPENDICITIS_DAYS.includes(b.day) || rng.chance(0.18)) consults.push(\"appendicitis\");",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:495",
+      "expression": "if (rng.chance(0.1)) consults.push(\"acute-cholecystitis\");",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:501",
+      "expression": "const target = dx === \"appendicitis\" && SCRIPTED_APPENDICITIS_DAYS.includes(b.day) ? 10 * 60 + 30 : rng.int(9 * 60, 14 * 60);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:526",
+      "expression": "p = b.picker.pick(prng, young) ?? b.picker.pick(prng, (q) => q.ageYears >= 18 && q.ageYears <= 75 && !q.tags.includes(hist));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:527",
+      "expression": "} else if (prng.chance(pedsShare)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:528",
+      "expression": "p = b.picker.pick(prng, (q) => q.ageYears < 18, ctx.allergyShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:530",
+      "expression": "p = b.picker.pick(prng, (q) => q.ageYears >= 18, ctx.allergyShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:534",
+      "expression": "const kg = Math.round(Math.max(3, p.weightKg * (1 + prng.normal(0, 0.012))) * 10) / 10;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:536",
+      "expression": "const newAllergy = !knownPcn && prng.chance(0.06);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:540",
+      "expression": "const startMin = clock - SHIFTS.P2.startClock + prng.int(5, 25);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:542",
+      "expression": "const lb = prng.chance(p.ageYears < 18 ? Math.min(0.7, ctx.lbShare * 2) : ctx.lbShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:561",
+      "expression": "stays.push([clock, clock + prng.int(240, 360)]);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:567",
+      "expression": "plan = prng.weighted(PEDS_SCENARIOS.map((s) => [s, s.weight] as const)).build(x);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:571",
+      "expression": "plan = prng.weighted(ADULT_SCENARIOS.map((s) => [s, s.weight(pp, flu)] as const)).build(x);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:574",
+      "expression": "let disposition: \"admit\" | \"discharge\" = plan.admit !== undefined && prng.chance(plan.admitProb) ? \"admit\" : \"discharge\";",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:592",
+      "expression": "clock: clock + prng.int(150, 300),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:596",
+      "expression": "losNights: plan.admit.losNights,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:599",
+      "expression": "prnPerShift: plan.admit.prnPerShift,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:608",
+      "expression": "stays.push([clock, clock + prng.int(240, 420)]);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:613",
+      "expression": "stays.push([clock, clock + prng.int(90, 240)]);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:614",
+      "expression": "if (b.state.p1Panel.includes(p.id) && prng.chance(plan.followupProb)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:615",
+      "expression": "addAppointment(b, \"P1\", p.id, b.day + prng.int(2, 4), \"ed-followup\", `ED follow-up: ${plan.key}`, taskId);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ed.ts:631",
+      "expression": "const key = rng.pick(keys);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:70",
+      "expression": "const wobble = new Rng(`${seed}:weight:${c.patientId}:${day}`).normal(0, 0.008);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:97",
+      "expression": "const fever = (): OrderChoice => (ageY >= 1 && rng.chance(0.4) ? peds.ibuprofen(kg) : peds.acetaminophen(kg));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:101",
+      "expression": "return { orders: [pcn ? peds.azithromycin(kg, \"acute-otitis-media\") : peds.amoxicillinAom(kg), fever()], immunizations: [], notes, recheckInDays: rng.chance(0.3) ? rng.int(1, 2) : null, reason: \"otitis-media\" };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:105",
+      "expression": "return { orders: [peds.albuterolNeb(kg)], immunizations: [], notes: [...notes, \"asthmaActionPlan\"], recheckInDays: rng.chance(0.5) ? 1 : null, reason: \"asthma-flare\" };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:107",
+      "expression": "return { orders: [peds.ondansetron(kg)], immunizations: [], notes: [...notes, \"hydrationAssessment\"], recheckInDays: rng.chance(0.3) ? 1 : null, reason: \"gastroenteritis\" };",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:116",
+      "expression": "const target = Math.max(12, Math.min(22, Math.round(16 * vol) + rng.int(-1, 1)));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:117",
+      "expression": "const fluShots = b.ctx.fluWeek ? rng.int(2, 4) : rng.chance(0.4) ? 1 : 0;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:126",
+      "expression": "const addOns = rng.int(1, 3) + (b.ctx.monday ? 1 : 0);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:134",
+      "expression": "visits.push({ p: b.patient(a.patientId), kind: \"recheck\", noShow: rng.chance(0.08), reason: a.reason });",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:140",
+      "expression": "const kind: VisitKind = rng.chance(b.ctx.fluWeek ? 0.4 : 0.5) ? \"well\" : \"sick\";",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:141",
+      "expression": "const p = b.picker.pick(rng, (q) => q.ageYears < 18, b.ctx.allergyShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:143",
+      "expression": "visits.push({ p, kind, noShow: rng.chance(0.1), reason: kind });",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:146",
+      "expression": "const p = b.picker.pick(rng, (q) => q.ageYears < 18 && (k < addOns || ageDaysOn(q.birthDate, b.day) >= 183), b.ctx.allergyShare);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:180",
+      "expression": "orders: vr.chance(0.15) ? [peds.acetaminophen(kg)] : [],",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/peds.ts:190",
+      "expression": "const failure = v.reason.includes(\"otitis\") && vr.chance(0.35);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:78",
+      "expression": "return rng.chance(0.8) ? prn.oxycodonePO(5) : prn.hydromorphonePO();",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:106",
+      "expression": "const complicated = rng.chance(dx === \"appendicitis\" ? 0.2 : 0.15);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:115",
+      "expression": "consultClock: Math.min(toClock(SHIFTS.P5.lengthMin - 20), edClock + rng.int(60, 120)),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:164",
+      "expression": "losNights: 1 + (complicated ? rng.int(2, 3) : 1),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:167",
+      "expression": "prnPerShift: 1.5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:197",
+      "expression": "const disposition = def.disposition === \"either\" ? (rng.chance(0.35) ? \"overnight\" : \"same-day\") : def.disposition;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:237",
+      "expression": "const rec = dischargeInpatient(b, ip, Math.max(toClock(startMin) + 90, rng.int(11 * 60, 13 * 60)), taskId, rng);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:309",
+      "expression": "const kg = ownIp?.weightKg ?? Math.round(p.weightKg * (1 + crng.normal(0, 0.01)) * 10) / 10;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:311",
+      "expression": "const dur = PROCEDURES[c.diagnosis].durationMin + crng.int(-10, 20);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:366",
+      "expression": "losNights: 1,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:369",
+      "expression": "prnPerShift: 1.5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:430",
+      "expression": "const target = Math.max(9, Math.min(15, Math.round(12 * vol) + rng.int(-1, 1)));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:454",
+      "expression": "if (rng.chance(0.05)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:459",
+      "expression": "const orders = rng.chance(0.25) ? [order(\"acetaminophen\", 650, \"mg\", \"PO\", \"q6h\", { prn: true })] : [];",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:466",
+      "expression": "const isNew = rng.chance(0.3);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:468",
+      "expression": "? (b.picker.pick(rng, (q) => q.ageYears >= 25 && q.ageYears <= 85 && canBook(b.state.surgicalCases, q.id)) ?? b.picker.pick(rng, (q) => q.ageYears >= 25 && q.ageYears <= 85))",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:469",
+      "expression": ": b.picker.pick(rng, (q) => q.ageYears >= 25 && q.ageYears <= 85);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/surgery.ts:474",
+      "expression": "const book = rng.chance(0.65);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:120",
+      "expression": "const prnCount = Math.min(4, prng.poisson(ip.prnPerShift * (b.ctx.personaLoad.P3 === \"busy\" ? 1.1 : 1)));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:123",
+      "expression": "const clock = prng.int(8 * 60, 18 * 60 + 15);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:128",
+      "expression": "const severe = prng.chance(ip.prnPerShift >= 1.5 ? 0.65 : 0.4);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:129",
+      "expression": "const choice = severe && opioids.length > 0 ? prng.pick(opioids) : mild.length > 0 ? prng.pick(mild) : opioids.length > 0 ? prng.pick(opioids) : undefined;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:132",
+      "expression": "const score = hasClass(choice.drug, \"opioid\") ? prng.int(6, 9) : prng.int(3, 5);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:136",
+      "expression": "b.addTask(\"P3\", \"W4\", ip.patientId, toMin(reassessAt), { painScore: Math.max(0, score - prng.int(2, 5)), noteSections: [\"painReassessment\"] }, [], b.interruptions(\"P3\", prng, 0.5));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:140",
+      "expression": "const nauseaClock = prng.int(8 * 60, 18 * 60);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:142",
+      "expression": "if (antiemetic !== undefined && prng.chance(ip.service === \"surgery\" ? 0.35 : 0.12) && !gone(ip, day, nauseaClock) && !offWard(ip, day, nauseaClock)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:147",
+      "expression": "const anxClock = prng.int(9 * 60, 18 * 60);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:149",
+      "expression": "if (benzo !== undefined && prng.chance(0.45) && !gone(ip, day, anxClock) && !offWard(ip, day, anxClock)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/flows/ward.ts:150",
+      "expression": "b.addTask(\"P3\", \"W4\", ip.patientId, toMin(anxClock), { administer: [benzo], observations: [{ code: \"prnReason\", value: \"anxiety\" }, { code: \"sedationScore\", value: prng.int(0, 1) }] }, [], b.interruptions(\"P3\", prng));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:28",
+      "expression": "if (o.drug === \"lisinopril\" && rng.chance(0.08)) return held(\"sbp-below-100\");",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:29",
+      "expression": "if (o.drug === \"insulin lispro\" && rng.chance(0.08)) return held(\"poor-oral-intake\");",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:30",
+      "expression": "if (o.drug === \"warfarin\" && rng.chance(0.05)) return held(\"inr-above-range\");",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:31",
+      "expression": "if ([\"heparin\", \"enoxaparin\"].includes(o.drug) && rng.chance(0.02)) return held(\"platelets-low\");",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:40",
+      "expression": "} else if (rng.chance(0.02)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:42",
+      "expression": "resolves = rng.chance(0.7);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:43",
+      "expression": "} else if (rng.chance(o.route === \"SC\" ? 0.05 : o.route === \"PO\" ? 0.025 : 0.005)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:45",
+      "expression": "resolves = rng.chance(0.6);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/medication/outcomes.ts:46",
+      "expression": "} else if (rng.chance(0.005)) {",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/state.ts:61",
+      "expression": "prnPerShift: number;",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:76",
+      "expression": "st.p1Panel = pop.adults.filter((p) => p.tags.length > 0 || p.homeMeds.length > 0 || rng.chance(0.55)).map((p) => p.id);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:81",
+      "expression": "const nMedical = Math.max(1, Math.min(censusCap - 1, rng.int(6, 8)));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:84",
+      "expression": "const p = b.picker.pick(r, (q) => q.ageYears >= 45) ?? b.picker.pick(r, (q) => q.ageYears >= 18);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:87",
+      "expression": "const admitDay = r.int(-2, 0);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:92",
+      "expression": "clock: r.int(14 * 60, 22 * 60),",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:96",
+      "expression": "losNights: 1,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:99",
+      "expression": "prnPerShift: plan.prnPerShift,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:108",
+      "expression": "ip.plannedDischargeDay = r.int(1, 3);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:117",
+      "expression": "const p = b.picker.pick(r, (q) => q.ageYears >= 30 && q.ageYears <= 75 && !q.tags.includes(\"cholecystectomy\"));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:134",
+      "expression": "losNights: 1,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:137",
+      "expression": "prnPerShift: 1.5,",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:158",
+      "expression": "const child = rng.pick(pop.peds);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:166",
+      "expression": "const lab = r.pick(labKeys);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:167",
+      "expression": "addPendingLab(b, { patientId: p.id, lab, resultDay: 1 + (i % 3), recipient: \"P1\", source: \"before simulation\", result: labValue(r, lab, r.chance(0.35)) });",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:183",
+      "expression": "refill: { id: b.nextId(\"rx\"), patientId: p.id, requestedDay: 0, current: homeOrder(med), decision: d.decision, modified: d.modified, reason: d.reason, labs: d.labs, lastFilledDaysAgo: r.int(26, 34) },",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:186",
+      "expression": "const lab = r.pick(labKeys);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:187",
+      "expression": "const res = labValue(r, lab, r.chance(0.3));",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    },
+    {
+      "citation": "world/src/world.ts:210",
+      "expression": "c.bookedDay = -r.int(5, 15);",
+      "status": "Current synthetic scenario input; not an empirical estimate. Retain unless a matched calibration source is supplied."
+    }
+  ],
+  "source_file_sha256": {
+    "lean/Ehr/Sim/Audit.lean": "67deda93e64b08d26ed13a7896606a742a858dc6824f11d22b322b8cb51d71a5",
+    "lean/Ehr/Sim/Bounded.lean": "69db8d447d44ea497f3f85c075ce055de3e22345f1b7befd2d4a8cd27845c881",
+    "lean/Ehr/Sim/Certificate.lean": "e685918d081fb1f887299b8a6f768ea04e3239338830dc32ec9db5131af024c2",
+    "lean/Ehr/Sim/Discovery.lean": "366bc6d60f5ea5790aacde8ca987e1013964fae8aaa315b6b5a0f1fed9a71b84",
+    "lean/Ehr/Sim/Goals.lean": "e9b4f8c9ebe13fed31e7c755de25586a98c775108ee5a7bcf22febad0f1964d4",
+    "lean/Ehr/Sim/History.lean": "8d021d5ee9a7dd4cea4ab2f8fd5967f18fe248a4710ba25d6386dee398c975c6",
+    "lean/Ehr/Sim/InformationMinimum.lean": "9f5363d837987f6ee61a5560e1edb479b64def6f1625b88d2637f8bee0055025",
+    "lean/Ehr/Sim/InformationNeeds.lean": "8f34dfc992ad4204d9644df1287a431a51dea477916cb35e6dc3e6cb619e5830",
+    "lean/Ehr/Sim/Interaction.lean": "42eb1c02ca720a961de4a85babcffcad95aa4462dbb87cf855a3558d74195454",
+    "lean/Ehr/Sim/Metrics.lean": "54de9552905b9dd16af6bb9c9cfd0fb19cc2e9dfd9118bc9c09fe582194643a1",
+    "lean/Ehr/Sim/MinClicks.lean": "5e15de9d1f67fb2586ad82731f1ceb7677f317e4c74b7dba31ea5e9a919b5183",
+    "lean/Ehr/Sim/Policy.lean": "58dac72cefab6bdfba98d8744102f8433791038e5ee6bde3dc060e50dc90427d",
+    "lean/Ehr/Sim/Resumption/Arrivals.lean": "b6d4a2fb4b4aaf53a0b8a79026b457cb19960e5c4b5cbfcbfe41088b6e679a2c",
+    "lean/Ehr/Sim/Resumption/Proofs.lean": "be5c858dfbcfea7099041b0f13fecd74ccb36cb600457bfcf47b26c7bd67cfc9",
+    "lean/Ehr/Sim/Resumption/Types.lean": "8a37e499bef8829bb6bffea71ba51ebcfe01b45273b27d59a12e2840bc5184f4",
+    "lean/Ehr/Sim/Resumption/Work.lean": "a3de96b98ad01b0f96b1892d95b74c61507a00543a7702d21e1b82ed7f27b9d9",
+    "lean/Ehr/Sim/Resumption/Workspace.lean": "15d001685b3b905ea8e1466bd89163e70dd87435fdcc8d6a6a5fb4c0785abb31",
+    "lean/Ehr/Sim/Scheduling/Axioms.lean": "a696f0b8a0f0f2281dca2512c18da3473412556302e154f16491e69fd062b7ec",
+    "lean/Ehr/Sim/Scheduling/Clock.lean": "f6fcd345768e2fea87c3c919f5e056e74f1d40c1257d6da3923410617ff8fbd1",
+    "lean/Ehr/Sim/Scheduling/Types.lean": "363f62eca4333ee21368894027ab6044148b085a74715e7297bb1cb05a10fa2c",
+    "lean/Ehr/Sim/TaskContext.lean": "dd835c0ecd9d12316e1e1f55aac312ef5f88fc46eb0661db018bd32ef9515828",
+    "lean/Ehr/Sim/TaskMinimum.lean": "abfeb7dc944dbd75682b51ec096c3666ea6d5a27ad090fac8910bceea18d4590",
+    "world/src/adt.ts": "00612464eee128c494d6cd322210d602a820937adb1b1dfca84a006b359dba53",
+    "world/src/build.ts": "67207d20ef16fbff83a2a60c8e439982af43679c08a0b5708bd562b3b969662b",
+    "world/src/calendar.ts": "88a54eb43bd7015d9ab30fab503af7d7794e5351aa51ec01bea56a83d0495529",
+    "world/src/clinical.ts": "84499295b3f7058f045396218a441d4aefa570bbf68147fe4665305c1e786229",
+    "world/src/context.ts": "12967bc155dbaf1fbf6d52552b01fe9ad48b7ab0cec2f8fccad180af7f380c48",
+    "world/src/controlled.ts": "8207ee281ed30548c2e880245d9cad9503327007542635963ea526332713f56c",
+    "world/src/fhir.ts": "8ea6276c9cb4f4e7b0521de6abd8f4f5fbd09d0544b6d49b33b1c3f830297676",
+    "world/src/flows/clinic.ts": "6b18cdf77c26ea42dcf1790dd72e9a8e469669d6ea350dd48d513e40dab32c95",
+    "world/src/flows/common.ts": "65eab273223f72ca703aaec6e566c081bb5c71801eb4ee87812ca068a19807f6",
+    "world/src/flows/ed.ts": "79ae8fea44e178f6b8f9af9af0ab4141a812ee5fb58ba67d5dc007944431a427",
+    "world/src/flows/peds.ts": "2bfcda20a8fdf908317a5f608828ba01b5202d0ca2190b81dcd1b0e02a223734",
+    "world/src/flows/surgery.ts": "9e7bf28e5a48f3133a364433e9f7dbf2b0261abdc6651f0e1cae7b57273cbff9",
+    "world/src/flows/ward.ts": "4a1e8efc6eea6e4961fb08477485845184ecdf6d1e951da40eb45444bdd6d5e4",
+    "world/src/formulary.ts": "3c956d01d4787ea3e57ebae6af22ac44af8dda71941a674928a5debcad028578",
+    "world/src/information-needs.ts": "ba54d1260d5ada3dece99accc498ecdeb31f1bde180091ffcde566262ca9f17f",
+    "world/src/medication/outcomes.ts": "61bfeb5a4a457a1e4c5bcd19649179f149ab1f0491e8bf5fea426e67df54979e",
+    "world/src/patients.ts": "3586e2ca8cb73920c7453dc3a8621197510c81883df98ec0e7fa204b852be6f6",
+    "world/src/personas.ts": "e49cdd38f9cf04978bb4b00632759903962e46548207c462e3cd763b3254c0ea",
+    "world/src/releases.ts": "fb692c3fe8130ac5761b702fe6637e764ab27dca87af917a22cf8c284b38cb7d",
+    "world/src/seed-contract.ts": "c48ee769198e1103058076ad366a09109d011ef7139ef39bc644ec6c2c92a6fe",
+    "world/src/state.ts": "06ddaba9c32223ea2b3dd34f4bb083f7e008964055985653437c15a314f1a0f9",
+    "world/src/timing/arrivals.ts": "ff2a2a9f1b370c79e893aa4ddaf4fde5a3e5a4b3add7b90d6f1df5a41ad8d009",
+    "world/src/world.ts": "68fff28f539f3f2bc31433341f678c62b5a705a8c3f0505cc13b4eddaf1fcdbf",
+    "agent/src/cadence.ts": "7f4585632a441bcc8b59ce23807bc368a3f8b75fed9dc193dea34baa9d05d4fb",
+    "agent/src/bounded-tailoring.ts": "353dd0a611536266c3f46b7474748daca1f7db9d06790744ac3fd5ccc686ab5c",
+    "app/src/dashboard/bounded-pointing.ts": "63b785fc17c7fcdd11ebb01a209fd3ca04181599bb4648d8e353779be3f0c26e",
+    "agent/src/session.ts": "3ee37d925e1dc7cf0dfc9c33c51ac646e2ab59855fdcbd803297f0c129a3f80d",
+    "agent/src/session-simulator.ts": "131aad858ab87ab99b0aac3226ef96a4adfac6d8e879cec900d0e98fae44f13b",
+    "agent/src/offline-preferences.ts": "547029b04fcb52d4d831a63a50699278a50d31c0b0e83ce25b4fa27110098032"
+  },
+  "scope": "Production simulator/world inputs; excludes test fixtures, RNG mechanics, clinical rulebook constraints, identifiers and unit-conversion constants. Callsite expressions may reference parameters defined elsewhere; families describe fixed timing and structural assumptions. Families A48-A50 additionally cover explicitly provisional README tailoring/measurement assumptions outside the simulator/world directories, by read-only inspection."
+}

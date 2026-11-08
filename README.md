@@ -2830,7 +2830,7 @@ other profile names are `wardNurse`, `surgicalPhysician`, `emergencyPhysician`
 and `clinicPrescriber`. Profile selection does not grant a clinical role.
 [Myers & Parikh](https://pubmed.ncbi.nlm.nih.gov/28871511/) observed 259
 interruptions in 47.3 hours of trauma-center nursing, including beneficial work.
-[Bagnasco et al.](https://pubmed.ncbi.nlm.nih.gov/28697685/) observed approximately
+[Bellandi et al.](https://pubmed.ncbi.nlm.nih.gov/28697685/) observed approximately
 13/hour among doctors and nurses in six surgical units.
 [Chisholm et al.](https://pubmed.ncbi.nlm.nih.gov/11073472/) distinguished
 30.9 brief interruptions from 20.7 task switches per three hours; the emergency
@@ -3056,6 +3056,14 @@ evidence mixed across a rebuild. The completion-accounting regression runs with
 
 How users are simulated and how the agent changes the interface are the two
 weakest parts.
+
+[Workflow calibration](docs/design/workflow-calibration.md) inventories current
+assumptions and public usability/workload evidence, including 2020+ cohort
+updates, explicit older-evidence retention, role-specific target settings and a
+statistical holdout acceptance rule without clinician review. It is a research
+plan; no fitted or clinically validated simulator is claimed. The source register
+retains supersession links and a reproducible citation/recency verifier
+(`scripts/verify-workflow-sources.py --online`).
 
 - **Simulated users are uncalibrated.** The default simulated clinician still
   knows the layout: it plans the shortest path through the whole current

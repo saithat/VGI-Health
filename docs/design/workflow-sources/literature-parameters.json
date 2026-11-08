@@ -1,0 +1,1356 @@
+{
+  "schema_version": 2,
+  "accessed": "2026-11-08",
+  "rows": [
+    {
+      "id": "ehr-day",
+      "parameter": "Total EHR time normalized to clinic schedule",
+      "value": {
+        "mean": 391.3,
+        "sd": 149.1
+      },
+      "unit": "min/8 scheduled clinic h",
+      "setting": "UW Health US academic family/general internal medicine, April 2022-March 2023",
+      "denominator": "141 PCP longitudinal cohort; minutes normalized per 8 scheduled clinic hours",
+      "caveat": "Includes outside-schedule and unscheduled-day work; not 391.3 minutes within an 8h shift.",
+      "citation": {
+        "source_id": "N1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38253499/",
+        "locator": "Table 2; 2022-2023 column"
+      },
+      "supersedes": [
+        "ehr-day-previous"
+      ],
+      "supersededBy": [],
+      "replacement_scope": "Default reference changes; compare units, setting and endpoint before interpreting old→new.",
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "audit"
+    },
+    {
+      "id": "ehr-office",
+      "parameter": "EHR time in clinic hours",
+      "value": 269,
+      "unit": "min/clinical-FTE weekday",
+      "setting": "family medicine",
+      "denominator": "142 physicians",
+      "caveat": "Clinic hours defined 08:00-18:00 weekdays",
+      "citation": {
+        "source_id": "L1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28893811/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2017,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2017): Historical day/office denominators differ from N1 per-scheduled-clinic-hour metrics; archive comparator only.",
+      "recency_search": "audit"
+    },
+    {
+      "id": "ehr-after",
+      "parameter": "EHR outside scheduled hours on scheduled days",
+      "value": {
+        "mean": 84.3,
+        "sd": 58.8
+      },
+      "unit": "min/8 scheduled clinic h",
+      "setting": "UW Health US academic family/general internal medicine, April 2022-March 2023",
+      "denominator": "141 PCP longitudinal cohort; minutes normalized per 8 scheduled clinic hours",
+      "caveat": "TOSH8; unscheduled-day TUSD8 (81.8 min) is separate. Not the old 08:00-18:00 boundary.",
+      "citation": {
+        "source_id": "N1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38253499/",
+        "locator": "Table 2; 2022-2023 column"
+      },
+      "supersedes": [
+        "ehr-after-previous"
+      ],
+      "supersededBy": [],
+      "replacement_scope": "Default reference changes; compare units, setting and endpoint before interpreting old→new.",
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "audit"
+    },
+    {
+      "id": "inbox-time",
+      "parameter": "Inbox management",
+      "value": {
+        "mean": 71.4,
+        "sd": 32.4
+      },
+      "unit": "min/8 scheduled clinic h",
+      "setting": "UW Health US academic family/general internal medicine, April 2022-March 2023",
+      "denominator": "141 PCP longitudinal cohort; minutes normalized per 8 scheduled clinic hours",
+      "caveat": "Time on inbox screens; downstream chart/order/note work excluded. Not full inbox-attributable effort.",
+      "citation": {
+        "source_id": "N1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38253499/",
+        "locator": "Table 2; 2022-2023 column"
+      },
+      "supersedes": [
+        "inbox-time-previous"
+      ],
+      "supersededBy": [],
+      "replacement_scope": "Default reference changes; compare units, setting and endpoint before interpreting old→new.",
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "inbox"
+    },
+    {
+      "id": "office-fractions",
+      "parameter": "Office activity shares",
+      "value": {
+        "direct_patient": 27.0,
+        "ehr_and_desk": 49.2
+      },
+      "unit": "percent observed time",
+      "setting": "four US ambulatory specialties",
+      "denominator": "57 physicians; 430 observed hours",
+      "caveat": "Desk work includes work outside EHR; not a novice multiplier",
+      "citation": {
+        "source_id": "L2",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/27595430/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2016,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2016): No newer matched four-specialty direct-patient versus EHR-plus-desk time-motion fractions established; audit logs omit desk work.",
+      "recency_search": "audit"
+    },
+    {
+      "id": "encounter-time",
+      "parameter": "Active EHR per encounter",
+      "value": 974,
+      "unit": "s/encounter",
+      "setting": "adult nonsurgical US ambulatory",
+      "denominator": "about 100 million encounters; 155000 physicians; 417 systems",
+      "caveat": "Large sample on one product; average across encounters and specialties",
+      "citation": {
+        "source_id": "L3",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/31931523/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2018,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2018): No newer matched national per-encounter audit-log estimand established; 2018 logs remain historical, while N1 normalizes by scheduled clinic hours. No newer matched national per-encounter audit-log estimand established; N1 uses scheduled hours and cannot replace this denominator.",
+      "recency_search": "audit"
+    },
+    {
+      "id": "encounter-mix",
+      "parameter": "EHR function shares",
+      "value": {
+        "chart_review": 33,
+        "documentation": 24,
+        "ordering": 17
+      },
+      "unit": "percent EHR time",
+      "setting": "adult ambulatory",
+      "denominator": "same as encounter-time",
+      "caveat": "Not additive extra time over encounter total",
+      "citation": {
+        "source_id": "L3",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/31931523/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2018,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2018): No newer matched national per-encounter audit-log estimand established; 2018 logs remain historical, while N1 normalizes by scheduled clinic hours. No newer matched national per-encounter audit-log estimand established; N1 uses scheduled hours and cannot replace this denominator.",
+      "recency_search": "audit"
+    },
+    {
+      "id": "inbox-volume",
+      "parameter": "Patient medical-advice message arrivals",
+      "value": {
+        "mean": 15.3,
+        "sd": 7.6
+      },
+      "unit": "patient-advice messages/8 scheduled clinic h",
+      "setting": "UW Health US academic family/general internal medicine, April 2022-March 2023",
+      "denominator": "141 PCP longitudinal cohort",
+      "caveat": "Replaces mixed-specialty all-message default with role-specific advice-message stream; not total inbox volume. Baseline 9.8±5.9 in 2019-2020.",
+      "citation": {
+        "source_id": "N1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38253499/",
+        "locator": "Table 2; 2022-2023 column"
+      },
+      "supersedes": [
+        "inbox-volume-previous"
+      ],
+      "supersededBy": [],
+      "replacement_scope": "Default reference changes; compare units, setting and endpoint before interpreting old→new.",
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "inbox"
+    },
+    {
+      "id": "inbox-mix",
+      "parameter": "Selected primary-care incoming streams",
+      "value": {
+        "patient_advice": 15.3,
+        "prescription": 14.3,
+        "results": 12.3,
+        "patient_calls": 23.5,
+        "electronic_consult": 0.31
+      },
+      "unit": "messages/8 scheduled clinic h",
+      "setting": "UW Health US academic family/general internal medicine, April 2022-March 2023",
+      "denominator": "141 PCP longitudinal cohort",
+      "caveat": "Source categories overlap workflow concepts, not a complete all-message census. Do not compare their sum to old all-message total or add N2 volumes.",
+      "citation": {
+        "source_id": "N1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38253499/",
+        "locator": "Table 2; 2022-2023 column"
+      },
+      "supersedes": [
+        "inbox-mix-previous"
+      ],
+      "supersededBy": [],
+      "replacement_scope": "Default reference changes; compare units, setting and endpoint before interpreting old→new.",
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "inbox"
+    },
+    {
+      "id": "fragmentation",
+      "parameter": "Activity changes",
+      "value": {
+        "mean": 1.4,
+        "sd": 0.6
+      },
+      "unit": "switches/min",
+      "setting": "APP/RN across four settings",
+      "denominator": "47 clinicians; 34 APP, 13 RN",
+      "caveat": "Voluntary task changes plus externally caused changes; not an interruption arrival rate",
+      "citation": {
+        "source_id": "L7",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33936464/",
+        "locator": "full text abstract/Table 3"
+      },
+      "recency": "current",
+      "evidence_year": 2020,
+      "supersedes": [],
+      "supersededBy": [],
+      "recency_search": "fragmentation"
+    },
+    {
+      "id": "ed-entry-share",
+      "parameter": "ED on-shift computer use",
+      "value": {
+        "median": 34.1
+      },
+      "unit": "percent shift minutes",
+      "setting": "US urban high-volume ED attending physicians, daytime May-November 2019",
+      "denominator": "20 physicians; 150 observed h",
+      "caveat": "Newer publication (2026), older evidence (2019). Computer work broader than data entry; direct patient median26.9%; not a post-pandemic time trend.",
+      "citation": {
+        "source_id": "N10",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/42496179/",
+        "locator": "Results/Table 2; study setting"
+      },
+      "supersedes": [
+        "ed-entry-share-previous"
+      ],
+      "supersededBy": [],
+      "replacement_scope": "Default reference changes; compare units, setting and endpoint before interpreting old→new.",
+      "recency": "older-retained",
+      "evidence_year": 2019,
+      "retention_reason": "Older evidence (2019): 2026 publication observes May-November 2019; newer than L8 but explicitly pre-pandemic, daytime attending sensitivity only. 2026 publication observes May-November 2019; newer than L8 but explicitly pre-pandemic, daytime attending sensitivity only.",
+      "recency_search": "ed-entry"
+    },
+    {
+      "id": "ward-interrupted",
+      "parameter": "Medication administrations with interruption",
+      "value": 53.1,
+      "unit": "percent administrations",
+      "setting": "six wards, two Australian teaching hospitals",
+      "denominator": "4271 medications; 98 nurses; 505 h",
+      "caveat": "Cannot convert to per-hour rate without per-administration exposure distribution",
+      "citation": {
+        "source_id": "I1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20421552/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2010,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2010): No newer comparable interruption-stratified adjusted major-error risk found; N5 is ICU pump exposure without this risk model. No newer comparable interruption-stratified adjusted major-error risk found; N5 is ICU pump exposure without this risk model.",
+      "recency_search": "ward-interrupt"
+    },
+    {
+      "id": "ward-major-risk",
+      "parameter": "Estimated major error risk",
+      "value": {
+        "zero_interruptions": 2.3,
+        "four_interruptions": 4.7
+      },
+      "unit": "percent administrations",
+      "setting": "same wards",
+      "denominator": "observational adjusted model",
+      "caveat": "Association, not causal error draw; never bypass simulator clinical guards",
+      "citation": {
+        "source_id": "I1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20421552/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2010,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2010): No newer comparable interruption-stratified adjusted major-error risk found; N5 is ICU pump exposure without this risk model. No newer comparable interruption-stratified adjusted major-error risk found; N5 is ICU pump exposure without this risk model.",
+      "recency_search": "ward-interrupt"
+    },
+    {
+      "id": "ed-interrupt",
+      "parameter": "ED interruptions",
+      "value": 7.9,
+      "unit": "interruptions/h",
+      "setting": "emergency physicians",
+      "denominator": "36 physicians; 120 observed h",
+      "caveat": "Overall external interruptions; different taxonomy from Chisholm breaks-in-task",
+      "citation": {
+        "source_id": "I2",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29317463/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2018,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2018): Conditional prescribing-hour rate not measured by N4; interrupted-task shares cannot replace it. Conditional prescribing-hour rate not measured by N4; interrupted-task shares cannot replace it.",
+      "recency_search": "ed-interrupt"
+    },
+    {
+      "id": "ed-prescribe-interrupt",
+      "parameter": "Interruptions during prescribing",
+      "value": 9.4,
+      "unit": "interruptions/h prescribing",
+      "setting": "emergency physicians",
+      "denominator": "28 observed prescribers; 239 orders",
+      "caveat": "Conditional activity rate; do not add to overall 7.9/h",
+      "citation": {
+        "source_id": "I2",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29317463/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2018,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2018): Conditional prescribing-hour rate not measured by N4; interrupted-task shares cannot replace it. Conditional prescribing-hour rate not measured by N4; interrupted-task shares cannot replace it.",
+      "recency_search": "ed-interrupt"
+    },
+    {
+      "id": "ward-interrupt",
+      "parameter": "Nursing interruptions",
+      "value": 5.475687103594081,
+      "unit": "interruptions/h",
+      "setting": "US trauma center nursing",
+      "denominator": "259 interruptions; 47.3 h",
+      "caveat": "Derived rate; includes beneficial and detrimental interruptions",
+      "citation": {
+        "source_id": "I4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28871511/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2017,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2017): No newer matched US whole-shift ward-RN hourly rate/time fraction established; N5 is IV-pump-activity-specific. No newer matched US whole-shift ward-RN hourly rate/time fraction established; N5 is IV-pump-activity-specific.",
+      "recency_search": "ward-interrupt"
+    },
+    {
+      "id": "ward-interrupt-time",
+      "parameter": "Interrupted fraction of work",
+      "value": 9.1,
+      "unit": "percent observed time",
+      "setting": "same trauma center",
+      "denominator": "47.3 h",
+      "caveat": "Derived mean duration about 59.8 s; no variance or per-type duration inferred",
+      "citation": {
+        "source_id": "I4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28871511/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2017,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2017): No newer matched US whole-shift ward-RN hourly rate/time fraction established; N5 is IV-pump-activity-specific. No newer matched US whole-shift ward-RN hourly rate/time fraction established; N5 is IV-pump-activity-specific.",
+      "recency_search": "ward-interrupt"
+    },
+    {
+      "id": "surgery-interrupt",
+      "parameter": "Surgical unit interruptions",
+      "value": 13,
+      "unit": "interruptions/h (approximate)",
+      "setting": "doctors and nurses in six surgical units",
+      "denominator": "source study observations",
+      "caveat": "Bellandi et al. 2018, online 2017; mixed role, not operating-room-only",
+      "citation": {
+        "source_id": "I5",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28697685/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2018,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2018): Newer operating-room studies use different roles/task definitions; no matched six-unit mixed-role replacement established. Newer operating-room studies use different roles/task definitions; no matched six-unit mixed-role replacement established.",
+      "recency_search": "surgery-interrupt"
+    },
+    {
+      "id": "chisholm-rates",
+      "parameter": "Attention events per three hours",
+      "value": {
+        "brief_interruptions_mean": 30.9,
+        "brief_interruptions_sd": 9.7,
+        "breaks_mean": 20.7,
+        "breaks_sd": 6.3
+      },
+      "unit": "events/180 min",
+      "setting": "physicians in three EDs",
+      "denominator": "180-min observation blocks",
+      "caveat": "Brief interruptions do not switch tasks; breaks exceed 10s and change tasks; mutually distinct source categories",
+      "citation": {
+        "source_id": "I6",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/11073472/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2000,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2000): Retained solely for distinct brief-interruption versus task-break taxonomy with reported SDs. Retained solely for distinct brief-interruption versus task-break taxonomy with reported SDs.",
+      "recency_search": "ed-interrupt"
+    },
+    {
+      "id": "pharmacy-rate",
+      "parameter": "Pharmacy interruptions",
+      "value": 10.6,
+      "unit": "interruptions/h",
+      "setting": "inpatient pharmacy employees",
+      "denominator": "552 interruptions",
+      "caveat": "Includes technicians; no pharmacist-only rate supplied",
+      "citation": {
+        "source_id": "I7",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/32308866/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2019,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2019): N8 is ward clinical pharmacists, not dispensing staff/technicians, and lacks comparable duration SD. N8 is ward clinical pharmacists, not dispensing staff/technicians, and lacks comparable duration SD.",
+      "recency_search": "pharmacy-interrupt"
+    },
+    {
+      "id": "pharmacy-duration",
+      "parameter": "Interruption duration",
+      "value": {
+        "mean": 1.34,
+        "sd": 1.43
+      },
+      "unit": "min/interruption",
+      "setting": "same pharmacy",
+      "denominator": "552 interruptions",
+      "caveat": "Propose lognormal moment match only for aggregate pharmacy service; allocation to five semantic steps remains unfitted",
+      "citation": {
+        "source_id": "I7",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/32308866/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2019,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2019): N8 is ward clinical pharmacists, not dispensing staff/technicians, and lacks comparable duration SD. N8 is ward clinical pharmacists, not dispensing staff/technicians, and lacks comparable duration SD.",
+      "recency_search": "pharmacy-interrupt"
+    },
+    {
+      "id": "resumption-lab",
+      "parameter": "Resume versus ordinary action interval",
+      "value": {
+        "resumption": 3.8,
+        "ordinary": 1.9
+      },
+      "unit": "s",
+      "setting": "nonclinical laboratory task",
+      "denominator": "experimental participants",
+      "caveat": "Sensitivity reference only; not EHR per-entry or draft-size coefficients",
+      "citation": {
+        "source_id": "I3",
+        "url": "https://gregtrafton.com/papers/task_interruption.pdf",
+        "locator": "abstract/discussion"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2004,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2004): No newer comparable ordinary-action versus resumption-interval pair identified; N12 reports recovery performance, not lag seconds. No newer comparable ordinary-action versus resumption-interval pair identified; N12 reports recovery performance, not lag seconds.",
+      "recency_search": "resumption"
+    },
+    {
+      "id": "result-lab",
+      "parameter": "Report-to-acknowledgment",
+      "value": {
+        "median_h": 18.1,
+        "within_24h_pct": 60
+      },
+      "unit": "h and percent",
+      "setting": "Australian maternity hospital inpatient labs",
+      "denominator": "27354 total inpatient lab/imaging results; 6855 patients",
+      "caveat": "Acknowledgment is distinct from first view, treatment or patient contact",
+      "citation": {
+        "source_id": "E1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24598829/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2014,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2014): Newer studies address patient release or follow-up, not the same report/view/acknowledgment timestamp pair. Newer studies address patient release or follow-up, not the same report/view/acknowledgment timestamp pair.",
+      "recency_search": "results"
+    },
+    {
+      "id": "result-imaging",
+      "parameter": "Report-to-acknowledgment",
+      "value": {
+        "median_h": 42,
+        "within_24h_pct": 44
+      },
+      "unit": "h and percent",
+      "setting": "same hospital imaging",
+      "denominator": "same combined cohort",
+      "caveat": "Do not use these routine-result delays as urgent-result service targets",
+      "citation": {
+        "source_id": "E1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24598829/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2014,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2014): Newer studies address patient release or follow-up, not the same report/view/acknowledgment timestamp pair. Newer studies address patient release or follow-up, not the same report/view/acknowledgment timestamp pair.",
+      "recency_search": "results"
+    },
+    {
+      "id": "view-ack",
+      "parameter": "View-to-acknowledgment median",
+      "value": {
+        "laboratory": 7,
+        "imaging": 1
+      },
+      "unit": "min",
+      "setting": "same maternity hospital",
+      "denominator": "same combined cohort",
+      "caveat": "Separate endpoint; not report-to-view or interpretation time",
+      "citation": {
+        "source_id": "E1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24598829/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2014,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2014): Newer studies address patient release or follow-up, not the same report/view/acknowledgment timestamp pair. Newer studies address patient release or follow-up, not the same report/view/acknowledgment timestamp pair.",
+      "recency_search": "results"
+    },
+    {
+      "id": "handoff",
+      "parameter": "RN information sharing at shift change",
+      "value": {
+        "start_mean": 15,
+        "end_mean": 13
+      },
+      "unit": "min/shift transition",
+      "setting": "French general/university hospitals",
+      "denominator": "29 RNs; 18 nursing aides; 14 physicians total observed",
+      "caveat": "Whole transition, not per patient; no SD reported; existing 15-min overlap is not active handover time",
+      "citation": {
+        "source_id": "E2",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24553442/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2014,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2014): No newer matched whole shift-transition start/end RN time pair established; do not substitute per-patient bedside report. No newer matched whole shift-transition start/end RN time pair established; do not substitute per-patient bedside report.",
+      "recency_search": "handoff"
+    },
+    {
+      "id": "timing-review",
+      "parameter": "Timing error frequency across studies",
+      "value": {
+        "min": 1,
+        "max": 72.6,
+        "studies": 23,
+        "using_60min_definition": 13
+      },
+      "unit": "percent doses; counts studies",
+      "setting": "heterogeneous hospital studies 1999-2021",
+      "denominator": "23 included studies",
+      "caveat": "Range is heterogeneity, not a confidence interval or default probability",
+      "citation": {
+        "source_id": "E3",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/36332227/",
+        "locator": "abstract/results"
+      },
+      "recency": "current",
+      "evidence_year": 2021,
+      "supersedes": [],
+      "supersededBy": [],
+      "recency_search": "mar-timing"
+    },
+    {
+      "id": "omission-vte",
+      "parameter": "Nonadministration",
+      "value": {
+        "all_doses_pct": 12.7,
+        "sc_anticoagulant_pct": 20.8,
+        "other_medication_pct_reported": 11.2
+      },
+      "unit": "percent prescribed doses",
+      "setting": "four floors, one center, one month",
+      "denominator": "6758 doses among 75 patients selected for at least one nonadministration",
+      "caveat": "Selected-patient denominator; not population refusal risk or all SC medications",
+      "citation": {
+        "source_id": "E5",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/29523536/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2018,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2018): No newer matched selected-patient VTE nonadministration denominator established; not a default refusal rate. No newer matched selected-patient VTE nonadministration denominator established; not a default refusal rate.",
+      "recency_search": "omission"
+    },
+    {
+      "id": "omission-reasons",
+      "parameter": "Reasons among omitted medications",
+      "value": {
+        "refusal": 47.22,
+        "unable_to_take": 22.7,
+        "unavailable": 17.04
+      },
+      "unit": "percent omissions",
+      "setting": "UK district hospital point-prevalence",
+      "denominator": "omitted medications in sampled charts",
+      "caveat": "Conditional reasons, not marginal per-dose probabilities",
+      "citation": {
+        "source_id": "E6",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/25650191/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2015,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2015): Newer aged-care/ICU reports do not reproduce these omitted-dose reason definitions and denominator. Newer aged-care/ICU reports do not reproduce these omitted-dose reason definitions and denominator.",
+      "recency_search": "omission"
+    },
+    {
+      "id": "antimicrobial-omission",
+      "parameter": "Antimicrobial nonadministration",
+      "value": {
+        "all_omissions": 3.49,
+        "clinically_relevant": 1.66
+      },
+      "unit": "percent scheduled dose records",
+      "setting": "Calgary adult medical wards, 2012",
+      "denominator": "294718 dose records; 10282 omitted",
+      "caveat": "Separate relevant omissions from appropriate holds; not a universal drug-class probability",
+      "citation": {
+        "source_id": "E7",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/25856373/",
+        "locator": "abstract/results"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2012,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2012): Newer ICU antimicrobial studies differ from general medical wards and relevant-omission adjudication. Newer ICU antimicrobial studies differ from general medical wards and relevant-omission adjudication.",
+      "recency_search": "antimicrobial"
+    },
+    {
+      "id": "barcode-timing",
+      "parameter": "Early-or-late administration",
+      "value": {
+        "without_barcode_pct": 16.7,
+        "with_barcode_pct": 12.2
+      },
+      "unit": "percent observed administrations",
+      "setting": "one academic center, before/after barcode eMAR",
+      "denominator": "14041 observed administrations overall",
+      "caveat": "Both early and late; do not replace current late-only 0.5% branch directly",
+      "citation": {
+        "source_id": "E8",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/20445181/",
+        "locator": "full paper Table 3; abstract relative decrease 27.3%"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2010,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2010): N6 offers current signed lateness but no matched before/after barcode effect; retain historical intervention contrast. N6 offers current signed lateness but no matched before/after barcode effect; retain historical intervention contrast.",
+      "recency_search": "barcode"
+    },
+    {
+      "id": "ed-after-hours",
+      "parameter": "ED arrival after business hours",
+      "value": {
+        "yes": 56.3,
+        "no": 42.3,
+        "blank": 1.4
+      },
+      "unit": "percent visits",
+      "setting": "US national ED survey 2022",
+      "denominator": "weighted national visits",
+      "caveat": "Business hours Mon-Fri 08:00-17:00; not directly the complement of current 07:00-17:00 tour",
+      "citation": {
+        "source_id": "S15",
+        "url": "https://www.cdc.gov/nchs/data/nhamcs/web_tables/2022-nhamcs-ed-web-tables.pdf",
+        "locator": "Table 3 PDF p. 6"
+      },
+      "recency": "current",
+      "evidence_year": 2022,
+      "supersedes": [],
+      "supersededBy": [],
+      "recency_search": "ed-arrival"
+    },
+    {
+      "id": "ed-wait",
+      "parameter": "Arrival-to-provider wait",
+      "value": {
+        "median": 16,
+        "mean": 38.1
+      },
+      "unit": "min",
+      "setting": "same national survey",
+      "denominator": "visits with measured applicable wait; blank 11%, not applicable 3.2%",
+      "caveat": "Arrival, not triage timestamp; operational outcome rather than ESI clinical deadline",
+      "citation": {
+        "source_id": "S15",
+        "url": "https://www.cdc.gov/nchs/data/nhamcs/web_tables/2022-nhamcs-ed-web-tables.pdf",
+        "locator": "Table 3 PDF p. 6"
+      },
+      "recency": "current",
+      "evidence_year": 2022,
+      "supersedes": [],
+      "supersededBy": [],
+      "recency_search": "ed-arrival"
+    },
+    {
+      "id": "ed-hour-bins",
+      "parameter": "Monday hourly arrivals",
+      "value": {
+        "00:00-00:59": 3.7,
+        "06:00-06:59": 2.9,
+        "12:00-12:59": 10.0,
+        "18:00-18:59": 8.7
+      },
+      "unit": "patients/facility hour",
+      "setting": "single urban adult teaching ED, 2005-2006",
+      "denominator": "Table 1 Monday arrivals",
+      "caveat": "Selected bins only; not a complete 24h curve and not per clinician demand",
+      "citation": {
+        "source_id": "E4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/18370987/",
+        "locator": "Table 1, article p. 340"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2006,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2006): Newer Karpman 2021 uses 2009-2019 data; no public matched post-pandemic complete hour×weekday curve established. Newer Karpman 2021 uses 2009-2019 data; no public matched post-pandemic complete hour×weekday curve established.",
+      "recency_search": "ed-arrival"
+    },
+    {
+      "id": "ed-weekday",
+      "parameter": "Mean hourly arrivals by weekday",
+      "value": {
+        "Mon": 6.5,
+        "Tue": 5.8,
+        "Wed": 5.7,
+        "Thu": 5.6,
+        "Fri": 5.9,
+        "Sat": 6.1,
+        "Sun": 6.0
+      },
+      "unit": "patients/facility hour",
+      "setting": "same ED",
+      "denominator": "8760 observed hours",
+      "caveat": "Transfer shape cautiously; facility scale and acuity assignment require a separate model",
+      "citation": {
+        "source_id": "E4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/18370987/",
+        "locator": "Table 1, article p. 340"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2006,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2006): Newer Karpman 2021 uses 2009-2019 data; no public matched post-pandemic complete hour×weekday curve established. Newer Karpman 2021 uses 2009-2019 data; no public matched post-pandemic complete hour×weekday curve established.",
+      "recency_search": "ed-arrival"
+    },
+    {
+      "id": "mimic-esi",
+      "parameter": "Benchmark ESI counts",
+      "value": [
+        25363,
+        147178,
+        237565,
+        30160,
+        1171
+      ],
+      "unit": "visits for ESI 1 through 5",
+      "setting": "adult MIMIC-IV-ED benchmark",
+      "denominator": "441437 visits",
+      "caveat": "Historical benchmark release/cohort differs from pinned ED 2.2; not a target for all EDs",
+      "citation": {
+        "source_id": "M1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/36302776/",
+        "locator": "Table 2 PDF p. 5"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2019,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2019): Retain published fixed benchmark cohort; newer prediction papers do not update this exact denominator. Retain published fixed benchmark cohort; newer prediction papers do not update this exact denominator.",
+      "recency_search": "mimic"
+    },
+    {
+      "id": "mimic-outcomes",
+      "parameter": "Benchmark outcomes",
+      "value": {
+        "hospitalized": 47.34,
+        "critical": 5.93,
+        "reattendance_72h": 3.47
+      },
+      "unit": "percent visits",
+      "setting": "same adult benchmark",
+      "denominator": "441437 visits",
+      "caveat": "Critical defined by ICU transfer within 12h or inpatient mortality; not a timing distribution",
+      "citation": {
+        "source_id": "M1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/36302776/",
+        "locator": "Table 3 PDF p. 5"
+      },
+      "recency": "older-retained",
+      "evidence_year": 2019,
+      "supersedes": [],
+      "supersededBy": [],
+      "retention_reason": "Older evidence (2019): Retain published fixed benchmark cohort; newer prediction papers do not update this exact denominator. Retain published fixed benchmark cohort; newer prediction papers do not update this exact denominator.",
+      "recency_search": "mimic"
+    },
+    {
+      "id": "med-windows",
+      "parameter": "Scheduled dose timing windows",
+      "value": {
+        "time_critical_each_side_min": 30,
+        "noncritical_daily_or_longer_each_side_min": 120,
+        "noncritical_more_than_daily_through_q4h_each_side_min": 60
+      },
+      "unit": "min before and after scheduled dose",
+      "setting": "US hospital interpretive guidance",
+      "denominator": "hospital-designated eligible scheduled medications",
+      "caveat": "Local policy must classify time criticality; stat/first/loading and other excluded doses need separate policies",
+      "citation": {
+        "source_id": "S14",
+        "url": "https://www.cms.gov/Regulations-and-Guidance/Guidance/Manuals/Downloads/som107ap_a_hospitals.pdf",
+        "locator": "A-0405 PDF pp. 237-238"
+      },
+      "recency": "current",
+      "evidence_year": 2026,
+      "supersedes": [],
+      "supersededBy": [],
+      "recency_search": "mar-timing"
+    },
+    {
+      "id": "ehr-function-minutes",
+      "parameter": "Review, notes and orders",
+      "value": {
+        "review": {
+          "mean": 62.6,
+          "sd": 30.2
+        },
+        "notes": {
+          "mean": 127.5,
+          "sd": 78.5
+        },
+        "orders": {
+          "mean": 62.4,
+          "sd": 25.2
+        }
+      },
+      "unit": "min/8 scheduled clinic h",
+      "setting": "UW Health US academic family/general internal medicine, April 2022-March 2023",
+      "denominator": "141 PCPs",
+      "caveat": "Overlapping dashboard activity definitions; not extra delays added to total EHR time.",
+      "citation": {
+        "source_id": "N1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38253499/",
+        "locator": "Table 2, 2022-2023 column"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "audit"
+    },
+    {
+      "id": "portal-growth",
+      "parameter": "Quarterly patient-advice message growth",
+      "value": {
+        "Q4_2019": 340,
+        "Q4_2021": 695
+      },
+      "unit": "mean messages/clinician quarter",
+      "setting": "Cleveland Clinic primary care, 2019-2021",
+      "denominator": "150 clinicians",
+      "caveat": "Quarter totals cannot be converted to workday rates without schedules; independent check of growth, not additional arrivals.",
+      "citation": {
+        "source_id": "N2",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38129617/",
+        "locator": "Abstract/results"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2021,
+      "recency_search": "inbox"
+    },
+    {
+      "id": "inpatient-messages",
+      "parameter": "Clinician secure-message exposure",
+      "value": {
+        "median": 9,
+        "q1": 0,
+        "q3": 51
+      },
+      "unit": "sent plus received messages/clinician workday",
+      "setting": "14 US Midwestern hospitals, Feb-Apr 2023; attending/trainee/APP",
+      "denominator": "3996 clinicians; 103285 workdays",
+      "caveat": "Sent+received; excludes RNs and patient portal messages. Not interruption/h or new inbound requests.",
+      "citation": {
+        "source_id": "N3",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40085321/",
+        "locator": "Abstract; Methods Secure Messaging Volume"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "fragmentation"
+    },
+    {
+      "id": "inpatient-switches",
+      "parameter": "Patient attention switches",
+      "value": {
+        "median": 79,
+        "q1": 35,
+        "q3": 147
+      },
+      "unit": "patient switches/clinician workday",
+      "setting": "same inpatient physician/APP cohort",
+      "denominator": "103285 workdays",
+      "caveat": "Switches need not be externally interrupted tasks; no conversion to hourly interruption rate.",
+      "citation": {
+        "source_id": "N3",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40085321/",
+        "locator": "Abstract/results"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "fragmentation"
+    },
+    {
+      "id": "ed-resident-interruptions",
+      "parameter": "ED resident interruptions by site",
+      "value": {
+        "site1": {
+          "median": 23.5,
+          "q1": 19.5,
+          "q3": 26
+        },
+        "site2": {
+          "median": 27,
+          "q1": 24,
+          "q3": 35
+        },
+        "site3": {
+          "median": 26,
+          "q1": 22,
+          "q3": 28
+        }
+      },
+      "unit": "interruptions/4h observation",
+      "setting": "Indiana academic/county/pediatric ED residents, May-Jul 2023",
+      "denominator": "70 residents; 280 h",
+      "caveat": "Three site strata, not one attending default. 36.9% during order entry is share of interruptions, not interruptions/prescribing-hour.",
+      "citation": {
+        "source_id": "N4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40552315/",
+        "locator": "Table 1; Methods"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "ed-interrupt"
+    },
+    {
+      "id": "ed-resident-return",
+      "parameter": "No return to initial interrupted task",
+      "value": 17,
+      "unit": "percent interrupted tasks",
+      "setting": "same ED resident cohort",
+      "denominator": "observed interruptions",
+      "caveat": "Observed nonreturn is not proof of abandoned care; charting after observation can be censored.",
+      "citation": {
+        "source_id": "N4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40552315/",
+        "locator": "Abstract/results"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "ed-interrupt"
+    },
+    {
+      "id": "pump-interrupted",
+      "parameter": "IV pump activities with other interruptions",
+      "value": 44,
+      "unit": "percent activities",
+      "setting": "US academic adult ICU, contemporary project with Feb-May 2024 pharmacy context",
+      "denominator": "100 IV smart-pump activities; 54 non-pump-alert interruptions",
+      "caveat": "Activity-specific; do not replace ward shift rate or 53.1% of all medication administrations.",
+      "citation": {
+        "source_id": "N5",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/41140292/",
+        "locator": "Results/Table 2"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2024,
+      "recency_search": "ward-interrupt"
+    },
+    {
+      "id": "pump-interrupt-duration",
+      "parameter": "Other-interruption duration",
+      "value": {
+        "mean": 28,
+        "sd": 21.9
+      },
+      "unit": "s/interruption",
+      "setting": "same US adult ICU IV-pump activities",
+      "denominator": "54 observed interruptions",
+      "caveat": "Excludes pump alerts/alarms; not draft reorientation time. Channel durations differ.",
+      "citation": {
+        "source_id": "N5",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/41140292/",
+        "locator": "Table 2, Total"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2024,
+      "recency_search": "ward-interrupt"
+    },
+    {
+      "id": "pump-alert-duration",
+      "parameter": "Pump alert/alarm duration",
+      "value": {
+        "mean": 17.9,
+        "sd": 13.9
+      },
+      "unit": "s/alert or alarm",
+      "setting": "same US adult ICU",
+      "denominator": "34 alerts/alarms; 25/100 activities affected",
+      "caveat": "Device alerts not EHR decision-support dialogs; preserve separate exposure.",
+      "citation": {
+        "source_id": "N5",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/41140292/",
+        "locator": "Table 3"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2024,
+      "recency_search": "ward-interrupt"
+    },
+    {
+      "id": "mar-signed-lateness",
+      "parameter": "Signed scheduled-dose lateness",
+      "value": {
+        "mean": 25,
+        "sd": 79,
+        "median": 15,
+        "q1": -11,
+        "q3": 59,
+        "p05": -76,
+        "p95": 149
+      },
+      "unit": "min (negative early; positive late)",
+      "setting": "University of Iowa post-cesarean scheduled acetaminophen/ibuprofen/ketorolac, 2021-2023",
+      "denominator": "67900 records; 3163 cesarean cases",
+      "caveat": "Given-dose records; omitted doses excluded. Drug/setting-specific distribution; no general late/refusal Bernoulli.",
+      "citation": {
+        "source_id": "N6",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/38947679/",
+        "locator": "Table 1, All administrations"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2023,
+      "recency_search": "mar-timing"
+    },
+    {
+      "id": "administration-documentation-gap",
+      "parameter": "Observed administration/documentation difference",
+      "value": {
+        "median": 6,
+        "q1": 2,
+        "q3": 16,
+        "over15min_pct": 26.5
+      },
+      "unit": "min; percent patients",
+      "setting": "Netherlands ED prospective time-motion study",
+      "denominator": "34 patients",
+      "caveat": "Magnitude of timestamp discrepancy; abstract does not establish signed lag distribution or US transferability.",
+      "citation": {
+        "source_id": "N7",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/34392956/",
+        "locator": "Abstract/results"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2021,
+      "recency_search": "mar-timing"
+    },
+    {
+      "id": "clinical-pharmacy-interruptions",
+      "parameter": "Ward clinical-pharmacist interruptions",
+      "value": 34,
+      "unit": "interruptions/day",
+      "setting": "four Australian hospitals, Jul-Aug 2024",
+      "denominator": "678.3 observed h",
+      "caveat": "Clinical pharmacists differ from inpatient dispensing employees/technicians; no conversion to 10.6/h or duration SD.",
+      "citation": {
+        "source_id": "N8",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40257690/",
+        "locator": "Abstract/results"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2024,
+      "recency_search": "pharmacy-interrupt"
+    },
+    {
+      "id": "ed-boarding-tail",
+      "parameter": "Boarding duration exceedances at Jan 2022 peak",
+      "value": {
+        "over4h_pct": 40.1,
+        "over24h_pct": 6.3
+      },
+      "unit": "percent admitted patients",
+      "setting": "US national 2017-2024 hospitalization data",
+      "denominator": "46.2 million hospitalizations",
+      "caveat": "Peak-month stress profile; not full-period means or arrival-to-provider waits. Abstract alone does not provide recent full hour×weekday arrivals.",
+      "citation": {
+        "source_id": "N9",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40456033/",
+        "locator": "Abstract/results"
+      },
+      "supersedes": [],
+      "supersededBy": [],
+      "recency": "current",
+      "evidence_year": 2024,
+      "recency_search": "ed-boarding"
+    },
+    {
+      "id": "ward-stock-omission",
+      "parameter": "Omitted ward-stock doses due to unavailability",
+      "value": {
+        "pre_2022_pct": 0.08,
+        "post_2023_pct": 0.18
+      },
+      "unit": "percent all prescribed doses",
+      "setting": "ten hospital wards, UK, July-September 2022/2023",
+      "denominator": "393 pre and 817 post omitted ward-stock doses; all prescribed doses denominator",
+      "caveat": "Supply-related ward-stock subset, not all omissions or all antimicrobial doses; no significant pre/post difference (p=0.1655), no causal benefit inferred.",
+      "citation": {
+        "source_id": "N15",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/40103606/",
+        "locator": "Abstract/results"
+      },
+      "recency": "current",
+      "evidence_year": 2023,
+      "supersedes": [],
+      "supersededBy": [],
+      "recency_search": "omission"
+    }
+  ],
+  "recency_policy": "current: evidence/version dated 2020+; older-retained: pre-2020 or conservative historical bound. Publication alone does not establish recent data.",
+  "archived_rows": [
+    {
+      "id": "ehr-day-previous",
+      "parameter": "EHR weekday time",
+      "value": 355,
+      "unit": "min/clinical-FTE weekday",
+      "setting": "family medicine, one Wisconsin system",
+      "denominator": "142 physicians",
+      "caveat": "Includes work outside office; not continuous per-patient UI time",
+      "citation": {
+        "source_id": "L1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28893811/",
+        "locator": "abstract/results"
+      },
+      "supersededBy": [
+        "ehr-day"
+      ],
+      "supersedes": [],
+      "retention_reason": "Older evidence (2017): Historical day/office denominators differ from N1 per-scheduled-clinic-hour metrics; archive comparator only.",
+      "recency": "older-retained",
+      "evidence_year": 2017,
+      "recency_search": "audit"
+    },
+    {
+      "id": "ehr-after-previous",
+      "parameter": "EHR time after clinic hours",
+      "value": 86,
+      "unit": "min/clinical-FTE weekday",
+      "setting": "family medicine",
+      "denominator": "142 physicians",
+      "caveat": "Do not equate automatically with active overtime in simulator",
+      "citation": {
+        "source_id": "L1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28893811/",
+        "locator": "abstract/results"
+      },
+      "supersededBy": [
+        "ehr-after"
+      ],
+      "supersedes": [],
+      "retention_reason": "Older evidence (2017): Historical day/office denominators differ from N1 per-scheduled-clinic-hour metrics; archive comparator only.",
+      "recency": "older-retained",
+      "evidence_year": 2017,
+      "recency_search": "audit"
+    },
+    {
+      "id": "inbox-time-previous",
+      "parameter": "Inbox management",
+      "value": 85,
+      "unit": "min/clinical-FTE weekday",
+      "setting": "family medicine",
+      "denominator": "142 physicians",
+      "caveat": "External aggregate validation target; UI service plus review/communication",
+      "citation": {
+        "source_id": "L1",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/28893811/",
+        "locator": "abstract/results"
+      },
+      "supersededBy": [
+        "inbox-time"
+      ],
+      "supersedes": [],
+      "retention_reason": "Older evidence (2017): Historical day/office denominators differ from N1 per-scheduled-clinic-hour metrics; archive comparator only.",
+      "recency": "older-retained",
+      "evidence_year": 2017,
+      "recency_search": "audit"
+    },
+    {
+      "id": "inbox-volume-previous",
+      "parameter": "Incoming messages",
+      "value": 33.8,
+      "unit": "messages/clinician day",
+      "setting": "US ambulatory, mixed specialties",
+      "denominator": "348 US systems, Jan-Aug 2019",
+      "caveat": "System-weighted aggregate; old mixed-specialty reference, not a measured primary-care default",
+      "citation": {
+        "source_id": "L4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33315048/",
+        "locator": "full text Results"
+      },
+      "supersededBy": [
+        "inbox-volume"
+      ],
+      "supersedes": [],
+      "retention_reason": "Older evidence (2019): Historical mixed-specialty/system-weighted category census; N1 replaces primary-care default, not this mixed population. Archived exact prior benchmark; replacement changes setting and/or normalization, not a within-cohort trend.",
+      "recency": "older-retained",
+      "evidence_year": 2019,
+      "recency_search": "inbox"
+    },
+    {
+      "id": "inbox-mix-previous",
+      "parameter": "Incoming categories",
+      "value": {
+        "system": 11.5,
+        "team": 11.4,
+        "results": 6.49,
+        "prescription": 2.7,
+        "patient": 1.06,
+        "custom": 0.35
+      },
+      "unit": "messages/clinician day",
+      "setting": "US ambulatory",
+      "denominator": "same as inbox-volume",
+      "caveat": "Rounded displayed categories do not sum exactly to 33.8; retain residual other, do not silently normalize",
+      "citation": {
+        "source_id": "L4",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/33315048/",
+        "locator": "full text Results/Figure 1"
+      },
+      "supersededBy": [
+        "inbox-mix"
+      ],
+      "supersedes": [],
+      "retention_reason": "Older evidence (2019): Historical mixed-specialty/system-weighted category census; N1 replaces primary-care default, not this mixed population. Archived exact prior benchmark; replacement changes setting and/or normalization, not a within-cohort trend.",
+      "recency": "older-retained",
+      "evidence_year": 2019,
+      "recency_search": "inbox"
+    },
+    {
+      "id": "ed-entry-share-previous",
+      "parameter": "ED data entry",
+      "value": 44,
+      "unit": "percent pooled observed time",
+      "setting": "community ED",
+      "denominator": "observed physician activities",
+      "caveat": "About 4000 clicks per busy 10h shift is an extrapolation, not a per-case UI count",
+      "citation": {
+        "source_id": "L8",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/24060331/",
+        "locator": "abstract/results"
+      },
+      "supersededBy": [
+        "ed-entry-share"
+      ],
+      "supersedes": [],
+      "retention_reason": "Older evidence (2013): Replaced as ED time-allocation reference by N10; historical comparator only. Archived exact prior benchmark; replacement changes setting and/or normalization, not a within-cohort trend.",
+      "recency": "older-retained",
+      "evidence_year": 2013,
+      "recency_search": "ed-entry"
+    }
+  ]
+}

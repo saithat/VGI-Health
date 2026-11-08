@@ -1,0 +1,732 @@
+{
+  "schema_version": 1,
+  "accessed": "2026-11-08",
+  "limitations": "Purposive public search; no clinician review; not exhaustive. Publication recency and actual data recency are separate. Paperclip skill load failed during credential refresh (read-only credential file); public journals, Europe PMC and Crossref used. No keys requested, no patient data accessed.",
+  "searches": [
+    {
+      "id": "audit",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"electronic health record\" AND (TITLE_ABS:\"time motion\" OR TITLE_ABS:\"audit log\") AND TITLE_ABS:physician) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 26,
+      "screened_result_count": 26,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22electronic%20health%20record%22%20AND%20%28TITLE_ABS%3A%22time%20motion%22%20OR%20TITLE_ABS%3A%22audit%20log%22%29%20AND%20TITLE_ABS%3Aphysician%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N1",
+        "N13"
+      ]
+    },
+    {
+      "id": "inbox",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"primary care\" AND (TITLE_ABS:\"inbox\" OR TITLE_ABS:\"portal message\")) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 56,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22primary%20care%22%20AND%20%28TITLE_ABS%3A%22inbox%22%20OR%20TITLE_ABS%3A%22portal%20message%22%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N2"
+      ]
+    },
+    {
+      "id": "fragmentation",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"attention switching\" OR (TITLE_ABS:\"task switching\" AND TITLE_ABS:clinician)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 207,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22attention%20switching%22%20OR%20%28TITLE_ABS%3A%22task%20switching%22%20AND%20TITLE_ABS%3Aclinician%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N3"
+      ]
+    },
+    {
+      "id": "ed-entry",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"emergency department\" AND (TITLE_ABS:\"time motion\" OR TITLE_ABS:\"data entry\")) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 59,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22emergency%20department%22%20AND%20%28TITLE_ABS%3A%22time%20motion%22%20OR%20TITLE_ABS%3A%22data%20entry%22%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N10"
+      ]
+    },
+    {
+      "id": "ward-interrupt",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:interruptions AND (TITLE_ABS:nurses OR TITLE_ABS:\"medication administration\")) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 342,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3Ainterruptions%20AND%20%28TITLE_ABS%3Anurses%20OR%20TITLE_ABS%3A%22medication%20administration%22%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N5"
+      ]
+    },
+    {
+      "id": "ed-interrupt",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:interruptions AND (TITLE_ABS:\"emergency physician\" OR TITLE_ABS:\"emergency department\")) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 131,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3Ainterruptions%20AND%20%28TITLE_ABS%3A%22emergency%20physician%22%20OR%20TITLE_ABS%3A%22emergency%20department%22%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N4"
+      ]
+    },
+    {
+      "id": "surgery-interrupt",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:interruptions AND (TITLE_ABS:surgical OR TITLE_ABS:surgery)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 421,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3Ainterruptions%20AND%20%28TITLE_ABS%3Asurgical%20OR%20TITLE_ABS%3Asurgery%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": []
+    },
+    {
+      "id": "pharmacy-interrupt",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:interruptions AND (TITLE_ABS:pharmacy OR TITLE_ABS:pharmacists)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 94,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3Ainterruptions%20AND%20%28TITLE_ABS%3Apharmacy%20OR%20TITLE_ABS%3Apharmacists%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N8"
+      ]
+    },
+    {
+      "id": "resumption",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"resumption lag\" OR (TITLE_ABS:interruptions AND TITLE_ABS:\"task duration\")) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 9,
+      "screened_result_count": 9,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22resumption%20lag%22%20OR%20%28TITLE_ABS%3Ainterruptions%20AND%20TITLE_ABS%3A%22task%20duration%22%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N11",
+        "N12"
+      ]
+    },
+    {
+      "id": "results",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"test result\" AND (TITLE_ABS:acknowledgment OR TITLE_ABS:acknowledgement OR TITLE_ABS:\"follow-up\") AND TITLE_ABS:electronic) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 55,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22test%20result%22%20AND%20%28TITLE_ABS%3Aacknowledgment%20OR%20TITLE_ABS%3Aacknowledgement%20OR%20TITLE_ABS%3A%22follow-up%22%29%20AND%20TITLE_ABS%3Aelectronic%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": []
+    },
+    {
+      "id": "handoff",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:handover AND TITLE_ABS:nursing AND (TITLE_ABS:duration OR TITLE_ABS:time)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 102,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3Ahandover%20AND%20TITLE_ABS%3Anursing%20AND%20%28TITLE_ABS%3Aduration%20OR%20TITLE_ABS%3Atime%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": []
+    },
+    {
+      "id": "mar-timing",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"medication administration\" AND (TITLE_ABS:timeliness OR TITLE_ABS:\"timing error\" OR TITLE_ABS:late)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 38,
+      "screened_result_count": 38,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22medication%20administration%22%20AND%20%28TITLE_ABS%3Atimeliness%20OR%20TITLE_ABS%3A%22timing%20error%22%20OR%20TITLE_ABS%3Alate%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N6",
+        "N7"
+      ]
+    },
+    {
+      "id": "omission",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"medication omission\" OR TITLE_ABS:\"dose omission\" OR (TITLE_ABS:nonadministration AND TITLE_ABS:medication)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 69,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22medication%20omission%22%20OR%20TITLE_ABS%3A%22dose%20omission%22%20OR%20%28TITLE_ABS%3Anonadministration%20AND%20TITLE_ABS%3Amedication%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N15"
+      ]
+    },
+    {
+      "id": "antimicrobial",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:antimicrobial AND (TITLE_ABS:omission OR TITLE_ABS:nonadministration)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 44,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3Aantimicrobial%20AND%20%28TITLE_ABS%3Aomission%20OR%20TITLE_ABS%3Anonadministration%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": []
+    },
+    {
+      "id": "barcode",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:barcode AND TITLE_ABS:\"medication administration\" AND (TITLE_ABS:timing OR TITLE_ABS:time)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 27,
+      "screened_result_count": 27,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3Abarcode%20AND%20TITLE_ABS%3A%22medication%20administration%22%20AND%20%28TITLE_ABS%3Atiming%20OR%20TITLE_ABS%3Atime%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N14"
+      ]
+    },
+    {
+      "id": "ed-arrival",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"emergency department\" AND (TITLE_ABS:\"hourly arrival\" OR TITLE_ABS:\"arrival patterns\" OR TITLE_ABS:\"day of week\")) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 68,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22emergency%20department%22%20AND%20%28TITLE_ABS%3A%22hourly%20arrival%22%20OR%20TITLE_ABS%3A%22arrival%20patterns%22%20OR%20TITLE_ABS%3A%22day%20of%20week%22%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N17"
+      ]
+    },
+    {
+      "id": "ed-boarding",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"emergency department\" AND TITLE_ABS:boarding AND (TITLE_ABS:national OR TITLE_ABS:patterns)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 67,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22emergency%20department%22%20AND%20TITLE_ABS%3Aboarding%20AND%20%28TITLE_ABS%3Anational%20OR%20TITLE_ABS%3Apatterns%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N9"
+      ]
+    },
+    {
+      "id": "mimic",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"MIMIC-IV-ED\" AND (TITLE_ABS:benchmark OR TITLE_ABS:dataset)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 21,
+      "screened_result_count": 21,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22MIMIC-IV-ED%22%20AND%20%28TITLE_ABS%3Abenchmark%20OR%20TITLE_ABS%3Adataset%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": []
+    },
+    {
+      "id": "usability",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"electronic health record\" AND TITLE_ABS:usability AND (TITLE_ABS:task OR TITLE_ABS:certification)) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 67,
+      "screened_result_count": 40,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22electronic%20health%20record%22%20AND%20TITLE_ABS%3Ausability%20AND%20%28TITLE_ABS%3Atask%20OR%20TITLE_ABS%3Acertification%29%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "U8",
+        "U9"
+      ]
+    },
+    {
+      "id": "refill-alert",
+      "engine": "Europe PMC public search",
+      "query": "(TITLE_ABS:\"electronic health record\" AND (TITLE_ABS:refill OR TITLE_ABS:alert) AND TITLE_ABS:usability) AND FIRST_PDATE:[2020-01-01 TO 2026-11-08]",
+      "accessed": "2026-11-08",
+      "hit_count": 36,
+      "screened_result_count": 36,
+      "scope": "purposive first result page; recent candidates screened for matching role, period, denominator and endpoint; not a systematic review",
+      "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=%28TITLE_ABS%3A%22electronic%20health%20record%22%20AND%20%28TITLE_ABS%3Arefill%20OR%20TITLE_ABS%3Aalert%29%20AND%20TITLE_ABS%3Ausability%29%20AND%20FIRST_PDATE%3A%5B2020-01-01%20TO%202026-11-08%5D&format=json",
+      "selected_source_ids": [
+        "N16"
+      ]
+    }
+  ],
+  "parameter_coverage": {
+    "ehr-day": [
+      "audit"
+    ],
+    "ehr-office": [
+      "audit"
+    ],
+    "ehr-after": [
+      "audit"
+    ],
+    "inbox-time": [
+      "inbox"
+    ],
+    "office-fractions": [
+      "audit"
+    ],
+    "encounter-time": [
+      "audit"
+    ],
+    "encounter-mix": [
+      "audit"
+    ],
+    "inbox-volume": [
+      "inbox"
+    ],
+    "inbox-mix": [
+      "inbox"
+    ],
+    "fragmentation": [
+      "fragmentation"
+    ],
+    "ed-entry-share": [
+      "ed-entry"
+    ],
+    "ward-interrupted": [
+      "ward-interrupt"
+    ],
+    "ward-major-risk": [
+      "ward-interrupt"
+    ],
+    "ed-interrupt": [
+      "ed-interrupt"
+    ],
+    "ed-prescribe-interrupt": [
+      "ed-interrupt"
+    ],
+    "ward-interrupt": [
+      "ward-interrupt"
+    ],
+    "ward-interrupt-time": [
+      "ward-interrupt"
+    ],
+    "surgery-interrupt": [
+      "surgery-interrupt"
+    ],
+    "chisholm-rates": [
+      "ed-interrupt"
+    ],
+    "pharmacy-rate": [
+      "pharmacy-interrupt"
+    ],
+    "pharmacy-duration": [
+      "pharmacy-interrupt"
+    ],
+    "resumption-lab": [
+      "resumption"
+    ],
+    "result-lab": [
+      "results"
+    ],
+    "result-imaging": [
+      "results"
+    ],
+    "view-ack": [
+      "results"
+    ],
+    "handoff": [
+      "handoff"
+    ],
+    "timing-review": [
+      "mar-timing"
+    ],
+    "omission-vte": [
+      "omission"
+    ],
+    "omission-reasons": [
+      "omission"
+    ],
+    "antimicrobial-omission": [
+      "antimicrobial"
+    ],
+    "barcode-timing": [
+      "barcode"
+    ],
+    "ed-after-hours": [
+      "ed-arrival"
+    ],
+    "ed-wait": [
+      "ed-arrival"
+    ],
+    "ed-hour-bins": [
+      "ed-arrival"
+    ],
+    "ed-weekday": [
+      "ed-arrival"
+    ],
+    "mimic-esi": [
+      "mimic"
+    ],
+    "mimic-outcomes": [
+      "mimic"
+    ],
+    "med-windows": [
+      "mar-timing"
+    ],
+    "ehr-function-minutes": [
+      "audit"
+    ],
+    "portal-growth": [
+      "inbox"
+    ],
+    "inpatient-messages": [
+      "fragmentation"
+    ],
+    "inpatient-switches": [
+      "fragmentation"
+    ],
+    "ed-resident-interruptions": [
+      "ed-interrupt"
+    ],
+    "ed-resident-return": [
+      "ed-interrupt"
+    ],
+    "pump-interrupted": [
+      "ward-interrupt"
+    ],
+    "pump-interrupt-duration": [
+      "ward-interrupt"
+    ],
+    "pump-alert-duration": [
+      "ward-interrupt"
+    ],
+    "mar-signed-lateness": [
+      "mar-timing"
+    ],
+    "administration-documentation-gap": [
+      "mar-timing"
+    ],
+    "clinical-pharmacy-interruptions": [
+      "pharmacy-interrupt"
+    ],
+    "ed-boarding-tail": [
+      "ed-boarding"
+    ],
+    "ward-stock-omission": [
+      "omission"
+    ],
+    "ehr-day-previous": [
+      "audit"
+    ],
+    "ehr-after-previous": [
+      "audit"
+    ],
+    "inbox-time-previous": [
+      "audit"
+    ],
+    "inbox-volume-previous": [
+      "inbox"
+    ],
+    "inbox-mix-previous": [
+      "inbox"
+    ],
+    "ed-entry-share-previous": [
+      "ed-entry"
+    ]
+  },
+  "task_coverage": {
+    "U1-4": [
+      "usability"
+    ],
+    "U1-7": [
+      "usability"
+    ],
+    "U1-11": [
+      "usability"
+    ],
+    "U1-13": [
+      "usability"
+    ],
+    "U1-15": [
+      "usability"
+    ],
+    "U1-17": [
+      "usability"
+    ],
+    "U1-20": [
+      "usability"
+    ],
+    "U1-21": [
+      "refill-alert"
+    ],
+    "U2-A1.2": [
+      "usability"
+    ],
+    "U2-A2.2": [
+      "usability"
+    ],
+    "U2-A3.2": [
+      "usability"
+    ],
+    "U2-A4.1": [
+      "usability"
+    ],
+    "U2-A4.2": [
+      "usability"
+    ],
+    "U2-A7.4": [
+      "usability"
+    ],
+    "U2-A8.5": [
+      "usability"
+    ],
+    "U2-A6.5": [
+      "usability"
+    ],
+    "U3-2": [
+      "usability"
+    ],
+    "U3-3": [
+      "usability"
+    ],
+    "U3-4": [
+      "usability"
+    ],
+    "U3-6": [
+      "usability"
+    ],
+    "U3-8": [
+      "usability"
+    ],
+    "U3-9": [
+      "usability"
+    ],
+    "U3-10": [
+      "usability"
+    ],
+    "U3-12": [
+      "usability"
+    ],
+    "U3-13": [
+      "usability"
+    ],
+    "U4-1": [
+      "usability"
+    ],
+    "U4-2": [
+      "usability"
+    ],
+    "U4-3": [
+      "usability"
+    ],
+    "U4-4": [
+      "usability"
+    ],
+    "U4-10": [
+      "usability"
+    ],
+    "U4-13": [
+      "usability"
+    ],
+    "U4-14": [
+      "usability"
+    ],
+    "U5-hold-R1": [
+      "usability"
+    ],
+    "U5-hold-R2": [
+      "usability"
+    ],
+    "U5-hold-R3": [
+      "usability"
+    ],
+    "U8-2": [
+      "usability"
+    ],
+    "U8-3": [
+      "usability"
+    ],
+    "U8-5": [
+      "usability"
+    ],
+    "U8-6": [
+      "usability"
+    ],
+    "U8-7": [
+      "usability"
+    ],
+    "U8-9": [
+      "usability"
+    ],
+    "U9-2": [
+      "usability"
+    ],
+    "U9-4": [
+      "usability"
+    ]
+  },
+  "top_ten_coverage": {
+    "1": [
+      "audit",
+      "ed-entry"
+    ],
+    "2": [
+      "usability"
+    ],
+    "3": [
+      "refill-alert",
+      "inbox"
+    ],
+    "4": [
+      "refill-alert",
+      "usability"
+    ],
+    "5": [
+      "ed-interrupt",
+      "ward-interrupt",
+      "surgery-interrupt"
+    ],
+    "6": [
+      "resumption",
+      "pharmacy-interrupt",
+      "ward-interrupt"
+    ],
+    "7": [
+      "mar-timing"
+    ],
+    "8": [
+      "mar-timing",
+      "omission",
+      "antimicrobial",
+      "barcode"
+    ],
+    "9": [
+      "inbox",
+      "fragmentation"
+    ],
+    "10": [
+      "ed-arrival",
+      "ed-boarding",
+      "mimic"
+    ]
+  },
+  "supplemental_searches": [
+    {
+      "query": "EHR Usability Test Report 2024 2025 CPOE refill task time; public certification reports",
+      "source_ids": [
+        "U8",
+        "U9",
+        "Q1",
+        "Q2",
+        "Q3"
+      ],
+      "engine": "public web search; original report/publisher/agency checked"
+    },
+    {
+      "query": "NHAMCS 2023 Emergency Department Summary Tables",
+      "source_ids": [
+        "S15"
+      ],
+      "engine": "public web search; original report/publisher/agency checked"
+    },
+    {
+      "query": "2025 2026 electronic health record refill request usability completion time study",
+      "source_ids": [
+        "N16"
+      ],
+      "engine": "public web search; original report/publisher/agency checked"
+    },
+    {
+      "query": "2024 2025 antimicrobial omitted doses medical wards study omission reasons",
+      "source_ids": [
+        "N15"
+      ],
+      "engine": "public web search; original report/publisher/agency checked"
+    },
+    {
+      "query": "CMS State Operations Manual Appendix A revision 248 (2026), A-0405 medication timing windows",
+      "source_ids": [
+        "S14"
+      ],
+      "engine": "public CMS current original PDF inspected"
+    }
+  ],
+  "decisions": [
+    {
+      "source_ids": [
+        "N1",
+        "N13"
+      ],
+      "decision": "Prefer N1 2022-2023 joint mean/SD schedule-normalized baseline; N13 published 2026 uses 2019-2022 reducer cohort and no replacement population mean."
+    },
+    {
+      "source_ids": [
+        "N4",
+        "I2"
+      ],
+      "decision": "Prefer 2023 US resident stratum; retain older attending prescribing-hour rate only as a distinct historical endpoint."
+    },
+    {
+      "source_ids": [
+        "N5",
+        "I4",
+        "I1"
+      ],
+      "decision": "Newest located US direct pump-activity duration evidence; not a whole-ward hourly or adjusted error-risk replacement."
+    },
+    {
+      "source_ids": [
+        "N6",
+        "N7",
+        "N15",
+        "E7",
+        "E8"
+      ],
+      "decision": "Use modern signed lateness and supply-omission subtypes; retain old general-ward relevant-omission and barcode before/after contrasts because endpoint/denominator differs."
+    },
+    {
+      "source_ids": [
+        "N8",
+        "I7"
+      ],
+      "decision": "Recent Australian clinical pharmacists have 34 interruptions/day; old dispensing-staff duration moments remain distinct, not overwritten."
+    },
+    {
+      "source_ids": [
+        "N10",
+        "L8"
+      ],
+      "decision": "Replace ED time-allocation comparator with newer 2026 paper but label both as older cohorts; N10 observes 2019."
+    },
+    {
+      "source_ids": [
+        "U8",
+        "U9",
+        "U1",
+        "Q1",
+        "Q2",
+        "Q3",
+        "N16"
+      ],
+      "decision": "2021/2022 source-equivalent order/alert tasks preferred; old refill UI seconds retained. 2026 operational refill turnaround is not active UI time. Upload dates do not date core cohorts."
+    },
+    {
+      "source_ids": [
+        "E4",
+        "S15",
+        "N9"
+      ],
+      "decision": "National 2022 waiting/after-hours and 2017-2024 boarding supplement older hourly arrivals; Karpman et al. 2021 DOI 10.5055/jem.0569 PMID 33954967 uses 2009-2019 observations and cannot supply post-pandemic hourly bins."
+    },
+    {
+      "source_ids": [
+        "E1",
+        "E2",
+        "I3",
+        "N11",
+        "N12"
+      ],
+      "decision": "Newer follow-up, per-patient handoff and recovery-performance studies do not identify old paired acknowledgment, whole-transition start/end or resumption/ordinary-action interval estimands."
+    }
+  ]
+}
