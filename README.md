@@ -311,7 +311,8 @@ queries. Claude tool use, OpenAI-compatible function calling and confined Codex 
 share decision budgets and recorded tool-result replay. Reports include query-cache
 proposals, complaints and train/validation gaps; no digest is promoted automatically.
 E is not the default; only the owner may change that after reviewing measured results.
-[Agent-loop methods and experiment status](docs/methods/agent-loop.md).
+Current-build paired acceptance (35 decisions): B 88.6%; E 0.0%.
+[Results, fingerprints and limitations](docs/methods/agent-loop.md).
 
 The one-context frozen B/D pilot (`night-01/P1`, one sample per arm, three live
 completions total) accepted B's change and refused D's: D saved scrolls but added
