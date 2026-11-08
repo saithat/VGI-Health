@@ -2,10 +2,10 @@ import Ehr.Commit.Adt
 import Ehr.Commit.Protocol.Model
 
 /-! NEW owner-review ADT protocol specifications. The native administrative
-reducer is reused without changing its policy. Baselines are consistent imported
+reducer supplies swap and compensating cancellation policy. Baselines are consistent imported
 boards. A COMMIT atomically publishes every changed stream and its request
-receipt (Postgres assumption); provisional writes are private. Swap/cancel are
-not commands in the implemented API. No physical placement or fairness claim. -/
+receipt (Postgres assumption); provisional writes are private. No physical
+movement or fairness claim. -/
 namespace Ehr.Commit.Protocol.AdtModel
 open Ehr.Commit
 

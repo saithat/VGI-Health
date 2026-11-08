@@ -18,6 +18,7 @@ import {
   type MarUser,
 } from "./data/commitService";
 import {
+  adtRefusal,
   readBoard,
   sendAdt,
   subscribeBoard,
@@ -34,6 +35,10 @@ const actions: AdtAction[] = [
   "admit",
   "assign",
   "transfer",
+  "swap",
+  "cancelAdmit",
+  "cancelTransfer",
+  "cancelDischarge",
   "release",
   "discharge",
   "clean",
@@ -43,6 +48,10 @@ const labels: Record<AdtAction, string> = {
   admit: "Admit",
   assign: "Assign bed",
   transfer: "Transfer",
+  swap: "Swap beds (A17)",
+  cancelAdmit: "Cancel admission (A11)",
+  cancelTransfer: "Cancel transfer (A12)",
+  cancelDischarge: "Cancel discharge (A13)",
   release: "Release bed",
   discharge: "Discharge",
   clean: "Start cleaning",
@@ -53,6 +62,7 @@ export function AdtApp() {
   const [user, setUser] = useState<MarUser>();
   const [board, setBoard] = useState<Board>();
   const [patient, setPatient] = useState("");
+  const [other, setOther] = useState("");
   const [bed, setBed] = useState("");
   const [action, setAction] = useState<AdtAction>("admit");
   const [pending, setPending] = useState(false);
@@ -104,7 +114,18 @@ export function AdtApp() {
   }, [user]);
   async function submit() {
     if (!board || pending) return;
-    const currentBed = board.state.patients.find((p) => p.id === patient)?.bed;
+    const selectedPatient = board.state.patients.find((p) => p.id === patient);
+    const currentBed = selectedPatient?.bed;
+    const otherBed = board.state.patients.find((p) => p.id === other)?.bed;
+    const cancelKind = action === "cancelAdmit" ? "admit" : action === "cancelTransfer" ? "transfer" : action === "cancelDischarge" ? "discharge" : undefined;
+    if (!intent.current && cancelKind && selectedPatient?.last?.kind !== cancelKind) {
+      setError("Select the patient's latest matching ADT event. Later movements prevent this cancellation.");
+      return;
+    }
+    if (!intent.current && action === "swap" && (other === patient || currentBed == null || otherBed == null)) {
+      setError("Select two different admitted patients with assigned beds.");
+      return;
+    }
     if (
       !intent.current &&
       ["transfer", "release"].includes(action) &&
@@ -122,10 +143,12 @@ export function AdtApp() {
       expected: board.versions,
       patient,
       action,
-      ...(action === "discharge"
+      ...(action === "discharge" || action === "cancelAdmit" || action === "cancelTransfer"
         ? {}
-        : { bed: action === "release" ? (currentBed ?? 0) : Number(bed) }),
-      ...(action === "transfer" ? { source: currentBed ?? 0 } : {}),
+        : { bed: action === "swap" ? (otherBed ?? 0) : action === "release" ? (currentBed ?? 0) : Number(bed) }),
+      ...(["transfer", "swap"].includes(action) ? { source: currentBed ?? 0 } : {}),
+      ...(action === "swap" ? { other } : {}),
+      ...(cancelKind ? { event: selectedPatient?.revision ?? 0 } : {}),
     };
     intent.current = command;
     try {
@@ -142,7 +165,7 @@ export function AdtApp() {
       if (e instanceof MarConflict || e instanceof MarRejected) {
         intent.current = undefined;
         setUncertain(false);
-        setError(messageOf(e));
+        setError(adtRefusal(messageOf(e)));
         try {
           setBoard(await readBoard());
         } catch (readError) {
@@ -202,7 +225,7 @@ export function AdtApp() {
                   <Text fw={700}>
                     {b.unit} · Bed {b.id}
                   </Text>
-                  <Text>Status: {b.phase}</Text>
+                  <Text>Status: {b.active ? b.phase : `Inactive · ${b.phase}`}</Text>
                   <Text>Patient: {b.occupant ?? "None"}</Text>
                 </Paper>
               ))}
@@ -220,7 +243,10 @@ export function AdtApp() {
               <Title order={2}>Update placement</Title>
               <Text size="sm" mb="md">
                 Release leaves the patient admitted and the bed dirty. Cleaning
-                must finish before a bed can be marked ready.
+                must finish before a bed can be marked ready. Swap records completed
+                placement of both patients atomically; transport is separate.
+                Cancellation compensates the latest ADT event. Clinical documentation
+                stays linked to the original encounter and is not retracted.
               </Text>
               <form
                 onSubmit={(e) => {
@@ -272,7 +298,26 @@ export function AdtApp() {
                           ))}
                       </select>
                     </label>
-                    {!["release", "discharge"].includes(action) && (
+                    {action === "swap" && (
+                      <label>
+                        Other patient{" "}
+                        <select style={selectStyle} aria-label="Other patient" value={other}
+                          onChange={(e) => setOther(e.target.value)}>
+                          <option value="">Select patient</option>
+                          {board.state.patients.filter((p) => p.id !== patient && p.admitted && p.bed !== null).map((p) => (
+                            <option key={p.id} value={p.id}>{p.id} · Bed {p.bed}</option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
+                    {["cancelAdmit", "cancelTransfer", "cancelDischarge"].includes(action) && (
+                      <Text role="status">
+                        Original event: {selected?.last ? `${patient}:${selected.revision} · ${selected.last.kind}` : "No cancellable latest movement"}.
+                        {selected?.last?.kind === "transfer" && ` Origin bed: ${selected.last.source}; destination bed: ${selected.last.target}. Origin must be empty and ready.`}
+                        {action === "cancelDischarge" && " Choose a ready bed explicitly; this reopens the original encounter."}
+                      </Text>
+                    )}
+                    {!["release", "discharge", "swap", "cancelAdmit", "cancelTransfer"].includes(action) && (
                       <label>
                         Bed{" "}
                         <select
@@ -283,7 +328,7 @@ export function AdtApp() {
                         >
                           {board.state.beds.map((b) => (
                             <option key={b.id} value={b.id}>
-                              {b.unit} · {b.id} · {b.phase}
+                              {b.unit} · {b.id} · {b.active ? b.phase : `inactive · ${b.phase}`}
                             </option>
                           ))}
                         </select>

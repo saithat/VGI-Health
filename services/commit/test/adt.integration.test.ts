@@ -1,4 +1,4 @@
-import { array, configSchema, num, obj, objs, required, str, type AdtCommand, type Obj } from '../src/types.ts';
+import { array, configSchema, maybeObj, num, obj, objs, required, str, type AdtCommand, type Obj } from '../src/types.ts';
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -60,10 +60,38 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
     const r = await api(a.base, manager, '/adt/commands', await make(action, p, bed, source)); assert.equal(r.status, 201, JSON.stringify(r)); return r.body;
   };
   const readyBed = async (id: number) => { await execute('clean', 'adt-a', id); await execute('ready', 'adt-a', id); };
+  const lostCommit = async (command: AdtCommand) => {
+    const connect = a.db.connect.bind(a.db);
+      a.db.connect = new Proxy(connect, {
+        apply(target, receiver, args: unknown[]) {
+          if (args.length) return Reflect.apply(target, receiver, args);
+          return target().then(client => {
+            const query = client.query;
+            client.query = new Proxy(query, {
+              apply(queryTarget, queryReceiver, queryArgs: unknown[]) {
+                const result: unknown = Reflect.apply(queryTarget, queryReceiver, queryArgs);
+                if (queryArgs[0] === 'COMMIT' && result instanceof Promise) return result.then(() => {
+                  client.query = query;
+                  throw new Error('test lost COMMIT reply after actual durable commit');
+                });
+                return result;
+              },
+            });
+            return client;
+          });
+        },
+      });
+      try { assert.equal((await api(a.base, manager, '/adt/commands', command)).status, 503); }
+      finally { a.db.connect = connect; }
+  };
   try {
     await migrate(a.db);
     for (const [i, p] of ['adt-a', 'adt-b'].entries()) await a.store.importPatient(patient(f, p, i + 1));
     await new AdtStore(a.store).provision();
+    // Imported pre-extension baseline: defaults must not invent stream effects.
+    await a.db.query(`UPDATE commit_streams SET snapshot = CASE WHEN kind='patient'
+      THEN jsonb_set(snapshot, '{adt}', (snapshot->'adt') - 'revision' - 'encounter' - 'last')
+      ELSE snapshot - 'active' END WHERE tenant=$1`, [config.tenant]);
     recordAdtBaseline(config.actors[0], config, await new AdtStore(a.store).read(config.actors[0]));
     await t.test('signed administrative role and unit claims override provision metadata; scopes fail closed', async () => {
       assert.equal(obj((await api(a.base, manager, '/me')).body.user).role, 'bedManager');
@@ -76,7 +104,7 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
       assert.equal((await api(a.base, manager, '/adt/commands', { ...await make('admit', 'adt-a', 401), expected: [] })).status, 400);
       const incomplete = await make('admit', 'adt-a', 401); incomplete.expected.pop();
       assert.equal((await api(a.base, manager, '/adt/commands', incomplete)).status, 409);
-      for (const action of ['swap', 'cancel']) {
+      for (const action of ['swap', 'cancel', 'cancelAdmit', 'cancelTransfer', 'cancelDischarge']) {
         assert.equal((await api(a.base, manager, '/adt/commands', { ...await make('admit', 'adt-a', 401), action })).status, 400);
       }
     });
@@ -136,28 +164,7 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
     await t.test('lost multi-stream COMMIT reply recovers the identical outcome once', async () => {
       await readyBed(402);
       const command = await make('transfer', 'adt-a', 402, 401);
-      const connect = a.db.connect.bind(a.db);
-      a.db.connect = new Proxy(connect, {
-        apply(target, receiver, args: unknown[]) {
-          if (args.length) return Reflect.apply(target, receiver, args);
-          return target().then(client => {
-            const query = client.query;
-            client.query = new Proxy(query, {
-              apply(queryTarget, queryReceiver, queryArgs: unknown[]) {
-                const result: unknown = Reflect.apply(queryTarget, queryReceiver, queryArgs);
-                if (queryArgs[0] === 'COMMIT' && result instanceof Promise) return result.then(() => {
-                  client.query = query;
-                  throw new Error('test lost COMMIT reply after actual durable commit');
-                });
-                return result;
-              },
-            });
-            return client;
-          });
-        },
-      });
-      try { assert.equal((await api(a.base, manager, '/adt/commands', command)).status, 503); }
-      finally { a.db.connect = connect; }
+      await lostCommit(command);
       const recovered = await api(b.base, manager, '/adt/commands', command);
       assert.equal(recovered.status, 201);
       assert.deepEqual(await api(a.base, manager, '/adt/commands', command), recovered);
@@ -178,6 +185,121 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
         while (!rt.includes('event: board')) { const c = await rr.read(); rt += c.value; }
         assert.match(rt, new RegExp(str((await board()).cursor))); await rr.cancel();
       } finally { clearTimeout(timer); abort.abort(); }
+    });
+    const reset = async () => {
+      for (const p of objs(obj((await board()).state).patients)) if (p.admitted) await execute('discharge', str(p.id));
+      for (const bed of objs(obj((await board()).state).beds)) {
+        if (bed.phase === 'dirty') await readyBed(num(bed.id));
+      }
+    };
+    const revision = async (p = 'adt-a') => num(required(objs(obj((await board()).state).patients).find(x => x.id === p)).revision);
+    const correction = async (action: AdtCommand['action'], bed?: number): Promise<AdtCommand> =>
+      ({ ...await make(action, 'adt-a', bed), event: await revision() });
+    await t.test('A17 swaps both occupied beds once; opposite transfers, stale cancellations and changed payloads refuse', async () => {
+      await reset(); await execute('admit', 'adt-a', 401); await execute('admit', 'adt-b', 402);
+      const oldAdmission = await revision();
+      assert.equal((await api(a.base, manager, '/adt/commands', await make('transfer', 'adt-a', 402, 401))).status, 422);
+      assert.equal((await api(b.base, manager, '/adt/commands', await make('transfer', 'adt-b', 401, 402))).status, 422);
+      const swap = { ...await make('swap', 'adt-a', 402, 401), other: 'adt-b' };
+      const reads = Promise.all(Array.from({length: 8}, () => board()));
+      const results = await Promise.all([api(a.base, manager, '/adt/commands', swap), api(b.base, manager, '/adt/commands', swap)]);
+      await reads;
+      assert.equal(results[0].status, 201, JSON.stringify(results)); assert.deepEqual(results[0], results[1]);
+      assert.equal(objs(results[0].body.written).length, 4);
+      assert.deepEqual(objs(obj((await board()).state).beds).map(x => [x.id,x.occupant,x.phase]), [[401,'adt-b','occupied'],[402,'adt-a','occupied']]);
+      const scoped = await api(a.base, nurse, '/patients/adt-a');
+      assert.equal(scoped.status, 200);
+      assert.ok(!JSON.stringify(scoped.body).includes('adt-b'), 'swap operands must not disclose another patient through scoped histories');
+      assert.equal((await api(a.base, manager, '/adt/commands', {...swap, other: 'adt-a'})).status, 409);
+      const refused = await api(a.base, manager, '/adt/commands', {...await make('cancelAdmit'), event: oldAdmission});
+      assert.equal(refused.status, 422); assert.equal(refused.body.reason, 'adt_cancel_not_latest_event');
+      await reset();
+    });
+    await t.test('swap rolls back every stream on late INSERT failure and exact-ID retry succeeds', async () => {
+      await execute('admit', 'adt-a', 401); await execute('admit', 'adt-b', 402);
+      const before = await board();
+      const swap = {...await make('swap', 'adt-a', 402, 401), other:'adt-b'};
+      const nextVersion = num(required(objs(before.versions).find(v => v.key === 'patient:adt-b')).version) + 1;
+      await a.db.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$3,$4,$5)',
+        [config.tenant, 'patient:adt-b', nextVersion, randomUUID(), {kind:'fault'}]);
+      assert.equal((await api(a.base, manager, '/adt/commands', swap)).status, 503);
+      assert.deepEqual(await board(), before);
+      assert.equal((await api(a.base, manager, `/requests/${swap.requestId}`)).status, 404);
+      await a.db.query('DELETE FROM commit_events WHERE tenant=$1 AND stream=$2 AND version=$3', [config.tenant,'patient:adt-b',nextVersion]);
+      assert.equal((await api(b.base, manager, '/adt/commands', swap)).status, 201);
+      await reset();
+    });
+    await t.test('A11/A12/A13 compensate latest events, require clean ready beds, retain encounter identity and are idempotent', async () => {
+      await execute('admit', 'adt-a', 401);
+      const cancelAdmit = await correction('cancelAdmit');
+      const first = await api(a.base, manager, '/adt/commands', cancelAdmit);
+      assert.equal(first.status, 201, JSON.stringify(first));
+      assert.deepEqual(await api(b.base, manager, '/adt/commands', cancelAdmit), first);
+      assert.equal(objs(obj((await board()).state).beds)[0].phase, 'dirty');
+      assert.equal((await api(a.base, manager, '/adt/commands', {...await make('cancelAdmit'), event: cancelAdmit.event})).status, 422);
+      await readyBed(401); await execute('admit', 'adt-a', 401);
+      const episode = num(objs(obj((await board()).state).patients)[0].encounter);
+      await execute('transfer', 'adt-a', 402, 401);
+      assert.equal((await api(a.base, manager, '/adt/commands', await correction('cancelTransfer'))).status, 422);
+      await readyBed(401);
+      const cancelTransfer = await correction('cancelTransfer');
+      const moved = await api(a.base, manager, '/adt/commands', cancelTransfer);
+      assert.equal(moved.status, 201, JSON.stringify(moved));
+      assert.deepEqual(await api(b.base, manager, '/adt/commands', cancelTransfer), moved);
+      assert.equal(objs(obj((await board()).state).patients)[0].bed, 401);
+      await execute('discharge');
+      assert.equal((await api(a.base, manager, '/adt/commands', await correction('cancelDischarge',401))).status, 422);
+      await readyBed(402);
+      const cancelDischarge = await correction('cancelDischarge',402);
+      const reopened = await api(a.base, manager, '/adt/commands', cancelDischarge);
+      assert.equal(reopened.status, 201, JSON.stringify(reopened));
+      assert.deepEqual(await api(b.base, manager, '/adt/commands', cancelDischarge), reopened);
+      assert.equal(objs(obj((await board()).state).patients)[0].encounter, episode);
+      const chart = await a.store.read(config.actors[0], 'adt-a');
+      const resources = objs(obj(chart.snapshot.bundle).entry).map(e => obj(e.resource));
+      const active = resources.filter(r => r.resourceType === 'Encounter' && r.status === 'in-progress' && maybeObj(r.class)?.code === 'IMP');
+      assert.equal(active.length, 1);
+      assert.equal(resources.filter(r => r.resourceType === 'Provenance' && r.activity).length, 3);
+      await reset();
+    });
+    await t.test('cancellation races with bed reuse, transfer, discharge and swap serialize at the full board vector', async () => {
+      for (const rival of ['reuse', 'transfer', 'discharge', 'swap'] as const) {
+        await execute('admit', 'adt-a', 401);
+        if (rival !== 'swap') { await execute('transfer','adt-a',402,401); await readyBed(401); }
+        else await execute('admit','adt-b',402);
+        const cancel = await correction(rival === 'swap' ? 'cancelAdmit' : 'cancelTransfer');
+        const competitor = rival === 'reuse' ? await make('admit','adt-b',401) :
+          rival === 'transfer' ? await make('transfer','adt-a',401,402) :
+          rival === 'discharge' ? await make('discharge') : {...await make('swap','adt-a',402,401), other:'adt-b'};
+        const results = await Promise.all([api(a.base, manager, '/adt/commands', cancel), api(b.base, manager, '/adt/commands', {...competitor, expected:cancel.expected})]);
+        assert.deepEqual(results.map(r => r.status).sort(), [201,409], JSON.stringify(results));
+        await board(); await reset();
+      }
+      await execute('admit','adt-a',401); await execute('discharge');
+      const cancel = await correction('cancelDischarge',402);
+      const rival = {...await make('admit','adt-b',402), expected:cancel.expected};
+      const results = await Promise.all([api(a.base, manager,'/adt/commands',cancel),api(b.base, manager,'/adt/commands',rival)]);
+      assert.deepEqual(results.map(r => r.status).sort(),[201,409]);
+      await reset();
+    });
+    await t.test('swap and every cancellation recover a lost COMMIT reply with the same original intent', async () => {
+      await execute('admit','adt-a',401); await execute('admit','adt-b',402);
+      const swap = {...await make('swap','adt-a',402,401),other:'adt-b'};
+      await lostCommit(swap);
+      const swapped = await api(b.base,manager,'/adt/commands',swap);
+      assert.equal(swapped.status,201); assert.deepEqual(await api(a.base,manager,'/adt/commands',swap),swapped);
+      await reset();
+      for (const action of ['cancelAdmit','cancelTransfer','cancelDischarge'] as const) {
+        await execute('admit','adt-a',401);
+        if (action === 'cancelTransfer') {await execute('transfer','adt-a',402,401);await readyBed(401);}
+        if (action === 'cancelDischarge') await execute('discharge');
+        const command = await correction(action,action === 'cancelDischarge' ? 402 : undefined);
+        await lostCommit(command);
+        const recovered = await api(b.base,manager,'/adt/commands',command);
+        assert.equal(recovered.status,201,JSON.stringify(recovered));
+        assert.deepEqual(await api(a.base,manager,'/adt/commands',command),recovered);
+        await reset();
+      }
     });
     await t.test('every accepted journal transition independently replays natively; versions have no gaps and events pair atomically', async () => {
       const rows = (await a.db.query('SELECT * FROM commit_events WHERE tenant=$1 ORDER BY stream,version', [config.tenant])).rows;
@@ -204,7 +326,8 @@ test('ADT: signed roles, two replicas, seeded races, atomic reads/rollback, SSE 
         }
         const peers = rows.filter(r => r.transaction_id === e.transaction_id);
         for (const peer of peers) assert.equal(peer.version, e.event.input.versions.find((v: Obj) => v.key === peer.stream).version + 1);
-        if (e.event.input.command.transfer) assert.equal(peers.length, 3);
+        if (e.event.input.command.transfer || e.event.input.command.cancelTransfer) assert.equal(peers.length, 3);
+        if (e.event.input.command.swap) assert.equal(peers.length, 4);
       }
       for (const s of (await a.db.query('SELECT key,kind,version,snapshot FROM commit_streams WHERE tenant=$1', [config.tenant])).rows) {
         assert.equal(s.version, byStream.get(s.key) ?? 0);

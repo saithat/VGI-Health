@@ -49,7 +49,7 @@ export const configSchema = z.object({
   tenant: id,
   oidc: z.object({ issuer: z.url(), audience: z.string().min(1), clientId: z.string().min(1), jwksUrl: z.url().optional() }).strict().optional(),
   units: z.record(id, z.object({ name: z.string().min(1), marOnService: z.boolean() }).strict()).optional(),
-  adt: z.object({ patients: z.array(id).min(1).max(64), beds: z.array(z.object({ id: nat, unit: id, resource: id.optional() }).strict()).min(1).max(64) }).strict().optional(),
+  adt: z.object({ patients: z.array(id).min(1).max(64), beds: z.array(z.object({ id: nat, unit: id, active: z.boolean().default(true), resource: id.optional() }).strict()).min(1).max(64) }).strict().optional(),
   actors: z.array(z.object({
     token: z.string().min(24).optional(), subject: id.optional(), persona: id.optional(), name: z.string().optional(), user: z.object({ id, role: z.enum(['rn', 'physician', 'np', 'surgeon', 'chargeNurse', 'bedManager', 'admittingClerk']) }).strict(),
     modelId: nat, patients: z.array(id), units: z.array(id).optional(), adtRoles: z.array(adtRole).optional(),
@@ -152,13 +152,15 @@ export const adtCommandInput = z.object({
   requestId: z.string().regex(/^[A-Za-z0-9._-]{1,128}$/),
   // A complete board read vector prevents stale UI intent from silently rebasing.
   expected: z.array(z.object({ key: z.string().min(1).max(100), version }).strict()).min(1).max(128),
-  action: z.enum(['admit', 'assign', 'transfer', 'release', 'discharge', 'clean', 'ready']),
-  patient: id, bed: nat.optional(), source: nat.optional(),
+  action: z.enum(['admit', 'assign', 'transfer', 'swap', 'cancelAdmit', 'cancelTransfer', 'cancelDischarge', 'release', 'discharge', 'clean', 'ready']),
+  patient: id, bed: nat.optional(), source: nat.optional(), other: id.optional(), event: nat.optional(),
 }).strict().superRefine((c, ctx) => {
-  if ((c.action !== 'discharge' && c.bed === undefined) ||
-      (c.action === 'transfer' && c.source === undefined) ||
-      (c.action !== 'transfer' && c.source !== undefined) ||
-      (c.action === 'discharge' && c.bed !== undefined))
+  const needsBed = !['discharge', 'cancelAdmit', 'cancelTransfer'].includes(c.action);
+  const needsSource = ['transfer', 'swap'].includes(c.action);
+  const cancellation = ['cancelAdmit', 'cancelTransfer', 'cancelDischarge'].includes(c.action);
+  if (needsBed !== (c.bed !== undefined) || needsSource !== (c.source !== undefined) ||
+      (c.action === 'swap') !== (c.other !== undefined) || cancellation !== (c.event !== undefined) ||
+      (cancellation && c.event === 0))
     ctx.addIssue({ code: 'custom', message: 'incorrect ADT operands' });
 });
 export type AdtCommand = z.infer<typeof adtCommandInput>;

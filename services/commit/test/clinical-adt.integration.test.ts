@@ -67,13 +67,28 @@ test('clinical admission shares the ADT bed stream: native guards, board CAS, at
       expected: (await new AdtStore(h.store).read(actor)).versions, action: 'discharge', patient: 'clinical-a' });
     assert.equal(released.status, 201);
     assert.equal(obj(array(obj((await new AdtStore(h.store).read(actor)).state).beds)[0]).phase, 'dirty');
+    const beforeCorrection = await h.store.read(actor, 'clinical-a');
+    const clinicalDocuments = objs(obj(beforeCorrection.snapshot.bundle).entry).filter(e => !['Encounter','Location'].includes(String(obj(e.resource).resourceType)));
+    for (const action of ['clean','ready'] as const) assert.equal((await api(h.base,actor,'/adt/commands',{
+      requestId:`correction-${action}`,expected:(await new AdtStore(h.store).read(actor)).versions,action,patient:'clinical-a',bed:42})).status,201);
+    const restored = await api(h.base,actor,'/adt/commands',{requestId:'cancel-clinical-discharge',
+      expected:(await new AdtStore(h.store).read(actor)).versions,action:'cancelDischarge',patient:'clinical-a',event:2,bed:42});
+    assert.equal(restored.status,201,JSON.stringify(restored));
+    const afterCorrection = await h.store.read(actor,'clinical-a');
+    const afterResources = objs(obj(afterCorrection.snapshot.bundle).entry).map(e => obj(e.resource));
+    for (const e of clinicalDocuments) assert.deepEqual(afterResources.find(r => r.id === obj(e.resource).id),e.resource);
+    assert.equal(afterResources.filter(r => r.resourceType === 'Encounter' && r.status === 'in-progress' && obj(r.class).code === 'IMP').length,1);
+    const originalInpatient = objs(obj(current.snapshot.bundle).entry).map(e => obj(e.resource)).find(r => r.resourceType === 'Encounter' && obj(r.class).code === 'IMP');
+    assert.ok(originalInpatient);
+    assert.ok(afterResources.some(r => r.resourceType === 'Encounter' && r.id === originalInpatient.id && r.status === 'in-progress'));
     t.diagnostic(checkAdtTrace(path));
     // Historical clinical-ADT envelopes must respect the same patient scope as
     // administrative envelopes. Seed one in this isolated test tenant only.
-    await h.db.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,5,$3,$4)',
-      [config.tenant, 'patient:clinical-a', randomUUID(), { kind: 'clinical-adt', actor: actor.user.id, requestId: 'historical-envelope', input: event.clinicalAdt.input, accepted: event.clinicalAdt.accepted }]);
-    await h.db.query('UPDATE commit_streams SET version=5 WHERE tenant=$1 AND key=$2', [config.tenant, 'patient:clinical-a']);
-    const scoped = await api(h.base, config.actors[1], '/patients/clinical-a?after=4');
+    const priorVersion = afterCorrection.version;
+    await h.db.query('INSERT INTO commit_events(tenant,stream,version,transaction_id,event) VALUES($1,$2,$5,$3,$4)',
+      [config.tenant, 'patient:clinical-a', randomUUID(), { kind: 'clinical-adt', actor: actor.user.id, requestId: 'historical-envelope', input: event.clinicalAdt.input, accepted: event.clinicalAdt.accepted }, priorVersion+1]);
+    await h.db.query('UPDATE commit_streams SET version=$3 WHERE tenant=$1 AND key=$2', [config.tenant, 'patient:clinical-a',priorVersion+1]);
+    const scoped = await api(h.base, config.actors[1], `/patients/clinical-a?after=${priorVersion}`);
     assert.equal(scoped.status, 200);
     const envelope = obj(array(scoped.body.events)[0]).event;
     assert.equal(obj(envelope).kind, 'clinical-adt');

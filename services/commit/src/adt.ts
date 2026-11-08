@@ -1,5 +1,6 @@
 import { Fault, digest, maybeObj, obj, objs, required, type Actor, type AdtCommand, type Obj } from './types.ts';
-import { projectAdt } from './clinical-adt.ts';
+import { normalizeAdtStream, projectAdt } from './clinical-adt.ts';
+import { adtBedSchema, adtPatientSchema } from './projection-codecs.ts';
 import { protocolTrace } from './protocol-trace.ts';
 import { randomUUID } from 'node:crypto';
 import { Store, transaction } from './store.ts';
@@ -29,8 +30,8 @@ export class AdtStore {
   private board(rows: Obj[]) {
     const keys = this.keys();
     if (rows.length !== keys.length || rows.some((r, i) => r.key !== keys[i])) throw new Fault(409, 'adt_not_provisioned');
-    const patients = rows.filter(r => r.kind === 'patient').map(r => obj(r.snapshot).adt);
-    const beds = rows.filter(r => r.kind === 'bed').map(r => r.snapshot);
+    const patients = rows.filter(r => r.kind === 'patient').map(r => adtPatientSchema.parse(obj(r.snapshot).adt));
+    const beds = rows.filter(r => r.kind === 'bed').map(r => adtBedSchema.parse(r.snapshot));
     if (patients.some(p => !p) || beds.some(b => obj(b).occupant === undefined)) throw new Fault(409, 'adt_not_provisioned');
     return { state: { patients, beds }, versions: rows.map(r => ({ key: r.key, version: r.version })) };
   }
@@ -61,9 +62,9 @@ export class AdtStore {
         const bed = a.beds.find(b => b.resource && encounter?.location?.some((l: Obj) => maybeObj(l.location)?.reference === `Location/${b.resource}` && l.status === 'active'));
         if (bed && placements.has(bed.id)) throw new Fault(422, 'conflicting_initial_placement');
         if (bed) placements.set(bed.id, id);
-        initial.set(id, { id, admitted: Boolean(encounter), bed: bed?.id ?? null });
+        initial.set(id, adtPatientSchema.parse({ id, admitted: Boolean(encounter), bed: bed?.id ?? null }));
       }
-      const initialBeds = a.beds.map(b => ({ id: b.id, unit: b.unit, phase: placements.has(b.id) ? 'occupied' : 'ready', occupant: placements.get(b.id) ?? null }));
+      const initialBeds = a.beds.map(b => ({ id: b.id, unit: b.unit, active: b.active, phase: placements.has(b.id) ? 'occupied' : 'ready', occupant: placements.get(b.id) ?? null }));
       const state = { patients: [...initial.values()], beds: initialBeds };
       const probe = initialBeds.find(b => b.phase === 'ready');
       const admitted = state.patients.find(p => p.admitted);
@@ -84,7 +85,7 @@ export class AdtStore {
   async submit(actor: Actor, command: AdtCommand) {
     const roles = this.authorize(actor);
     const a = this.definition();
-    if (!a.patients.includes(command.patient) ||
+    if (!a.patients.includes(command.patient) || (command.other !== undefined && !a.patients.includes(command.other)) ||
         (command.bed !== undefined && !a.beds.some(b => b.id === command.bed)) ||
         (command.source !== undefined && !a.beds.some(b => b.id === command.source))) throw new Fault(403, 'adt_scope_forbidden');
     // Choose the least-privileged signed role that permits this operation.
@@ -116,12 +117,15 @@ export class AdtStore {
       for (const key of this.keys()) {
         const row = (await c.query('SELECT * FROM commit_streams WHERE tenant=$1 AND key=$2 FOR UPDATE', [t, key])).rows[0];
         if (!row) throw new Fault(409, 'adt_not_provisioned');
-        rows.push(row);
+        rows.push(normalizeAdtStream(row));
         trace?.emit('lock', { key: trace.key(key) });
       }
       const board = this.board(rows);
-      const { action, patient, bed, source } = command;
-      const operands = action === 'transfer' ? { patient, source, target: bed } :
+      const { action, patient, bed, source, other, event } = command;
+      const operands = action === 'swap' ? { patient, other, source, target: bed } :
+        action === 'cancelDischarge' ? { patient, event, bed } :
+        ['cancelAdmit', 'cancelTransfer'].includes(action) ? { patient, event } :
+        action === 'transfer' ? { patient, source, target: bed } :
         ['clean', 'ready'].includes(action) ? { bed } : action === 'discharge' ? { patient } : { patient, bed };
       const input = { ...board, expected: command.expected, role, command: { [action]: operands } };
       trace?.emit('read', { adt: trace.adtInput(input) });
@@ -136,7 +140,8 @@ export class AdtStore {
       for (const row of rows) {
         const next = row.kind === 'patient'
           ? { ...row.snapshot, adt: objs(obj(accepted.state).patients).find((p: Obj) => `patient:${p.id}` === row.key),
-              bundle: projectAdt(row.snapshot, required(objs(obj(accepted.state).patients).find((p: Obj) => `patient:${p.id}` === row.key)), this.store.config, transactionId, new Date().toISOString()) }
+              bundle: projectAdt(row.snapshot, required(objs(obj(accepted.state).patients).find((p: Obj) => `patient:${p.id}` === row.key)), this.store.config, transactionId, new Date().toISOString(),
+                { action, event, actor: actor.user.id }) }
           : objs(obj(accepted.state).beds).find((b: Obj) => `bed:${b.id}` === row.key);
         if (digest(next) === digest(row.snapshot)) continue;
         const result = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',

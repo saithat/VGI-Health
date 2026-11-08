@@ -3,6 +3,15 @@
 import { z } from 'zod';
 import { RoleValues, UnitKindValues } from '../../../lean/generated/ehr-types.ts';
 
+export const adtPatientSchema = z.object({
+  id: z.string(), admitted: z.boolean(), bed: z.number().int().nonnegative().nullable(),
+  revision: z.number().int().nonnegative().default(0), encounter: z.number().int().nonnegative().default(0),
+  last: z.object({ kind: z.enum(['admit', 'transfer', 'discharge']),
+    source: z.number().int().nonnegative().nullable(), target: z.number().int().nonnegative().nullable() }).nullable().default(null),
+});
+export const adtBedSchema = z.object({ id: z.number().int().nonnegative(), unit: z.string(),
+  active: z.boolean().default(true), phase: z.enum(['ready', 'occupied', 'dirty', 'cleaning']), occupant: z.string().nullable() });
+
 export const capturedSchema = z.array(z.object({
   element: z.string(), slot: z.number(), byHuman: z.boolean(), confirmed: z.boolean(), provenance: z.string().optional(),
   value: z.union([

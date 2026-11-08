@@ -1,4 +1,4 @@
-import { canonical, commandInput, configSchema, digest, num, obj, objs, required, sharedAction, sharedKey, str } from '../src/types.ts';
+import { adtCommandInput, canonical, commandInput, configSchema, digest, num, obj, objs, required, sharedAction, sharedKey, str } from '../src/types.ts';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { mkdtemp, rm } from 'node:fs/promises';
@@ -97,4 +97,58 @@ test('JSON narrowing preserves mutable object/array identities and rejects wrong
   assert.throws(() => str(3));
   assert.throws(() => num('3'));
   assert.throws(() => required(undefined));
+});
+
+
+test('ADT codec requires exact swap/cancellation operands and positive original event ordinals', () => {
+  const base = {requestId:'new-adt',expected:[{key:'patient:a',version:1}],patient:'a'};
+  const good = [
+    {...base,action:'swap',other:'b',source:401,bed:402},
+    {...base,action:'cancelAdmit',event:1},
+    {...base,action:'cancelTransfer',event:2},
+    {...base,action:'cancelDischarge',event:3,bed:402},
+  ];
+  for (const c of good) assert.ok(adtCommandInput.safeParse(c).success);
+  for (const c of [
+    {...good[0],other:undefined}, {...good[0],source:undefined},
+    {...good[1],event:0}, {...good[1],bed:401}, {...good[2],source:401},
+    {...good[3],bed:undefined}, {...good[1],originalState:{}}, {...good[1],event:-1},
+    {...base,action:'discharge',event:1},
+  ]) assert.equal(adtCommandInput.safeParse(c).success,false);
+});
+
+test('ADT cancellation preserves later clinical documentation and reopens only the original encounter', () => {
+  const config = configSchema.parse({tenant:'compensation',units:{west:{name:'West',marOnService:true}},
+    adt:{patients:['a'],beds:[{id:401,unit:'west',resource:'bed-a'},{id:402,unit:'west',resource:'bed-b'}]},
+    actors:[{token:'synthetic-adt-projection-token',user:{id:'manager',role:'physician'},modelId:1,patients:['a']}],releases:{}});
+  const none = {id:'a',admitted:false,bed:null,revision:0,encounter:0,last:null};
+  const admitted = {...none,admitted:true,bed:401,revision:1,encounter:1,last:{kind:'admit',source:null,target:401}};
+  const bundle = projectAdt({adt:none,bundle:{entry:[]}},admitted,config,'original-encounter','2026-11-07T10:00:00Z');
+  const note = {resourceType:'DocumentReference',id:'later-note',status:'current',context:{encounter:[{reference:'Encounter/original-encounter'}]}};
+  objs(obj(bundle).entry).push({resource:note});
+  const snapshot = {adt:admitted,bundle};
+  const original = structuredClone(snapshot);
+  const cancelled = {...admitted,admitted:false,bed:null,revision:2,last:null};
+  const cancelledBundle = projectAdt(snapshot,cancelled,config,'cancel-admit','2026-11-07T10:05:00Z',{action:'cancelAdmit',event:1,actor:'manager'});
+  assert.deepEqual(snapshot,original,'projection must not mutate its input');
+  const resources = objs(obj(cancelledBundle).entry).map(e => obj(e.resource));
+  assert.deepEqual(resources.find(r => r.id === 'later-note'),note);
+  assert.equal(required(resources.find(r => r.id === 'original-encounter')).status,'entered-in-error');
+  const readmitted = {...admitted,revision:3,encounter:3,last:{kind:'admit',source:null,target:401}};
+  const next = projectAdt({adt:cancelled,bundle:cancelledBundle},readmitted,config,'new-encounter','2026-11-07T11:00:00Z');
+  const discharged = {...readmitted,admitted:false,bed:null,revision:4,last:{kind:'discharge',source:401,target:null}};
+  const finished = projectAdt({adt:readmitted,bundle:next},discharged,config,'discharge','2026-11-07T12:00:00Z');
+  const reopened = {...readmitted,bed:402,revision:5,last:null};
+  const restored = projectAdt({adt:discharged,bundle:finished},reopened,config,'cancel-discharge','2026-11-07T12:05:00Z',{action:'cancelDischarge',event:4,actor:'manager'});
+  const final = objs(obj(restored).entry).map(e => obj(e.resource));
+  assert.equal(final.filter(r => r.resourceType === 'Encounter').length,2);
+  assert.equal(required(final.find(r => r.id === 'original-encounter')).status,'entered-in-error');
+  const active = required(final.find(r => r.id === 'new-encounter'));
+  assert.equal(active.status,'in-progress'); assert.equal(obj(active.period).end,undefined);
+  assert.equal(objs(active.location).filter(l => l.status === 'active').length,1);
+  assert.equal(obj(required(objs(active.location).find(l => l.status === 'active')).location).reference,'Location/bed-b');
+  assert.deepEqual(final.find(r => r.id === 'later-note'),note);
+  const provenance = required(final.find(r => r.id === 'cancel-discharge-cancel'));
+  assert.equal(obj(obj(objs(provenance.entity)[0].what).identifier).value,'a:4');
+  assert.equal(objs(provenance.target)[0].reference,'Encounter/new-encounter');
 });

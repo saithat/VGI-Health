@@ -48,7 +48,7 @@ def dispatch (request : Json) : Except String Json := do
     let i : Commit.Adt.Input ← fromJson? input
     pure <| match Commit.Adt.commit i with
       | some accepted => toJson accepted
-      | none => Json.mkObj [("rejected", .str "adt_guard")]
+      | none => Json.mkObj [("rejected", .str (Commit.Adt.refusal i))]
   | "mar-import-context" =>
     let i ← fromJson? input
     pure (toJson (← Commit.Mar.importContextFor i))

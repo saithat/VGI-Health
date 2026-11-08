@@ -447,6 +447,21 @@ persona selected in Evolution. View-only playback changes remain inside
 Prompt golden hashes bind the current manual text, deterministic historical
 examples and all 35 retained nightly contexts.
 
+## Policies awaiting owner review
+
+The new MAR and ADT rules below are implemented provisional specifications.
+The checks establish their stated behavior; clinical appropriateness and the
+uncalibrated rates remain for owner review in this single decision list.
+
+| Decision | Implemented policy awaiting review |
+|---|---|
+| MAR outcomes and timing | [Outcome policy](#medication-administration-outcomes): conditional rates, critical-drug classification, 30/60/120-minute windows, 20/45-minute re-offers, escalation thresholds and 18:59 cutoff. |
+| MAR follow-up scope | Prescriber notification is nursing documentation only; live delivery and cross-shift dose ownership remain future work. |
+| ADT cancellation eligibility | [Administrative rules](#administrative-adt-extension): latest matching ADT event only; positive exact ordinal; active destination beds; transfer cancellation requires the original bed empty and ready after cleaning. |
+| Clinical work after cancellation | Retain all documentation, orders and administrations with their original encounter links, including an encounter marked entered-in-error; append cancellation provenance. |
+| Swap compatibility | Two distinct admitted patients owning distinct active occupied beds; complete signed board scope; no additional unit/service compatibility restriction. |
+| ADT simulation and transport | Provisional movement/error rates and cleaning/transport delays; `adt.json` is an administrative stream, with physical transport represented separately and no change to bedside clinical effort. |
+
 ## Information needs methodology
 
 `information-needs-v1` is an opt-in simulator specification in
@@ -672,7 +687,7 @@ COMMIT_INTERNAL_URL=http://127.0.0.1:8091 MAR_E2E=1 ADT_E2E=1 APP_TEST_PREVIEW=1
 ### Continuous integration
 
 [CI](.github/workflows/ci.yml) runs on every push and pull request, on all
-branches. Five Ubuntu jobs build the pinned Lean default targets and audit
+branches. Six Ubuntu jobs build the pinned Lean default targets and audit
 headline theorem axioms; lint and typecheck app, agent, world and commit;
 run fast unit suites and the information-needs Python test; run all 201
 canonical conformance scenarios and the 15-accepted/23-rejected certification
@@ -872,9 +887,8 @@ transaction-linearized refinement test, not a proof of the host implementation.
 [Protocol evidence](docs/audits/commit-model-20261106.md) records exact commands,
 bounds and outcomes.
 
-Not proved: host ADT/SQL/FHIR refinement, dynamic cache inputs, or swap/cancellation
-policy (these commands are absent); that the rules are clinically complete; the
-React painter,
+Not proved: host ADT/SQL/FHIR refinement, dynamic cache inputs, physical transport,
+clinical completeness of the rules (including swap/cancellation), or the React painter,
 browser, FHIR import mapping and storage projections (tested); the Node/SQL
 wrapper, Postgres and authentication (integration-tested); the Lean compiler
 and native clang (trusted); SHA-256 collision resistance (assumed); serialization
@@ -919,7 +933,7 @@ flowchart TB
     check["Program checker<br/>226 theorems, 51 headline"]:::guar
     render["Screen renderer<br/>189 theorems, 11 headline"]:::guar
     layout["UI library &amp; geometry<br/>89 theorems, 34 headline"]:::guar
-    commit["Commit reducers<br/>16 theorems, 4 headline"]:::guar
+    commit["Commit reducers<br/>20 theorems, 8 headline"]:::guar
     protocol["Commit service protocol<br/>48 theorems, 30 headline"]:::guar
     multi["Multi-actor models<br/>26 theorems, 0 headline"]:::guar
   end
@@ -1513,16 +1527,24 @@ flowchart LR
 
 </details>
 
-<details><summary><b>Commit reducers</b>: 4 headline claims. Medication administration and ADT reducers the commit service runs.</summary>
+<details><summary><b>Commit reducers</b>: 8 headline claims. Medication administration and ADT reducers the commit service runs.</summary>
 
 ```mermaid
 flowchart LR
   n0["Commit.Adt.bed_exclusivity"]:::head
-  n1["Commit.Adt.patient_one_bed"]:::head
-  n2["Commit.Mar.nonadministration_preserves_shared"]:::head
-  n3["Commit.Mar.reoffers_doses_unique"]:::head
-  n4["Commit.Mar.reduce_invariant"]:::lemma
-  n3 --> n4
+  n1["Commit.Adt.cancellation_preserves_encounters"]:::head
+  n2["Commit.Adt.cancellation_references_latest"]:::head
+  n3["Commit.Adt.patient_one_bed"]:::head
+  n4["Commit.Adt.swap_active"]:::head
+  n5["Commit.Adt.swap_atomic"]:::head
+  n6["Commit.Mar.nonadministration_preserves_shared"]:::head
+  n7["Commit.Mar.reoffers_doses_unique"]:::head
+  n8["Commit.Adt.accepted_guard_at_written_versions"]:::lemma
+  n9["Commit.Mar.reduce_invariant"]:::lemma
+  n2 --> n8
+  n4 --> n8
+  n5 --> n8
+  n7 --> n9
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46
@@ -1720,12 +1742,13 @@ The model has explicit provisional staging but does not model SQL statements'
 private MVCC versions individually: rollback isolation and all-stream atomicity
 are the stated Postgres assumption.
 
-### Administrative ADT extension (new specifications for owner review)
+### Administrative ADT extension
 
 `AdtModel` separates the complete sorted board read set from changed patient/bed
-streams. It executes admit, assign, transfer, release, discharge, clean and ready
-through the existing native reducer; transfer publishes patient + source bed +
-target bed atomically. Private UPDATE and event INSERT are separate steps, so
+streams. It executes admit, assign, transfer, swap, cancelAdmit, cancelTransfer,
+cancelDischarge, release, discharge, clean and ready through the native reducer.
+Transfer and cancelTransfer publish patient + source bed + target bed atomically;
+swap publishes both patients and both occupied beds in one transaction. Private UPDATE and event INSERT are separate steps, so
 crashes before/after each stream write, before outcome staging, and after COMMIT
 are explicit. Rollback discards all provisional writes; a lost COMMIT reply
 preserves the complete durable outcome. Version counts include only changed
@@ -1751,19 +1774,121 @@ The theorem does not prove Postgres internals, lock timing, absence of every SQL
 error, starvation freedom or eventual response. A deliberately reversed stream
 order is a detected circular-wait control.
 
-Swap and cancellation are **absent from the implemented API and native command
-type**; the HTTP regression checks their rejection. Opposite transfers into two
-occupied beds are refused, not a swap. Retrying/aborting a transaction is not a
-domain cancellation. No new swap/cancellation semantics were invented. These
-operations and dynamic cache inputs remain open for owner specification.
+**Administrative policy.** These are
+local simulation policies, not additional clinical regulations. A17-style `swap`
+requires two different admitted, placed patients, distinct beds and current
+ownership of both occupied beds. Both beds must have `active = true`; provisioning
+takes this fixed availability flag from the configured closed board (default true).
+Admission, assignment,
+transfer destinations and cancellation destinations also require active beds.
+There is no online activation/deactivation command and no additional unit/service
+compatibility restriction in the existing reducer. The signed actor must have the whole board's unit/patient scope. Swap
+records completed placement atomically; physical transport is separate. Two
+opposite transfers into occupied beds remain refused.
+
+Every patient ADT transition advances `revision`, a patient-scoped event ordinal.
+`encounter` is the admission ordinal (zero for imported encounters). Existing
+boards missing these fields are read with zero/null/active defaults, without
+default-only writes or version resets; pre-extension movements are not cancellable.
+The immutable
+accepted event log records each transition; `patient:revision` identifies its
+original event. `last` retains only the latest cancellable movement. Clinical
+chart edits do not advance this ADT ordinal. Assign, release, swap and cancellation
+clear `last`; later admission/transfer/discharge replaces it. Thus **all three
+cancellations require the original to be the patient's latest ADT event**, of the
+matching kind, with a positive exact ordinal supplied in the event field:
+
+- A11 `cancelAdmit`: patient still admitted in that admission's bed. End placement,
+  mark the bed dirty and mark that encounter `entered-in-error`.
+- A12 `cancelTransfer`: patient still owns the recorded destination; the recorded
+  origin must be empty **and ready after cleaning**. Move back atomically and
+  mark the destination dirty. No implicit hygiene override.
+- A13 `cancelDischarge`: patient remains discharged/unplaced; caller explicitly
+  chooses an empty ready bed, which may differ from the original. Reopen the
+  same encounter and remove its end time; never create a replacement encounter.
+
+Only charge nurses and bed managers can swap/cancel; admitting clerks retain
+admit/assign permissions. Cancellations compensate **current** state, never load
+an old chart/board snapshot. Clinical documentation, orders, administrations and
+their original encounter links remain intact, including records from the
+cancelled interval. Cancellation does not retract clinical work. A cancellation adds FHIR Provenance targeting the
+encounter and referencing the original patient ADT ordinal. Encounter sequence
+extensions prevent reopening another completed episode; ambiguous/missing
+encounters refuse. Encounter location history is retained. The board exposes
+latest-event identity, separate swap/cancel controls and specific refusal reasons.
+Full sorted-board locks plus exact read vectors serialize bed reuse, transfer,
+discharge, swap and cancellation; a stale command must be resubmitted with a new
+request ID after review. Identical-ID retries retain the exact durable outcome.
+
+The world CLI now exports `adt.json` (`adt-realism-v1`) alongside its clinical
+schedules by default; `--adt off` selects historical generation without that
+sidecar. `world/src/adt.ts` consumes the same initial census and timed admission/
+discharge records, then executes every administrative transition through one
+native `ehr serve` child. It adds same-unit transfers (0.03 per placed patient-day),
+one possible same-unit swap (0.05 per board-day), erroneous admissions (0.01 per
+admission), erroneous transfers (0.02 per transfer) and erroneous discharges
+(0.002 per placed patient-day), followed by linked compensating corrections.
+These low-frequency rates and 30-minute cleaning / 5–20-minute transport delays
+are **provisional simulation assumptions**, not measured incidence estimates.
+[HL7 v2 chapter 3](https://hl7.eu/HL7v2x/v29/std29/ch03.html) defines the A11–A13/A17
+movement/correction categories; [FHIR R4 Encounter](https://hl7.org/fhir/R4/encounter.html)
+distinguishes encounter lifecycle and location history. Neither source calibrates
+these frequencies or approves this local cancellation policy.
+
+Administrative operator events and separate delayed transport completion/
+supersession records are seed-deterministic; transports are not placement
+authority. The sidecar does not change frozen clinical random streams, tasks,
+rooms, schedules or chart documentation. Thus it exercises administrative
+workload and occupancy, not clinical task effort for an ADT operator, nor a shared
+physical-location model driving bedside MAR. Reservations and bed holds remain
+out of scope. Forced-rate regression exercises swap, all three cancellations,
+admission, transfer, discharge, cleaning and ready transitions against native
+Lean, including stale transport supersession. The board controls change the certified app hash. Source-bound WASM/assets,
+app bindings and recording certification/replay evidence must match the combined build.
+
+The generic unbounded protocol invariants quantify over the expanded command
+type, so their fold, exclusivity, request-uniqueness and atomic-publication claims
+include swap and all three cancellations. `swap_atomic` specifies the complete
+exchange successor; `cancellation_references_latest` binds every accepted
+cancellation to the latest matching event; `cancellation_preserves_encounters`
+preserves the complete patient-ID/encounter-identity projection under all three
+compensations. `swap_active` requires both beds active at acceptance. Lock-order
+exclusion remains the conditional unbounded `LockOrder.no_wait_cycle`; executable machine/host lock
+correspondence remains bounded/tested. The expanded checker covers both inactive
+bed refusals and the new movement races; its finite bounds are distinct from these
+universally quantified safety statements.
+
 Clinical placement's non-ADT guard and session checks remain explicit abstract
 inputs; administrative guard decisions execute the native reducer without an
 oracle. FHIR projection functions, initial provisioning and TypeScript/SQL
 refinement remain tested rather than proved. See the
-[ADT verification record](docs/audits/adt-model-20261107.md) for bounds, commands,
-results. The bounded ADT checker covers 26,812 transaction states and 62 reducer
-boards. Integration tests require Lean witnesses for administrative and mixed
-clinical/administrative attempts, including rollback and lost COMMIT replies.
+[prior ADT verification record](docs/audits/adt-model-20261107.md) for the earlier
+bounds and historical audit receipts. The swap/cancellation checker exhausts
+**33,467 transaction states / 244,133 transitions across 27 scenarios** (maximum
+shortest-path depth 56), plus **1,257 reducer boards / 11,728 accepted edges** with
+two patients, two beds, all three roles and up to three patient ADT events per
+board (accepted boundary successors are also validated). Transaction graphs use
+fixed request contents/IDs and include arbitrary repeated crashes, retries and
+timeouts at every modeled phase, including each provisional UPDATE/INSERT pair.
+No counterexample occurred; all six unsafe controls were detected. The original
+protocol checker separately exhausts 21,393 transaction states and 81 cache states.
+
+The regression suite uses an isolated Postgres primary and two actual hosts.
+It tests legacy-board defaults without phantom writes; opposite-transfer refusal;
+four-stream atomic swap; all cancellation eligibility/refusal paths; stale event
+references; cancellation racing origin/destination reuse, transfer, discharge and
+swap; late INSERT rollback; and lost COMMIT reply recovery for swap and all three
+cancellations. Patient-scoped histories expose the action name and this patient's
+successor only, so swap operands cannot disclose another patient. A mixed clinical
+regression found an ED-disposition projection defect during implementation: using
+the finished ED source encounter could create a second inpatient episode. The
+fix selects the newly projected inpatient child and cancellation reopens that
+same child. Clinical resources and encounter references survive unchanged.
+
+The service integration suite requires a fresh PostgreSQL instance and the generated
+native fixture. Its ADT and mixed clinical traces cover four-stream publication,
+latest-event compensation, encounter retention, rollback and uncertain COMMIT.
+Use the reproduction commands below; retained traces are scratch artifacts.
 
 ### Veil evaluation
 
@@ -2371,13 +2496,13 @@ product.
 | **Orders** | Medication order composer with order favorites, formulary dose units, kg dosing weight, route, frequency, PRN, dispense and refills, pharmacy, indication and diagnosis; lab, imaging and procedure orders; prior authorization (release v2); coded antibiotic indication (release v3). | Real e-prescribing transmission, pharmacy interventions. |
 | **Safety checks** | Hard-stop sign guards; drug-allergy, interaction, duplicate-therapy, dose-range and high-alert alerts, interruptive (modal) or passive (inline); barcode patient and medication scan at administration; second-nurse cosign for high-alert drugs; patient-ID re-entry; review receipts that expire; critical-result escalation; California controlled-substance rules (CURES check, naloxone offer, Schedule II refills). | Real CURES/PDMP queries, barcode hardware, a full drug-knowledge base (a small formulary is built in). |
 | **Documentation** | Visit and operative notes, nursing assessments, vaccine administration, consent, SBAR handoff, administration records. | Note templates, dictation. |
-| **Bed management (ADT)** | Admit, assign, transfer, release, discharge and bed cleaning on a unit bed board, with exclusive beds and atomic transfers. | Enterprise patient flow, transport, multiple facilities. |
+| **Bed management (ADT)** | Admit, assign, transfer, atomic bed swap, linked admission/transfer/discharge cancellation, release, discharge and bed cleaning on a unit bed board. | Enterprise patient flow, transport authority, reservations, multiple facilities. |
 | **Regulatory updates** | Vendor releases v1 → v2 → v3 that add rules, migrated per clinician and re-certified. | Real vendor upgrade tooling. |
 | **Data and storage** | Immutable FHIR R4 imports and Postgres event projections: Patient, Encounter, Observation, Condition, AllergyIntolerance, MedicationRequest, MedicationAdministration, Immunization, DiagnosticReport, DocumentReference, ServiceRequest, Procedure, Consent, Appointment, Task, Communication, ChargeItem, Provenance. Native-guarded, versioned commands and live updates for all workflows. | HL7v2 interfaces, enterprise patient index, production audit logging, high availability. |
 | **Identity** | Keycloak single sign-on (PKCE) for all live clinical, MAR and bed-management workflows. | Production identity, break-the-glass access. |
 | **Users** | Simulated clinicians with seeded behavior and interruptions, measured in clicks, scrolls and mouse travel. The default policy plans through the current screens; an optional bounded policy learns locations and searches visible controls. | Real clinicians; no user study. Search, practice, forgetting and hidden tastes use uncalibrated simulation assumptions. |
 
-## Medication administration outcomes (new specifications: owner review)
+## Medication administration outcomes
 
 Scheduled ward doses carry `OrderChoice.administration`, separately from order
 `holdReason`: a typed given, held, refused, delayed or notGiven outcome, reason,
@@ -2441,7 +2566,6 @@ No theorem statement in Specs, Props, Statements or comparator changed.
 The existing four MAR invariant/guard theorems keep their statements and now range
 over the two additional Event constructors. New `nonadministration_preserves_shared`
 and `reoffers_doses_unique` make the nonconsumption and re-offer guarantees explicit.
-These outcome states, window policy and follow-up rules require owner review.
 
 Outcome regressions enumerate given, clinical hold, refusal→given, repeated
 refusal, unavailable→given/missed, off-unit return/expiry, late-window miss,
@@ -2803,11 +2927,12 @@ geometry. This avoids starting an interpreter for each popup. A three-bundle
 P1 revision comparison preserved all 87 popup files byte-for-byte.
 `core-10day` is the single retained recording.
 
-The current certified app SHA-256 is
-`b78fef8c17c68d215ad91bf67a49ca2150f651d844cc8eb426449b24f05629e7`.
-The CI lint dependencies in `pnpm-lock.yaml` participate in this hash. Source-bound
-WASM assets and their manifest are rebuilt with the current Lean sources;
-recordings require re-certification before their bindings can authorize this build.
+Changes to the bound clinical sources require a new app hash and matching
+recording certificates, geometry measurements and strict replay evidence. The
+board controls are included in that boundary. `pnpm-lock.yaml` also participates
+in the hash. Source-bound WASM assets and their manifest must match the current
+Lean sources before an app build and recording re-certification.
+
 Code-choice fields and their confirmation wrappers reserve a text-relative
 minimum width inside wrapping sections. Increasing text size expands the track
 instead of clipping the selected label.

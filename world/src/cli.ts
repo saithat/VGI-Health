@@ -17,6 +17,7 @@ import { DayScheduleSchema, PERSONAS } from "./schema";
 import { dayFacts, dayTable } from "./summary";
 import { withInformationData } from "./information-needs";
 import { generateWorld } from "./world";
+import { nativeAdt, simulateAdt } from "./adt";
 
 export const GENERATOR = "world@0.1.0";
 
@@ -50,7 +51,7 @@ function intArg(args: string[], name: string, dflt: number): number {
   return n;
 }
 
-function main(): void {
+async function main(): Promise<void> {
   const args = process.argv.slice(2).filter((a) => a !== "--");
   const root = repoRoot();
   const seed = intArg(args, "seed", 1);
@@ -64,6 +65,8 @@ function main(): void {
   if (!["off", "v1"].includes(informationNeeds)) throw new Error("--information-needs must be off or v1");
   const pop = loadPopulation(fixtures);
   const run = generateWorld(seed, days, pop.patients);
+  const adt = arg(args, "adt") ?? "realistic";
+  if (!["off", "realistic"].includes(adt)) throw new Error("--adt must be off or realistic");
 
   mkdirSync(outDir, { recursive: true });
   for (const f of readdirSync(outDir)) if (/^(state-day-\d+|day-\d+-P\d)\.json$/.test(f)) rmSync(join(outDir, f));
@@ -76,6 +79,12 @@ function main(): void {
   const files: string[] = [];
   write("world.json", { seed, days, personas: PERSONAS });
   files.push("world.json");
+  if (adt === "realistic") {
+    const native = nativeAdt(process.env.EHR_BIN ?? join(root, "lean/.lake/build/bin/ehr"));
+    try { write("adt.json", await simulateAdt(run, native.apply)); }
+    finally { native.close(); }
+    files.push("adt.json");
+  } else rmSync(join(outDir, "adt.json"), {force:true});
   for (const p of PERSONAS) {
     const name = `personas/${p}.json`;
     write(name, personaParams(p, seed, policy, args.includes("--hidden-preferences")));
@@ -99,6 +108,7 @@ function main(): void {
   }
   write("manifest.json", {
     generator: GENERATOR,
+    ...(adt === "realistic" ? {adtProtocol: "adt-realism-v1"} : {}),
     ...(informationNeeds === "v1" ? {informationProtocol: "information-needs-v1"} : {}),
     seed,
     days,
@@ -138,4 +148,4 @@ function main(): void {
   }
 }
 
-main();
+void main().catch(error => { console.error(error); process.exitCode = 1; });

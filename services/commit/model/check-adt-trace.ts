@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { adtPatientSchema } from '../src/projection-codecs.ts';
 import { protocolTrace } from '../src/protocol-trace.ts';
 import { z } from 'zod';
 import { digest, obj, objs, str, required } from '../src/types.ts';
@@ -20,8 +21,8 @@ export function recordAdtBaseline(actor: Actor, config: Config, board: Obj) {
 }
 const versionSchema = z.object({ key: z.string(), version: z.number().int().nonnegative() });
 const boardSchema = z.looseObject({
-  patients: z.array(z.looseObject({ id: z.string(), admitted: z.boolean(), bed: z.number().nullable() })),
-  beds: z.array(z.looseObject({ id: z.number(), unit: z.string(), phase: z.string(), occupant: z.string().nullable() })),
+  patients: z.array(adtPatientSchema),
+  beds: z.array(z.looseObject({ id: z.number(), unit: z.string(), active: z.boolean().default(true), phase: z.string(), occupant: z.string().nullable() })),
 });
 const inputSchema = z.looseObject({ state: boardSchema, versions: z.array(versionSchema),
   expected: z.array(versionSchema), role: z.string(), command: z.record(z.string(), z.unknown()) });

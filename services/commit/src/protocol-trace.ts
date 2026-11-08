@@ -41,7 +41,8 @@ export class ProtocolTrace {
       expected: objs(input.expected).map((v: Obj) => ({ ...v, key: this.key(str(v.key)) })),
       command: Object.fromEntries(Object.entries(obj(input.command)).map(([action, value]) => {
         const operands = obj(value);
-        return [action, { ...operands, ...(operands.patient ? { patient: this.patient(str(operands.patient)) } : {}) }];
+        return [action, { ...operands, ...(operands.patient ? { patient: this.patient(str(operands.patient)) } : {}),
+          ...(operands.other ? { other: this.patient(str(operands.other)) } : {}) }];
       })) };
   }
   emit(step: string, data: Obj = {}) {

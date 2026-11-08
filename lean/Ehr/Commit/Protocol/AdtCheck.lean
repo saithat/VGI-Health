@@ -37,12 +37,17 @@ def board : Adt.State :=
 private def req (d : Durable) (id : String) (command : Adt.Command) : Request :=
   { id, payload := id, command, expected := versions d }
 
-private def commands : List Adt.Command :=
+private def commands (s : Adt.State) : List Adt.Command :=
   ["a", "b"].flatMap (fun p => [.discharge p] ++ [1,2].flatMap (fun b =>
     [.admit p b, .assign p b, .release p b] ++ [1,2].map (Adt.Command.transfer p b))) ++
-  [1,2].flatMap (fun b => [.clean b, .ready b])
+  [1,2].flatMap (fun b => [.clean b, .ready b]) ++
+  ["a", "b"].flatMap (fun p => ["a", "b"].flatMap fun q =>
+    [1,2].flatMap fun src => [1,2].map (Adt.Command.swap p q src)) ++
+  s.patients.flatMap (fun p =>
+    [p.revision, p.revision + 1].flatMap fun event =>
+      [.cancelAdmit p.id event, .cancelTransfer p.id event] ++ [1,2].map (Adt.Command.cancelDischarge p.id event))
 
-/-- All reachable two-patient/two-bed reducer boards, all commands and roles.
+/-- Two-patient/two-bed boards through three patient ADT events, all commands and roles.
 This complements transaction graphs whose fixed IDs bound the log size. -/
 private def boards : IO Unit := do
   let mut queue := #[board]
@@ -53,16 +58,16 @@ private def boards : IO Unit := do
     let s := (queue[cursor]?).getD board
     cursor := cursor + 1
     for role in [Adt.Role.bedManager, .chargeNurse, .admittingClerk] do
-      for command in commands do
+      for command in commands s do
         if let some a := Adt.commit { state := s, versions := [], expected := [], role, command } then
           edges := edges + 1
           unless Adt.valid a.state do throw <| IO.userError s!"ADT BOARD COUNTEREXAMPLE {reprStr s} {reprStr command}"
           let key := reprStr a.state
-          unless seen.contains key do
-            if queue.size >= 10000 then throw <| IO.userError "INCOMPLETE board graph"
+          unless seen.contains key || a.state.patients.any (fun p => p.revision > 3) do
+            if queue.size >= 100000 then throw <| IO.userError "INCOMPLETE board graph"
             seen := seen.insert key
             queue := queue.push a.state
-  IO.println s!"ADT reducer: exhausted {seen.size} boards, {edges} accepted edges; all 3 roles / 2 patients / 2 beds"
+  IO.println s!"ADT reducer: exhausted {seen.size} boards, {edges} accepted edges; all 3 roles / 2 patients / 2 beds / ≤3 patient ADT events (boundary successors validated)"
 
 private def controls : IO Unit := do
   let d := initial board
@@ -107,8 +112,32 @@ def bounded : IO Unit := do
   let both := (Adt.apply base (.admit "b" 2))
   let d := initial both
   explore "occupied-target opposite transfers" both [req d "X" (.transfer "a" 1 2), req d "Y" (.transfer "b" 2 1)]
+  let swap := req d "S" (.swap "a" "b" 1 2)
+  explore "swap vs discharge" both [swap, req d "D" (.discharge "a")]
+  explore "swap duplicate replicas" both [swap,swap]
+  explore "swap changed payload" both [swap,{ swap with payload := "changed", command := .swap "b" "a" 2 1 }]
+  explore "swap vs transfer" both [swap, req d "T" (.transfer "a" 1 2)]
+  let inactive := { both with beds := both.beds.map fun b => if b.id == 1 then { b with active := false } else b }
+  let inactiveD := initial inactive
+  explore "inactive bed swap refusal" inactive [req inactiveD "S" (.swap "a" "b" 1 2), req inactiveD "D" (.discharge "a")]
+  let inactiveEmpty := { board with beds := board.beds.map fun b => { b with active := false } }
+  explore "inactive bed admission refusal" inactiveEmpty [req (initial inactiveEmpty) "A" (.admit "a" 1)]
+  let cancelledAdmit := req d "C" (.cancelAdmit "a" 1)
+  explore "cancel admit vs swap" both [cancelledAdmit, swap]
+  explore "cancel admit vs discharge" both [cancelledAdmit, req d "D" (.discharge "a")]
+  let prepared := Adt.apply (Adt.apply (Adt.apply base (.transfer "a" 1 2)) (.clean 1)) (.ready 1)
+  let d := initial prepared
+  let cancel := req d "C" (.cancelTransfer "a" 2)
+  explore "cancel transfer vs origin reuse" prepared [cancel, req d "B" (.admit "b" 1)]
+  explore "cancel transfer vs new transfer" prepared [cancel, req d "T" (.transfer "a" 2 1)]
+  explore "cancel transfer vs discharge" prepared [cancel, req d "D" (.discharge "a")]
+  explore "cancel transfer duplicate replicas" prepared [cancel,cancel]
   let dirty := Adt.apply base (.discharge "a")
   let d := initial dirty
+  let cancel := req d "X" (.cancelDischarge "a" 2 2)
+  explore "cancel discharge vs chosen bed reuse" dirty [cancel, req d "B" (.admit "b" 2)]
+  explore "cancel discharge duplicate replicas" dirty [cancel,cancel]
+  explore "cancel admit duplicate replicas" base [req (initial base) "CA" (.cancelAdmit "a" 1), req (initial base) "CA" (.cancelAdmit "a" 1)]
   let clean := req d "C" (.clean 1)
   explore "clean then ready / successor vector" dirty [clean, req (publish d clean).1 "Y" (.ready 1)]
   explore "dirty bed admission refusal" dirty [req d "A" (.admit "b" 1), req d "C" (.clean 1)]

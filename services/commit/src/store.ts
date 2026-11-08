@@ -1,6 +1,6 @@
 import { Fault, clinicalPersona, digest, emptyShared, maybeObj, maybeObjs, num, obj, objs, required, sharedAction, sharedKey, str, type Actor, type Command, type Config, type Obj, type Patient, type Release, type Workflow } from './types.ts';
 import { protocolTrace, type ProtocolTrace } from './protocol-trace.ts';
-import { boardKeys, boardFrom, clinicalAction, projectAdt } from './clinical-adt.ts';
+import { boardKeys, boardFrom, clinicalAction, normalizeAdtStream, projectAdt } from './clinical-adt.ts';
 import { projectCommand, storedReviewReceipts } from './projection.ts';
 import { z } from 'zod';
 import pg, { type PoolClient } from 'pg';
@@ -253,7 +253,8 @@ export class Store {
     const fullBoardAccess = board && actor.adtRoles?.length && board.patients.every(p => actor.patients.includes(p)) &&
       board.beds.every(b => actor.units?.includes(b.unit));
     if (!fullBoardAccess) row.events = row.events.map((e: Obj) => !['adt', 'clinical-adt'].includes(str(obj(e.event).kind)) ? (obj(e.event).clinicalAdt ? { ...e, event: { ...obj(e.event), clinicalAdt: undefined, readVersions: { [`patient:${patient}`]: maybeObj(obj(e.event).readVersions)?.[`patient:${patient}`] } } } : e) : { ...e,
-      event: { kind: obj(e.event).kind, actor: obj(e.event).actor, requestId: obj(e.event).requestId, command: obj(obj(e.event).input).command,
+      event: { kind: obj(e.event).kind, actor: obj(e.event).actor, requestId: obj(e.event).requestId,
+        command: { action: Object.keys(obj(obj(obj(e.event).input).command))[0] },
         patient: objs(obj(obj(obj(e.event).accepted).state).patients).find((p: Obj) => p.id === patient) } });
     return row;
   }
@@ -433,7 +434,8 @@ export class Store {
       trace?.emit('plan', { patient: trace.key(`patient:${s.patient}`), keys: keys.map(k => trace.key(k)),
         sessionVersion: s.base_version, sessionRevision: s.revision });
       for (const k of keys) {
-        streams.set(k, await this.stream(c, k, true));
+        const stream = await this.stream(c, k, true);
+        streams.set(k, placement && boardKeys(this.config).includes(k) ? normalizeAdtStream(stream) : stream);
         trace?.emit('lock', { key: trace.key(k) });
       }
       const p = required(streams.get(`patient:${s.patient}`));
@@ -561,7 +563,8 @@ export class Store {
         if (k === key) snapshot = required(multi).state;
         if (clinicalAdt) snapshot = stream.kind === 'patient' ? { ...obj(snapshot),
           adt: objs(obj(clinicalAdt.state).patients).find((p: Obj) => `patient:${p.id}` === k),
-          bundle: projectAdt(obj(snapshot), required(objs(obj(clinicalAdt.state).patients).find((p: Obj) => `patient:${p.id}` === k)), this.config, transactionId, new Date().toISOString()) } : objs(obj(clinicalAdt.state).beds).find((b: Obj) => `bed:${b.id}` === k);
+          bundle: projectAdt(obj(snapshot), required(objs(obj(clinicalAdt.state).patients).find((p: Obj) => `patient:${p.id}` === k)), this.config, transactionId, new Date().toISOString(),
+            { ...(k === `patient:${s.patient}` ? { encounterId: str(s.context.encounterId) } : {}) }) } : objs(obj(clinicalAdt.state).beds).find((b: Obj) => `bed:${b.id}` === k);
         if (k !== `patient:${s.patient}` && digest(snapshot) === digest(stream.snapshot)) continue;
         const updated = await c.query('UPDATE commit_streams SET version=version+1,snapshot=$4 WHERE tenant=$1 AND key=$2 AND version=$3 RETURNING version',
           [t, k, stream.version, snapshot]);
