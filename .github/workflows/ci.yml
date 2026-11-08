@@ -52,6 +52,25 @@ jobs:
             /home/saithat/Projects/run-tmp/lean-build.log
           retention-days: 7
 
+  proof-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo mkdir -p "$TMPDIR" && sudo chown "$(id -u):$(id -g)" "$TMPDIR"
+      - uses: ./.github/actions/setup-lean
+      - name: Build default targets plus proof modules outside them
+        working-directory: lean
+        run: lake build && lake build $(cat ../scripts/proof-map/extra-modules.txt)
+      - name: Regenerate the proof map; reject disallowed axioms and a stale README map
+        run: scripts/proof-map/build.sh --check-readme "$RUNNER_TEMP/proof-map"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: proof-map
+          path: ${{ runner.temp }}/proof-map
+          retention-days: 30
+          if-no-files-found: error
+
   lint-typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -176,3 +195,30 @@ jobs:
           install -D -m 755 "$TMPDIR/ehr" lean/.lake/build/bin/ehr
       # Includes protocol.integration.test.ts; its JWT/JWKS server is local.
       - run: pnpm --filter @vgi/commit test:integration
+
+  # Publishes the proof map to GitHub Pages for each push to main. Off until the
+  # repository variable PROOF_MAP_PAGES is 'true' and Pages uses GitHub Actions.
+  proof-map-pages:
+    needs: proof-map
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.PROOF_MAP_PAGES == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: proof-map-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: proof-map
+          path: proof-map
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: proof-map
+      - id: deploy
+        uses: actions/deploy-pages@v4

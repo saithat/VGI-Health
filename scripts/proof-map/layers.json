@@ -1,0 +1,149 @@
+[
+  {
+    "id": "core",
+    "p": [
+      "Ehr.Core",
+      "Ehr.Basic"
+    ],
+    "name": "Rulebook & interpreter",
+    "cls": "spec",
+    "tier": 0,
+    "note": "The rulebook language, guards, alerts, navigation and the step interpreter. Every safety claim is stated in these terms."
+  },
+  {
+    "id": "props",
+    "p": [
+      "Ehr.Props"
+    ],
+    "name": "Safety properties",
+    "cls": "spec",
+    "tier": 0,
+    "note": "What the claims mean: receipts, waivers, alert tiers, reachability, the macro reference."
+  },
+  {
+    "id": "specs",
+    "p": [
+      "Ehr.Specs",
+      "Ehr.Formulary"
+    ],
+    "name": "Hospital rules & formulary",
+    "cls": "spec",
+    "tier": 0,
+    "note": "Rule catalogs for each release (law, regulator, hospital policy) and drug data."
+  },
+  {
+    "id": "proofs",
+    "p": [
+      "Ehr.Proofs",
+      "Solution"
+    ],
+    "name": "Clinical guarantees",
+    "cls": "guar",
+    "tier": 1,
+    "note": "Hard stop on signing, receipts, macros never act for a human, alert behaviour (T0–T6, A2, A4)."
+  },
+  {
+    "id": "check",
+    "p": [
+      "Ehr.Check"
+    ],
+    "name": "Program checker",
+    "cls": "guar",
+    "tier": 1,
+    "note": "The checker that admits agent-written programs and its soundness: acceptance implies the screen properties (accepted_*), plus completability."
+  },
+  {
+    "id": "render",
+    "p": [
+      "Ehr.Render"
+    ],
+    "name": "Screen renderer",
+    "cls": "guar",
+    "tier": 1,
+    "note": "The screen tree the painter draws, and D1–D6: banner, required content, honest buttons, modal alerts."
+  },
+  {
+    "id": "layout",
+    "p": [
+      "Ehr.Layout"
+    ],
+    "name": "UI library & geometry",
+    "cls": "guar",
+    "tier": 1,
+    "note": "Integer layout, layout rules G1–G9, structural certificates and the renderer-range theorem."
+  },
+  {
+    "id": "commit",
+    "p": [
+      "Ehr.Commit"
+    ],
+    "name": "Commit reducers",
+    "cls": "guar",
+    "tier": 1,
+    "note": "Medication administration and ADT reducers the commit service runs."
+  },
+  {
+    "id": "protocol",
+    "p": [
+      "Ehr.Commit.Protocol"
+    ],
+    "name": "Commit service protocol",
+    "cls": "guar",
+    "tier": 1,
+    "note": "Model of the live service: locking, retries, crashes, caches. Stated under Postgres assumptions."
+  },
+  {
+    "id": "multi",
+    "p": [
+      "Ehr.Multi"
+    ],
+    "name": "Multi-actor models",
+    "cls": "guar",
+    "tier": 1,
+    "note": "Shared beds, doses given at most once, critical results escalated."
+  },
+  {
+    "id": "sim",
+    "p": [
+      "Ehr.Sim"
+    ],
+    "name": "Clinician simulation",
+    "cls": "supp",
+    "tier": 2,
+    "note": "Simulated clinicians and effort measurement. Not a safety claim."
+  },
+  {
+    "id": "sem",
+    "p": [
+      "Ehr.Sem"
+    ],
+    "name": "Research semantics",
+    "cls": "supp",
+    "tier": 2,
+    "note": "Exploratory boards and timelines outside the clinical runtime."
+  },
+  {
+    "id": "canon",
+    "p": [
+      "Ehr.Canonical",
+      "Ehr.Examples"
+    ],
+    "name": "Programs & fixtures",
+    "cls": "supp",
+    "tier": 2,
+    "note": "Canonical programs and deliberately bad programs used as tests."
+  },
+  {
+    "id": "plumb",
+    "p": [
+      "Ehr.Cli",
+      "Ehr.Api",
+      "Ehr.Tools",
+      "Ehr.JsonCompat"
+    ],
+    "name": "Plumbing",
+    "cls": "supp",
+    "tier": 2,
+    "note": "Command line, JSON and tooling."
+  }
+]
