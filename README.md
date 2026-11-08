@@ -1835,6 +1835,14 @@ movement/correction categories; [FHIR R4 Encounter](https://hl7.org/fhir/R4/enco
 distinguishes encounter lifecycle and location history. Neither source calibrates
 these frequencies or approves this local cancellation policy.
 
+The sidecar starts with 12 beds per service. When an admission has no ready
+bed but the service has an empty dirty bed, an explicit native clean/ready
+sequence precedes reuse, retaining the 30-minute cleaning delay. An actually
+occupied service still refuses capacity exhaustion. Turnover can delay the
+administrative event clock; clinical schedules are unchanged. The regression
+fills a service, replaces a discharged patient after cleaning and separately
+checks refusal when every bed remains occupied.
+
 Administrative operator events and separate delayed transport completion/
 supersession records are seed-deterministic; transports are not placement
 authority. The sidecar does not change frozen clinical random streams, tasks,

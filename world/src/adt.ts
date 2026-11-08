@@ -88,7 +88,7 @@ export async function simulateAdt(run: WorldRun, authority: Authority, rates = A
     if (state.beds.find(b => b.id === bed)?.phase === 'dirty') await step(day,minute,source,{clean:{bed}});
     if (state.beds.find(b => b.id === bed)?.phase === 'cleaning') await step(day,minute+30,source,{ready:{bed}});
   };
-  const freeBed = (unit: string) => state.beds.find(b => b.unit === unit && b.phase === 'ready' && b.occupant === null)?.id;
+  const freeBed = (unit: string) => state.beds.find(b => b.unit === unit && b.active && b.phase === 'ready' && b.occupant === null)?.id;
   const current = (id: string) => {
     const p = state.patients.find(p => p.id === id);
     if (!p) throw new Error(`unknown ADT patient ${id}`);
@@ -118,7 +118,17 @@ export async function simulateAdt(run: WorldRun, authority: Authority, rates = A
       }
       const patient = job.patient;
       if (job.kind === 'admit') {
-        const bed = freeBed(job.unit);
+        let bed = freeBed(job.unit);
+        if (bed === undefined) {
+          // Dirty capacity is not occupied capacity. Wait for explicit native
+          // turnover instead of aborting a later admission or bypassing hygiene.
+          const turnover = state.beds.find(b => b.unit === job.unit && b.active &&
+            b.occupant === null && (b.phase === 'dirty' || b.phase === 'cleaning'));
+          if (turnover) {
+            await ready(day, job.minute, turnover.id, 'admission-turnover');
+            bed = freeBed(job.unit);
+          }
+        }
         if (bed === undefined) throw new Error('simulated ADT capacity exhausted');
         await at({admit:{patient,bed}});
         if (r.chance(rates.erroneousAdmission)) {
