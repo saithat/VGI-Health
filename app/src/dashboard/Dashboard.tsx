@@ -1,3 +1,4 @@
+import { WorkloadClock } from "./WorkloadClock";
 import { watchRun, isRunning } from "./run-refresh";
 import { releaseLabel } from "../../../scripts/historical-releases.mjs";
 import { RuleConformanceBadge } from "./RuleConformance";
@@ -1635,6 +1636,7 @@ export function Dashboard({
                   run={run}
                   persona={persona}
                 />
+                <WorkloadClock run={run} persona={persona} />
                 <VersionList run={run} persona={persona} open={open} />
                 {run.files?.includes("trajectories/index.json") && (
                   <p className="trajectory-compare-entry">

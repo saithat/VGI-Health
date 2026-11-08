@@ -9,11 +9,11 @@ import {
   dayScheduleSchema,
   personaParamsSchema,
   programSchema,
-} from "./schema.js";
+} from "../../app/src/dashboard/measurement-schema.js";
 import { frictionFlagSchema } from "./session-schema.js";
 import { answerSession, prepareSession, recordSession } from "./session.js";
 import { boundedSessionChooser } from "./bounded-tailoring.js";
-import { userMemorySchema } from "./schema.js";
+import { userMemorySchema } from "../../app/src/dashboard/measurement-schema.js";
 import { seededSessionChooser } from "./session-simulator.js";
 const inputSchema = z.object({
   id: z.string(),

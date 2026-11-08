@@ -16,6 +16,7 @@ import { personaParams } from "./personas";
 import { DayScheduleSchema, PERSONAS } from "./schema";
 import { dayFacts, dayTable } from "./summary";
 import { withInformationData } from "./information-needs";
+import { withTiming } from "./timing/arrivals";
 import { generateWorld } from "./world";
 import { nativeAdt, simulateAdt } from "./adt";
 
@@ -63,6 +64,8 @@ async function main(): Promise<void> {
 
   const informationNeeds = arg(args, "information-needs") ?? "off";
   if (!["off", "v1"].includes(informationNeeds)) throw new Error("--information-needs must be off or v1");
+  const clockMode = arg(args, "clock-mode") ?? "continuous";
+  if (!["continuous", "legacy"].includes(clockMode)) throw new Error("--clock-mode must be continuous or legacy");
   const pop = loadPopulation(fixtures);
   const run = generateWorld(seed, days, pop.patients);
   const adt = arg(args, "adt") ?? "realistic";
@@ -96,18 +99,21 @@ async function main(): Promise<void> {
     write(`state-day-${d.state.day}.json`, d.state);
     files.push(`state-day-${d.state.day}.json`);
     for (const p of PERSONAS) {
-      const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...d.schedules[p], tasks: d.schedules[p].tasks.map(withInformationData)} : d.schedules[p]);
+      const schedule = clockMode === "legacy" ? {...d.schedules[p], clockMode: "legacy" as const}
+        : withTiming(d.schedules[p], d.state);
+      const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...schedule, tasks: schedule.tasks.map(withInformationData)} : schedule);
       if (!parsed.success) throw new Error(`day ${d.state.day} ${p}: schedule fails the schema: ${parsed.error.message}`);
       const name = `day-${d.state.day}-${p}.json`;
-      write(name, informationNeeds === "v1" ? parsed.data : d.schedules[p]);
+      write(name, parsed.data);
       files.push(name);
       const agentName = `schedules/day-${String(d.state.day).padStart(2, "0")}/${p}.json`;
-      write(agentName, informationNeeds === "v1" ? parsed.data : d.schedules[p]);
+      write(agentName, parsed.data);
       files.push(agentName);
     }
   }
   write("manifest.json", {
     generator: GENERATOR,
+    workloadProtocol: clockMode === "legacy" ? "task-local-legacy" : "continuous-workload-v1",
     ...(adt === "realistic" ? {adtProtocol: "adt-realism-v1"} : {}),
     ...(informationNeeds === "v1" ? {informationProtocol: "information-needs-v1"} : {}),
     seed,

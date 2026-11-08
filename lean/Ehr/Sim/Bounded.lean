@@ -558,8 +558,26 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
   let mut observations := []
   let mut assistance := []
   let mut receipts : List (String × List Receipt) := []
-  for task in schedule.tasks do
-    let raw := factsFor task
+  let legacy := schedule.clockMode? == some "legacy"
+  let windows := Scheduling.shifts schedule
+  let mut clock := 0
+  let mut pending := schedule.tasks
+  let mut timings := []
+  for _ in schedule.tasks do
+    let next := if legacy then pending.head?.map (fun t => (t, pending.tail))
+      else Scheduling.dispatchIn windows clock pending
+    let some (source, rest) := next | do
+      for t in pending do
+        timings := timings ++ [Scheduling.carry windows clock t]
+        day := { day with tasks := day.tasks ++ [emptyMetrics t.id] }
+      pending := []
+      break
+    pending := rest
+    let placement := Scheduling.slot windows clock source
+    let start := if legacy then source.startMin * 60000 else (placement.map (·.2)).getD clock
+    let offset := if legacy then 0 else start % 60000
+    let task := if legacy then source else { source with startMin := start / 60000 }
+    let raw := factsFor source
     let raw := if Workspace.enabled prog && raw.patientDirectory?.isNone then
       { raw with
         sourcePatientId? := some task.patientId,
@@ -581,7 +599,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
         rng,
         interruptions := positions,
         actionIndex := 0,
-        elapsedMs := 0,
+        elapsedMs := offset,
         lastDevice := none
       },
       memory,
@@ -641,11 +659,17 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
     day := { day with
       trace := day.trace ++ r.episode.trace,
       tasks := day.tasks ++ [{ metrics task.id r.episode.trace complete with
-        klmDeciSec := r.episode.elapsedMs / 100,
-        wallTimeMinutes? := some ((r.episode.elapsedMs + 59999) / 60000)
+        klmDeciSec := (r.episode.elapsedMs - offset) / 100,
+        wallTimeMinutes? := some ((r.episode.elapsedMs - offset + 59999) / 60000)
       }],
       complaints := (day.complaints ++ r.episode.complaints).eraseDups
     }
+    if !legacy then
+      let duration := r.episode.elapsedMs - offset
+      clock := start + duration
+      if let some (w, _) := placement then
+        timings := timings ++ [Scheduling.timing windows source w start duration complete]
+  if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   let expertTravel := expert.tasks.map fun t =>
     (t.task, traceTravel prog (expert.trace.filter (·.task == t.task)))
   let gaps := day.tasks.map fun t =>

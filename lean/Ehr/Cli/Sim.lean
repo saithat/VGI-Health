@@ -266,13 +266,20 @@ def informationMinimum (sp : Spec) (prog : Program) (schedule : DaySchedule)
     ("searchModel", .str "per-episode staged catalog-order lookups then navigationDirected actions; fixed clock; no Back; reads cost zero activations; scroll/mental effort separate; not a joint episode minimum"),
     ("tasks", toJson tasks)]
 
+/-- Export complete unserved source tasks, never reconstruct clinical choices from metrics.
+The recipient supplies successor coverage in the same time origin. -/
+def writeCarry (path? : Option String) (schedule : DaySchedule) (day : DayResult) : IO Unit := do
+  if let some path := path? then
+    let ids := (day.workload?.map (·.pending)).getD []
+    IO.FS.writeFile path (encodeJson { schedule with tasks := schedule.tasks.filter (fun t => ids.contains t.id) })
+
 /-- Shared command boundary, with errors on stderr and nonzero exit. -/
 def command (mode : String) (args : List String) : IO UInt32 := do
   try
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -282,6 +289,10 @@ def command (mode : String) (args : List String) : IO UInt32 := do
         let task ← readAs Task path
         pure { day := task.day, persona := task.persona, load := "normal", tasks := [task] : DaySchedule }
       | none => readAs DaySchedule (← required fs "--schedule")
+    let clockMode := (fs.lookup "--clock-mode").getD (schedule.clockMode?.getD "continuous")
+    if !["continuous", "legacy"].contains clockMode then
+      throw (IO.userError "--clock-mode must be continuous or legacy")
+    let schedule := if clockMode == "legacy" then { schedule with clockMode? := some "legacy" } else { schedule with clockMode? := none }
     if (fs.lookup "--task").isSome then
       if (fs.lookup "--schedule").isSome then throw (IO.userError "use --task or --schedule")
     if (schedule.tasks.map (·.id)).eraseDups.length != schedule.tasks.length then
@@ -314,6 +325,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
           throw (IO.userError "layout memory belongs to a different actor")
         let result := Bounded.simulate sp prog params schedule factsFor seed memory Bounded.lexicalScent Discovery.helpDesk information
         if let some path := fs.lookup "--memory-out" then IO.FS.writeFile path (encodeJson result.memory)
+        writeCarry (fs.lookup "--carry-out") schedule result.toDayResult
         let json := if information.isSome then
           (toJson result).setObjVal! "informationProtocol" (.str "information-needs-v1") else toJson result
         IO.println json.compress
@@ -321,9 +333,13 @@ def command (mode : String) (args : List String) : IO UInt32 := do
         if (fs.lookup "--memory-in").isSome || (fs.lookup "--memory-out").isSome then
           throw (IO.userError "layout memory requires --policy bounded")
         match information with
-        | none => IO.println (encodeJson (simulate sp prog params schedule factsFor seed))
+        | none =>
+          let day := simulate sp prog params schedule factsFor seed
+          writeCarry (fs.lookup "--carry-out") schedule day
+          IO.println (encodeJson day)
         | some _ =>
           let (day, lookups) := simulateWithInformation sp prog params schedule factsFor seed information
+          writeCarry (fs.lookup "--carry-out") schedule day
           let json := (toJson day).setObjVal! "informationProtocol" (.str "information-needs-v1")
             |>.setObjVal! "information" (toJson (lookups.map lookupJson))
           IO.println json.compress

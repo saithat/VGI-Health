@@ -145,7 +145,7 @@ export async function indexTrajectories({ root = defaultRoot, runDirectory, cont
           const trajectory = {
             schemaVersion: 1, id: task.id,
             context: { programPath: relative(progPath), specPath: relative(spPath), user: { id: prog.owner, role: prog.role },
-              startMin: task.startMin, today: dateOf(task.day), fixtureFile: relative(path.join(path.dirname(fixtureIndexPath), fixture.file)), resources: extras,
+              startMin: Math.floor((recorded.workload?.timings.find(t=>t.task===task.id)?.startMs ?? task.startMin*60000)/60000), today: dateOf(task.day), fixtureFile: relative(path.join(path.dirname(fixtureIndexPath), fixture.file)), resources: extras,
               segments: context.segments.map(({ initialState,clinicalInit, ...segment }) => ({ ...segment, seed: { kind: 'init', clock: initialState.clock,...(clinicalInit?{clinical:true}:{}) } })),
             }, trace, nativeMismatch: context.nativeMismatch,
           };

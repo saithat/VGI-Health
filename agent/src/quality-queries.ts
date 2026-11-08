@@ -10,7 +10,7 @@ import type { NightInput } from './night.js';
 import { isMeasurementDay } from './protocol.js';
 import type { PromptParts } from './prompts.js';
 import { contextSchema, type QualityContext } from './quality-context.js';
-import { dayResultSchema } from './schema.js';
+import { dayResultSchema } from '../../app/src/dashboard/measurement-schema.js';
 
 export interface QueryBundle { files:Record<string,string> }
 export const QUERY_GUIDE = `## Read-only training queries (arm C, offline only)

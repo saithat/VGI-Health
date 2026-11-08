@@ -1,3 +1,4 @@
+import { ArrivalSchema, ShiftSchema } from "./timing/schema";
 /**
  * zod schemas for the simulation formats the world generator emits.
  *
@@ -121,6 +122,7 @@ export const TaskSchema = z.strictObject({
   workflow: WorkflowSchema,
   patientId: z.string().min(1),
   startMin: Nat,
+  timing: ArrivalSchema.exactOptional(),
   choices: TaskChoicesSchema,
   todayResources: z.array(JsonSchema),
   interruptions: Nat,
@@ -137,6 +139,8 @@ export const DayScheduleSchema = z.strictObject({
   persona: PersonaSchema,
   load: LoadSchema,
   tasks: z.array(TaskSchema),
+  clockMode: z.enum(["continuous", "legacy"]).exactOptional(),
+  shifts: z.array(ShiftSchema).exactOptional(),
 });
 export type DaySchedule = z.infer<typeof DayScheduleSchema>;
 

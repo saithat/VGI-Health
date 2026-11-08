@@ -4,6 +4,82 @@
 // The types mirror Lean's derived JSON encoding exactly.
 /* eslint-disable */
 
+export interface Arrival {
+  arrivalMs: number;
+  readyMs: number;
+  /**
+   * Smaller values have higher priority; zero is urgent.
+   */
+  priority: number;
+  deadlineMs?: number;
+  /**
+   * Result availability; response is measured to task completion.
+   */
+  resultAvailableMs?: number;
+  /**
+   * Age before the nonnegative schedule origin (e.g. inbox backlog).
+   */
+  resultAgeMs: number;
+  /**
+   * Distinct occurrence keys and their MAR window ends.
+   */
+  doseWindows: [string, number][];
+}
+
+export interface Shift {
+  id: string;
+  startMs: number;
+  endMs: number;
+}
+
+/**
+ * Optional suspend/resume boundary for a cooperating policy. The scheduler
+ * never synthesizes suspended work or grants clinical completion.
+ */
+export interface Suspension {
+  suspendedMs: number;
+  resumedMs: number;
+  reason: string;
+}
+
+export interface Timing {
+  task: string;
+  arrival: Arrival;
+  startMs?: number;
+  finishMs?: number;
+  shift?: string;
+  suspensions: Suspension[];
+  queueDelayMs: number;
+  overtimeMs: number;
+  /**
+   * Number of shift ends crossed while waiting, including the final horizon.
+   */
+  handovers: number;
+  overdueDoses: string[];
+  resultResponseMs?: number;
+  /**
+   * finished | carried | abandoned; abandonment requires a reason.
+   */
+  disposition: string;
+  reason?: string;
+}
+
+export interface WorkloadReport {
+  protocol: string;
+  shifts: Shift[];
+  timings: Timing[];
+  /**
+   * Full source tasks remain in the input schedule, indexed by these IDs.
+   */
+  pending: string[];
+  queueDelayMs: number;
+  overdueScheduledDoses: number;
+  resultResponseMs: number;
+  resultsResponded: number;
+  overtimeMs: number;
+  tasksCarriedOver: number;
+}
+
 export interface Result {
   id: string;
   patient: string;
@@ -1671,6 +1747,7 @@ export interface DayResult {
    * Prompts a receipt could not satisfy, with reasons.
    */
   complaints: string[];
+  workload?: WorkloadReport;
 }
 
 /**
@@ -1721,6 +1798,7 @@ export interface Task {
    */
   todayResources: unknown[];
   interruptions: number;
+  timing?: Arrival;
 }
 
 /**
@@ -1734,6 +1812,11 @@ export interface DaySchedule {
    */
   load: string;
   tasks: Task[];
+  /**
+   * Omitted selects continuous; legacy retains archived task-local clocks.
+   */
+  clockMode?: string;
+  shifts?: Shift[];
 }
 
 /**

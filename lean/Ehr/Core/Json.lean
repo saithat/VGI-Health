@@ -85,6 +85,7 @@ structure Task where
   /-- Synthetic FHIR resources for today (e.g. a triage weight in lb). -/
   todayResources : List Lean.Json := []
   interruptions : Nat := 0
+  timing? : Option Sim.Scheduling.Arrival := none
   deriving BEq, Inhabited, Lean.ToJson, Lean.FromJson
 
 /-- One persona's schedule for one day. -/
@@ -94,6 +95,9 @@ structure DaySchedule where
   /-- `"quiet"` | `"normal"` | `"busy"`. -/
   load : String
   tasks : List Task
+  /-- Omitted selects continuous; legacy retains archived task-local clocks. -/
+  clockMode? : Option String := none
+  shifts? : Option (List Sim.Scheduling.Shift) := none
   deriving BEq, Inhabited, Lean.ToJson, Lean.FromJson
 
 /-- `true` when `x` survives a JSON round trip (to a string and back). -/

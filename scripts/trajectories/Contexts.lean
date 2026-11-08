@@ -15,7 +15,10 @@ def main (args : List String) : IO UInt32 := do
   let user : User := { id := prog.owner, role := prog.role }
   let mut receipts : List (String × List Receipt) := []
   let mut tasks : List Json := []
-  for task in schedule.tasks do
+  let ordered := day.tasks.filterMap fun row => schedule.tasks.find? (·.id == row.task)
+  for task in ordered do
+    let startMs := (day.workload?.bind fun w => (w.timings.find? (·.task == task.id)).bind (·.startMs?)).getD (task.startMin * 60000)
+    let task := { task with startMin := startMs / 60000 }
     let raw := (rawFacts.lookup task.id).getD default
     let facts := { raw with
       now := task.startMin
@@ -23,7 +26,7 @@ def main (args : List String) : IO UInt32 := do
     let eps := taskEpisodes facts task
     let trace := day.trace.filter (·.task == task.id)
     let mut remaining := trace
-    let mut state : State := default
+    let mut state : State := { (default : State) with clock := startMs % 60000 / 100 }
     let mut segments : List Json := []
     let mut offset := 0
     let mut divergence : Option Json := none

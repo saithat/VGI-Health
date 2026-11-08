@@ -8,7 +8,7 @@ import { dryFixture } from './dry-fixture.js';
 import { createEhr } from './ehr.js';
 import { geometryProgramHash,type GeometryProvider } from './geometry.js';
 import { runDays } from './run.js';
-import { programSchema,dayScheduleSchema,personaParamsSchema } from './schema.js';
+import { programSchema,dayScheduleSchema,personaParamsSchema } from '../../app/src/dashboard/measurement-schema.js';
 import { REPO_ROOT,writeJson } from './util.js';
 import { existsSync } from 'node:fs';
 export async function prepareDeterminismFixture(root:string):Promise<void>{

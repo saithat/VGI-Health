@@ -2535,7 +2535,8 @@ sentinel now maps to refused. Other historical holds remain held.
 medications are insulin, systemic formulary antibiotics and anticoagulants. Their
 late window is 30 minutes; other daily doses use 120 minutes and other scheduled
 doses 60 minutes, capped at 18:59 for expiry documentation by shift end.
-Cross-shift dose ownership is outside this model. One re-offer is attempted after
+Clinical acceptance of cross-shift dose ownership remains outside the outcome
+model; the workload queue can carry its unchanged source tasks. One re-offer is attempted after
 20/45 minutes respectively, or later when an off-unit patient returns, only within the window and before
 discharge, with the original regimen order still active. No catch-up administration
 is generated after expiry. A second refusal
@@ -2635,6 +2636,89 @@ Lean source and canonical MAR label, then remeasure/replay preserved inputs; a
 frozen run does not acquire new outcome scenarios by re-certification alone.
 MAR history and board display changes require matching app certificate bindings.
 
+## Continuous workload clock
+
+New native expert and bounded simulations default to `continuous-workload-v1`.
+`lean/Ehr/Sim/Scheduling/` owns the shared queue and shift model; the policy hooks
+retain the clinical interpreter and per-task random streams. `startMin` remains
+the source task's planned ready time for archived schedules. Optional task
+`timing` records arrival, ready, priority, deadline, result availability and MAR
+occurrence/window pairs in milliseconds from the first shift's start. Without
+that metadata, arrival and ready both equal `startMin`; no urgency is inferred.
+The world CLI defaults to source-based timing metadata; `--clock-mode legacy`
+selects task-local clocks in either the world CLI or `ehr simulate` and reproduces
+the previous scheduling semantics. A schedule's `clockMode` can also select it.
+
+The clock advances to max(previous finish, arrival, ready, shift start). Among
+ready tasks it orders by ascending priority (urgent zero), deadline (finite before
+absent), then arrival, retaining source order on ties. It reevaluates the queue
+when an off-duty gap ends. Urgent work takes precedence at task boundaries;
+active tasks finish without scheduler preemption. The clock uses milliseconds;
+clinical `Facts.now` plus the episode clock retain the subminute offset and trace
+timestamps remain deciseconds. `workload.timings` records actual start/finish,
+coverage ID, disposition and optional suspend/resume intervals for the interruptions
+lane. The scheduler itself introduces no suspended clinical actions.
+
+Shift intervals can be supplied as `shifts` in a schedule. The default uses the
+existing persona tour lengths, 15-minute ED/ward overlaps and successor coverage;
+clinic successors skip weekends. There is one serial server per persona even in
+an overlap. Active work beyond its assigned shift counts as overtime; queued work
+crossing a shift end is handed over to successor coverage. Each task is completed,
+explicitly abandoned with a reason when its policy cannot complete the clinical
+goals, or retained as carried work at the coverage horizon. Carried tasks also
+receive incomplete effort rows so denominators retain every source task.
+`ehr simulate --carry-out FILE` exports full unserved source tasks as a schedule;
+recipient coverage must use the same time origin and replace the exhausted shifts.
+This is simulator queue ownership, not the live clinical handoff acceptance protocol.
+
+World timing projection (`world/src/timing/`) uses existing ED arrival clocks and
+acuity, clinic slots, inbox resources/backlog and medication passes. Exogenous
+source tasks and arrival metadata have no UI or policy input: comparison arms
+receive the same world seed and schedule, while their actual starts and outcomes
+can differ. Successor coverage continues through nights and weekends for hospital
+work. The current world generates weekday daytime clinical cases; this change does
+not fabricate independent night/weekend cases or claim calibrated 24-hour demand.
+World clinical state remains exogenous rather than being altered by a faster arm.
+
+`DayResult.workload` adds total queue delay (start minus max(arrival, ready)),
+distinct overdue MAR occurrence count, completed-result response time (availability
+to documentation finish, including source backlog age before the schedule origin),
+active overtime and tasks handed over. Per-task timing
+and pending source IDs are retained. A dose is overdue when task documentation
+finishes after its existing MAR window, or that window has passed at the final
+coverage horizon. This conservative documentation proxy includes held/refused
+outcomes; it does not claim measured bedside administration time. Dashboard and
+measurement reports expose these values separately from physical effort. Legacy
+recordings without this envelope show timing as unavailable. Simulator-only schemas
+live under `app/src/dashboard/measurement-schema.ts` so source timing survives
+agent load/store parsing without editing the clinical wire schema. Trajectory
+extraction follows recorded dispatch order and seeds the actual subminute start.
+
+**Simulation assumptions for owner review:** one serial clinician/coverage chain;
+nonpreemptive tasks; a 15-minute hospital overlap; finite successor coverage
+(without merging the following day’s new arrivals);
+clinic weekend closure; ESI queue deadlines of 10/30/60 minutes for ESI ≤2/3/≥4;
+result response ends at full task documentation; MAR lateness uses documentation
+finish and the existing provisional windows. Missing historical arrival metadata
+uses planned readiness. Source worlds do not yet supply independent night/weekend
+arrivals, and pending exports need explicit recipient coverage. These assumptions
+are neither clinical policy nor fitted behavior.
+
+Kernel lemmas cover `start_bounds`, `clock_monotone`, `erase_conservation`,
+`timing_accounted` and `exogenous_arm_independent`. The full queue/coverage loop
+and its output partition are executable bounded checks, not a general liveness or
+fair-service proof. No clinical theorem statement or rule is changed. Headline
+clinical claims and their proof map structure are unchanged.
+
+The default changes measurements. The merge must regenerate successor world timing
+schedules, `core-10day` actual/canonical/no-agent/training day measurements, timing
+summaries, trajectories and same-task controls using matched clock modes. Archived
+worlds and measurements remain immutable and require explicit legacy mode for a
+historical rerun. Native/WASM source bindings need rebuilding after Lean changes;
+this lane does not re-certify recordings or run browser audits.
+The [workload verification receipt](docs/audits/workload-clock-20261108.md) records
+the bounded-check scope, source coverage limits and exact verification commands.
+
 ## Bounded clinician simulation
 
 `Ehr.Sim.Policy.simulate` retains its JSON envelope. Administration decisions and
@@ -2693,7 +2777,7 @@ the existing guarded interpreter. There are no new clinical rules or proof
 assumptions.
 
 Bounded results retain the original `tasks`, `trace`, `floor` and `complaints`.
-`expert` contains an independent unchanged BFS-policy run on the same inputs and
+`expert` contains an independent BFS-policy run with the same clock mode, inputs and
 seed: the expert comparison, not a newly proved minimum (persona noise can make
 its cost exceed the bounded run). `floor` remains the ideal-interface clinical
 floor. `effort` adds per-task misses, visual searches, scanned items, backtracks,

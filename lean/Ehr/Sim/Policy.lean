@@ -1,6 +1,7 @@
 import Ehr.Core.Workspace
 import Ehr.Sim.Interaction
 import Ehr.Sim.TaskContext
+import Ehr.Sim.Scheduling.Clock
 
 /-!
 Deterministic persona policy. Clinical goals are fixed outside the UI. Each
@@ -383,8 +384,26 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
   let mut day : DayResult := {
     day := schedule.day, persona := params.id,
     programVersion := prog.version, trace := [], tasks := [], floor := [], complaints := [] }
-  for task in schedule.tasks do
-    let raw := factsFor task
+  let legacy := schedule.clockMode? == some "legacy"
+  let windows := Scheduling.shifts schedule
+  let mut clock := 0
+  let mut pending := schedule.tasks
+  let mut timings := []
+  for _ in schedule.tasks do
+    let next := if legacy then pending.head?.map (fun t => (t, pending.tail))
+      else Scheduling.dispatchIn windows clock pending
+    let some (source, rest) := next | do
+      for t in pending do
+        timings := timings ++ [Scheduling.carry windows clock t]
+        day := { day with tasks := day.tasks ++ [emptyMetrics t.id], floor := day.floor ++ [emptyMetrics t.id] }
+      pending := []
+      break
+    pending := rest
+    let placement := Scheduling.slot windows clock source
+    let start := if legacy then source.startMin * 60000 else (placement.map (·.2)).getD clock
+    let offset := if legacy then 0 else start % 60000
+    let task := if legacy then source else { source with startMin := start / 60000 }
+    let raw := factsFor source
     let raw := if Workspace.enabled prog && raw.patientDirectory?.isNone then
       { raw with
         sourcePatientId? := some task.patientId
@@ -402,7 +421,7 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions nActions
     let mut r : EpisodeResult := {
       state := default, trace := [], complaints := [], rng,
-      interruptions := positions, actionIndex := 0, elapsedMs := 0, lastDevice := none }
+      interruptions := positions, actionIndex := 0, elapsedMs := offset, lastDevice := none }
     let mut complete := !eps.isEmpty
     let mut floor := { emptyMetrics task.id with completed := true }
     for ((ep, g), idx) in (eps.zip goals).zipIdx do
@@ -422,12 +441,18 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
     day := { day with
       trace := day.trace ++ r.trace
       tasks := day.tasks ++ [{ metrics task.id r.trace complete with
-        wallTimeMinutes? := some ((r.elapsedMs + 59999) / 60000) }]
+        wallTimeMinutes? := some ((r.elapsedMs - offset + 59999) / 60000) }]
       floor := day.floor ++ [floor]
       complaints := (day.complaints ++ r.complaints).eraseDups }
+    if !legacy then
+      let duration := r.elapsedMs - offset
+      clock := start + duration
+      if let some (w, _) := placement then
+        timings := timings ++ [Scheduling.timing windows source w start duration complete]
+  if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   return (day, lookups)
 
-/-- Historical protocol: byte-for-byte outputs are retained when no needs are requested. -/
+/-- Expert entry point; explicit legacy clock mode retains task-local timing. -/
 def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : DaySchedule)
     (factsFor : Task → Facts) (seed : Nat) : DayResult :=
   (simulateWithInformation sp prog params schedule factsFor seed).1

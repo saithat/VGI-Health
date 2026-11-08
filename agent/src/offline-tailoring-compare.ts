@@ -7,7 +7,7 @@ import { parseArgs } from 'node:util';
 import { runDays } from './run.js';
 import { CADENCE_PROTOCOL } from './cadence.js';
 import { generatorOnlyBackend } from './generator-only.js';
-import { dayResultSchema, dayScheduleSchema, programSchema, decisionRecordSchema, personaParamsSchema, type DayResult } from './schema.js';
+import { dayResultSchema, dayScheduleSchema, programSchema, decisionRecordSchema, personaParamsSchema, type DayResult } from '../../app/src/dashboard/measurement-schema.js';
 import { effortCost } from './bounded-tailoring.js';
 import { pastSessions } from './session-gate.js';
 import { RunStore } from './store.js';

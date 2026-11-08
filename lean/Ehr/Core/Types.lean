@@ -1,4 +1,5 @@
 import Ehr.Multi.Critical
+import Ehr.Sim.Scheduling.Types
 
 /-!
 Core data formats: hospital rules, UI programs, patient facts, state and events.
@@ -1201,6 +1202,7 @@ structure DayResult where
   floor : List TaskMetrics
   /-- Prompts a receipt could not satisfy, with reasons. -/
   complaints : List String
+  workload? : Option Sim.Scheduling.WorkloadReport := none
   deriving DecidableEq, Repr, Inhabited
 
 /-! ## Checker formats (section 8) -/

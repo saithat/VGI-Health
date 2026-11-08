@@ -10,7 +10,7 @@ import { addMetrics, pairedMetrics, sumMetrics, saving } from './observe.js';
 import { personalize } from './program.js';
 import { recordingEhr } from './recording-ehr.js';
 import { loadRelease, releaseForPersona } from './releases.js';
-import { dayResultSchema, type DecisionRecord } from './schema.js';
+import { dayResultSchema, type DecisionRecord } from '../../app/src/dashboard/measurement-schema.js';
 import { RunStore } from './store.js';
 import { pad2, readJson, resolveUserPath, writeJson } from './util.js';
 import { loadWorld } from './world.js';
@@ -39,6 +39,7 @@ for (const persona of manifest.personas) {
   if (!params) throw new Error(`Missing persona ${persona}`);
   let before = sumMetrics([]), after = sumMetrics([]);
   let noAgentBefore=sumMetrics([]),noAgentAfter=sumMetrics([]),noAgentDays=0;
+  const workload: {day:number; actual: unknown; canonical: unknown; noAgent: unknown}[] = [];
   const samples:{day:number;tasks:number;completed:number}[]=[];
   const incomplete: { day: number; task: string }[] = [];
   const decisions: DecisionRecord[] = [];
@@ -58,10 +59,13 @@ for (const persona of manifest.personas) {
     const baselineFile = path.join(directory,'baselines',`day-${pad2(day)}`,`${persona}.json`);
     const baseline = existsSync(baselineFile) ? await readJson(baselineFile,dayResultSchema) : await ehr.simulate({ specVersion: program.specVersion, program: baselineProgram, persona: params, schedule, worldDir: world.dir, seed: daySeed(world.manifest.seed, day) });
     const controlFile=path.join(directory,'no-agent/days',`day-${pad2(day)}`,`${persona}.json`);
+    let controlWorkload: unknown = null;
     if(existsSync(controlFile)){
       const control=await readJson(controlFile,dayResultSchema), pair=pairedMetrics(control,actual);
+      controlWorkload=control.workload??null;
       noAgentBefore=addMetrics(noAgentBefore,pair.before);noAgentAfter=addMetrics(noAgentAfter,pair.after);noAgentDays++;
     }else if(manifest.noAgentRequired)throw new Error(`Missing no-agent control ${persona}/${day}`);
+    workload.push({day,actual:actual.workload??null,canonical:baseline.workload??null,noAgent:controlWorkload});
     samples.push({day,tasks:actual.tasks.length,completed:actual.tasks.filter(t=>t.completed).length});
     const pair = pairedMetrics(baseline,actual);
     before = addMetrics(before, pair.before);
@@ -77,7 +81,7 @@ for (const persona of manifest.personas) {
     invalidPatches: decisions.flatMap((d)=>d.candidates).filter((c)=>c.check.status==='invalid-patch').length,
     infrastructureErrors:decisions.filter(d=>['error','infrastructure-error'].includes(d.outcome)||d.flags.some(f=>f.startsWith('infrastructure-error'))).length,
     screenInfrastructureErrors: decisions.filter((d)=>d.screenCheck?.status==='error').length,
-    samples, noAgent: noAgentDays?{before:noAgentBefore,after:noAgentAfter,saving:saving(noAgentBefore,noAgentAfter),days:noAgentDays}:null,
+    samples, workload, noAgent: noAgentDays?{before:noAgentBefore,after:noAgentAfter,saving:saving(noAgentBefore,noAgentAfter),days:noAgentDays}:null,
     deployedVersions: [...versions].sort((a, b) => a - b), before, after, incomplete,
     nights: decisions.map((d) => ({ night: d.night, outcome: d.outcome, blindTest:d.measured.test?.day??null,testNote:d.flags.filter(f=>f.startsWith('test-unmeasured')), newCalibrationData:d.night%2===1, llmCalls: d.llmCalls.length, flags: d.flags })),
   });

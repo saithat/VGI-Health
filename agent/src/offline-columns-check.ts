@@ -4,7 +4,7 @@ import path from 'node:path';
 import {parseArgs} from 'node:util';
 import {createEhr} from './ehr.js';
 import {createScreenChecker} from './screencheck.js';
-import {programSchema, dayScheduleSchema} from './schema.js';
+import {programSchema, dayScheduleSchema} from '../../app/src/dashboard/measurement-schema.js';
 import {REPO_ROOT, writeJson} from './util.js';
 const {values}=parseArgs({options:{comparison:{type:'string'},out:{type:'string'}}});
 const comparison=path.resolve(values.comparison??path.join(REPO_ROOT,'runs/wire-tailoring-20261104/wire-tailoring-medication-comparison'));

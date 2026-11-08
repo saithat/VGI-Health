@@ -6,7 +6,7 @@ import {RunStore} from './store.js';
 import {assertCertified} from './certification.js';
 import {personalize} from './program.js';
 import {checkPatch,completionOk,deployVersion,daySeed,type LoopDeps,type Holdout} from './night.js';
-import {certificateSchema,dayResultSchema,programSchema,type DaySchedule} from './schema.js';
+import {certificateSchema,dayResultSchema,programSchema,type DaySchedule} from '../../app/src/dashboard/measurement-schema.js';
 import type {Release} from './releases.js';
 import type {PersonaView} from './prompts.js';
 import {pad2,readJson,writeJson} from './util.js';

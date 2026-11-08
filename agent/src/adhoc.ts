@@ -32,7 +32,7 @@ import type { HistoryItem } from './prompts.js';
 import { loadRelease } from './releases.js';
 import { historyItem } from './run.js';
 import { createScreenChecker, type ScreenChecker } from './screencheck.js';
-import { dayResultSchema, type Program } from './schema.js';
+import { dayResultSchema, type Program } from '../../app/src/dashboard/measurement-schema.js';
 import { RunStore } from './store.js';
 import { pad2, readJson } from './util.js';
 import { loadWorld } from './world.js';

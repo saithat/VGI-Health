@@ -35,7 +35,7 @@ import {exportPopupGeometry} from './geometry-popups.js';
  * deterministic outputs FOR TESTS ONLY. It certifies nothing.
  */
 import { expandProgram } from './composites.js';
-import { programSchema } from './schema.js';
+import { programSchema } from '../../app/src/dashboard/measurement-schema.js';
 import {runNative,nativeTimeout,type NativeResult} from './native-process.js';
 import { existsSync } from 'node:fs';
 import { mkdir, mkdtemp, readdir, rm, writeFile } from 'node:fs/promises';
@@ -46,7 +46,7 @@ import {
   certificateSchema, dayResultSchema, minClicksResultSchema, specSchema, verdictSchema,
   type Certificate, type DayResult, type DaySchedule, type MinClicksResult, type PersonaParams, type Program, type UserMemory,
   type Spec, type Verdict,
-} from './schema.js';
+} from '../../app/src/dashboard/measurement-schema.js';
 import { REPO_ROOT, writeJson } from './util.js';
 import { createFakeEhr } from './fake/ehr-fake.js';
 

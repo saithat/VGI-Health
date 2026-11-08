@@ -13,7 +13,7 @@
  */
 import path from 'node:path';
 import { z } from 'zod';
-import { dayScheduleSchema, personaParamsSchema, type DaySchedule, type PersonaParams } from './schema.js';
+import { dayScheduleSchema, personaParamsSchema, type DaySchedule, type PersonaParams } from '../../app/src/dashboard/measurement-schema.js';
 import { pad2, readJson } from './util.js';
 
 export const worldManifestSchema = z.object({

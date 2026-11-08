@@ -1,3 +1,4 @@
+import Ehr.Sim.Scheduling.Tests
 import Ehr.Layout.Tests
 import Ehr.Sem.Board
 import Ehr.Sem.BoardView

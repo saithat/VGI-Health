@@ -6,7 +6,7 @@ import {
   decisionRecordSchema as baseDecision, llmCandidateSchema as baseLlmCandidate,
   llmProposalSchema as baseProposal, toCandidate as baseToCandidate,
 } from '../../../agent/src/schema.js';
-export * from '../../../agent/src/schema.js';
+export * from './measurement-schema.js';
 export const portfolioSchema=z.object({scale:z.enum(['small','medium','radical']),hotspotId:z.string().min(1)});
 export const candidateSchema=baseCandidate.extend({portfolio:portfolioSchema.optional()});
 export const evaluatedCandidateSchema=baseEvaluated.extend({candidate:candidateSchema});
