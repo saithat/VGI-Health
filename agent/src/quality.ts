@@ -1,4 +1,6 @@
 import { ToolNightAgent, nightToolSession } from './agent-loop.js';
+import { RlmNightAgent } from './rlm/loop.js';
+import { DEFAULT_RLM_BUDGET, type RlmBudget } from './rlm/stats.js';
 import { DEFAULT_TOOL_BUDGET, type ToolBudget } from './tool-session.js';
 import { frozenGeometry } from './frozen-geometry.js';
 import { applyToProgram } from './program.js';
@@ -25,6 +27,7 @@ import { retryInfrastructure } from './infrastructure.js';
 import { daySeed, makeHoldout, runNight, TrainEstimator, type LoopDeps, type NightInput } from './night.js';
 import { auditedOperation } from './operation-manifest.js';
 import { queryUsage } from './backends/query-audit.js';
+import { usageOf } from './backends/usage.js';
 import { trainingQueryBundle, writeQueryDirectory } from './quality-queries.js';
 import { loadMeasuredSavings, recomputedSavings } from './quality-ledger.js';
 import { measuredLedger, physicalKeys } from './quality-context.js';
@@ -128,18 +131,6 @@ export async function frozenTrainAtlases(input:Pick<NightInput,'train'|'programs
   }));
 }
 
-const usageSchema=z.object({input_tokens:z.number(),output_tokens:z.number(),cached_input_tokens:z.number().optional()});
-function usageOf(response:Pick<JsonResponse,'usage'|'transcript'>):Omit<TokenCounts,'source'>|null {
-  const direct=usageSchema.safeParse(response.usage);
-  if(direct.success)return {input:direct.data.input_tokens,output:direct.data.output_tokens,cachedInput:direct.data.cached_input_tokens??0};
-  const transcript=z.object({stdout:z.string()}).safeParse(response.transcript);
-  if(transcript.success) for(const line of transcript.data.stdout.split('\n').reverse().filter(Boolean)) {
-    let parsed:unknown;try{parsed=JSON.parse(line);}catch{continue;}
-    const event=z.object({type:z.literal('turn.completed'),usage:usageSchema}).safeParse(parsed);
-    if(event.success)return {input:event.data.usage.input_tokens,output:event.data.usage.output_tokens,cachedInput:event.data.usage.cached_input_tokens??0};
-  }
-  return null;
-}
 export function meteredLlm(inner:JsonLlm,source:string) {
   const calls:{callId:string;promptMatched:boolean|null;tokens:TokenCounts}[]=[];
   let attempts=0,unknownAttemptUsage=false;
@@ -169,6 +160,10 @@ export function meteredLlm(inner:JsonLlm,source:string) {
   return {llm,calls,tokens,callCount:()=>attempts,queries:()=>({count:queries.count,tally:Object.fromEntries(queries.tally)})};
 }
 
+function sumTokens(a:TokenCounts,b:TokenCounts):TokenCounts {
+  const add=(x:number|null,y:number|null)=>x===null||y===null?null:x+y;
+  return {input:add(a.input,b.input),output:add(a.output,b.output),cachedInput:add(a.cachedInput,b.cachedInput),source:a.source==='unavailable'||b.source==='unavailable'?'unavailable':a.source};
+}
 export function candidateDiffs(before:DecisionRecord,after:DecisionRecord) {
   return before.candidates.filter(e=>!e.candidate.seeded).map(old=>{
     const now=after.candidates.find(e=>e.candidate.id===old.candidate.id);
@@ -194,6 +189,8 @@ export interface QualityOptions {
   /** Continue an interrupted run in the same --out: identical inputs, build and options required. */
   resume?:boolean;
   toolBudget?:ToolBudget;geometryFrom?:string;appBuild?:string;toolReplayFrom?:string;
+  /** Arm R only: per-decision RLM budget and optional cheaper sub-call model. */
+  rlmBudget?:RlmBudget;rlmSubModel?:string;rlmSubReasoningEffort?:string;
 }
 export async function freshOutput(runDir:string,outDir:string) {
   const runs=path.resolve(REPO_ROOT,'runs'),source=await realpath(runDir);
@@ -214,7 +211,7 @@ export async function evaluateQuality(opts:QualityOptions) {
   if(opts.backend==='codex'&&opts.serviceTier==='fast')throw new Error('Codex fast mode is prohibited; use --service-tier default');
   if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>2)throw new Error('--workers must be 1 or 2 (14 GB budget)');
   if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
-  if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','D','E','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, D, E, sanity');
+  if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','D','E','R','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, D, E, R, sanity');
   if(opts.arms.includes('sanity')&&opts.backend!=='replay')throw new Error('Sanity requires replay; no new proposals');
   if(opts.arms.includes('C')&&!['codex','replay'].includes(opts.backend))throw new Error('Query-tool arm C requires codex or replay');
   const source=await realpath(opts.runDir),historical=await historicalDecisions(source),selected=selectDecisions(historical,opts.decisions);
@@ -294,10 +291,10 @@ export async function evaluateQuality(opts:QualityOptions) {
         await writeJson(path.join(inputDir,'input.json'),{...input,programs:Object.fromEntries(input.programs),holdout:{day:input.holdout.day}});
         const prepareMs=performance.now()-started;
         const contextStarted=performance.now();
-        const locality=opts.arms.some(a=>a==='B'||a==='C'||a==='D'||a==='E')?await frozenLocality(input,geometryDir):null;
+        const locality=opts.arms.some(a=>a==='B'||a==='C'||a==='D'||a==='E'||a==='R')?await frozenLocality(input,geometryDir):null;
         const quality=locality?{ledger:measuredLedger(historical,original.persona,original.night,measured??new Map()),locality}:null;
         const qualityContextMs=performance.now()-contextStarted;
-        const queryBundle=opts.arms.some(a=>a==='C'||a==='E')&&quality?trainingQueryBundle(input,(await frozenTrainAtlases(input,geometryDir)).map(d=>d.atlas),quality):null;
+        const queryBundle=opts.arms.some(a=>a==='C'||a==='E'||a==='R')&&quality?trainingQueryBundle(input,(await frozenTrainAtlases(input,geometryDir)).map(d=>d.atlas),quality):null;
         if(queryBundle){const files=path.join(inputDir,'query-files');await rm(files,{recursive:true,force:true});await mkdir(files);await writeQueryDirectory(files,queryBundle);}
         const queryContextMs=performance.now()-contextStarted-qualityContextMs;
         for(const arm of opts.arms)for(let sample=1;sample<=(arm==='sanity'?1:opts.samples);sample++) {
@@ -312,16 +309,29 @@ export async function evaluateQuality(opts:QualityOptions) {
           if(opts.resume&&existsSync(sampleDir)){let n=1;while(existsSync(`${sampleDir}.partial-${n}`))n++;await rename(sampleDir,`${sampleDir}.partial-${n}`);}
           const first=await readJson(llmRecordPath(inputs,`night-${pad2(original.night)}/${original.persona}/propose-0`),llmRecordSchema);
           const usage=z.object({reasoningEffort:z.string().optional(),serviceTier:z.string().nullable().optional()}).safeParse(first.usage);
-          const meter=meteredLlm(createBackend(arm==='sanity'?'replay':opts.backend,{replayFrom:arm==='E'&&opts.toolReplayFrom?path.join(opts.toolReplayFrom,'samples',decisionId(original),arm,String(sample)):inputs,replayAllowDrift:true,queryMode:arm==='C',model:opts.model??(['codex','replay'].includes(opts.backend)?manifest.model??first.model:undefined),
-            reasoningEffort:opts.reasoningEffort??(usage.success?usage.data.reasoningEffort:undefined)??'high',serviceTier:opts.backend==='codex'?(opts.serviceTier??'default'):opts.serviceTier??(usage.success?usage.data.serviceTier:undefined)??'default'}),inputs);
+          // E and R replay from their own recorded sample; R allows no prompt drift at all.
+          const ownReplay=(arm==='E'||arm==='R')&&opts.toolReplayFrom?path.join(opts.toolReplayFrom,'samples',decisionId(original),arm,String(sample)):null;
+          const backendOptions={replayFrom:ownReplay??inputs,replayAllowDrift:arm!=='R',queryMode:arm==='C',model:opts.model??(['codex','replay'].includes(opts.backend)?manifest.model??first.model:undefined),
+            reasoningEffort:opts.reasoningEffort??(usage.success?usage.data.reasoningEffort:undefined)??'high',serviceTier:opts.backend==='codex'?(opts.serviceTier??'default'):opts.serviceTier??(usage.success?usage.data.serviceTier:undefined)??'default'};
+          const meter=meteredLlm(createBackend(arm==='sanity'?'replay':opts.backend,backendOptions),arm==='R'&&ownReplay?ownReplay:inputs);
+          const separateSub=arm==='R'&&opts.backend!=='replay'&&((opts.rlmSubModel!==undefined&&opts.rlmSubModel!==backendOptions.model)||(opts.rlmSubReasoningEffort!==undefined&&opts.rlmSubReasoningEffort!==backendOptions.reasoningEffort));
+          const subMeter=separateSub?meteredLlm(createBackend(opts.backend,{...backendOptions,model:opts.rlmSubModel??backendOptions.model,reasoningEffort:opts.rlmSubReasoningEffort??backendOptions.reasoningEffort}),inputs):meter;
           const sampleDeps:LoopDeps={...deps,store:new RunStore(sampleDir),agent:new LlmAgent(new RecordingLlm(meter.llm,sampleDir)),seedState:{injected:0,rejected:new Set()}};
           const session=arm==='E'&&queryBundle?nightToolSession(input,sampleDeps,queryBundle,opts.toolBudget??DEFAULT_TOOL_BUDGET,async event=>{
             await writeJson(path.join(sampleDir,'tools',`${String(event.index).padStart(3,'0')}.json`),event);
           }):null;
           if(session)sampleDeps.agent=new ToolNightAgent(new RecordingLlm(meter.llm,sampleDir),session,input);
+          if(arm==='R'&&!queryBundle)throw new Error('Arm R requires the train-only query bundle');
+          let rlmTurns=0;
+          const rlm=arm==='R'&&queryBundle?new RlmNightAgent(input,sampleDeps,queryBundle,{root:new RecordingLlm(meter.llm,sampleDir),sub:new RecordingLlm(subMeter.llm,sampleDir),runDir:sampleDir,
+            budget:opts.rlmBudget??DEFAULT_RLM_BUDGET,...(ownReplay?{replayFrom:ownReplay}:{}),persist:async entry=>{await writeJson(path.join(sampleDir,'rlm',`${String(rlmTurns++).padStart(3,'0')}.json`),entry);}}):null;
+          if(rlm)sampleDeps.agent=rlm;
           const tick=performance.now();
-          const result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,
-            ...((arm==='B'||arm==='C'||arm==='D')&&quality?{quality}:{}),...(arm==='D'?{structure:defaultStructurePolicy()}:{}),...(arm==='C'&&queryBundle?{queryBundle}:{})}));
+          let result;
+          try {
+            result=await auditedOperation(sampleDir,meter.llm,original.persona,original.night,()=>runNight(sampleDeps,input,{offline:true,
+              ...((arm==='B'||arm==='C'||arm==='D')&&quality?{quality}:{}),...(arm==='D'?{structure:defaultStructurePolicy()}:{}),...(arm==='C'&&queryBundle?{queryBundle}:{})}));
+          } finally {await rlm?.close();}
           const certified=arm==='sanity'?undefined:result.record.certification.attempts.filter(a=>a.check.status==='pass').at(-1);
           const program=certified?applyToProgram(input.current,certified.patch,{version:input.current.version+1,specVersion:input.current.specVersion}).program:null;
           const singleton=certified?.candidateIds.length===1?result.record.candidates.find(e=>e.candidate.id===certified.candidateIds[0])?.trainEstimate:null;
@@ -330,7 +340,9 @@ export async function evaluateQuality(opts:QualityOptions) {
           const effects={train:effect?.gross??null,netTrain:effect?.net??null,validation:result.record.validation.replay?result.record.validation.replay.saving.clicks+result.record.validation.replay.saving.scrolls:null,
             structuralDistance:program?structuralDistance(input.current,program):null};
           const record:OfflineRecord={...result.record,effects,offline:true,screenCheck:'skipped',label:OFFLINE_LABEL,decisionId:decisionId(original),arm,sample,
-            ...(session?{toolLoop:session.stats(),toolEvents:session.events}:{}),queries:session?{count:session.events.length,tally:session.stats().tally}:meter.queries(),tokens:meter.tokens(),callCount:meter.callCount(),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'||arm==='D'?qualityContextMs:arm==='C'||arm==='E'?qualityContextMs+queryContextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
+            ...(session?{toolLoop:session.stats(),toolEvents:session.events}:{}),...(rlm?{rlmLoop:rlm.stats()}:{}),
+            queries:session?{count:session.events.length,tally:session.stats().tally}:rlm?{count:Object.entries(rlm.stats().tally).filter(([k])=>k!=='root_turn').reduce((n,[,v])=>n+v,0),tally:rlm.stats().tally}:meter.queries(),
+            tokens:subMeter===meter?meter.tokens():sumTokens(meter.tokens(),subMeter.tokens()),callCount:meter.callCount()+(subMeter===meter?0:subMeter.callCount()),wallTimeMs:performance.now()-tick+prepareMs+(arm==='B'||arm==='D'?qualityContextMs:arm==='C'||arm==='E'||arm==='R'?qualityContextMs+queryContextMs:0),frozenInputs:path.relative(out,path.join(inputDir,'input.json')),
             repeatedMeasuredBad:measured?repetitionCount(result.record,historical,measured):0,proposedCandidates:result.record.candidates.filter(e=>!e.candidate.seeded).length};
           await writeJson(path.join(sampleDir,'record.json'),offlineRecordSchema.parse(record));await writeJson(path.join(sampleDir,'calls.json'),meter.calls);
           if(arm==='sanity') {
