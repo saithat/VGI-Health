@@ -31,13 +31,9 @@ private theorem decide_accepted (d : Durable) (r : Request) (n : Nat)
     r.sessionVersion = version d r.patient ∧ r.revision = r.sessionRevision ∧
     n = d.events.length + 1 := by
   unfold decide at h
-  split at h
-  · contradiction
-  · split at h
-    · contradiction
-    · split at h
-      · contradiction
-      · simp_all
+  -- Each rejecting guard contradicts `h`; the remaining branch fixes `n`.
+  repeat (split at h; contradiction)
+  simp_all
 
 /-- Matching intent always recovers the identical durable answer, including a
 refusal, even after session expiry/crash. Authorization remains a host check. -/
@@ -79,13 +75,8 @@ theorem receipt_persistent (d : Durable) (r other : Request) (a : Receipt)
   | none =>
     have mem : a ∈ d.receipts := List.mem_of_find?_eq_some h
     have id : a.id = r.id := by simpa [receipt] using List.find?_some h
-    have different : other.id ≠ r.id := by
-      intro eq
-      exact receipt_fresh d other ho a mem (id.trans eq.symm)
-    have differentB : (other.id == r.id) = false := by
-      cases hb : other.id == r.id with
-      | false => rfl
-      | true => exact False.elim (different (by simpa using hb))
+    have different : other.id ≠ r.id := fun eq => receipt_fresh d other ho a mem (id.trans eq.symm)
+    have differentB : (other.id == r.id) = false := by simpa using different
     change d.receipts.find? (fun a => a.id == r.id) = some a at h
     cases hd : decide d other <;> simp only [publish, ho, hd] <;>
       simpa [receipt, List.find?, differentB] using h
@@ -113,26 +104,14 @@ theorem publish_invariant (d : Durable) (r : Request) (h : StrongInvariant d) :
       refine ⟨⟨?_, ?_, ?_, ?_, ?_⟩, ?_, ?_⟩
       · simp [ProjectionCorrect, foldLog, hp]
       · simpa [NoDuplicateEffect, List.nodup_cons] using And.intro notEvent hu
-      · intro e mem
-        simp only [List.mem_cons] at mem
-        rcases mem with eq | mem
-        · simpa [eq] using native
-        · exact hg e mem
+      -- Each list property: the new head is the fresh request/receipt pair, and
+      -- old entries keep their witnesses in the extended lists.
+      · exact List.forall_mem_cons.mpr ⟨native, hg⟩
       · exact effect_safe d.projection r hm
-      · intro a mem k eq
-        simp only [List.mem_cons] at mem
-        rcases mem with eqA | mem
-        · subst a
-          exact ⟨_, List.mem_cons_self, rfl, rfl⟩
-        · obtain ⟨e, emem, eid, ep⟩ := ha a mem k eq
-          exact ⟨e, List.mem_cons_of_mem _ emem, eid, ep⟩
-      · intro e mem
-        simp only [List.mem_cons] at mem
-        rcases mem with eq | mem
-        · subst e
-          exact ⟨_, List.mem_cons_self, rfl, rfl, n, rfl⟩
-        · obtain ⟨a, amem, aid, ap, an⟩ := he e mem
-          exact ⟨a, List.mem_cons_of_mem _ amem, aid, ap, an⟩
+      · exact List.forall_mem_cons.mpr ⟨fun _ _ => ⟨_, List.mem_cons_self, rfl, rfl⟩,
+          fun a mem k eq => (ha a mem k eq).imp fun _ h => ⟨List.mem_cons_of_mem _ h.1, h.2⟩⟩
+      · exact List.forall_mem_cons.mpr ⟨⟨_, List.mem_cons_self, rfl, rfl, n, rfl⟩,
+          fun e mem => (he e mem).imp fun _ h => ⟨List.mem_cons_of_mem _ h.1, h.2⟩⟩
       · dsimp [HistoryCorrect]
         have pr : decide { events := d.events, projection := foldLog d.events } r = decide d r := by
           simp [decide, readVersions, version, ← hp]
@@ -141,23 +120,15 @@ theorem publish_invariant (d : Durable) (r : Request) (h : StrongInvariant d) :
       all_goals
         simp only [publish, hr, hd]
         refine ⟨⟨hp, hu, hg, hm, ?_⟩, ?_, hh⟩
-        · intro a mem n eq
-          simp only [List.mem_cons] at mem
-          rcases mem with eqA | mem
-          · subst a; contradiction
-          · exact ha a mem n eq
-        · intro e mem
-          obtain ⟨a, amem, aid, ap, an⟩ := he e mem
-          exact ⟨a, List.mem_cons_of_mem _ amem, aid, ap, an⟩
+        · exact List.forall_mem_cons.mpr ⟨fun _ eq => (nomatch eq), ha⟩
+        · exact fun e mem => (he e mem).imp fun _ h => ⟨List.mem_cons_of_mem _ h.1, h.2⟩
 
 theorem publish_patient_projection (d : Durable) (r : Request) (h : PatientProjectionCorrect d) :
     PatientProjectionCorrect (publish d r).1 := by
   change d.patientProjection = foldPatientLog d.events at h
   cases hr : receipt d r with
   | some a => simpa [PatientProjectionCorrect, publish, hr] using h
-  | none =>
-    cases hd : decide d r <;> simp only [publish, hr, hd]
-    all_goals simp [PatientProjectionCorrect, foldPatientLog, h]
+  | none => cases hd : decide d r <;> simp [publish, hr, hd, PatientProjectionCorrect, foldPatientLog, h]
 
 inductive Reachable : Durable → Prop where
   | initial : Reachable {}

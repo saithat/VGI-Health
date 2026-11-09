@@ -6,16 +6,7 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private def seed19Screen : Screen := noVaccineProviderAddress.screens[29]?.getD default
-private theorem seed19ScreenPresent : noVaccineProviderAddress.screens[29]?.isSome = true := by decide +kernel
-private theorem seed19CompPresent : seed19Screen.components[20]?.isSome = true := by decide +kernel
-@[irreducible] private def seed19Witness : Screen × Component :=
-  (seed19Screen, seed19Screen.components[20]?.getD default)
-private theorem seed19Member : seed19Witness ∈ allComps noVaccineProviderAddress := by
-  unfold seed19Witness
-  exact List.mem_flatMap.mpr ⟨seed19Screen,
-    getD_mem noVaccineProviderAddress.screens 29 seed19ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem seed19Screen.components 20 seed19CompPresent, rfl⟩⟩
+comp_witness seed19Witness, seed19Member := noVaccineProviderAddress[29][20]
 private theorem seed19Kind : seed19Witness.2.kind = .button (.commit "recordImmunization") := by decide +kernel
 private def seed19Commit := (specV1.commit? "recordImmunization").getD default
 private theorem seed19Lookup : specV1.commit? "recordImmunization" = some seed19Commit := by decide +kernel

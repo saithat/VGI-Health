@@ -6,27 +6,9 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private def static11Screen : Screen := repeatedInteraction.screens[5]?.getD default
-private theorem static11ScreenPresent : repeatedInteraction.screens[5]?.isSome = true := by decide +kernel
-private theorem static11CompPresent : static11Screen.components[1]?.isSome = true := by decide +kernel
-@[irreducible] private def static11Witness : Screen × Component :=
-  (static11Screen, static11Screen.components[1]?.getD default)
-private theorem static11Member : static11Witness ∈ allComps repeatedInteraction := by
-  unfold static11Witness
-  exact List.mem_flatMap.mpr ⟨static11Screen,
-    getD_mem repeatedInteraction.screens 5 static11ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem static11Screen.components 1 static11CompPresent, rfl⟩⟩
+comp_witness static11Witness, static11Member := repeatedInteraction[5][1]
 
-private def static111Screen : Screen := repeatedInteraction.screens[8]?.getD default
-private theorem static111ScreenPresent : repeatedInteraction.screens[8]?.isSome = true := by decide +kernel
-private theorem static111CompPresent : static111Screen.components[8]?.isSome = true := by decide +kernel
-@[irreducible] private def static111Witness : Screen × Component :=
-  (static111Screen, static111Screen.components[8]?.getD default)
-private theorem static111Member : static111Witness ∈ allComps repeatedInteraction := by
-  unfold static111Witness
-  exact List.mem_flatMap.mpr ⟨static111Screen,
-    getD_mem repeatedInteraction.screens 8 static111ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem static111Screen.components 8 static111CompPresent, rfl⟩⟩
+comp_witness static111Witness, static111Member := repeatedInteraction[8][8]
 
 private theorem static11Kind : alertOf? static11Witness.2.kind = some ("interactionOrder", true) := by decide +kernel
 private theorem static111Kind : alertOf? static111Witness.2.kind = some ("interactionOrder", true) := by decide +kernel

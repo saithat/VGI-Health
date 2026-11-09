@@ -1,4 +1,4 @@
-import Ehr.Check.StructuralWitness
+import Ehr.Check.PatchWitness
 import Ehr.Canonical.BadPrograms
 
 set_option Elab.async false
@@ -6,11 +6,7 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private theorem screenBound : 42 < defaultRefillEligibility.screens.length := by decide +kernel
-private theorem compBound : 20 < (defaultRefillEligibility.screens[42]'screenBound).components.length := by decide +kernel
-private def witness : Screen × Component := indexedComp defaultRefillEligibility 42 screenBound 20 compBound
-private theorem member : witness ∈ allComps defaultRefillEligibility :=
-  indexedComp_mem defaultRefillEligibility 42 screenBound 20 compBound
+comp_witness witness, member := defaultRefillEligibility[42][20]
 private theorem kind : fieldOf? witness.2.kind =
     some ("refillScheduleEligibility", .fixed 0, .default "notScheduleII") := by decide +kernel
 private def element := (specV1.element? "refillScheduleEligibility").getD default

@@ -6,16 +6,7 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private def seed17Screen : Screen := noRestraintCarePlan.screens[15]?.getD default
-private theorem seed17ScreenPresent : noRestraintCarePlan.screens[15]?.isSome = true := by decide +kernel
-private theorem seed17CompPresent : seed17Screen.components[36]?.isSome = true := by decide +kernel
-@[irreducible] private def seed17Witness : Screen × Component :=
-  (seed17Screen, seed17Screen.components[36]?.getD default)
-private theorem seed17Member : seed17Witness ∈ allComps noRestraintCarePlan := by
-  unfold seed17Witness
-  exact List.mem_flatMap.mpr ⟨seed17Screen,
-    getD_mem noRestraintCarePlan.screens 15 seed17ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem seed17Screen.components 36 seed17CompPresent, rfl⟩⟩
+comp_witness seed17Witness, seed17Member := noRestraintCarePlan[15][36]
 private theorem seed17Kind : seed17Witness.2.kind = .button (.commit "signRestraintOrder") := by decide +kernel
 private def seed17Commit := (specV1.commit? "signRestraintOrder").getD default
 private theorem seed17Lookup : specV1.commit? "signRestraintOrder" = some seed17Commit := by decide +kernel

@@ -19,6 +19,29 @@ theorem getD_mem {α : Type} [Inhabited α] (xs : List α) (n : Nat)
     simp only [Option.getD_some]
     exact List.mem_of_getElem? h
 
+/-- `comp_witness w, hw := p[n][i]` declares the regression witness `w`,
+component `i` of screen `n` of `p` (via `wScreen`, `wScreenPresent` and
+`wCompPresent`), and
+`hw : w ∈ allComps p`. `w` is irreducible, so later lemmas evaluate only its own
+projections. Both lookups are optional prefix walks (see `getD_mem`), each
+kernel-checked once. -/
+macro "comp_witness " w:ident ", " hw:ident " := " p:ident "[" n:num "]" "[" i:num "]" : command => do
+  let ws := Lean.mkIdent (w.getId.appendAfter "Screen")
+  let hs := Lean.mkIdent (w.getId.appendAfter "ScreenPresent")
+  let hc := Lean.mkIdent (w.getId.appendAfter "CompPresent")
+  `(private def $ws : Screen := (Program.screens $p)[$n]?.getD default
+    private theorem $hs : (Program.screens $p)[$n]?.isSome = true := by decide +kernel
+    private theorem $hc : (Screen.components $ws)[$i]?.isSome = true := by decide +kernel
+    @[irreducible] private def $w : Screen × Component := ($ws, (Screen.components $ws)[$i]?.getD default)
+    private theorem $hw : $w ∈ allComps $p := by
+      unfold $w
+      exact List.mem_flatMap.mpr ⟨$ws, getD_mem (Program.screens $p) $n $hs,
+        List.mem_map.mpr ⟨_, getD_mem (Screen.components $ws) $i $hc, rfl⟩⟩)
+
+/-- Any automation-policy violation refutes certification against the canonical program. -/
+theorem rejects_human (p : Program) (h : ¬ NoAutomationAttempts Specs.V1.specV1 p) :
+    ¬ Satisfies Specs.V1.specV1 none canonicalV1 p := fun hs => h hs.2.2.2.2.1.1
+
 /-- One closed component lookup supplies its binding facts without repeating
 reduction of the canonical screen for each projection. -/
 theorem componentAt_facts (cs : List Component) (i : Nat) (id : CompId) (kind : Kind)
