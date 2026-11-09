@@ -128,8 +128,9 @@ Each arm ran one sample per decision. The frozen source was
 `runs/quality-BE-source-20261108`, and the measured ledger came from the
 completed `runs/quality-BE-sanity-20261108`; both were copied from the main
 checkout without editing. Root and sub-calls used Codex `gpt-6.1-sol` with high
-reasoning and the default service tier. No cheaper sub-model was clearly
-available, so sub-calls used the same model. The budget was the default above.
+reasoning and the default service tier. Pilot preparation did not identify a cheaper
+sub-model, so sub-calls used the same model; the follow-up below verifies Luna
+with existing Codex login. The budget was the default above.
 One harness worker ran under the browser lock, B before R within each decision.
 The run took 1 h 27 min (22:56:58Z–00:24:04Z).
 
@@ -353,9 +354,9 @@ not cells.
 Full-run root turns ranged from nine to 29, against the unchanged 30-turn cap.
 The matched subset reduces cohort differences but still uses fresh model draws
 and two samples rather than one; these before/after observations are not a
-randomized estimate of the prompt effect. The prompt changes reduced the
-observed truncation rate substantially but did not establish an acceptance
-advantage or remove R's cost/time overhead.
+randomized estimate of the prompt effect. After the prompt changes, the observed
+truncation rate was substantially lower, but the study did not establish an
+acceptance advantage or remove R's cost/time overhead.
 
 The root used the digest to start targeted exploration, then printed component,
 rule and train-cost projections, kept patches/results in globals, checked and
@@ -381,7 +382,7 @@ inconsistent with the VM globals, and geometry/query API clarity remains a
 future improvement; neither was changed during this study.
 
 **Recommendation:** keep R opt-in. It reliably submits within its bounds and
-now prints less, but the declared full comparison shows no acceptance advantage,
+stdout truncation is less common, but the declared full comparison shows no acceptance advantage,
 fewer released clicks/scrolls saved and higher token/wall usage. The owner decides
 whether to change the default; this lane changes none.
 
@@ -393,12 +394,99 @@ settings, prompt/digest bounds and unchanged sanity ledger. The full
 `records.json` SHA-256 is
 `b9f3993bb58f7aa6f2e5c9d3d464780c6dbc85d1d92e71cbbc77b0dad7a542c8`.
 
+### Cheaper-model pilots
+
+The local Codex model cache advertised `gpt-6-luna`, `gpt-6.1-terra` and
+`gpt-5.6-luna` as cheaper candidates under the current rate card. A confined
+structured-JSON probe of **`gpt-6-luna` succeeded** with existing Codex login,
+high reasoning and default service tier; its transcript passed the no-tool
+audit. No new account or API key was created. The other candidates needed no
+probe once Luna was available. The CLI still did not report an independent
+served-model identifier.
+
+The `claude` SDK backend had no `ANTHROPIC_API_KEY`; an installed Claude CLI
+does not configure that backend. `openai-compat` had no configured base URL,
+model or key. Ollama was installed, but its default local server refused the
+read-only availability request. Neither alternative backend was used. Model
+inventory, boolean credential presence, local-server result and the successful
+Codex probe are retained in `model-availability.json` and `local-backends.json`;
+no credential values enter those receipts.
+
+Both pilots used the original seven decision IDs, one sample per decision,
+two workers, the rebased source/new sanity ledger and the unchanged R budgets,
+prompts, native and held-out gates. One configured Sol for the root and Luna
+for sub-calls; the other configured Luna for both. **Neither pilot made a
+sub-call.** The first therefore supplies another Sol-root draw, not a test of
+Luna sub-call quality or cost. All token figures below are root tokens; sub-call
+input, cached input and output were zero in both pilots. This also means the
+second pilot tests Luna as root, without a recursion effect.
+
+The matched full-study rows contain two samples per decision (14 per arm).
+Pilots contain one (seven each). All totals average within decision first;
+per-arm and paired intervals retain 10,000 decision-bootstrap iterations and
+seed 20261103. These seven cases do not estimate Luna performance on the full
+35-decision cohort.
+
+| Configuration on the seven pilot decisions | Accepted | Acceptance 95% interval | Validation clicks saved | Validation scrolls saved | Seconds / decision |
+|---|---:|---:|---:|---:|---:|
+| Full-study B, Sol, 14 samples | 9/14 (64.3%) | 28.6–92.9% | 17.5 | 281.5 | 336.8 |
+| Full-study R, Sol, 14 samples | 11/14 (78.6%) | 50.0–100% | 18 | 365 | 518.2 |
+| Pilot R, Sol root / Luna sub, 7 samples | 5/7 (71.4%) | 42.9–100% | 8 | 617 | 468.0 |
+| Pilot R, Luna root / Luna sub, 7 samples | 2/7 (28.6%) | 0–57.1% | 0 | 0 | 652.1 |
+
+Luna's two accepted changes improved pixels only: night-01/P1 saved 409.34
+mouse-travel pixels; night-05/P4 saved two scroll pixels and 0.15 mouse-travel
+pixels. Its other five samples submitted no change. Sol-root/Luna-sub had one
+no change and one validation rejection. No pilot ended in a model-error outcome,
+budget exhaustion or REPL restart; no final-gate repair or complaint occurred.
+
+| Configuration | Input / decision | Cached input / decision | Output / decision | Root calls / decision | Standard-credit proxy / sample |
+|---|---:|---:|---:|---:|---:|
+| Full-study B, matched seven | 207,275 | 4,562 | 5,271 | 2 | 11.46 |
+| Full-study R, Sol, matched seven | 409,298 | 174,866 | 7,283 | 20.71 | 13.98 |
+| Sol root / Luna sub pilot | 379,804 | 174,866 | 6,371 | 19.43 | 12.28 |
+| Luna root / Luna sub pilot | 579,176 | 201,893 | 9,878 | 25.86 | 1.12 |
+
+The proxy applies the published Standard rates to input minus cached input,
+cached input and output separately: Sol 50/2.5/250 credits per million tokens,
+Luna 2.5/0.25/12.5 ([rate card](https://learn.chatgpt.com/docs/pricing)). It is not
+account billing. Luna's proxy per draw was about **12.5× lower** than matched
+Sol-R, while its charged wall time was 1.26× higher. The Sol-root pilot's cost
+variation cannot be attributed to Luna: it made zero Luna calls.
+
+Sol-root/Luna-sub used 136 turns (15–24 per decision), with 46/135 cells
+explicitly truncated (34.1%) and five recovered root errors. Luna-root used
+181 turns (17–30), with 114/175 cells truncated (65.1%) and 18 recovered root
+errors. It used all 30 turns on two decisions but submitted on time. Luna
+queried `targets` 68 times and `steps` 35 times, often inspected traces repeatedly,
+and made 19 estimates and two direct checks. It generally spent more turns
+exploring than the Sol root and returned no change more often. Its errors
+included unsupported/missing filters, map/array assumptions, malformed wire
+patches and incomplete submission fields. All 136 Sol-root and 181 Luna-root
+transcripts passed the no-tool audit, with verified high/default settings.
+
+Against the matched full-study R, Sol-root/Luna-sub's acceptance difference was
+−7.1 points (95% −42.9 to +21.4), with ten fewer clicks and 252 more scrolls
+saved; against B, +7.1 points (−21.4 to +42.9), −9.5 clicks and +335.5 scrolls.
+Luna-root versus Sol-R was −50.0 points (−85.7 to −14.3), −18 clicks and −365
+scrolls; versus B, −35.7 points (−71.4 to −7.1), −17.5 clicks and −281.5 scrolls.
+Neither pilot beats its baseline under the retained decision rule. A cheaper
+sub-model remains untested in actual use; **do not promote Luna-root or R as
+the default from these results**.
+
+The Sol-root pilot command took 1,754.64 seconds (29 min 14.64 s), and Luna-root
+2,384.01 seconds (39 min 44.01 s), both exit 0. Per-sample summaries and audits
+are in each pilot's `study-summary.json` / `study-detail.json`;
+`cheaper-model-comparison.json` retains the matched comparisons and intervals,
+and `pilot-verification.json` checks all 14 identities, model choices, settings
+and unchanged budgets.
+
 ### Commands
 
 Run from this lane worktree, whose local `runs` symlink points to
 `/home/saithat/Projects/VGI-Health/runs`. This satisfies the harness's local
 output-directory guard while storing only new BR directories in the main run
-store. Existing run directories are read-only. The generated B manual reads
+store. Pre-existing run directories are read-only. The generated B manual reads
 optional `runs/core-10day` examples. The pilot worktree had none; exposing the
 main run store would add two examples (2,559 characters) and change its hash
 from `78e74920576598291b46ffcdde18de65ed9e93abf5583ef2c0a8901809146c06`
@@ -407,9 +495,11 @@ Live and smoke-replay commands therefore use a private mount view that hides
 that optional directory, restoring the exact pilot manual hash without editing
 any files. The sanity replay started before this was detected: its generated
 prompt metadata differs, but replay uses frozen model outputs. Candidate,
-certification, validation and outcome equality are checked separately. The source/sanity paths below
-replace the removed-worktree workaround; the old symlink is retained until the
-study has completed and been verified.
+certification, validation and outcome equality are checked separately.
+The source/sanity paths below
+replace the removed-worktree workaround. After the completed study and final
+verification, the old symlink and then-empty parent directories were removed;
+no existing run data was deleted.
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=2 LEAN_NUM_THREADS=4
@@ -439,12 +529,79 @@ study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts 
 study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
   --run "$SOURCE" --out "$OUT/quality-BR-20261109" --arms B,R --samples 2 --workers 2 \
   --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default --ledger-from "$SANITY"
+PILOT=night-01/P1,night-02/P2,night-04/P3,night-05/P4,night-07/P5,night-08/P1,night-09/P2
+study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
+  --run "$SOURCE" --out "$OUT/quality-BR-cheap-sub-20261109" --arms R --samples 1 --workers 2 \
+  --decisions "$PILOT" --backend codex --model gpt-6.1-sol --rlm-sub-model gpt-6-luna \
+  --reasoning-effort high --service-tier default --ledger-from "$SANITY"
+study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
+  --run "$SOURCE" --out "$OUT/quality-BR-cheap-all-20261109" --arms R --samples 1 --workers 2 \
+  --decisions "$PILOT" --backend codex --model gpt-6-luna --rlm-sub-model gpt-6-luna \
+  --reasoning-effort high --service-tier default --ledger-from "$SANITY"
 # Continue the same full command with --resume after interruption; never restart it.
 ```
 
 Data and execution receipts stay untracked. No full browser audits run in this
 lane because no app source changes. Agent lint, typecheck and targeted unit tests
 are the lane checks; CI runs the remaining suite after merge.
+
+### Verification and cleanup
+
+Agent checks ran once after the prompt changes; later commits changed docs and
+the run-alias ignore rule only. Lint and typecheck exited 0; the targeted suite
+passed **40 tests in four files**, including exact-production bwrap confinement,
+train partition, UTF-8 bounds, recording/replay and tamper detection. The earlier
+standalone OS-confinement preflight also passed. Packaged WASM verification
+reported current Lean manifest
+`821d62993be8eb9af8594e68f965c51a92ccf3f6a7d73ae927b0955e2fd3eacb`.
+
+From the repository root, the exact check commands were:
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp
+DATA=/home/saithat/Projects/VGI-Health/runs
+SOURCE="$DATA/quality-BR-source-20261109"
+npm_config_manage_package_manager_versions=false pnpm --filter agent lint
+npm_config_manage_package_manager_versions=false pnpm --filter agent typecheck
+agent/node_modules/.bin/vitest run --root agent test/rlm.test.ts test/quality.test.ts \
+  test/quality-queries.test.ts test/codex-options.test.ts --maxWorkers=2
+node scripts/wasm-assets.mjs
+agent/node_modules/.bin/tsx "$TMPDIR/check-BR-digests.mts"
+python "$TMPDIR/check-BR-sanity.py"
+agent/node_modules/.bin/tsx "$TMPDIR/audit-BR-smoke.mts"
+agent/node_modules/.bin/tsx "$TMPDIR/summarize-BR.mts" "$DATA/quality-BR-20261109"
+agent/node_modules/.bin/tsx "$TMPDIR/verify-BR-data.mts"
+agent/node_modules/.bin/tsx "$TMPDIR/verify-BR-pilots.mts"
+agent/node_modules/.bin/tsx "$TMPDIR/summarize-BR.mts" "$DATA/quality-BR-cheap-sub-20261109"
+agent/node_modules/.bin/tsx "$TMPDIR/summarize-BR.mts" "$DATA/quality-BR-cheap-all-20261109"
+agent/node_modules/.bin/tsx "$TMPDIR/compare-BR-pilots.mts"
+agent/node_modules/.bin/tsx "$TMPDIR/build-BR.mts" after
+git diff --check
+```
+
+Identical helper copies are retained in the new source directory, alongside
+exact command vectors, timestamps, exit codes and logs. The data verifier
+reconfirmed the 641 source/copy file hashes, 35×2×2 identities, all 1,529 primary
+model settings, 70 digest bounds and unchanged sanity record hash. Pilot
+verification passed all 14 samples and 317 model calls. Full/pilot reporters
+independently audited every actual Codex transcript; the availability probe and
+16-call smoke passed too. Replay made no new model calls.
+
+The final before/after receipt matches native, certified app, entire `app/dist`,
+WASM, Lean-source tree and agent-source tree fingerprints. There are no app,
+Lean or lockfile changes, no Lean build and no full browser audits; CI runs the
+remaining suite after merge under the lane's verify-once rule. The app hash
+remains `030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`.
+All browser geometry ran under `$TMPDIR/vgi-browser-heavy.lock`, with two
+harness workers and `EHR_SCREEN_WORKERS=2`. No live run used unconfined R.
+
+After verification, cleanup removed only
+`/home/saithat/Projects/VGI-agent-loop-exp/runs/quality-BE-source-20261108`, its
+empty `runs` directory and the then-empty `VGI-agent-loop-exp` directory.
+`cleanup-receipt.json` records all three successful removals. Pre-existing run
+directories were not modified; run data and the local run-store alias stay
+untracked. All work is committed on `lane/rlm-study`; nothing was pushed, and no
+production default changed. The owner retains the default decision.
 
 ## Limitations
 
