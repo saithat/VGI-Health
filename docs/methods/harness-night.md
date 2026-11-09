@@ -160,6 +160,79 @@ the same decision rule as the B/R study: a decision-unit paired bootstrap with
 10,000 iterations and seed 20261103. If neither harness qualifies, the work
 stops after the pilot and is reported.
 
+## Smokes
+
+There was one smoke on night-01/P1 per harness. The first Codex smoke showed
+that Codex's own workspace-write sandbox refuses socket connections from shell
+commands, so every `night` call failed with EPERM and the agent could not
+submit. The CLI transport was changed from a Unix socket to the file spool
+before any recorded result. The second Codex smoke and the Claude Code smoke
+were both accepted: 12 clicks and 20 scrolls saved for Codex, 0 and 11 for
+Claude. A replay of the second Codex smoke (`--backend replay
+--tool-replay-from`) made no CLI launch. It re-executed all 12 night commands
+identically, and its outcome, candidates, certification, validation and choice
+equal the recording.
+
 ## Pilot, 2026-11-09
 
-(pending)
+The seven pre-declared decisions were run with one sample per harness and the
+default budget. The comparator is B from the full B/R study, averaged over
+its two samples per decision. The B column of the pilot's own Codex run was
+started before the rule was declared; it is for reference only.
+
+| Arm | Accepted | Validation clicks saved | Validation scrolls saved | Input tokens / decision | Cached input / decision | Output tokens / decision | Seconds / decision | Night commands / decision |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| B (B/R study, 2 samples) | 4.5/7 | 17.5 | 281.5 | 207,275 | 4,562 | 5,271 | 336.8 | – |
+| B (fresh, reference) | 6/7 | 33 | 270 | 207,299 | 7,863 | 5,953 | 364.8 | – |
+| H-codex (`gpt-6.1-sol`, high) | 5/7 | 20 | 126 | 1,523,356 | 1,456,494 | 8,239 | 357.4 | 14.6 |
+| H-claude (Claude Code default, `claude-opus-5-5`) | 5/7 | 22 | 480 | 2,067,912 | 1,971,467 | 14,050 | 524.8 | 11.7 |
+
+Per decision, validation clicks/scrolls:
+
+| Decision | H-codex | H-claude |
+|---|---|---|
+| night-01/P1 | rejected (−1 click, 103 scrolls) | 16/6 |
+| night-02/P2 | 8/39 | 0/408 |
+| night-04/P3 | 0/0 (pixels only) | rejected (−1, 78) |
+| night-05/P4 | 0/56 | 0/0 (pixels only) |
+| night-07/P5 | 12/11 | 0/20 |
+| night-08/P1 | no change | rejected (−1, 60) |
+| night-09/P2 | 0/20 | 6/46 |
+
+**Rule.** H-codex accepted 5 decisions, which meets the floor of 3.5. It saved
+146 clicks plus scrolls, short of B's 299, so it does not qualify. H-claude
+accepted 5 decisions and saved 502 clicks plus scrolls, at least 299, so it
+qualifies. 408 of those 502 came from a single decision, night-02/P2, which
+collapsed the order-favorites group. The paired comparison against the fresh B
+(report.json, 10,000 iterations) for H-codex is: Δ accepted −14.3%, 95%
+interval −42.9% to 0, Δ clicks −13 and Δ scrolls −144. Only the H-claude study
+ran, as the rule required.
+
+**Mechanism.** Every sample submitted within one launch. No sample needed a
+continuation, a final-gate repair, or came near the wall-time limit. The
+largest run took 789 s against a 1,200 s limit. Checks per decision were 0–7 of 12,
+and estimates 3–8 of 8. One Claude decision used all 8 estimates. Codex averaged 33 shell commands per decision, 88 of the
+231 in total ran Python, and it emitted about 40 items per decision. Claude
+Code averaged 44 turns, 16 Bash calls, 10 Read, 9 Grep and 8 Write. Its
+`dontAsk` allowlist denied 21 calls. Most were Python one-liners or shell
+loops, so it fell back to one `night` call per Bash call and to the Read and
+Grep tools. Codex's inner sandbox allows Python, so the two harnesses did not
+have equal shell freedom. Input was 95–96% cached for both CLIs. Codex used
+7.3× B's input tokens and Claude Code 10×, though most of it was cached. The
+egress proxy allowed only the model API. It denied 36 Codex connections to
+`ab.chatgpt.com`, a telemetry host. The Codex audit passed. Two Claude
+samples are flagged by the audit: Claude Code tried to write its auto-memory
+files and to grep its own tool-result file under `/home/agent`, and both
+attempts were denied by the permission rules. The per-decision private home
+is deleted after each decision, so nothing carries over between decisions.
+
+**What the agents did.** Both read README.md first. Then they read the
+precomputed queries, screens and renders. Both wrote three to five patch files,
+ran `night check` and `night estimate` on each, wrote a submission file and
+submitted it. Codex wrote Python helper scripts (`build_submission.py`) that
+generated the patches and the submission. Claude Code wrote each patch with
+Write and chained `night estimate` calls. On night-08/P1, H-codex measured that
+every alternative left 2 of 41 training tasks incomplete and submitted no
+change. It also filed the pilot's only complaint, asking for per-task replay
+outcomes and the unmet completion requirements. H-claude submitted changes there
+that validation rejected. This matches R and B on that decision.
