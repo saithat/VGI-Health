@@ -52,6 +52,12 @@ browser screen checks and replay validation gate deployment; `step` guards each
 interaction at runtime. A rejected proposal can receive a counterexample and up
 to three repairs.
 
+Seeded safety probes remain diagnostic and cannot deploy. The allergy probe
+hides every provider of the required allergy list on one commit screen,
+including duplicate and composite providers; hiding only one panel can be safe.
+The [wave 2 investigation](docs/audits/wave2-investigation-20261109.md) reproduces
+that distinction and separates retained layout completion gaps from clock effects.
+
 ```mermaid
 flowchart LR
   A["Traces → agent proposal"] --> B["Lean checker + screen/replay gates"]
