@@ -3,43 +3,6 @@
 import type {} from "./ehr-types";
 
 /**
- * Disjoint time on one server. Queue time is an endpoint, not paid service.
- * Clinical and text coefficients are declared scenarios; N1 (2023) motivates
- * separating EHR/inbox/clinical time, not adding its totals as extra waits.
- */
-export interface Clocks {
-  uiMs: number;
-  readingMs: number;
-  clinicalMs: number;
-  communicationMs: number;
-  passiveWaitMs: number;
-  reorientationMs: number;
-  queueMs: number;
-}
-
-/**
- * Responsibility only: accepting never transfers a draft, receipt or sign authority.
- * FHIR S8–S10 and SAFER S13 (2025) supply structure, no acceptance rate.
- */
-export interface Handover {
-  task: string;
-  patient: string;
-  sender: string;
-  recipient: string;
-  offeredAtMs: number;
-  acceptedAtMs?: number;
-  reason: string;
-}
-
-export interface EdStages {
-  providerQueueMs: number;
-  providerStartMs: number;
-  decisionMs: number;
-  departureMs: number;
-  boardingMs: number;
-}
-
-/**
  * Workflow structure, never a clinical permission or calibrated rate.
  */
 export type WorkflowKind =
@@ -80,6 +43,43 @@ export interface WorkflowReport {
   closed: boolean;
   activeMs: number;
   waitingMs: number;
+}
+
+/**
+ * Disjoint time on one server. Queue time is an endpoint, not paid service.
+ * Clinical and text coefficients are declared scenarios; N1 (2023) motivates
+ * separating EHR/inbox/clinical time, not adding its totals as extra waits.
+ */
+export interface Clocks {
+  uiMs: number;
+  readingMs: number;
+  clinicalMs: number;
+  communicationMs: number;
+  passiveWaitMs: number;
+  reorientationMs: number;
+  queueMs: number;
+}
+
+/**
+ * Responsibility only: accepting never transfers a draft, receipt or sign authority.
+ * FHIR S8–S10 and SAFER S13 (2025) supply structure, no acceptance rate.
+ */
+export interface Handover {
+  task: string;
+  patient: string;
+  sender: string;
+  recipient: string;
+  offeredAtMs: number;
+  acceptedAtMs?: number;
+  reason: string;
+}
+
+export interface EdStages {
+  providerQueueMs: number;
+  providerStartMs: number;
+  decisionMs: number;
+  departureMs: number;
+  boardingMs: number;
 }
 
 export interface Arrival {

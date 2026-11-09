@@ -16,17 +16,17 @@ run.
 flowchart TB
   subgraph guar_g["Guarantees"]
     proofs["Clinical guarantees<br/>151 theorems, 33 headline"]:::guar
-    check["Program checker<br/>312 theorems, 51 headline"]:::guar
+    check["Program checker<br/>315 theorems, 51 headline"]:::guar
     render["Screen renderer<br/>190 theorems, 11 headline"]:::guar
-    layout["UI library &amp; geometry<br/>187 theorems, 36 headline"]:::guar
-    commit["Commit reducers<br/>21 theorems, 8 headline"]:::guar
+    layout["UI library &amp; geometry<br/>189 theorems, 36 headline"]:::guar
+    commit["Commit reducers<br/>22 theorems, 8 headline"]:::guar
     protocol["Commit service protocol<br/>53 theorems, 30 headline"]:::guar
     multi["Multi-actor models<br/>26 theorems, 0 headline"]:::guar
   end
   subgraph spec_g["Specification"]
     core["Rulebook &amp; interpreter<br/>1 theorems, 0 headline"]:::spec
     props["Safety properties<br/>23 theorems, 0 headline"]:::spec
-    specs["Hospital rules &amp; formulary<br/>3 theorems, 0 headline"]:::spec
+    specs["Hospital rules &amp; formulary<br/>5 theorems, 0 headline"]:::spec
   end
   check ==> core
   check ==> props
@@ -34,6 +34,7 @@ flowchart TB
   commit --> core
   commit --> multi
   commit --> render
+  commit -.-> specs
   core --> multi
   layout --> core
   layout --> props
@@ -595,30 +596,31 @@ flowchart LR
   n48["Layout.Shell.contrast"]:::lemma
   n49["Layout.Shell.footer_inactive"]:::lemma
   n50["Layout.Shell.horizontal"]:::lemma
-  n51["Layout.Shell.modal_cases"]:::lemma
-  n52["Layout.Shell.modal_rule"]:::lemma
-  n53["Layout.Shell.modals_separated"]:::lemma
-  n54["Layout.Shell.reading_order"]:::lemma
+  n51["Layout.Shell.modal_rule"]:::lemma
+  n52["Layout.Shell.modals_separated"]:::lemma
+  n53["Layout.Shell.reading_order"]:::lemma
+  n54["Layout.Shell.shell_cases"]:::lemma
   n55["Layout.Shell.target_implies"]:::lemma
   n56["Layout.Shell.text_rule"]:::lemma
   n57["Layout.Shell.zip_order"]:::lemma
   n58["Layout.Structural.body_order"]:::lemma
   n59["Layout.Structural.bounds"]:::lemma
-  n60["Layout.candidate_length_le"]:::lemma
-  n61["Layout.chunks_complete"]:::lemma
-  n62["Layout.chunks_short"]:::lemma
-  n63["Layout.codepointInk_supported"]:::lemma
-  n64["Layout.column_floor"]:::lemma
-  n65["Layout.constrain_satisfies"]:::lemma
-  n66["Layout.layoutAccepted_allScreens"]:::lemma
-  n67["Layout.layoutAccepted_geometry"]:::lemma
-  n68["Layout.review_shape_payload_independent"]:::lemma
-  n69["Layout.screenShape_flat_length"]:::lemma
-  n70["Layout.screenShape_sources"]:::lemma
-  n71["Layout.separated_pixels"]:::lemma
-  n72["Layout.shape_path_unique"]:::lemma
-  n73["Layout.shift_rect"]:::lemma
-  n74["Layout.textAdvance_bound"]:::lemma
+  n60["Layout.Structural.placement_cases"]:::lemma
+  n61["Layout.candidate_length_le"]:::lemma
+  n62["Layout.chunks_complete"]:::lemma
+  n63["Layout.chunks_short"]:::lemma
+  n64["Layout.codepointInk_supported"]:::lemma
+  n65["Layout.column_floor"]:::lemma
+  n66["Layout.constrain_satisfies"]:::lemma
+  n67["Layout.layoutAccepted_allScreens"]:::lemma
+  n68["Layout.layoutAccepted_geometry"]:::lemma
+  n69["Layout.review_shape_payload_independent"]:::lemma
+  n70["Layout.screenShape_flat_length"]:::lemma
+  n71["Layout.screenShape_sources"]:::lemma
+  n72["Layout.separated_pixels"]:::lemma
+  n73["Layout.shape_path_unique"]:::lemma
+  n74["Layout.shift_rect"]:::lemma
+  n75["Layout.textAdvance_bound"]:::lemma
   n0 --> n3
   n0 --> n38
   n1 --> n3
@@ -631,8 +633,8 @@ flowchart LR
   n5 --> n47
   n5 --> n48
   n5 --> n50
-  n5 --> n52
-  n5 --> n54
+  n5 --> n51
+  n5 --> n53
   n5 --> n6
   n5 --> n56
   n6 --> n41
@@ -641,24 +643,25 @@ flowchart LR
   n6 --> n44
   n6 --> n45
   n6 --> n49
-  n6 --> n51
-  n6 --> n53
+  n6 --> n52
+  n6 --> n54
   n6 --> n55
   n6 --> n57
   n7 --> n58
   n7 --> n59
-  n10 --> n64
-  n10 --> n73
-  n11 --> n60
-  n11 --> n69
+  n7 --> n60
+  n10 --> n65
+  n10 --> n74
+  n11 --> n61
+  n11 --> n70
   n15 --> n39
   n16 --> n15
-  n17 --> n67
+  n17 --> n68
   n18 --> n20
-  n18 --> n71
-  n19 --> n66
+  n18 --> n72
+  n19 --> n67
   n19 --> n29
-  n19 --> n68
+  n19 --> n69
   n21 --> n20
   n21 --> n26
   n21 --> n31
@@ -667,43 +670,42 @@ flowchart LR
   n22 --> n20
   n22 --> n34
   n23 --> n20
-  n23 --> n71
-  n24 --> n65
-  n26 --> n63
+  n23 --> n72
+  n24 --> n66
+  n26 --> n64
   n27 --> n20
-  n28 --> n70
-  n28 --> n72
+  n28 --> n71
+  n28 --> n73
   n31 --> n13
   n32 --> n8
   n32 --> n14
-  n34 --> n61
-  n35 --> n62
-  n35 --> n74
+  n34 --> n62
+  n35 --> n63
+  n35 --> n75
   n40 --> n41
   n40 --> n43
-  n40 --> n51
-  n46 --> n51
+  n40 --> n54
+  n46 --> n54
   n48 --> n43
-  n48 --> n51
+  n48 --> n54
   n50 --> n43
   n50 --> n45
-  n50 --> n51
-  n52 --> n51
-  n54 --> n43
-  n54 --> n51
-  n54 --> n57
+  n50 --> n54
+  n51 --> n54
+  n53 --> n43
+  n53 --> n57
   n56 --> n41
   n56 --> n42
   n56 --> n43
   n56 --> n49
-  n56 --> n51
-  n56 --> n53
-  n64 --> n73
-  n66 --> n20
-  n66 --> n21
-  n66 --> n70
+  n56 --> n52
+  n56 --> n54
+  n65 --> n74
   n67 --> n20
-  n74 --> n8
+  n67 --> n21
+  n67 --> n71
+  n68 --> n20
+  n75 --> n8
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46
@@ -841,16 +843,19 @@ flowchart LR
 
 </details>
 
-<details><summary><b>Clinician simulation</b>: 5 headline claims. Simulated clinicians and effort measurement. Not a safety claim.</summary>
+<details><summary><b>Clinician simulation</b>: 8 headline claims. Simulated clinicians and effort measurement. Not a safety claim.</summary>
 
 ```mermaid
 flowchart LR
-  n0["Sim.Scheduling.clock_monotone"]:::head
-  n1["Sim.Scheduling.erase_conservation"]:::head
-  n2["Sim.Scheduling.exogenous_arm_independent"]:::head
-  n3["Sim.Scheduling.start_bounds"]:::head
-  n4["Sim.Scheduling.timing_accounted"]:::head
-  n0 --> n3
+  n0["Sim.Resumption.accepted_owner"]:::head
+  n1["Sim.Resumption.offered_owner"]:::head
+  n2["Sim.Scheduling.clock_monotone"]:::head
+  n3["Sim.Scheduling.clock_partition"]:::head
+  n4["Sim.Scheduling.erase_conservation"]:::head
+  n5["Sim.Scheduling.exogenous_arm_independent"]:::head
+  n6["Sim.Scheduling.start_bounds"]:::head
+  n7["Sim.Scheduling.timing_accounted"]:::head
+  n2 --> n6
   classDef head fill:#e3eefc,stroke:#2b6cb0,stroke-width:2px,color:#0f2747,font-weight:bold
   classDef lemma fill:#ffffff,stroke:#8a94a6,color:#1f2937
   classDef other fill:#f4f4f5,stroke:#a1a1aa,stroke-dasharray:4 3,color:#3f3f46
