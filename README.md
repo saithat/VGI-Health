@@ -249,7 +249,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
 | Interface research | [UI library](docs/methods/ui-library.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |
 | Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md), [RLM arm R](docs/methods/rlm-night.md) |
-| Local evidence and data | [Run data](docs/methods/run-data.md), [conformance](docs/methods/conformance.md), [organization names and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
+| Local evidence and data | [Run data](docs/methods/run-data.md), [conformance](docs/methods/conformance.md), [Synthetic Hospital](docs/methods/synthetic-hospital.md), [organization names and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
 
 ## Data sources
 
@@ -257,7 +257,9 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
   JAMIA 2018;25(3):230–238.
 - **Synthetic Hospital** (code MIT; data fully synthetic and redistributable)
   longitudinal records. Park, Chen, Dettmers, preprint 2026,
-  https://arxiv.org/abs/2609.30027.
+  https://arxiv.org/abs/2609.30027. All 1,268 patients are converted; the
+  dataset also supplies synthetic-benchmark (not calibrated) case mix, ED imaging
+  priority and note-section text ([method and checks](docs/methods/synthetic-hospital.md)).
 - CPT is a trademark of the AMA; only a few code identifiers with original
   short labels are included.
 - Fonts: Noto Sans, Noto Sans Mono, Noto Sans Symbols 2, Noto Sans CJK SC and Noto Sans Hebrew (SIL OFL 1.1).

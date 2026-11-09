@@ -20,6 +20,7 @@ import { INBOX_RANDOM_STREAM } from "../seed-contract";
 import type { Json, OrderChoice } from "../schema";
 import type { InboxItem, PendingLab, RefillRequest } from "../state";
 import { addPendingLab, isInpatient, labValue, warfarinInr } from "./common";
+import { type CaseMixMode, mixWeights } from "../case-mix";
 
 interface VisitPlan {
   orders: OrderChoice[];
@@ -63,7 +64,7 @@ function titrated(m: HomeMed, dir: 1 | -1): OrderChoice {
 
 // ---------- visit plans ----------
 
-function chronicFocus(p: PatientProfile, rng: Rng): string {
+function chronicFocus(p: PatientProfile, rng: Rng, caseMix: CaseMixMode = "legacy"): string {
   const options: string[] = [];
   if (hasChronicOpioid(p)) options.push("chronic-pain", "chronic-pain");
   if (p.tags.includes("htn")) options.push("htn");
@@ -73,7 +74,9 @@ function chronicFocus(p: PatientProfile, rng: Rng): string {
   if (homeMed(p, "apixaban") !== undefined) options.push("apixaban");
   if (p.tags.includes("asthma") || p.tags.includes("copd")) options.push("respiratory");
   if (p.tags.includes("prediabetes") || p.tags.includes("obesity")) options.push("metabolic");
-  return options.length === 0 ? "wellness" : rng.pick(options);
+  if (options.length === 0) return "wellness";
+  // Legacy picks uniformly (chronic pain listed twice); dataset mode weights each distinct focus.
+  return caseMix === "legacy" ? rng.pick(options) : rng.weighted(mixWeights(caseMix, "clinicChronic", [...new Set(options)].map((o) => [o, 1] as const), (o) => o));
 }
 
 function chronicVisit(p: PatientProfile, focus: string, rng: Rng): VisitPlan {
@@ -127,10 +130,18 @@ function chronicVisit(p: PatientProfile, focus: string, rng: Rng): VisitPlan {
   }
 }
 
+/** Flu-week and urgent-care multipliers of the legacy weights (scenario; declared, uncited). */
+function acuteFactor(kind: string, flu: boolean, urgentCare: boolean): number {
+  if (flu && kind === "influenza-like") return 8;
+  if (flu && kind === "cap-outpatient") return 3;
+  if (urgentCare && kind === "ankle-sprain") return 4;
+  return 1;
+}
+
 /** Same-day acute problems (add-ons and the urgent-care day). */
-function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boolean): VisitPlan {
+function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boolean, caseMix: CaseMixMode = "legacy"): VisitPlan {
   const pcn = isPcnAllergic(p);
-  const kind = rng.weighted<string>([
+  const kind = rng.weighted<string>(mixWeights(caseMix, "clinicAcute", [
     ["sinusitis", 4],
     ["strep-pharyngitis", 3],
     ["bronchitis", 3],
@@ -142,7 +153,7 @@ function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boole
     ["ankle-sprain", urgentCare ? 4 : 1],
     ["laceration", urgentCare ? 3 : 0],
     ["dental-pain", urgentCare ? 1 : 0],
-  ]);
+  ], (k) => k, (k) => acuteFactor(k, flu, urgentCare)));
   const notes = [...DOC, ...(urgentCare ? ["urgentCareTriage"] : [])];
   switch (kind) {
     case "sinusitis":
@@ -297,8 +308,8 @@ function runClinic(b: DayBuild): void {
       newPatients++;
       if (!b.state.p1Panel.includes(v.patient.id)) b.state.p1Panel.push(v.patient.id);
     } else if (v.kind === "post-discharge" || v.kind === "ed-followup") plan = followupVisit(v.patient, v.kind, vr);
-    else if (v.kind === "add-on") plan = acuteVisit(v.patient, vr, b.ctx.fluWeek, false);
-    else plan = chronicVisit(v.patient, chronicFocus(v.patient, vr), vr);
+    else if (v.kind === "add-on") plan = acuteVisit(v.patient, vr, b.ctx.fluWeek, false, b.caseMix);
+    else plan = chronicVisit(v.patient, chronicFocus(v.patient, vr, b.caseMix), vr);
     const taskId = b.peekTaskId("P1", "W1");
     b.addTask("P1", "W1", v.patient.id, start, { orders: plan.orders, noteSections: plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr));
     orderLabs(b, v.patient, plan, vr, `visit ${taskId}`);
@@ -319,7 +330,7 @@ function runUrgentCare(b: DayBuild): void {
     if (p === undefined) break;
     const isNew = !panel.has(p.id);
     if (isNew) newPatients++;
-    const plan = acuteVisit(p, vr, b.ctx.fluWeek, true);
+    const plan = acuteVisit(p, vr, b.ctx.fluWeek, true, b.caseMix);
     const start = 30 + Math.round((k * 590) / n) + vr.int(0, 8);
     b.addTask("P1", "W1", p.id, start, { orders: plan.orders, noteSections: isNew ? [...plan.notes, "pmh", "medRec"] : plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr, 1.3));
     seenIds.push(p.id);
