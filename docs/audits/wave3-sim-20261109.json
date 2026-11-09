@@ -42,11 +42,11 @@
     "scrolls": 4676,
     "communicationMin": 114.15,
     "reorientationMin": 1.48,
-    "readingMin": 0,
-    "clinicalMin": 0,
+    "readingMin": null,
+    "clinicalMin": null,
     "carried": 0,
-    "acceptedHandovers": 0,
-    "actors": 0
+    "acceptedHandovers": null,
+    "actors": null
   },
   "legacyReplayDay2": {
     "tasks": 148,
@@ -62,7 +62,7 @@
     "readingMin": 0,
     "clinicalMin": 0,
     "carried": 0,
-    "acceptedHandovers": 0,
+    "acceptedHandovers": null,
     "actors": 5
   },
   "wave3Day2": {
@@ -150,21 +150,50 @@
     "sameTextOfferedArrivalsEqual": true,
     "browserAudits": {
       "templates": {
+        "status": "pass",
+        "controlsStatus": "pass",
         "states": 1826,
         "measurements": 16434,
         "findings": 0,
-        "elapsedMs": 1770899
+        "elapsedMs": 1770899,
+        "batches": 29,
+        "retries": 0,
+        "cache": {
+          "hits": 0,
+          "misses": 1826
+        }
       },
-      "personas": "waiting for shared browser lock"
+      "personas": {
+        "status": "pass",
+        "controlsStatus": "pass",
+        "states": 1296,
+        "measurements": 11664,
+        "findings": 0,
+        "elapsedMs": 842703,
+        "batches": 14,
+        "retries": 0,
+        "cache": {
+          "hits": 443,
+          "misses": 853
+        }
+      }
     },
     "nativeRenderParity": {
       "nativeScreenTreesIdentical": 801,
       "urgencyProbesIdentical": 7,
       "auditBinarySha256": "750e9833da4f1ac8373455de911334f6afdb7802bce95822d657b454a9b430d0",
-      "laneBinarySha256": "a4845ad199ea98f1177c987cdd18ecb65445c3f4203e3279e65e405cf7021736",
-      "stockRnAfterReceiptIsolationExact": true
+      "laneBinarySha256": "f6083e37088af6bebc640a9c3d46b4b578529cca4dee1f25845be58d45840fba",
+      "stockRnAfterReceiptIsolationExact": true,
+      "stockRnAfterOptionalWireExact": true
     },
     "frozenLegacyBehaviorExact": true,
-    "sourceReceiptIsolationExpertAndBounded": true
+    "sourceReceiptIsolationExpertAndBounded": true,
+    "providerReadinessBeyondSourceDay": true,
+    "finalTargetedWorldTests": 9,
+    "historicalNativeReader": {
+      "contexts": 51,
+      "mismatches": 0
+    },
+    "historicalHandoffAbsencePreserved": true
   }
 }

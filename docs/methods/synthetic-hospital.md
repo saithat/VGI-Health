@@ -167,13 +167,13 @@ Typing is charged at K = 200 ms per character, so sized sections add about 54 s
 Every character is typed: templates, dictation and copy-forward are not
 modeled, so this is an upper bound for authoring. P3 keeps the fixed phrases.
 
-In that data-only comparison, scroll and reading costs did not change. The A04 viewport is ordinal (scroll
-pages by component index), and reading (A17, 1,350 ms per item) is an opt-in,
-item-based lookup cost; neither depends on text length. Charging them by length
+In that data-only comparison, scroll and reading costs did not change. The then-current A04 viewport was ordinal (scroll
+pages by component index), and reading (A17, 1,350 ms per item) was an opt-in,
+item-based lookup cost; neither depended on text length. Charging them by length
 was outside the data lane; the owner subsequently approved and the sim lane
 implemented it. For scale only: with an assumed 90 characters per
-line, 10 lines per page and 200 words per minute (declared scenario values, not
-used by the simulator), a dataset ED note of 1,992 characters is 23 lines (2
+line, 10 lines per page and 200 words per minute (declared scenario values for
+that earlier illustration), a dataset ED note of 1,992 characters is 23 lines (2
 scroll pages, 2.2 s at A04's 1,100 ms) and about 2 minutes of reading.
 
 ## Reproduce
