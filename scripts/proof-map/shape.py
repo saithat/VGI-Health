@@ -110,7 +110,30 @@ for r in decls:
             sorted(r["axioms"]),
         ]
     )
-mi = {m["module"]: m["imports"] for m in raw["modules"]}
+# Render the project's import graph from the pinned import-graph package's DOT,
+# whose arrows point from dependency to importer. The extractor independently
+# supplies module membership; reject any disagreement about direct imports.
+expected = {
+    (dependency, module["module"])
+    for module in raw["modules"]
+    for dependency in module["imports"]
+    if dependency in midx
+}
+dot = (out_dir / "imports.dot").read_text()
+edges = {
+    (dependency, importer)
+    for dependency, importer in re.findall(
+        r'^\s*"([^"\n]+)" -> "([^"\n]+)"(?: \[[^\]]*\])?;', dot, re.MULTILINE
+    )
+    if dependency in midx and importer in midx
+}
+if edges != expected:
+    sys.exit(
+        f"import-graph disagrees with the compiled environment: {len(expected - edges)} missing, {len(edges - expected)} extra edges"
+    )
+mi = collections.defaultdict(list)
+for dependency, importer in sorted(edges):
+    mi[importer].append(dependency)
 commit = (
     os.environ.get("GITHUB_SHA")
     or subprocess.check_output(

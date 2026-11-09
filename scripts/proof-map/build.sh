@@ -25,9 +25,8 @@ cd "$root/lean"
 mapfile -t mods < <(printf '%s\n' Ehr CommitProtocol Main; grep -v '^\s*$' "$root/scripts/proof-map/extra-modules.txt")
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 lake env lean --run "$root/scripts/proof-map/Extract.lean" "$tmp/full.json" "${mods[@]}"
-python3 "$root/scripts/proof-map/shape.py" "$tmp/full.json" "$root" "$out"
-
 "$root/scripts/proof-map/imports.sh" "$out"
+python3 "$root/scripts/proof-map/shape.py" "$tmp/full.json" "$root" "$out"
 case "$readme" in
   write) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/docs/proof-map.md" ;;
   check) python3 "$root/scripts/proof-map/readme.py" "$out/data.json" "$root/docs/proof-map.md" --check ;;
