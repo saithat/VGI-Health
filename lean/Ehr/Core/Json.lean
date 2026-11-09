@@ -98,6 +98,8 @@ structure DaySchedule where
   /-- Omitted selects continuous; legacy retains archived task-local clocks. -/
   clockMode? : Option String := none
   shifts? : Option (List Sim.Scheduling.Shift) := none
+  /-- Explicit source calendar dates for a merged multi-day queue. -/
+  sourceDates? : Option (List (Nat × String)) := none
   deriving BEq, Inhabited, Lean.ToJson, Lean.FromJson
 
 /-- `true` when `x` survives a JSON round trip (to a string and back). -/

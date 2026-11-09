@@ -187,6 +187,11 @@ export interface EdVisit {
   taskId: string;
   patientId: string;
   arrivalClock: number;
+  /** Scenario exogenous stages; actual provider/decision times are in workload output. */
+  providerReadyClock?: number;
+  admitDecisionClock?: number;
+  bedDepartureClock?: number;
+  boardingMin?: number;
   esi: number;
   scenario: string;
   orderSet: string;
@@ -207,6 +212,9 @@ export interface ClinicDay {
 
 export interface WorldState {
   schemaVersion: 1;
+  worldClock?: "continuous";
+  /** ED beds still occupied at the next 07:00 boundary. */
+  edCarry?: EdVisit[];
   seed: number;
   day: number;
   date: string;

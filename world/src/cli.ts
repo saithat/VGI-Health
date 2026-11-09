@@ -14,13 +14,13 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SIM_START_DATE } from "./calendar";
+import { SIM_START_DATE, withCalendar } from "./calendar";
 import { loadPopulation } from "./patients";
 import { personaParams } from "./personas";
 import { DayScheduleSchema, PERSONAS } from "./schema";
 import { dayFacts, dayTable } from "./summary";
 import { withInformationData } from "./information-needs";
-import { withTiming } from "./timing/arrivals";
+import { withTiming, mergeTimedDays } from "./timing/arrivals";
 import { generateWorld } from "./world";
 import { CASE_MIX_MODES, SYNTHETIC_HOSPITAL_MIX } from "./case-mix";
 import { NOTE_TEXT_MODES, NoteTexts, loadSectionDonors, withNoteTexts } from "./notes";
@@ -72,6 +72,8 @@ async function main(): Promise<void> {
   if (!["off", "v1"].includes(informationNeeds)) throw new Error("--information-needs must be off or v1");
   const clockMode = arg(args, "clock-mode") ?? "continuous";
   if (!["continuous", "legacy"].includes(clockMode)) throw new Error("--clock-mode must be continuous or legacy");
+  const worldClock = arg(args, "world-clock") ?? "continuous";
+  if (worldClock !== "continuous" && worldClock !== "legacy") throw new Error("--world-clock must be continuous or legacy");
   const caseMix = CASE_MIX_MODES.find((m) => m === (arg(args, "case-mix") ?? "synthetic-hospital"));
   if (caseMix === undefined) throw new Error("--case-mix must be synthetic-hospital or legacy");
   const noteText = NOTE_TEXT_MODES.find((m) => m === (arg(args, "note-text") ?? "synthetic-hospital"));
@@ -81,7 +83,7 @@ async function main(): Promise<void> {
     throw new Error(`${relative(root, sectionsPath)} missing: run make synthetic-hospital, or pass --note-text legacy`);
   const notes = noteText === "synthetic-hospital" ? new NoteTexts(loadSectionDonors(sectionsPath)) : undefined;
   const pop = loadPopulation(fixtures);
-  const run = generateWorld(seed, days, pop.patients, undefined, { caseMix });
+  const run = generateWorld(seed, days, pop.patients, undefined, { caseMix, worldClock });
   const adt = arg(args, "adt") ?? "realistic";
   if (!["off", "realistic"].includes(adt)) throw new Error("--adt must be off or realistic");
 
@@ -109,6 +111,7 @@ async function main(): Promise<void> {
   }
   write("state-day-0.json", run.initial);
   files.push("state-day-0.json");
+  const timedDays: Record<string, ReturnType<typeof withTiming>[]> = {};
   for (const d of run.days) {
     write(`state-day-${d.state.day}.json`, d.state);
     files.push(`state-day-${d.state.day}.json`);
@@ -117,8 +120,9 @@ async function main(): Promise<void> {
       const base = notes === undefined ? d.schedules[p] : withNoteTexts(d.schedules[p], notes, (id) => run.pop.byId.get(id), (id) => scenarios.get(id));
       const schedule = clockMode === "legacy" ? {...base, clockMode: "legacy" as const}
         : withTiming(base, d.state);
-      const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...schedule, tasks: schedule.tasks.map(withInformationData)} : schedule);
+      const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...schedule, tasks: schedule.tasks.map(t => withCalendar(worldClock, () => withInformationData(t)))} : schedule);
       if (!parsed.success) throw new Error(`day ${d.state.day} ${p}: schedule fails the schema: ${parsed.error.message}`);
+      (timedDays[p] ??= []).push(parsed.data);
       const name = `day-${d.state.day}-${p}.json`;
       write(name, parsed.data);
       files.push(name);
@@ -127,8 +131,16 @@ async function main(): Promise<void> {
       files.push(agentName);
     }
   }
+  if (worldClock === "continuous" && clockMode === "continuous" && run.days.length) {
+    for (const p of PERSONAS) {
+      const name = `horizon-${p}.json`;
+      write(name, DayScheduleSchema.parse(mergeTimedDays(timedDays[p] ?? [], run.days.map(d => d.state.date))));
+      files.push(name);
+    }
+  }
   write("manifest.json", {
     generator: GENERATOR,
+    worldClock,
     workloadProtocol: clockMode === "legacy" ? "task-local-legacy" : "continuous-workload-v1",
     ...(adt === "realistic" ? {adtProtocol: "adt-realism-v1"} : {}),
     ...(informationNeeds === "v1" ? {informationProtocol: "information-needs-v1"} : {}),

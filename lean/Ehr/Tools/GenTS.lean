@@ -95,7 +95,7 @@ The clinical module also exports runtime enum tables, so even type-only source
 changes would otherwise alter the certified painter fingerprint. -/
 def simulatorField (n f : Name) : Bool :=
   (n == ``Ehr.Task && f == `timing?) ||
-  (n == ``Ehr.DaySchedule && [`clockMode?, `shifts?].contains f) ||
+  (n == ``Ehr.DaySchedule && [`clockMode?, `shifts?, `sourceDates?].contains f) ||
   (n == ``Ehr.TaskMetrics && f == `interruptions?) ||
   (n == ``Ehr.DayResult && f == `workload?)
 

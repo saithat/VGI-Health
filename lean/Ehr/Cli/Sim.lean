@@ -142,7 +142,7 @@ def loadClinical (root world : System.FilePath) (schedule : DaySchedule) : IO (L
   let contextPath := world / "context" / s!"day-{if schedule.day < 10 then "0" else ""}{schedule.day}.json"
   let directoryResources ← if ← contextPath.pathExists then
       pure (Render.Fhir.bundleResources (← readJson contextPath)) else pure []
-  let directoryContext : Render.FactsContext := { today := dateOf schedule.day, now := 0, record := [("viewerPersona", schedule.persona)] }
+  let directoryContext : Render.FactsContext := { today := (schedule.sourceDates?.getD []).lookup schedule.day |>.getD (dateOf schedule.day), now := 0, record := [("viewerPersona", schedule.persona)] }
   let directory := Render.Fhir.patientDirectory directoryContext directoryResources
   let mut extras : List (String × List Json) := []
   let mut out := []
@@ -163,7 +163,7 @@ def loadClinical (root world : System.FilePath) (schedule : DaySchedule) : IO (L
         let rs := mergeResources (bundleResourcesWithIds b) today
         let merged := Json.mkObj [("resourceType", .str "Bundle"),
           ("entry", toJson (rs.map fun r => Json.mkObj [("resource", r)]))]
-        let ctx : Render.FactsContext := { today := dateOf task.day, now := task.startMin, record := (clinicalRecord rs).reverse }
+        let ctx : Render.FactsContext := { today := (schedule.sourceDates?.getD []).lookup schedule.day |>.getD (dateOf task.day), now := task.startMin, record := (clinicalRecord rs).reverse }
         match Render.Fhir.parseBundle ctx merged with
         | .error e => throw (IO.userError s!"{task.id}: FHIR facts: {e}")
         | .ok (f, display) => pure (f, display)
@@ -279,7 +279,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out", "--interruptions", "--interruption-profile"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out", "--interruptions", "--interruption-profile", "--sim-model", "--text-cost"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -297,9 +297,9 @@ def command (mode : String) (args : List String) : IO UInt32 := do
       if (fs.lookup "--schedule").isSome then throw (IO.userError "use --task or --schedule")
     if (schedule.tasks.map (·.id)).eraseDups.length != schedule.tasks.length then
       throw (IO.userError "schedule contains duplicate task IDs")
-    if !schedule.tasks.all (fun t => t.day == schedule.day && t.persona == schedule.persona) then
+    if !schedule.tasks.all (fun t => (t.day == schedule.day || (schedule.sourceDates?.getD []).any (fun d => d.1 == t.day)) && t.persona == schedule.persona) then
       throw (IO.userError "task day/persona must match the schedule")
-    if schedule.day < 1 || schedule.day > 10 then throw (IO.userError "schedule day must be 1..10")
+    if schedule.day < 1 then throw (IO.userError "schedule day must be positive")
     let world ← match (fs.lookup "--world").or (fs.lookup "--fhir") with
       | some p => pure (System.FilePath.mk p)
       | none => throw (IO.userError "missing --world")
@@ -327,7 +327,14 @@ def command (mode : String) (args : List String) : IO UInt32 := do
           | "emergencyPhysician" => pure (some .emergencyPhysician)
           | "inpatientPharmacy" => pure (some .inpatientPharmacy)
           | _ => throw (IO.userError "unknown --interruption-profile")
-      let interruptionConfig : Resumption.InterruptionConfig := { mode := interruptionMode, profile? := interruptionProfile }
+      let model := (fs.lookup "--sim-model").getD "wave3"
+      unless ["wave3", "legacy"].contains model do throw (IO.userError "--sim-model must be wave3 or legacy")
+      let textCost := (fs.lookup "--text-cost").getD "length"
+      unless ["length", "legacy"].contains textCost do throw (IO.userError "--text-cost must be length or legacy")
+      let interruptionConfig : Resumption.InterruptionConfig := {
+        mode := interruptionMode, profile? := interruptionProfile, legacyModel := model == "legacy",
+        lengthCosts := textCost == "length",
+        chartDisplay := fun task => ((clinical.lookup task.id).map (·.2)).getD Render.Display.empty }
       let options ← readAs Bounded.Options (← required fs "--persona")
       let policy := (fs.lookup "--policy").getD options.policy
       if !["expert", "bounded"].contains policy then throw (IO.userError "--policy must be expert or bounded")

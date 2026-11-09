@@ -4,6 +4,39 @@ import Lean.Data.Json
 start). These simulator assumptions do not alter clinical rules. -/
 namespace Ehr.Sim.Scheduling
 
+/-- Disjoint time on one server. Queue time is an endpoint, not paid service.
+Clinical and text coefficients are declared scenarios; N1 (2023) motivates
+separating EHR/inbox/clinical time, not adding its totals as extra waits. -/
+structure Clocks where
+  uiMs : Nat := 0
+  readingMs : Nat := 0
+  clinicalMs : Nat := 0
+  communicationMs : Nat := 0
+  passiveWaitMs : Nat := 0
+  reorientationMs : Nat := 0
+  queueMs : Nat := 0
+  deriving DecidableEq, BEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
+
+/-- Responsibility only: accepting never transfers a draft, receipt or sign authority.
+FHIR S8–S10 and SAFER S13 (2025) supply structure, no acceptance rate. -/
+structure Handover where
+  task : String
+  patient : String
+  sender : String
+  recipient : String
+  offeredAtMs : Nat
+  acceptedAtMs? : Option Nat := none
+  reason : String
+  deriving DecidableEq, BEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
+
+structure EdStages where
+  providerQueueMs : Nat
+  providerStartMs : Nat
+  decisionMs : Nat
+  departureMs : Nat
+  boardingMs : Nat
+  deriving DecidableEq, BEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
+
 structure Arrival where
   arrivalMs : Nat
   readyMs : Nat
@@ -16,6 +49,10 @@ structure Arrival where
   resultAgeMs : Nat := 0
   /-- Distinct occurrence keys and their MAR window ends. -/
   doseWindows : List (String × Nat) := []
+  /-- Scenario bedside service, atomic and additional to measured EHR effort. -/
+  clinicalServiceMs? : Option Nat := none
+  /-- ED admitted cases: passive bed wait after the decision, never clinician service. -/
+  boardingMs? : Option Nat := none
   deriving DecidableEq, BEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
 
 structure Shift where
@@ -55,6 +92,10 @@ structure Timing where
   /-- finished | carried | abandoned; abandonment requires a reason. -/
   disposition : String := "carried"
   reason? : Option String := none
+  clocks? : Option Clocks := none
+  actor? : Option String := none
+  handover? : Option Handover := none
+  ed? : Option EdStages := none
   deriving DecidableEq, BEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
 
 structure WorkloadReport where

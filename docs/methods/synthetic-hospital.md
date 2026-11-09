@@ -145,6 +145,10 @@ document.
 
 ## Typing, scroll and reading cost
 
+This data-lane measurement predates the wave-3 simulator increment. Current
+length-dependent reading/scrolling and its legacy opt-out are documented in
+[wave-3 simulation](wave3-simulation.md#separate-time-on-one-server).
+
 Native `ehr simulate` covered ten days and five personas on the expert policy,
 using releases v1/v2/v3 by day. It compared the dataset-text world with an
 identical fixed-phrase world (same seed and case mix; schedules differ only in
@@ -163,11 +167,11 @@ Typing is charged at K = 200 ms per character, so sized sections add about 54 s
 Every character is typed: templates, dictation and copy-forward are not
 modeled, so this is an upper bound for authoring. P3 keeps the fixed phrases.
 
-Scroll and reading costs do not change. The A04 viewport is ordinal (scroll
+In that data-only comparison, scroll and reading costs did not change. The A04 viewport is ordinal (scroll
 pages by component index), and reading (A17, 1,350 ms per item) is an opt-in,
 item-based lookup cost; neither depends on text length. Charging them by length
-would be a Lean simulator change outside this data lane; it is listed as an open
-question in the lane report. For scale only: with an assumed 90 characters per
+was outside the data lane; the owner subsequently approved and the sim lane
+implemented it. For scale only: with an assumed 90 characters per
 line, 10 lines per page and 200 words per minute (declared scenario values, not
 used by the simulator), a dataset ED note of 1,992 characters is 23 lines (2
 scroll pages, 2.2 s at A04's 1,100 ms) and about 2 minutes of reading.

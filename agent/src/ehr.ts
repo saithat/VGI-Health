@@ -63,6 +63,8 @@ export interface SimulateInput {
   policy?: 'expert' | 'bounded';
   clockMode?: 'continuous' | 'legacy';
   interruptions?: 'realWork' | 'fixedCost';
+  simModel?: 'wave3' | 'legacy';
+  textCost?: 'length' | 'legacy';
   interruptionProfile?: 'wardNurse' | 'surgicalPhysician' | 'clinicPrescriber' | 'emergencyPhysician' | 'inpatientPharmacy';
 }
 export interface MinClicksInput { specVersion: string; program: Program; schedule: DaySchedule; worldDir: string }
@@ -156,6 +158,8 @@ class CliEhr implements EhrClient {
         ...(i.policy ? ['--policy',i.policy] : []),
         ...(i.clockMode ? ['--clock-mode', i.clockMode] : []),
         ...(i.interruptions ? ['--interruptions', i.interruptions] : []),
+        ...(i.simModel ? ['--sim-model', i.simModel] : []),
+        ...(i.textCost ? ['--text-cost', i.textCost] : []),
         ...(i.interruptionProfile ? ['--interruption-profile', i.interruptionProfile] : []),
         ...(i.memory ? ['--memory-in',p['memory'] ?? ''] : []),
       ]);
