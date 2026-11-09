@@ -182,12 +182,16 @@ scroll pages, 2.2 s at A04's 1,100 ms) and about 2 minutes of reading.
 make synthetic-hospital            # fetch, verify SHA-256, convert, check the mix table
 make test-synthetic-hospital
 for m in synthetic-hospital legacy; do
-  pnpm --filter world gen --seed 1 --days 10 --case-mix synthetic-hospital --note-text $m \
+  pnpm --filter world gen --seed 1 --days 10 --case-mix synthetic-hospital --note-text $m --world-clock legacy \
     --out "$TMPDIR/sh-$m" --quiet
 done
 node scripts/synthetic-hospital/check-world.mjs --world "$TMPDIR/sh-synthetic-hospital" \
-  --baseline "$TMPDIR/sh-legacy" --simulate --jobs 6
+  --baseline "$TMPDIR/sh-legacy" --simulate --jobs 6 --sim-model legacy --text-cost legacy
 ```
+
+The flags above reproduce the historical data-only timing model; omit
+`--world-clock legacy`, `--sim-model legacy` and `--text-cost legacy` to inspect
+the current wave-3 scenario instead. The report records its selected model.
 
 World generation with the default `--note-text synthetic-hospital` needs the
 local sections fixture and stops with a hint when it is missing.
