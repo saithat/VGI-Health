@@ -2,6 +2,11 @@
  * pnpm --filter world gen --seed 1 --days 10 [--fixtures <index.json>] [--out <dir>]
  *
  * Optional: --policy bounded --hidden-preferences (default remains expert).
+ * --case-mix synthetic-hospital|legacy and --note-text synthetic-hospital|legacy
+ * (defaults synthetic-hospital: setting case mix and note section text from
+ * Synthetic Hospital, labeled synthetic-benchmark; legacy keeps local draws and
+ * fixed phrases). --note-typed-share N (per mille, default 1000 = off) types
+ * only that share of each section (declared template/dictation discount).
  * Defaults to runs/world/2 (world revision, independent of seed); writes
  * state-day-<d>.json, day-<d>-<persona>.json
  * (DaySchedule, validated against src/schema.ts) and manifest.json.
@@ -18,6 +23,8 @@ import { dayFacts, dayTable } from "./summary";
 import { withInformationData } from "./information-needs";
 import { withTiming } from "./timing/arrivals";
 import { generateWorld } from "./world";
+import { CASE_MIX_MODES, SYNTHETIC_HOSPITAL_MIX } from "./case-mix";
+import { NOTE_TEXT_MODES, NOTE_TYPED_SHARE_OFF, NoteTexts, loadSectionDonors, withNoteTexts } from "./notes";
 import { nativeAdt, simulateAdt } from "./adt";
 
 export const GENERATOR = "world@0.1.0";
@@ -66,8 +73,18 @@ async function main(): Promise<void> {
   if (!["off", "v1"].includes(informationNeeds)) throw new Error("--information-needs must be off or v1");
   const clockMode = arg(args, "clock-mode") ?? "continuous";
   if (!["continuous", "legacy"].includes(clockMode)) throw new Error("--clock-mode must be continuous or legacy");
+  const caseMix = CASE_MIX_MODES.find((m) => m === (arg(args, "case-mix") ?? "synthetic-hospital"));
+  if (caseMix === undefined) throw new Error("--case-mix must be synthetic-hospital or legacy");
+  const noteText = NOTE_TEXT_MODES.find((m) => m === (arg(args, "note-text") ?? "synthetic-hospital"));
+  if (noteText === undefined) throw new Error("--note-text must be synthetic-hospital or legacy");
+  const sectionsPath = join(root, "fixtures", "synthetic-hospital-sections.json");
+  if (noteText === "synthetic-hospital" && !existsSync(sectionsPath))
+    throw new Error(`${relative(root, sectionsPath)} missing: run make synthetic-hospital, or pass --note-text legacy`);
+  const notes = noteText === "synthetic-hospital" ? new NoteTexts(loadSectionDonors(sectionsPath)) : undefined;
+  const typedShare = intArg(args, "note-typed-share", NOTE_TYPED_SHARE_OFF);
+  if (typedShare > 1000) throw new Error("--note-typed-share must be 0..1000 (per mille)");
   const pop = loadPopulation(fixtures);
-  const run = generateWorld(seed, days, pop.patients);
+  const run = generateWorld(seed, days, pop.patients, undefined, { caseMix });
   const adt = arg(args, "adt") ?? "realistic";
   if (!["off", "realistic"].includes(adt)) throw new Error("--adt must be off or realistic");
 
@@ -98,9 +115,12 @@ async function main(): Promise<void> {
   for (const d of run.days) {
     write(`state-day-${d.state.day}.json`, d.state);
     files.push(`state-day-${d.state.day}.json`);
+    // Diagnosis keys for donor matching: ED scenarios and clinic/pediatric visit kinds.
+    const scenarios = new Map([...d.state.today.ed.arrivals.map((a) => [a.taskId, a.scenario] as const), ...Object.entries(d.visitKinds)]);
     for (const p of PERSONAS) {
-      const schedule = clockMode === "legacy" ? {...d.schedules[p], clockMode: "legacy" as const}
-        : withTiming(d.schedules[p], d.state);
+      const base = notes === undefined ? d.schedules[p] : withNoteTexts(d.schedules[p], notes, (id) => run.pop.byId.get(id), (id) => scenarios.get(id), typedShare);
+      const schedule = clockMode === "legacy" ? {...base, clockMode: "legacy" as const}
+        : withTiming(base, d.state);
       const parsed = DayScheduleSchema.safeParse(informationNeeds === "v1" ? {...schedule, tasks: schedule.tasks.map(withInformationData)} : schedule);
       if (!parsed.success) throw new Error(`day ${d.state.day} ${p}: schedule fails the schema: ${parsed.error.message}`);
       const name = `day-${d.state.day}-${p}.json`;
@@ -116,6 +136,10 @@ async function main(): Promise<void> {
     workloadProtocol: clockMode === "legacy" ? "task-local-legacy" : "continuous-workload-v1",
     ...(adt === "realistic" ? {adtProtocol: "adt-realism-v1"} : {}),
     ...(informationNeeds === "v1" ? {informationProtocol: "information-needs-v1"} : {}),
+    // Synthetic-benchmark inputs (Synthetic Hospital); absent keys mean legacy local draws.
+    ...(caseMix === "synthetic-hospital" ? {caseMix, caseMixSource: SYNTHETIC_HOSPITAL_MIX.source} : {}),
+    ...(noteText === "synthetic-hospital" ? {noteText, noteTextSource: relative(root, sectionsPath),
+      ...(typedShare !== NOTE_TYPED_SHARE_OFF ? {noteTypedSharePerMille: typedShare} : {})} : {}),
     seed,
     days,
     startDate: SIM_START_DATE,

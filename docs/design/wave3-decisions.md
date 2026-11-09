@@ -73,7 +73,7 @@ Sources: `docs/audits/realism-wave2-verification-20261108.md` (Owner questions),
 - *Type:* data (replaces local draws in A43). *Evidence:* Synthetic Hospital 2026. *Recommend:* **A.** It is better grounded than hand-picked values. Its setting mix (55% outpatient / 31% ED) is not used to resize the personas. *Options:* A) adopt; B) imaging priority only.
 
 **14. Chart and note sizes from Synthetic Hospital**
-- *Change:* replace the fixed-phrase synthetic notes with sections sized from the dataset (~60K sections averaging ~1,900 characters). This raises reading, scrolling and typing costs.
+- *Change:* replace the fixed-phrase synthetic notes with sections sized from the dataset (~60K sections averaging ~150 characters; a whole note of about 11 sections averages ~1,930 characters; corrected 2026-11-09, owner-approved). This raises reading, scrolling and typing costs.
 - *Type:* sim (A04/A05) + data. *Evidence:* Synthetic Hospital 2026. *Recommend:* **A.** Notes are currently far too short to be realistic. *Options:* A) sizes + text; B) sizes only.
 
 **15. Add the missing workflow phases**

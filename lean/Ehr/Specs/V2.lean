@@ -52,11 +52,23 @@ def orderCode : ElementSpec where
   friction := .compliance
   fhirTarget := "ServiceRequest.code"
 
+/-- Hospital policy (not law): local clinical documentation and record-completeness checklist.
+Optional requested priority of an imaging order (routine, urgent, ASAP, stat).
+No entry or review requirement uses it. -/
+def imagingPriority : ElementSpec where
+  id := "imagingPriority"
+  label := "Imaging priority"
+  kind := .coded "request-priority"
+  enteredBy := prescribers
+  prefill := .defaultConfirm
+  friction := .compliance
+  fhirTarget := "ServiceRequest.priority"
+
 /-- v2 adds only optional content and its catalog tag; old requirements stay exact. -/
 def specV2 : Spec :=
   { specV1 with
     version := "v2"
-    elements := specV1.elements ++ [priorAuthRequest, orderKind, orderCode]
+    elements := specV1.elements ++ [priorAuthRequest, orderKind, orderCode, imagingPriority]
     infos := specV1.infos ++ [priorAuthStatus]
     design := { specV1.design with catalog := specV1.design.catalog ++ ["priorAuth"] } }
 

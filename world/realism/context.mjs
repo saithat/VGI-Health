@@ -1,5 +1,17 @@
 import { fictionalize } from '../../scripts/fictional-identities.mjs';
-import { cc, ref, id, tag, text, title, stamp, calendarAgo, SYSTEM, EXT, SNOMED } from './common.mjs';
+import { readFileSync } from 'node:fs';
+import { cc, ref, id, tag, text, title, stamp, calendarAgo, hash, SYSTEM, EXT, SNOMED } from './common.mjs';
+
+const MIX = JSON.parse(readFileSync(new URL('../src/synthetic-hospital-mix.json', import.meta.url), 'utf8'));
+/** Synthetic-benchmark imaging priority (Synthetic Hospital v1.3, per setting); a
+ * deterministic categorical draw keyed by the order identity. */
+export function imagingPriority(setting, key) {
+  const split = MIX.imagingPriority.bySetting[setting];
+  const total = Object.values(split).reduce((a, b) => a + b, 0);
+  let u = parseInt(hash(`imaging-priority|${key}`).slice(0, 8), 16) / 2 ** 32 * total;
+  for (const p of ['stat', 'urgent', 'routine']) { u -= split[p] ?? 0; if (u < 0) return p; }
+  return 'routine';
+}
 
 const ACT = 'http://terminology.hl7.org/CodeSystem/v3-ActCode';
 const PARTICIPATION = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType';
@@ -57,7 +69,7 @@ export function enrichRefill(original, {date,pharmacy,owner}) {
 }
 
 /** One shared, dated FHIR graph; List resources define the exact visible collections. */
-export function dayContext({seed,day,date,schedules,state,previous,population,charts,operationHistory=new Map()}) {
+export function dayContext({seed,day,date,schedules,state,previous,population,charts,operationHistory=new Map(),caseMix='legacy'}) {
   const entries = new Map();
   const add = (r, persona, kind='list-context') => {
     tag(r,kind,`day-${day}`,...(persona?[persona]:[]));
@@ -116,12 +128,13 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
   for(const [i,a] of state.today.ed.arrivals.entries()) {
     const bed = make('Location',`ed-bed-${i}`,{status:'active',name:`ED ${String(i+1).padStart(2,'0')}`,physicalType:cc('bd','Bed','http://terminology.hl7.org/CodeSystem/location-physical-type'),partOf:ref(units.P2)},'P2');
     const work=pendingWork(a.scenario,i);
-    const e = encounter(a.patientId,'P2',`ed-${a.taskId}`,'EMER',stamp(date,a.arrivalClock),COMPLAINTS[a.scenario]??title(a.scenario.replaceAll('-',' ')),bed,{priority:cc(String(a.esi),`ESI ${a.esi}`,SYSTEM+'/esi'),extension:[{url:EXT+'disposition',valueString:{admit:'Admit',discharge:'Discharge after reassessment',consult:'Surgical consultation'}[a.disposition]??'Evaluation in progress'},{url:EXT+'pending-labs',valueString:work.labs?work.labs+' pending':'No pending labs'},{url:EXT+'pending-imaging',valueString:work.image?work.image+' pending':'No pending imaging'}]});
+    const imaging=work.image&&caseMix==='synthetic-hospital'?imagingPriority('ed',`${seed}|${day}|${a.taskId}`):null;
+    const e = encounter(a.patientId,'P2',`ed-${a.taskId}`,'EMER',stamp(date,a.arrivalClock),COMPLAINTS[a.scenario]??title(a.scenario.replaceAll('-',' ')),bed,{priority:cc(String(a.esi),`ESI ${a.esi}`,SYSTEM+'/esi'),extension:[{url:EXT+'disposition',valueString:{admit:'Admit',discharge:'Discharge after reassessment',consult:'Surgical consultation'}[a.disposition]??'Evaluation in progress'},{url:EXT+'pending-labs',valueString:work.labs?work.labs+' pending':'No pending labs'},{url:EXT+'pending-imaging',valueString:work.image?work.image+' pending'+(imaging?` (${imaging.toUpperCase()})`:''):'No pending imaging'}]});
     // A census is a simultaneous board snapshot, capped at 20 of the day's arrivals.
     if(edRows.length<20) edRows.push(e);
     for(const kind of ['labs','imaging']) {
       const label=kind==='labs'?work.labs:work.image;
-      if(label) make('ServiceRequest',`${e.id}-${kind}`,{status:'active',intent:'order',code:cc(label.toLowerCase().replaceAll(/[^a-z0-9]+/g,'-'),label),subject:patient(a.patientId),encounter:ref(e),requester:ref(providers.P2),authoredOn:stamp(date,a.arrivalClock+10)},'P2');
+      if(label) make('ServiceRequest',`${e.id}-${kind}`,{status:'active',intent:'order',...(kind==='imaging'&&imaging?{priority:imaging}:{}),code:cc(label.toLowerCase().replaceAll(/[^a-z0-9]+/g,'-'),label),subject:patient(a.patientId),encounter:ref(e),requester:ref(providers.P2),authoredOn:stamp(date,a.arrivalClock+10)},'P2');
     }
   }
   while(edRows.length<16) {

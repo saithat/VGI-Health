@@ -9,7 +9,7 @@ import { loadWorld } from "../../agent/src/world";
 import { DayScheduleSchema, PERSONAS } from "../src/schema";
 
 it("exports a deterministic agent-loadable world and removes stale days on regeneration", async (context) => {
-  const reason = dataReason("fixtures/synthetic-hospital");
+  const reason = dataReason("fixtures/synthetic-hospital", "fixtures/synthetic-hospital-sections.json");
   if (reason) context.skip(reason);
   const out = mkdtempSync(join(tmpdir(), "world-cli-"));
   const gen = (days: number) => {

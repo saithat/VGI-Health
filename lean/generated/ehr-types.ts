@@ -1534,6 +1534,20 @@ export interface OrderChoice {
   administration?: AdministrationDecision;
   indication?: string;
   prn: boolean;
+  /**
+   * Requested priority of an imaging order (`routine`/`urgent`/`asap`/`stat`);
+   * omitted for medications, procedures and older schedules.
+   */
+  priority?: string;
+}
+
+/**
+ * Text typed for one documentation section, keyed by its element id. World
+ * generation sizes it from Synthetic Hospital chart sections (synthetic-benchmark).
+ */
+export interface NoteText {
+  id: string;
+  text: string;
 }
 
 /**
@@ -1568,6 +1582,10 @@ export interface TaskChoices {
    * Documentation sections to complete.
    */
   noteSections: string[];
+  /**
+   * Typed section text; omitted sections, and older schedules, use the fixed phrase.
+   */
+  noteTexts?: NoteText[];
   /**
    * Pain score for this task (0-10).
    */

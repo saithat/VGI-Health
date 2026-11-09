@@ -19,6 +19,7 @@ import type { Json, OrderChoice } from "../schema";
 import type { CaseDiagnosis, EdVisit } from "../state";
 import { addAppointment, admit, canAdmit } from "./common";
 import { createUrgentCase } from "./surgery";
+import { type CaseMixMode, mixWeights, settingQualifies } from "../case-mix";
 
 interface ScenarioCtx {
   p: PatientProfile;
@@ -64,6 +65,9 @@ function painRx(x: ScenarioCtx): OrderChoice {
 function oxyPrn(x: ScenarioCtx): OrderChoice {
   return prn.oxycodonePO(opioidTolerant(x.p) ? 10 : 5);
 }
+
+/** Flu-week multipliers of the legacy weights (scenario; declared, uncited). */
+const ED_FLU_FACTOR: Partial<Record<string, number>> = { pneumonia: 13 / 8, "copd-asthma-exacerbation": 1.5, "influenza-like-illness": 16 / 3 };
 
 /** Adult and pediatric ED scenarios with their selection weight for a given patient. */
 const ADULT_SCENARIOS: readonly { key: string; weight: (p: PatientProfile, flu: boolean) => number; build: (x: ScenarioCtx) => EdPlan }[] = [
@@ -564,11 +568,12 @@ export function runEd(b: DayBuild): void {
 
     let plan: EdPlan;
     if (p.ageYears < 18) {
-      plan = prng.weighted(PEDS_SCENARIOS.map((s) => [s, s.weight] as const)).build(x);
+      plan = prng.weighted(mixWeights(b.caseMix, "edPeds", PEDS_SCENARIOS.map((s) => [s, s.weight] as const), (s) => s.key)).build(x);
     } else {
       const flu = ctx.fluWeek;
       const pp = p;
-      plan = prng.weighted(ADULT_SCENARIOS.map((s) => [s, s.weight(pp, flu)] as const)).build(x);
+      plan = prng.weighted(mixWeights(b.caseMix, "edAdult", ADULT_SCENARIOS.map((s) => [s, s.weight(pp, flu)] as const), (s) => s.key,
+        (s) => (flu ? ED_FLU_FACTOR[s.key] ?? 1 : 1))).build(x);
     }
 
     let disposition: "admit" | "discharge" = plan.admit !== undefined && prng.chance(plan.admitProb) ? "admit" : "discharge";
@@ -626,9 +631,9 @@ export function runEd(b: DayBuild): void {
 }
 
 /** An admission plan for an inpatient already on the ward when the simulation starts. */
-export function initialAdmissionPlan(p: PatientProfile, kg: number, rng: Rng): { diagnosis: string; regimen: OrderChoice[]; prnPerShift: number } {
+export function initialAdmissionPlan(p: PatientProfile, kg: number, rng: Rng, caseMix: CaseMixMode = "legacy"): { diagnosis: string; regimen: OrderChoice[]; prnPerShift: number } {
   const keys = ["pneumonia", "cellulitis", "copd-asthma-exacerbation", "pyelonephritis", ...(isDiabetic(p) ? ["hyperglycemia"] : [])];
-  const key = rng.pick(keys);
+  const key = caseMix === "legacy" || !settingQualifies("wardAdmission") ? rng.pick(keys) : rng.weighted(mixWeights(caseMix, "wardAdmission", keys.map((k) => [k, 1] as const), (k) => k));
   const scen = ADULT_SCENARIOS.find((s) => s.key === key);
   if (scen === undefined) throw new Error(`unknown scenario ${key}`);
   const plan = scen.build({ p, kg, pcn: isPcnAllergic(p), rng });

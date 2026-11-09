@@ -175,10 +175,11 @@ export const eventSchema: z.ZodType<L.Event> = z.union([
 const stepResultSchema: z.ZodType<L.StepResult> = z.union([z.enum(['ok', 'ignored']), z.object({ blocked: z.object({ reason: str }) })]);
 
 // ---------------------------------------------------------------- simulation
-const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'kind', 'code', 'supplyDays', 'curesExemptReason', 'holdReason', 'administration'], z.object({
+const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'kind', 'code', 'supplyDays', 'curesExemptReason', 'holdReason', 'administration', 'priority'], z.object({
   drug: str, doseTenths: nat, unit: unitKindSchema, route: str, freq: str, indication: str.exactOptional(), prn: z.boolean(),
   kind: z.enum(['medication', 'imaging', 'procedure']).exactOptional(), code: str.exactOptional(),
   supplyDays: nat.exactOptional(), curesExemptReason: str.exactOptional(), holdReason: str.exactOptional(),
+  priority: str.exactOptional(),
   administration: z.object({
     outcome: z.enum(['given', 'held', 'refused', 'notGiven', 'delayed']),
     reason: str, occurrence: str, scheduledMin: nat, windowEndMin: nat, attemptMin: nat,
@@ -192,11 +193,12 @@ const taskSchema: z.ZodType<L.Task> = z.object({
   workflow: z.enum(['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']),
   patientId: str,
   startMin: nat,
-  choices: dropNulls(['refill', 'disposition', 'painScore', 'w6Step', 'refillReason'], z.object({
+  choices: dropNulls(['refill', 'disposition', 'painScore', 'w6Step', 'refillReason', 'noteTexts'], z.object({
     orders: z.array(orderChoiceSchema), administer: z.array(orderChoiceSchema), ackResult: z.boolean(),
     refill: str.exactOptional(), disposition: str.exactOptional(), immunizations: z.array(str), noteSections: z.array(str),
     painScore: nat.exactOptional(), w6Step: z.enum(['consult', 'preop', 'postop', 'rounding', 'discharge']).exactOptional(),
     refillReason: str.exactOptional(),
+    noteTexts: z.array(z.object({ id: str, text: z.string() })).exactOptional(),
   })),
   todayResources: z.array(z.unknown()),
   interruptions: nat,

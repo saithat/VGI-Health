@@ -60,7 +60,7 @@ def weightKgGoal (facts : Facts) : Option Value :=
 /-- Order-line element names. -/
 def orderElements : List ElementId :=
   ["drug", "dose", "doseUnit", "unit", "route", "freq", "frequency", "indication", "abxIndication", "duration", "quantity", "refills", "pharmacy",
-   "substitution", "prn", "orderDiagnosis", "orderKind", "orderCode"]
+   "substitution", "prn", "orderDiagnosis", "orderKind", "orderCode", "imagingPriority"]
 
 /-- The chosen value of an order element for one order (`none`: no chosen value). -/
 def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
@@ -76,6 +76,7 @@ def orderValue (e : ElementId) (o : OrderChoice) : Option Value :=
   else if e == "orderKind" then some (.code (match o.kind?.getD .medication with
     | .medication => "medication" | .imaging => "imaging" | .procedure => "procedure"))
   else if e == "orderCode" then o.code?.map .code
+  else if e == "imagingPriority" then o.priority?.map .code
   else none
 
 /-- Translate typed world exemption decisions to the hospital's coded
@@ -102,8 +103,12 @@ def taskCuresReason (choices : TaskChoices) : Option String := do
 /-- Elements filled once per immunization (slot = index). -/
 def immunizationElements : List ElementId := ["vaccine", "immunization", "cvx"]
 
-/-- The text typed for a note section. -/
+/-- The fixed phrase typed for a note section without supplied text. -/
 def noteText (sec : String) : String := sec ++ ": reviewed, see plan."
+
+/-- The text typed for a note section: the task's supplied text, else the fixed phrase. -/
+def sectionText (choices : TaskChoices) (sec : String) : String :=
+  (((choices.noteTexts?.getD []).find? (·.id == sec)).map (·.text)).getD (noteText sec)
 
 /-- Explicit administration outcomes take priority. Frozen schedules keep their
 historical hold data, including the former refusal sentinel, without redrawing them. -/
@@ -160,7 +165,7 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
       med?.map fun m => .text (administrationFollowup m)
     else if el.id == "refillDecision" then choices.refill?.map .code
     else if el.id == "disposition" || el.id == "dispositionChoice" then choices.disposition?.map .code
-    else if choices.noteSections.contains el.id then some (.text (noteText el.id))
+    else if choices.noteSections.contains el.id then some (.text (sectionText choices el.id))
     else match med? with
       | some m => orderValue el.id m
       | none => none
@@ -418,7 +423,9 @@ def deriveGoals (sp : Spec) (facts : Facts) (user : User) (wf : Workflow) (choic
     | _, _ => []
   let services := ((List.range orders.length).zip orders).flatMap fun (i, o) =>
     if o.kind?.getD .medication == .medication then [] else
-    ["orderKind", "orderCode"].map fun e =>
+    -- Imaging priority is entered only when chosen and the release declares it.
+    (["orderKind", "orderCode"] ++
+      (if o.priority?.isSome && (sp.element? "imagingPriority").isSome then ["imagingPriority"] else [])).map fun e =>
       { element := e, slot? := some i, value? := orderValue e o, commit := "signOrders" : ValueGoal }
   let base := dedupGoals (raw ++ advance ++ explicitChoices ++ services)
   let fitted := (mergeClinicalGoals base clinical).map (checkFit sp facts user)

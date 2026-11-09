@@ -3184,6 +3184,16 @@
      {"field": {"slot": "current", "prefill": "none", "element": "orderCode"}},
      "id": "w1Labs.orderCode"},
     {"visibility": "always",
+     "tag": "w1Labs.imagingPriority",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w1Labs.servicePriorAuth",
+     "label": "Imaging priority (routine / urgent / stat)",
+     "kind":
+     {"field":
+      {"slot": "current", "prefill": "none", "element": "imagingPriority"}},
+     "id": "w1Labs.imagingPriority"},
+    {"visibility": "always",
      "tag": "w1Labs.priorAuthRequest",
      "tab": 0,
      "size": "normal",
@@ -17877,6 +17887,16 @@
      "kind":
      {"field": {"slot": "current", "prefill": "none", "element": "orderCode"}},
      "id": "w6PreOp.orderCode"},
+    {"visibility": "always",
+     "tag": "w6PreOp.imagingPriority",
+     "tab": 0,
+     "size": "normal",
+     "parent": "w6PreOp.servicePriorAuth",
+     "label": "Imaging priority (routine / urgent / stat)",
+     "kind":
+     {"field":
+      {"slot": "current", "prefill": "none", "element": "imagingPriority"}},
+     "id": "w6PreOp.imagingPriority"},
     {"visibility": "always",
      "tag": "w6PreOp.priorAuthRequest",
      "tab": 0,

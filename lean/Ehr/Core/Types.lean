@@ -1119,6 +1119,16 @@ structure OrderChoice where
   administration? : Option AdministrationDecision := none
   indication? : Option String := none
   prn : Bool := false
+  /-- Requested priority of an imaging order (`routine`/`urgent`/`asap`/`stat`);
+  omitted for medications, procedures and older schedules. -/
+  priority? : Option String := none
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Text typed for one documentation section, keyed by its element id. World
+generation sizes it from Synthetic Hospital chart sections (synthetic-benchmark). -/
+structure NoteText where
+  id : String
+  text : String
   deriving DecidableEq, Repr, Inhabited
 
 /-- The clinical choices for one task. -/
@@ -1137,6 +1147,8 @@ structure TaskChoices where
   immunizations : List String := []
   /-- Documentation sections to complete. -/
   noteSections : List String := []
+  /-- Typed section text; omitted sections, and older schedules, use the fixed phrase. -/
+  noteTexts? : Option (List NoteText) := none
   /-- Pain score for this task (0-10). -/
   painScore? : Option Nat := none
   /-- W6 stage; independent of free-text documentation. -/

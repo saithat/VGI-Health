@@ -10,6 +10,7 @@ import { hasAllergyClass } from "./patients";
 import { Rng } from "./rng";
 import type { Json, OrderChoice, Persona, Task, TaskChoices, Workflow } from "./schema";
 import type { DayContext, WorldState } from "./state";
+import { type CaseMixMode, drawImagingPriority } from "./case-mix";
 
 export interface PopIndex {
   all: PatientProfile[];
@@ -124,6 +125,9 @@ export class DayBuild {
   readonly tasks: Record<Persona, Task[]> = { P1: [], P2: [], P3: [], P4: [], P5: [] };
   readonly picker: Picker;
   readonly events: string[] = [];
+  /** Clinical visit kind (chronic focus, acute problem, pediatric reason) by task id,
+   * for diagnosis-matched note text. Generation output only; never drawn from. */
+  readonly visitKinds: Record<string, string> = {};
   private seq: Record<Persona, number> = { P1: 0, P2: 0, P3: 0, P4: 0, P5: 0 };
 
   constructor(
@@ -132,6 +136,8 @@ export class DayBuild {
     readonly pop: PopIndex,
     readonly state: WorldState,
     readonly daySeed: string,
+    /** Scenario weights within each setting (see case-mix.ts). */
+    readonly caseMix: CaseMixMode = "legacy",
   ) {
     this.picker = new Picker(pop);
   }
@@ -174,8 +180,12 @@ export class DayBuild {
     this.seq[persona] += 1;
     const id = `d${String(this.day).padStart(2, "0")}-${persona}-${workflow}-${String(this.seq[persona]).padStart(3, "0")}`;
     // Filter after scenario generation so release gating consumes no random draws.
-    const orders = (c.orders ?? []).filter((o) =>
+    const gated = (c.orders ?? []).filter((o) =>
       this.day >= PRIOR_AUTH_RELEASE_DAY || (o.kind ?? "medication") === "medication");
+    // Dataset mode: imaging orders carry the Synthetic Hospital priority split of their setting.
+    const setting = persona === "P2" ? "ed" : persona === "P3" || workflow === "W6" ? "inpatient" : "outpatient";
+    const orders = this.caseMix === "legacy" ? gated : gated.map((o, i) =>
+      o.kind === "imaging" && o.priority == null ? { ...o, priority: drawImagingPriority(setting, `${id}|${i}`) } : o);
     const task: Task = {
       id,
       day: this.day,

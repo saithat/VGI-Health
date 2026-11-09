@@ -78,7 +78,8 @@ load:
 
 seed: load
 
-# Opt-in historical charts, independent of simulation worlds; committed default cohort = 150.
+# Synthetic Hospital (synthetic-benchmark): all 1,268 patients as historical charts, the
+# local note-section fixture, and a check of the committed case-mix table against the pinned DB.
 .PHONY: load-synthetic-hospital synthetic-hospital test-synthetic-hospital
 load-synthetic-hospital:
 	node infra/scripts/load-synthetic-hospital.mjs
@@ -86,6 +87,7 @@ load-synthetic-hospital:
 synthetic-hospital:
 	node scripts/synthetic-hospital/fetch.mjs
 	node scripts/synthetic-hospital/convert.mjs
+	node scripts/synthetic-hospital/mix.mjs --check
 
 test-synthetic-hospital:
 	node --test scripts/synthetic-hospital/*.test.mjs

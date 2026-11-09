@@ -19,6 +19,8 @@ def withServicePriorAuth (p : Program) (id : ScreenId) : Program := p.updateScre
        (parent := some "servicePriorAuth"),
      lineField id "orderKind" "orderKind" "Kind: imaging / procedure" (parent := some "servicePriorAuth"),
      lineField id "orderCode" "orderCode" "Service code" (parent := some "servicePriorAuth"),
+     lineField id "imagingPriority" "imagingPriority" "Imaging priority (routine / urgent / stat)"
+       (parent := some "servicePriorAuth"),
      lineField id "priorAuthRequest" "priorAuthRequest" "Request authorization (human entry)"
        (parent := some "servicePriorAuth"),
      mk id "servicePriorAuthStatus" (.priorAuth "priorAuthStatus") "Service prior-auth status"
