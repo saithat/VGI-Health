@@ -3,6 +3,8 @@
 E is opt-in (`proposal-quality --arms B,E`). Production discovery and the A/B/C/D
 prompt/choice policies retain their existing behavior. Only the owner decides
 whether E should become the default after reviewing a completed paired comparison.
+[Arm R](rlm-night.md) keeps E's capabilities but moves large results into a
+confined REPL, so the root model's prompt stays bounded.
 
 `agent/src/agent-loop.ts` supplies a compact task/persona/night identity, allowed
 moves, selector patch addressing, thirteen safety-property summaries, movement
