@@ -213,7 +213,8 @@ greater acceptance, a strictly positive lower 95% bound, and nonnegative
 validation click and scroll differences. Offline screen checks and simulated
 user offers remain skipped, so acceptance is a hypothetical release.
 
-The prompt pre-declaration commit will be pinned here before any live call.
+The prompt pre-declaration commit is `db57833a4d69be79e525f1f67d69c18add194eda`.
+It was committed before any live follow-up call.
 A one-decision R smoke and its exact replay precede the full study. A cheaper
 model, if available through existing credentials, is tested on the pilot's seven
 decisions, one sample: first for sub-calls only, then for root and sub-calls.
