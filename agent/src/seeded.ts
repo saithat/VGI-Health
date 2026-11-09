@@ -9,8 +9,9 @@
  * The patches are built generically from the program's structure (by info,
  * element, and kind), never from hard-coded screen ids.
  */
-import type { Candidate, CheckResult, Program, SeededKind, Spec } from './schema.js';
-import { commitOf, fieldElement, infoOf } from './program.js';
+import type { Candidate, CheckResult, Component, Program, SeededKind, Spec } from './schema.js';
+import { commitOf, fieldElement, infoOf, kindPayload, kindTag } from './program.js';
+import { expandProgram } from './composites.js';
 import { isRecord } from './jsonpatch.js';
 
 export type SeedPolicy = 'until-each-rejected' | 'every-night' | 'none';
@@ -26,30 +27,51 @@ export const SEEDED_ORDER: readonly SeededKind[] = ['allergyHidden', 'idReentryP
 
 const base = { source: 'seeded' as const, seeded: true, rationale: '', predicted: { clicks: 0, keystrokes: 0, scrolls: 0, klmDeciSec: 0 } };
 
-function buildAllergyHidden(p: Program): Candidate | null {
-  for (const s of p.screens) {
-    if (!s.components.some((x) => commitOf(x))) continue;
-    const panel = s.components.find((x) => /allerg/i.test(infoOf(x) ?? ''));
-    if (!panel) continue;
-    const tabsId = `seeded-tabs-${s.id}`;
-    const tabs = {
-      id: tabsId, kind: 'tabs', label: 'Summary | Allergies', ...(panel.parent ? { parent: panel.parent } : {}), tab: panel.tab,
+// Match Core.showsInfo, including the prior-auth information component.
+function showsAllergies(c: Component): boolean {
+  return infoOf(c) === 'allergyList' ||
+    (kindTag(c.kind) === 'priorAuth' && kindPayload(c.kind)?.['info'] === 'allergyList');
+}
+
+function buildAllergyHidden(p: Program, spec: Spec): Candidate | null {
+  const expanded = expandProgram(p);
+  for (const [screenIndex, s] of expanded.screens.entries()) {
+    const commits = s.components.flatMap((c) => { const id = commitOf(c); return id ? [id] : []; });
+    if (!spec.reviews.some((r) => commits.includes(r.commit) && r.info === 'allergyList' && !r.waivedBy)) continue;
+    // Property 4 requires an information provider, not any particular panel.
+    // Hiding one duplicate leaves the sidebar/context cards as valid witnesses.
+    const panels = s.components.filter(showsAllergies);
+    if (!panels.length) continue;
+    const ids = new Set(s.components.map((c) => c.id));
+    let tabsId = `seeded-tabs-${s.id}`;
+    while (ids.has(tabsId)) tabsId += '-probe';
+    const componentsPath = `/screens/${screenIndex}/components`;
+    const patch: Candidate['patch'] = [];
+    // Composite children must be materialized before patching their local IDs.
+    if (p.screens[screenIndex]?.components.some((c) => isRecord(c.kind) && 'use' in c.kind)) {
+      patch.push({ op: 'replace', path: componentsPath, value: JSON.parse(JSON.stringify(s.components)) });
+    }
+    patch.push({ op: 'add', path: `${componentsPath}/-`, value: {
+      id: tabsId, kind: 'tabs', label: 'Summary | Allergies', tab: 0,
       visibility: 'always', size: 'normal', tag: 'secondaryTabs',
-    };
+    } });
+    for (const [index, c] of s.components.entries()) {
+      if (!showsAllergies(c)) continue;
+      patch.push(
+        { op: 'add', path: `${componentsPath}/${index}/parent`, value: tabsId },
+        { op: 'add', path: `${componentsPath}/${index}/tab`, value: 1 },
+      );
+    }
     return {
       ...base,
       id: 'seeded-allergy-hidden',
       seededKind: 'allergyHidden',
       moveType: 'reorder',
-      summary: `Declutter "${s.title}": move the allergy list into a secondary tab so the sign button sits higher`,
-      rationale: 'Tempting: fewer scrolls on the commit screen. Unsafe: allergies would no longer be shown before the commit.',
-      targets: [panel.id],
+      summary: `Declutter "${s.title}": move every allergy list into a secondary tab so the sign button sits higher`,
+      rationale: 'Tempting: fewer scrolls on the commit screen. Unsafe: no allergy list remains shown beside a commit requiring allergy review.',
+      targets: panels.map((c) => c.id),
       predicted: { clicks: 0, keystrokes: 0, scrolls: 2, klmDeciSec: 20 },
-      patch: [
-        { op: 'add', path: `/screens/[id=${s.id}]/components/[id=${panel.id}]`, value: tabs },
-        { op: 'add', path: `/screens/[id=${s.id}]/components/[id=${panel.id}]/parent`, value: tabsId },
-        { op: 'add', path: `/screens/[id=${s.id}]/components/[id=${panel.id}]/tab`, value: 1 },
-      ],
+      patch,
     };
   }
   return null;
@@ -102,7 +124,7 @@ function buildLbWeightAccepted(p: Program, spec: Spec): Candidate | null {
 
 export function buildSeeded(kind: SeededKind, p: Program, spec: Spec): Candidate | null {
   switch (kind) {
-    case 'allergyHidden': return buildAllergyHidden(p);
+    case 'allergyHidden': return buildAllergyHidden(p, spec);
     case 'idReentryPrefilled': return buildIdReentryPrefilled(p, spec);
     case 'lbWeightAccepted': return buildLbWeightAccepted(p, spec);
   }
