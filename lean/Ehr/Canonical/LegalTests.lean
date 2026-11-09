@@ -20,16 +20,24 @@ def navigate (p : Program) (origin target : ScreenId) : List Event :=
       if seen.any (fun y => y.1 == x.1) then seen else seen ++ [x]) []) paths
   ((paths.find? (·.1 == target)).map (·.2)).getD []
 
-/-- Explicit samples enter real fields. Missing samples stay absent. -/
+/-- Explicit samples enter real fields. Medication doses use the selected
+formulary drug's native unit; the generic kind parser intentionally refuses them.
+Missing samples stay absent. -/
 def fillArtifact (p : Program) (screen : ScreenId) (drug : String := "lisinopril") (refillChoice : String := "approve") (sp : Spec := specV1) (f : Facts := hospital) : List Event :=
   (p.screen? (Blueprint.host screen)).toList.flatMap fun sc =>
     (sc.components.filter fun c => c.id.startsWith (screen ++ ".")).flatMap fun c =>
     match c.kind with
     | .field e _ _ =>
-      let sample := if e == "patientIdReentry" then some (f.identity.initials ++ "/" ++ f.identity.sex ++ "/" ++ toString f.identity.ageYears) else if e == "weight" then f.weightToday?.map (fun (w, _) => toString (w / 10) ++ "." ++ toString (w % 10)) else if e == "drug" then some drug else if e == "refillDecision" then some refillChoice else
+      let sample := if e == "patientIdReentry" then some (f.identity.initials ++ "/" ++ f.identity.sex ++ "/" ++ toString f.identity.ageYears) else if e == "weight" then f.weightToday?.map (fun (w, _) => toString (w / 10) ++ "." ++ toString (w % 10)) else if e == "drug" then some drug else if e == "doseUnit" then (drugDoseUnits drug).head?.map (fun rule => rule.unit.name) else if e == "refillDecision" then some refillChoice else
         (LegalExamples.values.find? (·.1 == e)).map (·.2)
       match sample, sp.element? e with
-      | some text, some el => (parseValue el.kind text).toList.map (.enter c.id)
+      | some text, some el =>
+        let value := if el.kind == .medicationDose then do
+          let amount ← parseTenths text
+          let rule ← (drugDoseUnits drug).head?
+          pure (.qty amount rule.unit)
+        else parseValue el.kind text
+        value.toList.map (.enter c.id)
       | _, _ => []
     | _ => []
 

@@ -3,6 +3,7 @@ import Ehr.Sim.FeatureTests
 import Ehr.Sim.GoalsTests
 import Ehr.Specs.V1
 import Ehr.Canonical.Program
+import Ehr.Canonical.FeatureExamples
 
 namespace Ehr.Sim.PolicyTests
 open Ehr Ehr.Sim Ehr.Examples.Tiny
@@ -26,8 +27,12 @@ def day : DayResult := simulate spec program p1 schedule (fun _ => facts) 123 { 
 
 def canonicalTask : Task := { task with
   choices := { orders := [GoalsTests.amox], noteSections := ["hpi", "ros", "exam", "assessmentPlan"] } }
+/-- The full catalog requires trusted external evidence as well as human UI
+inputs. Keep the original core scenario; supply explicit full-profile fixtures. -/
+def canonicalFacts : Facts :=
+  if Specs.ruleProfile == .full then Canonical.FeatureExamples.withEvidence facts else facts
 def canonicalDay : DayResult := simulate Specs.V1.specV1 Canonical.canonicalV1 p1
-  { schedule with tasks := [canonicalTask] } (fun _ => facts) 123 { mode := .fixedCost }
+  { schedule with tasks := [canonicalTask] } (fun _ => canonicalFacts) 123 { mode := .fixedCost }
 #guard canonicalDay.tasks.all (·.completed)
 #guard (canonicalDay.floor.zip canonicalDay.tasks).all (fun (a, b) => below a b)
 

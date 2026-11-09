@@ -1,5 +1,6 @@
 import Ehr.Check.BadProofs
 import Ehr.Check.DomainObstruction
+import Ehr.Check.FullDisplayObstruction
 
 set_option Elab.async false
 namespace Ehr.Check
@@ -7,10 +8,10 @@ open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 
 set_option maxRecDepth 16384
 
-/-- Seed 13 is genuinely invalid in the current all-encounters domain, but
-this witness is the shared pre-op display defect, NOT its intended CURES
-mutation. Other workflows still provide CURES paths, so this theorem must not
-be presented as a proof that removing the W1 paths breaks completability. -/
+/-- Seed 13's former pre-op display witness is repaired by required-review
+pinning. Its rejection theorem retains the shared full-profile payload-domain
+obstruction. The CURES mutation is independently checked by FullSeedTests's
+completion regression; this theorem does not establish CURES-specific detection. -/
 def noCuresPreopEp : Episode :=
   ⟨specV1, noCures, preopFacts, replayUser noCures⟩
 
@@ -22,15 +23,22 @@ private theorem noCuresButton : (noCuresPreopEp.prog.compsOf noCuresPreopSign.sc
       compShown noCuresPreopEp.spec noCuresPreopEp.facts noCuresPreopSign
         (noCuresPreopEp.prog.compsOf noCuresPreopSign.screen) c) = true := by decide +kernel
 
-private theorem preopRequirement : mustShow signOrders anticoagulantList (.encounter "preop") ∈ specV1.reviews := by decide +kernel
-private theorem noCuresReviewFalse : reviewMet specV1 noCures preopFacts noCuresPreopSign
-    (mustShow signOrders anticoagulantList (.encounter "preop")) = false := by decide +kernel
+private theorem noCuresRequired : "signOrders" ∈ requiredCommits specV1 canonicalV1 noCures := by
+  obtain ⟨c, hc, hk⟩ := List.any_eq_true.mp noCuresButton
+  have kind : c.kind = .button (.commit "signOrders") :=
+    beq_iff_eq.mp (Bool.and_eq_true.mp hk).1
+  change c ∈ noCures.compsOf noCuresPreopSign.screen at hc
+  cases hs : noCures.screen? noCuresPreopSign.screen with
+  | none => simp [Program.compsOf, hs] at hc
+  | some scr =>
+    have member : (scr, c) ∈ allComps noCures :=
+      List.mem_flatMap.mpr ⟨scr, List.mem_of_find?_eq_some hs,
+        List.mem_map.mpr ⟨c, by simpa [Program.compsOf, hs] using hc, rfl⟩⟩
+    exact required_of_component specV1 canonicalV1 noCures (scr, c) member "signOrders"
+      kind signOrders (by decide +kernel) (by decide +kernel)
 
 theorem bad13_preop_not_satisfies : ¬ Satisfies specV1 none canonicalV1 noCures :=
-  review_violation noCuresPreopEp none canonicalV1 rfl noCuresPreopSign
-    (reachable_afterHuman noCuresPreopEp hiddenPath noCuresPreopEp.start .start)
-    "signOrders" noCuresButton (mustShow signOrders anticoagulantList (.encounter "preop"))
-    preopRequirement rfl rfl noCuresReviewFalse
+  v1_payload_domain_not_satisfies canonicalV1 noCures ⟨"signOrders", noCuresRequired⟩
 
 /-- Seed 15 reaches a shown Sign button for a controlled order while the
 actual order-summary component remains inside its collapsed group. -/
@@ -59,4 +67,10 @@ theorem bad15_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenControl
 
 #print axioms bad13_preop_not_satisfies
 #print axioms bad15_not_satisfies
+#print axioms noCuresButton
+#print axioms noCuresRequired
+#print axioms controlledButton
+#print axioms controlledRequirement
+#print axioms controlledReviewFalse
+
 end Ehr.Check

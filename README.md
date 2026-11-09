@@ -132,7 +132,7 @@ and replay configuration, context requirements and frozen-night comparisons.
 The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
 lazy review evidence and safe local renames.
 
-The opt-in `EhrHeavy` module imports its full-catalog proofs before its module documentation.
+`EhrHeavy` seed proofs use current canonical witnesses and structural patch membership; full-profile regressions supply explicit dose units and trusted evidence.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
 runs unit tests, 201 canonical conformance scenarios, the 15-accepted/23-rejected

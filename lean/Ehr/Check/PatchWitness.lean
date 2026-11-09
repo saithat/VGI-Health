@@ -47,6 +47,18 @@ theorem hasComponent_forPersona (sp : Spec) (p : Program) (owner : String) (role
   refine ⟨List.mem_filter.mpr ⟨hc, allowed⟩, ?_⟩
   cases hk : c.kind <;> simp_all [macroOf?]
 
+/-- Persona projection also preserves the source screen id for a subsequent
+screen-specific patch. Only this component's authorization is required. -/
+theorem component_forPersona_on (sp : Spec) (p : Program) (owner : String) (role : Role)
+    (s : Screen) (c : Component) (screen : s ∈ (presetProgram owner p).screens)
+    (member : c ∈ s.components) (allowed : roleComponentAllowed sp role c = true)
+    (nonmacro : macroOf? c.kind = none) :
+    ∃ out ∈ (forPersona sp p owner role).screens, out.id = s.id ∧ c ∈ out.components := by
+  refine ⟨_, List.mem_map.mpr ⟨_, List.mem_map.mpr ⟨s, screen, rfl⟩, rfl⟩, rfl, ?_⟩
+  apply List.mem_filter.mpr
+  refine ⟨List.mem_filter.mpr ⟨member, allowed⟩, ?_⟩
+  cases hk : c.kind <;> simp_all [macroOf?]
+
 /-- Updating a screen retains a component when the update retains every occurrence. -/
 theorem hasComponent_updateScreen (p : Program) (id : ScreenId) (f : Screen → Screen)
     (c : Component) (h : HasComponent p c)
@@ -172,6 +184,7 @@ def canonicalSource : List Screen :=
     W4.screens ++ W5.screens ++ W6.screens ++ W7.screens
   if Specs.ruleProfile == .full then Features.screens (Rules.screens base) else base.map CorePlacements.augment
 
+set_option maxRecDepth 16384 in
 /-- Alerts and link annotation retain a field with no declared source/link. -/
 theorem canonical_keeps_plain_field (c : Component)
     (member : ∃ s ∈ Blueprint.screens canonicalSource, c ∈ s.components)
@@ -201,5 +214,8 @@ theorem canonical_keeps_plain_field (c : Component)
       | none => c
     | _ => c) = c
   simp [kind, lookup, noLink, noRecord]
+
+#print axioms component_forPersona_on
+#print axioms canonical_keeps_plain_field
 
 end Ehr.Check

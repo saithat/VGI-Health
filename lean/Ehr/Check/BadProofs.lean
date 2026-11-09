@@ -24,16 +24,16 @@ theorem reachable_afterHuman (ep : Episode) (es : List Event) (s : State)
 def refillKept : List ScreenId :=
   (unreachableRefill.screens.map (·.id)).filter (· != "w7Decision")
 
-private def refillScreen : Screen := unreachableRefill.screens[42]?.getD default
-private theorem refillScreenPresent : unreachableRefill.screens[42]?.isSome = true := by decide +kernel
-private theorem refillCompPresent : refillScreen.components[25]?.isSome = true := by decide +kernel
+@[irreducible] private def refillScreen : Screen := unreachableRefill.screens[45]?.getD default
+private theorem refillScreenPresent : unreachableRefill.screens[45]?.isSome = true := by decide +kernel
+private theorem refillCompPresent : refillScreen.components[26]?.isSome = true := by decide +kernel
 @[irreducible] private def refillWitness : Screen × Component :=
-  (refillScreen, refillScreen.components[25]?.getD default)
+  (refillScreen, refillScreen.components[26]?.getD default)
 private theorem refillWitness_mem : refillWitness ∈ allComps unreachableRefill := by
   unfold refillWitness
   exact List.mem_flatMap.mpr ⟨refillScreen,
-    getD_mem unreachableRefill.screens 42 refillScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem refillScreen.components 25 refillCompPresent, rfl⟩⟩
+    (by unfold refillScreen; exact getD_mem unreachableRefill.screens 45 refillScreenPresent),
+    List.mem_map.mpr ⟨_, getD_mem refillScreen.components 26 refillCompPresent, rfl⟩⟩
 private theorem refillKind : refillWitness.2.kind = .button (.commit "approveRefill") := by decide +kernel
 private def refillCommit := (specV1.commit? "approveRefill").getD default
 private theorem refillLookup : specV1.commit? "approveRefill" = some refillCommit := by decide +kernel
@@ -60,7 +60,7 @@ private theorem refillDifferentStart : unreachableRefill.start ≠ "w7Decision" 
 
 theorem bad07_not_satisfies : ¬ Satisfies specV1 none canonicalV1 unreachableRefill :=
   required_unreachable_violation specV1 none canonicalV1 unreachableRefill "approveRefill"
-    refillRequired (requires approveRefill refillDecision) refillRequirement rfl "w7Decision"
+    refillRequired (requires approveRefill refillDecision) refillRequirement rfl rfl "w7Decision"
     refillFields (no_incoming_no_depth unreachableRefill "w7Decision" specV1.design.maxDepth
       refillDifferentStart refillNoIncoming)
 
@@ -97,4 +97,20 @@ theorem bad01_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergi
 #print axioms bad11_not_satisfies
 #print axioms bad12_not_satisfies
 #print axioms bad14_not_satisfies
+#print axioms reachable_afterHuman
+#print axioms refillScreenPresent
+#print axioms refillCompPresent
+#print axioms refillWitness_mem
+#print axioms refillKind
+#print axioms refillLookup
+#print axioms refillRole
+#print axioms refillRequired
+#print axioms refillRequirement
+#print axioms refillFields
+#print axioms refillNoIncoming
+#print axioms refillDifferentStart
+#print axioms hiddenButton
+#print axioms hiddenRequirement
+#print axioms hiddenReviewFalse
+
 end Ehr.Check

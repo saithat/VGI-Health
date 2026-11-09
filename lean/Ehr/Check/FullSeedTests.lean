@@ -44,6 +44,7 @@ def mutationRejected (property : String) (p : Program) : Bool :=
 #guard mutationRejected "wellFormed" Bad.inventedAlert
 #guard mutationRejected "noRepeatInterruptions" Bad.repeatedInteraction
 #guard mutationRejected "severityTiers" Bad.passivePopup
+#guard mutationRejected "completable" Bad.noCures
 #guard mutationRejected "humanOnlyKept" Bad.macroNaloxone
 #guard mutationRejected "reviewsBeforeCommit" Bad.hiddenControlledDetails
 #guard mutationRejected "completable" Bad.scheduleIIRefills
