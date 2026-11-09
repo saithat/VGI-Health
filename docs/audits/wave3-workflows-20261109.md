@@ -42,7 +42,7 @@ against the read-only shared dependency store.
 
 | Command (repository root unless stated) | Result |
 |---|---|
-| `git rebase main` | Passed before implementation and after the implementation commit; the latter incorporated the proof-map documentation merge without conflicts. |
+| `git rebase main` | Passed before implementation and after the implementation commit; incorporated the proof-map documentation and harness-night merges. The latter required only combining the README review tag. |
 | `cd lean && lake build` | Passed, 555 jobs. |
 | `cd lean && lake exe gents` | Passed, 196 types / 42 samples; simulator metadata remains in its augmentation module. |
 | `LEAN_PATH=$PWD/lean/.lake/build/lib/lean lean -j4 "$TMPDIR/Wave3WorkflowAxioms.lean"` | Passed; ten `#print axioms` checks, listed below. |
@@ -51,8 +51,15 @@ against the read-only shared dependency store.
 | `pnpm --filter app lint` / `pnpm --filter app typecheck` / `pnpm --filter app build` | All passed. |
 | `pnpm --filter agent exec vitest run test/workflow-protocol.test.ts test/workload-capabilities.test.ts test/lean-types.test.ts test/releases.test.ts --maxWorkers=2` | 35/35 passed; includes native compound/stream paths, all five workload-bearing canonicals and the actual seven-task replay. |
 | `VGI_REQUIRE_LEAN_TESTS=1 pnpm --filter world exec vitest run test/workflows.test.ts test/administration-outcomes.test.ts test/schema.test.ts test/timing.test.ts test/consistency.test.ts test/determinism.test.ts --maxWorkers=2` | 98/98 passed; no skips. |
-| `node scripts/audit-alert-policy.mjs "$TMPDIR/w3-workflows-audit-templates"` then `node scripts/audit-alert-policy.mjs "$TMPDIR/w3-workflows-audit-personas" --personas` | Template audit is running under the shared browser lock; personas follow sequentially. Results pending. |
+| `node scripts/audit-alert-policy.mjs "$TMPDIR/w3-workflows-audit-templates"` | Passed: 4,813 exports / 1,826 distinct trees; 16,434 physical measurements; zero findings/retries; 29 batches, four workers. |
+| `node scripts/audit-alert-policy.mjs "$TMPDIR/w3-workflows-audit-personas" --personas` | Passed sequentially after templates under the shared browser lock: 3,619 exports / 1,296 distinct trees (443 exact cache hits, 853 fresh); 11,664 physical measurements; zero findings/retries; 14 batches, four workers. |
 | `git diff --check` | Passed before staging; repeated after staging and final rebase. |
+
+Agent lint, typecheck and the 35 targeted tests also passed after incorporating
+the harness-night merge. The rebase did not change Lean, renderer or release inputs.
+Both full browser results report `status=pass` and `controlsStatus=pass`;
+physical report coverage is 1,826/1,826 template trees and 1,296/1,296 persona
+trees. The pair ran once, sequentially, without bypassing the shared browser lock.
 
 An early build restart briefly overlapped an unfinished `lake` process. The
 second process was interrupted as soon as the overlap was noticed. Subsequent
