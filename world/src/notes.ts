@@ -1,7 +1,8 @@
 /**
  * Note section text from Synthetic Hospital v1.3 chart sections
  * (synthetic-benchmark). Each task borrows one donor encounter from its
- * setting, matched by local scenario (ED), then sex and age band; every mapped
+ * setting, matched by diagnosis key (ED scenario, or clinic/pediatric visit
+ * kind), then sex and age band; every mapped
  * note section types that donor's section text, so section sizes follow the
  * dataset. Sections with no dataset counterpart keep Lean's fixed phrase
  * (A45 placeholders). `legacy` omits all text, which reproduces the fixed
@@ -78,7 +79,7 @@ export function taskSetting(task: Task): Setting {
 }
 
 const pickBy = <T>(items: readonly T[], key: string): T | undefined =>
-  items.length === 0 ? undefined : items[parseInt(hashHex(key).slice(0, 8), 16) % items.length];
+  items.length === 0 ? undefined : items[parseInt(hashHex(key).slice(-8), 16) % items.length];
 
 export class NoteTexts {
   private readonly bySetting = new Map<Setting, SectionDonor[]>();
@@ -127,11 +128,23 @@ export class NoteTexts {
   }
 }
 
+/** Template/dictation typing discount: the per-mille share of each section's
+ * text that is keyboard-typed (scenario value; declared, uncited; 1000 = off,
+ * the default). The rest is assumed to arrive by template, copy-forward or
+ * dictation and is not typed, so only the typed prefix is supplied. */
+export const NOTE_TYPED_SHARE_OFF = 1000;
+
+export function typedPortion(text: string, perMille: number): string {
+  if (!Number.isInteger(perMille) || perMille < 0 || perMille > 1000) throw new Error("note typed share must be an integer per mille in 0..1000");
+  return perMille === NOTE_TYPED_SHARE_OFF ? text : text.slice(0, Math.ceil(text.length * perMille / 1000));
+}
+
 /** Add section text to every task of a schedule (a pure post-processing step: no random draws). */
 export function withNoteTexts(schedule: DaySchedule, notes: NoteTexts, patient: (id: string) => PatientProfile | undefined,
-  scenario: (taskId: string) => string | undefined): DaySchedule {
+  scenario: (taskId: string) => string | undefined, typedShare = NOTE_TYPED_SHARE_OFF): DaySchedule {
   return { ...schedule, tasks: schedule.tasks.map((task) => {
-    const texts = notes.texts(task, patient(task.patientId), scenario(task.id));
+    const texts = notes.texts(task, patient(task.patientId), scenario(task.id))
+      .map((n) => ({ ...n, text: typedPortion(n.text, typedShare) })).filter((n) => n.text.length > 0);
     return texts.length === 0 ? task : { ...task, choices: { ...task.choices, noteTexts: texts } };
   }) };
 }

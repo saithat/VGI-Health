@@ -2,8 +2,8 @@ import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { MIX_PSEUDO_COUNT, SYNTHETIC_HOSPITAL_MIX, datasetCount, imagingPriorityWeights, mixWeights } from "../src/case-mix";
-import { NOTE_SECTION_TYPES, NoteTexts, type SectionDonor, withNoteTexts } from "../src/notes";
+import { MIX_MIN_MATCHED, MIX_PSEUDO_COUNT, SYNTHETIC_HOSPITAL_MIX, datasetCount, drawImagingPriority, imagingPriorityWeights, mixWeights, settingQualifies } from "../src/case-mix";
+import { NOTE_SECTION_TYPES, NoteTexts, type SectionDonor, typedPortion, withNoteTexts } from "../src/notes";
 import { loadPopulation } from "../src/patients";
 import { DayScheduleSchema, PERSONAS, type Task } from "../src/schema";
 import { generateWorld } from "../src/world";
@@ -25,6 +25,22 @@ describe("Synthetic Hospital case mix (synthetic-benchmark)", () => {
     expect(() => datasetCount("edAdult", "not-a-scenario")).toThrow();
   });
 
+  it("uses dataset weights only where at least 30 encounters match", () => {
+    expect(MIX_MIN_MATCHED).toBe(30);
+    const settings = ["edAdult", "edPeds", "edSurgicalConsult", "clinicChronic", "clinicAcute", "pedsSick", "wardAdmission"] as const;
+    expect([...settings].sort()).toEqual(Object.keys(SYNTHETIC_HOSPITAL_MIX.settings).sort());
+    const qualifying = settings.filter((s) => settingQualifies(s));
+    expect(qualifying.sort()).toEqual(["clinicChronic", "edAdult"]);
+    const peds = [["peds-asthma", 3]] as const;
+    expect(mixWeights("synthetic-hospital", "edPeds", peds, (k) => k)).toEqual(peds);
+  });
+
+  it("draws outpatient imaging priority deterministically and mostly routine", () => {
+    const draws = Array.from({ length: 4000 }, (_, i) => drawImagingPriority("outpatient", `k${i}`));
+    expect(drawImagingPriority("outpatient", "k1")).toBe(draws[1]);
+    expect(draws.filter((d) => d === "routine").length / draws.length).toBeGreaterThan(0.65);
+  });
+
   it("orders ED imaging mostly stat and outpatient imaging mostly routine", () => {
     const ed = Object.fromEntries(imagingPriorityWeights("ed"));
     const outpatient = Object.fromEntries(imagingPriorityWeights("outpatient"));
@@ -41,6 +57,11 @@ describe("Synthetic Hospital case mix (synthetic-benchmark)", () => {
     for (const d of a.days) for (const p of PERSONAS) DayScheduleSchema.parse(d.schedules[p]);
     const scenarios = (r: typeof a) => r.days.flatMap((d) => d.state.today.ed.arrivals.map((x) => x.scenario));
     expect(scenarios(a)).not.toEqual(scenarios(legacy));
+    const imaging = a.days.flatMap((d) => PERSONAS.flatMap((p) => d.schedules[p].tasks.flatMap((t) => t.choices.orders.filter((o) => o.kind === "imaging"))));
+    expect(imaging.every((o) => o.priority !== undefined)).toBe(true);
+    const legacyImaging = legacy.days.flatMap((d) => PERSONAS.flatMap((p) => d.schedules[p].tasks.flatMap((t) => t.choices.orders.filter((o) => o.kind === "imaging"))));
+    expect(legacyImaging.every((o) => o.priority === undefined)).toBe(true);
+    expect(Object.keys(a.days[0]?.visitKinds ?? {}).length).toBeGreaterThan(0);
   });
 });
 
@@ -75,6 +96,17 @@ describe("note section text", () => {
     });
     expect(result.status, result.stderr || result.stdout).toBe(0);
     expect(result.stdout.trim().split("\n").slice(1).map((s): unknown => JSON.parse(s))).toEqual(schedules);
+  });
+
+  it("matches clinic donors on the recorded visit kind", () => {
+    const clinic = new NoteTexts([donor(5, "outpatient", 30), donor(6, "outpatient", 30, ["htn"])]);
+    expect(clinic.texts(task("P1", ["hpi"]), undefined, "htn")).toEqual([{ id: "hpi", text: "HPI 6" }]);
+  });
+
+  it("types only the declared share of each section when the discount is on", () => {
+    expect(typedPortion("abcdefghij", 1000)).toBe("abcdefghij");
+    expect(typedPortion("abcdefghij", 300)).toBe("abc");
+    expect(() => typedPortion("x", 1001)).toThrow();
   });
 
   it("adds text without changing anything else in the schedule", () => {

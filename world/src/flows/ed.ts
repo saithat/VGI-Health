@@ -19,7 +19,7 @@ import type { Json, OrderChoice } from "../schema";
 import type { CaseDiagnosis, EdVisit } from "../state";
 import { addAppointment, admit, canAdmit } from "./common";
 import { createUrgentCase } from "./surgery";
-import { type CaseMixMode, mixWeights } from "../case-mix";
+import { type CaseMixMode, mixWeights, settingQualifies } from "../case-mix";
 
 interface ScenarioCtx {
   p: PatientProfile;
@@ -633,7 +633,7 @@ export function runEd(b: DayBuild): void {
 /** An admission plan for an inpatient already on the ward when the simulation starts. */
 export function initialAdmissionPlan(p: PatientProfile, kg: number, rng: Rng, caseMix: CaseMixMode = "legacy"): { diagnosis: string; regimen: OrderChoice[]; prnPerShift: number } {
   const keys = ["pneumonia", "cellulitis", "copd-asthma-exacerbation", "pyelonephritis", ...(isDiabetic(p) ? ["hyperglycemia"] : [])];
-  const key = caseMix === "legacy" ? rng.pick(keys) : rng.weighted(mixWeights(caseMix, "wardAdmission", keys.map((k) => [k, 1] as const), (k) => k));
+  const key = caseMix === "legacy" || !settingQualifies("wardAdmission") ? rng.pick(keys) : rng.weighted(mixWeights(caseMix, "wardAdmission", keys.map((k) => [k, 1] as const), (k) => k));
   const scen = ADULT_SCENARIOS.find((s) => s.key === key);
   if (scen === undefined) throw new Error(`unknown scenario ${key}`);
   const plan = scen.build({ p, kg, pcn: isPcnAllergic(p), rng });

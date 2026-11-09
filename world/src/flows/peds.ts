@@ -202,6 +202,7 @@ export function runPeds(b: DayBuild): void {
     for (const cvx of plan.immunizations) c.vaccinesGiven.push({ cvx, day: b.day });
     c.lastVisitDay = b.day;
     const taskId = b.peekTaskId("P4", "W5");
+    b.visitKinds[taskId] = plan.reason.replace(/^(recheck )+/, "");
     b.addTask(
       "P4",
       "W5",

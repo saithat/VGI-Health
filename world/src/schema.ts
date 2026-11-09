@@ -82,6 +82,8 @@ export const OrderChoiceSchema = z.strictObject({
   administration: opt(AdministrationDecisionSchema),
   indication: opt(z.string().min(1)),
   prn: z.boolean(),
+  /** Imaging order priority (ServiceRequest.priority); Synthetic Hospital split in dataset mode. */
+  priority: opt(z.enum(["routine", "urgent", "asap", "stat"])),
 }).superRefine((o, ctx) => {
   if (o.holdReason != null && o.administration != null) {
     ctx.addIssue({ code: "custom", message: "Order hold and administration decision must be separate" });
@@ -90,6 +92,7 @@ export const OrderChoiceSchema = z.strictObject({
   if (service ? o.drug !== "" || !o.code || o.doseTenths !== 0 || o.unit !== "none" || o.route !== "" || o.freq !== "" || o.prn || o.supplyDays != null || o.curesExemptReason != null || o.holdReason != null || o.administration != null : o.drug === "" || o.route === "" || o.freq === "") {
     ctx.addIssue({ code: "custom", message: "Expected a medication or a coded, nondrug service order" });
   }
+  if (o.priority != null && o.kind !== "imaging") ctx.addIssue({ code: "custom", message: "Only imaging orders carry a priority" });
 });
 export type OrderChoice = z.infer<typeof OrderChoiceSchema>;
 

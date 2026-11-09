@@ -229,6 +229,8 @@ function countTasks(tasks: Task[]): Partial<Record<Workflow, number>> {
 export interface DayOutput {
   state: WorldState;
   schedules: Record<Persona, DaySchedule>;
+  /** Clinic and pediatric visit kinds by task id (see DayBuild.visitKinds). */
+  visitKinds: Record<string, string>;
 }
 
 /** Advance the world one day. `prev` is not modified. */
@@ -284,7 +286,7 @@ export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBui
   });
   state.today.taskCounts = perPersona((p) => countTasks(schedules[p].tasks));
   state.today.events = b.events;
-  return { state, schedules };
+  return { state, schedules, visitKinds: b.visitKinds };
 }
 
 export interface WorldRun {

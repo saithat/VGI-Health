@@ -20,9 +20,11 @@ import { INBOX_RANDOM_STREAM } from "../seed-contract";
 import type { Json, OrderChoice } from "../schema";
 import type { InboxItem, PendingLab, RefillRequest } from "../state";
 import { addPendingLab, isInpatient, labValue, warfarinInr } from "./common";
-import { type CaseMixMode, mixWeights } from "../case-mix";
+import { type CaseMixMode, mixWeights, settingQualifies } from "../case-mix";
 
 interface VisitPlan {
+  /** Chronic focus or acute problem key (mix.mjs RULES); absent for new/follow-up visits. */
+  kind?: string;
   orders: OrderChoice[];
   notes: string[];
   observations?: ClinicalObservation[];
@@ -76,7 +78,7 @@ function chronicFocus(p: PatientProfile, rng: Rng, caseMix: CaseMixMode = "legac
   if (p.tags.includes("prediabetes") || p.tags.includes("obesity")) options.push("metabolic");
   if (options.length === 0) return "wellness";
   // Legacy picks uniformly (chronic pain listed twice); dataset mode weights each distinct focus.
-  return caseMix === "legacy" ? rng.pick(options) : rng.weighted(mixWeights(caseMix, "clinicChronic", [...new Set(options)].map((o) => [o, 1] as const), (o) => o));
+  return caseMix === "legacy" || !settingQualifies("clinicChronic") ? rng.pick(options) : rng.weighted(mixWeights(caseMix, "clinicChronic", [...new Set(options)].map((o) => [o, 1] as const), (o) => o));
 }
 
 function chronicVisit(p: PatientProfile, focus: string, rng: Rng): VisitPlan {
@@ -154,6 +156,10 @@ function acuteVisit(p: PatientProfile, rng: Rng, flu: boolean, urgentCare: boole
     ["laceration", urgentCare ? 3 : 0],
     ["dental-pain", urgentCare ? 1 : 0],
   ], (k) => k, (k) => acuteFactor(k, flu, urgentCare)));
+  return { ...acutePlan(p, rng, kind, pcn, urgentCare), kind };
+}
+
+function acutePlan(p: PatientProfile, rng: Rng, kind: string, pcn: boolean, urgentCare: boolean): VisitPlan {
   const notes = [...DOC, ...(urgentCare ? ["urgentCareTriage"] : [])];
   switch (kind) {
     case "sinusitis":
@@ -309,9 +315,13 @@ function runClinic(b: DayBuild): void {
       if (!b.state.p1Panel.includes(v.patient.id)) b.state.p1Panel.push(v.patient.id);
     } else if (v.kind === "post-discharge" || v.kind === "ed-followup") plan = followupVisit(v.patient, v.kind, vr);
     else if (v.kind === "add-on") plan = acuteVisit(v.patient, vr, b.ctx.fluWeek, false, b.caseMix);
-    else plan = chronicVisit(v.patient, chronicFocus(v.patient, vr, b.caseMix), vr);
+    else {
+      const focus = chronicFocus(v.patient, vr, b.caseMix);
+      plan = { ...chronicVisit(v.patient, focus, vr), kind: focus };
+    }
     const taskId = b.peekTaskId("P1", "W1");
-    b.addTask("P1", "W1", v.patient.id, start, { orders: plan.orders, noteSections: plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr));
+    const task = b.addTask("P1", "W1", v.patient.id, start, { orders: plan.orders, noteSections: plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr));
+    if (plan.kind !== undefined) b.visitKinds[task.id] = plan.kind;
     orderLabs(b, v.patient, plan, vr, `visit ${taskId}`);
   }
   b.state.today.clinics.P1 = { booked: visits.length, seen: all.length - noShows.length, noShows, addOns: addOnVisits.map((x) => x.v.patient.id), newPatients };
@@ -332,7 +342,8 @@ function runUrgentCare(b: DayBuild): void {
     if (isNew) newPatients++;
     const plan = acuteVisit(p, vr, b.ctx.fluWeek, true, b.caseMix);
     const start = 30 + Math.round((k * 590) / n) + vr.int(0, 8);
-    b.addTask("P1", "W1", p.id, start, { orders: plan.orders, noteSections: isNew ? [...plan.notes, "pmh", "medRec"] : plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr, 1.3));
+    const task = b.addTask("P1", "W1", p.id, start, { orders: plan.orders, noteSections: isNew ? [...plan.notes, "pmh", "medRec"] : plan.notes, observations: plan.observations ?? [] }, [], b.interruptions("P1", vr, 1.3));
+    if (plan.kind !== undefined) b.visitKinds[task.id] = plan.kind;
     seenIds.push(p.id);
   }
   b.state.today.clinics.P1 = { booked: 0, seen: seenIds.length, noShows: [], addOns: seenIds, newPatients };

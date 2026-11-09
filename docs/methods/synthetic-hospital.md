@@ -49,7 +49,11 @@ counted as uncovered. They are not modeled, because they would need new order
 sets.
 
 Generation weights in `world/src/case-mix.ts`, `--case-mix synthetic-hospital`
-(the CLI default):
+(the CLI default). They apply only to settings with at least
+`MIX_MIN_MATCHED` = 30 matched encounters (declared scenario threshold,
+owner-approved 2026-11-09): **ED adult (194) and primary-care chronic focus (80)
+qualify**. ED pediatric, outpatient acute, pediatric sick visits and the ward
+keep their local weights. In qualifying settings:
 
 - a scenario that the legacy weights make ineligible for the patient (weight 0,
   such as hyperglycemia without diabetes or PE while anticoagulated) stays ineligible;
@@ -73,16 +77,22 @@ personas, and the surgical-consult rates stay local.
 | Medical ward admission | 190 | 9 | 4.7% |
 
 The dataset is a mostly rare-disease, board-question-derived case set, so
-coverage is low. For the thin settings (pediatric, acute outpatient and ward),
-the weights are mostly the pseudo-count.
+coverage is low; the threshold keeps the thin settings on local draws.
 
 Imaging priority: ED pending-imaging `ServiceRequest`s in the day context get
 `priority` from the dataset's ED split, a deterministic draw keyed by seed, day
 and task. The priority also appears on the track board's pending-imaging text.
 The split is 70.5% stat, 28.8% urgent and 0.7% routine (702 orders). Overall it
 is 36% stat, 29% urgent and 35% routine (1,865 orders), and outpatient is 72%
-routine (882 orders). Clinic and surgery imaging orders keep no priority: order
-entry has no imaging-priority element, and adding one would change the spec.
+routine (882 orders). Clinic and surgery imaging orders get `priority` from
+the outpatient split (inpatient orders would use the inpatient split, 61% stat;
+the current world places none). The draw is deterministic, keyed by task and
+order index, and consumes no random stream. Release v2 adds the optional
+`imagingPriority` order element (`ServiceRequest.priority`, coded
+`request-priority`, no entry or review requirement) with a field in the
+canonical imaging/procedure group; the simulated clinician enters it when the
+order carries a priority and the release declares the element. Legacy worlds
+carry no priority.
 
 ## Note section text (decision 14)
 
@@ -94,80 +104,97 @@ that text instead (`Goals.sectionText`). `NoteText` and
 `world/src/notes.ts` maps 30 local section ids to dataset section types (for
 example `exam` to `physical_exam` and `assessmentPlan` to `assessment` + `plan`).
 Each task borrows one donor encounter from its setting. The donor is matched by
-ED scenario first, then sex and age band; a section type the donor lacks comes
+diagnosis key first (the ED scenario, or for clinic and pediatric tasks the
+visit kind recorded during generation: chronic focus, acute problem or
+pediatric reason, `DayOutput.visitKinds`), then sex and age band; a section type the donor lacks comes
 from another matched donor. Sections with no dataset counterpart (care gaps,
 consent and similar) keep the fixed phrase, as does all inpatient nursing (P3)
 documentation, because the dataset holds physician chart sections. Section sizes
-therefore follow the dataset by construction. Donor content can disagree with
-the local scenario outside the ED match. `--note-text legacy` omits all text.
+therefore follow the dataset by construction. Donor content can still disagree
+with the local case when no donor matches the key (new-patient and follow-up
+visits record none). `--note-text legacy` omits all text.
+
+`--note-typed-share N` (per mille, default 1000 = off) is a declared
+template/dictation discount: only the first N/1000 of each section is
+keyboard-typed and supplied; the remainder is assumed to arrive by template,
+copy-forward or dictation, which the simulator does not model. It is a scenario
+value without a verified recent citation. Rule et al. 2021 (JAMA Netw Open
+4(7):e2115334, one academic center's outpatient notes) is a candidate source
+for a typed share, but its figure was not verified from the full text.
 
 ## Distribution checks
 
 `node scripts/synthetic-hospital/check-world.mjs --world W --baseline B
 [--simulate]` compares a world with the table. Seed 1, ten days, 194 dataset ED
-encounters vs 135 generated adult ED cases:
+encounters vs 143 generated adult ED cases:
 
 | ED adult scenario | Dataset | Weight (+1) | Generated | Legacy world |
 |---|---:|---:|---:|---:|
-| chest pain | 19.6% | 18.5% | 24.4% | 10.0% |
-| abdominal pain | 17.5% | 16.6% | 15.6% | 8.6% |
-| renal colic | 10.3% | 10.0% | 11.9% | 5.0% |
-| pulmonary embolism | 9.3% | 9.0% | 10.4% | 5.7% |
-| pneumonia | 7.7% | 7.6% | 5.9% | 14.3% |
-| COPD/asthma | 7.2% | 7.1% | 3.7% | 2.1% |
-| pyelonephritis | 6.2% | 6.2% | 4.4% | 5.7% |
-| hyperglycemia | 4.6% | 4.7% | 3.0% | 0% |
-| influenza-like (flu-week factor) | 2.6% | 2.8% | 7.4% | 10.7% |
-| other 8 scenarios | 14.9% | 17.5% | 13.3% | 37.9% |
+| chest pain | 19.6% | 18.5% | 17.5% | 10.0% |
+| abdominal pain | 17.5% | 16.6% | 16.1% | 8.6% |
+| renal colic | 10.3% | 10.0% | 10.5% | 5.0% |
+| pulmonary embolism | 9.3% | 9.0% | 6.3% | 5.7% |
+| pneumonia | 7.7% | 7.6% | 8.4% | 14.3% |
+| COPD/asthma | 7.2% | 7.1% | 12.6% | 2.1% |
+| pyelonephritis | 6.2% | 6.2% | 7.0% | 5.7% |
+| hyperglycemia | 4.6% | 4.7% | 0% | 0% |
+| influenza-like (flu-week factor) | 2.6% | 2.8% | 5.6% | 10.7% |
+| other 8 scenarios | 14.9% | 17.4% | 16.1% | 37.9% |
 
-Eligibility gates and the flu week shift the generated shares from the weights.
-Pediatric ED (24 cases) is 12.5/37.5/50% otitis/asthma/gastroenteritis against
-the dataset's 12.5/37.5/50%. ED imaging priority over 82 generated orders is
-58.5% stat, 40.2% urgent and 1.2% routine. A 20,000-key check of the draw gives
-70.4/28.7/0.8%. Mapped sections cover 70.6% of the generated section entries
-(2,601 of 3,683). Generated vs dataset mean characters per section:
+Eligibility gates (hyperglycemia needs diabetes) and the flu week shift the
+generated shares from the weights. Pediatric ED, the ward and the other thin
+settings keep the local weights (pediatric ED 57.9/21.1/21.1%
+otitis/asthma/gastroenteritis vs the legacy world's 58.3/16.7/25.0%). ED
+imaging priority over 84 generated orders is 66.7% stat, 33.3% urgent, 0%
+routine; the 11 clinic and surgery imaging orders are 9 routine and 2 urgent. A
+20,000-key check of the ED draw gives 70.4/28.7/0.8%. Of 356 clinic and
+pediatric visits, 294 record a visit kind and 213 of those find a
+diagnosis-matched donor (well-child, flu-shot and wellness visits have no
+dataset counterpart). Mapped sections cover 72.4% of the generated section
+entries (2,615 of 3,611). Generated vs dataset mean characters per section:
 
 | Setting / section | Generated mean (n) | Dataset mean |
 |---|---:|---:|
-| ED HPI | 378 (168) | 340 |
-| ED exam | 149 (168) | 170 |
-| ED triage (complaint + vitals) | 174 (168) | 186 |
-| ED MDM (assessment) | 73 (168) | 77 |
-| Outpatient HPI | 350 (340) | 346 |
-| Outpatient exam | 170 (394) | 158 |
-| Outpatient assessment/plan | 125 (399) | 98 + 115 when both exist |
+| ED HPI | 364 (167) | 340 |
+| ED exam | 151 (167) | 170 |
+| ED triage (complaint + vitals) | 178 (167) | 186 |
+| ED MDM (assessment) | 74 (167) | 77 |
+| Outpatient HPI | 339 (343) | 346 |
+| Outpatient exam | 177 (394) | 158 |
+| Outpatient assessment/plan | 134 (397) | 98 + 115 when both exist |
 
-Mean typed characters per task rise from the fixed phrases' 198 to 1,121 (ED),
-143 to 763 (primary-care visit), 117 to 556 (pediatric visit) and 108 to 293
-(surgery). A dataset ED
-note averages 1,992 characters over 10.9 sections, more than the local sections
-document.
+Mean typed characters per task rise from the fixed phrases' 197 to 1,104 (ED),
+142 to 792 (primary-care visit), 114 to 592 (pediatric visit), 110 to 615
+(surgery clinic) and 105 to 242 (surgery W6). A dataset ED note averages 1,992
+characters over 10.9 sections, more than the local sections document.
 
 ## Typing, scroll and reading cost
 
 Native `ehr simulate` covered ten days and five personas on the expert policy,
-using releases v1/v2/v3 by day. It compared the dataset-text world with an
-identical fixed-phrase world (same seed and case mix; schedules differ only in
-`noteTexts`). Every task completed in both.
+using releases v1/v2/v3 by day. Three worlds share the seed and case mix:
+fixed phrases, dataset text, and dataset text with `--note-typed-share 294`
+(an example setting of the off-by-default discount). Schedules differ only in
+`noteTexts`. Every task completed in all three, including clinic imaging orders
+that now enter `imagingPriority` from day 4.
 
-| Persona | Keystrokes | KLM minutes | Queue delay (min) | Scrolls |
-|---|---:|---:|---:|---:|
-| P1 primary care | 35,969 → 139,791 | 768.5 → 1,117.2 | 70.7 → 70.7 | 7,165 (unchanged) |
-| P2 ED | 46,795 → 127,120 | 1,247.5 → 1,514.4 | 231.7 → 296.6 | 16,529 (unchanged) |
-| P3 inpatient RN | 14,252 (unchanged) | 943.8 (unchanged) | 1,316.6 | 8,328 (unchanged) |
-| P4 pediatrics | 32,352 → 107,751 | 612.0 → 862.5 | 20.9 → 20.9 | 6,360 (unchanged) |
-| P5 surgery | 22,367 → 53,459 | 728.9 → 833.3 | 1,115.0 → 1,115.3 | 6,705 (unchanged) |
+| Persona | Keystrokes (phrase → text → 29.4%) | KLM minutes | Queue delay (min) |
+|---|---:|---:|---:|
+| P1 primary care | 36,505 → 138,395 → 53,749 | 777.6 → 1,118.3 → 835.6 | 70.3 (unchanged) |
+| P2 ED | 47,980 → 125,717 → 65,229 | 1,263.0 → 1,517.1 → 1,319.1 | 262.7 → 325.9 → 276.4 |
+| P3 inpatient RN | 13,773 (unchanged) | 882.8 (unchanged) | 1,086.4 (unchanged) |
+| P4 pediatrics | 31,678 → 112,286 → 47,383 | 600.0 → 869.2 → 652.3 | 15.3 (unchanged) |
+| P5 surgery | 22,344 → 53,242 → 27,509 | 715.8 → 819.6 → 733.2 | 348.2 → 348.2 → 348.1 |
 
-Typing is charged at K = 200 ms per character, so sized sections add about 54 s
-(primary care) to 95 s (ED) per task. Overtime and overdue doses do not change.
-Every character is typed: templates, dictation and copy-forward are not
-modeled, so this is an upper bound for authoring. P3 keeps the fixed phrases.
+Typing is charged at K = 200 ms per character, so full sections add about 54 s
+(primary care) to 92 s (ED) per task. P2 overtime rises from 11.3 to 14.2
+minutes over ten days (11.9 with the 29.4% share); overdue doses do not change.
+Without the discount every character is typed, an upper bound for authoring.
+P3 keeps the fixed phrases. Scroll counts are identical in all three worlds.
 
 Scroll and reading costs do not change. The A04 viewport is ordinal (scroll
 pages by component index), and reading (A17, 1,350 ms per item) is an opt-in,
-item-based lookup cost; neither depends on text length. Charging them by length
-would be a Lean simulator change outside this data lane; it is listed as an open
-question in the lane report. For scale only: with an assumed 90 characters per
+item-based lookup cost; neither depends on text length. Length-dependent scroll
+and reading belong to the wave3-sim lane. For scale only: with an assumed 90 characters per
 line, 10 lines per page and 200 words per minute (declared scenario values, not
 used by the simulator), a dataset ED note of 1,992 characters is 23 lines (2
 scroll pages, 2.2 s at A04's 1,100 ms) and about 2 minutes of reading.

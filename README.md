@@ -258,7 +258,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 - **Synthetic Hospital** (code MIT; data fully synthetic and redistributable)
   longitudinal records. Park, Chen, Dettmers, preprint 2026,
   https://arxiv.org/abs/2609.30027. All 1,268 patients are converted; the
-  dataset also supplies synthetic-benchmark (not calibrated) case mix, ED imaging
+  dataset also supplies synthetic-benchmark (not calibrated) case mix, imaging
   priority and note-section text ([method and checks](docs/methods/synthetic-hospital.md)).
 - CPT is a trademark of the AMA; only a few code identifiers with original
   short labels are included.

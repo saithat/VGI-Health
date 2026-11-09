@@ -1119,6 +1119,9 @@ structure OrderChoice where
   administration? : Option AdministrationDecision := none
   indication? : Option String := none
   prn : Bool := false
+  /-- Requested priority of an imaging order (`routine`/`urgent`/`asap`/`stat`);
+  omitted for medications, procedures and older schedules. -/
+  priority? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- Text typed for one documentation section, keyed by its element id. World

@@ -13,6 +13,7 @@
 - **R2-1:** Adds optional prior-auth status info and request element. No new entry or review requirement.
 - **R2-2:** Adds the `priorAuth` catalog tag for the status component and request action.
 - **R2-3:** Adds imaging/procedure controls in W1 lab/service ordering and W6 pre-op; also surfaces optional status in shared W1/W3/W5/W6 medication composers. Personalized UIs may keep it absent.
+- **R2-4 (wave 3, 2026-11-09):** Adds the optional `imagingPriority` order-line element (`ServiceRequest.priority`, coded routine/urgent/ASAP/stat) beside the service code. No new entry or review requirement. Simulated orders carry the Synthetic Hospital (synthetic-benchmark) priority split of their setting.
 
 ## Validation and integration
 

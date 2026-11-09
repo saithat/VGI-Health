@@ -1534,6 +1534,11 @@ export interface OrderChoice {
   administration?: AdministrationDecision;
   indication?: string;
   prn: boolean;
+  /**
+   * Requested priority of an imaging order (`routine`/`urgent`/`asap`/`stat`);
+   * omitted for medications, procedures and older schedules.
+   */
+  priority?: string;
 }
 
 /**

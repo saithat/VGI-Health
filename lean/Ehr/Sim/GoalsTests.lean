@@ -1,6 +1,7 @@
 import Ehr.Sim.Goals
 import Ehr.Core.Interp
 import Ehr.Examples.Tiny
+import Ehr.Specs.V2
 
 /-!
 # Goal tests on the tiny example
@@ -79,5 +80,14 @@ def hpiElement : ElementSpec :=
 #guard taskValue facts user { noteSections := ["hpi"] } none hpiElement == some (.text (noteText "hpi"))
 #guard ((Lean.Json.parse "{\"orders\":[],\"administer\":[],\"ackResult\":false,\"immunizations\":[],\"noteSections\":[\"hpi\"]}" >>= Lean.fromJson? (α := TaskChoices)).toOption.map (·.noteTexts?)) == some none
 #guard ((Lean.Json.parse "{\"orders\":[],\"administer\":[],\"ackResult\":false,\"immunizations\":[],\"noteSections\":[\"hpi\"],\"noteTexts\":[{\"id\":\"hpi\",\"text\":\"Cough.\"}]}" >>= Lean.fromJson? (α := TaskChoices)).toOption.map (·.noteTexts?)) == some (some [{ id := "hpi", text := "Cough." }])
+
+-- Imaging priority is an order-line value; absent priority gives no value.
+def mri : OrderChoice :=
+  { drug := "", kind? := some .imaging, code? := some "mri-lumbar-spine-without-contrast"
+    doseTenths := 0, unit := .none, route := "", freq := "", priority? := some "routine" }
+#guard orderValue "imagingPriority" mri == some (.code "routine")
+#guard orderValue "imagingPriority" { mri with priority? := none } == none
+#guard Specs.V2.specV2.element? "imagingPriority" |>.isSome
+#guard Specs.V1.specV1.element? "imagingPriority" |>.isNone
 
 end Ehr.Sim.GoalsTests
