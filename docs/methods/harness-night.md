@@ -236,3 +236,106 @@ every alternative left 2 of 41 training tasks incomplete and submitted no
 change. It also filed the pilot's only complaint, asking for per-task replay
 outcomes and the unmet completion requirements. H-claude submitted changes there
 that validation rejected. This matches R and B on that decision.
+
+## Full H-claude study, 2026-11-09
+
+H-claude met the pre-declared rule, so it ran automatically on all 35 decisions
+with 2 samples each. The run used `--workers 4`, the browser lock and
+systemd-run with `MemoryMax=16G`. B (70 samples) was reused from
+`runs/quality-BR-20261109` through `--reuse-arm-from … --reuse-arm B`. The
+reuse check found every frozen input binding, the native binary, the app build,
+the sanity ledger and the B model options identical. `reused-arm.json` records
+both agent source hashes; they differ because this branch adds H. B was not run
+at the same time as H. The full H-Codex study did not run.
+
+**Usage-limit incident.** The first pass ran at 08:45–11:15 PST. After 13 H
+samples the Claude subscription's 5-hour usage limit returned HTTP 429
+`usage_limit_reached` (overage disabled). The remaining 57 H samples ended
+within seconds as `llm-error` ("agent ended without night submit"). Every one of
+the 57 transcripts contains `usage_limit_reached`, and no other sample does.
+After the reset these 57 sample directories were moved aside to
+`<sample>.limit-1`, with the first pass's records, manifest and report kept as
+`*.limit-attempt-1.json` and the list in `limit-resume-1.json`. The manifest was
+marked aborted, and the same command was resumed with `--resume` from
+identical agent sources. It reran exactly those 57 samples under a watchdog
+that would stop the run at the next `usage_limit_reached`. It did not trigger.
+The 13 first-pass samples, all accepted, were kept.
+
+| Arm | Accepted | Validation clicks saved | Validation scrolls saved | Input tokens / decision | Cached input / decision | Output tokens / decision | Seconds / decision |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| B (reused) | 58/70 (82.9%) | 123.5 | 1,747.5 | 209,523 | 5,102 | 5,259 | 338.1 |
+| H-claude | 60/70 (85.7%) | 88.5 | 2,783 | 1,754,774 | 1,670,935 | 13,666 | 479.9 |
+| R (B/R study, reference) | 57/70 (81.4%) | 46 | 1,698 | 389,967 | 167,375 | 6,931 | 484.6 |
+
+H−B, using the paired decision bootstrap (10,000 iterations, seed 20261103):
+Δ accepted +2.9%, 95% interval −7.1% to +14.3%; Δ clicks −35; Δ scrolls
++1,035.5. **Under the declared decision rule H does not beat B**: the rule needs a
+gain of at least 10 points, a lower bound above 0, and no loss in clicks. The
+scroll gain is concentrated in persona P2. night-02/P2 (+421.5) and night-01/P2
+(+394) account for 816 of the 1,035.5. H accepted more often than B on 4
+decisions and less often on 3. H's outcomes were 60 accepted, 9 rejected and 1
+no change. B's were 58 accepted and 12 rejected.
+
+**Mechanism.** All 70 H samples submitted in one launch. None hit a budget limit
+or needed a final-gate repair. The longest took 767 s of the 1,200 s limit.
+Samples averaged 10.9 night commands and 41.7 Claude turns. There were 92 checks
+and 411 estimates in total, and 11 samples used all 8 estimates. Every
+proposed candidate passed the native checker. Every sample was served by
+`claude-opus-5-5`. Egress went only to `api.anthropic.com`. The `dontAsk`
+allowlist denied 164 calls, mostly Python and shell loops. The audit flags 8
+samples. In all 13 flagged attempts, Claude Code tried to write its auto-memory
+or read its own tool-result file under `/home/agent`, and every attempt was
+denied. H used 8.4× B's input tokens, 95% of them cached, 2.6× its output and
+1.42× its wall time. There were no complaints.
+
+## Recommendation
+
+Do not make H the default, and do not run the full H-Codex study as declared:
+H-Codex failed the continuation rule. H-claude is the first arm to match or
+exceed B's acceptance rate in a full study (60/70 against 58/70), and it saved
+about 60% more validation scrolls. Most of that gain comes from two P2
+decisions, it saves fewer clicks, and it does not meet the declared rule. It
+costs about 8× B's input tokens (mostly cached) and about 1.4× B's wall time on
+a subscription that hit its 5-hour limit after 13 samples at 4 workers. Keep H
+opt-in. Two changes would make a better-powered follow-up worth running:
+
+- give Claude Code a narrow allowlisted interpreter (for example `node` on workspace scripts), so both harnesses have equal shell freedom;
+- run at least 3 samples per decision, so P2's concentration can be separated from noise.
+
+## Commands
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=2 LEAN_NUM_THREADS=4
+export EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr
+DATA=/home/saithat/Projects/VGI-Health/runs
+SOURCE=$DATA/quality-BR-source-20261109 SANITY=$DATA/quality-BR-sanity-20261109
+D=night-01/P1,night-02/P2,night-04/P3,night-05/P4,night-07/P5,night-08/P1,night-09/P2
+cd agent
+lock() { systemd-run --user --scope -q -p MemoryMax=12G -p MemorySwapMax=0 flock "$TMPDIR/vgi-browser-heavy.lock" "$@"; }
+lock ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY --samples 1 --workers 1 \
+  --out ../runs/quality-BH-pilot-codex-20261109 --arms B,H --harness codex --decisions $D \
+  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default
+lock ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY --samples 1 --workers 1 \
+  --out ../runs/quality-BH-pilot-claude-20261109 --arms H --harness claude --decisions $D --backend claude
+# Re-verification of a recorded H sample (no model calls):
+lock ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY --samples 1 --workers 1 \
+  --out ../runs/quality-BH-smoke-codex2-replay-20261109 --arms H --decisions night-01/P1 \
+  --backend replay --tool-replay-from ../runs/quality-BH-smoke-codex2-20261109
+# Full study (add --resume to continue an interrupted run):
+systemd-run --user --scope -q -p MemoryMax=16G -p MemorySwapMax=0 flock "$TMPDIR/vgi-browser-heavy.lock" \
+  ./node_modules/.bin/tsx src/cli.ts proposal-quality --run $SOURCE --ledger-from $SANITY \
+  --out ../runs/quality-BH-full-claude-20261109 --arms B,H --harness claude \
+  --reuse-arm-from $DATA/quality-BR-20261109 --reuse-arm B --samples 2 --workers 4 \
+  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default
+```
+
+For a Claude H run, `--backend codex --model …` names B's settings only; the
+reuse check compares them. Data stays untracked under the worktree's `runs/`.
+
+## Limitations
+
+- Replay re-verifies the recorded commands and the outcome, not the model's transcript (see above).
+- Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom.
+- The Codex credential copy includes its refresh token, as the existing Codex backend's does. A refresh inside the sandbox could rotate it.
+- The workspace inputs are 0444, but the agent may delete or replace them inside `/work`. Every check, estimate and submission is evaluated by the host against its own copy, so this can only mislead the agent itself.
+- Codex exec has no turn limit; wall time and the command quota bound it.

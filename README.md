@@ -246,7 +246,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Clinical scenario policies | [Medication outcomes](docs/methods/medication-outcomes.md), [information needs](docs/methods/information-needs.md), [ADT](docs/methods/adt.md) |
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
 | Interface research | [UI library](docs/methods/ui-library.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |
-| Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md), [RLM arm R](docs/methods/rlm-night.md) |
+| Agent experiments | [Discovery/cadence](docs/methods/discovery-and-cadence.md), [model backends](docs/methods/model-backends.md), [tool-driven arm E](docs/methods/agent-loop.md), [RLM arm R](docs/methods/rlm-night.md), [harness-native arm H](docs/methods/harness-night.md) (Claude Code CLI in a confined workspace: 60/70 accepted vs B's 58/70 in the full study; opt-in) |
 | Local evidence and data | [Run data](docs/methods/run-data.md), [conformance](docs/methods/conformance.md), [organization names and regeneration](docs/methods/fictional-identities.md), [audit records](docs/audits/) |
 
 ## Data sources
