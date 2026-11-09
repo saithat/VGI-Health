@@ -48,6 +48,7 @@ import { REPO_ROOT, readJson, resolveUserPath } from './util.js';
 import { loadWorld } from './world.js';
 import { evaluateQuality, historicalDecisions } from './quality.js';
 import type { QualityArm } from './quality-report.js';
+import { DEFAULT_RLM_BUDGET } from './rlm/stats.js';
 import { offlineRecordSchema, refreshSanityRepetitions, writeQualityReport } from './quality-report.js';
 
 function backendArg(v: string | undefined): BackendChoice {
@@ -240,12 +241,15 @@ const COMMANDS: Record<string, (argv: string[]) => Promise<void>> = {
     }
   },
   'proposal-quality': async argv => {
-    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'},'geometry-from':{type:'string'},'app-build':{type:'string'},'tool-replay-from':{type:'string'},'tool-max-calls':{type:'string'},'tool-max-checks':{type:'string'},'tool-max-estimates':{type:'string'},'tool-wall-ms':{type:'string'},'tool-max-tokens':{type:'string'}}});
+    const {values}=parseArgs({args:argv,options:{run:{type:'string'},out:{type:'string'},decisions:{type:'string'},arms:{type:'string'},samples:{type:'string'},backend:{type:'string'},workers:{type:'string'},world:{type:'string'},model:{type:'string'},'reasoning-effort':{type:'string'},'service-tier':{type:'string'},'ledger-from':{type:'string'},resume:{type:'boolean'},'geometry-from':{type:'string'},'app-build':{type:'string'},'tool-replay-from':{type:'string'},'tool-max-calls':{type:'string'},'tool-max-checks':{type:'string'},'tool-max-estimates':{type:'string'},'tool-wall-ms':{type:'string'},'tool-max-tokens':{type:'string'},'rlm-max-turns':{type:'string'},'rlm-max-sub-calls':{type:'string'},'rlm-wall-ms':{type:'string'},'rlm-sub-model':{type:'string'},'rlm-sub-reasoning-effort':{type:'string'}}});
     if(!values.run||!values.out)throw new Error('--run and --out are required');
     const backend=backendArg(values.backend??'replay');
-    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='D'||a==='E'||a==='sanity')return a;throw new Error('--arms must contain A, B, C, D, E or sanity');});
+    const arms:QualityArm[]=(values.arms??'A').split(',').map(a=>{if(a==='A'||a==='B'||a==='C'||a==='D'||a==='E'||a==='R'||a==='sanity')return a;throw new Error('--arms must contain A, B, C, D, E, R or sanity');});
     await evaluateQuality({...(values['geometry-from']?{geometryFrom:resolveUserPath(values['geometry-from'])}:{}),...(values['app-build']?{appBuild:resolveUserPath(values['app-build'])}:{}),...(values['tool-replay-from']?{toolReplayFrom:resolveUserPath(values['tool-replay-from'])}:{}),
-      toolBudget:{maxCalls:intArg(values['tool-max-calls'],'tool-max-calls',60),maxChecks:intArg(values['tool-max-checks'],'tool-max-checks',12),maxEstimates:intArg(values['tool-max-estimates'],'tool-max-estimates',8),wallMs:intArg(values['tool-wall-ms'],'tool-wall-ms',900000),maxTokens:intArg(values['tool-max-tokens'],'tool-max-tokens',120000)},runDir:resolveUserPath(values.run),outDir:resolveUserPath(values.out),arms,samples:intArg(values.samples,'samples',1),backend,workers:intArg(values.workers,'workers',1),
+      toolBudget:{maxCalls:intArg(values['tool-max-calls'],'tool-max-calls',60),maxChecks:intArg(values['tool-max-checks'],'tool-max-checks',12),maxEstimates:intArg(values['tool-max-estimates'],'tool-max-estimates',8),wallMs:intArg(values['tool-wall-ms'],'tool-wall-ms',900000),maxTokens:intArg(values['tool-max-tokens'],'tool-max-tokens',120000)},rlmBudget:{...DEFAULT_RLM_BUDGET,maxRootTurns:intArg(values['rlm-max-turns'],'rlm-max-turns',DEFAULT_RLM_BUDGET.maxRootTurns),maxSubCalls:intArg(values['rlm-max-sub-calls'],'rlm-max-sub-calls',DEFAULT_RLM_BUDGET.maxSubCalls),
+        maxChecks:intArg(values['tool-max-checks'],'tool-max-checks',DEFAULT_RLM_BUDGET.maxChecks),maxEstimates:intArg(values['tool-max-estimates'],'tool-max-estimates',DEFAULT_RLM_BUDGET.maxEstimates),wallMs:intArg(values['rlm-wall-ms'],'rlm-wall-ms',DEFAULT_RLM_BUDGET.wallMs)},
+      ...(values['rlm-sub-model']?{rlmSubModel:values['rlm-sub-model']}:{}),...(values['rlm-sub-reasoning-effort']?{rlmSubReasoningEffort:values['rlm-sub-reasoning-effort']}:{}),
+      runDir:resolveUserPath(values.run),outDir:resolveUserPath(values.out),arms,samples:intArg(values.samples,'samples',1),backend,workers:intArg(values.workers,'workers',1),
       ...(values['ledger-from']?{ledgerFrom:resolveUserPath(values['ledger-from'])}:{}),...(values.resume?{resume:true}:{}),...(values.decisions?{decisions:values.decisions.split(',')}:{}),...(values.world?{worldDir:resolveUserPath(values.world)}:{}),
       ...(values.model?{model:values.model}:{}),...(values['reasoning-effort']?{reasoningEffort:values['reasoning-effort']}:{}),...(values['service-tier']?{serviceTier:values['service-tier']}:{}),
     });
