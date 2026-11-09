@@ -103,6 +103,19 @@ try {
     /Classical.choice/,
   );
   assert.match(await page.locator("#assumptions").innerText(), /Invariant s/);
+  // A preview near the viewport edge must leave its trigger clickable.
+  const edgeResult = page.locator("#results .result").last();
+  await edgeResult.hover();
+  const triggerBox = await edgeResult.boundingBox();
+  const previewBox = await page.locator("#preview").boundingBox();
+  assert.ok(triggerBox && previewBox);
+  assert.ok(
+    previewBox.y + previewBox.height <= triggerBox.y ||
+      previewBox.y >= triggerBox.y + triggerBox.height,
+    "Preview obscures its trigger",
+  );
+  await page.keyboard.press("Escape");
+  await page.mouse.move(1400, 20);
   const branch = page
     .locator(`#dependencies .branch`)
     .filter({ has: page.locator(`:scope > .node [data-read="${reduce}"]`) })

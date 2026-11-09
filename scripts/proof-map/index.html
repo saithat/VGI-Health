@@ -749,7 +749,12 @@
           preview.hidden = false;
           const rect = el.getBoundingClientRect();
           preview.style.left = `${Math.max(16, Math.min(rect.left, window.innerWidth - preview.offsetWidth - 16))}px`;
-          preview.style.top = `${Math.max(16, Math.min(rect.bottom + 8, window.innerHeight - preview.offsetHeight - 16))}px`;
+          const below = window.innerHeight - rect.bottom - 24;
+          const above = rect.top - 24;
+          const placeBelow = below >= above;
+          const room = Math.max(80, placeBelow ? below : above);
+          preview.style.maxHeight = `${Math.min(window.innerHeight * 0.65, room)}px`;
+          preview.style.top = `${placeBelow ? rect.bottom + 8 : rect.top - preview.offsetHeight - 8}px`;
         }
         document.addEventListener("mouseover", (e) => {
           const el = e.target.closest("[data-preview]");

@@ -171,7 +171,8 @@ Regenerate it with `scripts/proof-map/build.sh --readme` after building the
 [additional proof modules](scripts/proof-map/extra-modules.txt). The same CI job
 uploads self-contained declaration and module-import views with source links at the
 built commit, bidirectional expansion, guarantee breadcrumbs, full-type previews,
-keyboard search and per-theorem axioms/premises. The import view uses an isolated
+keyboard search and per-theorem axioms/premises. Previews stay clear of their
+trigger nodes at viewport edges. The import view uses an isolated
 Lean 4.35 `import-graph` package; it adds no dependency to the certified build.
 An optional [Lean Atlas view](docs/proof-map.md#optional-lean-atlas-view) runs against the same compiled roots in isolation.
 [MAR proof walkthrough](docs/proof-walkthrough.md) traces one guarantee through its definitions and key lemmas.
