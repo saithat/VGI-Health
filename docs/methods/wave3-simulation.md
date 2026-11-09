@@ -109,7 +109,7 @@ simulated on-call recipient. Communication notification never resolves the
 underlying clinical result or creates a clinical receipt.
 
 Coverage actors have distinct IDs. Both policies clear predecessor receipt caches
-on actor change. The bounded policy stores independent `actorMemories`; a new
+on actor change and filter source-snapshot receipts to the current actor. The bounded policy stores independent `actorMemories`; a new
 successor starts empty, and the usual `memory` output remains the initial actor's
 memory for existing callers. No predecessor drafts, acknowledgments, receipts or
 layout knowledge are passed to a successor. The stock CLI still supplies immutable

@@ -453,6 +453,11 @@ def playEpisode (ctx : Context) (params : PersonaParams) (task : Task) (lastEpis
   if !ctx.goals.informationNeeds.all (fun n => r.lookups.any (fun a => a.need == n.id && a.episodeIndex == r.episodeIndex && !a.consumed)) then r
   else playLoop ctx params task lastEpisode fuel r true 0
 
+/-- Source snapshots cannot inject another actor's private review knowledge.
+Legacy controls retain the historical ambient-receipt behavior. -/
+def actorReceipts (legacy : Bool) (u : User) (source : List Receipt) : List Receipt :=
+  if legacy then source else source.filter (·.user == u.id)
+
 /-- The scenario receiver explicitly accepts before service. Unaccepted offers
 remain sender-owned. No predecessor workspace or receipts cross this boundary. -/
 def taskHandover (task : Task) (sender recipient : String) (atMs : Nat) : Option Scheduling.Handover :=
@@ -511,7 +516,7 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
       else raw
     let facts := { raw with
       now := task.startMin,
-      receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
+      receipts := actorReceipts (legacy || interruptionConfig.legacyModel) user raw.receipts ++ (receipts.lookup task.patientId).getD [] }
     let eps := taskEpisodes facts task
     if eps.isEmpty then
       day := { day with complaints := day.complaints ++

@@ -606,7 +606,7 @@ def simulate (sp : Spec) (prog : Program) (params : PersonaParams) (schedule : D
           activities := []
         }
       } else raw
-    let facts := { raw with now := task.startMin, receipts := raw.receipts ++ (receipts.lookup task.patientId).getD [] }
+    let facts := { raw with now := task.startMin, receipts := actorReceipts (legacy || interruptionConfig.legacyModel) user raw.receipts ++ (receipts.lookup task.patientId).getD [] }
     let eps := taskEpisodes facts task
     let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
     let n := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0

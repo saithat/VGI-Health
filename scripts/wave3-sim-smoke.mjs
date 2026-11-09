@@ -20,7 +20,7 @@ mkdirSync(out,{recursive:true});
 function run(persona,schedule,worldDir,program,suffix,extra=[],binary=join(root,'lean/.lake/build/bin/ehr')) {
   const file=join(out,`${suffix}-${persona}-schedule.json`);
   writeFileSync(file,JSON.stringify(schedule));
-  const args=['simulate','--spec',join(root,'releases',program.specVersion,'spec.json'),
+  const args=['simulate','--spec',join(reference,'certifications',persona,`v${program.version}`,'spec.json'),
     '--program',join(reference,'programs',persona,`v${program.version}.json`),
     '--persona',join(worldDir,'personas',`${persona}.json`),'--schedule',file,
     '--world',worldDir,'--seed','1002','--clock-mode','continuous','--interruptions','realWork',...extra];
@@ -77,6 +77,7 @@ for(const persona of personas) {
       const old=prior.tasks.find(p=>p.task===t.task);
       return old?.clicks!==t.clicks||old?.klmDeciSec!==t.klmDeciSec||old?.completed!==t.completed;
     }).map(t=>t.task)});
+  assert.deepEqual(behavior(replay),behavior(prior),`retained frozen-spec replay differs: ${persona}`);
   replayed.push(replay);
   const schedule=read(join(world,`day-2-${persona}.json`));
   current.push(run(persona,schedule,world,program,'wave3-day2'));

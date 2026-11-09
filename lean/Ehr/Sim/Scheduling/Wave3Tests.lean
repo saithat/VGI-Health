@@ -43,6 +43,18 @@ def bounded := Bounded.simulate fixtureSpec (fixtureProgram []) params day (fun 
 #guard bounded.memory.actor == (fixtureProgram []).owner
 #guard bounded.actorMemories.all (fun m => m.entries.all (fun e => e.exposures == 1))
 
+-- Even a source snapshot carrying the predecessor's receipt cannot teach the
+-- successor a private review. There is no review panel in this test program.
+def receiptSpec := { fixtureSpec with reviews := [{commit := "ackResult", info := "allergyList", mode := .shownOrReceipt 100 [.physician]}] }
+def sourceWithReceipt : Facts := { Ehr.Examples.Tiny.facts with receipts := [{
+  info := "allergyList", dataVersion := Ehr.Examples.Tiny.facts.allergyVersion,
+  time := 0, role := .physician, user := (fixtureProgram []).owner }] }
+def privateResult := simulate receiptSpec (fixtureProgram []) params day (fun _ => sourceWithReceipt) 7 {mode := .fixedCost}
+#guard privateResult.tasks.map (·.completed) == [true, false]
+def privateBounded := Bounded.simulate receiptSpec (fixtureProgram []) params day (fun _ => sourceWithReceipt) 7
+  {} Bounded.lexicalScent Discovery.helpDesk none {mode := .fixedCost}
+#guard privateBounded.tasks.map (·.completed) == [true, false]
+
 -- Length coefficients and actual extra scroll events, with an independent
 -- per-item legacy opt-out. Typing remains the source text in both arms.
 def textTask : Task := { task with choices := { task.choices with
