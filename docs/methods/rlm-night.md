@@ -238,6 +238,16 @@ The rebased world fingerprint is
 Original provenance receipts remain unchanged, including earlier archive-binding
 mismatches described in [the BE methods](agent-loop.md#frozen-source-and-build-binding).
 
+| Copied tree | Identical source/copy SHA-256 |
+|---|---|
+| `programs` | `96627ca900d16a341f982ca7a9d04e07c6accc207f2f45e766014394a35ef44a` |
+| `certifications` | `c1d81e9121f17a9da11420d798a00a2543524670e6adebaa6a81370d20e53a05` |
+| `decisions` | `140a73230f8491c0458effddba90010677e14dd520458995ee724c09cc629fb3` |
+| `days` | `a3f69cf1e3724e633a1e98c7293b11b93e710bd2d39e50788f5c56704219fb2a` |
+| `llm` | `23f09bad9311e97a01200d722a509e687c1c24f04c92ff3b5536ec956a37cb3b` |
+| `fixtures` | `bd9897a28cf32d9343e58dd536da51d4d559b0be0972c53dda8249c9485d93b3` |
+| `world/schedules` | `c70ef948408a48949bf082e80f53bca86b52d4fc1a90d937a50d14a0541cc4ca` |
+
 The new sanity replay completed in 2,455.17 seconds, before any live study call.
 All 35 decisions and 120 nonseeded candidates match the BE sanity run exactly
 on outcome, chosen candidates, candidate checks/estimates, certification,
@@ -269,6 +279,119 @@ submission and evaluation fields matched. The pilot manual hash was restored
 and checked. `smoke-comparison.json`, `smoke-audit.json` and execution receipts
 are retained with the new source. These are smoke observations, not full-study
 results.
+
+### Full paired results
+
+**R does not beat B under the pre-declared rule.** All 140 samples completed:
+B accepted 58/70 (82.9%); R accepted 57/70 (81.4%). R−B is −1.4 percentage
+points, with a paired 95% interval of **−11.4 to +8.6 points**. Validation
+differences are −77.5 clicks and −49.5 scrolls saved. This B arm comprises fresh
+model calls; it is not the 62/70 B result from the earlier B/E run.
+
+Intervals resample the 35 decisions 10,000 times, seed 20261103, after averaging
+the two samples in each decision. Per-arm intervals use the same decision-unit
+bootstrap. Validation totals sum those decision means, assigning zero released
+saving to rejected/no-change samples. Wall time below is the sample mean within
+decision, including charged shared preparation. B runs before R and the geometry
+cache is shared: these wall times are descriptive and cache-order dependent.
+Screen checks and simulated user offers remain skipped; these are hypothetical
+simulator releases, not shipping or clinician-performance evidence.
+
+| Arm | Accepted | Acceptance 95% interval | Validation clicks saved | Validation scrolls saved | Seconds / decision |
+|---|---:|---:|---:|---:|---:|
+| B | 58/70 (82.9%) | 70.0–94.3% | 123.5 | 1,747.5 | 338.1 |
+| R | 57/70 (81.4%) | 70.0–91.4% | 46 | 1,698 | 484.6 |
+
+B had 12 validation rejections. R had five validation rejections and eight
+no-change submissions. Every R sample submitted within budget: no budget
+exhaustion, model-error outcome or REPL restart. One R final-gate repair was
+needed (night-09/P2, sample 1): the native checker refused a pharmacy field whose
+parent was no longer a group/tab container; the repaired proposal validated.
+All 1,529 primary Codex transcripts passed the no-tool audit (140 B, 1,387 R
+root and two R sub-calls). Every actual call retained `gpt-6.1-sol`, high
+reasoning and default service tier. All 70 R openings contained the digest,
+999–2,239 bytes each, under the 4,000-byte JSON cap. The largest complete root
+request was 44,232 bytes, below 48,000.
+
+#### Tokens and wall time
+
+These are actual totals across all 70 samples per arm, including repairs.
+Cached input is a subset of input; it must not be added to it. Output includes
+reported reasoning output. The CLI exposed no independent served-model ID.
+
+| Calls | Model calls | Input tokens | Cached input tokens | Output tokens |
+|---|---:|---:|---:|---:|
+| B, all | 140 | 14,666,605 | 357,120 | 368,096 |
+| R, root | 1,387 | 27,246,974 | 11,716,224 | 482,025 |
+| R, sub | 2 | 50,684 | 0 | 3,141 |
+| R, total | 1,389 | 27,297,658 | 11,716,224 | 485,166 |
+
+R averaged 389,967 input tokens (167,375 cached), 6,931 output tokens and
+19.84 model calls per decision, versus 209,523 (5,102 cached), 5,259 and two
+for B. R used **1.86× B's input tokens and 1.43× its charged wall time**.
+The cache shares were 42.9% for R and 2.4% for B. Applying the published
+[Standard credit rates](https://learn.chatgpt.com/docs/pricing) to these token
+splits gives a rate-card proxy of 808.39 credits for B and 929.65 for R (1.15×),
+not an observation of account charges. The entire paired command took
+27,659.26 seconds (7 h 40 min 59.26 s), from 07:06:55.890Z to 14:47:55.146Z on
+2026-11-09, exit 0. No interruption or resume was needed.
+
+#### Truncation, turns and root behavior
+
+Only the explicit harness marker `[truncated <bytes> bytes; …]` counts as
+stdout-cap truncation. Query result metadata such as `"truncated":false` does
+not. This corrects the original pilot's 102 count to 99; the pilot had 154
+executed cells across 156 root turns. Final replies without code are turns,
+not cells.
+
+| Cohort | R samples | Root turns | Mean turns / sample | Executed cells | Explicit truncations |
+|---|---:|---:|---:|---:|---:|
+| Original seven-decision pilot | 7 | 156 | 22.29 | 154 | 99 (64.3%) |
+| Full follow-up | 70 | 1,387 | 19.81 | 1,382 | 382 (27.6%) |
+| Follow-up, same seven pilot decisions | 14 | 290 | 20.71 | 287 | 78 (27.2%) |
+
+Full-run root turns ranged from nine to 29, against the unchanged 30-turn cap.
+The matched subset reduces cohort differences but still uses fresh model draws
+and two samples rather than one; these before/after observations are not a
+randomized estimate of the prompt effect. The prompt changes reduced the
+observed truncation rate substantially but did not establish an acceptance
+advantage or remove R's cost/time overhead.
+
+The root used the digest to start targeted exploration, then printed component,
+rule and train-cost projections, kept patches/results in globals, checked and
+estimated independent alternatives, and submitted a measured choice or no
+change. It still often re-queried the ledger. Totals were 225 `targets`, 201
+`ledger`, 88 `screens`, 34 `sequences`, seven `scroll_past` and three `steps`
+queries; 302 direct checks and 296 estimates. The 249 candidates comprised 69
+reorders, 59 optional collapses, 52 shortcuts, 49 task views, nine merges, five
+toolbar copies, three macros, two feature-surfacing changes and one
+information-forward change. Final gates remained independent of these tools.
+
+The root rarely delegated: two successful sub-calls across 70 samples. One
+asked for independent candidate patches on night-08/P5; a preceding 154,307-byte
+request was refused by the unchanged 64,000-byte sub-call cap. The other asked
+why signing tasks stopped after identity entry on night-09/P1; the answer
+explicitly retained uncertainty about the stopping cause. **No complaints were
+recorded.** There were 54 recovered root errors: 20 unsupported `sequences`
+filters, 13 unavailable `structuredClone` calls, seven geometry map/array
+mistakes, six syntax errors, six submission-list errors, one missing task filter
+and the oversized sub-call. Fifty-one arose in executed cells; three were
+structured-final rejections. The existing prompt's `structuredClone` advice is
+inconsistent with the VM globals, and geometry/query API clarity remains a
+future improvement; neither was changed during this study.
+
+**Recommendation:** keep R opt-in. It reliably submits within its bounds and
+now prints less, but the declared full comparison shows no acceptance advantage,
+fewer released clicks/scrolls saved and higher token/wall usage. The owner decides
+whether to change the default; this lane changes none.
+
+`study-summary.json` retains per-arm decision-bootstrap intervals and totals;
+`study-detail.json` retains every sample's errors, thoughts, code and audits.
+`final-data-verification.json` rechecks all 641 copied files against both source
+and rebased hashes, all 140 sample identities, the restored pilot manual, model
+settings, prompt/digest bounds and unchanged sanity ledger. The full
+`records.json` SHA-256 is
+`b9f3993bb58f7aa6f2e5c9d3d464780c6dbc85d1d92e71cbbc77b0dad7a542c8`.
 
 ### Commands
 
