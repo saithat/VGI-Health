@@ -10,7 +10,7 @@ import { ROOT, augment } from './generate.mjs';
 const skip = dataReason("fixtures/clinical", "fixtures/synthea", "fixtures/synthetic-hospital", "runs/world/2");
 const codes=r=>r.code?.coding?.map(c=>c.code)??[];
 
-test('all 324 charts have a reviewed allergy state, PCP, coverage and reconciled active medications', { skip },()=>{
+test('all 1,442 charts have a reviewed allergy state, PCP, coverage and reconciled active medications', { skip },()=>{
 const clinical=read(resolve(ROOT,'fixtures/clinical/overrides.json'));
 const index=read(resolve(ROOT,'fixtures/clinical/index.json'));
 const overrides=new Map(clinical.entry.map(e=>[e.key,e]));
@@ -44,7 +44,7 @@ const overrides=new Map(clinical.entry.map(e=>[e.key,e]));
       if(!original||JSON.stringify({...original.resource,id:e.resource.id})!==JSON.stringify(e.resource)) assert.deepEqual(overrides.get(resourceKey(e))?.resource,e.resource);
     }
   }
-  assert.ok(nka>200); assert.ok(stopped>100); assert.equal(index.patients.length,324);
+  assert.ok(nka>200); assert.ok(stopped>100); assert.equal(index.patients.length,1442);
 });
 
 test('all ten day graphs have full lists, role assignments, standing orders, senders and complete refill records', { skip },()=>{

@@ -10,6 +10,7 @@ import { hasAllergyClass } from "./patients";
 import { Rng } from "./rng";
 import type { Json, OrderChoice, Persona, Task, TaskChoices, Workflow } from "./schema";
 import type { DayContext, WorldState } from "./state";
+import type { CaseMixMode } from "./case-mix";
 
 export interface PopIndex {
   all: PatientProfile[];
@@ -132,6 +133,8 @@ export class DayBuild {
     readonly pop: PopIndex,
     readonly state: WorldState,
     readonly daySeed: string,
+    /** Scenario weights within each setting (see case-mix.ts). */
+    readonly caseMix: CaseMixMode = "legacy",
   ) {
     this.picker = new Picker(pop);
   }

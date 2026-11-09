@@ -122,13 +122,13 @@ describe("offline live UI catalog", () => {
     expect(
       catalog.programs.filter((program) => program.run === "mock").length,
     ).toBeGreaterThan(20);
-    expect(catalog.patients).toHaveLength(324);
+    expect(catalog.patients).toHaveLength(1442);
     expect(catalog.patients.filter((p) => p.source === "synthea")).toHaveLength(
       174,
     );
     expect(
       catalog.patients.filter((p) => p.source === "synthetic-hospital"),
-    ).toHaveLength(150);
+    ).toHaveLength(1268);
     expect(defaultPatient(catalog, "P2").encounterClass).toBe("EMER");
     expect(defaultPatient(catalog, "P3").encounterClass).toBe("IMP");
     expect(defaultPatient(catalog, "P4").flags.pediatric).toBe(true);
