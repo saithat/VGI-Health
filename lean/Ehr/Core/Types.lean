@@ -1,4 +1,5 @@
 import Ehr.Multi.Critical
+import Ehr.Sim.Workflow.Types
 import Ehr.Sim.Scheduling.Types
 import Ehr.Sim.Resumption.Types
 
@@ -1094,6 +1095,12 @@ structure AdministrationDecision where
   scheduledMin : Nat
   windowEndMin : Nat
   attemptMin : Nat
+  /-- Inclusive early boundary; omitted only in frozen legacy schedules. -/
+  windowStartMin? : Option Nat := none
+  /-- Actual administration, absent for non-administration. -/
+  administeredMin? : Option Nat := none
+  /-- Documentation time, distinct from the bedside event. -/
+  chartedMin? : Option Nat := none
   reoffer : Bool
   notifyPrescriber : Bool
   deriving DecidableEq, Repr, Inhabited
@@ -1179,6 +1186,7 @@ structure TraceEvent where
 
 /-- Effort counts for one task. -/
 structure TaskMetrics where
+  workflow? : Option Sim.Workflow.WorkflowReport := none
   task : String
   clicks : Nat
   keystrokes : Nat

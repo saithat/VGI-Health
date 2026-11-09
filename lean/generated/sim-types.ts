@@ -2,6 +2,49 @@
 // These augmentations preserve the full Lean JSON types without changing enum-table source.
 import type {} from "./ehr-types";
 
+/**
+ * Workflow structure, never a clinical permission or calibrated rate.
+ */
+export type WorkflowKind =
+  | "refill"
+  | "alert"
+  | "advice"
+  | "result"
+  | "call"
+  | "consult"
+  | "chart"
+  | "pharmacy"
+  | "dispensing"
+  | "reconciliation"
+  | "prescription"
+  | "coordination";
+/** All values of `WorkflowKind`. */
+export const WorkflowKindValues = ["refill", "alert", "advice", "result", "call", "consult", "chart", "pharmacy", "dispensing", "reconciliation", "prescription", "coordination"] as const;
+
+export interface WorkflowPlan {
+  kind: WorkflowKind;
+  owner: string;
+  delegateTo?: string;
+  delegateAccepted: boolean;
+  /**
+   * Declared scenario time per non-UI phase.
+   */
+  phaseMs: number;
+  /**
+   * Passive response wait; separate from active phase time.
+   */
+  responseWaitMs: number;
+}
+
+export interface WorkflowReport {
+  phases: string[];
+  owner: string;
+  clinicalComplete: boolean;
+  closed: boolean;
+  activeMs: number;
+  waitingMs: number;
+}
+
 export interface Arrival {
   arrivalMs: number;
   readyMs: number;
@@ -200,6 +243,7 @@ declare module "./ehr-types" {
  */
 export interface Task {
   timing?: Arrival;
+  workflowPlan?: WorkflowPlan;
 }
 
 /**
@@ -217,6 +261,7 @@ export interface DaySchedule {
  * Effort counts for one task.
  */
 export interface TaskMetrics {
+  workflow?: WorkflowReport;
   interruptions?: InterruptionMetrics;
 }
 

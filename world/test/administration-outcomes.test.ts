@@ -25,7 +25,7 @@ class Decisions extends Rng {
   }
 }
 const attempt = (o = oral, ip = patient, decisions = [false, false, false]) =>
-  doseAttempts(o, ip, 1, 540, "a:1:540:0", new Decisions(decisions));
+  doseAttempts(o, ip, 1, 540, "a:1:540:0", new Decisions(decisions), true);
 
 const cases: { name: string; med: OrderChoice; attempts: AdministrationDecision[] }[] = [
   { name: "given", med: oral, attempts: attempt() },

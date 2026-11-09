@@ -226,14 +226,14 @@ export interface DayOutput {
 }
 
 /** Advance the world one day. `prev` is not modified. */
-export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void = runWard): DayOutput {
+export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void = runWard, workflowMode: "realistic" | "legacy" = "realistic"): DayOutput {
   const day = prev.day + 1;
   // Presentation names and serialized vocabulary do not redraw clinical scenarios.
   const prevStateHash = hashHex(stableStringify(seedState(prev)));
   const daySeed = hashHex(`${prev.seed}|${day}|${prevStateHash}`);
   const ctx = computeContext(prev.seed, day, daySeed);
   const state: WorldState = { ...structuredClone(prev), day, date: dateOf(day), daySeed, prevStateHash, context: ctx, today: emptyToday() };
-  const b = new DayBuild(day, ctx, pop, state, daySeed);
+  const b = new DayBuild(day, ctx, pop, state, daySeed, workflowMode);
 
   for (const ip of state.inpatients) b.picker.block(ip.patientId);
   for (const c of state.surgicalCases) if (c.orDay === day && c.stage === "booked") b.picker.block(c.patientId);
@@ -292,13 +292,13 @@ export interface WorldRun {
  * `wardFlow` is an explicit test seam for immutable pre-outcome archives;
  * production callers use the current ward model. */
 export function generateWorld(seed: number, days: number, patients: PatientProfile[],
-  wardFlow: (b: DayBuild) => void = runWard): WorldRun {
+  wardFlow: (b: DayBuild) => void = runWard, workflowMode: "realistic" | "legacy" = "realistic"): WorldRun {
   const pop = worldPopulation(patients, seed);
   const initial = initialState(seed, pop);
   const out: DayOutput[] = [];
   let prev = initial;
   for (let d = 1; d <= days; d++) {
-    const r = advanceDay(prev, pop, wardFlow);
+    const r = advanceDay(prev, pop, wardFlow, workflowMode);
     out.push(r);
     prev = r.state;
   }

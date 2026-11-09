@@ -387,7 +387,9 @@ export async function runDays(opts: RunOptions): Promise<RunSummary> {
       const deps=workerDeps.get(id);if(!deps)throw new Error(`Missing worker ${id}`);
       const seedState=deps.seedState;
       const { program: current } = await store.login(id);
+      const declaredWorkload = (await Promise.all(Array.from({length: world.manifest.days}, (_, i) => world.schedule(i + 1, id)))).flatMap(s => s?.tasks ?? []);
       const nightInput = {
+        declaredWorkload,
         night: day, persona: view, release: await releaseForPersona(inForce, id), current,
         train: [...(train.get(id) ?? [])], programs: programs.get(id) ?? new Map<number, Program>(), history: [...(history.get(id) ?? [])],
         holdout: makeHoldout(deps, view, await world.schedule(calibrationDay(day), id)),

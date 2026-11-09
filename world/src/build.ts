@@ -2,6 +2,7 @@
  * Shared machinery for building one simulated day: id allocation, seeded
  * random streams, the patient picker, and task construction.
  */
+import { workflowPlan } from "./workflows";
 import { PRIOR_AUTH_RELEASE_DAY } from "./releases";
 import { SHIFTS } from "./calendar";
 import { clinicalObservation, type ClinicalObservation } from "./fhir";
@@ -132,6 +133,7 @@ export class DayBuild {
     readonly pop: PopIndex,
     readonly state: WorldState,
     readonly daySeed: string,
+    readonly workflowMode: "realistic" | "legacy" = "realistic",
   ) {
     this.picker = new Picker(pop);
   }
@@ -161,7 +163,7 @@ export class DayBuild {
     return Math.min(6, rng.poisson(INTERRUPTION_MEAN[persona] * this.ctx.interruptionFactor * scale));
   }
 
-  /** Create and register a task. `startMin` is clamped into the persona's shift. */
+  /** Create/register a task. New MAR charting may fall in successor coverage. */
   addTask(
     persona: Persona,
     workflow: Workflow,
@@ -182,10 +184,14 @@ export class DayBuild {
       persona,
       workflow,
       patientId,
-      startMin: Math.max(0, Math.min(SHIFTS[persona].lengthMin, Math.round(startMin))),
+      startMin: Math.max(0, (c.administer ?? []).some(o => o.administration?.chartedMin != null)
+        ? Math.round(startMin) : Math.min(SHIFTS[persona].lengthMin, Math.round(startMin))),
       choices: choices({ ...c, orders }),
       todayResources: [...todayResources, ...(c.observations ?? []).map((o, i) => clinicalObservation(`${id}-clinical-${i}`, patientId, this.day, SHIFTS[persona].startClock + startMin, o))],
       interruptions,
+      ...(this.workflowMode === "legacy" || workflow === "W4" && !(c.noteSections?.length) ? {} : {workflowPlan: workflowPlan(
+        workflow === "W7" ? "refill" : workflow === "W2" ? "result" :
+        orders.some(o => hasDrugAllergy(this.patient(patientId)) && o.drug !== "") ? "alert" : "chart", persona)}),
     };
     this.tasks[persona].push(task);
     return task;

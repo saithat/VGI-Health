@@ -1,4 +1,5 @@
 import Ehr.Commit.Check
+import Ehr.Specs.MarTiming
 import Ehr.Multi.Proofs
 
 /-! W4's patient-stream reduction. SQL must persist the returned version, events,
@@ -70,6 +71,9 @@ structure Input where
   medicationRequest : String
   encounter : String
   time : String
+  /-- Separate charting timestamp; time remains the bedside/outcome timestamp. -/
+  chartedTime? : Option String := none
+  timing? : Option AdministrationDecision := none
   resourceId : String
   deriving FromJson
 
@@ -97,6 +101,9 @@ def evidence (i : Input) (s : Ehr.State) : List Event :=
     [.doubleCheckCosign i.dose i.request.user.id (capturedText s "highAlertCosign")])
 
 def outcomeEvent (i : Input) (s : Ehr.State) : Option Event :=
+  if i.timing?.any (fun a => capturedText s "adminStatus" != match a.outcome with
+    | .given => "given" | .held => "held" | .refused => "refused"
+    | .notGiven => "not-given" | .delayed => "delayed") then none else
   match capturedText s "adminStatus" with
   | "given" => some (.administered i.dose i.actor i.request.user.id)
   | "held" => some (.held i.dose i.request.user.id (capturedText s "adminReason"))
@@ -135,7 +142,7 @@ def resource (i : Input) (s : Ehr.State) : Json := Id.run do
     ("request", ref ("MedicationRequest/" ++ i.medicationRequest)),
     ("effectiveDateTime", .str i.time),
     ("note", toJson [Json.mkObj [("text", .str (capturedText s "adminReason")),
-      ("authorReference", ref ("Practitioner/" ++ i.request.user.id)), ("time", .str i.time)]]),
+      ("authorReference", ref ("Practitioner/" ++ i.request.user.id)), ("time", .str (i.chartedTime?.getD i.time))]]),
     ("medicationCodeableConcept", field (order.getD .null) "medicationCodeableConcept"),
     ("performer", toJson [Json.mkObj [("actor", ref ("Practitioner/" ++ i.request.user.id))]]),
     ("extension", toJson [Json.mkObj [("url", .str "urn:vgi:scheduled-dose"), ("valueString", .str (toJson i.dose).compress)],
@@ -187,6 +194,7 @@ def importContextFor (i : ContextInput) : Except String Render.FactsContext := d
 /-- Successful reduction writes exactly one successor of the checked version.
 All clinical authorization comes from Commit.check on this version's bundle. -/
 def commit (i : Input) : Option Accepted :=
+  if i.timing?.any (fun a => !Specs.MarTiming.valid a) then none else
   if i.version != i.expectedVersion then none else
   if i.request.commit != "administerMed" || i.request.user.role != .rn then none else
   match check i.request with
@@ -212,6 +220,7 @@ theorem commit_invariant (i : Input) (a : Accepted) (h : Invariant i.state)
   split at accepted <;> try contradiction
   split at accepted <;> try contradiction
   split at accepted <;> try contradiction
+  split at accepted <;> try contradiction
   cases accepted
   exact reduce_invariant _ _ h
 
@@ -225,6 +234,7 @@ theorem accepted_guard_at_written_version (i : Input) (a : Accepted)
         i.request.state i.request.commit = true := by
   unfold commit at accepted
   split at accepted <;> try contradiction
+  split at accepted <;> try contradiction
   rename_i versionOk
   have hv : i.version = i.expectedVersion := by simpa using versionOk
   split at accepted <;> try contradiction
@@ -236,6 +246,16 @@ theorem accepted_guard_at_written_version (i : Input) (a : Accepted)
   obtain ⟨current, hp, hg, _⟩ := accepted_current_guard i.request ps staged checked
   exact ⟨hv, congrArg (· + 1) hv, current, hp, hg⟩
 
+theorem accepted_timing_valid (i : Input) (a : Accepted) (t : AdministrationDecision)
+    (timing : i.timing? = some t) (accepted : commit i = some a) :
+    Specs.MarTiming.valid t = true := by
+  unfold commit at accepted
+  split at accepted
+  · contradiction
+  · rename_i h
+    simpa [timing] using h
+
+#print axioms accepted_timing_valid
 #print axioms nonadministration_preserves_shared
 #print axioms reoffers_doses_unique
 #print axioms applyEvent_invariant

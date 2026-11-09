@@ -51,7 +51,7 @@ import {
 import { REPO_ROOT, writeJson } from './util.js';
 import { createFakeEhr } from './fake/ehr-fake.js';
 
-export interface CheckInput { specVersion: string; program: Program; prev: Program; canonical: Program }
+export interface CheckInput { specVersion: string; program: Program; prev: Program; canonical: Program; workload?: DaySchedule['tasks'] }
 export interface SimulateInput {
   specVersion: string;
   program: Program;
@@ -142,8 +142,8 @@ class CliEhr implements EhrClient {
   }
 
   check(i: CheckInput): Promise<Verdict> {
-    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
-      const res = await this.run(['check', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '']);
+    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical, ...(i.workload ? {workload:i.workload} : {}) }, async (p) => {
+      const res = await this.run(['check', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '', '--canonical', p['canonical'] ?? '', ...(i.workload ? ['--workload',p['workload'] ?? ''] : [])]);
       return parseOut('check', res, verdictSchema);
     });
   }
@@ -175,10 +175,11 @@ class CliEhr implements EhrClient {
   }
 
   deploy(i: DeployInput): Promise<DeployResult> {
-    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical }, async (p) => {
+    return this.withFiles({ program: i.program, prev: i.prev, canonical: i.canonical, ...(i.workload ? {workload:i.workload} : {}) }, async (p) => {
       const res = await this.run([
         'deploy', '--spec', this.specPath(i.specVersion), '--program', p['program'] ?? '', '--prev', p['prev'] ?? '',
         '--canonical', p['canonical'] ?? '', '--out', i.outDir,
+        ...(i.workload ? ['--workload',p['workload'] ?? ''] : []),
       ]);
       const certificate = parseOut('deploy', res, certificateSchema);
       if (res.code === 0 && certificate.verdict === 'ok') return { deployed: true, certificate };

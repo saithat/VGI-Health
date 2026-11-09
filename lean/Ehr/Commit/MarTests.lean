@@ -92,4 +92,22 @@ def escalation := Sim.episodes Commit.Tests.currentFacts .W4 { administer := [me
   escalation[1].choices escalation[1].med? Specs.V1.nursingAssessment ==
     some (.text (Sim.administrationFollowup (medication .refused true)))
 
+def timed : AdministrationDecision := {
+  outcome := .given, reason := "scheduled", occurrence := "dose", scheduledMin := 600
+  windowStartMin? := some 570, windowEndMin := 630, attemptMin := 570
+  administeredMin? := some 570, chartedMin? := some 576, reoffer := false, notifyPrescriber := false }
+#guard Specs.MarTiming.valid timed
+#guard !Specs.MarTiming.valid { timed with attemptMin := 569, administeredMin? := some 569 }
+#guard Specs.MarTiming.valid { timed with attemptMin := 630, administeredMin? := some 630, chartedMin? := some 640 }
+#guard !Specs.MarTiming.valid { timed with attemptMin := 631, administeredMin? := some 631, chartedMin? := some 640 }
+#guard !Specs.MarTiming.valid { timed with chartedMin? := some 569 }
+#guard !Specs.MarTiming.valid { timed with outcome := .held }
+#guard Specs.MarTiming.valid { timed with outcome := .held, administeredMin? := none }
+#guard commit { input {} with timing? := some { timed with attemptMin := 569 } } |>.isNone
+#guard outcomeEvent { input {} with timing? := some timed } (goalCaptures (medication .held)) == none
+#guard str (first (resource { input {} with chartedTime? := some "chart-time" }
+  (goalCaptures (medication .given))) "note") "time" == "chart-time"
+#guard Specs.MarTiming.valid { timed with scheduledMin := 600, windowStartMin? := some 540, windowEndMin := 660, attemptMin := 540, administeredMin? := some 540 }
+#guard Specs.MarTiming.valid { timed with scheduledMin := 600, windowStartMin? := some 480, windowEndMin := 720, attemptMin := 480, administeredMin? := some 480 }
+#guard !Specs.MarTiming.valid { timed with windowStartMin? := some 560, windowEndMin := 640 }
 end Ehr.Commit.Mar.Tests

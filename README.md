@@ -1,4 +1,4 @@
-_README last reviewed against commit `45711b0a` (2026-11-09)._
+_README last reviewed 2026-11-09 against `45711b0a` and the approved wave-3 workflow increment._
 
 # VGI Health
 
@@ -85,10 +85,11 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
+The retained builds below predate wave 3; its new workflow model has not been remeasured.
 
 | Evidence | Result and caveat |
 |---|---|
-| Current recording verification | All 33 retained revision bindings re-certified; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
+| Retained recording verification | At the recorded build, all 33 revision bindings were re-certified; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
 | Matched workload experiment | Blind even days across five clinicians: both successor arms complete 660/662 tasks; mean queue delay is 1.19 minutes with fixed-cost interruptions and 1.73 with typed real work. Both have two overdue doses and zero active overtime. These are fixed-layout offline runs with uncalibrated rates; the archived cohort differs. [Cohorts, endpoints and screenshots](docs/methods/workload-and-interruptions.md#local-measurement-cohorts). |
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
 | Layout optimization pilot | One frozen P1 context accepts B and refuses D after D adds three validation clicks; both selected designs have structural distance 0.004717 and zero native rejection rate. This does not establish improvement or broader exploration. [Discovery policy and pilot](docs/methods/discovery-and-cadence.md). |
@@ -96,6 +97,13 @@ These are synthetic, local experiments, not observed clinician performance.
 The [EHR scope inventory](docs/methods/ehr-scope.md) lists seven workflows, five
 personas and the simplified or absent departments, interfaces and production
 capabilities. The system uses synthetic patients and is not a deployable product.
+
+- Refills have claim/delegation, review, guarded approve/deny/change, pharmacy response and closure phases ([methods](docs/methods/workflow-phases.md)).
+- Compound alert scenarios cover inspection, cancellation, alternative orders and documented override through existing guards ([methods](docs/methods/workflow-phases.md#compound-alerts)).
+- MAR has CMS ±30/60/120-minute windows and separate administration/charting times; timing draws remain scenarios ([methods](docs/methods/workflow-phases.md#mar-timing)).
+- Five inbox streams use N1 mean inputs, explicit ownership and delegated support review ([methods](docs/methods/workflow-phases.md#inbox-streams)).
+- Release gates prove retention of reachable field capabilities for the declared workload even when optional features are declined ([contract](docs/methods/workflow-phases.md#release-capabilities)).
+- Chart synthesis, note preparation and result follow-through have explicit scenario phases ([scope and remaining work](docs/methods/workflow-phases.md#scenario-scope)).
 
 ## How to run
 
@@ -193,7 +201,7 @@ uncalibrated rates remain for owner review in this single decision list.
 
 | Decision | Implemented policy awaiting review |
 |---|---|
-| MAR outcomes and timing | [Outcome policy](docs/methods/medication-outcomes.md#medication-administration-outcomes): conditional rates, critical-drug classification, 30/60/120-minute windows, 20/45-minute re-offers, escalation thresholds and 18:59 cutoff. |
+| MAR outcomes and timing | Owner approved wave-3 timing on 2026-11-09: [symmetric CMS windows and distinct clocks](docs/methods/workflow-phases.md#mar-timing). Criticality, holds, 20/45-minute re-offers, escalation and the legacy monitoring cutoff remain scenario policy. |
 | MAR follow-up scope | Prescriber notification is nursing documentation only; live delivery and cross-shift dose ownership remain future work. |
 | ADT cancellation eligibility | [Administrative rules](docs/methods/adt.md#administrative-adt-extension): patient's latest ADT event, of the matching kind; positive exact ordinal; active destination beds; transfer cancellation requires the original bed empty and ready after cleaning. |
 | Clinical work after cancellation | Retain all documentation, orders and administrations with their original encounter links, including an encounter marked entered-in-error; append cancellation provenance. |

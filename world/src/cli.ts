@@ -67,7 +67,9 @@ async function main(): Promise<void> {
   const clockMode = arg(args, "clock-mode") ?? "continuous";
   if (!["continuous", "legacy"].includes(clockMode)) throw new Error("--clock-mode must be continuous or legacy");
   const pop = loadPopulation(fixtures);
-  const run = generateWorld(seed, days, pop.patients);
+  const workflows = arg(args, "workflows") ?? "realistic";
+  if (workflows !== "realistic" && workflows !== "legacy") throw new Error("--workflows must be realistic or legacy");
+  const run = generateWorld(seed, days, pop.patients, undefined, workflows);
   const adt = arg(args, "adt") ?? "realistic";
   if (!["off", "realistic"].includes(adt)) throw new Error("--adt must be off or realistic");
 

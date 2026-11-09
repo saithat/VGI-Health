@@ -1495,6 +1495,18 @@ export interface AdministrationDecision {
   scheduledMin: number;
   windowEndMin: number;
   attemptMin: number;
+  /**
+   * Inclusive early boundary; omitted only in frozen legacy schedules.
+   */
+  windowStartMin?: number;
+  /**
+   * Actual administration, absent for non-administration.
+   */
+  administeredMin?: number;
+  /**
+   * Documentation time, distinct from the bedside event.
+   */
+  chartedMin?: number;
   reoffer: boolean;
   notifyPrescriber: boolean;
 }

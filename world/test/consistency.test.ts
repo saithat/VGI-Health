@@ -153,11 +153,12 @@ CASES.forEach(({ seed, index }) => {
     expect(loads.size).toBeGreaterThanOrEqual(2);
     const uc = schedule(r, 5, "P1").tasks;
     expect(uc.filter((t) => t.workflow === "W1").every((t) => t.choices.noteSections.includes("urgentCareTriage"))).toBe(true);
-    expect(uc.filter((t) => t.workflow !== "W1").every((t) => t.startMin >= 600)).toBe(true);
-    // The inbox mostly waits on the urgent-care day: at most 5 items handled, the rest carried over.
+    expect(uc.filter((t) => t.workflow !== "W1").every((t) => t.startMin < 480)).toBe(true);
+    // Contemporary streams arrive during clinic even on the urgent-care day.
+    // Queue/service backlog is a simulator outcome, not a generator burst cap.
     const ib4 = stateOf(r, 4).today.inbox.P1;
     const ib5 = stateOf(r, 5).today.inbox.P1;
-    expect(ib5.handled).toBeLessThanOrEqual(5);
+    expect(ib5.handled).toBeGreaterThan(5);
     expect(ib5.backlogAfter).toBe(ib4.backlogAfter + ib5.arrived - ib5.handled);
   });
 });

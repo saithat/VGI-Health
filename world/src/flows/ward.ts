@@ -93,16 +93,17 @@ export function runWard(b: DayBuild): void {
       }
       for (const [orderIndex, o] of due.entries()) {
         const occurrence = `${ip.admissionId}:${day}:${clock}:${orderIndex}:${o.drug}`;
-        const attempts = doseAttempts(o, ip, day, clock, occurrence, prng.fork(`outcome:${occurrence}`));
+        const attempts = doseAttempts(o, ip, day, clock, occurrence, prng.fork(`outcome:${occurrence}`), b.workflowMode === "legacy");
         for (const [attemptIndex, administration] of attempts.entries()) {
-          const decision = attemptIndex > 0 && administration.outcome === "given" &&
+          const decision = administration.outcome === "given" &&
             !activeOrders(ip, day, administration.attemptMin).includes(o)
-            ? { ...administration, outcome: "notGiven" as const, reason: "order-no-longer-active",
+            ? { ...administration, administeredMin: undefined, outcome: "notGiven" as const, reason: "order-no-longer-active",
               notifyPrescriber: criticalMedication(o) }
             : administration;
           const medication = { ...o, administration: decision };
-          if (attemptIndex === 0 && administration.attemptMin === clock) administer.push(medication);
-          else b.addTask("P3", "W4", ip.patientId, toMin(administration.attemptMin),
+          const chartClock = administration.chartedMin ?? administration.attemptMin;
+          if (attemptIndex === 0 && chartClock === clock) administer.push(medication);
+          else b.addTask("P3", "W4", ip.patientId, toMin(chartClock),
             { administer: [medication] }, [], b.interruptions("P3", prng.fork(`followup:${occurrence}`)));
         }
       }
