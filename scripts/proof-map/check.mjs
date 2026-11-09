@@ -126,6 +126,14 @@ try {
   await toggle.click();
   assert.equal(await toggle.getAttribute("aria-expanded"), "false");
   await toggle.hover();
+  await toggle.locator("span").first().hover();
+  await toggle.locator("code").hover();
+  await page.waitForTimeout(250);
+  assert.equal(
+    await page.locator("#preview").isVisible(),
+    true,
+    "Preview closed while moving inside its trigger",
+  );
   assert.equal(
     await page.locator("#preview pre").innerText(),
     data.decls[reduce][4],

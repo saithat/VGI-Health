@@ -893,6 +893,9 @@ Generated constructors, recursors and matcher helpers resolve to their source
 declaration.
 
 Hover or focus a node/name for its complete pretty-printed type and docstring.
+The preview stays open during pointer movement within the node and can be
+scrolled without covering its trigger. Dependency links expose their complete
+declaration names to assistive technology.
 Every declaration has a source link to its file and line at the built commit.
 The trust panel reports the selected theorem's transitive logical axioms,
 repeats its full type (including parameters and hypotheses), and lists the

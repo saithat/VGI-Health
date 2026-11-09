@@ -478,7 +478,7 @@
           results = [];
         const isHeadline = (i) => D[i][1] === "t" && Boolean(D[i][8]);
         const read = (i, label = short(i)) =>
-          `<a href="#d${i}" data-read="${i}" data-preview="${i}">${esc(label)}</a>`;
+          `<a href="#d${i}" data-read="${i}" data-preview="${i}" aria-label="Read ${esc(D[i][0])}">${esc(label)}</a>`;
         $("#stats").textContent =
           `${D.length.toLocaleString()} declarations · ${D.filter((r) => r[1] === "t").length.toLocaleString()} theorems · built commit ${data.commit.slice(0, 12)} · works offline`;
         $("#walkthrough").href =
@@ -761,7 +761,8 @@
           if (el && !el.contains(e.relatedTarget)) previewFor(el);
         });
         document.addEventListener("mouseout", (e) => {
-          if (e.target.closest("[data-preview]"))
+          const trigger = e.target.closest("[data-preview]");
+          if (trigger && !trigger.contains(e.relatedTarget))
             timer = setTimeout(() => {
               if (!preview.matches(":hover")) preview.hidden = true;
             }, 180);
