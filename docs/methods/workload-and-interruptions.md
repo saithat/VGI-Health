@@ -2,6 +2,10 @@
 
 [Overview](../../README.md) · [Methods and reproduction](../../README.md#documentation)
 
+The [wave-3 increment](wave3-simulation.md) supersedes the historical source-day,
+flat-rate and unilateral-handover defaults below; the legacy switches retain
+this wave-2 measurement model.
+
 New native expert and bounded simulations default to `continuous-workload-v1`.
 `lean/Ehr/Sim/Scheduling/` owns the shared queue and shift model; the policy hooks
 retain the clinical interpreter and per-task random streams. `startMin` remains

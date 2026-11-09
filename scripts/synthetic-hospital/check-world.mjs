@@ -85,7 +85,7 @@ export function noteSizes(world) {
 }
 
 const spec = (day) => day >= 7 ? 'v3' : day >= 4 ? 'v2' : 'v1';
-async function simulateWorld(world, jobs) {
+async function simulateWorld(world, jobs, modes) {
   const bin = process.env.EHR_BIN ?? resolve(root, 'lean/.lake/build/bin/ehr');
   const queue = [...world.schedules];
   const results = [];
@@ -94,7 +94,7 @@ async function simulateWorld(world, jobs) {
       const job = queue.shift();
       const v = spec(job.day);
       const { stdout } = await run(bin, ['simulate', '--spec', resolve(root, `releases/${v}/spec.json`), '--program', resolve(root, `releases/${v}/canonical.json`),
-        '--persona', resolve(world.dir, `personas/${job.persona}.json`), '--schedule', job.file, '--world', world.dir, '--seed', String(world.manifest.seed)], { maxBuffer: 512 * 1024 * 1024 });
+        '--persona', resolve(world.dir, `personas/${job.persona}.json`), '--schedule', job.file, '--world', world.dir, '--seed', String(world.manifest.seed), '--sim-model', modes.simModel, '--text-cost', modes.textCost], { maxBuffer: 512 * 1024 * 1024 });
       const r = JSON.parse(stdout);
       results.push({ persona: job.persona, day: job.day, tasks: r.tasks, workload: r.workload });
     }
@@ -114,18 +114,21 @@ async function simulateWorld(world, jobs) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === resolve(import.meta.filename)) {
-  const { values } = parseArgs({ options: { world: { type: 'string' }, baseline: { type: 'string' }, simulate: { type: 'boolean' }, jobs: { type: 'string' } } });
+  const { values } = parseArgs({ options: { world: { type: 'string' }, baseline: { type: 'string' }, simulate: { type: 'boolean' }, jobs: { type: 'string' }, 'sim-model': { type: 'string' }, 'text-cost': { type: 'string' } } });
   if (!values.world) throw new Error('Usage: check-world.mjs --world DIR [--baseline DIR] [--simulate] [--jobs N]');
+  const modes = { simModel: values['sim-model'] ?? 'wave3', textCost: values['text-cost'] ?? 'length' };
+  if (!['wave3', 'legacy'].includes(modes.simModel) || !['length', 'legacy'].includes(modes.textCost))
+    throw new Error('--sim-model must be wave3|legacy and --text-cost must be length|legacy');
   const world = worldData(resolve(values.world));
   const baseline = values.baseline ? worldData(resolve(values.baseline)) : undefined;
-  const report = { world: world.dir, baseline: baseline?.dir, label: 'synthetic-benchmark', distributions: distributions(world),
+  const report = { world: world.dir, baseline: baseline?.dir, label: 'synthetic-benchmark', simulationModes: modes, distributions: distributions(world),
     ...(baseline ? { baselineDistributions: distributions(baseline) } : {}),
     notes: noteSizes(world), ...(baseline ? { baselineNotes: noteSizes(baseline) } : {}),
     datasetSectionChars: MIX.sectionChars, datasetNotes: MIX.notes };
   if (values.simulate) {
     const jobs = Number(values.jobs ?? 4);
-    report.simulation = await simulateWorld(world, jobs);
-    if (baseline) report.baselineSimulation = await simulateWorld(baseline, jobs);
+    report.simulation = await simulateWorld(world, jobs, modes);
+    if (baseline) report.baselineSimulation = await simulateWorld(baseline, jobs, modes);
   }
   console.log(JSON.stringify(report, null, 2));
 }

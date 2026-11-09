@@ -45,7 +45,7 @@ def perform (p : WorkProgress) (step : WorkStep) : WorkProgress :=
 def executeWork (w : InterruptWork) (start : Nat) (deferred : Bool) : WorkRecord :=
   let p := (requiredSteps w.kind).foldl perform { work := w }
   {
-    work := w, startedAtMs := start, completedAtMs := start + p.elapsedMs, deferred,
+    work := w, startedAtMs := start, completedAtMs := start + if p.documented then w.serviceMs?.getD p.elapsedMs else p.elapsedMs, deferred,
     steps := p.done, completed := p.documented && p.response?.isSome && p.done == requiredSteps w.kind,
     outcome := if p.documented then p.response?.getD "communication incomplete" else "communication incomplete: missing patient or message" }
 
@@ -66,8 +66,10 @@ def initRuntime (seed : Nat) (task : Task) (role : Role) (patients : List String
       | .wardNurse => "wardNurse" | .surgicalPhysician => "surgicalPhysician"
       | .clinicPrescriber => "clinicPrescriber" | .emergencyPhysician => "emergencyPhysician"
       | .inpatientPharmacy => "inpatientPharmacy",
-    ratePerHourMilli := ratePerHourMilli setting,
-    exposureMinutes := exposureMinutes task.workflow, offered } }
+    model := if config.legacyModel then "interrupting-work-v1" else "interrupting-work-v3",
+    ratePerHourMilli := if config.legacyModel then ratePerHourMilli setting else activityRate setting task,
+    exposureMinutes := exposureMinutes task.workflow, offered,
+    handoffs? := if config.legacyModel then none else some [] } }
 
 /-- A scenario refresh cannot change patient identity or double-advance time. -/
 def refreshAt (config : InterruptionConfig) (facts : Facts) (atMs : Nat) : Facts :=
@@ -82,6 +84,12 @@ def handleNow (role : Role) (w : InterruptWork) (setting? : Option InterruptionP
 /-- Reorientation rereads the task position and each pending draft/confirmation.
 No claim that these coefficients describe measured clinicians. -/
 def reorientationCost (s : State) : Nat := 3000 + 700 * s.captured.length + 1000 * (s.captured.filter (! ·.confirmed)).length
+
+def acceptedCommunication (u : User) (w : InterruptWork) (atMs : Nat) (reason : String) :
+    List Scheduling.Handover :=
+  let recipient := u.id ++ ":on-call"
+  ((offerHandover w.id w.patient u.id recipient reason atMs).bind
+    (fun h => acceptHandover h recipient atMs)).toList
 
 /-- Communication and resumption share the clinician's serial clock. Reconsider
 arrived work after every atomic communication; only then run queued reorientation.
@@ -127,12 +135,18 @@ def serviceCheckpoint (sp : Spec) (prog : Program) (f : Facts) (u : User) (task 
     -- The interrupting workspace receives no saved clinical state or receipts.
     let record := executeWork w start deferred
     if record.completed && w.kind == .urgentResult then
-      rt := { rt with metrics := { rt.metrics with frames := rt.metrics.frames ++ [{
+      rt := { rt with metrics := { rt.metrics with
+        handoffs? := if rt.config.legacyModel then none else some
+          ((rt.metrics.handoffs?.getD []) ++ acceptedCommunication u w record.completedAtMs "communication follow-through requires clinical team"),
+        frames := rt.metrics.frames ++ [{
         task := w.id ++ ":clinical-follow-through", owner := u.id, patient := w.patient,
         suspendedAtMs := start, closedAtMs := record.completedAtMs, disposition := .handedOver,
         reason := "responsible clinical team: urgent notification communicated; clinical follow-through remains required" }] } }
     if !record.completed then
-      rt := { rt with metrics := { rt.metrics with frames := rt.metrics.frames ++ [{
+      rt := { rt with metrics := { rt.metrics with
+        handoffs? := if rt.config.legacyModel then none else some
+          ((rt.metrics.handoffs?.getD []) ++ acceptedCommunication u w record.completedAtMs "communication follow-through requires clinical team"),
+        frames := rt.metrics.frames ++ [{
         task := w.id, owner := u.id, patient := w.patient, suspendedAtMs := start,
         closedAtMs := record.completedAtMs, disposition := .handedOver,
         reason := "on-call service: communication could not verify patient or message" }] } }
@@ -164,6 +178,8 @@ def serviceCheckpoint (sp : Spec) (prog : Program) (f : Facts) (u : User) (task 
 an unresolved clinical alert. No deferred item disappears at task close. -/
 def handOverPending (u : User) (atMs : Nat) (runtime : InterruptionRuntime) : InterruptionRuntime :=
   { runtime with queued := [], metrics := { runtime.metrics with
+    handoffs? := if runtime.config.legacyModel then none else some
+      ((runtime.metrics.handoffs?.getD []) ++ runtime.queued.flatMap (fun w => acceptedCommunication u w atMs "protected alert; follow-through pending")),
     frames := runtime.metrics.frames ++ runtime.queued.map (fun w => {
       task := w.id, owner := u.id, patient := w.patient, suspendedAtMs := w.arrivedAtMs,
       closedAtMs := atMs, disposition := .handedOver,

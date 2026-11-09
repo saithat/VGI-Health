@@ -182,6 +182,38 @@ theorem interruption_timing_preserves_finish (row shiftEnd m) :
     (withInterruptions row shiftEnd m).finishMs? = row.finishMs? := by
   exact ⟨rfl, rfl⟩
 
+/-- Shift identity names a separate simulated clinician; the initial shift
+retains the configured actor so archived memory files remain usable. -/
+def actorFor (base : String) (windows : List Shift) (w : Shift) : String :=
+  if windows.head?.map (·.id) == some w.id then base else base ++ ":" ++ w.id
+
+def clocks (duration clinical reading : Nat) (m : Resumption.InterruptionMetrics)
+    (queue : Nat) : Clocks :=
+  { uiMs := duration - (clinical + reading + m.workMs + m.reorientationMs + m.closureWaitMs),
+    readingMs := reading, clinicalMs := clinical, communicationMs := m.workMs,
+    passiveWaitMs := m.closureWaitMs, reorientationMs := m.reorientationMs, queueMs := queue }
+
+def withClocks (row : Timing) (clinical reading documentedMs : Nat)
+    (m : Resumption.InterruptionMetrics) (actor : String) (handover : Option Handover) : Timing :=
+  let duration := row.finishMs?.getD 0 - row.startMs?.getD 0
+  { row with
+    clocks? := some (clocks duration clinical reading m row.queueDelayMs)
+    actor? := some actor
+    handover? := handover
+    ed? := row.arrival.boardingMs?.map fun boarding => {
+      providerQueueMs := row.startMs?.getD 0 - row.arrival.arrivalMs,
+      providerStartMs := row.startMs?.getD 0,
+      decisionMs := documentedMs, departureMs := documentedMs + boarding, boardingMs := boarding } }
+
+theorem clock_partition (duration clinical reading : Nat) (m : Resumption.InterruptionMetrics)
+    (queue : Nat) (bounded : clinical + reading + m.workMs + m.reorientationMs + m.closureWaitMs ≤ duration) :
+    let c := clocks duration clinical reading m queue
+    c.uiMs + c.readingMs + c.clinicalMs + c.communicationMs + c.passiveWaitMs + c.reorientationMs = duration := by
+  simp only [clocks]
+  omega
+
+#print axioms clock_partition
+
 /-- Every finalized policy attempt has an explicit terminal classification. -/
 theorem timing_accounted (ws t w start duration completed) :
     (timing ws t w start duration completed).disposition = "finished" ∨

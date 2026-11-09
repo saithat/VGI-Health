@@ -25,6 +25,8 @@ structure InterruptWork where
   essential : Bool
   /-- Synthetic communication content, not an imported clinical finding. -/
   message : String := "Care-team request"
+  /-- Clock-driven channel service; absent retains the five-step legacy costs. -/
+  serviceMs? : Option Nat := none
   deriving DecidableEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
 structure WorkRecord where
   work : InterruptWork
@@ -69,5 +71,7 @@ structure InterruptionMetrics where
   workMs : Nat := 0
   work : List WorkRecord := []
   frames : List FrameRecord := []
+  /-- Absent on historical recordings; present for wave-3 responsibility transfers. -/
+  handoffs? : Option (List Scheduling.Handover) := none
   deriving DecidableEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
 end Ehr.Sim.Resumption

@@ -2,6 +2,43 @@
 // These augmentations preserve the full Lean JSON types without changing enum-table source.
 import type {} from "./ehr-types";
 
+/**
+ * Disjoint time on one server. Queue time is an endpoint, not paid service.
+ * Clinical and text coefficients are declared scenarios; N1 (2023) motivates
+ * separating EHR/inbox/clinical time, not adding its totals as extra waits.
+ */
+export interface Clocks {
+  uiMs: number;
+  readingMs: number;
+  clinicalMs: number;
+  communicationMs: number;
+  passiveWaitMs: number;
+  reorientationMs: number;
+  queueMs: number;
+}
+
+/**
+ * Responsibility only: accepting never transfers a draft, receipt or sign authority.
+ * FHIR S8–S10 and SAFER S13 (2025) supply structure, no acceptance rate.
+ */
+export interface Handover {
+  task: string;
+  patient: string;
+  sender: string;
+  recipient: string;
+  offeredAtMs: number;
+  acceptedAtMs?: number;
+  reason: string;
+}
+
+export interface EdStages {
+  providerQueueMs: number;
+  providerStartMs: number;
+  decisionMs: number;
+  departureMs: number;
+  boardingMs: number;
+}
+
 export interface Arrival {
   arrivalMs: number;
   readyMs: number;
@@ -22,6 +59,14 @@ export interface Arrival {
    * Distinct occurrence keys and their MAR window ends.
    */
   doseWindows: [string, number][];
+  /**
+   * Scenario bedside service, atomic and additional to measured EHR effort.
+   */
+  clinicalServiceMs?: number;
+  /**
+   * ED admitted cases: passive bed wait after the decision, never clinician service.
+   */
+  boardingMs?: number;
 }
 
 export interface Shift {
@@ -69,6 +114,10 @@ export interface Timing {
    */
   disposition: string;
   reason?: string;
+  clocks?: Clocks;
+  actor?: string;
+  handover?: Handover;
+  ed?: EdStages;
 }
 
 export interface WorkloadReport {
@@ -133,6 +182,10 @@ export interface InterruptWork {
    * Synthetic communication content, not an imported clinical finding.
    */
   message: string;
+  /**
+   * Clock-driven channel service; absent retains the five-step legacy costs.
+   */
+  serviceMs?: number;
 }
 
 export interface WorkRecord {
@@ -192,6 +245,10 @@ export interface InterruptionMetrics {
   workMs: number;
   work: WorkRecord[];
   frames: FrameRecord[];
+  /**
+   * Absent on historical recordings; present for wave-3 responsibility transfers.
+   */
+  handoffs?: Handover[];
 }
 
 declare module "./ehr-types" {
@@ -211,6 +268,10 @@ export interface DaySchedule {
    */
   clockMode?: string;
   shifts?: Shift[];
+  /**
+   * Explicit source calendar dates for a merged multi-day queue.
+   */
+  sourceDates?: [number, string][];
 }
 
 /**

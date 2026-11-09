@@ -11,7 +11,7 @@ import { seedState } from "./seed-contract";
  */
 import { DayBuild, type PopIndex, indexPopulation } from "./build";
 import type { CaseMixMode } from "./case-mix";
-import { SHIFTS, dateOf } from "./calendar";
+import { SHIFTS, dateOf, withCalendar, type WorldClock } from "./calendar";
 import { computeContext } from "./context";
 import { assignChronicOpioids, worldHomeMedResources } from "./controlled";
 import { addAppointment, addPendingLab, admit, labValue, maxCensus } from "./flows/common";
@@ -50,13 +50,18 @@ export function worldPopulation(patients: PatientProfile[], seed: number): PopIn
 /** The world on day 0 (the Friday before the simulation): census, bookings, pending results, backlog. */
 /** Generator options. Library default `legacy` reproduces frozen archives; the CLI defaults to Synthetic Hospital. */
 export interface WorldOptions {
+  worldClock?: WorldClock;
   caseMix?: CaseMixMode;
 }
 
 export function initialState(seed: number, pop: PopIndex, options: WorldOptions = {}): WorldState {
+  return withCalendar(options.worldClock ?? "legacy", () => initialCalendarState(seed, pop, options));
+}
+function initialCalendarState(seed: number, pop: PopIndex, options: WorldOptions): WorldState {
   const daySeed = hashHex(`${seed}|init`);
   const st: WorldState = {
     schemaVersion: 1,
+    ...(options.worldClock === "continuous" ? {worldClock: "continuous" as const, edCarry: []} : {}),
     seed,
     day: 0,
     date: dateOf(0),
@@ -235,6 +240,9 @@ export interface DayOutput {
 
 /** Advance the world one day. `prev` is not modified. */
 export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void = runWard, options: WorldOptions = {}): DayOutput {
+  return withCalendar(options.worldClock ?? prev.worldClock ?? "legacy", () => advanceCalendarDay(prev, pop, wardFlow, options));
+}
+function advanceCalendarDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBuild) => void, options: WorldOptions): DayOutput {
   const day = prev.day + 1;
   // Presentation names and serialized vocabulary do not redraw clinical scenarios.
   const prevStateHash = hashHex(stableStringify(seedState(prev)));
@@ -253,8 +261,8 @@ export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBui
   runEd(b);
   runSurgery(b);
   wardFlow(b);
-  runP1(b);
-  runPeds(b);
+  const weekend = state.worldClock === "continuous" && (ctx.weekday === "Sat" || ctx.weekday === "Sun");
+  if (!weekend) { runP1(b); runPeds(b); }
 
   // World-assigned home meds travel with every task for that patient, so FHIR-derived facts see them.
   for (const persona of PERSONAS) {
@@ -264,6 +272,9 @@ export function advanceDay(prev: WorldState, pop: PopIndex, wardFlow: (b: DayBui
     }
   }
 
+  if (state.worldClock === "continuous") {
+    state.today.ward.admissions = state.admissions.filter(a => a.day === day).map(a => a.id);
+  }
   // Carry-over: drop today's discharges; anyone whose planned discharge passed without one stays a day longer.
   const dischargedToday = new Set(state.discharges.filter((d) => d.day === day && d.admissionId !== null).map((d) => d.admissionId));
   state.inpatients = state.inpatients.filter((ip) => !dischargedToday.has(ip.admissionId));

@@ -4,6 +4,7 @@ export const ArrivalSchema = z.object({
   arrivalMs: nat, readyMs: nat, priority: nat,
   resultAgeMs: nat,
   deadlineMs: nat.exactOptional(), resultAvailableMs: nat.exactOptional(),
+  clinicalServiceMs: nat.exactOptional(), boardingMs: nat.exactOptional(),
   doseWindows: z.array(z.tuple([z.string(), nat])),
 });
 export type Arrival = z.infer<typeof ArrivalSchema>;

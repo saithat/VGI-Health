@@ -198,7 +198,7 @@ export async function indexTrajectories({ root = defaultRoot, runDirectory, cont
             const baseSpec = await specFor(baseProgram.specVersion);
             // Simulate the full day so prior resources/receipts are preserved. Cache per day below.
             if (!baselineTasks.some(t => t.day === task.day && t.persona === persona)) {
-              const result = await exec(binary, ['simulate', '--spec', baseSpec.file, '--program', baselinePath, '--persona', path.join(world, 'personas', `${persona}.json`), '--schedule', schedulePath, '--world', world, '--seed', String(manifest.worldSeed * 1000 + task.day), '--clock-mode', manifest.simulationModes?.clockMode ?? 'legacy', '--interruptions', manifest.simulationModes?.interruptions ?? 'fixedCost'], { cwd: root, timeout: 180000, maxBuffer: 64e6 });
+              const result = await exec(binary, ['simulate', '--spec', baseSpec.file, '--program', baselinePath, '--persona', path.join(world, 'personas', `${persona}.json`), '--schedule', schedulePath, '--world', world, '--seed', String(manifest.worldSeed * 1000 + task.day), '--clock-mode', manifest.simulationModes?.clockMode ?? 'legacy', '--interruptions', manifest.simulationModes?.interruptions ?? 'fixedCost', '--sim-model', manifest.simulationModes?.simModel ?? 'legacy', '--text-cost', manifest.simulationModes?.textCost ?? 'legacy'], { cwd: root, timeout: 180000, maxBuffer: 64e6 });
               const recorded = JSON.parse(result.stdout);
               const recording = path.join(work, 'baseline.json');
               await write(recording, recorded);

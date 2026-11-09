@@ -70,6 +70,7 @@ export function enrichRefill(original, {date,pharmacy,owner}) {
 
 /** One shared, dated FHIR graph; List resources define the exact visible collections. */
 export function dayContext({seed,day,date,schedules,state,previous,population,charts,operationHistory=new Map(),caseMix='legacy'}) {
+  const sourceDate = d => state.worldClock === 'continuous' ? new Date(Date.parse(date)+(d-day)*86400000).toISOString().slice(0,10) : workDate(d);
   const entries = new Map();
   const add = (r, persona, kind='list-context') => {
     tag(r,kind,`day-${day}`,...(persona?[persona]:[]));
@@ -152,7 +153,7 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
     const roomName=ip?.room??freeRooms.shift();
     const bed=make('Location',`ward-bed-${i}`,{status:'active',name:`${roomName}-A`,partOf:ref(units.P3),physicalType:cc('bd','Bed','http://terminology.hl7.org/CodeSystem/location-physical-type')},'P3');
     const admitted=ip?previous.inpatients.find(x=>x.patientId===pid):null;
-    const admitDate=admitted?workDate(admitted.admitDay):calendarAgo(date,2);
+    const admitDate=admitted?sourceDate(admitted.admitDay):calendarAgo(date,2);
     const e=encounter(pid,'P3',`ward-${i}`,'IMP',stamp(admitDate,admitted?.admitClock??900),ip?.diagnosis??['Acute kidney injury','Pneumonia improving','Heart failure exacerbation'][i%3],bed,{extension:[{url:EXT+'nursing-assignment',valueString:i<5?'Assigned to Rosa Delgado, RN':'Unit patient – other RN'}]});
     if(ip?.service==='surgery') { e.serviceType={text:'General Surgery'};e.type=[{text:'Inpatient Stay – General Surgery'}];e.participant[0].individual=ref(providers.P5); }
     if(i>=5) e.participant=e.participant.filter(x=>x.individual.reference!==ref(providers.P3).reference).concat({type:[cc('PPRF','Registered nurse',PARTICIPATION)],individual:ref(providers.RN2)});
@@ -161,7 +162,7 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
   for(const pid of new Set(schedules.P3.tasks.map(t=>t.patientId)))if(!wardRows.some(e=>e.subject.reference===patient(pid).reference)) {
     const ip=state.inpatients.find(x=>x.patientId===pid);
     const bed=make('Location',`ward-admission-bed-${pid}`,{status:'active',name:ip?.room?ip.room+'-A':'4 West admission bed',partOf:ref(units.P3)},'P3');
-    encounter(pid,'P3',`ward-admission-${pid}`,'IMP',stamp(ip?workDate(ip.admitDay):date,ip?.admitClock??720),ip?.diagnosis??'Inpatient admission',bed);
+    encounter(pid,'P3',`ward-admission-${pid}`,'IMP',stamp(ip?sourceDate(ip.admitDay):date,ip?.admitClock??720),ip?.diagnosis??'Inpatient admission',bed);
   }
   list('P3','my-patients','My Patients – 4 West',wardRows.slice(0,5));
   list('P3','unit-census','4 West Unit Census',wardRows);
@@ -199,7 +200,7 @@ export function dayContext({seed,day,date,schedules,state,previous,population,ch
     if(!enc) enc=encounter(pid,'P5',`surgical-target-${pid}`,preop?'SS':'IMP',stamp(date,390),c?(preop?'Preoperative assessment for ':'s/p ')+c.procedure:'General surgery inpatient care',preop?units.P5:units.P3);
     if(preop) enc.type=[{text:'Preoperative Visit – General Surgery'}];
     if(c?.orDay<day&&!preop) {
-      const pod=Math.round((Date.parse(date)-Date.parse(workDate(c.orDay)))/86400000);
+      const pod=Math.round((Date.parse(date)-Date.parse(sourceDate(c.orDay)))/86400000);
       enc.extension=[...(enc.extension??[]),{url:EXT+'postoperative-day',valueInteger:pod}];
       enc.reasonCode=[{text:`s/p ${c.procedure} – POD ${pod}`}];
     }

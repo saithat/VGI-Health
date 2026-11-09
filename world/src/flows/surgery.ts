@@ -403,7 +403,7 @@ export function runSurgery(b: DayBuild): void {
   }
 
   // 5. Clinic days: post-op checks, new elective consults, follow-ups.
-  if (!isOr) runP5Clinic(b, Math.max(90, toMin(lastCaseEnd) + 20), rng.fork("clinic"));
+  if (!isOr && !(b.state.worldClock === "continuous" && (b.ctx.weekday === "Sat" || b.ctx.weekday === "Sun"))) runP5Clinic(b, Math.max(90, toMin(lastCaseEnd) + 20), rng.fork("clinic"));
   else b.state.today.clinics.P5 = { booked: 0, seen: 0, noShows: [], addOns: [], newPatients: 0 };
 
   // 6. Light inbox: pathology results.

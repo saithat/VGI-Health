@@ -44,6 +44,11 @@ project is not affiliated with any EHR vendor.
 |---|---|---|
 | ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-landing.png) | ![MAR](app/shots/final/P3-chart.png) |
 
+- Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
+- Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
+- Accepted handover transfers responsibility to actors with private receipts and layout memory. [Ownership](docs/methods/wave3-simulation.md#ownership-and-acceptance).
+- Role/activity interruption service and length-based note reading/scrolling retain explicit legacy opt-outs and historical native decoding; data comparisons expose the same controls. [Parameters](docs/methods/wave3-simulation.md#roleactivity-interruptions-and-opt-outs).
+
 ## Architecture
 
 The Lean `Spec` is the rulebook; a JSON `Program` describes screens, fields,
@@ -85,11 +90,14 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
+Wave-3 source changes require re-certification at merge; retained certificates
+describe the earlier build.
 
 | Evidence | Result and caveat |
 |---|---|
-| Current recording verification | All 33 retained revision bindings re-certified; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
+| Retained recording verification (pre-wave-3) | All 33 retained revision bindings re-certified; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
 | Matched workload experiment | Blind even days across five clinicians: both successor arms complete 660/662 tasks; mean queue delay is 1.19 minutes with fixed-cost interruptions and 1.73 with typed real work. Both have two overdue doses and zero active overtime. These are fixed-layout offline runs with uncalibrated rates; the archived cohort differs. [Cohorts, endpoints and screenshots](docs/methods/workload-and-interruptions.md#local-measurement-cohorts). |
+| Wave-3 simulator smoke | Day 2: 158/158 tasks complete; mean queue 12.58 min versus 1.73 in the earlier cohort. On identical new tasks, length costs add 267.69 active min and 56 scrolls. Scenario assumptions, fixed layouts, different wave-2/wave-3 cohorts. Full template/persona browser audits: zero findings. [Verification and scope](docs/audits/wave3-sim-20261109.md). |
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
 | Layout optimization pilot | One frozen P1 context accepts B and refuses D after D adds three validation clicks; both selected designs have structural distance 0.004717 and zero native rejection rate. This does not establish improvement or broader exploration. [Discovery policy and pilot](docs/methods/discovery-and-cadence.md). |
 
@@ -187,6 +195,8 @@ An optional [Lean Atlas view](docs/proof-map.md#optional-lean-atlas-view) runs a
 
 ## Policies awaiting owner review
 
+Wave-3 simulator recommendations were approved on 2026-11-09; their scenario
+coefficients and provisional interaction rules remain unvalidated.
 The MAR, ADT, workload and interruption rules are implemented provisional specifications.
 The checks establish their stated behavior; clinical appropriateness and the
 uncalibrated rates remain for owner review in this single decision list.
@@ -200,9 +210,9 @@ uncalibrated rates remain for owner review in this single decision list.
 | Swap compatibility | Two distinct admitted patients owning distinct active occupied beds; complete signed board scope; no additional unit/service compatibility restriction. |
 | ADT simulation and transport | Provisional movement/error rates and cleaning/transport delays; `adt.json` is an administrative stream, with physical transport represented separately and no change to bedside clinical effort. |
 | Workload dispatch and coverage | One serial clinician/coverage chain; priority/deadline/arrival ordering; task-boundary dispatch with event-boundary communication preemption; 15-minute hospital overlap; finite successor coverage and clinic weekend closure. ESI queue deadlines are 10/30/60 minutes for ESI ≤2/3/≥4. |
-| Workload scope and endpoints | Source worlds supply weekday daytime cases; extended queues do not merge subsequent days' arrivals or create independent night/weekend demand. Successor actor knowledge and live handoff acceptance remain outside this model. Completed tasks use documentation endpoints; abandoned MAR attempts use service finish, carried doses use the coverage horizon. Result response requires completion. Missing source timing uses planned readiness. |
-| Draft ownership and authority | Frames bind clinician, source patient and task; any workspace must remain selected and bound to that patient to restore. Current receipt rules filter stale evidence; changed chart data requires reconfirmation. Incomplete unsent drafts are discarded with reasons. Named handover transfers responsibility, without sign authority or another clinician's draft. |
-| Interruption service and calibration | Role/setting profiles, minute-bin rates, fixed task exposure, urgency/type mix, protected-popup triage, semantic communication steps and return costs are provisional. Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
+| Workload scope and endpoints | Wave-3 source worlds include night/weekend cases; horizon schedules merge subsequent arrivals. Successors have private memory and explicit simulated handover acceptance; live human acceptance remains outside the model. Completed tasks use documentation endpoints; abandoned MAR attempts use service finish, carried doses use the coverage horizon. Result response requires completion. Missing source timing uses planned readiness. |
+| Draft ownership and authority | Frames bind clinician, source patient and task; any workspace must remain selected and bound to that patient to restore. Current receipt rules filter stale evidence; changed chart data requires reconfirmation. Incomplete unsent drafts are discarded with reasons. Responsibility transfers only after the named recipient accepts, without sign authority or another clinician's draft. |
+| Interruption service and calibration | Role/activity minute-bin rates, channel service, fixed exposure, urgency/type mix, protected-popup triage and return costs are provisional; parameter provenance and opt-outs are in [wave-3 methods](docs/methods/wave3-simulation.md). Urgent work precedes queued return work; individual protocols and reorientation are atomic. Fixed-exposure closure waits count as wall time, excluding active effort and overtime. |
 | Commit and ADT protocol assumptions | [Models and storage contract](docs/methods/commit-protocol.md): sole writer, consistent imports, locked current snapshots and atomic durable publication; host refinement remains tested. |
 | Completion interaction rules | [Scenario checker](docs/methods/completion-checker.md): acknowledgment before commit and Back retention; general property 6 and patient-switch durability remain open. |
 | Research layout predicates | [UI library](docs/methods/ui-library.md): G1–G9, safety-text preservation and the supported viewport/font/keyboard contracts; no deployed painter change is authorized. |

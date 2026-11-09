@@ -146,6 +146,7 @@ export const DayScheduleSchema = z.strictObject({
   tasks: z.array(TaskSchema),
   clockMode: z.enum(["continuous", "legacy"]).exactOptional(),
   shifts: z.array(ShiftSchema).exactOptional(),
+  sourceDates: z.array(z.tuple([Nat, z.string()])).exactOptional(),
 });
 export type DaySchedule = z.infer<typeof DayScheduleSchema>;
 

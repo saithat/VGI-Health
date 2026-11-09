@@ -170,6 +170,10 @@ characters over 10.9 sections, more than the local sections document.
 
 ## Typing, scroll and reading cost
 
+This data-lane measurement predates the wave-3 simulator increment. Current
+length-dependent reading/scrolling and its legacy opt-out are documented in
+[wave-3 simulation](wave3-simulation.md#separate-time-on-one-server).
+
 Native `ehr simulate` covered ten days and five personas on the expert policy,
 using releases v1/v2/v3 by day. Three worlds share the seed and case mix:
 fixed phrases, dataset text, and dataset text with `--note-typed-share 294`
@@ -191,12 +195,13 @@ minutes over ten days (11.9 with the 29.4% share); overdue doses do not change.
 Without the discount every character is typed, an upper bound for authoring.
 P3 keeps the fixed phrases. Scroll counts are identical in all three worlds.
 
-Scroll and reading costs do not change. The A04 viewport is ordinal (scroll
-pages by component index), and reading (A17, 1,350 ms per item) is an opt-in,
-item-based lookup cost; neither depends on text length. Length-dependent scroll
-and reading belong to the wave3-sim lane. For scale only: with an assumed 90 characters per
-line, 10 lines per page and 200 words per minute (declared scenario values, not
-used by the simulator), a dataset ED note of 1,992 characters is 23 lines (2
+In that data-only comparison, scroll and reading costs did not change. The then-current A04 viewport was ordinal (scroll
+pages by component index), and reading (A17, 1,350 ms per item) was an opt-in,
+item-based lookup cost; neither depended on text length. Charging them by length
+was outside the data lane; the owner subsequently approved and the sim lane
+implemented it. For scale only: with an assumed 90 characters per
+line, 10 lines per page and 200 words per minute (declared scenario values for
+that earlier illustration), a dataset ED note of 1,992 characters is 23 lines (2
 scroll pages, 2.2 s at A04's 1,100 ms) and about 2 minutes of reading.
 
 ## Reproduce
@@ -205,12 +210,16 @@ scroll pages, 2.2 s at A04's 1,100 ms) and about 2 minutes of reading.
 make synthetic-hospital            # fetch, verify SHA-256, convert, check the mix table
 make test-synthetic-hospital
 for m in synthetic-hospital legacy; do
-  pnpm --filter world gen --seed 1 --days 10 --case-mix synthetic-hospital --note-text $m \
+  pnpm --filter world gen --seed 1 --days 10 --case-mix synthetic-hospital --note-text $m --world-clock legacy \
     --out "$TMPDIR/sh-$m" --quiet
 done
 node scripts/synthetic-hospital/check-world.mjs --world "$TMPDIR/sh-synthetic-hospital" \
-  --baseline "$TMPDIR/sh-legacy" --simulate --jobs 6
+  --baseline "$TMPDIR/sh-legacy" --simulate --jobs 6 --sim-model legacy --text-cost legacy
 ```
+
+The flags above reproduce the historical data-only timing model; omit
+`--world-clock legacy`, `--sim-model legacy` and `--text-cost legacy` to inspect
+the current wave-3 scenario instead. The report records its selected model.
 
 World generation with the default `--note-text synthetic-hospital` needs the
 local sections fixture and stops with a hint when it is missing.

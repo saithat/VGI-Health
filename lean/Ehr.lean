@@ -1,5 +1,6 @@
 import Ehr.Sim.Scheduling.Tests
 import Ehr.Sim.Scheduling.CombinedTests
+import Ehr.Sim.Scheduling.Wave3Tests
 import Ehr.Layout.Tests
 import Ehr.Sem.Board
 import Ehr.Sem.BoardView

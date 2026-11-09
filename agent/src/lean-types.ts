@@ -241,7 +241,7 @@ const expertDayResultSchema = z.object({
 });
 
 export const dayResultSchema: z.ZodType<DayResult> = expertDayResultSchema.extend({
-  policy:z.literal('bounded').exactOptional(),memory:userMemorySchema.exactOptional(),
+  policy:z.literal('bounded').exactOptional(),memory:userMemorySchema.exactOptional(),actorMemories:z.array(userMemorySchema).exactOptional(),
   expert:expertDayResultSchema.exactOptional(),effort:z.array(userEffortSchema).exactOptional(),
   observations:z.array(userObservationSchema).exactOptional(),
   assistance:z.array(userHelpSchema).exactOptional(),
@@ -281,7 +281,7 @@ export type DaySchedule = L.DaySchedule;
 export type PersonaParams = L.PersonaParams & {policy?:'expert'|'bounded';hiddenPreferences?:HiddenPreferences};
 export type TraceEvent = L.TraceEvent;
 export type TaskMetrics = L.TaskMetrics & {mouseTravelPx?:number|null;scrollPx?:number|null;rawScrolls?:number};
-export type DayResult = Omit<L.DayResult,'tasks'> & {policy?:'bounded';memory?:UserMemory;expert?:L.DayResult;effort?:z.infer<typeof userEffortSchema>[];observations?:z.infer<typeof userObservationSchema>[];assistance?:z.infer<typeof userHelpSchema>[];expertTravelUnits?:[string,number][];learnability?:{task:string;clicks:number;scrolls:number;keystrokes:number;timeMs:number;mouseTravelUnits:number}[];tasks:TaskMetrics[];geometry?:{programHash:string;componentsSha256?:string;appSha256:string;source:string;viewport:{width:number;height:number};missingTargets:string[]}};
+export type DayResult = Omit<L.DayResult,'tasks'> & {policy?:'bounded';memory?:UserMemory;actorMemories?:UserMemory[];expert?:L.DayResult;effort?:z.infer<typeof userEffortSchema>[];observations?:z.infer<typeof userObservationSchema>[];assistance?:z.infer<typeof userHelpSchema>[];expertTravelUnits?:[string,number][];learnability?:{task:string;clicks:number;scrolls:number;keystrokes:number;timeMs:number;mouseTravelUnits:number}[];tasks:TaskMetrics[];geometry?:{programHash:string;componentsSha256?:string;appSha256:string;source:string;viewport:{width:number;height:number};missingTargets:string[]}};
 export type Certificate = L.Certificate;
 
 export function violationOf(verdict: Verdict): Violation | null {

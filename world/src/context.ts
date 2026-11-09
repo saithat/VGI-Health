@@ -5,7 +5,7 @@
  * quiet one) comes from the seed alone; the day-to-day noise comes from the
  * day seed, which also hashes the previous world state.
  */
-import { dateOf, weekdayOf, weekOf } from "./calendar";
+import { dateOf, weekdayOf, weekOf, continuousCalendar } from "./calendar";
 import { Rng } from "./rng";
 import type { Load, Persona } from "./schema";
 import { perPersona } from "./schema";
@@ -45,7 +45,8 @@ export function computeContext(seed: number, day: number, daySeed: string): DayC
   const rng = new Rng(`${daySeed}:context`);
   const weekday = weekdayOf(day);
   const week = weekOf(day);
-  const wdIdx = (((day - 1) % 5) + 5) % 5; // 0 = Mon
+  const daysPerWeek = continuousCalendar() ? 7 : 5;
+  const wdIdx = (((day - 1) % daysPerWeek) + daysPerWeek) % daysPerWeek; // 0 = Mon
   const fluWeek = week === fluWeekOf(seed);
   const quiet = wdIdx + 1 === quietWeekdayIndex(seed, week);
   let volume = WEEKDAY_VOLUME[wdIdx] ?? 1;

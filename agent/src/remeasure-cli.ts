@@ -15,11 +15,11 @@ import {contentDigest,writeDayDigest,writeNightDigest} from './content-digest.js
 import {REPO_ROOT,readJson,writeJson} from './util.js';
 
 const {values}=parseArgs({options:{source:{type:'string'},out:{type:'string'},world:{type:'string'},
-  'clock-mode':{type:'string'},interruptions:{type:'string'}}});
+  'clock-mode':{type:'string'},'sim-model':{type:'string'},'text-cost':{type:'string'},interruptions:{type:'string'}}});
 if(!values.source||!values.out||!values.world)throw Error('Required: --source runs/<control> --out runs/<new> --world runs/world/<successor>');
 const source=path.resolve(REPO_ROOT,values.source),out=path.resolve(REPO_ROOT,values.out),world=path.resolve(REPO_ROOT,values.world);
 if(path.dirname(out)!==path.join(REPO_ROOT,'runs')||out===source||existsSync(out))throw Error('Output must be a new recording directly under runs/');
-const modes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork'});
+const modes=simulationModesSchema.parse({clockMode:values['clock-mode']??'continuous',interruptions:values.interruptions??'realWork',simModel:values['sim-model']??'wave3',textCost:values['text-cost']??'length'});
 const original=await readJson(path.join(source,'manifest.json'),z.object({runId:z.string(),days:z.number().int().positive(),personas:z.array(z.string()),worldSeed:z.number().int(),contentDigest:z.string().optional(),ehr:z.object({mode:z.literal('real')})}).passthrough());
 const manifest=original;
 const generated=await loadWorld(world);
