@@ -7,18 +7,25 @@ record per project declaration (kind, module, location, signature, docstring,
 statement dependencies, proof/body dependencies, axioms for theorems). -/
 
 def ownModule (m : Name) : Bool :=
-  (`Ehr).isPrefixOf m || (`CommitProtocol).isPrefixOf m || m == `Solution
+  (`Ehr).isPrefixOf m || (`CommitProtocol).isPrefixOf m || m == `Solution || m == `Main
 
-/-- Map an auxiliary/private name to the user-facing declaration it belongs to. -/
+/-- Map generated helpers to their source declaration, preserving private identities. -/
 partial def owner (env : Environment) (n : Name) : Option Name :=
-  let n' := (privateToUserName? n).getD n
   let rec up (x : Name) : Option Name :=
     match x with
     | .anonymous => none
     | _ =>
-      let isAux := x.isInternal || x.components.any (fun c => c.toString.startsWith "match_" || c.toString.startsWith "proof_" || c.toString == "eq_def" || c.toString.startsWith "eq_" || c.toString.startsWith "_")
-      if !isAux && (env.contains x || env.contains (mkPrivateName env x)) then some x else up x.getPrefix
-  if env.contains n && !n.isInternal && !(n'.components.any (fun c => c.toString.startsWith "match_" || c.toString.startsWith "proof_" || c.toString.startsWith "eq_" || c.toString == "eq_def")) then some n else up n'
+      -- Preserve the raw identity of private declarations. Resolve generated
+      -- helpers by walking raw prefixes; display names cannot locate privates.
+      let u := (privateToUserName? x).getD x
+      let isAux := u.isInternal || u.components.any (fun c => c.toString.startsWith "match_" || c.toString.startsWith "proof_" || c.toString == "eq_def" || c.toString.startsWith "eq_" || c.toString.startsWith "_")
+      match env.find? x with
+      | some (.ctorInfo c) => up c.induct
+      | some (.recInfo _) => up x.getPrefix
+      | some _ =>
+        if !isAux && !isAuxRecursor env x && !isNoConfusion env x && !Meta.isMatcherCore env x then some x else up x.getPrefix
+      | none => up x.getPrefix
+  up n
 
 def kindOf : ConstantInfo → String
   | .thmInfo _ => "theorem" | .defnInfo _ => "def" | .axiomInfo _ => "axiom"
@@ -86,7 +93,7 @@ unsafe def main (args : List String) : IO Unit := do
     let doc ← findDocString? env n
     let range ← try
         let (r, _) ← (findDeclarationRanges? n : CoreM _).toIO ctx st
-        pure (r.map (·.range.pos.line))
+        pure (r.map (·.selectionRange.pos.line))
       catch _ => pure none
     let ax ← if ci matches .thmInfo _ then (axiomsOf 100000 n) else pure #[]
     let isStruct := isStructure env n

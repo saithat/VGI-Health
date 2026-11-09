@@ -1,0 +1,7 @@
+name = "proofmapImports"
+version = "0.1.0"
+
+[[require]]
+name = "importGraph"
+git = "https://github.com/leanprover-community/import-graph"
+rev = "a41f0e9a4dea23188ea9cc1c41ac9f8bbafe0b93" # v4.35.0

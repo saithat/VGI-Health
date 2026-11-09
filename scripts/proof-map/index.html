@@ -1,546 +1,791 @@
 <!doctype html>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VGI Proof Map</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
-<style>
-/* Layout: a layer map on top (trusted rules at the base, guarantees above, support to the side), then a two-pane explorer: claims list left, one declaration's trust surface and proof outline right. */
-:root {
-  --bg: #f6f7f9; --panel: #ffffff; --fg: #17202b; --muted: #5a6675; --line: #dde2e8;
-  --accent: #0f6b74; --accent-soft: #e2f1f2;
-  --spec: #9a5b07; --spec-soft: #fbefdc;
-  --guar: #0f6b74; --guar-soft: #e2f1f2;
-  --supp: #5d6673; --supp-soft: #eceff3;
-  --ok: #1e7a3c; --ok-soft: #e3f3e8; --warn: #a3410f;
-  --code-bg: #f1f3f6;
-  --f-display: "Newsreader", Georgia, "Times New Roman", serif;
-  --f-body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0f1419; --panel: #161c23; --fg: #e3e8ee; --muted: #9aa6b4; --line: #2a333d;
-  --accent: #5cc3cc; --accent-soft: #15343a;
-  --spec: #e7a94e; --spec-soft: #3a2a12; --guar: #5cc3cc; --guar-soft: #15343a;
-  --supp: #a3adb9; --supp-soft: #222a33; --ok: #6fcf8c; --ok-soft: #173322; --warn: #f08a5d;
-  --code-bg: #1c232b; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #0f1419; --panel: #161c23; --fg: #e3e8ee; --muted: #9aa6b4; --line: #2a333d;
-  --accent: #5cc3cc; --accent-soft: #15343a;
-  --spec: #e7a94e; --spec-soft: #3a2a12; --guar: #5cc3cc; --guar-soft: #15343a;
-  --supp: #a3adb9; --supp-soft: #222a33; --ok: #6fcf8c; --ok-soft: #173322; --warn: #f08a5d;
-  --code-bg: #1c232b; color-scheme: dark }
-* { box-sizing: border-box }
-body { background: var(--bg); color: var(--fg); font: 14px/1.5 var(--f-body); }
-.wrap { max-width: 1400px; margin: 0 auto; padding-block: 20px 48px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 20px }
-header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 20px }
-h1 { font: 600 30px/1.1 var(--f-display); margin: 0; letter-spacing: -0.01em }
-h2 { font: 600 19px/1.2 var(--f-display); margin: 0; text-wrap: balance }
-h3 { font: 600 11px/1.3 var(--f-body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 }
-.sub { color: var(--muted); max-width: 70ch }
-.stats { display: flex; flex-wrap: wrap; gap: 8px; font-variant-numeric: tabular-nums }
-.chip { display: inline-flex; align-items: center; gap: 6px; padding: 2px 9px; border-radius: 999px; font-size: 12px; background: var(--supp-soft); color: var(--fg); border: 1px solid var(--line); white-space: nowrap }
-.chip.ok { background: var(--ok-soft); color: var(--ok); border-color: transparent }
-.chip.spec { background: var(--spec-soft); color: var(--spec); border-color: transparent }
-.chip.guar { background: var(--guar-soft); color: var(--guar); border-color: transparent }
-.chip.supp { background: var(--supp-soft); color: var(--supp); border-color: transparent }
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px }
-.mapbox { padding: 16px; display: grid; gap: 10px }
-.maphead { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: baseline }
-.svgscroll { overflow-x: auto }
-svg text { fill: var(--fg); font-family: var(--f-body) }
-.lnode { cursor: pointer }
-.lnode rect { stroke-width: 1.5 }
-.lnode:hover rect, .lnode.sel rect { stroke-width: 3 }
-.lnode:focus-visible { outline: none } .lnode:focus-visible rect { stroke: var(--fg); stroke-width: 3 }
-.explorer { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 16px; align-items: start }
-@media (max-width: 860px) { .explorer { grid-template-columns: minmax(0, 1fr) } }
-.listpane { padding: 12px; display: grid; gap: 10px; position: sticky; top: env(safe-area-inset-top, 0px); max-height: 100vh; overflow: hidden; grid-template-rows: auto auto auto 1fr }
-@media (max-width: 860px) { .listpane { position: static; max-height: none } }
-input[type=search] { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 7px; background: var(--bg); color: var(--fg); font: inherit }
-input[type=search]:focus-visible, button:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
-.seg { display: flex; flex-wrap: wrap; gap: 4px }
-.seg button { font: 500 12px var(--f-body); padding: 4px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); cursor: pointer }
-.seg button[aria-pressed=true] { background: var(--accent); border-color: var(--accent); color: var(--panel) }
-.list { overflow-y: auto; min-height: 0; display: grid; align-content: start; gap: 1px; max-height: 70vh }
-.item { display: grid; gap: 1px; padding: 7px 8px; border-radius: 6px; cursor: pointer; border: 0; background: none; text-align: left; color: var(--fg); font: inherit; width: 100% }
-.item:hover { background: var(--code-bg) } .item.sel { background: var(--accent-soft) }
-.item .nm { font: 500 12.5px/1.35 var(--f-mono); overflow-wrap: anywhere }
-.item .ds { font-size: 12px; color: var(--muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden }
-.item .ln { display: flex; gap: 6px; align-items: center; flex-wrap: wrap }
-.tag { font: 600 10px/1 var(--f-body); letter-spacing: .04em; padding: 3px 5px; border-radius: 4px; background: var(--code-bg); color: var(--muted) }
-.tag.C { background: var(--ok-soft); color: var(--ok) } .tag.R { background: var(--accent-soft); color: var(--accent) } .tag.A { background: var(--spec-soft); color: var(--spec) }
-.more { font-size: 12px; color: var(--muted); padding: 6px 8px }
-.detail { padding: 18px; display: grid; gap: 18px; min-width: 0 }
-.dhead { display: grid; gap: 8px }
-.dname { font: 500 17px/1.35 var(--f-mono); overflow-wrap: anywhere; margin: 0 }
-.meta { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; color: var(--muted); font-size: 12.5px }
-.meta a { color: var(--accent) }
-.doc { max-width: 75ch; font-size: 14.5px }
-pre.sig { margin: 0; background: var(--code-bg); border-radius: 8px; padding: 12px 14px; font: 12.5px/1.55 var(--f-mono); white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: auto }
-pre.sig a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted currentColor }
-.sec { display: grid; gap: 8px }
-.sechead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px }
-.secnote { color: var(--muted); font-size: 12.5px; max-width: 75ch }
-.bar { height: 6px; border-radius: 3px; background: var(--code-bg); overflow: hidden; width: 160px }
-.bar > i { display: block; height: 100%; background: var(--ok) }
-details.grp { border: 1px solid var(--line); border-radius: 8px }
-details.grp > summary { cursor: pointer; padding: 8px 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; list-style: none }
-details.grp > summary::-webkit-details-marker { display: none }
-details.grp > summary::before { content: "▸"; color: var(--muted); font-size: 11px }
-details.grp[open] > summary::before { content: "▾" }
-.rows { display: grid; padding: 0 6px 6px }
-.row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: start; padding: 5px 6px; border-radius: 6px }
-.row:hover { background: var(--code-bg) }
-.row .k { font: 600 10px/1.9 var(--f-mono); color: var(--muted); width: 2.2em; text-align: center }
-.row a.n { font: 12.5px/1.6 var(--f-mono); color: var(--fg); text-decoration: none; overflow-wrap: anywhere }
-.row a.n:hover { color: var(--accent); text-decoration: underline }
-.row .d { display: block; font-size: 12px; color: var(--muted) }
-.rv { font: 500 11px var(--f-body); border: 1px solid var(--line); border-radius: 5px; background: var(--panel); color: var(--muted); padding: 2px 7px; cursor: pointer; white-space: nowrap }
-.rv[aria-pressed=true] { background: var(--ok-soft); color: var(--ok); border-color: transparent }
-.tree { font: 12.5px/1.6 var(--f-mono); display: grid }
-.tnode { display: grid; grid-template-columns: 16px minmax(0, 1fr); align-items: start }
-.tnode > button.tg { border: 0; background: none; color: var(--muted); cursor: pointer; padding: 0; font: inherit; width: 16px; text-align: left }
-.tnode .kids { grid-column: 2; border-left: 1px solid var(--line); padding-left: 8px; margin-left: -10px }
-.tnode a { color: var(--fg); text-decoration: none; overflow-wrap: anywhere } .tnode a:hover { color: var(--accent); text-decoration: underline }
-.tnode .cnt { color: var(--muted); font-family: var(--f-body); font-size: 11px; margin-left: 6px }
-.used { display: flex; flex-wrap: wrap; gap: 6px }
-.used a { font: 12px var(--f-mono); color: var(--accent); text-decoration: none; background: var(--code-bg); padding: 2px 7px; border-radius: 5px; overflow-wrap: anywhere }
-.empty { color: var(--muted); font-size: 13px }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12px; color: var(--muted) }
-.treebox { border: 1px solid var(--line); border-radius: 8px; background: var(--bg); position: relative; overflow: hidden; height: 560px }
-@media (max-width: 860px) { .treebox { height: 440px } }
-.treebox svg { width: 100%; height: 100%; display: block; cursor: grab; touch-action: none }
-.treebox svg:active { cursor: grabbing }
-.treebar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between }
-.tlink { fill: none; stroke: var(--line); stroke-width: 1.4 }
-.tn circle { stroke-width: 1.6; cursor: pointer }
-.tn text { font: 11.5px var(--f-mono); fill: var(--fg); cursor: pointer }
-.tn text:hover { fill: var(--accent); text-decoration: underline }
-.tn .cnt2 { font: 10px var(--f-body); fill: var(--muted) }
-.tn.more text { fill: var(--muted); font-style: italic }
-.tkey { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11.5px; color: var(--muted); align-items: center }
-.dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; border: 1.6px solid; vertical-align: -1px; margin-right: 4px }
-.sq { border-radius: 2px }
-.loading { padding: 40px; text-align: center; color: var(--muted) }
-@media (prefers-reduced-motion: no-preference) { .item, .row { transition: background .12s } }
-</style>
-
-<div class="wrap">
-  <header>
-    <h1>Proof Map</h1>
-    <div class="stats" id="stats"><span class="chip">Loading the Lean environment…</span></div>
-    <p class="sub">Every definition and theorem in the Lean code, read from the compiled build. A theorem is only as good as its statement, and a statement is only as good as the definitions it mentions. Pick a claim to see exactly which definitions you need to read to trust it, and the lemmas its proof rests on.</p>
-  </header>
-
-  <section class="panel mapbox" aria-labelledby="maptitle">
-    <div class="maphead">
-      <h2 id="maptitle">Layers</h2>
-      <div class="legend"><span><span class="chip spec">Rules</span> definitions the claims are stated against</span><span><span class="chip guar">Guarantees</span> proofs</span><span><span class="chip supp">Support</span> not safety claims</span><span>Lines: how many statements in a layer mention definitions from another</span></div>
-    </div>
-    <div class="svgscroll"><svg id="map" role="group" aria-label="Layer dependency map"></svg></div>
-  </section>
-
-  <div class="explorer">
-    <aside class="panel listpane" aria-label="Declarations">
-      <input type="search" id="q" placeholder="Search names, statements, docs" aria-label="Search declarations">
-      <div class="seg" id="scope" role="group" aria-label="Show">
-        <button type="button" data-v="head" aria-pressed="true">Headline claims</button>
-        <button type="button" data-v="thm" aria-pressed="false">All theorems</button>
-        <button type="button" data-v="def" aria-pressed="false">Definitions</button>
-        <button type="button" data-v="all" aria-pressed="false">Everything</button>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>VGI Health · Proof map</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #1b3040;
+        --muted: #526775;
+        --line: #ccd8df;
+        --paper: #fff;
+        --wash: #f2f6f8;
+        --accent: #076978;
+        --soft: #e3f2f3;
+        --rule: #855009;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--wash);
+        color: var(--ink);
+        font:
+          14px/1.5 system-ui,
+          sans-serif;
+      }
+      a {
+        color: var(--accent);
+        text-underline-offset: 3px;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      button,
+      select {
+        cursor: pointer;
+      }
+      button {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 6px 10px;
+      }
+      button:hover {
+        background: var(--soft);
+      }
+      :focus-visible {
+        outline: 3px solid var(--accent);
+        outline-offset: 3px;
+      }
+      header {
+        padding: 22px 28px 16px;
+        background: var(--paper);
+        border-bottom: 1px solid var(--line);
+      }
+      .topline {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 20px;
+      }
+      h1 {
+        margin: 0;
+        font:
+          600 30px/1.2 Georgia,
+          serif;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 17px;
+      }
+      h3 {
+        margin: 0 0 7px;
+        font-size: 14px;
+      }
+      p {
+        margin: 6px 0 12px;
+      }
+      nav {
+        display: flex;
+        gap: 18px;
+      }
+      .muted,
+      .meta {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      #stats {
+        margin-top: 10px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr) 310px;
+        gap: 18px;
+        max-width: 1600px;
+        padding: 18px 24px;
+        margin: auto;
+        align-items: start;
+      }
+      .panel {
+        background: var(--paper);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 16px;
+        min-width: 0;
+      }
+      aside {
+        position: sticky;
+        top: 16px;
+        max-height: calc(100vh - 32px);
+        overflow: auto;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 7px;
+      }
+      input,
+      select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 9px;
+        background: var(--paper);
+      }
+      select {
+        margin-top: 8px;
+      }
+      #results {
+        display: grid;
+        gap: 5px;
+        margin-top: 10px;
+        max-height: 540px;
+        overflow: auto;
+      }
+      .result {
+        text-align: left;
+        padding: 9px;
+        overflow-wrap: anywhere;
+      }
+      .result[aria-current="true"] {
+        background: var(--soft);
+        border-color: var(--accent);
+      }
+      code,
+      .name {
+        font:
+          12px/1.6 ui-monospace,
+          SFMono-Regular,
+          Consolas,
+          monospace;
+        overflow-wrap: anywhere;
+      }
+      .badge {
+        color: var(--accent);
+        font:
+          600 11px system-ui,
+          sans-serif;
+      }
+      #breadcrumb {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin: 0 0 14px;
+      }
+      #breadcrumb a {
+        font-size: 12px;
+        overflow-wrap: anywhere;
+      }
+      #title {
+        font:
+          600 19px/1.4 ui-monospace,
+          monospace;
+        overflow-wrap: anywhere;
+      }
+      .doc {
+        white-space: pre-wrap;
+        margin: 12px 0;
+      }
+      pre {
+        font:
+          12px/1.65 ui-monospace,
+          monospace;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        background: var(--wash);
+        border-radius: 7px;
+        padding: 12px;
+        margin: 10px 0;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 600;
+        padding: 6px 0;
+      }
+      .graph {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .branch {
+        border-top: 1px solid var(--line);
+        margin-top: 4px;
+        padding-top: 5px;
+      }
+      .node {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 2px 6px;
+        padding: 5px 0;
+      }
+      .node .toggle {
+        grid-column: 1 / -1;
+        text-align: left;
+        display: flex;
+        align-items: baseline;
+        gap: 7px;
+        padding: 7px;
+      }
+      .node .toggle span:last-child {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 11px;
+        white-space: nowrap;
+      }
+      .node .open {
+        margin-left: 8px;
+      }
+      .node a {
+        font-size: 11px;
+      }
+      .children {
+        margin-left: 12px;
+        border-left: 2px solid var(--line);
+        padding-left: 9px;
+      }
+      .children[hidden] {
+        display: none;
+      }
+      .empty {
+        font-size: 12px;
+        color: var(--muted);
+        padding: 8px 0;
+      }
+      .trust h2 {
+        color: var(--rule);
+      }
+      .trust section + section {
+        border-top: 1px solid var(--line);
+        margin-top: 14px;
+        padding-top: 14px;
+      }
+      #surface {
+        max-height: 260px;
+        overflow: auto;
+      }
+      #surface a {
+        display: block;
+        padding: 3px 0;
+      }
+      #preview {
+        position: fixed;
+        z-index: 10;
+        width: min(700px, calc(100vw - 32px));
+        max-height: 65vh;
+        overflow: auto;
+        padding: 16px;
+        background: var(--paper);
+        border: 1px solid var(--accent);
+        box-shadow: 0 8px 30px #163b4933;
+        border-radius: 8px;
+      }
+      #preview[hidden] {
+        display: none;
+      }
+      #preview .doc {
+        font-size: 13px;
+      }
+      #preview pre {
+        max-height: none;
+      }
+      .help {
+        margin-top: 14px;
+        border-top: 1px solid var(--line);
+        padding-top: 10px;
+      }
+      @media (max-width: 1100px) {
+        .layout {
+          grid-template-columns: 260px minmax(0, 1fr);
+        }
+        .trust {
+          grid-column: 2;
+          position: static;
+          max-height: none;
+        }
+      }
+      @media (max-width: 720px) {
+        .layout {
+          display: block;
+          padding: 12px;
+        }
+        .panel {
+          margin-bottom: 12px;
+        }
+        aside {
+          position: static;
+          max-height: none;
+        }
+        #results {
+          max-height: 220px;
+        }
+        .graph {
+          grid-template-columns: 1fr;
+        }
+        .topline {
+          display: block;
+        }
+        header {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="topline">
+        <h1>Proof map</h1>
+        <nav aria-label="Views">
+          <a href="imports.html">Module imports ↗</a
+          ><a
+            href="https://github.com/saithat/VGI-Health/blob/main/docs/proof-walkthrough.md"
+            id="walkthrough"
+            >MAR walkthrough ↗</a
+          >
+        </nav>
       </div>
-      <div class="meta" id="layerfilter"></div>
-      <div class="list" id="list" role="listbox" aria-label="Results"></div>
-    </aside>
-    <main class="panel detail" id="detail"><div class="loading">Loading…</div></main>
-  </div>
-</div>
+      <p>
+        Start with a guarantee, read what it assumes, then follow the
+        declarations its proof cites.
+      </p>
+      <div class="meta" id="stats"></div>
+    </header>
+    <div class="layout">
+      <aside class="panel" aria-label="Find a declaration">
+        <label for="search"
+          >Find a declaration <span class="muted">/ or Ctrl K</span></label
+        >
+        <input
+          id="search"
+          type="search"
+          placeholder="Name, statement or docstring"
+          autocomplete="off"
+          aria-controls="results"
+        />
+        <select id="scope" aria-label="Declaration filter">
+          <option value="head">Headline guarantees</option>
+          <option value="all">All declarations</option>
+          <option value="t">Theorems</option>
+          <option value="d">Definitions and types</option>
+        </select>
+        <div id="result-count" class="meta" aria-live="polite"></div>
+        <div id="results" aria-label="Search results"></div>
+        <details class="help">
+          <summary>How to read the map</summary>
+          <p class="muted">
+            Click a node to expand or collapse its direct neighbors. “Read”
+            opens its statement; “Source” opens the built commit on GitHub.
+            Hover or focus a name to preview its full type and docstring. Enter
+            in search jumps to the first result; ↓ moves into the results.
+          </p>
+          <p class="muted">
+            Proof citations include definitions used in the body. Statement
+            references are shown separately. Repeated declarations can appear on
+            different paths; cycles stop at the path boundary.
+          </p>
+        </details>
+      </aside>
+      <main class="panel" id="detail" tabindex="-1">
+        <nav id="breadcrumb" aria-label="Guarantee path"></nav>
+        <div class="meta" id="kind"></div>
+        <h2 id="title"></h2>
+        <a id="source" target="_blank" rel="noopener">Source</a>
+        <p class="doc" id="doc"></p>
+        <details open>
+          <summary>Full statement / type</summary>
+          <pre id="signature"></pre>
+        </details>
+        <div class="graph">
+          <section aria-labelledby="dependencies-title">
+            <h3 id="dependencies-title">What this proof cites</h3>
+            <p class="muted" id="dependency-note"></p>
+            <div id="dependencies"></div>
+            <details>
+              <summary>Statement references</summary>
+              <div id="statement-deps"></div>
+            </details>
+          </section>
+          <section aria-labelledby="users-title">
+            <h3 id="users-title">What uses it</h3>
+            <p class="muted">Direct references in a statement or proof/body.</p>
+            <div id="users"></div>
+          </section>
+        </div>
+      </main>
+      <aside class="panel trust" aria-label="Trust surface">
+        <h2>Trust surface</h2>
+        <section>
+          <h3>Logical axioms</h3>
+          <div id="axioms"></div>
+          <p class="muted">
+            Transitive axioms reported by the extractor. The build rejects
+            anything beyond propext, Classical.choice and Quot.sound.
+          </p>
+        </section>
+        <section>
+          <h3>Spec assumptions</h3>
+          <p class="muted">
+            The full type gives every parameter and hypothesis, including any
+            initial invariant or storage contract. These are premises, separate
+            from logical axioms.
+          </p>
+          <pre id="assumptions"></pre>
+        </section>
+        <section>
+          <h3>Definitions to review <span id="surface-count"></span></h3>
+          <p class="muted">
+            Reachable from the statement through definition types and bodies;
+            proof bodies are excluded. This is a semantic review aid, not
+            clinical validation.
+          </p>
+          <div id="surface"></div>
+        </section>
+        <section>
+          <p class="muted">
+            Lean checks the argument against its definitions. Clinical
+            appropriateness, the host, storage and physical actions retain the
+            trust limits described in the README.
+          </p>
+        </section>
+      </aside>
+    </div>
+    <div id="preview" role="tooltip" hidden></div>
+    <script id="proof-data" type="application/json">
+      __PROOF_MAP_DATA__
+    </script>
+    <script>
+      (() => {
+        "use strict";
+        const data = JSON.parse(
+          document.querySelector("#proof-data").textContent,
+        );
+        const D = data.decls,
+          modules = data.modules.map((m) => m[0]);
+        const $ = (s) => document.querySelector(s);
+        const esc = (s) =>
+          String(s).replace(
+            /[&<>"]/g,
+            (c) =>
+              ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c],
+          );
+        const short = (i) => D[i][0].replace(/^Ehr\./, "");
+        const unique = (xs) => [...new Set(xs)];
+        const allDeps = (i) => unique([...D[i][6], ...D[i][7]]);
+        const source = (i) =>
+          `https://github.com/saithat/VGI-Health/blob/${data.commit}/lean/${modules[D[i][2]].replaceAll(".", "/")}.lean#L${D[i][3]}`;
+        const rev = D.map(() => []);
+        D.forEach((_, i) => allDeps(i).forEach((j) => rev[j].push(i)));
+        let selected,
+          path = [],
+          results = [];
+        const isHeadline = (i) => D[i][1] === "t" && Boolean(D[i][8]);
+        const read = (i, label = short(i)) =>
+          `<a href="#d${i}" data-read="${i}" data-preview="${i}">${esc(label)}</a>`;
+        $("#stats").textContent =
+          `${D.length.toLocaleString()} declarations · ${D.filter((r) => r[1] === "t").length.toLocaleString()} theorems · built commit ${data.commit.slice(0, 12)} · works offline`;
+        $("#walkthrough").href =
+          `https://github.com/saithat/VGI-Health/blob/${data.commit}/docs/proof-walkthrough.md`;
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
-<script>
-(function () {
-  const REPO = "https://github.com/saithat/VGI-Health/blob/";
-  // Layers: longest module prefix wins.
-  let LAYERS = [];  // from data.json (scripts/proof-map/layers.json)
-  const TAGNAME = { C: "Comparator", A: "Axiom audit", R: "In overview / methods" };
-  const KIND = { t: "thm", d: "def", s: "struct", i: "type", o: "opaque" };
-  const KINDLONG = { t: "theorem", d: "definition", s: "structure", i: "inductive type", o: "opaque" };
-  const $ = (s) => document.querySelector(s);
-  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-  const md = (t) => esc(t).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, '<code style="font-family:var(--f-mono);font-size:.92em;background:var(--code-bg);padding:0 3px;border-radius:3px">$1</code>');
-  const short = (n) => n.replace(/^Ehr\./, "");
-  const store = {
-    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
-    set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} },
-  };
-
-  let D, mods, layerOfMod, nameIdx, rev, state = { scope: "head", layer: null, q: "", sel: null };
-
-  function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
-  function reviewKey(i) { const r = D[i]; return "pm-rv:" + r[0] + ":" + hash(r[4]); }
-  function isReviewed(i) { return store.get(reviewKey(i)) === "1"; }
-
-  function layerFor(mod) {
-    let best = null, len = -1;
-    for (const L of LAYERS) for (const p of L.p) if ((mod === p || mod.startsWith(p + ".")) && p.length > len) { best = L; len = p.length; }
-    return best || LAYERS[LAYERS.length - 1];
-  }
-
-  fetch("data.json").then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); }).then(init).catch((e) => {
-    $("#detail").innerHTML = '<div class="loading">Could not load data.json (' + esc(e.message) + "). Republish with the data file attached.</div>";
-  });
-
-  function init(data) {
-    LAYERS = data.layers;
-    D = data.decls; mods = data.modules.map((m) => m[0]);
-    layerOfMod = mods.map(layerFor);
-    nameIdx = new Map(D.map((r, i) => [r[0], i]));
-    rev = D.map(() => []);
-    D.forEach((r, i) => { for (const j of new Set([...r[6], ...r[7]])) rev[j].push(i); });
-    window.__commit = data.commit;
-    const thms = D.filter((r) => r[1] === "t").length;
-    const head = D.filter((r) => r[8]).length;
-    $("#stats").innerHTML =
-      '<span class="chip">' + D.length.toLocaleString() + " declarations</span>" +
-      '<span class="chip">' + thms.toLocaleString() + " theorems</span>" +
-      '<span class="chip">' + head + " headline claims</span>" +
-      '<span class="chip ok">Axioms: only propext, Classical.choice, Quot.sound</span>' +
-      '<span class="chip">commit ' + esc(data.commit.slice(0, 8)) + "</span>";
-    drawMap(); drawLayerFilter();
-    $("#q").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); renderList(); });
-    document.querySelectorAll("#scope button").forEach((b) => b.addEventListener("click", () => {
-      state.scope = b.dataset.v;
-      document.querySelectorAll("#scope button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-      renderList();
-    }));
-    window.addEventListener("hashchange", fromHash);
-    const saved = store.get("pm-scope"); if (saved && !location.hash) {}
-    renderList();
-    if (!fromHash()) {
-      const first = D.findIndex((r) => r[0] === "Ehr.Proofs.T0_commit_needs_guard");
-      select(first >= 0 ? first : D.findIndex((r) => r[8]), false);
-    }
-  }
-
-  function fromHash() {
-    const m = /^#d(\d+)$/.exec(location.hash);
-    if (m && D[+m[1]]) { select(+m[1], false); return true; }
-    return false;
-  }
-
-  // ---------- layer map ----------
-  function drawMap() {
-    const svg = $("#map");
-    const counts = {}, thmCounts = {}, headCounts = {}, edges = {};
-    LAYERS.forEach((L) => { counts[L.id] = 0; thmCounts[L.id] = 0; headCounts[L.id] = 0; });
-    D.forEach((r) => {
-      const L = layerOfMod[r[2]]; counts[L.id]++; if (r[1] === "t") thmCounts[L.id]++; if (r[8]) headCounts[L.id]++;
-      for (const j of r[6]) { const M = layerOfMod[D[j][2]]; if (M !== L) { const k = L.id + ">" + M.id; edges[k] = (edges[k] || 0) + 1; } }
-    });
-    const tiers = [[], [], []]; LAYERS.forEach((L) => tiers[L.tier].push(L));
-    const W = 1300, NW = 176, NH = 64, rowY = [300, 150, 20];
-    const pos = {};
-    // tier 1 (guarantees) across the middle; tier 0 at the bottom; support on top row
-    tiers.forEach((row, t) => {
-      const gap = (W - row.length * NW) / (row.length + 1);
-      row.forEach((L, i) => { pos[L.id] = { x: gap + i * (NW + gap), y: rowY[t] }; });
-    });
-    let s = '<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker></defs>';
-    const max = Math.max(...Object.values(edges));
-    const E = Object.entries(edges).filter(([, v]) => v >= 3).sort((a, b) => a[1] - b[1]);
-    for (const [k, v] of E) {
-      const [a, b] = k.split(">"); const A = pos[a], B = pos[b];
-      const ax = A.x + NW / 2, bx = B.x + NW / 2;
-      const down = B.y > A.y; const ay = down ? A.y + NH : A.y, by = down ? B.y : B.y + NH;
-      const same = A.y === B.y;
-      const d = same ? `M${ax},${A.y + NH} C${ax},${A.y + NH + 40} ${bx},${B.y + NH + 40} ${bx},${B.y + NH}` : `M${ax},${ay} C${ax},${(ay + by) / 2} ${bx},${(ay + by) / 2} ${bx},${by}`;
-      const w = 0.6 + 4.4 * Math.sqrt(v / max);
-      s += `<path d="${d}" fill="none" stroke="var(--muted)" stroke-opacity="0.35" stroke-width="${w.toFixed(2)}" marker-end="url(#ah)" data-e="${a} ${b}"><title>${esc(nameOf(a))} mentions ${esc(nameOf(b))}: ${v} statement references</title></path>`;
-    }
-    for (const L of LAYERS) {
-      const P = pos[L.id];
-      s += `<g class="lnode" tabindex="0" role="button" data-l="${L.id}" aria-label="${esc(L.name)}: ${counts[L.id]} declarations"><title>${esc(L.note)}</title>` +
-        `<rect x="${P.x}" y="${P.y}" width="${NW}" height="${NH}" rx="8" fill="var(--${L.cls}-soft)" stroke="var(--${L.cls})"/>` +
-        `<text x="${P.x + 10}" y="${P.y + 22}" font-size="12.5" font-weight="600">${esc(L.name)}</text>` +
-        `<text x="${P.x + 10}" y="${P.y + 41}" font-size="11" fill="var(--muted)" style="fill:var(--muted)">${counts[L.id].toLocaleString()} decls · ${thmCounts[L.id]} thms</text>` +
-        (headCounts[L.id] ? `<text x="${P.x + 10}" y="${P.y + 56}" font-size="11" style="fill:var(--${L.cls})" font-weight="600">${headCounts[L.id]} headline</text>` : "") + "</g>";
-    }
-    s += `<text x="8" y="${rowY[2] + 38}" font-size="11" style="fill:var(--muted)" transform="rotate(-90 8 ${rowY[2] + 38})"></text>`;
-    svg.setAttribute("viewBox", `0 0 ${W} ${rowY[0] + NH + 50}`);
-    svg.setAttribute("width", W); svg.style.maxWidth = "100%"; svg.style.height = "auto"; svg.style.minWidth = "760px";
-    svg.innerHTML = s;
-    svg.querySelectorAll(".lnode").forEach((g) => {
-      const go = () => { state.layer = state.layer === g.dataset.l ? null : g.dataset.l; syncLayer(); renderList(); };
-      g.addEventListener("click", go);
-      g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
-    });
-  }
-  function nameOf(id) { return LAYERS.find((L) => L.id === id).name; }
-  function drawLayerFilter() { syncLayer(); }
-  function syncLayer() {
-    document.querySelectorAll(".lnode").forEach((g) => g.classList.toggle("sel", g.dataset.l === state.layer));
-    const el = $("#layerfilter");
-    if (!state.layer) { el.innerHTML = '<span>All layers. Click a layer above to filter.</span>'; return; }
-    const L = LAYERS.find((x) => x.id === state.layer);
-    el.innerHTML = `<span class="chip ${L.cls}">${esc(L.name)}</span><span>${esc(L.note)}</span><button type="button" class="rv" id="clearlayer">Show all layers</button>`;
-    $("#clearlayer").addEventListener("click", () => { state.layer = null; syncLayer(); renderList(); });
-  }
-
-  // ---------- list ----------
-  function matches(i) {
-    const r = D[i];
-    if (state.scope === "head" && !r[8]) return false;
-    if (state.scope === "thm" && r[1] !== "t") return false;
-    if (state.scope === "def" && r[1] === "t") return false;
-    if (state.layer && layerOfMod[r[2]].id !== state.layer) return false;
-    if (state.q) { const q = state.q; if (!(r[0].toLowerCase().includes(q) || r[5].toLowerCase().includes(q) || (q.length > 3 && r[4].toLowerCase().includes(q)))) return false; }
-    return true;
-  }
-  function renderList() {
-    const out = []; let n = 0; const LIMIT = 400;
-    const order = D.map((_, i) => i).filter(matches);
-    order.sort((a, b) => (D[b][8].length - D[a][8].length) || (mods[D[a][2]] < mods[D[b][2]] ? -1 : mods[D[a][2]] > mods[D[b][2]] ? 1 : D[a][3] - D[b][3]));
-    for (const i of order) {
-      if (n++ >= LIMIT) break;
-      const r = D[i];
-      const tags = [...r[8]].map((t) => `<span class="tag ${t}" title="${TAGNAME[t]}">${TAGNAME[t]}</span>`).join("");
-      out.push(`<button type="button" class="item${i === state.sel ? " sel" : ""}" role="option" aria-selected="${i === state.sel}" data-i="${i}"><span class="ln"><span class="tag">${KIND[r[1]]}</span>${tags}</span><span class="nm">${esc(short(r[0]))}</span>${r[5] ? `<span class="ds">${esc(r[5])}</span>` : ""}</button>`);
-    }
-    if (!order.length) out.push('<div class="more">Nothing matches. Clear the search or pick another filter.</div>');
-    else if (order.length > LIMIT) out.push(`<div class="more">Showing ${LIMIT} of ${order.length.toLocaleString()}. Narrow the search to see the rest.</div>`);
-    else out.push(`<div class="more">${order.length.toLocaleString()} shown</div>`);
-    const list = $("#list"); list.innerHTML = out.join("");
-    list.querySelectorAll(".item").forEach((b) => b.addEventListener("click", () => select(+b.dataset.i, true)));
-  }
-
-  // ---------- analysis ----------
-  function trustSurface(i) {
-    // Definitions reachable from the statement, following definition bodies (not proofs).
-    const seen = new Set(), stack = [...D[i][6]];
-    while (stack.length) {
-      const j = stack.pop(); if (seen.has(j)) continue;
-      const r = D[j]; if (r[1] === "t") continue;
-      seen.add(j); for (const k of r[6]) stack.push(k); for (const k of r[7]) stack.push(k);
-    }
-    return [...seen];
-  }
-  function lemmas(i) { return [...new Set(D[i][7])].filter((j) => D[j][1] === "t"); }
-  function proofSize(i, memo = new Map()) {
-    const seen = new Set(), st = [i];
-    while (st.length) { const j = st.pop(); if (seen.has(j)) continue; seen.add(j); for (const k of D[j][7]) if (D[k][1] === "t") st.push(k); }
-    return seen.size - 1;
-  }
-
-  function link(j, label) { return `<a class="n" href="#d${j}" data-i="${j}">${esc(label || short(D[j][0]))}</a>`; }
-  function srcLink(j) {
-    const r = D[j]; const path = "lean/" + mods[r[2]].replace(/\./g, "/") + ".lean";
-    return `<a href="${REPO}${window.__commit}/${path}#L${r[3]}" target="_blank" rel="noopener">${esc(path)}:${r[3]}</a>`;
-  }
-  function linkSig(sig) {
-    return esc(sig).replace(/[A-Za-z_][A-Za-z0-9_'.!?₀-₉]*/g, (tok) => {
-      const t = tok.replace(/\.$/, "");
-      const j = nameIdx.get(t) ?? nameIdx.get("Ehr." + t);
-      if (j == null) return tok;
-      return `<a href="#d${j}" data-i="${j}" title="${esc(KINDLONG[D[j][1]])} in ${esc(mods[D[j][2]])}">${esc(short(t))}</a>` + (tok.endsWith(".") ? "." : "");
-    });
-  }
-
-  // ---------- detail ----------
-  function select(i, push) {
-    state.sel = i;
-    if (push) { try { history.replaceState(null, "", "#d" + i); } catch (e) { location.hash = "d" + i; } }
-    document.querySelectorAll("#list .item").forEach((b) => { const on = +b.dataset.i === i; b.classList.toggle("sel", on); b.setAttribute("aria-selected", String(on)); });
-    renderDetail(i);
-  }
-
-  function renderDetail(i) {
-    const r = D[i], L = layerOfMod[r[2]];
-    const tags = [...r[8]].map((t) => `<span class="tag ${t}">${TAGNAME[t]}</span>`).join(" ");
-    let h = `<div class="dhead"><div class="meta"><span class="chip ${L.cls}">${esc(L.name)}</span><span>${KINDLONG[r[1]]}</span>${tags}${r[9] ? '<span class="tag">private</span>' : ""}</div>
-      <h2 class="dname">${esc(r[0])}</h2>
-      <div class="meta"><span>${srcLink(i)}</span></div>
-      ${r[5] ? `<div class="doc">${md(r[5])}</div>` : '<div class="empty">No docstring.</div>'}</div>
-      <div class="sec"><h3>${r[1] === "t" ? "Statement" : "Signature"}</h3><pre class="sig">${linkSig(r[4])}</pre>
-      ${r[1] === "t" ? '<div class="secnote">Names are links. Hypotheses in parentheses before the final colon are assumptions the claim needs.</div>' : r[1] === "d" ? '<div class="secnote">Only the type is shown here. Open the source link to read the body.</div>' : ""}</div>`;
-    h += `<div class="sec"><div class="treebar"><h3>Dependency tree</h3>
-        <div class="seg" id="tmode" role="group" aria-label="Tree shows">
-          ${r[1] === "t" ? `<button type="button" data-m="both" aria-pressed="${treeMode === "both"}">Lemmas and definitions</button><button type="button" data-m="proof" aria-pressed="${treeMode === "proof"}">Lemmas only</button>` : ""}
-          <button type="button" data-m="stmt" aria-pressed="${r[1] !== "t" || treeMode === "stmt"}">Definitions only</button>
-          <button type="button" id="texpand">Expand a level</button><button type="button" id="tcollapse">Collapse</button><button type="button" id="treset">Fit</button>
-        </div></div>
-        <div class="tkey"><span><span class="dot" style="border-color:var(--guar);background:var(--guar-soft)"></span>theorem</span><span><span class="dot sq" style="border-color:var(--spec);background:var(--spec-soft)"></span>rules definition</span><span><span class="dot sq" style="border-color:var(--guar);background:var(--panel)"></span>definition in a guarantee layer</span><span><span class="dot sq" style="border-color:var(--supp);background:var(--panel)"></span>support definition</span><span>Filled circle: has more below. Click a circle to expand. Click a name to open it. Drag to pan, scroll or pinch to zoom.</span></div>
-        <div class="treebox" id="treebox"></div></div>`;
-
-    if (r[1] === "t") {
-      const ts = trustSurface(i);
-      const done = ts.filter(isReviewed).length;
-      const byLayer = new Map();
-      for (const j of ts) { const M = layerOfMod[D[j][2]]; if (!byLayer.has(M)) byLayer.set(M, []); byLayer.get(M).push(j); }
-      const groups = [...byLayer.entries()].sort((a, b) => a[0].tier - b[0].tier || b[1].length - a[1].length);
-      h += `<div class="sec"><div class="sechead"><h3>To trust this, read these ${ts.length} definitions</h3>
-        <span class="meta"><span class="bar" aria-hidden="true"><i style="width:${ts.length ? (100 * done / ts.length).toFixed(1) : 0}%"></i></span><span id="rvcount">${done} of ${ts.length} marked reviewed</span></span></div>
-        <div class="secnote">Everything the statement mentions, followed through definition bodies. Proofs are not on this list because the kernel checks them. Marks are saved in this browser and reset when a definition's type changes.</div>`;
-      if (!ts.length) h += '<div class="empty">The statement mentions no project definitions.</div>';
-      groups.forEach(([M, js], gi) => {
-        js.sort((a, b) => mods[D[a][2]].localeCompare(mods[D[b][2]]) || D[a][3] - D[b][3]);
-        const gd = js.filter(isReviewed).length;
-        h += `<details class="grp"${gi === 0 && js.length <= 40 ? " open" : ""}><summary><span class="chip ${M.cls}">${esc(M.name)}</span><span class="meta">${js.length} definitions · ${gd} reviewed</span></summary><div class="rows">` +
-          js.map((j) => `<div class="row"><span class="k">${KIND[D[j][1]]}</span><span>${link(j)}${D[j][5] ? `<span class="d">${esc(D[j][5].slice(0, 180))}${D[j][5].length > 180 ? "…" : ""}</span>` : ""}</span><button type="button" class="rv" data-rv="${j}" aria-pressed="${isReviewed(j)}">${isReviewed(j) ? "Reviewed" : "Mark reviewed"}</button></div>`).join("") + "</div></details>";
-      });
-      h += "</div>";
-
-      const lm = lemmas(i);
-      h += `<div class="sec"><div class="sechead"><h3>Proof outline</h3><span class="meta">${lm.length} direct lemmas · ${proofSize(i)} theorems in the whole proof</span></div>
-        <div class="secnote">The theorems this proof cites, and what those cite. Expand a row to go deeper. Lean's kernel has checked every step, so this is for understanding the argument, not for checking it.</div>
-        <div class="tree" id="tree">${lm.length ? lm.map((j) => tnode(j, 0, new Set([i]))).join("") : '<div class="empty">No project lemmas. The proof uses tactics and definitions directly.</div>'}</div></div>`;
-    } else {
-      const deps = [...new Set([...r[6], ...r[7]])].filter((j) => D[j][1] !== "t");
-      h += `<div class="sec"><div class="sechead"><h3>Built from</h3><span class="meta">${deps.length} definitions</span></div>${deps.length ? `<div class="used">${deps.map((j) => `<a href="#d${j}" data-i="${j}">${esc(short(D[j][0]))}</a>`).join("")}</div>` : '<div class="empty">No project definitions.</div>'}</div>
-        <div class="sec"><div class="sechead"><h3>Review</h3></div><div><button type="button" class="rv" data-rv="${i}" aria-pressed="${isReviewed(i)}">${isReviewed(i) ? "Reviewed" : "Mark reviewed"}</button></div></div>`;
-    }
-
-    const users = rev[i];
-    const ut = users.filter((j) => D[j][1] === "t"), uh = users.filter((j) => D[j][8]);
-    h += `<div class="sec"><div class="sechead"><h3>Used by</h3><span class="meta">${users.length} declarations · ${ut.length} theorems · ${uh.length} headline</span></div>
-      ${users.length ? `<div class="used">${[...uh, ...users.filter((j) => !D[j][8])].slice(0, 60).map((j) => `<a href="#d${j}" data-i="${j}">${D[j][8] ? "★ " : ""}${esc(short(D[j][0]))}</a>`).join("")}${users.length > 60 ? `<span class="empty">and ${users.length - 60} more</span>` : ""}</div>` : '<div class="empty">Nothing in the project uses this.</div>'}</div>`;
-
-    const el = $("#detail"); el.innerHTML = h;
-    wire(el, i);
-    if (r[1] !== "t" && treeMode !== "stmt") treeModeFor = "stmt"; else treeModeFor = treeMode;
-    el.querySelectorAll("#tmode button[data-m]").forEach((b) => b.addEventListener("click", () => {
-      treeMode = b.dataset.m; treeModeFor = treeMode;
-      el.querySelectorAll("#tmode button[data-m]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
-      renderTree(i);
-    }));
-    renderTree(i);
-  }
-
-  let treeMode = "both", treeModeFor = "both";
-  function treeKids(j) {
-    const r = D[j], m = treeModeFor;
-    let out = [];
-    if (r[1] === "t") {
-      if (m !== "stmt") out.push(...lemmas(j));
-      if (m !== "proof") out.push(...r[6].filter((k) => D[k][1] !== "t"));
-    } else if (m !== "proof") {
-      out.push(...new Set([...r[6], ...r[7]].filter((k) => D[k][1] !== "t" && k !== j)));
-    }
-    out = [...new Set(out)];
-    // theorems first, then rules layer, then others; headline first
-    out.sort((a, b) => (D[a][1] === "t" ? 0 : 1) - (D[b][1] === "t" ? 0 : 1) || layerOfMod[D[a][2]].tier - layerOfMod[D[b][2]].tier || D[a][0].localeCompare(D[b][0]));
-    return out;
-  }
-  function renderTree(root) {
-    const box = $("#treebox"); if (!box) return;
-    if (!window.d3) { box.innerHTML = '<div class="loading">The diagram library did not load. The lists below still work.</div>'; return; }
-    box.innerHTML = "";
-    const CAP = 30;
-    const mk = (j, path) => ({ j, path, kids: null, open: false });
-    const rootN = mk(root, [root]);
-    function expand(n) {
-      if (n.more) return;
-      const all = treeKids(n.j).filter((k) => !n.path.includes(k));
-      const shown = all.slice(0, n.cap || CAP);
-      n.kids = shown.map((k) => mk(k, n.path.concat(k)));
-      if (all.length > shown.length) n.kids.push({ more: all.length - shown.length, parent: n });
-      n.open = true;
-    }
-    function hasKids(n) { return !n.more && treeKids(n.j).some((k) => !n.path.includes(k)); }
-    expand(rootN);
-    const W = box.clientWidth || 900, H = box.clientHeight || 560;
-    const svg = d3.select(box).append("svg").attr("role", "img").attr("aria-label", "Dependency tree of " + short(D[root][0]));
-    const g = svg.append("g");
-    const zoom = d3.zoom().scaleExtent([0.15, 2.5]).on("zoom", (e) => g.attr("transform", e.transform));
-    svg.call(zoom).on("dblclick.zoom", null);
-    const color = (j) => { const L = layerOfMod[D[j][2]]; return `var(--${L.cls})`; };
-    const fill = (n) => {
-      if (n.more) return "var(--panel)";
-      const L = layerOfMod[D[n.j][2]];
-      if (D[n.j][1] === "t") return n.open || !hasKids(n) ? "var(--guar-soft)" : "var(--guar)";
-      if (!n.open && hasKids(n)) return `var(--${L.cls})`;
-      return L.cls === "spec" ? "var(--spec-soft)" : "var(--panel)";
-    };
-    let first = true, lastNodes = [];
-    function update() {
-      const h = d3.hierarchy(rootN, (n) => (n.open ? n.kids : null));
-      d3.tree().nodeSize([20, 250]).separation((a, b) => (a.parent === b.parent ? 1 : 1.3))(h);
-      const nodes = h.descendants(), links = h.links(); lastNodes = nodes;
-      g.selectAll("path.tlink").data(links, (l) => keyOf(l.target)).join("path").attr("class", "tlink")
-        .attr("d", (l) => `M${l.source.y},${l.source.x} C${(l.source.y + l.target.y) / 2},${l.source.x} ${(l.source.y + l.target.y) / 2},${l.target.x} ${l.target.y},${l.target.x}`);
-      const sel = g.selectAll("g.tn").data(nodes, (d) => keyOf(d));
-      const enter = sel.enter().append("g");
-      enter.append("circle"); enter.append("rect"); enter.append("text").attr("class", "lbl"); enter.append("text").attr("class", "cnt2");
-      const all = enter.merge(sel);
-      all.attr("class", (d) => "tn" + (d.data.more ? " more" : "")).attr("transform", (d) => `translate(${d.y},${d.x})`);
-      all.select("circle").attr("r", (d) => (d.data.more || D[d.data.j][1] !== "t" ? 0 : 6))
-        .attr("fill", (d) => fill(d.data)).attr("stroke", (d) => (d.data.more ? "var(--muted)" : color(d.data.j)))
-        .on("click", (e, d) => toggle(d.data));
-      all.select("rect").attr("x", -6).attr("y", -6).attr("width", (d) => (d.data.more || D[d.data.j][1] === "t" ? 0 : 12)).attr("height", (d) => (d.data.more || D[d.data.j][1] === "t" ? 0 : 12)).attr("rx", 2)
-        .attr("fill", (d) => fill(d.data)).attr("stroke", (d) => (d.data.more ? "var(--muted)" : color(d.data.j))).style("stroke-width", 1.6).style("cursor", "pointer")
-        .on("click", (e, d) => toggle(d.data));
-      all.select("text.lbl").attr("x", 11).attr("dy", "0.35em")
-        .text((d) => { if (d.data.more) return `+ ${d.data.more} more (click)`; const t = short(D[d.data.j][0]); return t.length > 34 ? "…" + t.slice(-33) : t; })
-        .on("click", (e, d) => { if (d.data.more) { const p = d.data.parent; p.cap = (p.cap || CAP) + 60; expand(p); update(); } else if (d.data.j !== root) { select(d.data.j, true); } })
-        .each(function (d) { d3.select(this).selectAll("title").data([0]).join("title").text(d.data.more ? "Show more" : D[d.data.j][0] + (D[d.data.j][5] ? "\n" + D[d.data.j][5].slice(0, 200) : "")); });
-      all.select("text.cnt2").attr("x", 11).attr("dy", "1.55em").text((d) => (d.data.more ? "" : d.data.open ? "" : (() => { const k = treeKids(d.data.j).filter((x) => !d.data.path.includes(x)).length; return k ? k + " below" : ""; })()));
-      sel.exit().remove();
-      if (first) { fit(nodes, false); first = false; }
-    }
-    let uid = 0; const ids = new WeakMap();
-    function keyOf(d) { const n = d.data; if (!ids.has(n)) ids.set(n, ++uid); return ids.get(n); }
-    function toggle(n) { if (n.more) return; if (n.open) { n.open = false; } else if (hasKids(n)) { expand(n); } update(); }
-    function fit(nodes, anim) {
-      const xs = nodes.map((d) => d.x), ys = nodes.map((d) => d.y);
-      const x0 = Math.min(...xs) - 20, x1 = Math.max(...xs) + 20, y0 = Math.min(...ys) - 10, y1 = Math.max(...ys) + 260;
-      const k = Math.max(0.7, Math.min(1.2, W / (y1 - y0), H / (x1 - x0)));
-      const fitsW = k * (y1 - y0) <= W, fitsH = k * (x1 - x0) <= H;
-      const tx = fitsW ? W / 2 - k * (y0 + y1) / 2 : 24 - k * y0;
-      const ty = fitsH ? H / 2 - k * (x0 + x1) / 2 : H / 2;  // tall trees: keep the root's row centred
-      const t = d3.zoomIdentity.translate(tx, ty).scale(k);
-      (anim ? svg.transition().duration(250) : svg).call(zoom.transform, t);
-    }
-    update();
-    $("#texpand").onclick = () => {
-      const h = d3.hierarchy(rootN, (n) => (n.open ? n.kids : null));
-      const leaves = h.leaves().map((d) => d.data).filter((n) => !n.more && hasKids(n));
-      let budget = 400; for (const n of leaves) { if (budget <= 0) break; expand(n); budget -= n.kids.length; }
-      update(); fit(lastNodes, true);
-    };
-    $("#tcollapse").onclick = () => { rootN.kids.forEach((c) => { if (!c.more) c.open = false; }); update(); fit(lastNodes, true); };
-    $("#treset").onclick = () => fit(lastNodes, true);
-  }
-
-  function tnode(j, depth, path) {
-    const kids = lemmas(j).filter((k) => !path.has(k));
-    return `<div class="tnode" data-j="${j}" data-depth="${depth}">${kids.length ? `<button type="button" class="tg" aria-expanded="false" aria-label="Expand ${esc(short(D[j][0]))}">▸</button>` : "<span></span>"}<span><a href="#d${j}" data-i="${j}">${esc(short(D[j][0]))}</a>${D[j][8] ? ' <span class="tag C">headline</span>' : ""}<span class="cnt">${kids.length ? kids.length + " lemmas" : ""}</span></span></div>`;
-  }
-
-  function wire(el, i) {
-    el.querySelectorAll("a[data-i]").forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); select(+a.dataset.i, true); el.scrollIntoView({ block: "start" }); }));
-    el.querySelectorAll("button[data-rv]").forEach((b) => b.addEventListener("click", () => {
-      const j = +b.dataset.rv, on = !isReviewed(j);
-      store.set(reviewKey(j), on ? "1" : null);
-      b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "Reviewed" : "Mark reviewed";
-      const cnt = $("#rvcount");
-      if (cnt) { const ts = trustSurface(i); const done = ts.filter(isReviewed).length; cnt.textContent = `${done} of ${ts.length} marked reviewed`; const bar = el.querySelector(".bar > i"); if (bar) bar.style.width = (100 * done / ts.length).toFixed(1) + "%"; }
-    }));
-    const tree = el.querySelector("#tree");
-    if (tree) tree.addEventListener("click", (e) => {
-      const b = e.target.closest("button.tg"); if (!b) return;
-      const node = b.parentElement; const open = b.getAttribute("aria-expanded") === "true";
-      if (open) { node.querySelector(":scope > .kids")?.remove(); b.setAttribute("aria-expanded", "false"); b.textContent = "▸"; return; }
-      const path = new Set([i]); let p = node; while (p && p.dataset && p.dataset.j) { path.add(+p.dataset.j); p = p.parentElement.closest(".tnode"); }
-      const j = +node.dataset.j; const depth = +node.dataset.depth + 1;
-      const kids = lemmas(j).filter((k) => !path.has(k));
-      const div = document.createElement("div"); div.className = "kids";
-      div.innerHTML = kids.map((k) => tnode(k, depth, path)).join("");
-      node.appendChild(div);
-      div.querySelectorAll("a[data-i]").forEach((a) => a.addEventListener("click", (ev) => { ev.preventDefault(); select(+a.dataset.i, true); }));
-      b.setAttribute("aria-expanded", "true"); b.textContent = "▾";
-    });
-  }
-})();
-</script>
+        // Breadth-first reverse search returns an actual dependency path, never a browsing history.
+        function guaranteePath(target) {
+          const queue = [target],
+            next = new Map([[target, null]]);
+          for (let at = 0; at < queue.length; at++) {
+            const i = queue[at];
+            if (isHeadline(i)) {
+              const out = [];
+              for (let j = i; j !== null; j = next.get(j)) out.push(j);
+              return out;
+            }
+            for (const j of rev[i])
+              if (!next.has(j)) {
+                next.set(j, i);
+                queue.push(j);
+              }
+          }
+          return [target];
+        }
+        function surface(i) {
+          const seen = new Set(),
+            stack = D[i][1] === "t" ? [...D[i][6]] : [i];
+          while (stack.length) {
+            const j = stack.pop();
+            if (seen.has(j) || D[j][1] === "t") continue;
+            seen.add(j);
+            stack.push(...allDeps(j));
+          }
+          return [...seen].sort((a, b) => D[a][0].localeCompare(D[b][0]));
+        }
+        function show(i, keepPath = true) {
+          if (!D[i]) return;
+          $("#preview").hidden = true;
+          if (keepPath && path.includes(i))
+            path = path.slice(0, path.indexOf(i) + 1);
+          else if (
+            keepPath &&
+            selected !== undefined &&
+            allDeps(selected).includes(i)
+          )
+            path.push(i);
+          else path = guaranteePath(i);
+          selected = i;
+          const r = D[i];
+          $("#breadcrumb").innerHTML =
+            (path.length === 1 && !isHeadline(i)
+              ? '<span class="muted">No headline guarantee reaches this declaration.</span>'
+              : "") +
+            path
+              .map(
+                (j, k) =>
+                  `${k ? '<span aria-hidden="true">›</span>' : ""}${read(j)}`,
+              )
+              .join("");
+          $("#kind").textContent =
+            `${{ t: "Theorem", d: "Definition", s: "Structure", i: "Inductive type", o: "Opaque declaration" }[r[1]]} · ${modules[r[2]]}${isHeadline(i) ? " · headline guarantee" : ""}${r[9] ? " · private" : ""}`;
+          $("#title").textContent = r[0];
+          $("#source").href = source(i);
+          $("#source").textContent =
+            `Source · lean/${modules[r[2]].replaceAll(".", "/")}.lean:${r[3]}`;
+          $("#doc").textContent = r[5] || "No docstring recorded.";
+          $("#signature").textContent = r[4];
+          $("#dependencies-title").textContent =
+            r[1] === "t"
+              ? "What this proof cites"
+              : "What this definition uses";
+          $("#dependency-note").textContent =
+            `${r[7].length} direct proof/body references. Expand any node to follow its body.`;
+          renderBranches($("#dependencies"), r[7], "body", [i]);
+          renderBranches($("#statement-deps"), r[6], "statement", [i]);
+          renderBranches($("#users"), rev[i], "reverse", [i]);
+          $("#axioms").innerHTML =
+            r[1] === "t"
+              ? r[10].length
+                ? r[10].map((a) => `<div><code>${esc(a)}</code></div>`).join("")
+                : "<p>No logical axioms.</p>"
+              : '<p class="muted">Axiom extraction is reported for theorems. Select a theorem in “What uses it”.</p>';
+          $("#assumptions").textContent = r[4];
+          const review = surface(i);
+          $("#surface-count").textContent = `(${review.length})`;
+          $("#surface").innerHTML =
+            review.map((j) => read(j)).join("") ||
+            '<p class="empty">No project definitions in this statement.</p>';
+          document
+            .querySelectorAll(".result")
+            .forEach((b) =>
+              b.setAttribute("aria-current", String(+b.dataset.read === i)),
+            );
+        }
+        function kids(i, direction) {
+          return direction === "reverse"
+            ? rev[i]
+            : direction === "statement"
+              ? D[i][6]
+              : D[i][7];
+        }
+        function renderBranches(box, ids, direction, ancestors) {
+          box.innerHTML = "";
+          if (!ids.length) {
+            box.innerHTML = '<div class="empty">No project references.</div>';
+            return;
+          }
+          const sorted = unique(ids).sort(
+            (a, b) =>
+              Number(isHeadline(b)) - Number(isHeadline(a)) ||
+              short(a).localeCompare(short(b)),
+          );
+          // Lazy batches keep broad definitions responsive; every neighbor remains reachable.
+          let count = 0;
+          const more = document.createElement("button");
+          more.type = "button";
+          function batch() {
+            more.remove();
+            for (const i of sorted.slice(count, count + 40)) {
+              const cycle = ancestors.includes(i),
+                n = kids(i, direction).length;
+              const row = document.createElement("div");
+              row.className = "branch";
+              row.innerHTML = `<div class="node"><button type="button" class="toggle" data-preview="${i}" aria-expanded="false" ${cycle || !n ? "disabled" : ""}><span aria-hidden="true">${cycle ? "↩" : n ? "▸" : "·"}</span><code>${esc(short(i))}</code><span>${cycle ? "cycle" : n}</span></button><span class="open">${read(i, "Read")}</span><a href="${source(i)}" target="_blank" rel="noopener" aria-label="Source for ${esc(D[i][0])}">Source ↗</a></div><div class="children" hidden></div>`;
+              const toggle = row.querySelector("button"),
+                children = row.querySelector(".children");
+              toggle.addEventListener("click", () => {
+                const open = toggle.getAttribute("aria-expanded") !== "true";
+                if (open && !children.childElementCount)
+                  renderBranches(children, kids(i, direction), direction, [
+                    ...ancestors,
+                    i,
+                  ]);
+                children.hidden = !open;
+                toggle.setAttribute("aria-expanded", String(open));
+                toggle.firstElementChild.textContent = open ? "▾" : "▸";
+              });
+              box.append(row);
+            }
+            count += 40;
+            if (count < sorted.length) {
+              more.textContent = `Show more (${sorted.length - count} remaining)`;
+              box.append(more);
+            }
+          }
+          more.addEventListener("click", batch);
+          batch();
+        }
+        function search() {
+          const q = $("#search").value.trim().toLowerCase(),
+            scope = $("#scope").value;
+          results = D.map((_, i) => i).filter((i) => {
+            const r = D[i];
+            if (q)
+              return [r[0], r[4], r[5]].some((s) =>
+                s.toLowerCase().includes(q),
+              );
+            return (
+              scope === "all" ||
+              (scope === "head"
+                ? isHeadline(i)
+                : scope === "t"
+                  ? r[1] === "t"
+                  : r[1] !== "t")
+            );
+          });
+          const rank = (i) => {
+            const name = D[i][0].toLowerCase();
+            return name === q
+              ? 0
+              : name.endsWith("." + q)
+                ? 1
+                : name.includes(q)
+                  ? 2
+                  : 3;
+          };
+          results.sort(
+            (a, b) =>
+              (q ? rank(a) - rank(b) : 0) ||
+              Number(isHeadline(b)) - Number(isHeadline(a)) ||
+              D[a][0].localeCompare(D[b][0]),
+          );
+          $("#result-count").textContent =
+            `${results.length.toLocaleString()} matches${q ? " across all declarations" : ""}`;
+          $("#results").innerHTML =
+            results
+              .slice(0, 200)
+              .map(
+                (i) =>
+                  `<button type="button" class="result" data-read="${i}" data-preview="${i}" aria-current="${i === selected}"><span class="badge">${D[i][1] === "t" ? (isHeadline(i) ? "★ Guarantee" : "Theorem") : "Definition / type"}</span><br><code>${esc(short(i))}</code></button>`,
+              )
+              .join("") +
+            (results.length > 200
+              ? '<p class="muted">First 200 shown. Refine the search to find more.</p>'
+              : "");
+        }
+        document.addEventListener("click", (e) => {
+          const el = e.target.closest("[data-read]");
+          if (!el) return;
+          e.preventDefault();
+          const i = +el.dataset.read;
+          if (location.hash === `#d${i}`) show(i);
+          else location.hash = `d${i}`;
+        });
+        window.addEventListener("hashchange", () => {
+          const m = /^#d(\d+)$/.exec(location.hash);
+          if (m) show(+m[1]);
+        });
+        $("#search").addEventListener("input", search);
+        $("#scope").addEventListener("change", search);
+        document.addEventListener("keydown", (e) => {
+          const typing = /INPUT|TEXTAREA|SELECT/.test(
+            document.activeElement.tagName,
+          );
+          if (
+            (e.key === "/" && !typing) ||
+            ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")
+          ) {
+            e.preventDefault();
+            $("#search").focus();
+            $("#search").select();
+          }
+          if (e.key === "Escape") {
+            $("#preview").hidden = true;
+            if (typing) document.activeElement.blur();
+          }
+          if (
+            document.activeElement === $("#search") &&
+            e.key === "Enter" &&
+            results.length
+          ) {
+            e.preventDefault();
+            location.hash = `d${results[0]}`;
+            show(results[0]);
+            $("#detail").focus();
+          }
+          if (
+            document.activeElement === $("#search") &&
+            e.key === "ArrowDown"
+          ) {
+            e.preventDefault();
+            $("#results button")?.focus();
+          }
+          if (
+            document.activeElement.matches(".result") &&
+            ["ArrowDown", "ArrowUp"].includes(e.key)
+          ) {
+            e.preventDefault();
+            const items = [...document.querySelectorAll(".result")],
+              at = items.indexOf(document.activeElement);
+            items[
+              Math.max(
+                0,
+                Math.min(
+                  items.length - 1,
+                  at + (e.key === "ArrowDown" ? 1 : -1),
+                ),
+              )
+            ]?.focus();
+          }
+        });
+        const preview = $("#preview");
+        let timer;
+        function previewFor(el) {
+          clearTimeout(timer);
+          const r = D[+el.dataset.preview];
+          preview.innerHTML = `<strong class="name">${esc(r[0])}</strong><pre>${esc(r[4])}</pre><div class="doc">${esc(r[5] || "No docstring recorded.")}</div>`;
+          preview.hidden = false;
+          const rect = el.getBoundingClientRect();
+          preview.style.left = `${Math.max(16, Math.min(rect.left, window.innerWidth - preview.offsetWidth - 16))}px`;
+          preview.style.top = `${Math.max(16, Math.min(rect.bottom + 8, window.innerHeight - preview.offsetHeight - 16))}px`;
+        }
+        document.addEventListener("mouseover", (e) => {
+          const el = e.target.closest("[data-preview]");
+          if (el && !el.contains(e.relatedTarget)) previewFor(el);
+        });
+        document.addEventListener("mouseout", (e) => {
+          if (e.target.closest("[data-preview]"))
+            timer = setTimeout(() => {
+              if (!preview.matches(":hover")) preview.hidden = true;
+            }, 180);
+        });
+        preview.addEventListener("mouseleave", () => {
+          preview.hidden = true;
+        });
+        document.addEventListener("focusin", (e) => {
+          const el = e.target.closest("[data-preview]");
+          if (el) previewFor(el);
+          else preview.hidden = true;
+        });
+        document.addEventListener("focusout", () => {
+          preview.hidden = true;
+        });
+        const m = /^#d(\d+)$/.exec(location.hash),
+          initial = D.findIndex(
+            (r) => r[0] === "Ehr.Commit.Mar.reoffers_doses_unique",
+          );
+        show(
+          m && D[+m[1]]
+            ? +m[1]
+            : initial >= 0
+              ? initial
+              : D.findIndex((_, i) => isHeadline(i)),
+          false,
+        );
+        search();
+      })();
+    </script>
+  </body>
+</html>

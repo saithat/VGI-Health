@@ -169,7 +169,12 @@ The generated [proof map](docs/proof-map.md) includes all headline dependency
 charts; CI enforces freshness with `scripts/proof-map/build.sh --check-readme`.
 Regenerate it with `scripts/proof-map/build.sh --readme` after building the
 [additional proof modules](scripts/proof-map/extra-modules.txt). The same CI job
-uploads an interactive map with search and trust surfaces.
+uploads self-contained declaration and module-import views with source links at the
+built commit, bidirectional expansion, guarantee breadcrumbs, full-type previews,
+keyboard search and per-theorem axioms/premises. The import view uses an isolated
+Lean 4.35 `import-graph` package; it adds no dependency to the certified build.
+An optional [Lean Atlas view](docs/proof-map.md#optional-lean-atlas-view) runs against the same compiled roots in isolation.
+[MAR proof walkthrough](docs/proof-walkthrough.md) traces one guarantee through its definitions and key lemmas.
 
 ## Policies awaiting owner review
 
