@@ -50,7 +50,8 @@ context; nested or concurrent callers do not mutate a global setting. Each world
 transition restores its mode from persisted state. Clinics close on Saturday and
 Sunday; hospital ED arrivals, inpatient state and surgical hospital work continue.
 The hospital source day spans 07:00 to the next 07:00, avoiding negative `Nat`
-arrival times. FHIR timestamps roll into the next date rather than clipping to
+arrival times. Provider readiness may extend past that source-day boundary;
+it is not capped at the next 07:00. FHIR timestamps roll into the next date rather than clipping to
 23:59. The pharmacy and pediatric/surgical rates remain scenario-only.
 
 | New world parameter | Value | Evidence classification |

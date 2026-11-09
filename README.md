@@ -45,7 +45,7 @@ project is not affiliated with any EHR vendor.
 | ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-landing.png) | ![MAR](app/shots/final/P3-chart.png) |
 
 - Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
-- Consecutive hospital days include night/weekend ED arrivals, boarding and merged queues across days. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
+- Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
 - Accepted handover transfers responsibility to actors with private receipts and layout memory. [Ownership](docs/methods/wave3-simulation.md#ownership-and-acceptance).
 - Role/activity interruption service and length-based note reading/scrolling retain explicit legacy opt-outs. [Parameters](docs/methods/wave3-simulation.md#roleactivity-interruptions-and-opt-outs).
 

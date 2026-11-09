@@ -185,7 +185,8 @@ export class DayBuild {
       persona,
       workflow,
       patientId,
-      startMin: Math.max(0, Math.min(this.state.worldClock === "continuous" && persona === "P2" ? 1440 : SHIFTS[persona].lengthMin, Math.round(startMin))),
+      startMin: Math.max(0, this.state.worldClock === "continuous" && persona === "P2"
+        ? Math.round(startMin) : Math.min(SHIFTS[persona].lengthMin, Math.round(startMin))),
       choices: choices({ ...c, orders }),
       todayResources: [...todayResources, ...(c.observations ?? []).map((o, i) => clinicalObservation(`${id}-clinical-${i}`, patientId, this.day, SHIFTS[persona].startClock + startMin, o))],
       interruptions,

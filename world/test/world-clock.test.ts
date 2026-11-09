@@ -4,6 +4,7 @@ import {fullDayArrival, boardingMinutes} from "../src/timing/world-clock";
 import {mergeTimedDays, withTiming} from "../src/timing/arrivals";
 import {generateWorld, advanceDay} from "../src/world";
 import {loadPopulation} from "../src/patients";
+import {DayBuild} from "../src/build";
 import {Rng} from "../src/rng";
 import {DayScheduleSchema, PERSONAS} from "../src/schema";
 import {FIXTURE_INDEX} from "./helpers";
@@ -32,6 +33,16 @@ describe("wave3 calendar, arrivals and shared horizon", () => {
   });
   const patients = loadPopulation(FIXTURE_INDEX).patients;
   const run = generateWorld(1, 8, patients, undefined, {worldClock: "continuous"});
+  it("retains provider readiness beyond the source-day boundary", () => {
+    const source = must(run.days[0]);
+    const build = new DayBuild(1, source.state.context, run.pop, structuredClone(source.state), "late-provider");
+    const task = build.addTask("P2", "W3", must(patients[0]).id, 1470, {}, [], 0);
+    expect(task.startMin).toBe(1470);
+    const {worldClock, ...legacyState} = structuredClone(source.state);
+    expect(worldClock).toBe("continuous");
+    const legacy = new DayBuild(1, source.state.context, run.pop, legacyState, "legacy-provider");
+    expect(legacy.addTask("P2", "W3", task.patientId, 1470, {}, [], 0).startMin).toBe(600);
+  });
   it("keeps hospital arrivals on weekends, closes clinics and carries boarding", () => {
     for (const day of run.days.slice(5, 7)) {
       expect(day.state.today.ed.arrivals.length).toBeGreaterThan(0);
