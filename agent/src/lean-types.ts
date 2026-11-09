@@ -192,11 +192,12 @@ const taskSchema: z.ZodType<L.Task> = z.object({
   workflow: z.enum(['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']),
   patientId: str,
   startMin: nat,
-  choices: dropNulls(['refill', 'disposition', 'painScore', 'w6Step', 'refillReason'], z.object({
+  choices: dropNulls(['refill', 'disposition', 'painScore', 'w6Step', 'refillReason', 'noteTexts'], z.object({
     orders: z.array(orderChoiceSchema), administer: z.array(orderChoiceSchema), ackResult: z.boolean(),
     refill: str.exactOptional(), disposition: str.exactOptional(), immunizations: z.array(str), noteSections: z.array(str),
     painScore: nat.exactOptional(), w6Step: z.enum(['consult', 'preop', 'postop', 'rounding', 'discharge']).exactOptional(),
     refillReason: str.exactOptional(),
+    noteTexts: z.array(z.object({ id: str, text: z.string() })).exactOptional(),
   })),
   todayResources: z.array(z.unknown()),
   interruptions: nat,

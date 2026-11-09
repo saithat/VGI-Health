@@ -102,8 +102,12 @@ def taskCuresReason (choices : TaskChoices) : Option String := do
 /-- Elements filled once per immunization (slot = index). -/
 def immunizationElements : List ElementId := ["vaccine", "immunization", "cvx"]
 
-/-- The text typed for a note section. -/
+/-- The fixed phrase typed for a note section without supplied text. -/
 def noteText (sec : String) : String := sec ++ ": reviewed, see plan."
+
+/-- The text typed for a note section: the task's supplied text, else the fixed phrase. -/
+def sectionText (choices : TaskChoices) (sec : String) : String :=
+  (((choices.noteTexts?.getD []).find? (·.id == sec)).map (·.text)).getD (noteText sec)
 
 /-- Explicit administration outcomes take priority. Frozen schedules keep their
 historical hold data, including the former refusal sentinel, without redrawing them. -/
@@ -160,7 +164,7 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
       med?.map fun m => .text (administrationFollowup m)
     else if el.id == "refillDecision" then choices.refill?.map .code
     else if el.id == "disposition" || el.id == "dispositionChoice" then choices.disposition?.map .code
-    else if choices.noteSections.contains el.id then some (.text (noteText el.id))
+    else if choices.noteSections.contains el.id then some (.text (sectionText choices el.id))
     else match med? with
       | some m => orderValue el.id m
       | none => none

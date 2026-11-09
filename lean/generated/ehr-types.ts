@@ -1537,6 +1537,15 @@ export interface OrderChoice {
 }
 
 /**
+ * Text typed for one documentation section, keyed by its element id. World
+ * generation sizes it from Synthetic Hospital chart sections (synthetic-benchmark).
+ */
+export interface NoteText {
+  id: string;
+  text: string;
+}
+
+/**
  * The clinical choices for one task.
  */
 export interface TaskChoices {
@@ -1568,6 +1577,10 @@ export interface TaskChoices {
    * Documentation sections to complete.
    */
   noteSections: string[];
+  /**
+   * Typed section text; omitted sections, and older schedules, use the fixed phrase.
+   */
+  noteTexts?: NoteText[];
   /**
    * Pain score for this task (0-10).
    */

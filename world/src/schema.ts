@@ -102,6 +102,8 @@ export const TaskChoicesSchema = z.strictObject({
   disposition: opt(z.enum(["admit", "discharge", "consult"])),
   immunizations: z.array(z.string().min(1)),
   noteSections: z.array(z.string().min(1)),
+  /** Typed section text (Synthetic Hospital-sized); omitted sections use Lean's fixed phrase. */
+  noteTexts: opt(z.array(z.strictObject({ id: z.string().min(1), text: z.string() }))),
   painScore: opt(Nat.max(10)),
   w6Step: opt(z.enum(W6StepValues)),
   refillReason: opt(z.string().min(1)),

@@ -68,4 +68,16 @@ def incompatibleDose : ValueGoal :=
     enteredBy := [.physician], prefill := .never, friction := .safety,
     fhirTarget := "MedicationRequest.dosageInstruction" } == some (.qty 30 .mg)
 
+-- Supplied section text is typed; other sections and older schedules keep the fixed phrase.
+def hpiElement : ElementSpec :=
+  { id := "hpi", label := "HPI", kind := .text, enteredBy := [.physician],
+    prefill := .never, friction := .compliance, fhirTarget := "Composition.section.text" }
+#guard taskValue facts user { noteSections := ["hpi"], noteTexts? := some [{ id := "hpi", text := "Two days of cough." }] } none
+  hpiElement == some (.text "Two days of cough.")
+#guard taskValue facts user { noteSections := ["hpi"], noteTexts? := some [{ id := "exam", text := "Clear." }] } none
+  hpiElement == some (.text (noteText "hpi"))
+#guard taskValue facts user { noteSections := ["hpi"] } none hpiElement == some (.text (noteText "hpi"))
+#guard ((Lean.Json.parse "{\"orders\":[],\"administer\":[],\"ackResult\":false,\"immunizations\":[],\"noteSections\":[\"hpi\"]}" >>= Lean.fromJson? (α := TaskChoices)).toOption.map (·.noteTexts?)) == some none
+#guard ((Lean.Json.parse "{\"orders\":[],\"administer\":[],\"ackResult\":false,\"immunizations\":[],\"noteSections\":[\"hpi\"],\"noteTexts\":[{\"id\":\"hpi\",\"text\":\"Cough.\"}]}" >>= Lean.fromJson? (α := TaskChoices)).toOption.map (·.noteTexts?)) == some (some [{ id := "hpi", text := "Cough." }])
+
 end Ehr.Sim.GoalsTests
