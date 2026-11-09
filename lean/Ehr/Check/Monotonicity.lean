@@ -56,8 +56,7 @@ theorem extends_static {new old : Spec} {p : Program} (he : new.Extends old)
         refine ⟨commit, review, mac, ?_⟩
         intro isRequest el hel
         exact request isRequest el (extends_element_mem he hel)
-  · intro sc hc f hf el hel quantity fact hfct
-    exact units sc hc f hf el (extends_element_mem he hel) quantity fact hfct
+  · exact fun sc hc f hf el hel => units sc hc f hf el (extends_element_mem he hel)
   · simpa only [NoInterruptivePopupRequests, Spec.alert?, he.2.2.2.2.2.1] using interrupt
   · simpa only [PopupRequestedOnce, Spec.alert?, he.2.2.2.2.2.1] using once
   · simpa only [NoPassivePopupRequests, Spec.alert?, he.2.2.2.2.2.1] using passive
@@ -107,18 +106,12 @@ theorem T8_old_obligations {new old : Spec} {prev : Option Program}
     hs.2.2.2.2.2.2.2.2.2.1.2 facts user role,
     hs.2.2.2.2.2.2.2.2.2.2.1.2 facts user role,
     hs.2.2.2.2.2.2.2.2.2.2.2.1.2 facts user role, extends_contracts _ he⟩
-  · intro s reach actor event c happened rq mem same
-    exact entry s reach actor event c happened rq (extends_entries he mem) same
-  · intro s reach actor event c happened rq mem same
-    exact review s reach actor event c happened rq (extends_reviews he mem) same
-  · intro s reach c shown rq mem same waiver
-    exact screen s reach c shown rq (extends_reviews he mem) same waiver
-  · intro s reach actor event c happened rq mem same
-    exact units s reach actor event c happened rq (extends_entries he mem) same
-  · intro s reach actor event c happened al mem same tier
-    exact interrupt s reach actor event c happened al (he.2.2.2.2.2.1 ▸ mem) same tier
-  · intro s reach al mem tier target fires
-    exact passive s reach al (he.2.2.2.2.2.1 ▸ mem) tier target fires
+  · exact fun s reach actor event c happened rq mem => entry s reach actor event c happened rq (extends_entries he mem)
+  · exact fun s reach actor event c happened rq mem => review s reach actor event c happened rq (extends_reviews he mem)
+  · exact fun s reach c shown rq mem => screen s reach c shown rq (extends_reviews he mem)
+  · exact fun s reach actor event c happened rq mem => units s reach actor event c happened rq (extends_entries he mem)
+  · exact fun s reach actor event c happened al mem => interrupt s reach actor event c happened al (he.2.2.2.2.2.1 ▸ mem)
+  · exact fun s reach al mem => passive s reach al (he.2.2.2.2.2.1 ▸ mem)
 
 /-- T8 directly from an actual checker certificate. Only the already proved
 safety clauses are needed; this theorem does not assume general T1 or completion. -/
@@ -141,18 +134,12 @@ theorem T8_checked_old_obligations {new old : Spec} {prev : Option Program}
     (accepted_noFalseAlarms new prev canonical p h).2 facts user role,
     (accepted_noRepeatInterruptions new prev canonical p h).2 facts user role,
     (accepted_severityTiers new prev canonical p h).2 facts user role, extends_contracts _ he⟩
-  · intro s reach actor event c happened rq mem same
-    exact entry s reach actor event c happened rq (extends_entries he mem) same
-  · intro s reach actor event c happened rq mem same
-    exact review s reach actor event c happened rq (extends_reviews he mem) same
-  · intro s reach c shown rq mem same waiver
-    exact screen s reach c shown rq (extends_reviews he mem) same waiver
-  · intro s reach actor event c happened rq mem same
-    exact units s reach actor event c happened rq (extends_entries he mem) same
-  · intro s reach actor event c happened al mem same tier
-    exact interrupt s reach actor event c happened al (he.2.2.2.2.2.1 ▸ mem) same tier
-  · intro s reach al mem tier target fires
-    exact passive s reach al (he.2.2.2.2.2.1 ▸ mem) tier target fires
+  · exact fun s reach actor event c happened rq mem => entry s reach actor event c happened rq (extends_entries he mem)
+  · exact fun s reach actor event c happened rq mem => review s reach actor event c happened rq (extends_reviews he mem)
+  · exact fun s reach c shown rq mem => screen s reach c shown rq (extends_reviews he mem)
+  · exact fun s reach actor event c happened rq mem => units s reach actor event c happened rq (extends_entries he mem)
+  · exact fun s reach actor event c happened al mem => interrupt s reach actor event c happened al (he.2.2.2.2.2.1 ▸ mem)
+  · exact fun s reach al mem => passive s reach al (he.2.2.2.2.2.1 ▸ mem)
 
 /-- v2 certification preserves the v1 hospital's obligations. -/
 theorem T8_v1_to_v2 {prev : Option Program} {canonical p : Program}
