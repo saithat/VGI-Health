@@ -62,12 +62,12 @@ it('writes only the current program/spec projections and the train-only bundle i
   expect(files['train/ledger.json']).toBe(f.bundle.files['ledger.json']);
 });
 it.skipIf(!bwrap)('the sandbox sees only the workspace, a private home and the read-only control directory; no sentinel reaches it', async () => {
-  const f = await fixture(), a = agent(f, `ls -a / | tr '\\n' ' '; echo; grep -rl SECRET /work /home/agent /run/harness /tmp; echo "grep=$?"; ls /run/harness /run/harness/bin | tr '\\n' ' '; echo; env | cut -d= -f1 | sort | tr '\\n' ' '; echo; night submit --no-change "nothing measured"`, f.dir);
+  const f = await fixture(), a = agent(f, `ls -a / | tr '\\n' ' '; echo; grep -rl SECRET /work /home/agent /run/harness /spool /tmp; echo "grep=$?"; ls /run/harness /run/harness/bin | tr '\\n' ' '; echo; env | cut -d= -f1 | sort | tr '\\n' ' '; echo; night submit --no-change "nothing measured"`, f.dir);
   try { await a.proposeCandidates(ctx(a)); } finally { await a.close(); }
   const [root, grep, control, env] = (await stdout(f.dir)).split('\n');
-  expect(root?.split(' ').filter(Boolean).sort()).toEqual(['.', '..', 'bin', 'dev', 'etc', 'home', 'lib', 'lib64', 'proc', 'run', 'sbin', 'tmp', 'usr', 'work'].filter(d => d !== 'sbin' || existsSync('/sbin')).filter(d => d !== 'lib64' || existsSync('/lib64')).sort());
+  expect(root?.split(' ').filter(Boolean).sort()).toEqual(['.', '..', 'bin', 'dev', 'etc', 'home', 'lib', 'lib64', 'proc', 'run', 'sbin', 'spool', 'tmp', 'usr', 'work'].filter(d => d !== 'sbin' || existsSync('/sbin')).filter(d => d !== 'lib64' || existsSync('/lib64')).sort());
   expect(grep).toBe('grep=1');
-  expect(control?.trim().split(' ').filter(Boolean).sort()).toEqual(['/run/harness/bin:', '/run/harness:', 'bin', 'egress.sock', 'entry.mjs', 'night', 'night.sock'].sort());
+  expect(control?.trim().split(' ').filter(Boolean).sort()).toEqual(['/run/harness/bin:', '/run/harness:', 'bin', 'egress.sock', 'entry.mjs', 'night'].sort());
   const allowed = ['ALL_PROXY', 'HOME', 'HTTPS_PROXY', 'HTTP_PROXY', 'LANG', 'NO_PROXY', 'OLDPWD', 'PATH', 'PWD', 'SHLVL', 'TMPDIR', '_', 'all_proxy', 'http_proxy', 'https_proxy', 'no_proxy'];
   expect(env?.trim().split(' ').filter(k => !allowed.includes(k))).toEqual([]);
   expect(env).not.toMatch(/ANTHROPIC|OPENAI|CODEX|CLAUDE|SSH|DBUS|XDG/);
@@ -168,13 +168,13 @@ night render ${f.screen} >/dev/null; night query ledger >/dev/null; night check 
 it('launches each CLI with a declared, minimal capability set and never a permission bypass', async () => {
   const home = await scratch(), control = await scratch();
   const codex = await prepareLaunch({ harness: 'codex', model: 'gpt-test', reasoningEffort: 'high', serviceTier: 'default', maxTurns: 5 }, home, control, 0);
-  expect(codex.args).toEqual(expect.arrayContaining(['-s', 'workspace-write', 'sandbox_workspace_write.network_access=false', 'web_search="disabled"', 'mcp_servers={}', '--ephemeral', '-C', '/work']));
+  expect(codex.args).toEqual(expect.arrayContaining(['-s', 'workspace-write', 'sandbox_workspace_write.network_access=false', 'web_search="disabled"', 'mcp_servers={}', '--ephemeral', '-C', '/work', '--add-dir', '/spool']));
   expect(codex.hosts).toEqual(['chatgpt.com', 'api.openai.com']);
   expect(await readFile(path.join(control, 'codex-requirements.toml'), 'utf8')).toContain('/home/agent/.codex/auth.json');
   await expect(prepareLaunch({ harness: 'codex', model: 'gpt-test', reasoningEffort: 'high', serviceTier: 'fast', maxTurns: 5 }, home, control, 0)).rejects.toThrow('fast mode');
   for (const a of [codex.args, CLAUDE_ALLOWED, CLAUDE_DENIED]) expect(a.join(' ')).not.toMatch(/bypass|dangerously|skip-permissions/);
   expect(CLAUDE_ALLOWED.filter(t => t.startsWith('Bash'))).toEqual(['Bash(night:*)', 'Bash(ls:*)', 'Bash(cat:*)', 'Bash(jq:*)', 'Bash(head:*)', 'Bash(wc:*)', 'Bash(grep:*)']);
-  const args = harnessSandboxArgs({ workspace: home, home, control }, '/usr/bin/true', [], {});
+  const args = harnessSandboxArgs({ workspace: home, home, control, spool: home }, '/usr/bin/true', [], {});
   expect(args).toEqual(expect.arrayContaining(['--unshare-all', '--clearenv', '--die-with-parent']));
   expect(args).not.toContain('--share-net');
   // Usage and audit parsing from recorded transcripts.

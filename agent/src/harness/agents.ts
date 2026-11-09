@@ -1,7 +1,7 @@
 /** The two native CLI agents arm H can launch, how each is confined inside the
  * bwrap sandbox, and how its transcript is read back (usage, served model, audit). */
 import { existsSync, readFileSync, realpathSync } from 'node:fs';
-import { copyFile, mkdir, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, rm, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import path from 'node:path';
 import { z } from 'zod';
@@ -55,12 +55,13 @@ export async function prepareLaunch(cfg: AgentConfig, home: string, control: str
     if (existsSync(auth)) await copyFile(auth, path.join(dir, 'auth.json'));
     // Managed policy: tool subprocesses cannot read the client's credential copy.
     const requirements = path.join(control, 'codex-requirements.toml');
+    await rm(requirements, { force: true });
     await writeFile(requirements, `[permissions.filesystem]\ndeny_read = ${JSON.stringify([`${SANDBOX_PATHS.home}/.codex/auth.json`])}\n`, { mode: 0o444 });
     return { command: codexBinary(), hosts: EGRESS_HOSTS.codex, readOnly: [[requirements, '/etc/codex/requirements.toml']], env: { CODEX_HOME: `${SANDBOX_PATHS.home}/.codex` },
       args: ['exec', '--json', '-s', 'workspace-write', '-c', 'sandbox_workspace_write.network_access=false', '-c', 'approval_policy="never"',
         '-c', 'web_search="disabled"', '-c', 'mcp_servers={}', '-c', 'features.apps=false', '-c', 'features.plugins=false', '-c', 'features.browser_use=false',
         '-c', 'features.multi_agent=false', '-c', `model_reasoning_effort="${cfg.reasoningEffort}"`, '-c', `service_tier="${cfg.serviceTier}"`,
-        '--skip-git-repo-check', '--ephemeral', '-C', SANDBOX_PATHS.workspace, '-m', cfg.model, '-o', `${SANDBOX_PATHS.home}/final-${launch}.txt`, '-'] };
+        '--skip-git-repo-check', '--ephemeral', '-C', SANDBOX_PATHS.workspace, '--add-dir', SANDBOX_PATHS.spool, '-m', cfg.model, '-o', `${SANDBOX_PATHS.home}/final-${launch}.txt`, '-'] };
   }
   if (cfg.harness === 'claude') {
     const dir = path.join(home, '.claude'); await mkdir(dir, { recursive: true, mode: 0o700 });
@@ -108,7 +109,7 @@ export function launchUsage(harness: HarnessKind, stdout: string): LaunchUsage {
 }
 
 export interface LaunchAudit { status: 'pass' | 'fail'; findings: unknown[]; permissionDenials: number; commands: number }
-const SENSITIVE = [SANDBOX_PATHS.home, 'auth.json', '.credentials', '/proc/', '/run/harness/egress.sock'];
+const SENSITIVE = [SANDBOX_PATHS.home, 'auth.json', '.credentials', '/proc/', '/run/harness/egress.sock', '.req.json', '.res.json'];
 /** Fail on any tool family outside the declared set, or any request that names the CLI's private home or credentials. */
 export function auditLaunch(harness: HarnessKind, stdout: string): LaunchAudit {
   const findings: unknown[] = [];

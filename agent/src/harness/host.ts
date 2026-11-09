@@ -1,8 +1,8 @@
-/** Arm H host: serves the night CLI over a private Unix socket with E/R's check,
+/** Arm H host: serves the night CLI over a private file spool with E/R's check,
  * estimate, query and submit code paths and per-decision quotas. Every request is
  * recorded with its arguments and its exact output. */
-import { createServer, type Socket } from 'node:net';
-import { createInterface } from 'node:readline';
+import { readFile, readdir, rename, rm, writeFile } from 'node:fs/promises';
+import path from 'node:path';
 import { z } from 'zod';
 import { checkPatch, TrainEstimator, type LoopDeps, type NightInput } from '../night.js';
 import { currentRenderSamples, validateSubmission, wirePatch } from '../agent-loop.js';
@@ -150,18 +150,26 @@ export class HarnessHost {
 }
 export class HarnessReplayError extends Error {}
 
-/** One JSON line in, one JSON line out, per connection. */
-export async function serveHarness(socketPath: string, host: HarnessHost) {
-  const clients = new Set<Socket>();
-  const server = createServer({ allowHalfOpen: true }, client => {
-    clients.add(client); client.on('close', () => clients.delete(client)); client.on('error', () => client.destroy());
-    let bytes = 0; client.on('data', chunk => { bytes += chunk.length; if (bytes > 5_000_000) client.destroy(); });
-    createInterface({ input: client }).once('line', line => { void (async () => {
-      let raw: unknown; try { raw = JSON.parse(line); } catch { raw = null; }
+/** File RPC: Codex's own command sandbox forbids socket connections, so the CLI writes
+ * <id>.req.json into the spool (atomically, by rename) and waits for <id>.res.json.
+ * Requests are served one at a time in discovery order; ids are only file names. */
+export async function serveHarnessSpool(spool: string, host: HarnessHost, pollMs = 50) {
+  const seen = new Set<string>();
+  let stopped = false, busy: Promise<void> = Promise.resolve();
+  const tick = async () => {
+    const names = (await readdir(spool)).filter(n => /^[A-Za-z0-9_-]{1,80}\.req\.json$/.test(n) && !seen.has(n)).sort();
+    for (const name of names) {
+      seen.add(name);
+      const id = name.slice(0, -'.req.json'.length), file = path.join(spool, name);
+      let raw: unknown = null;
+      try { const text = await readFile(file, 'utf8'); if (text.length <= 5_000_000) raw = JSON.parse(text); } catch { raw = null; }
+      await rm(file, { force: true });
       const reply = await host.execute(raw);
-      client.end(JSON.stringify(reply) + '\n');
-    })(); });
-  });
-  await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(socketPath, resolve); });
-  return async () => { for (const c of clients) c.destroy(); await new Promise<void>(resolve => server.close(() => resolve())); };
+      await writeFile(path.join(spool, `${id}.res.tmp`), JSON.stringify(reply));
+      await rename(path.join(spool, `${id}.res.tmp`), path.join(spool, `${id}.res.json`));
+    }
+  };
+  const loop = async () => { while (!stopped) { busy = tick().catch(() => undefined); await busy; await new Promise(r => setTimeout(r, pollMs)); } };
+  const running = loop();
+  return async () => { stopped = true; await busy; await running; };
 }

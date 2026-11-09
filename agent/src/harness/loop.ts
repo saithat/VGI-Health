@@ -17,7 +17,7 @@ import { stableStringify } from '../program.js';
 import { readJson, writeJson } from '../util.js';
 import { auditLaunch, claudeTokenValidityMs, launchUsage, prepareLaunch, type AgentConfig, type LaunchAudit, type LaunchUsage } from './agents.js';
 import { startEgressProxy, type EgressEvent } from './egress.js';
-import { HarnessBudgetError, HarnessHost, HarnessReplayError, serveHarness, type HarnessEvent } from './host.js';
+import { HarnessBudgetError, HarnessHost, HarnessReplayError, serveHarnessSpool, type HarnessEvent } from './host.js';
 import { harnessSandboxArgs, runSandboxed, type SandboxRun } from './sandbox.js';
 import { DEFAULT_HARNESS_BUDGET, harnessBudgetSchema, harnessLoopSchema, type HarnessBudget, type HarnessLoopStats } from './stats.js';
 import { harnessWorkspace, workspaceHash } from './workspace.js';
@@ -76,7 +76,7 @@ export class HarnessNightAgent implements AgentBackend {
     const root = this.root = await mkdtemp(path.join(tmpdir(), 'agent-harness-'));
     await chmod(root, 0o700);
     const ws = path.join(root, 'work'), home = path.join(root, 'home'), ctl = path.join(root, 'control');
-    for (const d of [ws, home, ctl, path.join(ctl, 'bin')]) await mkdir(d, { recursive: true });
+    for (const d of [ws, home, ctl, path.join(root, 'spool'), path.join(ctl, 'bin')]) await mkdir(d, { recursive: true });
     for (const [name, text] of Object.entries(this.files)) {
       const file = path.join(ws, name); await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, text, { mode: 0o444 });
     }
@@ -88,19 +88,20 @@ export class HarnessNightAgent implements AgentBackend {
   private remainingMs() { return this.budget.wallMs - (Date.now() - this.start); }
 
   private async launch(kind: 'propose' | 'repair' | 'continue') {
-    const root = await this.prepare(), ws = path.join(root, 'work'), home = path.join(root, 'home'), ctl = path.join(root, 'control');
+    const root = await this.prepare(), ws = path.join(root, 'work'), home = path.join(root, 'home'), ctl = path.join(root, 'control'), spool = path.join(root, 'spool');
     const index = this.launches.length;
     this.host.launch = index;
     if (this.opts.harness === 'claude') await (this.opts.ensureToken ?? ensureClaudeToken)(Math.min(this.remainingMs(), this.budget.wallMs) + 60_000);
     const spec = await prepareLaunch(this.opts, home, ctl, index);
     const egress: EgressEvent[] = [];
-    for (const s of ['night.sock', 'egress.sock']) await rm(path.join(ctl, s), { force: true });
+    await rm(path.join(ctl, 'egress.sock'), { force: true });
+    for (const f of await readdir(spool)) await rm(path.join(spool, f), { force: true });
     const stopEgress = await startEgressProxy(path.join(ctl, 'egress.sock'), spec.hosts, e => egress.push(e));
-    const stopHost = await serveHarness(path.join(ctl, 'night.sock'), this.host);
+    const stopHost = await serveHarnessSpool(spool, this.host);
     const prompt = harnessPrompt(kind), started = Date.now();
     let run: SandboxRun;
     try {
-      run = await runSandboxed(harnessSandboxArgs({ workspace: ws, home, control: ctl, readOnly: spec.readOnly }, spec.command, spec.args, spec.env), prompt, Math.max(1000, this.remainingMs()));
+      run = await runSandboxed(harnessSandboxArgs({ workspace: ws, home, control: ctl, spool, readOnly: spec.readOnly }, spec.command, spec.args, spec.env), prompt, Math.max(1000, this.remainingMs()));
     } finally { await stopHost(); await stopEgress(); }
     const finalFile = path.join(home, `final-${index}.txt`);
     const record: LaunchRecord = { launch: index, prompt, args: spec.args, code: run.code, signal: run.signal, timedOut: run.timedOut, stdoutTruncated: run.stdoutTruncated, wallMs: Date.now() - started,

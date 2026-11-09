@@ -1,16 +1,17 @@
 /** Arm H OS boundary: one bwrap sandbox per agent launch. All namespaces are
  * unshared (network included), the environment is cleared, the runtime is
- * read-only, and only three host directories are visible:
+ * read-only, and only four host directories are visible:
  *   /work         the decision workspace (read-write),
  *   /home/agent   the CLI's private state and credential copy (read-write),
- *   /run/harness  the night CLI, the entry script and the two Unix sockets (read-only).
+ *   /spool        the night CLI's request/reply files (read-write),
+ *   /run/harness  the night CLI, the entry script and the egress socket (read-only).
  * The only route out is the allowlisted CONNECT proxy socket (egress.ts). */
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 
-export const SANDBOX_PATHS = { workspace: '/work', home: '/home/agent', control: '/run/harness' } as const;
+export const SANDBOX_PATHS = { workspace: '/work', home: '/home/agent', control: '/run/harness', spool: '/spool' } as const;
 export const PROXY_PORT = 18_443;
-export interface SandboxMounts { workspace: string; home: string; control: string; readOnly?: readonly (readonly [string, string])[] }
+export interface SandboxMounts { workspace: string; home: string; control: string; spool: string; readOnly?: readonly (readonly [string, string])[] }
 
 const RUNTIME = ['/usr', '/bin', '/lib', '/lib64', '/sbin'];
 const ETC = ['/etc/ssl', '/etc/pki', '/etc/crypto-policies', '/etc/passwd', '/etc/group', '/etc/nsswitch.conf', '/etc/hosts', '/etc/localtime', '/etc/alternatives'];
@@ -20,7 +21,7 @@ export function harnessSandboxArgs(m: SandboxMounts, command: string, args: read
   return ['--die-with-parent', '--new-session', '--unshare-all',
     ...[...RUNTIME, ...ETC].filter(existsSync).flatMap(p => ro(p)),
     '--proc', '/proc', '--dev', '/dev', '--tmpfs', '/tmp',
-    '--bind', m.workspace, SANDBOX_PATHS.workspace, '--bind', m.home, SANDBOX_PATHS.home, ...ro(m.control, SANDBOX_PATHS.control),
+    '--bind', m.workspace, SANDBOX_PATHS.workspace, '--bind', m.home, SANDBOX_PATHS.home, '--bind', m.spool, SANDBOX_PATHS.spool, ...ro(m.control, SANDBOX_PATHS.control),
     ...(m.readOnly ?? []).flatMap(([from, to]) => ro(from, to)),
     '--clearenv', '--setenv', 'PATH', `${SANDBOX_PATHS.control}/bin:/usr/local/bin:/usr/bin:/bin`, '--setenv', 'HOME', SANDBOX_PATHS.home,
     '--setenv', 'TMPDIR', '/tmp', '--setenv', 'LANG', 'C.UTF-8',
