@@ -18,7 +18,7 @@ import { SAFETY_PROPERTIES, SUBMIT_SCHEMA } from '../agent-loop.js';
 import { MOVE_TYPES, llmChoiceSchema } from '../../../app/src/dashboard/agent-evidence.js';
 import { stableStringify } from '../program.js';
 import { readJson, writeJson } from '../util.js';
-import { RlmBudgetError, RlmHost, rlmReplData, type HostEvent } from './context.js';
+import { RlmBudgetError, RlmHost, rlmReplData, rlmStartingDigest, STARTING_DIGEST_BYTES, type HostEvent } from './context.js';
 import { DEFAULT_RLM_BUDGET, rlmBudgetSchema, type RlmBudget, type RlmLoopStats } from './stats.js';
 export { rlmLoopSchema, type RlmLoopStats } from './stats.js';
 import { DEFAULT_SANDBOX_LIMITS, RlmSandbox, type Confinement, type SandboxLimits } from './sandbox.js';
@@ -44,7 +44,7 @@ The large context is NOT in this prompt. It lives in a sandboxed JavaScript REPL
 - thought: one or two sentences about the next step.
 - code: the body of an async JavaScript function, run in the REPL. await works; "return x" prints x. Use "" when you give final.
 - final: null, or the complete submission object to end the decision. You may instead call await FINAL(submission) inside code, which is convenient when patches are built in code.
-You see only what a cell prints, truncated to ${budget.maxStdoutBytes} bytes per turn: print compact summaries, never whole objects. Code is limited to ${budget.maxCodeBytes} bytes per cell. Variables declared with const/let/function disappear after the cell; persist with globalThis.name = value. Older turns are shown summarized, so keep findings and candidate patches in globals (for example globalThis.notes, globalThis.cands).
+You see only what a cell prints, truncated to ${budget.maxStdoutBytes} bytes per turn. Stay well under that cap: aim for at most 1,000 UTF-8 bytes of stdout per cell. Print compact summaries with explicit fields, counts and a few rows; never dump whole objects, screens, rules, traces or estimate results. Store full results in globals, then print only the facts needed for the next decision. Use the opening train-only hotspot digest to focus discovery. Code is limited to ${budget.maxCodeBytes} bytes per cell. Variables declared with const/let/function disappear after the cell; persist with globalThis.name = value. Older turns are shown summarized, so keep findings and candidate patches in globals (for example globalThis.notes, globalThis.cands).
 
 Preloaded read-only globals (deep-frozen; structuredClone before editing):
 - meta: night, persona, role, version, specVersion, stabilityBudget, start.
@@ -135,6 +135,7 @@ export class RlmNightAgent implements AgentBackend {
   readonly host: RlmHost;
   readonly entries: TurnEntry[] = [];
   private readonly sandbox: RlmSandbox;
+  private readonly startingDigest: string;
   private readonly start = Date.now();
   private choice: Choice | null = null;
   private repair: RepairContext | undefined;
@@ -153,6 +154,7 @@ export class RlmNightAgent implements AgentBackend {
     this.budget = rlmBudgetSchema.parse(opts.budget ?? DEFAULT_RLM_BUDGET);
     this.host = new RlmHost(input, deps, this.budget, (prompt, data, charge) => this.subCall(prompt, data, charge));
     const repl = rlmReplData(input, bundle);
+    this.startingDigest = rlmStartingDigest(bundle);
     this.sandbox = new RlmSandbox(repl.data, repl.files, this.host.handler, opts.limits ?? DEFAULT_SANDBOX_LIMITS, opts.confinement ?? 'bwrap');
   }
   get name() { return this.opts.root.name; }
@@ -173,7 +175,8 @@ Per-decision budget: ${JSON.stringify(this.budget)}.`;
     return `## Now\nRoot turn ${this.rootTurns + 1} of ${this.budget.maxRootTurns} (${left - 1} left after this one). Remaining: checks ${this.budget.maxChecks - this.host.checks}, estimates ${this.budget.maxEstimates - this.host.estimates}, sub-calls ${this.budget.maxSubCalls - this.host.subCalls}.${left <= 3 ? ' Turns are nearly exhausted: submit final now (noChange if nothing passed).' : ''}\nReply with {thought, code, final}.`;
   }
   private rootRequest(callId: string): JsonRequest {
-    const system = rootSystem(this.budget), head = this.header() + '\n\n## REPL history\n', tail = '\n\n' + this.status();
+    const opening = this.rootTurns === 0 ? `\n\n## Starting hotspots (train only; JSON cap ${STARTING_DIGEST_BYTES} UTF-8 bytes)\n${this.startingDigest}` : '';
+    const system = rootSystem(this.budget), head = this.header() + opening + '\n\n## REPL history\n', tail = '\n\n' + this.status();
     const room = this.budget.maxRootPromptBytes - bytes(system) - bytes(head) - bytes(tail);
     if (room < 2000) throw new RlmBudgetError('root prompt bound leaves no room for history');
     const prompt = head + (this.entries.length ? renderHistory(this.entries, room) : '(empty: no cells run yet)') + tail;

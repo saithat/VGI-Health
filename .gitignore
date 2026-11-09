@@ -46,7 +46,7 @@ __pycache__/
 /.cache/
 
 # Data is not tracked in git (owner, 2026-11-02). It lives outside the repo; see README "Data".
-/runs/
+/runs
 /fixtures/
 /programs/
 /verdicts.json
