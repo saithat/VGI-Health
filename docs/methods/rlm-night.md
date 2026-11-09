@@ -149,7 +149,7 @@ decision (clicks/scrolls, B vs R): 11/80 vs 0/79, 8/39 vs 8/33, 12/58 vs
 night-09/P2 change R accepted, saved pixels were the only improvement.
 No final-gate repair was needed in either arm.
 
-**Mechanism.** No R sample came near a budget limit. Root turns were 19–28 of
+**Mechanism.** No R sample came near a budget limit. Root turns were 19–27 of
 30, and checks and estimates 3–5 of 12/8. The largest root request was 42,412
 bytes, under the 48,000-byte bound. There were no REPL restarts, three cell
 errors in total, and no complaints. Input tokens per root call averaged about
@@ -167,7 +167,11 @@ and called `FINAL` from code. The root rarely used `llm_query`: one decision
 made two requests. The first was refused for size (74,982 bytes against the
 64,000 limit). The second compared unfinished-task traces with the signing
 rules and concluded the stopping cause was unproven. The root then chose no
-change. 102 of 156 cell outputs reached the 3,000-byte limit and were cut.
+change. The original write-up counted 102/156 outputs containing
+`truncat`; re-audit finds three were ordinary query responses with
+`"truncated":false`. The explicit stdout-cap marker occurs in **99/154 executed
+cells** (64.3%), across 156 root turns. The follow-up uses this explicit-marker
+definition, excluding query metadata; two pilot root turns did not run cells.
 The root tended to print as much as it was allowed and then narrow down in the
 next turn. Cell errors were an unsupported `sequences` filter, the oversized
 sub-call, and one `FINAL` rejected because `rejected` did not list every
@@ -250,6 +254,21 @@ the read-only native executable stays
 `750e9833da4f1ac8373455de911334f6afdb7802bce95822d657b454a9b430d0`.
 No Lean build or edit is involved. The production-argument bwrap confinement
 probe passed before the follow-up; live R never uses unconfined execution.
+
+### Follow-up smoke and exact replay
+
+The declared prompt at `db57833a` passed night-01/P1 before the full run:
+validation accepted, 16 root turns/cells, four checks and four estimates, no
+sub-call, error, restart or complaint. Two cells were explicitly truncated
+(12.5%); the largest root request was 38,475 bytes. Root usage was 302,520 input
+(including 46,720 cached) and 5,144 output tokens. All 16 Codex transcripts passed
+the no-tool audit. The smoke command took 468.47 seconds including preparation;
+its charged sample wall was 465 seconds. The exact replay took 189.86 seconds,
+with no new model usage. All root prompts, REPL entries, host results,
+submission and evaluation fields matched. The pilot manual hash was restored
+and checked. `smoke-comparison.json`, `smoke-audit.json` and execution receipts
+are retained with the new source. These are smoke observations, not full-study
+results.
 
 ### Commands
 
