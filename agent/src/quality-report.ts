@@ -8,14 +8,16 @@ import { measuredLedger, physicalSaving, sameIdea, zeroEffect, zeroOrWorse, type
 import { recomputedSavings } from './quality-ledger.js';
 import { rng, writeJson } from './util.js';
 import { rlmLoopSchema, type RlmLoopStats } from './rlm/stats.js';
+import { harnessLoopSchema, type HarnessLoopStats } from './harness/stats.js';
 
 export const OFFLINE_LABEL = 'offline, screen check skipped, simulator only';
-export type QualityArm = 'A' | 'B' | 'C' | 'D' | 'E' | 'R' | 'sanity';
+export type QualityArm = 'A' | 'B' | 'C' | 'D' | 'E' | 'R' | 'H' | 'sanity';
 export interface TokenCounts { input: number | null; output: number | null; cachedInput: number | null; source: 'backend' | 'recorded-reference' | 'unavailable' }
 export type OfflineRecord = Omit<DecisionRecord,'screenCheck'> & {
   toolLoop?:{budget:ToolBudget;calls:number;checks:number;estimates:number;wallMs:number;inputTokens:number;outputTokens:number;visibleTokenUpperBound:number;exceeded:string|null;tally:Record<string,number>;complaints:string[]}|undefined;
   toolEvents?:ToolEvent[]|undefined;
   rlmLoop?:RlmLoopStats|undefined;
+  harnessLoop?:HarnessLoopStats|undefined;
   effects?:{train:number|null;netTrain:number|null;validation:number|null;structuralDistance:number|null} | undefined;
   offline:true; screenCheck:'skipped'; label:typeof OFFLINE_LABEL; decisionId:string; arm:QualityArm; sample:number;
   tokens:TokenCounts; callCount:number; wallTimeMs:number; frozenInputs:string;
@@ -25,10 +27,11 @@ export type OfflineRecord = Omit<DecisionRecord,'screenCheck'> & {
 export const offlineRecordSchema = decisionRecordSchema.omit({screenCheck:true}).extend({
   toolEvents:z.array(toolEventSchema).optional(),
   rlmLoop:rlmLoopSchema.optional(),
+  harnessLoop:harnessLoopSchema.optional(),
   toolLoop:z.object({budget:toolBudgetSchema,calls:z.number(),checks:z.number(),estimates:z.number(),wallMs:z.number(),inputTokens:z.number(),outputTokens:z.number(),visibleTokenUpperBound:z.number(),exceeded:z.string().nullable(),tally:z.record(z.string(),z.number()),complaints:z.array(z.string())}).optional(),
   effects:z.object({train:z.number().nullable(),netTrain:z.number().nullable(),validation:z.number().nullable(),structuralDistance:z.number().nullable()}).optional(),
   offline:z.literal(true),screenCheck:z.literal('skipped'),label:z.literal(OFFLINE_LABEL),decisionId:z.string(),
-  arm:z.enum(['A','B','C','D','E','R','sanity']),sample:z.number().int().positive(),
+  arm:z.enum(['A','B','C','D','E','R','H','sanity']),sample:z.number().int().positive(),
   tokens:z.object({input:z.number().nullable(),output:z.number().nullable(),cachedInput:z.number().nullable(),source:z.enum(['backend','recorded-reference','unavailable'])}),
   queries:z.object({count:z.number().int().nonnegative(),tally:z.record(z.string(),z.number().int().nonnegative())}).optional(),
   callCount:z.number(),wallTimeMs:z.number(),frozenInputs:z.string(),repeatedMeasuredBad:z.number(),proposedCandidates:z.number(),
@@ -38,7 +41,7 @@ export function decisionMetrics(r: OfflineRecord) {
   const candidates=r.candidates.filter(e=>!e.candidate.seeded);
   return {
     effects:r.effects??null,
-    toolLoop:r.toolLoop??null,rlmLoop:r.rlmLoop??null,
+    toolLoop:r.toolLoop??null,rlmLoop:r.rlmLoop??null,harnessLoop:r.harnessLoop??null,
     gateRepairs:r.certification.attempts.filter(a=>a.source==='repair').length,
     preSubmitFailures:(r.toolEvents??[]).filter(e=>e.tool==='check_patch'&&e.result&&typeof e.result==='object'&&'status' in e.result&&e.result.status==='fail').length,
     trainValidationGap:r.effects?.train!=null&&r.effects.validation!=null?r.effects.train-r.effects.validation:null,
@@ -102,10 +105,10 @@ export function qualityReport(records: readonly OfflineRecord[]) {
     const total=(f:(r:typeof own[number])=>number)=>decisions.reduce((n,id)=>n+mean(own.filter(r=>r.decisionId===id).map(f)),0);
     const tokens=(key:'input'|'output'|'cachedInput')=>own.every(r=>r.tokens[key]!==null)?total(r=>r.tokens[key]??0):null;
     const gap=own.flatMap(r=>r.trainValidationGap===null?[]:[r.trainValidationGap]);
-    return {arm,checkCalls:own.reduce((n,r)=>n+(r.toolLoop?.checks??r.rlmLoop?.checks??0),0),estimateCalls:own.reduce((n,r)=>n+(r.toolLoop?.estimates??r.rlmLoop?.estimates??0),0),
+    return {arm,checkCalls:own.reduce((n,r)=>n+(r.toolLoop?.checks??r.rlmLoop?.checks??r.harnessLoop?.checks??0),0),estimateCalls:own.reduce((n,r)=>n+(r.toolLoop?.estimates??r.rlmLoop?.estimates??r.harnessLoop?.estimates??0),0),
       gateRepairs:own.reduce((n,r)=>n+r.gateRepairs,0),
       repairsAvoidedProxy:own.filter(r=>r.gateRepairs===0&&r.accepted).reduce((n,r)=>n+r.preSubmitFailures,0),
-      complaints:[...new Set(own.flatMap(r=>r.toolLoop?.complaints??r.rlmLoop?.complaints??[]))],
+      complaints:[...new Set(own.flatMap(r=>r.toolLoop?.complaints??r.rlmLoop?.complaints??r.harnessLoop?.complaints??[]))],
       trainValidationGapMean:gap.length?mean(gap):null,trainValidationGapSamples:gap.length,decisions:decisions.length,samples:own.length,acceptedChangeRate:avg(r=>r.accepted),
       validationClicks:total(r=>r.validationClicks),validationScrolls:total(r=>r.validationScrolls),
       zeroEffectShare:count?own.reduce((n,r)=>n+r.zeroEffect,0)/count:null,
@@ -122,7 +125,7 @@ export function qualityReport(records: readonly OfflineRecord[]) {
       callsPerDecision:avg(r=>r.calls),wallTimeMsPerDecision:avg(r=>r.wallTimeMs)};
   });
   return {label:OFFLINE_LABEL,note:'Sample means within decision; validation totals sum those means. Unknown token counts remain null. Calls count backend completion attempts including retries; Codex internal model turns are not separately exposed. Query counts include all command executions, with non-CLI reads tallied as other. Replay tokens are recorded references, not new model usage. Wall time includes charged shared evidence preparation; the shared exact-content geometry cache makes timings cache-order dependent. Idea repeats = same id OR same move type and nonempty target set. Zero effect requires all five physical metrics measured and zero; denominator is all nonseeded candidates.',
-    queryCaching:queryCacheReport(records),arms,perDecision:rows,comparisons:[pairedComparison(records,'A','B'),pairedComparison(records,'B','C'),pairedComparison(records,'B','D'),pairedComparison(records,'B','E'),pairedComparison(records,'B','R')]};
+    queryCaching:queryCacheReport(records),arms,perDecision:rows,comparisons:[pairedComparison(records,'A','B'),pairedComparison(records,'B','C'),pairedComparison(records,'B','D'),pairedComparison(records,'B','E'),pairedComparison(records,'B','R'),pairedComparison(records,'B','H')]};
 }
 export async function writeQualityReport(dir:string,records:readonly OfflineRecord[]) {
   const report=qualityReport(records);await writeJson(path.join(dir,'report.json'),report);
