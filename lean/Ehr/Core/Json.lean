@@ -86,6 +86,7 @@ structure Task where
   todayResources : List Lean.Json := []
   interruptions : Nat := 0
   timing? : Option Sim.Scheduling.Arrival := none
+  workflowPlan? : Option Sim.Workflow.WorkflowPlan := none
   deriving BEq, Inhabited, Lean.ToJson, Lean.FromJson
 
 /-- One persona's schedule for one day. -/

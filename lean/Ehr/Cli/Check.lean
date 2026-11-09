@@ -1,4 +1,5 @@
 import Ehr.Check.Deploy
+import Ehr.Check.Workload
 
 /-!
 # `ehr check` and `ehr deploy`
@@ -57,11 +58,24 @@ def nowIso : IO String := do
     if out.exitCode == 0 then return out.stdout.trimAscii.toString else return "unknown"
   catch _ => return "unknown"
 
+/-- Workload is a declaration, not a sampled training/validation subset. -/
+def workloadMissing (args : List String) (i : Inputs) : IO (List ElementId) := do
+  match flag args "workload" with
+  | none => pure []
+  | some file =>
+    let tasks ← readJson (List Task) file
+    return Workload.missing (Workload.fields i.spec tasks) i.prog
+
+def capabilityVerdict (missing : List ElementId) (fallback : Verdict) : Verdict :=
+  if missing.isEmpty then fallback else
+    .violation "workloadCapabilities" ("release drops declared workload fields: " ++ String.intercalate ", " missing) [] []
+
 /-- `ehr check …`. -/
 def checkMain (args : List String) : IO UInt32 := do
   try
     let i ← readInputs args
-    let v := check i.spec i.prev i.canonical i.prog
+    let missing ← workloadMissing args i
+    let v := capabilityVerdict missing (check i.spec i.prev i.canonical i.prog)
     IO.println (Lean.toJson v).pretty
     return if v == .ok then 0 else 1
   catch e =>
@@ -76,7 +90,10 @@ def deployMain (args : List String) : IO UInt32 := do
     let time ← match flag args "time" with
       | some t => pure t
       | none => nowIso
-    let (v, writes) := deployPlan i.spec i.prev i.canonical i.prog time
+    let missing ← workloadMissing args i
+    let (baseVerdict, baseWrites) := deployPlan i.spec i.prev i.canonical i.prog time
+    let v := capabilityVerdict missing baseVerdict
+    let writes := if missing.isEmpty then baseWrites else []
     let dir : System.FilePath := System.FilePath.mk out / i.prog.owner
     IO.FS.createDirAll dir
     for w in writes do

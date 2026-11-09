@@ -223,7 +223,7 @@ def minSchedule (sp : Spec) (prog : Program) (schedule : DaySchedule)
     let eps := episodes facts task.workflow task.choices
     if eps.isEmpty then throw s!"{task.id}: no clinical episode is defined by the scenario"
     let contexts := eps.map fun ep =>
-      let g := deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med?
+      let g := deriveGoals sp ep.facts user (episodeWorkflow task ep) ep.choices ep.orders ep.med?
       { sp, prog, facts := ep.facts, user, goals := g : Context }
     let click ← optionExcept (jointMinimum contexts .clicks bound space?)
       s!"{task.id}: joint click search exceeded bound or found no completion"
@@ -249,7 +249,7 @@ def informationMinimum (sp : Spec) (prog : Program) (schedule : DaySchedule)
     let mut receipts := []
     for ep in eps do
       let f := { ep.facts with receipts := ep.facts.receipts ++ receipts }
-      let g := deriveGoals sp f user task.workflow ep.choices ep.orders ep.med? (some (displayFor task))
+      let g := deriveGoals sp f user (episodeWorkflow task ep) ep.choices ep.orders ep.med? (some (displayFor task))
       let ctx : Context := { sp, prog, facts := f, user, goals := { g with informationOffset := Information.shiftOffset schedule.persona } }
       let start := init sp prog f user
       let click ← optionExcept (Information.minimum ctx .clicks start bound)

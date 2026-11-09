@@ -29,7 +29,7 @@ open Lean
 namespace Ehr.Tools.GenTS
 
 /-- Modules whose types are exported. -/
-def sourceModules : List Name := [`Ehr.Sim.Scheduling.Types, `Ehr.Sim.Resumption.Types, `Ehr.Multi.Critical, `Ehr.Core.Types, `Ehr.Core.Json, `Ehr.Render.Types, `Ehr.Render.Json, `Ehr.Render.Fhir]
+def sourceModules : List Name := [`Ehr.Sim.Workflow.Types, `Ehr.Sim.Scheduling.Types, `Ehr.Sim.Resumption.Types, `Ehr.Multi.Critical, `Ehr.Core.Types, `Ehr.Core.Json, `Ehr.Render.Types, `Ehr.Render.Json, `Ehr.Render.Fhir]
 
 /-- The TypeScript name of a Lean declaration: its last component. -/
 def tsName (n : Name) : String :=
@@ -94,9 +94,9 @@ def classify (env : Environment) (n : Name) : Option Decl :=
 The clinical module also exports runtime enum tables, so even type-only source
 changes would otherwise alter the certified painter fingerprint. -/
 def simulatorField (n f : Name) : Bool :=
-  (n == ``Ehr.Task && f == `timing?) ||
+  (n == ``Ehr.Task && (f == `timing? || f == `workflowPlan?)) ||
   (n == ``Ehr.DaySchedule && [`clockMode?, `shifts?, `sourceDates?].contains f) ||
-  (n == ``Ehr.TaskMetrics && f == `interruptions?) ||
+  (n == ``Ehr.TaskMetrics && (f == `interruptions? || f == `workflow?)) ||
   (n == ``Ehr.DayResult && f == `workload?)
 
 /-- Emit one exported declaration. -/

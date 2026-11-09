@@ -58,12 +58,21 @@ export const AdministrationDecisionSchema = z.strictObject({
   scheduledMin: Nat,
   windowEndMin: Nat,
   attemptMin: Nat,
+  windowStartMin: opt(Nat),
+  administeredMin: opt(Nat),
+  chartedMin: opt(Nat),
   reoffer: z.boolean(),
   notifyPrescriber: z.boolean(),
 }).superRefine((a, ctx) => {
-  if (a.windowEndMin < a.scheduledMin || a.attemptMin < a.scheduledMin ||
+  if (a.windowEndMin < a.scheduledMin || a.attemptMin < (a.windowStartMin ?? a.scheduledMin) ||
       ((a.outcome === "given" || a.outcome === "delayed") && a.attemptMin > a.windowEndMin)) {
     ctx.addIssue({ code: "custom", message: "Administration attempt outside its declared window" });
+  }
+  if (a.windowStartMin != null && (a.windowStartMin !== Math.max(0, a.scheduledMin - (a.windowEndMin - a.scheduledMin)) ||
+      ![30, 60, 120].includes(a.windowEndMin - a.scheduledMin) ||
+      a.chartedMin == null || a.chartedMin < a.attemptMin ||
+      (a.outcome === "given" ? a.administeredMin !== a.attemptMin : a.administeredMin != null))) {
+    ctx.addIssue({ code: "custom", message: "Distinct administration and charting times required" });
   }
 });
 export type AdministrationDecision = z.infer<typeof AdministrationDecisionSchema>;
@@ -119,6 +128,13 @@ export const JsonSchema: z.ZodType<Json> = z.lazy(() =>
   z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(JsonSchema), z.record(z.string(), JsonSchema)]),
 );
 
+export const WorkflowPlanSchema = z.strictObject({
+  kind: z.enum(["refill", "alert", "advice", "result", "call", "consult", "chart", "pharmacy", "dispensing", "reconciliation", "prescription", "coordination"]),
+  owner: z.string().min(1), delegateTo: opt(z.string().min(1)), delegateAccepted: z.boolean(),
+  phaseMs: Nat, responseWaitMs: Nat,
+});
+export type WorkflowPlan = z.infer<typeof WorkflowPlanSchema>;
+
 /** `structure Task`. */
 export const TaskSchema = z.strictObject({
   id: z.string().min(1),
@@ -128,6 +144,7 @@ export const TaskSchema = z.strictObject({
   patientId: z.string().min(1),
   startMin: Nat,
   timing: ArrivalSchema.exactOptional(),
+  workflowPlan: WorkflowPlanSchema.exactOptional(),
   choices: TaskChoicesSchema,
   todayResources: z.array(JsonSchema),
   interruptions: Nat,

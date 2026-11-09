@@ -45,7 +45,7 @@ function releaseItems(text: string): string[] {
 }
 
 async function recheck(deps: LoopDeps, input: ReleaseNightInput): Promise<{ program: Program; check: CheckResult; gate: Gate }> {
-  const gate: Gate = { specVersion: input.next.specVersion, prev: input.current, canonical: input.next.canonical, nextVersion: input.current.version + 1, night: input.night };
+  const gate: Gate = { specVersion: input.next.specVersion, prev: input.current, canonical: input.next.canonical, nextVersion: input.current.version + 1, night: input.night, workload: input.declaredWorkload ?? input.train.flatMap(d => d.schedule.tasks) };
   const { program, check } = await checkPatch(deps.ehr, input.current, [], gate);
   if (!program) throw new Error('recheck: could not restamp the current program');
   return { program, check, gate };
@@ -193,7 +193,7 @@ export async function runMigration(deps: LoopDeps, input: ReleaseNightInput): Pr
   rec.userResponse = { response: 'not-offered', probability: 0, reason: 'regulatory migration: the user cannot keep a non-conforming version' };
 
   const canon = { ...personalize(next.canonical, persona.params, persona.userId), id: input.current.id, version: input.current.version + 1, specVersion: next.specVersion };
-  const fbGate: Gate = { specVersion: next.specVersion, prev: canon, canonical: next.canonical, nextVersion: canon.version, night };
+  const fbGate: Gate = { specVersion: next.specVersion, prev: canon, canonical: next.canonical, nextVersion: canon.version, night, workload: input.declaredWorkload ?? input.train.flatMap(d => d.schedule.tasks) };
   const finalize = async (program: Program, gate: Gate, outcome: DecisionRecord['outcome']): Promise<NightResult> => {
     let failure: unknown;
     try {

@@ -86,7 +86,9 @@ async function main(): Promise<void> {
   const typedShare = intArg(args, "note-typed-share", NOTE_TYPED_SHARE_OFF);
   if (typedShare > 1000) throw new Error("--note-typed-share must be 0..1000 (per mille)");
   const pop = loadPopulation(fixtures);
-  const run = generateWorld(seed, days, pop.patients, undefined, { caseMix, worldClock });
+  const workflows = arg(args, "workflows") ?? "realistic";
+  if (workflows !== "realistic" && workflows !== "legacy") throw new Error("--workflows must be realistic or legacy");
+  const run = generateWorld(seed, days, pop.patients, undefined, { caseMix, worldClock, workflows });
   const adt = arg(args, "adt") ?? "realistic";
   if (!["off", "realistic"].includes(adt)) throw new Error("--adt must be off or realistic");
 

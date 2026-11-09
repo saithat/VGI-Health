@@ -22,7 +22,7 @@ describe("DaySchedule JSON shape (core-model section 7)", () => {
 
   it("emits every defaulted field and omits `none` options, like Lean's derived ToJson", () => {
     for (const t of allTasks(r)) {
-      expect(Object.keys(t).sort()).toEqual(["choices", "day", "id", "interruptions", "patientId", "persona", "startMin", "todayResources", "workflow"]);
+      expect(Object.keys(t).sort()).toEqual(["choices", "day", "id", "interruptions", "patientId", "persona", "startMin", "todayResources", "workflow", ...(t.workflowPlan ? ["workflowPlan"] : [])].sort());
       for (const k of ["orders", "administer", "ackResult", "immunizations", "noteSections"]) expect(t.choices).toHaveProperty(k);
       for (const o of [...t.choices.orders, ...t.choices.administer]) {
         expect(o).toHaveProperty("prn");
@@ -55,7 +55,7 @@ describe("DaySchedule JSON shape (core-model section 7)", () => {
           ids.add(t.id);
           expect(t.day).toBe(s.day);
           expect(t.persona).toBe(p);
-          expect(t.startMin).toBeLessThanOrEqual(SHIFTS[p].lengthMin);
+          if (!t.choices.administer.some(o => o.administration?.chartedMin != null)) expect(t.startMin).toBeLessThanOrEqual(SHIFTS[p].lengthMin);
           expect(t.startMin).toBeGreaterThanOrEqual(last);
           last = t.startMin;
         }

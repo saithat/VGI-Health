@@ -165,6 +165,8 @@ def taskValue (facts : Facts) (user : User) (choices : TaskChoices) (med? : Opti
       med?.map fun m => .text (administrationFollowup m)
     else if el.id == "refillDecision" then choices.refill?.map .code
     else if el.id == "disposition" || el.id == "dispositionChoice" then choices.disposition?.map .code
+    else if el.id == "assessmentPlan" && (facts.record.lookup "scenarioAlertResolution").isSome then
+      (facts.record.lookup "scenarioAlertResolution").map .text
     else if choices.noteSections.contains el.id then some (.text (sectionText choices el.id))
     else match med? with
       | some m => orderValue el.id m

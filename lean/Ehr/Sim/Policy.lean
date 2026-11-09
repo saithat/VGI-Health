@@ -2,6 +2,7 @@ import Ehr.Core.Workspace
 import Ehr.Sim.Interaction
 import Ehr.Sim.TaskContext
 import Ehr.Sim.Scheduling.Clock
+import Ehr.Sim.Workflow.Timing
 import Ehr.Sim.Resumption.Work
 
 /-!
@@ -520,14 +521,16 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
     let eps := taskEpisodes facts task
     if eps.isEmpty then
       day := { day with complaints := day.complaints ++
-        [s!"{task.id}: no clinical episode; refill approval requires a focused prescription or explicit order"] }
-    let goals := eps.map fun ep => deriveGoals sp ep.facts user task.workflow ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
+        [s!"{task.id}: no clinical episode; check workflow ownership/delegation, dose timing and focused refill prescription"] }
+    let goals := eps.map fun ep => deriveGoals sp ep.facts user (episodeWorkflow task ep) ep.choices ep.orders ep.med? (displayFor?.map (fun f => f task))
     let nActions := goals.foldl (fun n g => n + g.values.length + g.waivers.length + g.commits.length) 0
     let (positions, rng) := interruptionPositions (taskSeed seed task.id) task.interruptions nActions
     let mut r : EpisodeResult := {
       state := default, trace := [], complaints := [], rng,
       interruptions := positions, actionIndex := 0, elapsedMs := offset + clinical, lastDevice := none,
       resumption := Resumption.initRuntime seed source params.role (schedule.tasks.map (·.patientId)) interruptionConfig }
+    let protocolBefore := source.workflowPlan?.map (fun p => (Workflow.finish p false (workflowDecision source)).activeMs) |>.getD 0
+    r := { r with elapsedMs := r.elapsedMs + protocolBefore }
     let mut documentedMs := start
     let mut complete := !eps.isEmpty
     let mut floor := { emptyMetrics task.id with completed := true }
@@ -550,13 +553,17 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
     if eps.isEmpty then
       let ctx : Context := { sp, prog, facts, user, goals := default }
       r := finishInterruptionTask ctx task r false
+    let workflow := source.workflowPlan?.map (fun p => Workflow.finish p complete (workflowDecision source))
+    let protocolAfter := workflow.map (fun w => w.activeMs - protocolBefore + w.waitingMs) |>.getD 0
+    r := { r with elapsedMs := r.elapsedMs + protocolAfter }
     lookups := lookups ++ r.lookups.map (fun a => { a with traceIndex := day.trace.length + a.traceIndex })
     receipts := (task.patientId, r.state.receipts) :: receipts.filter (·.1 != task.patientId)
     day := { day with
       trace := day.trace ++ r.trace
       tasks := day.tasks ++ [{ metrics task.id r.trace complete with
+        workflow? := workflow,
         klmDeciSec := if interruptionConfig.legacyModel && interruptionConfig.mode == .fixedCost then (metrics task.id r.trace complete).klmDeciSec
-          else (r.elapsedMs - offset - clinical - r.resumption.metrics.closureWaitMs) / 100,
+          else (r.elapsedMs - offset - clinical - r.resumption.metrics.closureWaitMs - (workflow.map (fun w => w.activeMs + w.waitingMs)).getD 0) / 100,
         wallTimeMinutes? := some ((r.elapsedMs - offset + 59999) / 60000),
         interruptions? := if interruptionConfig.mode == .realWork then some r.resumption.metrics else none }]
       floor := day.floor ++ [floor]
@@ -565,9 +572,13 @@ def simulateWithInformation (sp : Spec) (prog : Program) (params : PersonaParams
       let duration := r.elapsedMs - offset
       clock := start + duration
       if let some (w, _) := placement then
+        -- Workflow protocol phases are clinician service; the response wait is passive.
+        let m := r.resumption.metrics
+        let protocolWait := (workflow.map (·.waitingMs)).getD 0
         timings := timings ++ [Scheduling.withClocks (Scheduling.withInterruptions
-          (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs) w.endMs r.resumption.metrics)
-          clinical r.readingMs documentedMs r.resumption.metrics actor handover]
+          (Workflow.withAdministration source (Scheduling.withDocumentation (Scheduling.timing windows source w start duration complete) documentedMs)) w.endMs m)
+          (clinical + (workflow.map (·.activeMs)).getD 0) r.readingMs documentedMs
+          { m with closureWaitMs := m.closureWaitMs + protocolWait } actor handover]
   if !legacy then day := { day with workload? := some (Scheduling.report windows timings) }
   return (day, lookups)
 

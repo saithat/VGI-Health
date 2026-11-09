@@ -49,7 +49,7 @@ export function taskArrival(task: Task, state: WorldState): Arrival {
   // last source result arrives; pre-origin backlog age remains measurable.
   const resultAt = task.workflow === "W2" && released.length ? Math.max(...released) : undefined;
   if(resultAt !== undefined) arrivalMin = Math.max(0,resultAt / MINUTE);
-  if(doses.length) arrivalMin = Math.max(0,Math.min(...doses.map(d=>d.scheduledMin-shift.startClock)));
+  if(doses.length) arrivalMin = Math.max(0,Math.min(...doses.map(d=>(d.windowStartMin ?? d.scheduledMin)-shift.startClock)));
   const priority = urgent ? 0 : doses.length > 0 || (task.workflow === "W2" && abnormal) || inbox?.priority === 0 ? 1 : 2;
   const doseWindows: [string, number][] = doses.map(d =>
     [d.occurrence, Math.max(0, d.windowEndMin - shift.startClock) * MINUTE]);

@@ -182,10 +182,15 @@ const orderChoiceSchema: z.ZodType<L.OrderChoice> = dropNulls(['indication', 'ki
   priority: str.exactOptional(),
   administration: z.object({
     outcome: z.enum(['given', 'held', 'refused', 'notGiven', 'delayed']),
-    reason: str, occurrence: str, scheduledMin: nat, windowEndMin: nat, attemptMin: nat,
+    reason: str, occurrence: str, scheduledMin: nat, windowEndMin: nat, attemptMin: nat, windowStartMin: nat.exactOptional(), administeredMin: nat.exactOptional(), chartedMin: nat.exactOptional(),
     reoffer: z.boolean(), notifyPrescriber: z.boolean(),
   }).exactOptional(),
 }));
+const workflowPlanSchema = z.object({
+  kind:z.enum(['refill','alert','advice','result','call','consult','chart','pharmacy','dispensing','reconciliation','prescription','coordination']),
+  owner:str,delegateTo:str.exactOptional(),delegateAccepted:z.boolean(),phaseMs:nat,responseWaitMs:nat,
+});
+const workflowReportSchema = z.object({phases:z.array(str),owner:str,clinicalComplete:z.boolean(),closed:z.boolean(),activeMs:nat,waitingMs:nat});
 const taskSchema: z.ZodType<L.Task> = z.object({
   id: str,
   day: nat,
@@ -202,6 +207,7 @@ const taskSchema: z.ZodType<L.Task> = z.object({
   })),
   todayResources: z.array(z.unknown()),
   interruptions: nat,
+  workflowPlan:workflowPlanSchema.exactOptional(),
 });
 export const dayScheduleSchema: z.ZodType<L.DaySchedule> = z.object({ day: nat, persona: str, load: str, tasks: z.array(taskSchema) });
 // Supplemental bounded-user formats live in Ehr.Sim.Bounded, leaving the
@@ -224,6 +230,7 @@ export const personaParamsSchema: z.ZodType<PersonaParams> = z.object({
 const taskMetricsSchema: z.ZodType<TaskMetrics> = z.object({
   task: str, clicks: nat, keystrokes: nat, scrolls: nat, popups: nat, overrides: nat, searches: nat, backtracks: nat,
   mouseTravelPx:z.number().nonnegative().nullable().exactOptional(),scrollPx:z.number().nonnegative().nullable().exactOptional(),rawScrolls:nat.exactOptional(),
+  workflow:workflowReportSchema.exactOptional(),
   klmDeciSec: nat, completed: z.boolean(), wallTimeMinutes: nat.exactOptional(),
 });
 const expertDayResultSchema = z.object({
