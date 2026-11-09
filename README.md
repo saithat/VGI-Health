@@ -195,7 +195,7 @@ uncalibrated rates remain for owner review in this single decision list.
 | Release and user-model choices | [Cadence](docs/methods/discovery-and-cadence.md) uses a provisional effect floor, movement proxy and auto-approval; [bounded learning and preferences](docs/methods/simulation.md) are uncalibrated. [Tool-driven arm E](docs/methods/agent-loop.md) stays opt-in: in the 35-decision paired run B accepted 88.6% and E 0%, because every E sample hit its 120K cumulative token ceiling before submitting, a ceiling B did not have. [Arm R](docs/methods/rlm-night.md), an opt-in recursive-language-model agent with a confined REPL, submitted within budget on every pilot decision but matched B at 6/7 while using about twice the tokens. |
 
 
-The [full paired B/R follow-up](docs/methods/rlm-night.md#paired-br-follow-up-pre-declaration-2026-11-09) pins prompt pre-declaration `db57833a` for compact output and a bounded train-only opening digest; R remains opt-in.
+The [full paired B/R follow-up](docs/methods/rlm-night.md#paired-br-follow-up-pre-declaration-2026-11-09) pins prompt pre-declaration `db57833a` for compact output and a bounded train-only opening digest, preserving the pilot manual; R remains opt-in.
 
 ## Open problems
 

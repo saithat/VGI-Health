@@ -249,7 +249,16 @@ probe passed before the follow-up; live R never uses unconfined execution.
 Run from this lane worktree, whose local `runs` symlink points to
 `/home/saithat/Projects/VGI-Health/runs`. This satisfies the harness's local
 output-directory guard while storing only new BR directories in the main run
-store. Existing run directories are read-only. The source/sanity paths below
+store. Existing run directories are read-only. The generated B manual reads
+optional `runs/core-10day` examples. The pilot worktree had none; exposing the
+main run store would add two examples (2,559 characters) and change its hash
+from `78e74920576598291b46ffcdde18de65ed9e93abf5583ef2c0a8901809146c06`
+to `de95d3924e6dd717a78beaa779d4eb23ebee0dff8108a1f5d0d146ed7f56b4f6`.
+Live and smoke-replay commands therefore use a private mount view that hides
+that optional directory, restoring the exact pilot manual hash without editing
+any files. The sanity replay started before this was detected: its generated
+prompt metadata differs, but replay uses frozen model outputs. Candidate,
+certification, validation and outcome equality are checked separately. The source/sanity paths below
 replace the removed-worktree workaround; the old symlink is retained until the
 study has completed and been verified.
 
@@ -261,18 +270,24 @@ SOURCE="$DATA/quality-BR-source-20261109"
 SANITY="$DATA/quality-BR-sanity-20261109"
 OUT="$PWD/runs"
 cd agent
+# Preserve the pilot's absent optional examples; the real directory is untouched.
+mkdir -p "$TMPDIR/BR-empty-core"
+study() {
+  bwrap --die-with-parent --bind / / --dev-bind /dev /dev \
+    --ro-bind "$TMPDIR/BR-empty-core" "$DATA/core-10day" -- "$@"
+}
 flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
   --run "$SOURCE" --out "$OUT/quality-BR-sanity-20261109" --arms sanity --samples 1 --workers 2 \
   --backend replay --model gpt-6.1-sol --reasoning-effort high --service-tier default
-flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
+study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
   --run "$SOURCE" --out "$OUT/quality-BR-smoke-20261109" --arms R --samples 1 --workers 1 \
   --decisions night-01/P1 --backend codex --model gpt-6.1-sol --reasoning-effort high \
   --service-tier default --ledger-from "$SANITY"
-flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
+study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
   --run "$SOURCE" --out "$OUT/quality-BR-smoke-replay-20261109" --arms R --samples 1 --workers 1 \
   --decisions night-01/P1 --backend replay --model gpt-6.1-sol --reasoning-effort high \
   --service-tier default --ledger-from "$SANITY" --tool-replay-from "$DATA/quality-BR-smoke-20261109"
-flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
+study flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
   --run "$SOURCE" --out "$OUT/quality-BR-20261109" --arms B,R --samples 2 --workers 2 \
   --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default --ledger-from "$SANITY"
 # Continue the same full command with --resume after interruption; never restart it.
