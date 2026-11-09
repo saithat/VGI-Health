@@ -189,3 +189,19 @@ it('launches each CLI with a declared, minimal capability set and never a permis
   expect(auditLaunch('claude', claudeOut)).toMatchObject({ status: 'pass', permissionDenials: 1, commands: 1 });
   expect(auditLaunch('claude', JSON.stringify({ type: 'assistant', message: { content: [{ type: 'tool_use', name: 'WebFetch', input: {} }] } })).status).toBe('fail');
 });
+it('reuses an arm only from a completed run whose frozen bindings, ledger and model options all match', async () => {
+  const { reusableSamples, REUSE_BINDING_KEYS } = await import('../src/quality.js');
+  const dir = await scratch();
+  const binding: Record<string, unknown> = { ...Object.fromEntries(REUSE_BINDING_KEYS.map(k => [k, `v-${k}`])), agentSha256: 'old', ledgerSource: { directory: '/x', recordsSha256: 'L' },
+    options: { backend: 'codex', model: 'm', reasoningEffort: 'high', serviceTier: 'default', samples: 2 } };
+  await writeJson(path.join(dir, 'manifest.json'), { status: 'completed' });
+  await writeJson(path.join(dir, 'inputs/binding.json'), binding);
+  await writeJson(path.join(dir, 'records.json'), []);
+  const opts = { runDir: '', outDir: '', arms: ['B', 'H'] as const, samples: 2, backend: 'codex' as const, workers: 1, model: 'm', reasoningEffort: 'high', serviceTier: 'default' };
+  const ours = { ...binding, agentSha256: 'new' };
+  await expect(reusableSamples(dir, 'B', ours, { ...opts, arms: [...opts.arms] }, [])).resolves.toMatchObject({ agentSha256: { theirs: 'old', ours: 'new' } });
+  await expect(reusableSamples(dir, 'B', { ...ours, ehrSha256: 'other' }, { ...opts, arms: [...opts.arms] }, [])).rejects.toThrow('bindings differ (ehrSha256)');
+  await expect(reusableSamples(dir, 'B', { ...ours, ledgerSource: { recordsSha256: 'M' } }, { ...opts, arms: [...opts.arms] }, [])).rejects.toThrow('ledgerSource');
+  await expect(reusableSamples(dir, 'B', ours, { ...opts, arms: [...opts.arms], model: 'n', samples: 3 }, [])).rejects.toThrow('options.model, options.samples');
+  await expect(reusableSamples(dir, 'B', ours, { ...opts, arms: [...opts.arms] }, ['night-01/P1'])).rejects.toThrow('missing night-01/P1 B/1');
+});

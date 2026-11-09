@@ -196,6 +196,27 @@ export interface QualityOptions {
   /** Arm H only: which native CLI agent runs in the workspace, its budget and an optional model override
    * (codex defaults to --model; claude to the Claude Code default). */
   harness?:'codex'|'claude';harnessBudget?:HarnessBudget;harnessModel?:string;
+  /** Copy one arm's completed samples from an earlier run with identical frozen inputs instead of rerunning it. */
+  reuseArmFrom?:string;reuseArm?:QualityArm;
+}
+/** Bindings an earlier run must share for its samples to stand in for this run's. Agent sources may
+ * differ (the reused arm's code path is reported, not re-proven); every frozen input must not. */
+export const REUSE_BINDING_KEYS=['source','originalWorldSha256','fixturesSha256','sourceDecisionsSha256','sourceProgramsSha256','sourceDaysSha256','sourceLlmSha256','sourceCertificationsSha256','ehrSha256','app','label'] as const;
+export async function reusableSamples(from:string,arm:QualityArm,binding:Record<string,unknown>,opts:QualityOptions,selected:readonly string[]) {
+  const dir=await realpath(from);
+  const manifest=await readJson(path.join(dir,'manifest.json'),z.object({status:z.string()}).passthrough());
+  if(manifest.status!=='completed')throw new Error('--reuse-arm-from: run is not completed');
+  const theirs=z.record(z.string(),z.unknown()).parse(JSON.parse(await readFile(path.join(dir,'inputs/binding.json'),'utf8')));
+  const differs:string[]=REUSE_BINDING_KEYS.filter(k=>JSON.stringify(theirs[k])!==JSON.stringify(binding[k]));
+  const ledger=(b:Record<string,unknown>)=>JSON.stringify(z.object({recordsSha256:z.string()}).optional().parse(b['ledgerSource'])?.recordsSha256??null);
+  if(ledger(theirs)!==ledger(binding))differs.push('ledgerSource');
+  const o=z.object({backend:z.string(),model:z.string().optional(),reasoningEffort:z.string().optional(),serviceTier:z.string().optional(),samples:z.number()}).passthrough().parse(theirs['options']);
+  for(const k of ['backend','model','reasoningEffort','serviceTier'] as const)if(o[k]!==opts[k])differs.push(`options.${k}`);
+  if(o.samples<opts.samples)differs.push('options.samples');
+  if(differs.length)throw new Error(`--reuse-arm-from: bindings differ (${differs.join(', ')}); refusing to reuse`);
+  const records=z.array(offlineRecordSchema).parse(JSON.parse(await readFile(path.join(dir,'records.json'),'utf8'))).filter(r=>r.arm===arm&&r.sample<=opts.samples);
+  for(const id of selected)for(let n=1;n<=opts.samples;n++)if(!records.some(r=>r.decisionId===id&&r.sample===n))throw new Error(`--reuse-arm-from: missing ${id} ${arm}/${n}`);
+  return {dir,records,agentSha256:{theirs:theirs['agentSha256']??null,ours:binding['agentSha256']??null}};
 }
 export async function freshOutput(runDir:string,outDir:string) {
   const runs=path.resolve(REPO_ROOT,'runs'),source=await realpath(runDir);
@@ -214,7 +235,9 @@ export async function resumedOutput(outDir:string) {
 
 export async function evaluateQuality(opts:QualityOptions) {
   if(opts.backend==='codex'&&opts.serviceTier==='fast')throw new Error('Codex fast mode is prohibited; use --service-tier default');
-  if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>2)throw new Error('--workers must be 1 or 2 (14 GB budget)');
+  if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>4)throw new Error('--workers must be 1–4 (run under a memory-capped scope)');
+  if((opts.reuseArm===undefined)!==(opts.reuseArmFrom===undefined))throw new Error('--reuse-arm and --reuse-arm-from go together');
+  if(opts.reuseArm!==undefined&&(opts.reuseArm==='sanity'||!opts.arms.includes(opts.reuseArm)))throw new Error('--reuse-arm must be one of --arms (not sanity)');
   if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
   if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','D','E','R','H','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, D, E, R, H, sanity');
   if(opts.arms.includes('H')&&opts.backend!=='replay'&&!opts.harness)throw new Error('Arm H requires --harness codex|claude');
@@ -266,6 +289,9 @@ export async function evaluateQuality(opts:QualityOptions) {
     if(comparable(previous)!==comparable(binding))throw new Error('--resume: inputs, build, agent sources or options differ from the interrupted run');
   }
   else await writeJson(path.join(inputs,'binding.json'),binding);
+  const reused=opts.reuseArmFrom&&opts.reuseArm?await reusableSamples(opts.reuseArmFrom,opts.reuseArm,binding,opts,selected.map(decisionId)):null;
+  if(reused)await writeJson(path.join(out,'reused-arm.json'),{arm:opts.reuseArm,from:reused.dir,bindingKeys:[...REUSE_BINDING_KEYS,'ledgerSource','options.backend/model/reasoningEffort/serviceTier/samples'],agentSha256:reused.agentSha256,
+    note:'Copied samples; not run concurrently with the other arms.'});
   const measured=opts.ledgerFrom?await loadMeasuredSavings(opts.ledgerFrom,historical,binding):null;
   const world=await loadWorld(path.join(inputs,'world')),records:OfflineRecord[]=[];
   const sanity:{decisionId:string;candidates:ReturnType<typeof candidateDiffs>}[]=[];
@@ -307,6 +333,11 @@ export async function evaluateQuality(opts:QualityOptions) {
         for(const arm of opts.arms)for(let sample=1;sample<=(arm==='sanity'?1:opts.samples);sample++) {
           if(stopped)break;
           const sampleDir=path.join(out,'samples',decisionId(original),arm,String(sample));
+          if(reused&&arm===opts.reuseArm){
+            const done=reused.records.find(r=>r.decisionId===decisionId(original)&&r.sample===sample);if(!done)throw new Error('Missing reused sample');
+            if(!existsSync(path.join(sampleDir,'record.json')))await cp(path.join(reused.dir,'samples',decisionId(original),arm,String(sample)),sampleDir,{recursive:true});
+            records.push(done);state.completed++;await writeJson(path.join(out,'manifest.json'),state);console.log(`${done.decisionId} ${arm}/${sample}: reused (${done.outcome})`);continue;
+          }
           if(opts.resume&&existsSync(path.join(sampleDir,'record.json'))){
             const done=offlineRecordSchema.parse(JSON.parse(await readFile(path.join(sampleDir,'record.json'),'utf8')));
             if(arm==='sanity')throw new Error('--resume does not support the sanity arm');
