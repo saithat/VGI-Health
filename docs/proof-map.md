@@ -890,7 +890,8 @@ with no reachable headline says so. Repeated nodes are allowed on distinct
 paths; a cycle marker ends recursion on the current path. Private source
 declarations retain their raw identities so their citations remain connected.
 Generated constructors, recursors and matcher helpers resolve to their source
-declaration.
+declaration. Named lemmas such as `eq_withHistory` remain searchable declarations;
+numbered helpers such as `eq_1` collapse to their source owner.
 
 Hover or focus a node/name for its complete pretty-printed type and docstring.
 The preview stays open during pointer movement within the node and can be

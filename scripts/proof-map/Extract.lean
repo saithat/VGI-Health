@@ -9,6 +9,10 @@ statement dependencies, proof/body dependencies, axioms for theorems). -/
 def ownModule (m : Name) : Bool :=
   (`Ehr).isPrefixOf m || (`CommitProtocol).isPrefixOf m || m == `Solution || m == `Main
 
+def numberedAux (s : String) : Bool :=
+  ["match_", "proof_", "eq_"].any fun stem =>
+    s.startsWith stem && ((s.drop stem.length).toString.toNat?).isSome
+
 /-- Map generated helpers to their source declaration, preserving private identities. -/
 partial def owner (env : Environment) (n : Name) : Option Name :=
   let rec up (x : Name) : Option Name :=
@@ -18,7 +22,7 @@ partial def owner (env : Environment) (n : Name) : Option Name :=
       -- Preserve the raw identity of private declarations. Resolve generated
       -- helpers by walking raw prefixes; display names cannot locate privates.
       let u := (privateToUserName? x).getD x
-      let isAux := u.isInternal || u.components.any (fun c => c.toString.startsWith "match_" || c.toString.startsWith "proof_" || c.toString == "eq_def" || c.toString.startsWith "eq_" || c.toString.startsWith "_")
+      let isAux := u.isInternal || u.components.any (fun c => numberedAux c.toString || c.toString == "eq_def" || c.toString.startsWith "_")
       match env.find? x with
       | some (.ctorInfo c) => up c.induct
       | some (.recInfo _) => up x.getPrefix

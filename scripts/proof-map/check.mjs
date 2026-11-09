@@ -16,6 +16,12 @@ const data = JSON.parse(await readFile(resolve(out, "data.json"), "utf8"));
 assert.match(data.commit, /^[a-f0-9]{40}$/);
 assert.ok(data.decls.length > 1000);
 assert.ok(
+  data.decls.some(
+    (row) => row[0] === "Ehr.Sim.eq_withHistory" && row[1] === "t",
+  ),
+  "Source equation lemmas must remain declarations",
+);
+assert.ok(
   data.decls.some((row) => row[9]),
   "Private declarations must remain navigable",
 );

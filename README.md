@@ -169,8 +169,8 @@ The generated [proof map](docs/proof-map.md) includes all headline dependency
 charts; CI enforces freshness with `scripts/proof-map/build.sh --check-readme`.
 Regenerate it with `scripts/proof-map/build.sh --readme` after building the
 [additional proof modules](scripts/proof-map/extra-modules.txt). The same CI job
-uploads self-contained declaration and module-import views with source links at the
-built commit, bidirectional expansion, guarantee breadcrumbs, full-type previews,
+uploads self-contained declaration and module-import views, including private
+declarations and named equation lemmas, with source links at the built commit, bidirectional expansion, guarantee breadcrumbs, full-type previews,
 keyboard search with arrow navigation and per-theorem axioms/premises. Hover and keyboard previews preserve
 access to their trigger nodes. The import view uses an isolated
 Lean 4.35 `import-graph` package; its DOT edges drive the SVG view and are
