@@ -6,19 +6,7 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private theorem rejects_human (p : Program) (h : ¬ NoAutomationAttempts specV1 p) :
-    ¬ Satisfies specV1 none canonicalV1 p := fun hs => h hs.2.2.2.2.1.1
-
-private def static4Screen : Screen := macroOverride.screens[18]?.getD default
-private theorem static4ScreenPresent : macroOverride.screens[18]?.isSome = true := by decide +kernel
-private theorem static4CompPresent : static4Screen.components[57]?.isSome = true := by decide +kernel
-@[irreducible] private def static4Witness : Screen × Component :=
-  (static4Screen, static4Screen.components[57]?.getD default)
-private theorem static4Member : static4Witness ∈ allComps macroOverride := by
-  unfold static4Witness
-  exact List.mem_flatMap.mpr ⟨static4Screen,
-    getD_mem macroOverride.screens 18 static4ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem static4Screen.components 57 static4CompPresent, rfl⟩⟩
+comp_witness static4Witness, static4Member := macroOverride[18][57]
 
 private def static4Macro : Macro := { id := "badOverride", label := "Override interaction and sign", steps := [.click "w3Sign.alert.interaction", .click "w3Sign.commit.signOrders"] }
 private theorem static4Macro_mem : static4Macro ∈ macroOverride.macros := by

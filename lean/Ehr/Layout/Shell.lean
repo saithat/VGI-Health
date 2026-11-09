@@ -35,19 +35,26 @@ private theorem base_cases (v first body p) (hp : p ∈ Structural.placements v 
     p = Structural.scroller v ∨ p = Structural.banner v first ∨
     ∃ entry i, (entry,i) ∈ body.zipIdx ∧ p = Structural.ordinary v entry.1 entry.2 i := by
   simp only [Structural.placements,List.mem_cons,List.mem_map] at hp
-  rcases hp with h | h | ⟨⟨e,i⟩,he,h⟩
-  · exact Or.inl h
-  · exact Or.inr (Or.inl h)
-  · exact Or.inr (Or.inr ⟨e,i,he,h.symm⟩)
+  rcases hp with h | h | ⟨⟨e,i⟩,he,rfl⟩
+  · exact .inl h
+  · exact .inr (.inl h)
+  · exact .inr (.inr ⟨e,i,he,rfl⟩)
 private theorem modal_cases (v ms p) (hp : p ∈ modalBoxes v ms) :
     ∃ entry i, (entry,i) ∈ ms.zipIdx ∧ p = modal v entry i := by
   obtain ⟨⟨e,i⟩,he,h⟩ := List.mem_map.mp hp
   exact ⟨e,i,he,h.symm⟩
+/-- Every shell box is a structural box, the commit footer, or a fixed modal. -/
+private theorem shell_cases {v first body commit ms p} (hp : p ∈ placements v first body commit ms) :
+    p ∈ Structural.placements v first body ∨ (∃ path ∈ commit.toList, p = footer v path) ∨
+    (p ∈ modalBoxes v ms ∧ ∃ entry i, (entry,i) ∈ ms.zipIdx ∧ p = modal v entry i) := by
+  simp only [placements,List.mem_append,List.mem_map] at hp
+  rcases hp with hp | ⟨path,h,rfl⟩ | hp
+  · exact .inl hp
+  · exact .inr (.inl ⟨path,h,rfl⟩)
+  · exact .inr (.inr ⟨hp,modal_cases v ms p hp⟩)
 private theorem modal_index (ms : Body) (limited : ms.length ≤ 2) (entry i)
     (member : (entry,i) ∈ ms.zipIdx) : i < 2 := by
-  have h : i < ms.length := by
-    have := List.mem_zipIdx member
-    omega
+  have := List.mem_zipIdx member
   omega
 private theorem base_flags (v first body p) (hp : p ∈ Structural.placements v first body) :
     p.info.interruptive = false ∧ p.info.commit = false ∧ p.style.z ≤ 30 ∧
@@ -76,20 +83,17 @@ private theorem modals_separated (v a b i j) (different : i ≠ j) :
   omega
 private theorem modal_visible (v : Size) (hv : v ∈ viewports) (entry i) (limited : i < 2) :
     visible v (modal v entry i) := by
-  have hw := (bounds v hv).1
-  have hh := (bounds v hv).2
+  obtain ⟨hw, hh⟩ := bounds v hv
   simp [visible,modal,Contains,viewportRect,Rect.right,Rect.bottom]
   omega
 private theorem footer_visible (v : Size) (hv : v ∈ viewports) (path) : visible v (footer v path) := by
-  have hw := (bounds v hv).1
-  have hh := (bounds v hv).2
+  obtain ⟨hw, hh⟩ := bounds v hv
   simp [visible,footer,Contains,viewportRect,Rect.right,Rect.bottom]
   omega
 private theorem has_modal (v first body commit ms p) (hp : p ∈ modalBoxes v ms) :
     ((placements v first body commit ms).any (·.info.interruptive)) = true := by
   obtain ⟨e,i,_,same⟩ := modal_cases v ms p hp
-  apply List.any_eq_true.mpr
-  exact ⟨p,by simp [placements,hp],by rw [same]; rfl⟩
+  exact List.any_eq_true.mpr ⟨p,by simp [placements,hp],by rw [same]; rfl⟩
 private theorem base_active (v first body commit ms p q)
     (hp : p ∈ Structural.placements v first body) (hq : q ∈ modalBoxes v ms)
     (active : activePaint (placements v first body commit ms) p = true) : p.info.banner = true := by
@@ -116,10 +120,8 @@ private theorem footer_inactive (v first body commit ms path q) (hq : q ∈ moda
   simp [activePaint,activeTarget,footer,has_modal v first body commit ms q hq]
 
 private theorem base_no_modal (v first body) :
-    ((Structural.placements v first body).any (·.info.interruptive)) = false := by
-  apply List.any_eq_false.mpr
-  intro p hp
-  simp [(base_flags v first body p hp).1]
+    ((Structural.placements v first body).any (·.info.interruptive)) = false :=
+  List.any_eq_false.mpr fun p hp => by simp [(base_flags v first body p hp).1]
 
 private theorem base_rules (v : Size) (hv : v ∈ viewports) (first body commit ms)
     (unique : (inventory first body commit ms).Nodup) :
@@ -128,7 +130,7 @@ private theorem base_rules (v : Size) (hv : v ∈ viewports) (first body commit 
   exact (List.pairwise_append.mp unique).1
 
 private theorem filter_false (xs : List α) : xs.filter (fun _ => false) = [] := by
-  induction xs <;> simp_all
+  simp
 
 private theorem banner_rule (v : Size) (hv : v ∈ viewports) (first body commit ms)
     (unique : (inventory first body commit ms).Nodup) : G1 v (placements v first body commit ms) := by
@@ -136,43 +138,31 @@ private theorem banner_rule (v : Size) (hv : v ∈ viewports) (first body commit
   constructor
   · simpa [placements,List.filter_append,List.filter_map,footer,modalBoxes,modal,Function.comp_def,filter_false] using base.1
   · intro p hp flag
-    simp only [placements,List.mem_append] at hp
-    rcases hp with hp | hp | hp
+    rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
     · refine ⟨(base.2 p hp flag).1,?_⟩
       intro q hq paint different
-      simp only [placements,List.mem_append] at hq
-      rcases hq with hq | hq | hq
+      rcases shell_cases hq with hq | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
       · exact (base.2 p hp flag).2 q hq paint different
-      · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
-        exact base_footer v first body p path hp
-      · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
-        rw [base_banner v first body p hp flag]
+      · exact base_footer v first body p path hp
+      · rw [base_banner v first body p hp flag]
         exact banner_modal v first e i
-    · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-      simp [footer] at flag
-    · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-      simp [modal] at flag
+    · simp [footer] at flag
+    · simp [modal] at flag
 
 private theorem modal_rule (v : Size) (hv : v ∈ viewports) (first body commit ms)
     (limited : ms.length ≤ 2) : G2 v (placements v first body commit ms) := by
   intro p hp flag
-  simp only [placements,List.mem_append] at hp
-  rcases hp with hp | hp | hp
+  rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,hi,rfl⟩
   · simp [(base_flags v first body p hp).1] at flag
-  · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-    simp [footer] at flag
-  · obtain ⟨e,i,hi,rfl⟩ := modal_cases v ms p hp
-    refine ⟨modal_visible v hv e i (modal_index ms limited e i hi),?_⟩
+  · simp [footer] at flag
+  · refine ⟨modal_visible v hv e i (modal_index ms limited e i hi),?_⟩
     intro q hq _ ordinary
-    simp only [placements,List.mem_append] at hq
-    rcases hq with hq | hq | hq
+    rcases shell_cases hq with hq | ⟨path,_,rfl⟩ | ⟨-,e,j,_,rfl⟩
     · have z := (base_flags v first body q hq).2.2.1
       change q.style.z < 100
       omega
-    · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
-      change (20 : Int) < 100; decide
-    · obtain ⟨e,j,_,rfl⟩ := modal_cases v ms q hq
-      simp [modal] at ordinary
+    · change (20 : Int) < 100; decide
+    · simp [modal] at ordinary
 
 private theorem zip_order (xs : List α) : xs.zipIdx.Pairwise (fun a b => a.2 < b.2) := by
   apply List.pairwise_iff_getElem.mpr
@@ -185,36 +175,30 @@ private theorem targets (v : Size) (hv : v ∈ viewports) (first body commit ms)
   have hw := (bounds v hv).1
   constructor
   · intro p hp ht
-    simp only [placements,List.mem_append] at hp
-    rcases hp with hp | hp | hp
+    rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
     · exact base.1 p hp ht
-    · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-      simp only [footer]; omega
-    · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-      simp only [modal]; omega
+    · simp only [footer]; omega
+    · simp only [modal]; omega
+  -- Pairs within the base, the footer and the modals; footer × modals; base × rest.
   · unfold placements
-    apply List.pairwise_append.mpr
-    refine ⟨?_,?_,?_⟩
+    refine List.pairwise_append.mpr ⟨?_,List.pairwise_append.mpr ⟨?_,?_,?_⟩,?_⟩
     · apply base.2.imp
       intro p q h hp hq
       apply h
       · simp [activeTarget,base_no_modal,target_implies _ _ hp]
       · simp [activeTarget,base_no_modal,target_implies _ _ hq]
-    · apply List.pairwise_append.mpr
-      refine ⟨?_,?_,?_⟩
-      · cases commit <;> simp
-      · unfold modalBoxes
-        rw [List.pairwise_map]
-        apply (zip_order ms).imp
-        intro a b ordered _ _
-        exact modals_separated v a.1 b.1 a.2 b.2 (by omega)
-      · intro p hp q hq hpActive _
-        obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-        have inactive := (footer_inactive v first body commit ms path q hq).2
-        exact False.elim (Bool.noConfusion (inactive.symm.trans hpActive))
+    · cases commit <;> simp
+    · unfold modalBoxes
+      rw [List.pairwise_map]
+      apply (zip_order ms).imp
+      intro a b ordered _ _
+      exact modals_separated v a.1 b.1 a.2 b.2 (by omega)
     · intro p hp q hq hpActive _
-      simp only [List.mem_append] at hq
-      rcases hq with hq | hq
+      obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
+      have inactive := (footer_inactive v first body commit ms path q hq).2
+      exact False.elim (Bool.noConfusion (inactive.symm.trans hpActive))
+    · intro p hp q hq hpActive _
+      rcases List.mem_append.mp hq with hq | hq
       · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
         exact base_footer v first body p path hp
       · have inactive := base_target_inactive v first body commit ms p q hp hq
@@ -270,65 +254,45 @@ private theorem text_rule (v : Size) (hv : v ∈ viewports) (first body commit m
   have base := (base_rules v hv first body commit ms unique).2.2.2.1
   refine ⟨?_,?_,?_⟩
   · intro p hp paint
-    simp only [placements,List.mem_append] at hp
-    rcases hp with hp | hp | hp
+    rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,hi,rfl⟩
     · exact base.1 p hp paint
-    · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-      exact (footer_visible v hv path).2
-    · obtain ⟨e,i,hi,rfl⟩ := modal_cases v ms p hp
-      exact (modal_visible v hv e i (modal_index ms limited e i hi)).2
+    · exact (footer_visible v hv path).2
+    · exact (modal_visible v hv e i (modal_index ms limited e i hi)).2
   · intro p hp t ht
-    simp only [placements,List.mem_append] at hp
-    rcases hp with hp | hp | hp
+    rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
     · exact base.2.1 p hp t ht
-    · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-      have same : footerText = t := by simpa [footer] using ht
-      subst t; exact footer_fits v hv path
-    · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-      have same : Structural.slotText = t := by simpa [modal] using ht
-      subst t; exact modal_fits v hv e i
+    · obtain rfl : footerText = t := by simpa [footer] using ht
+      exact footer_fits v hv path
+    · obtain rfl : Structural.slotText = t := by simpa [modal] using ht
+      exact modal_fits v hv e i
+  -- Overlapping active text: only base/base is left to the structural rule;
+  -- every pair involving a modal or the footer is separated or inactive.
   · intro p hp ht active q hq paint different qactive above
-    simp only [placements,List.mem_append] at hp hq
-    rcases hp with hp | hp | hp
-    · rcases hq with hq | hq | hq
-      · exact base.2.2 p hp ht (by simp [activePaint,base_no_modal]) q hq paint different
-          (by simp [activePaint,base_no_modal]) above
-      · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
-        exact base_footer v first body p path hp
-      · have same := base_banner v first body p hp (base_active v first body commit ms p q hp hq active)
-        obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
-        rw [same]; exact banner_modal v first e i
-    · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-      rcases hq with hq | hq | hq
-      · exact separated_symm _ _ (base_footer v first body q path hq)
-      · obtain ⟨other,_,rfl⟩ := List.mem_map.mp hq
-        exact False.elim (different rfl)
-      · have inactive := (footer_inactive v first body commit ms path q hq).1
-        simp [inactive] at active
-    · rcases hq with hq | hq | hq
-      · have same := base_banner v first body q hq (base_active v first body commit ms q p hq hp qactive)
-        obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-        rw [same]; exact separated_symm _ _ (banner_modal v first e i)
-      · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
-        have inactive := (footer_inactive v first body commit ms path p hp).1
-        simp [inactive] at qactive
-      · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-        obtain ⟨f,j,_,rfl⟩ := modal_cases v ms q hq
-        apply modals_separated v e f i j
-        intro same; apply different; simp [modal,same]
+    rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨hp,e,i,_,rfl⟩ <;>
+      rcases shell_cases hq with hq | ⟨other,_,rfl⟩ | ⟨hq,f,j,_,rfl⟩
+    · exact base.2.2 p hp ht (by simp [activePaint,base_no_modal]) q hq paint different
+        (by simp [activePaint,base_no_modal]) above
+    · exact base_footer v first body p other hp
+    · rw [base_banner v first body p hp (base_active v first body commit ms p _ hp hq active)]
+      exact banner_modal v first f j
+    · exact separated_symm _ _ (base_footer v first body q path hq)
+    · exact False.elim (different rfl)
+    · simp [(footer_inactive v first body commit ms path _ hq).1] at active
+    · rw [base_banner v first body q hq (base_active v first body commit ms q _ hq hp qactive)]
+      exact separated_symm _ _ (banner_modal v first e i)
+    · simp [(footer_inactive v first body commit ms other _ hp).1] at qactive
+    · apply modals_separated v e f i j
+      intro same; apply different; simp [modal,same]
 
 private theorem horizontal (v : Size) (hv : v ∈ viewports) (first body commit ms)
     (unique : (inventory first body commit ms).Nodup) : G5 v (placements v first body commit ms) := by
   have base := (base_rules v hv first body commit ms unique).2.2.2.2.1
   have hw := (bounds v hv).1
   intro p hp
-  simp only [placements,List.mem_append] at hp
-  rcases hp with hp | hp | hp
+  rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
   · exact base p hp
-  · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-    simp [footer,envelope,Rect.right]; omega
-  · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-    simp [modal,envelope,Rect.right]; omega
+  · simp [footer,envelope,Rect.right]; omega
+  · simp [modal,envelope,Rect.right]; omega
 
 private theorem contrast (v : Size) (hv : v ∈ viewports) (first body commit ms)
     (unique : (inventory first body commit ms).Nodup) : G6 (placements v first body commit ms) := by
@@ -336,20 +300,15 @@ private theorem contrast (v : Size) (hv : v ∈ viewports) (first body commit ms
   have text : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 9 = true := by decide_cbv
   have target : contrastPass ⟨15,23,42⟩ ⟨255,255,255⟩ 6 = true := by decide_cbv
   intro p hp
-  simp only [placements,List.mem_append] at hp
-  rcases hp with hp | hp | hp
+  rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
   · exact base p hp
-  · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-    simp [footer,footerText,Structural.slotText,text,target]
-  · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-    simp [modal,Structural.slotText,text,target]
+  · simp [footer,footerText,Structural.slotText,text,target]
+  · simp [modal,Structural.slotText,text,target]
 
 private theorem commit_rule (v : Size) (hv : v ∈ viewports) (first body commit ms) :
     G9 v (placements v first body commit ms) := by
-  have noBase : (Structural.placements v first body).filter (·.info.commit) = [] := by
-    apply List.filter_eq_nil_iff.mpr
-    intro p hp
-    simp [(base_flags v first body p hp).2.1]
+  have noBase : (Structural.placements v first body).filter (·.info.commit) = [] :=
+    List.filter_eq_nil_iff.mpr fun p hp => by simp [(base_flags v first body p hp).2.1]
   intro _ present
   cases commit with
   | none =>
@@ -362,25 +321,18 @@ private theorem commit_rule (v : Size) (hv : v ∈ viewports) (first body commit
     constructor
     · simp [placements,List.filter_append,noBase,footer,modalBoxes,List.filter_map,modal,Function.comp_def,filter_false]
     · intro p hp flag
-      simp only [placements,List.mem_append] at hp
-      rcases hp with hp | hp | hp
+      rcases shell_cases hp with hp | ⟨other,same,rfl⟩ | ⟨-,e,i,_,rfl⟩
       · simp [(base_flags v first body p hp).2.1] at flag
-      · have same : p = footer v path := by simpa using hp
-        subst p; exact ⟨rfl,footer_visible v hv path⟩
-      · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-        simp [modal] at flag
+      · obtain rfl : other = path := by simpa using same
+        exact ⟨rfl,footer_visible v hv other⟩
+      · simp [modal] at flag
 
-private theorem repr_ne (n : Nat) (id : String) (notNumeric : id.isNat = false) : Nat.repr n ≠ id := by
-  intro same
-  have eq := congrArg String.isNat same
-  have bad : true = false := by simpa only [Nat.isNat_repr,notNumeric] using eq
-  cases bad
+private theorem repr_ne (n : Nat) (id : String) (notNumeric : id.isNat = false) : Nat.repr n ≠ id :=
+  fun same => by simpa [Nat.isNat_repr,notNumeric] using congrArg String.isNat same
 
-private theorem not_numeric (id : String) (member : 'f' ∈ id.toList) : id.isNat = false := by
-  apply Bool.eq_false_iff.mpr
-  intro numeric
-  have digit := (String.isNat_iff.mp numeric).2.1 'f' member
-  simp [Char.isDigit] at digit
+private theorem not_numeric (id : String) (member : 'f' ∈ id.toList) : id.isNat = false :=
+  Bool.eq_false_iff.mpr fun numeric => by
+    simpa [Char.isDigit] using (String.isNat_iff.mp numeric).2.1 'f' member
 
 private theorem modal_id_not_numeric (i) : (modalId i).isNat = false := by
   unfold modalId; split <;> apply not_numeric <;> simp
@@ -398,31 +350,25 @@ private theorem ids_unique (v : Size) (hv : v ∈ viewports) (first body commit 
   have base := (base_rules v hv first body commit ms unique).2.2.2.2.2.2.1.1
   unfold placements
   simp only [List.map_append]
-  apply List.nodup_append.mpr
-  refine ⟨base,?_,?_⟩
-  · apply List.nodup_append.mpr
-    refine ⟨?_,?_,?_⟩
-    · cases commit <;> simp [footer]
-    · unfold modalBoxes
-      simp only [List.map_map,Function.comp_def]
-      rw [List.nodup_iff_pairwise_ne,List.pairwise_map]
-      apply (zip_order ms).imp_of_mem
-      intro a b ha hb ordered same
-      have hi := modal_index ms limited a.1 a.2 ha
-      have hj := modal_index ms limited b.1 b.2 hb
-      have eq := modal_id_injective a.2 b.2 hi hj same
-      omega
-    · intro id hid other hin sameId
-      obtain ⟨p,hp,rfl⟩ := List.mem_map.mp hid
-      obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-      obtain ⟨q,hq,same⟩ := List.mem_map.mp hin
-      obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
-      exact modal_id_not_footer i (same.trans sameId.symm)
+  refine List.nodup_append.mpr ⟨base,List.nodup_append.mpr ⟨?_,?_,?_⟩,?_⟩
+  · cases commit <;> simp [footer]
+  · unfold modalBoxes
+    simp only [List.map_map,Function.comp_def]
+    rw [List.nodup_iff_pairwise_ne,List.pairwise_map]
+    apply (zip_order ms).imp_of_mem
+    intro a b ha hb ordered same
+    have := modal_id_injective a.2 b.2 (modal_index ms limited a.1 a.2 ha) (modal_index ms limited b.1 b.2 hb) same
+    omega
+  · intro id hid other hin sameId
+    obtain ⟨p,hp,rfl⟩ := List.mem_map.mp hid
+    obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
+    obtain ⟨q,hq,same⟩ := List.mem_map.mp hin
+    obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
+    exact modal_id_not_footer i (same.trans sameId.symm)
   · intro id hid other hin sameId
     obtain ⟨p,hp,rfl⟩ := List.mem_map.mp hid
     obtain ⟨n,hn⟩ := (base_flags v first body p hp).2.2.2
-    simp only [List.mem_append] at hin
-    rcases hin with hin | hin
+    rcases List.mem_append.mp hin with hin | hin
     · obtain ⟨q,hq,same⟩ := List.mem_map.mp hin
       obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
       exact repr_ne n "fixed-commit" (not_numeric _ (by simp)) (hn.symm.trans (sameId.trans same.symm))
@@ -462,16 +408,11 @@ private theorem source_inventory (v first body commit ms) :
 private theorem sources_painted (v first body commit ms) :
     ∀ p ∈ placements v first body commit ms, ∀ source ∈ p.info.source, p.info.paint = true := by
   intro p hp source hs
-  simp only [placements,List.mem_append] at hp
-  rcases hp with hp | hp | hp
+  rcases shell_cases hp with hp | ⟨path,_,rfl⟩ | ⟨-,e,i,_,rfl⟩
   · rcases base_cases v first body p hp with rfl | rfl | ⟨e,i,_,rfl⟩
     · simp [Structural.scroller] at hs
-    · rfl
-    · rfl
-  · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-    rfl
-  · obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp
-    rfl
+    all_goals rfl
+  all_goals rfl
 
 private theorem complete (v : Size) (hv : v ∈ viewports) (first body commit ms)
     (unique : (inventory first body commit ms).Nodup) (limited : ms.length ≤ 2) :
@@ -490,34 +431,28 @@ private theorem reading_order (v : Size) (hv : v ∈ viewports) (first body comm
     (unique : (inventory first body commit ms).Nodup) : G8 (placements v first body commit ms) := by
   have base := (base_rules v hv first body commit ms unique).2.2.2.2.2.2.2.1
   let ink := fun p : Placed => p.info.paint && (p.info.target || p.info.text.isSome)
-  have ff : (commit.toList.map (footer v)).filter ink = commit.toList.map (footer v) := by
-    apply List.filter_eq_self.mpr
-    intro p hp; obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp; rfl
-  have fm : (modalBoxes v ms).filter ink = modalBoxes v ms := by
-    apply List.filter_eq_self.mpr
-    intro p hp; obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp; simp [ink,modal]
+  have ff : (commit.toList.map (footer v)).filter ink = commit.toList.map (footer v) :=
+    List.filter_eq_self.mpr fun p hp => by obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp; rfl
+  have fm : (modalBoxes v ms).filter ink = modalBoxes v ms :=
+    List.filter_eq_self.mpr fun p hp => by obtain ⟨e,i,_,rfl⟩ := modal_cases v ms p hp; simp [ink,modal]
   change ((placements v first body commit ms).filter ink).Pairwise _
   unfold placements
   rw [List.filter_append,List.filter_append,ff,fm]
-  apply List.pairwise_append.mpr
-  refine ⟨base,?_,?_⟩
-  · apply List.pairwise_append.mpr
-    refine ⟨?_,?_,?_⟩
-    · cases commit <;> simp
-    · unfold modalBoxes
-      rw [List.pairwise_map]
-      apply (zip_order ms).imp
-      intro a b ordered _
-      simp only [modal,List.map_nil,↓reduceIte,before]
-      omega
-    · intro p hp q hq same
-      obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
-      obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
-      simp [footer,modal] at same
+  refine List.pairwise_append.mpr ⟨base,List.pairwise_append.mpr ⟨?_,?_,?_⟩,?_⟩
+  · cases commit <;> simp
+  · unfold modalBoxes
+    rw [List.pairwise_map]
+    apply (zip_order ms).imp
+    intro a b ordered _
+    simp only [modal,List.map_nil,↓reduceIte,before]
+    omega
+  · intro p hp q hq same
+    obtain ⟨path,_,rfl⟩ := List.mem_map.mp hp
+    obtain ⟨e,i,_,rfl⟩ := modal_cases v ms q hq
+    simp [footer,modal] at same
   · intro p hp q hq same
     have hp := (List.mem_filter.mp hp).1
-    simp only [List.mem_append] at hq
-    rcases hq with hq | hq
+    rcases List.mem_append.mp hq with hq | hq
     · obtain ⟨path,_,rfl⟩ := List.mem_map.mp hq
       rcases base_cases v first body p hp with rfl | rfl | ⟨e,i,_,rfl⟩
       all_goals simp [Structural.scroller,Structural.banner,Structural.ordinary,footer] at same
@@ -625,10 +560,7 @@ theorem class_linked (shape : ScreenShape) (accepted : accepts shape = true) (v 
         Structural.slotText,by simp [Structural.ordinary],rfl⟩
       all_goals simp [Structural.ordinary,nb,nf,nm]
   · obtain ⟨path,hpath,rfl⟩ := List.mem_map.mp member
-    have optMember : path ∈ p.commitData := by simpa using hpath
-    obtain ⟨slot,hs,hpath⟩ := Option.map_eq_some_iff.mp (Option.mem_def.mp optMember)
-    subst path
-    have hs : slot ∈ p.commit := Option.mem_def.mpr hs
+    obtain ⟨slot,hs,rfl⟩ : ∃ slot ∈ p.commit, slot.path = path := by simpa [Parts.commitData] using hpath
     obtain ⟨reg,target⟩ := commitRegion slot hs
     refine ⟨slot,perm.mem_iff.mp (by simp [Parts.slots,Option.mem_def.mp hs]),rfl,?_,?_,?_,?_,footerText,
       by simp [footer],rfl⟩
@@ -681,6 +613,7 @@ theorem certified_currentCommit_visible (screen : UiScreen)
 #print axioms bounds
 #print axioms base_cases
 #print axioms modal_cases
+#print axioms shell_cases
 #print axioms modal_index
 #print axioms base_flags
 #print axioms separated_symm

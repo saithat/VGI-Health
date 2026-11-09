@@ -6,16 +6,7 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private def seed23Screen : Screen := noTelehealthConsent.screens[1]?.getD default
-private theorem seed23ScreenPresent : noTelehealthConsent.screens[1]?.isSome = true := by decide +kernel
-private theorem seed23CompPresent : seed23Screen.components[48]?.isSome = true := by decide +kernel
-@[irreducible] private def seed23Witness : Screen × Component :=
-  (seed23Screen, seed23Screen.components[48]?.getD default)
-private theorem seed23Member : seed23Witness ∈ allComps noTelehealthConsent := by
-  unfold seed23Witness
-  exact List.mem_flatMap.mpr ⟨seed23Screen,
-    getD_mem noTelehealthConsent.screens 1 seed23ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem seed23Screen.components 48 seed23CompPresent, rfl⟩⟩
+comp_witness seed23Witness, seed23Member := noTelehealthConsent[1][48]
 private theorem seed23Kind : seed23Witness.2.kind = .button (.commit "recordTelehealthConsent") := by decide +kernel
 private def seed23Commit := (specV1.commit? "recordTelehealthConsent").getD default
 private theorem seed23Lookup : specV1.commit? "recordTelehealthConsent" = some seed23Commit := by decide +kernel

@@ -6,16 +6,7 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private def seed18Screen : Screen := noOpTechnique.screens[37]?.getD default
-private theorem seed18ScreenPresent : noOpTechnique.screens[37]?.isSome = true := by decide +kernel
-private theorem seed18CompPresent : seed18Screen.components[22]?.isSome = true := by decide +kernel
-@[irreducible] private def seed18Witness : Screen × Component :=
-  (seed18Screen, seed18Screen.components[22]?.getD default)
-private theorem seed18Member : seed18Witness ∈ allComps noOpTechnique := by
-  unfold seed18Witness
-  exact List.mem_flatMap.mpr ⟨seed18Screen,
-    getD_mem noOpTechnique.screens 37 seed18ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem seed18Screen.components 22 seed18CompPresent, rfl⟩⟩
+comp_witness seed18Witness, seed18Member := noOpTechnique[37][22]
 private theorem seed18Kind : seed18Witness.2.kind = .button (.commit "signOpNote") := by decide +kernel
 private def seed18Commit := (specV1.commit? "signOpNote").getD default
 private theorem seed18Lookup : specV1.commit? "signOpNote" = some seed18Commit := by decide +kernel

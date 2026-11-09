@@ -6,16 +6,7 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-private def seed21Screen : Screen := noControlledStrength.screens[8]?.getD default
-private theorem seed21ScreenPresent : noControlledStrength.screens[8]?.isSome = true := by decide +kernel
-private theorem seed21CompPresent : seed21Screen.components[52]?.isSome = true := by decide +kernel
-@[irreducible] private def seed21Witness : Screen × Component :=
-  (seed21Screen, seed21Screen.components[52]?.getD default)
-private theorem seed21Member : seed21Witness ∈ allComps noControlledStrength := by
-  unfold seed21Witness
-  exact List.mem_flatMap.mpr ⟨seed21Screen,
-    getD_mem noControlledStrength.screens 8 seed21ScreenPresent,
-    List.mem_map.mpr ⟨_, getD_mem seed21Screen.components 52 seed21CompPresent, rfl⟩⟩
+comp_witness seed21Witness, seed21Member := noControlledStrength[8][52]
 private theorem seed21Kind : seed21Witness.2.kind = .button (.commit "signOrders") := by decide +kernel
 private def seed21Commit := (specV1.commit? "signOrders").getD default
 private theorem seed21Lookup : specV1.commit? "signOrders" = some seed21Commit := by decide +kernel
