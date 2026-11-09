@@ -245,7 +245,10 @@ export interface InterruptionMetrics {
   workMs: number;
   work: WorkRecord[];
   frames: FrameRecord[];
-  handoffs: Handover[];
+  /**
+   * Absent on historical recordings; present for wave-3 responsibility transfers.
+   */
+  handoffs?: Handover[];
 }
 
 declare module "./ehr-types" {

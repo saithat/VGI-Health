@@ -21,7 +21,7 @@ export const interruptionMetricsSchema: z.ZodType<InterruptionMetrics> = z.objec
     steps: z.array(z.enum(['identifyPatient', 'readMessage', 'assess', 'reply', 'escalate', 'document'])),
     outcome: z.string(), completed: z.boolean(),
   })),
-  handoffs: z.array(handoverSchema).default([]),
+  handoffs: z.array(handoverSchema).exactOptional(),
   frames: z.array(z.object({
     task: z.string(), owner: z.string(), patient: z.string(), suspendedAtMs: nat, closedAtMs: nat,
     disposition: z.enum(['resumed', 'handedOver', 'discarded']), reason: z.string().min(1),

@@ -160,4 +160,6 @@ retains historical action-position waits. The agent native adapter exposes
 manifests without these keys resolve to the pre-wave-3 model, and resume
 comparisons normalize historical defaults. Trajectory/replay exports preserve
 that interpretation. Review schemas retain new clocks, ED stages, handoffs
-and channel durations while accepting historical absence.
+and channel durations while accepting historical absence. The handoff list is
+optional in both the Lean JSON wire and the review codec; older recordings
+remain readable without turning an unmeasured handoff count into zero.

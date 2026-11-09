@@ -29,7 +29,7 @@ describe('interruption measurement data', () => {
     expect(sample(measured).tasks[0]?.interruptions).toEqual(measured);
     const {handoffs: omitted,...historical}=metadata;
     expect(omitted).toEqual([]);
-    expect(sample(historical).tasks[0]?.interruptions?.handoffs).toEqual([]);
+    expect(sample(historical).tasks[0]?.interruptions?.handoffs).toBeUndefined();
   });
   it('distinguishes historical absence from measured zero and includes failed tasks', () => {
     expect(interruptionTotals([sample()], 'P1')).toBeNull();

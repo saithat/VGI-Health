@@ -71,6 +71,7 @@ structure InterruptionMetrics where
   workMs : Nat := 0
   work : List WorkRecord := []
   frames : List FrameRecord := []
-  handoffs : List Scheduling.Handover := []
+  /-- Absent on historical recordings; present for wave-3 responsibility transfers. -/
+  handoffs? : Option (List Scheduling.Handover) := none
   deriving DecidableEq, Repr, Inhabited, Lean.ToJson, Lean.FromJson
 end Ehr.Sim.Resumption

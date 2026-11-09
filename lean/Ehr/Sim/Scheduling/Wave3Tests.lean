@@ -86,5 +86,9 @@ def chartCtx := { textCtx with prog := fixtureProgram [{id := "prior", kind := .
 def chartRead := scrollTo chartCtx textTask chartEpisode (.click "commit")
 #guard chartRead.readingMs == 100000
 #guard (scrollTo textCtx textTask chartEpisode (.click "commit")).readingMs == 0
-#guard (Resumption.Tests.serviced.2.2.metrics.handoffs).all (fun h => h.acceptedAtMs?.isSome)
+#guard (Resumption.Tests.serviced.2.2.metrics.handoffs?.getD []).all (fun h => h.acceptedAtMs?.isSome)
+-- Missing new measurements must decode in Lean as well as in the TS reader.
+def historicalMetrics := Lean.toJson ({} : InterruptionMetrics)
+#guard !(historicalMetrics.getObjVal? "handoffs").isOk
+#guard (Lean.fromJson? historicalMetrics : Except String InterruptionMetrics).isOk
 end Ehr.Sim.Scheduling.Wave3Tests

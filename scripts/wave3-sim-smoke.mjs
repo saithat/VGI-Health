@@ -47,6 +47,8 @@ function run(persona,schedule,worldDir,program,suffix,extra=[],binary=join(root,
 function aggregate(days) {
   const tasks=days.flatMap(d=>d.tasks), rows=days.flatMap(d=>d.workload?.timings??[]);
   const started=rows.filter(r=>r.startMs!==undefined);
+  const measuredClocks=rows.some(r=>r.clocks);
+  const measuredHandover=tasks.some(t=>t.interruptions?.model==='interrupting-work-v3');
   const sum=(xs,f)=>xs.reduce((n,x)=>n+f(x),0);
   return {tasks:tasks.length,completed:tasks.filter(t=>t.completed).length,started:started.length,
     meanQueueMin:sum(started,r=>r.queueDelayMs)/Math.max(1,started.length)/60000,
@@ -55,11 +57,11 @@ function aggregate(days) {
     effortMin:sum(tasks,t=>t.klmDeciSec)/600,scrolls:sum(tasks,t=>t.rawScrolls??t.scrolls),
     communicationMin:sum(tasks,t=>t.interruptions?.workMs??0)/60000,
     reorientationMin:sum(tasks,t=>t.interruptions?.reorientationMs??0)/60000,
-    readingMin:sum(rows,r=>r.clocks?.readingMs??0)/60000,
-    clinicalMin:sum(rows,r=>r.clocks?.clinicalMs??0)/60000,
+    readingMin:measuredClocks?sum(rows,r=>r.clocks?.readingMs??0)/60000:null,
+    clinicalMin:measuredClocks?sum(rows,r=>r.clocks?.clinicalMs??0)/60000:null,
     carried:rows.filter(r=>r.disposition==='carried').length,
-    acceptedHandovers:rows.filter(r=>r.handover?.acceptedAtMs!==undefined).length,
-    actors:[...new Set(rows.map(r=>r.actor).filter(Boolean))].length};
+    acceptedHandovers:measuredHandover?rows.filter(r=>r.handover?.acceptedAtMs!==undefined).length:null,
+    actors:rows.some(r=>r.actor)?[...new Set(rows.map(r=>r.actor).filter(Boolean))].length:null};
 }
 const original=[],replayed=[],current=[],itemCost=[],horizons=[],retainedReplayDifferences=[];
 for(const persona of personas) {

@@ -68,7 +68,8 @@ def initRuntime (seed : Nat) (task : Task) (role : Role) (patients : List String
       | .inpatientPharmacy => "inpatientPharmacy",
     model := if config.legacyModel then "interrupting-work-v1" else "interrupting-work-v3",
     ratePerHourMilli := if config.legacyModel then ratePerHourMilli setting else activityRate setting task,
-    exposureMinutes := exposureMinutes task.workflow, offered } }
+    exposureMinutes := exposureMinutes task.workflow, offered,
+    handoffs? := if config.legacyModel then none else some [] } }
 
 /-- A scenario refresh cannot change patient identity or double-advance time. -/
 def refreshAt (config : InterruptionConfig) (facts : Facts) (atMs : Nat) : Facts :=
@@ -135,16 +136,16 @@ def serviceCheckpoint (sp : Spec) (prog : Program) (f : Facts) (u : User) (task 
     let record := executeWork w start deferred
     if record.completed && w.kind == .urgentResult then
       rt := { rt with metrics := { rt.metrics with
-        handoffs := rt.metrics.handoffs ++ (if rt.config.legacyModel then [] else
-          acceptedCommunication u w record.completedAtMs "communication follow-through requires clinical team"),
+        handoffs? := if rt.config.legacyModel then none else some
+          ((rt.metrics.handoffs?.getD []) ++ acceptedCommunication u w record.completedAtMs "communication follow-through requires clinical team"),
         frames := rt.metrics.frames ++ [{
         task := w.id ++ ":clinical-follow-through", owner := u.id, patient := w.patient,
         suspendedAtMs := start, closedAtMs := record.completedAtMs, disposition := .handedOver,
         reason := "responsible clinical team: urgent notification communicated; clinical follow-through remains required" }] } }
     if !record.completed then
       rt := { rt with metrics := { rt.metrics with
-        handoffs := rt.metrics.handoffs ++ (if rt.config.legacyModel then [] else
-          acceptedCommunication u w record.completedAtMs "communication follow-through requires clinical team"),
+        handoffs? := if rt.config.legacyModel then none else some
+          ((rt.metrics.handoffs?.getD []) ++ acceptedCommunication u w record.completedAtMs "communication follow-through requires clinical team"),
         frames := rt.metrics.frames ++ [{
         task := w.id, owner := u.id, patient := w.patient, suspendedAtMs := start,
         closedAtMs := record.completedAtMs, disposition := .handedOver,
@@ -177,8 +178,8 @@ def serviceCheckpoint (sp : Spec) (prog : Program) (f : Facts) (u : User) (task 
 an unresolved clinical alert. No deferred item disappears at task close. -/
 def handOverPending (u : User) (atMs : Nat) (runtime : InterruptionRuntime) : InterruptionRuntime :=
   { runtime with queued := [], metrics := { runtime.metrics with
-    handoffs := runtime.metrics.handoffs ++ (if runtime.config.legacyModel then [] else
-      runtime.queued.flatMap (fun w => acceptedCommunication u w atMs "protected alert; follow-through pending")),
+    handoffs? := if runtime.config.legacyModel then none else some
+      ((runtime.metrics.handoffs?.getD []) ++ runtime.queued.flatMap (fun w => acceptedCommunication u w atMs "protected alert; follow-through pending")),
     frames := runtime.metrics.frames ++ runtime.queued.map (fun w => {
       task := w.id, owner := u.id, patient := w.patient, suspendedAtMs := w.arrivedAtMs,
       closedAtMs := atMs, disposition := .handedOver,
