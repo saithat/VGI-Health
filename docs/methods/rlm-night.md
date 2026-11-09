@@ -234,10 +234,17 @@ The rebased world fingerprint is
 Original provenance receipts remain unchanged, including earlier archive-binding
 mismatches described in [the BE methods](agent-loop.md#frozen-source-and-build-binding).
 
-The new sanity replay is in progress. It must match all 35 BE sanity decisions,
-120 nonseeded historical candidates and the 17 accepted / 10 rejected / 8
-no-change outcomes before any live study call. Its comparison receipt will be
-retained with the new source. The app hash stays
+The new sanity replay completed in 2,455.17 seconds, before any live study call.
+All 35 decisions and 120 nonseeded candidates match the BE sanity run exactly
+on outcome, chosen candidates, candidate checks/estimates, certification,
+validation and training evidence: **17 accepted / 10 rejected / 8 no change**.
+`sanity-diffs.json` also matches by decision; concurrent completion order varies.
+`sanity-comparison.json` retains the comparison, with full metadata differences
+in `sanity-metadata-differences.json`. There are 315 metadata differences: run
+IDs, timestamps, wall time, replay-source paths and the documented manual hash
+and prompt-size difference. No evaluation difference occurred. The new sanity
+`records.json` SHA-256 is
+`e0cdc5b12210b7a394f1458c4b4883bcf0f523a9008739146f867f5b87153eab`. The app hash stays
 `030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`;
 the read-only native executable stays
 `750e9833da4f1ac8373455de911334f6afdb7802bce95822d657b454a9b430d0`.
