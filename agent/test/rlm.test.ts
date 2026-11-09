@@ -6,7 +6,7 @@ import path from 'node:path';
 import { afterEach, expect, it, vi } from 'vitest';
 import { RlmSandbox, sandboxArgs } from '../src/rlm/sandbox.js';
 import { RlmNightAgent, renderHistory, ROOT_SCHEMA, type TurnEntry } from '../src/rlm/loop.js';
-import { rlmReplData } from '../src/rlm/context.js';
+import { rlmReplData, rlmStartingDigest, STARTING_DIGEST_BYTES } from '../src/rlm/context.js';
 import { DEFAULT_RLM_BUDGET, type RlmBudget } from '../src/rlm/stats.js';
 import { RecordingLlm, llmRecordSchema } from '../src/backends/recording.js';
 import { ReplayLlm } from '../src/backends/replay.js';
@@ -129,6 +129,43 @@ it('bounds every root prompt by eliding old turns, newest verbatim', () => {
   expect(Buffer.byteLength(text)).toBeLessThanOrEqual(30_000);
   expect(text).toContain('### Turn 40\n'); expect(text).toContain('(summarized)'); expect(text).toMatch(/earlier turn\(s\) omitted/);
   expect(text.indexOf('### Turn 40\n')).toBeGreaterThan(text.indexOf('(summarized)'));
+});
+it('records the bounded opening digest from train queries only, excluding holdout and raw context', async () => {
+  const f = await fixture();
+  // Forbidden partitions fail immediately if the new prompt path ever reads them.
+  for (const key of ['train', 'history', 'programs', 'holdout'] as const) Object.defineProperty(f.input, key, { get() { throw new Error(`SECRET_${key}`); } });
+  f.files['traces.json'] = JSON.stringify([{ day: 1, tasks: [{ task: 't1', completed: true }, { task: 't2', completed: true }, { task: 'incomplete', completed: false }],
+    trace: ['t1', 't2'].flatMap(task => [{ task, screen: 'hot', kind: 'click', target: 'review' }, { task, screen: 'hot', kind: 'click', target: 'next' }]) }]);
+  f.files['attribution.json'] = JSON.stringify([{ day: 1, steps: [
+    { task: 't1', screen: 'cool', clicks: 1, scrolls: 0 }, { task: 't2', screen: 'hot', clicks: 2, scrolls: 9 },
+    { task: 'incomplete', screen: 'SECRET_INCOMPLETE_AGGREGATE', clicks: 999, scrolls: 999 },
+  ] }]);
+  // Digest queries have no reason to inspect these payloads.
+  f.files['geometry.json'] = 'SECRET_GEOMETRY'; f.files['locality.json'] = 'SECRET_LOCALITY';
+  const digest = rlmStartingDigest(f.bundle), parsed = JSON.parse(digest);
+  expect(Buffer.byteLength(digest)).toBeLessThanOrEqual(STARTING_DIGEST_BYTES);
+  expect(parsed.screens.rows).toEqual([{ screen: 'hot', clicks: 2, scrolls: 9 }, { screen: 'cool', clicks: 1, scrolls: 0 }]);
+  expect(parsed.sequences.rows).toEqual([{ steps: ['hot:click:review', 'hot:click:next'], tasks: 2 }]);
+  expect(parsed.ledger.rows[0]).toEqual({ night: 0, id: 'old', moveType: 'reorder', targets: ['x'], trainDaySaving: null });
+  expect(digest).not.toMatch(/SECRET|nightOutcome|validation/);
+  // The normal REPL loader still requires valid JSON for geometry/locality.
+  f.files['geometry.json'] = '[]'; f.files['locality.json'] = '{}';
+  const seen: JsonRequest[] = [], a = agent(f, scripted([code('return "ready"'), { thought: 'done', code: '', final: noChange }], seen), f.dir);
+  try { await a.proposeCandidates(ctx(a)); } finally { await a.close(); }
+  expect(seen[0]?.prompt).toContain(digest);
+  expect(seen[0]?.system).toContain('at most 1,000 UTF-8 bytes');
+  expect(seen[1]?.prompt).not.toContain('## Starting hotspots');
+  expect(seen.map(r => r.system + r.prompt).join()).not.toMatch(/SECRET/);
+  for (const req of seen) expect(Buffer.byteLength(req.system + req.prompt)).toBeLessThanOrEqual(DEFAULT_RLM_BUDGET.maxRootPromptBytes);
+  const recorded = llmRecordSchema.parse(JSON.parse(await readFile(path.join(f.dir, 'llm/night-01/P1/propose-0/root-00.json'), 'utf8')));
+  expect(recorded.prompt).toBe(seen[0]?.prompt);
+});
+it('caps the opening digest in UTF-8 bytes with whole rows and valid JSON', async () => {
+  const f = await fixture();
+  f.files['ledger.json'] = JSON.stringify(Array.from({ length: 10 }, (_, i) => ({ night: i, id: '界'.repeat(400), moveType: 'reorder', targets: Array(30).fill('界'.repeat(400)), trainDaySaving: null })));
+  const digest = rlmStartingDigest(f.bundle);
+  expect(Buffer.byteLength(digest)).toBeLessThanOrEqual(4_000);
+  expect(JSON.parse(digest)).toMatchObject({ ledger: { totalRows: 10, rows: [] }, truncated: true });
 });
 it('ends cleanly on exhausted root turns and refuses over-budget checks and sub-calls inside the REPL', async () => {
   const f = await fixture(), budget = { ...DEFAULT_RLM_BUDGET, maxRootTurns: 4, maxChecks: 0, maxSubCalls: 1, maxSubPromptBytes: 2_000 };

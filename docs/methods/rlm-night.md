@@ -23,7 +23,8 @@ matching E's `SUBMIT_SCHEMA`. Code can also end the decision with
 (`validateSubmission`). Invalid submissions are returned to the root as errors.
 
 The root prompt is fixed instructions and a REPL API description (about 7 KB),
-the night identity, and the REPL history, followed by a short status line
+the night identity, a bounded train-only hotspot digest on the first request,
+and the REPL history, followed by a short status line
 (remaining turns, checks, estimates and sub-calls). History lists the newest turns
 verbatim (thought, code, output), then one-line summaries of older turns, then a
 count of omitted turns. **Every root request is at most `maxRootPromptBytes`
@@ -177,7 +178,8 @@ The pilot's night-08/P1 R sample (27 turns, one sub-call, no change) was
 also replayed exactly: all root and sub-call prompts matched, and so did the summary
 transcript and decision record. It took 171 s, with no new model usage.
 
-**Recommendation.** Do not run the full 35×2 paired study as configured. R
+**Pilot recommendation (before the approved follow-up).** Do not run the full
+35×2 paired study as configured. R
 fixes E's failure mode: every R sample submitted within budget. On these seven
 decisions it does not beat B, and it uses about twice the tokens. With one
 sample each, the pilot cannot show a 10-point acceptance difference in either
@@ -187,31 +189,97 @@ It would make sense after two cheap changes: guide the root to print less
 of hotspots so the opening exploration takes fewer turns. Both are prompt-only
 changes that should be declared before the study.
 
+## Paired B/R follow-up, pre-declaration 2026-11-09
+
+The owner approved the full follow-up on 2026-11-08. Before any live study call,
+R receives exactly two prompt changes: compact-output guidance (aim for at most
+1,000 UTF-8 bytes per cell, well below the unchanged 3,000-byte stdout cap), and
+an opening hotspot digest capped at **4,000 UTF-8 bytes of valid JSON**. The
+first root request alone includes up to five screens ranked by train clicks +
+scrolls, four repeated sequences ranked by completed-task frequency, and four
+ledger-head entries in the supplied order. Whole rows are removed if necessary
+to meet the byte cap; totals and truncation remain explicit. The digest uses the
+same pure train queries as the REPL. It omits geometry, raw context, validation,
+world paths and historical outcomes. A partition test makes reads of holdout,
+raw train input, history and earlier programs throw, and checks both recorded
+root requests. The existing recording/replay test re-executes the new opening.
+
+All budgets, quotas, candidate/gate/validation rules and production defaults
+remain unchanged. The primary comparison is 35 decisions × two samples × B/R,
+two harness workers, Codex `gpt-6.1-sol`, high reasoning, default service tier.
+Samples are averaged within decision; the paired bootstrap uses 10,000
+iterations and seed 20261103. R beats B only with at least 10 percentage points
+greater acceptance, a strictly positive lower 95% bound, and nonnegative
+validation click and scroll differences. Offline screen checks and simulated
+user offers remain skipped, so acceptance is a hypothetical release.
+
+The prompt pre-declaration commit will be pinned here before any live call.
+A one-decision R smoke and its exact replay precede the full study. A cheaper
+model, if available through existing credentials, is tested on the pilot's seven
+decisions, one sample: first for sub-calls only, then for root and sub-calls.
+The default arm remains the owner's decision.
+
+### Source rebase and sanity
+
+The new source is
+`/home/saithat/Projects/VGI-Health/runs/quality-BR-source-20261109`.
+Only `manifest.json`'s world path and world fingerprint, and
+`world/manifest.json`'s fixture-index path changed from the surviving BE source.
+All other 639 copied files have identical SHA-256 hashes. Programs,
+certifications/specs, decisions, days, model recordings, fixtures and schedules
+also pass tree-hash equality. `rebase-BR-receipt.json` retains every file hash.
+The rebased world fingerprint is
+`69ec67455f08956339c529ab0998e18b8936982de7c5684fc9d328becd02d257`.
+Original provenance receipts remain unchanged, including earlier archive-binding
+mismatches described in [the BE methods](agent-loop.md#frozen-source-and-build-binding).
+
+The new sanity replay is in progress. It must match all 35 BE sanity decisions,
+120 nonseeded historical candidates and the 17 accepted / 10 rejected / 8
+no-change outcomes before any live study call. Its comparison receipt will be
+retained with the new source. The app hash stays
+`030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`;
+the read-only native executable stays
+`750e9833da4f1ac8373455de911334f6afdb7802bce95822d657b454a9b430d0`.
+No Lean build or edit is involved. The production-argument bwrap confinement
+probe passed before the follow-up; live R never uses unconfined execution.
+
 ### Commands
 
-The source's recorded world and fixture paths point to a since-removed lane
-worktree. Rewriting them would change the frozen world fingerprint that the
-sanity ledger is bound to. So `/home/saithat/Projects/VGI-agent-loop-exp/runs/quality-BE-source-20261108`
-is a symlink to the local copy, and every byte is unchanged.
+Run from this lane worktree, whose local `runs` symlink points to
+`/home/saithat/Projects/VGI-Health/runs`. This satisfies the harness's local
+output-directory guard while storing only new BR directories in the main run
+store. Existing run directories are read-only. The source/sanity paths below
+replace the removed-worktree workaround; the old symlink is retained until the
+study has completed and been verified.
 
 ```sh
 export TMPDIR=/home/saithat/Projects/run-tmp CI=true EHR_SCREEN_WORKERS=2 LEAN_NUM_THREADS=4
 export EHR_BIN=/home/saithat/Projects/VGI-Health/lean/.lake/build/bin/ehr
-SOURCE="$PWD/runs/quality-BE-source-20261108" SANITY="$PWD/runs/quality-BE-sanity-20261108"
+DATA=/home/saithat/Projects/VGI-Health/runs
+SOURCE="$DATA/quality-BR-source-20261109"
+SANITY="$DATA/quality-BR-sanity-20261109"
+OUT="$PWD/runs"
 cd agent
 flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out ../runs/quality-BR-pilot-20261108 --arms B,R --samples 1 --workers 1 \
-  --decisions night-01/P1,night-02/P2,night-04/P3,night-05/P4,night-07/P5,night-08/P1,night-09/P2 \
-  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default --ledger-from "$SANITY"
+  --run "$SOURCE" --out "$OUT/quality-BR-sanity-20261109" --arms sanity --samples 1 --workers 2 \
+  --backend replay --model gpt-6.1-sol --reasoning-effort high --service-tier default
 flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
-  --run "$SOURCE" --out ../runs/quality-BR-pilot-20261108-replay08 --arms R --samples 1 --workers 1 \
-  --decisions night-08/P1 --backend replay --model gpt-6.1-sol --reasoning-effort high \
-  --service-tier default --ledger-from "$SANITY" --tool-replay-from ../runs/quality-BR-pilot-20261108
+  --run "$SOURCE" --out "$OUT/quality-BR-smoke-20261109" --arms R --samples 1 --workers 1 \
+  --decisions night-01/P1 --backend codex --model gpt-6.1-sol --reasoning-effort high \
+  --service-tier default --ledger-from "$SANITY"
+flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
+  --run "$SOURCE" --out "$OUT/quality-BR-smoke-replay-20261109" --arms R --samples 1 --workers 1 \
+  --decisions night-01/P1 --backend replay --model gpt-6.1-sol --reasoning-effort high \
+  --service-tier default --ledger-from "$SANITY" --tool-replay-from "$DATA/quality-BR-smoke-20261109"
+flock "$TMPDIR/vgi-browser-heavy.lock" ./node_modules/.bin/tsx src/cli.ts proposal-quality \
+  --run "$SOURCE" --out "$OUT/quality-BR-20261109" --arms B,R --samples 2 --workers 2 \
+  --backend codex --model gpt-6.1-sol --reasoning-effort high --service-tier default --ledger-from "$SANITY"
+# Continue the same full command with --resume after interruption; never restart it.
 ```
 
-Only the sanity run's `manifest.json`, `records.json` and `inputs/binding.json`
-were copied locally; the ledger binding check passed on them. Data stays
-untracked under `runs/`.
+Data and execution receipts stay untracked. No full browser audits run in this
+lane because no app source changes. Agent lint, typecheck and targeted unit tests
+are the lane checks; CI runs the remaining suite after merge.
 
 ## Limitations
 
