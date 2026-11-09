@@ -1,8 +1,3 @@
-/-!
-Opt-in whole-program proofs and full-catalog regression tests.
-Build with ruleProfile set to full.
--/
-
 import Ehr.Check.AdditionalBadProofs
 import Ehr.Check.BadProofs
 import Ehr.Check.LocalBadProofs
@@ -38,3 +33,8 @@ import Ehr.Check.Seed13Escape
 import Ehr.Check.FullDisplayObstruction
 import Ehr.Sim.IntegrationTests
 import Ehr.Sim.Audit
+
+/-!
+Opt-in whole-program proofs and full-catalog regression tests.
+Build with ruleProfile set to full.
+-/
