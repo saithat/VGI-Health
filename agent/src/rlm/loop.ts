@@ -240,6 +240,7 @@ Per-decision budget: ${JSON.stringify(this.budget)}.`;
             entry.error = cell.error; entry.restarted = cell.restarted;
             for (const [name, n] of Object.entries(cell.queries)) this.queries[name] = (this.queries[name] ?? 0) + n;
             if (cell.error) this.cellErrors++;
+            if (this.host.usageLimit) throw this.host.usageLimit;
           }
         }
         if (this.host.done && !entry.final) entry.stdout = entry.stdout ? `${entry.stdout}\nFINAL accepted` : 'FINAL accepted';

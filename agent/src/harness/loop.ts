@@ -21,6 +21,7 @@ import { HarnessBudgetError, HarnessHost, HarnessReplayError, serveHarnessSpool,
 import { harnessSandboxArgs, runSandboxed, type SandboxRun } from './sandbox.js';
 import { DEFAULT_HARNESS_BUDGET, harnessBudgetSchema, harnessLoopSchema, type HarnessBudget, type HarnessLoopStats } from './stats.js';
 import { harnessWorkspace, workspaceHash } from './workspace.js';
+import { UsageLimitError, usageLimitIn, type UsageLimit } from '../usage-limit.js';
 export { HarnessBudgetError } from './host.js';
 
 export const HARNESS_SYSTEM = 'Arm H: native CLI agent in a per-decision workspace. Instructions are README.md in the workspace; the night CLI is the only channel to the harness.';
@@ -42,7 +43,9 @@ export interface HarnessOptions extends AgentConfig {
   ensureToken?: (neededMs: number) => Promise<void>;
 }
 interface LaunchRecord { launch: number; prompt: string; args: string[]; code: number | null; signal: string | null; timedOut: boolean; stdoutTruncated: boolean; wallMs: number;
-  usage: LaunchUsage; audit: LaunchAudit; egress: EgressEvent[]; stderrTail: string; transcript: string; final: string | null }
+  usage: LaunchUsage; audit: LaunchAudit; egress: EgressEvent[]; stderrTail: string; transcript: string; final: string | null;
+  /** The CLI's own usage/rate-limit refusal, if any (see usage-limit.ts). */
+  usageLimit: UsageLimit | null }
 
 export class HarnessNightAgent implements AgentBackend {
   readonly budget: HarnessBudget;
@@ -59,7 +62,7 @@ export class HarnessNightAgent implements AgentBackend {
   constructor(private readonly input: NightInput, deps: LoopDeps, bundle: QueryBundle, private readonly opts: HarnessOptions) {
     this.budget = harnessBudgetSchema.parse(opts.budget ?? DEFAULT_HARNESS_BUDGET);
     this.host = new HarnessHost(input, deps, bundle, this.budget, opts.persist);
-    this.files = harnessWorkspace(input, bundle, this.budget);
+    this.files = harnessWorkspace(input, bundle, this.budget, opts.interpreter ?? null);
   }
   get name() { return this.opts.harness === 'script' ? 'scripted' : this.opts.harness; }
   get model() { return this.opts.model ?? `${this.opts.harness}-cli-default`; }
@@ -106,7 +109,7 @@ export class HarnessNightAgent implements AgentBackend {
     const finalFile = path.join(home, `final-${index}.txt`);
     const record: LaunchRecord = { launch: index, prompt, args: spec.args, code: run.code, signal: run.signal, timedOut: run.timedOut, stdoutTruncated: run.stdoutTruncated, wallMs: Date.now() - started,
       usage: launchUsage(this.opts.harness, run.stdout), audit: auditLaunch(this.opts.harness, run.stdout), egress, stderrTail: run.stderr.slice(-8000), transcript: `harness/launch-${index}.jsonl`,
-      final: existsSync(finalFile) ? (await readFile(finalFile, 'utf8')).slice(0, 20_000) : null };
+      final: existsSync(finalFile) ? (await readFile(finalFile, 'utf8')).slice(0, 20_000) : null, usageLimit: usageLimitIn(run.stdout, run.stderr, this.opts.harness === 'claude' ? 'claude' : 'codex') };
     await mkdir(path.join(this.opts.runDir, 'harness'), { recursive: true });
     await writeFile(path.join(this.opts.runDir, record.transcript), run.stdout);
     await writeJson(path.join(this.opts.runDir, 'harness', `launch-${index}.json`), record);
@@ -128,6 +131,9 @@ export class HarnessNightAgent implements AgentBackend {
           if (this.launches.length >= this.budget.maxLaunches) throw new HarnessBudgetError('agent ended without night submit (launch budget exhausted)');
           if (this.remainingMs() <= 5_000) throw new HarnessBudgetError('wall time budget exhausted');
           await this.launch(kind);
+          // A refused model request is infrastructure, not the agent: abort the sample (resumable), never a continuation or llm-error.
+          const limit = this.launches.at(-1)?.usageLimit;
+          if (limit && !this.host.done) throw new UsageLimitError(limit);
           kind = 'continue';
           if (this.launches.at(-1)?.timedOut && !this.host.done) throw new HarnessBudgetError('wall time budget exhausted');
         }
@@ -187,7 +193,7 @@ export class HarnessNightAgent implements AgentBackend {
     const denied: Record<string, number> = {};
     for (const e of this.launches.flatMap(l => l.egress)) if (!e.allowed) denied[e.host] = (denied[e.host] ?? 0) + 1;
     const findings = this.launches.reduce((n, l) => n + l.audit.findings.length, 0);
-    return { harness: this.opts.harness, model: this.model, servedModels: [...new Set(this.launches.flatMap(l => l.usage.servedModels))].sort(), budget: this.budget,
+    return { harness: this.opts.harness, ...(this.opts.interpreter ? { interpreter: this.opts.interpreter } : {}), model: this.model, servedModels: [...new Set(this.launches.flatMap(l => l.usage.servedModels))].sort(), budget: this.budget,
       launches: this.launches.length, turns: this.launches.length && this.launches.every(l => l.usage.turns !== null) ? this.launches.reduce((n, l) => n + (l.usage.turns ?? 0), 0) : null,
       commands: host.commands, checks: host.checks, estimates: host.estimates, tally: host.tally, complaints: host.complaints, wallMs: Date.now() - this.start, exceeded: this.exceeded,
       submitted: this.host.done, tokens: this.replayTokens ?? { input: sum('input'), output: sum('output'), cachedInput: sum('cachedInput') },

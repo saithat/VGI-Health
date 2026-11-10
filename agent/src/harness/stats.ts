@@ -20,7 +20,7 @@ export const DEFAULT_HARNESS_BUDGET: HarnessBudget = { maxCommands: 120, maxChec
 
 const tokens = z.object({ input: z.number().nullable(), output: z.number().nullable(), cachedInput: z.number().nullable() });
 export const harnessLoopSchema = z.object({
-  harness: z.enum(['codex', 'claude', 'script']), model: z.string(), servedModels: z.array(z.string()),
+  harness: z.enum(['codex', 'claude', 'script']), interpreter: z.literal('node').optional(), model: z.string(), servedModels: z.array(z.string()),
   budget: harnessBudgetSchema, launches: z.number(), turns: z.number().nullable(), commands: z.number(), checks: z.number(), estimates: z.number(),
   tally: z.record(z.string(), z.number()), complaints: z.array(z.string()), wallMs: z.number(), exceeded: z.string().nullable(), submitted: z.boolean(),
   tokens, egress: z.object({ allowed: z.number(), denied: z.record(z.string(), z.number()) }),

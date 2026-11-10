@@ -26,6 +26,7 @@ import { fileHash, treeHash } from './fingerprints.js';
 import { geometryComponentsHash, geometryEhr, geometryProgramHash, loadGeometry } from './geometry.js';
 import { localityDigest } from './locality.js';
 import { retryInfrastructure } from './infrastructure.js';
+import { UsageLimitError } from './usage-limit.js';
 import { daySeed, makeHoldout, runNight, TrainEstimator, type LoopDeps, type NightInput } from './night.js';
 import { auditedOperation } from './operation-manifest.js';
 import { queryUsage } from './backends/query-audit.js';
@@ -196,6 +197,8 @@ export interface QualityOptions {
   /** Arm H only: which native CLI agent runs in the workspace, its budget and an optional model override
    * (codex defaults to --model; claude to the Claude Code default). */
   harness?:'codex'|'claude';harnessBudget?:HarnessBudget;harnessModel?:string;
+  /** Pre-declared H-claude+node variant (claude only): Claude Code may run `node /work/<script>`. */
+  harnessInterpreter?:'node';
   /** Copy one arm's completed samples from an earlier run with identical frozen inputs instead of rerunning it. */
   reuseArmFrom?:string;reuseArm?:QualityArm;
 }
@@ -233,6 +236,20 @@ export async function resumedOutput(outDir:string) {
   return target;
 }
 
+/** --resume: a sample with record.json is kept as recorded. Anything else (interrupted, or aborted by
+ * an infrastructure error such as a CLI usage limit) is moved to `<sample>.partial-N` for audit and rerun. */
+export async function resumeSample(sampleDir:string):Promise<OfflineRecord|null> {
+  if(existsSync(path.join(sampleDir,'record.json')))return offlineRecordSchema.parse(JSON.parse(await readFile(path.join(sampleDir,'record.json'),'utf8')));
+  if(existsSync(sampleDir)){let n=1;while(existsSync(`${sampleDir}.partial-${n}`))n++;await rename(sampleDir,`${sampleDir}.partial-${n}`);}
+  return null;
+}
+/** A CLI usage/rate-limit refusal pauses the run instead of failing it: the manifest names the limit and
+ * the samples still to run, and `--resume` (same command) after the reset reruns only those. */
+export async function pausedState(out:string,error:UsageLimitError,selected:readonly string[],arms:readonly QualityArm[],samples:number) {
+  const pending:string[]=[];
+  for(const id of selected)for(const arm of arms)for(let n=1;n<=(arm==='sanity'?1:samples);n++)if(!existsSync(path.join(out,'samples',id,arm,String(n),'record.json')))pending.push(`${id}/${arm}/${n}`);
+  return {kind:'usage-limit' as const,cli:error.limit.cli,message:error.limit.message,resetsAt:error.limit.resetsAt,pausedAt:new Date().toISOString(),pending};
+}
 export async function evaluateQuality(opts:QualityOptions) {
   if(opts.backend==='codex'&&opts.serviceTier==='fast')throw new Error('Codex fast mode is prohibited; use --service-tier default');
   if(!Number.isInteger(opts.workers)||opts.workers<1||opts.workers>4)throw new Error('--workers must be 1–4 (run under a memory-capped scope)');
@@ -241,6 +258,7 @@ export async function evaluateQuality(opts:QualityOptions) {
   if(!Number.isInteger(opts.samples)||opts.samples<1)throw new Error('--samples must be positive');
   if(!opts.arms.length||new Set(opts.arms).size!==opts.arms.length||opts.arms.some(a=>!['A','B','C','D','E','R','H','sanity'].includes(a)))throw new Error('Implemented arms: A, B, C, D, E, R, H, sanity');
   if(opts.arms.includes('H')&&opts.backend!=='replay'&&!opts.harness)throw new Error('Arm H requires --harness codex|claude');
+  if(opts.harnessInterpreter!==undefined&&(opts.harnessInterpreter!=='node'||opts.harness!=='claude'||!opts.arms.includes('H')))throw new Error('--harness-interpreter node requires --arms …H --harness claude');
   if(opts.arms.includes('H')&&opts.backend==='replay'&&!opts.toolReplayFrom)throw new Error('Arm H replay requires --tool-replay-from <recorded run>');
   if(opts.arms.includes('sanity')&&opts.backend!=='replay')throw new Error('Sanity requires replay; no new proposals');
   if(opts.arms.includes('C')&&!['codex','replay'].includes(opts.backend))throw new Error('Query-tool arm C requires codex or replay');
@@ -295,7 +313,7 @@ export async function evaluateQuality(opts:QualityOptions) {
   const measured=opts.ledgerFrom?await loadMeasuredSavings(opts.ledgerFrom,historical,binding):null;
   const world=await loadWorld(path.join(inputs,'world')),records:OfflineRecord[]=[];
   const sanity:{decisionId:string;candidates:ReturnType<typeof candidateDiffs>}[]=[];
-  const state:{status:string;label:string;error:string|null;completed:number;planned:number}={status:'running',label:OFFLINE_LABEL,error:null,completed:0,planned:selected.length*opts.arms.reduce((n,a)=>n+(a==='sanity'?1:opts.samples),0)};
+  const state:{status:string;label:string;error:string|null;completed:number;planned:number;pause?:Awaited<ReturnType<typeof pausedState>>}={status:'running',label:OFFLINE_LABEL,error:null,completed:0,planned:selected.length*opts.arms.reduce((n,a)=>n+(a==='sanity'?1:opts.samples),0)};
   await writeJson(path.join(out,'manifest.json'),state);
   let cursor=0,stopped=false;
   async function worker(index:number) {
@@ -338,13 +356,11 @@ export async function evaluateQuality(opts:QualityOptions) {
             if(!existsSync(path.join(sampleDir,'record.json')))await cp(path.join(reused.dir,'samples',decisionId(original),arm,String(sample)),sampleDir,{recursive:true});
             records.push(done);state.completed++;await writeJson(path.join(out,'manifest.json'),state);console.log(`${done.decisionId} ${arm}/${sample}: reused (${done.outcome})`);continue;
           }
-          if(opts.resume&&existsSync(path.join(sampleDir,'record.json'))){
-            const done=offlineRecordSchema.parse(JSON.parse(await readFile(path.join(sampleDir,'record.json'),'utf8')));
-            if(arm==='sanity')throw new Error('--resume does not support the sanity arm');
-            records.push(done);state.completed++;await writeJson(path.join(out,'manifest.json'),state);continue;
+          if(opts.resume){
+            if(arm==='sanity'&&existsSync(path.join(sampleDir,'record.json')))throw new Error('--resume does not support the sanity arm');
+            const done=await resumeSample(sampleDir);
+            if(done){records.push(done);state.completed++;await writeJson(path.join(out,'manifest.json'),state);continue;}
           }
-          // An interrupted sample restarts from scratch; keep its partial files for audit.
-          if(opts.resume&&existsSync(sampleDir)){let n=1;while(existsSync(`${sampleDir}.partial-${n}`))n++;await rename(sampleDir,`${sampleDir}.partial-${n}`);}
           const first=await readJson(llmRecordPath(inputs,`night-${pad2(original.night)}/${original.persona}/propose-0`),llmRecordSchema);
           const usage=z.object({reasoningEffort:z.string().optional(),serviceTier:z.string().nullable().optional()}).safeParse(first.usage);
           // E and R replay from their own recorded sample; R allows no prompt drift at all.
@@ -370,7 +386,7 @@ export async function evaluateQuality(opts:QualityOptions) {
           if(arm==='H'&&!queryBundle)throw new Error('Arm H requires the train-only query bundle');
           let harnessEvents=0;
           const harness=arm==='H'&&queryBundle?new HarnessNightAgent(input,sampleDeps,queryBundle,{harness:harnessName,model:harnessName==='codex'?opts.harnessModel??backendOptions.model??null:opts.harnessModel??null,
-            reasoningEffort:backendOptions.reasoningEffort,serviceTier:'default',maxTurns:(opts.harnessBudget??DEFAULT_HARNESS_BUDGET).maxTurns,runDir:sampleDir,budget:opts.harnessBudget??DEFAULT_HARNESS_BUDGET,
+            reasoningEffort:backendOptions.reasoningEffort,serviceTier:'default',...(opts.harnessInterpreter?{interpreter:opts.harnessInterpreter}:{}),maxTurns:(opts.harnessBudget??DEFAULT_HARNESS_BUDGET).maxTurns,runDir:sampleDir,budget:opts.harnessBudget??DEFAULT_HARNESS_BUDGET,
             ...(ownReplay?{replayFrom:ownReplay}:{}),persist:async event=>{await writeJson(path.join(sampleDir,'harness','events',`${String(harnessEvents++).padStart(3,'0')}.json`),event);}}):null;
           if(harness)sampleDeps.agent=harness;
           const tick=performance.now();
@@ -430,7 +446,9 @@ export async function evaluateQuality(opts:QualityOptions) {
   }
   state.status='completed';await writeJson(path.join(out,'manifest.json'),state);return report;
   } catch(error) {
-    state.status='aborted';state.error=String(error);await writeJson(path.join(out,'manifest.json'),state);throw error;
+    if(error instanceof UsageLimitError){state.status='paused';state.pause=await pausedState(out,error,selected.map(decisionId),opts.arms,opts.samples);}
+    else state.status='aborted';
+    state.error=String(error);await writeJson(path.join(out,'manifest.json'),state);throw error;
   }
 }
 
