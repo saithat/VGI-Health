@@ -94,8 +94,8 @@ order index, and consumes no random stream. Release v2 adds the optional
 `imagingPriority` order element (`ServiceRequest.priority`, coded
 `request-priority`, no entry or review requirement) with a field in the
 canonical imaging/procedure group; the simulated clinician enters it when the
-order carries a priority and the release declares the element. Legacy worlds
-carry no priority.
+order carries a priority and the release declares the element. Legacy case-mix mode
+does not draw priorities.
 
 ## Note section text (decision 14)
 

@@ -78,7 +78,33 @@ The follow-up measurement uses seed 1, ten days, Synthea fixtures, realistic
 workflows, continuous world/queue clocks, Synthetic Hospital case mix and the
 canonical v1/v2/v3 programs (days 1–3/4–6/7–10). The three arms differ only in
 note authoring: fixed phrases, full dataset typing, and the template model.
-Length-based reading and scrolling remain enabled. Commands and the resulting
-table are recorded in the lane's final report; the historical data-only numbers
+Length-based reading and scrolling remain enabled. The three comparison worlds
+were frozen before the W2 presentation correction for messages without
+observations; all arms share those directory inputs. Regenerated library worlds
+and realism tests cover the corrected message context. This is a matched
+synthetic comparison, not a final deployment benchmark. Commands and input hashes are recorded in the [follow-up audit](../audits/wave3-followups-20261109.md); the historical data-only numbers
 in [Synthetic Hospital methods](synthetic-hospital.md#typing-scroll-and-reading-cost)
 use an earlier timing/workflow cohort and are not this comparison.
+
+
+| Persona | Keystrokes: phrases → full → template | Native KLM minutes: phrases → full → template |
+|---|---:|---:|
+| P1 | 72,677 → 155,857 → 76,972 | 6,198.5 → 6,690.9 → 6,449.6 |
+| P2 | 123,214 → 305,287 → 164,489 | 6,457.4 → 7,232.9 → 6,778.3 |
+| P4 | 26,142 → 90,775 → 36,575 | 1,059.5 → 1,336.7 → 1,162.2 |
+| P5 | 20,248 → 44,450 → 25,336 | 1,291.5 → 1,396.1 → 1,334.9 |
+
+All **1,947/1,947 tasks** completed in every arm (P1 708, P2 413, P3 560,
+P4 142, P5 124). P3 is unchanged at 23,753 keys and 1,064.0 reported minutes.
+Full/template scroll totals match for every persona (P1 13,453; P2 43,499;
+P4 5,156; P5 6,428), as expected when full section lengths are preserved.
+The template arm adds explicit selection activations; it does not simply scale
+all keyboard effort by 29.4%.
+
+These minutes sum the native `klmDeciSec` field. In wave3 it includes UI effort,
+length-based reading and interruption/return service, excluding the clinical,
+workflow-protocol and fixed-exposure closure-wait clocks. It is not a pure
+sum of keyboard operators or observed clinician time. Queue delays are large
+uncalibrated scenario outcomes; no clinical efficiency or fitted realism claim
+is made. The [aggregate JSON](../audits/wave3-followups-20261109.json) retains
+completion, clicks, scrolls, queue/overtime and dose outcomes for all five roles.
