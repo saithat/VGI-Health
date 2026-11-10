@@ -1,13 +1,6 @@
-import Ehr.Check.PatchWitness
-import Ehr.Check.ViolationWitness
-import Ehr.Check.MissingWitness
+import Ehr.Check.SeedDomainWitness
 import Ehr.Check.LocalBadProofs
-import Ehr.Check.Graph
 import Ehr.Check.ReplayContext
-import Ehr.Canonical.BadPrograms
-
--- The canonical template has over 1,500 components; kernel reduction traverses them.
-set_option maxRecDepth 16384
 
 set_option Elab.async false
 namespace Ehr.Check
@@ -24,36 +17,10 @@ theorem reachable_afterHuman (ep : Episode) (es : List Event) (s : State)
 def refillKept : List ScreenId :=
   (unreachableRefill.screens.map (·.id)).filter (· != "w7Decision")
 
-comp_witness refillWitness, refillWitness_mem := unreachableRefill[42][25]
-private theorem refillKind : refillWitness.2.kind = .button (.commit "approveRefill") := by decide +kernel
-private def refillCommit := (specV1.commit? "approveRefill").getD default
-private theorem refillLookup : specV1.commit? "approveRefill" = some refillCommit := by decide +kernel
-private theorem refillRole : unreachableRefill.role ∈ refillCommit.roles := by decide +kernel
-private theorem refillRequired : "approveRefill" ∈ requiredCommits specV1 canonicalV1 unreachableRefill :=
-  required_of_component specV1 canonicalV1 unreachableRefill refillWitness refillWitness_mem
-    "approveRefill" refillKind refillCommit refillLookup refillRole
-private theorem refillRequirement : requires approveRefill refillDecision ∈ specV1.entries := by decide +kernel
-private theorem refillFields : (allComps unreachableRefill).all (fun sc =>
-    (fieldOf? sc.2.kind).all (fun f => f.1 != "refillDecision" || sc.1.id == "w7Decision")) = true := by decide +kernel
-private theorem refillNoIncoming : (allComps unreachableRefill).all (fun sc =>
-    (gotoOf? sc.2.kind).all (· != "w7Decision")) = true := by
-  apply List.all_eq_true.mpr
-  intro sc member
-  simp only [allComps, List.mem_flatMap, List.mem_map] at member
-  obtain ⟨scr, hs, c, hc, rfl⟩ := member
-  change scr ∈ (base 7).screens.map _ at hs
-  obtain ⟨original, _, rfl⟩ := List.mem_map.mp hs
-  have kept := (List.mem_filter.mp hc).2
-  cases kind : c.kind <;> simp_all [gotoOf?]
-  rename_i action
-  cases action <;> simp_all [gotoOf?]
-private theorem refillDifferentStart : unreachableRefill.start ≠ "w7Decision" := by decide +kernel
-
+/-- Seed 7 is rejected by the full-profile payload-domain obstruction.
+Its stranded refill task is independently checked by FullSeedTests. -/
 theorem bad07_not_satisfies : ¬ Satisfies specV1 none canonicalV1 unreachableRefill :=
-  required_unreachable_violation specV1 none canonicalV1 unreachableRefill "approveRefill"
-    refillRequired (requires approveRefill refillDecision) refillRequirement rfl "w7Decision"
-    refillFields (no_incoming_no_depth unreachableRefill "w7Decision" specV1.design.maxDepth
-      refillDifferentStart refillNoIncoming)
+  seed_payload_not_satisfies unreachableRefill (by decide +kernel) (by decide +kernel)
 
 /-- Seed 1 reaches a shown Sign button with its allergy review unmet. -/
 def hiddenEp : Episode := ⟨specV1, hiddenAllergies, replayFacts, replayUser hiddenAllergies⟩
@@ -61,19 +28,10 @@ def hiddenPath : List Event := [.click "home.work.w1Rooming", .click "w1Rooming.
   .click "w1Orders.toSign", .click "w1Verify.continue"]
 def hiddenAtSign : State := hiddenEp.afterHuman hiddenEp.start hiddenPath
 
-private theorem hiddenButton : (hiddenEp.prog.compsOf hiddenAtSign.screen).any (fun c =>
-    c.kind == .button (.commit "signOrders") &&
-      compShown hiddenEp.spec hiddenEp.facts hiddenAtSign
-        (hiddenEp.prog.compsOf hiddenAtSign.screen) c) = true := by decide +kernel
-
-private theorem hiddenRequirement : showOrReceipt signOrders allergyList 240 prescribers ∈ specV1.reviews := by decide +kernel
-private theorem hiddenReviewFalse : reviewMet specV1 hiddenAllergies replayFacts hiddenAtSign
-    (showOrReceipt signOrders allergyList 240 prescribers) = false := by decide +kernel
-
+/-- Seed 1 is rejected by the full-profile payload-domain obstruction.
+FullSeedTests independently checks the hidden-allergy review and its replay. -/
 theorem bad01_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergies :=
-  review_violation hiddenEp none canonicalV1 rfl hiddenAtSign
-    (reachable_afterHuman hiddenEp hiddenPath hiddenEp.start .start) "signOrders" hiddenButton
-    (showOrReceipt signOrders allergyList 240 prescribers) hiddenRequirement rfl rfl hiddenReviewFalse
+  seed_payload_not_satisfies hiddenAllergies (by decide +kernel) (by decide +kernel)
 
 #print axioms bad01_not_satisfies
 #print axioms bad02_not_satisfies
@@ -88,4 +46,5 @@ theorem bad01_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergi
 #print axioms bad11_not_satisfies
 #print axioms bad12_not_satisfies
 #print axioms bad14_not_satisfies
+#print axioms reachable_afterHuman
 end Ehr.Check

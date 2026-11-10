@@ -67,8 +67,9 @@ describe('ehr CLI adapter (stub binary)', () => {
     await createEhr({ fake: false, binary: bin }).simulate({
       specVersion: RELEASE_IDS.base, program, persona, schedule, worldDir: '/w', seed: 3,
       policy: 'bounded', clockMode: 'legacy', interruptions: 'fixedCost', interruptionProfile: 'inpatientPharmacy',
+      choiceLatencyMs: 1500, arrivalSeed: 17,
     });
-    expect(await readFile(log, 'utf8')).toContain('--policy bounded --clock-mode legacy --interruptions fixedCost --interruption-profile inpatientPharmacy');
+    expect(await readFile(log, 'utf8')).toContain('--policy bounded --clock-mode legacy --interruptions fixedCost --choice-latency-ms 1500 --arrival-seed 17 --interruption-profile inpatientPharmacy');
   });
 
   it('reads a violation from a non-zero exit, and deploy refusals as { deployed: false }', async () => {

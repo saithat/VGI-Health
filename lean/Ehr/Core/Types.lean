@@ -1131,11 +1131,20 @@ structure OrderChoice where
   priority? : Option String := none
   deriving DecidableEq, Repr, Inhabited
 
-/-- Text typed for one documentation section, keyed by its element id. World
+/-- Simulator authoring effort; selections are KLM point/click pairs. The full
+section still enters through the ordinary human event and clinical guards. -/
+structure NoteAuthoring where
+  origin : String
+  typedCharacters : Nat
+  selections : Nat
+  deriving DecidableEq, Repr, Inhabited
+
+/-- Full text for one documentation section, keyed by its element id. World
 generation sizes it from Synthetic Hospital chart sections (synthetic-benchmark). -/
 structure NoteText where
   id : String
   text : String
+  authoring? : Option NoteAuthoring := none
   deriving DecidableEq, Repr, Inhabited
 
 /-- The clinical choices for one task. -/

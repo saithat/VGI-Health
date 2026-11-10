@@ -1,0 +1,30 @@
+{
+  "version": "wave3-fit-v1",
+  "declared": "2026-11-09",
+  "train": ["U8-2", "U8-3", "U8-5"],
+  "historicalSensitivity": ["U1-21"],
+  "development": ["U8-6", "U8-7", "U8-9"],
+  "holdout": ["U9-2", "U9-4", "U3-2", "U3-3", "U3-4", "U3-6", "U3-8", "U3-9", "U3-10", "U3-12", "U3-13"],
+  "pcpShiftHoldout": ["N1.totalEHR8", "N1.TOSH8"],
+  "attempts": 10000,
+  "seeds": {"navigation": 2026110901, "latency": 2026110902, "holdout": 2026110903, "exogenous": 2026110904},
+  "gate": {
+    "maxMeanErrorSourceSD": 1,
+    "sdRatio": [0.5, 2],
+    "wilsonZ": 1.959964,
+    "maxMonteCarloSESourceSD": 0.05,
+    "maxInterpretablePathRatioError": 0.20,
+    "mustBeatKLMOnlyMacroMAE": true,
+    "minimumIndependentTaskFamiliesPerRole": 2,
+    "allApplicableChecksRequired": true,
+    "missingPreventsPromotion": true
+  },
+  "profiles": {
+    "pcp": {"workflows": ["W1", "W2", "W7"], "source": "N1", "evidenceYear": "2022-2023"},
+    "ed-resident": {"workflows": ["W3"], "source": "N4", "evidenceYear": 2023},
+    "icu-rn-pump": {"workflows": ["W4"], "source": "N5", "evidenceYear": 2024}
+  },
+  "scenarioOnly": ["pediatrics", "surgery", "US pharmacy"],
+  "sensitivityOnly": ["N8"],
+  "simulator": {"clockMode": "continuous", "interruptions": "realWork", "simModel": "wave3", "textCost": "length"}
+}

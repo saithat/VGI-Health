@@ -62,8 +62,10 @@ keep their local weights. In qualifying settings:
 - the legacy flu-week and urgent-care multipliers are kept as declared scenario
   factors. The legacy age, sex and history multipliers are replaced.
 
-`--case-mix legacy` and the library default (`generateWorld` without options)
-reproduce the frozen archives exactly. Settings, rates and visit counts are
+`--case-mix legacy` retains local weights; library calls retain that case-mix
+default independently of their realistic workflow default. Explicit
+`{workflows: "legacy"}` retains the pre-follow-up library workflows (see
+[workflow snapshots](workflow-phases.md#library-default-and-frozen-worlds)). Settings, rates and visit counts are
 unchanged: the dataset's setting mix (55% outpatient, 31% ED) does not resize
 personas, and the surgical-consult rates stay local.
 
@@ -85,21 +87,23 @@ and task. The priority also appears on the track board's pending-imaging text.
 The split is 70.5% stat, 28.8% urgent and 0.7% routine (702 orders). Overall it
 is 36% stat, 29% urgent and 35% routine (1,865 orders), and outpatient is 72%
 routine (882 orders). Clinic and surgery imaging orders get `priority` from
-the outpatient split (inpatient orders would use the inpatient split, 61% stat;
-the current world places none). The draw is deterministic, keyed by task and
+the outpatient split. Realistic P5 surgical inpatient rounds now order imaging
+through the same path and use the inpatient split (61% stat); ordering rates are
+[declared scenarios](workflow-phases.md#inpatient-imaging). The draw is deterministic, keyed by task and
 order index, and consumes no random stream. Release v2 adds the optional
 `imagingPriority` order element (`ServiceRequest.priority`, coded
 `request-priority`, no entry or review requirement) with a field in the
 canonical imaging/procedure group; the simulated clinician enters it when the
-order carries a priority and the release declares the element. Legacy worlds
-carry no priority.
+order carries a priority and the release declares the element. Legacy case-mix mode
+does not draw priorities.
 
 ## Note section text (decision 14)
 
 Before this change, every documented section typed Lean's fixed phrase
 `<section>: reviewed, see plan.` With `--note-text synthetic-hospital` (the CLI
-default), the world adds `choices.noteTexts`, and the simulated clinician types
-that text instead (`Goals.sectionText`). `NoteText` and
+default), the world adds `choices.noteTexts`, and the simulated clinician enters
+that full text (`Goals.sectionText`); the authoring model determines keyboard
+and selection effort. `NoteText` and
 `TaskChoices.noteTexts?` are additive Lean fields; older schedules omit them.
 `world/src/notes.ts` maps 30 local section ids to dataset section types (for
 example `exam` to `physical_exam` and `assessmentPlan` to `assessment` + `plan`).
@@ -114,13 +118,12 @@ therefore follow the dataset by construction. Donor content can still disagree
 with the local case when no donor matches the key (new-patient and follow-up
 visits record none). `--note-text legacy` omits all text.
 
-`--note-typed-share N` (per mille, default 1000 = off) is a declared
-template/dictation discount: only the first N/1000 of each section is
-keyboard-typed and supplied; the remainder is assumed to arrive by template,
-copy-forward or dictation, which the simulator does not model. It is a scenario
-value without a verified recent citation. Rule et al. 2021 (JAMA Netw Open
-4(7):e2115334, one academic center's outpatient notes) is a candidate source
-for a typed share, but its figure was not verified from the full text.
+Dataset-mode notes default to a [section authoring model](note-authoring.md):
+template/import selections, copied-forward review/edit, or typed free text.
+Its pooled origin probabilities are calibrated to N18 (Rule et al., published
+2021, data 2018); section assignment and operator costs are declared scenarios.
+`--note-authoring full`, `--note-typed-share N`, and `--note-text legacy` retain
+explicit opt-outs. All modes preserve full section text for reading/scrolling.
 
 ## Distribution checks
 
@@ -177,7 +180,7 @@ length-dependent reading/scrolling and its legacy opt-out are documented in
 Native `ehr simulate` covered ten days and five personas on the expert policy,
 using releases v1/v2/v3 by day. Three worlds share the seed and case mix:
 fixed phrases, dataset text, and dataset text with `--note-typed-share 294`
-(an example setting of the off-by-default discount). Schedules differ only in
+(a historical example of the then-off-by-default discount). Schedules differ only in
 `noteTexts`. Every task completed in all three, including clinic imaging orders
 that now enter `imagingPriority` from day 4.
 
@@ -210,7 +213,7 @@ scroll pages, 2.2 s at A04's 1,100 ms) and about 2 minutes of reading.
 make synthetic-hospital            # fetch, verify SHA-256, convert, check the mix table
 make test-synthetic-hospital
 for m in synthetic-hospital legacy; do
-  pnpm --filter world gen --seed 1 --days 10 --case-mix synthetic-hospital --note-text $m --world-clock legacy \
+  pnpm --filter world gen --seed 1 --days 10 --case-mix synthetic-hospital --note-text $m --note-authoring full --workflows legacy --world-clock legacy \
     --out "$TMPDIR/sh-$m" --quiet
 done
 node scripts/synthetic-hospital/check-world.mjs --world "$TMPDIR/sh-synthetic-hospital" \

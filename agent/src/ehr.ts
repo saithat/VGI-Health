@@ -65,6 +65,10 @@ export interface SimulateInput {
   interruptions?: 'realWork' | 'fixedCost';
   simModel?: 'wave3' | 'legacy';
   textCost?: 'length' | 'legacy';
+  /** Opt-in experimental additional choice service per mental operator. */
+  choiceLatencyMs?: number;
+  /** Independent absolute-time offered-work stream for paired measurements. */
+  arrivalSeed?: number;
   interruptionProfile?: 'wardNurse' | 'surgicalPhysician' | 'clinicPrescriber' | 'emergencyPhysician' | 'inpatientPharmacy';
 }
 export interface MinClicksInput { specVersion: string; program: Program; schedule: DaySchedule; worldDir: string }
@@ -160,6 +164,8 @@ class CliEhr implements EhrClient {
         ...(i.interruptions ? ['--interruptions', i.interruptions] : []),
         ...(i.simModel ? ['--sim-model', i.simModel] : []),
         ...(i.textCost ? ['--text-cost', i.textCost] : []),
+        ...(i.choiceLatencyMs !== undefined ? ['--choice-latency-ms', String(i.choiceLatencyMs)] : []),
+        ...(i.arrivalSeed !== undefined ? ['--arrival-seed', String(i.arrivalSeed)] : []),
         ...(i.interruptionProfile ? ['--interruption-profile', i.interruptionProfile] : []),
         ...(i.memory ? ['--memory-in',p['memory'] ?? ''] : []),
       ]);

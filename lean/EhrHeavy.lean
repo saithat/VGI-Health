@@ -38,3 +38,6 @@ import Ehr.Sim.Audit
 Opt-in whole-program proofs and full-catalog regression tests.
 Build with ruleProfile set to full.
 -/
+
+-- This opt-in target is the full catalog, independent of the core release build.
+#guard Ehr.Specs.ruleProfile == .full

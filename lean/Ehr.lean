@@ -77,6 +77,7 @@ import Ehr.Check.EncounterRoleTests
 import Ehr.Multi.Tests
 import Ehr.Commit.Tests
 import Ehr.Sim.Workflow.Tests
+import Ehr.Sim.RoleCalibrationTests
 
 /-!
 Default library: interpreter, rule data, proofs and executable regressions.

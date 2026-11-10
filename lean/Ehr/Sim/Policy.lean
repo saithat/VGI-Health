@@ -134,8 +134,17 @@ def isGoalAction (ctx : Context) (s : State) : Event → Bool
     | _ => false
   | _ => false
 
+/-- Authoring changes effort only: the entered value remains the full section.
+Absent metadata preserves full typing. Reading uses the original NoteText. -/
+def noteEntryOps (notes : List NoteText) (element : String) (v : Value)
+    (activate : List Op) : List Op :=
+  match notes.find? (·.id == element) |>.bind (·.authoring?) with
+  | none => activate ++ List.replicate (typedLen v) .key
+  | some a => activate ++ (List.replicate a.selections [.point, .click]).flatten ++
+      List.replicate (min (typedLen v) a.typedCharacters) .key
+
 def actionOps (ctx : Context) (params : PersonaParams) (s : State) (e : Event)
-    (rng : UInt64) : List Op × UInt64 := Id.run do
+    (rng : UInt64) (notes : List NoteText := []) : List Op × UInt64 := Id.run do
   let mut seed := rng
   let mut mouse := true
   if let some c := (eventComp e).bind (shownComp? ctx.sp ctx.prog ctx.facts s) then
@@ -151,7 +160,7 @@ def actionOps (ctx : Context) (params : PersonaParams) (s : State) (e : Event)
     let scan := el.any (fun e => match e.kind with | .scan _ => true | _ => false)
     let cosign := el.any (fun e => e.kind == .cosign)
     return ([.think] ++ (if cosign then [.wait] else []) ++
-      (if scan then [.scan] else activate ++ List.replicate (typedLen v) .key), seed)
+      (if scan then [.scan] else noteEntryOps notes (el.map (·.id) |>.getD "") v activate), seed)
   | .ack a =>
     let removable := (ctx.sp.alert? a).any (·.tier == .removable)
     let (n, next) := draw seed 1000
@@ -159,6 +168,12 @@ def actionOps (ctx : Context) (params : PersonaParams) (s : State) (e : Event)
   | .scroll _ => return ([.scroll], seed)
   | .search q => return ([.point, .click] ++ List.replicate q.length .key, seed)
   | _ => return ((if isGoalAction ctx s e then [.think] else []) ++ activate, seed)
+
+/-- Experimental additional choice service is paid before the guarded event.
+It neither replaces motor KLM time nor changes the clinical goal or guard. -/
+def choiceLatency (r : EpisodeResult) (ops : List Op) : EpisodeResult :=
+  { r with elapsedMs := r.elapsedMs +
+      r.resumption.config.choiceLatencyMs * (ops.filter (· == .think)).length }
 
 /-- Execute an event with elapsed KLM time applied before the event. This lets
 an interruption expire a receipt before a commit is attempted. -/
@@ -354,8 +369,8 @@ def lookupExpert (ctx : Context) (params : PersonaParams) (task : Task)
     [s!"{task.id}: information need {n.id}: no reachable faithful answer; incomplete"] }
   let mut out := r
   for e in path do
-    let (ops, rng) := actionOps ctx params out.state e out.rng
-    out := emit ctx task { out with rng } e ops
+    let (ops, rng) := actionOps ctx params out.state e out.rng (task.choices.noteTexts?.getD [])
+    out := emit ctx task (choiceLatency { out with rng } ops) e ops
   return readNeed ctx task out n
 
 /-- Early review creates a receipt once per information version, only while
@@ -420,7 +435,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
         else out := emit ctx task out (.scroll out.state.screen) [.scroll]
         out := emit ctx task out (.scroll out.state.screen) [.scroll]
       out := scrollTo ctx task out e
-      let (ops, next) := actionOps ctx params out.state e out.rng
+      let (ops, next) := actionOps ctx params out.state e out.rng (task.choices.noteTexts?.getD [])
       out := { out with rng := next }
       let goalAction := isGoalAction ctx out.state e
       let flush := lastEpisode && ctx.done (ctx.next out.state e)
@@ -431,7 +446,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
         interruptions := out.interruptions.filter (fun n => !due.contains n),
         actionIndex := out.actionIndex + if goalAction then 1 else 0 }
       let prev := out.state.screen
-      out := emit ctx task out e ops
+      out := emit ctx task (choiceLatency out ops) e ops
       let failed := match out.trace.getLast?.map (·.result) with
         | some (.blocked reason) => if goalAction && reason != "alert" then failures + 1 else failures
         | _ => failures

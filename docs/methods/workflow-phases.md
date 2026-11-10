@@ -170,3 +170,45 @@ calibrated rates or synthetic-benchmark timing claims are made for these phases.
 
 The lane's [verification report and exact specification additions](../audits/wave3-workflows-20261109.md)
 records commands, results, theorem axioms and the release regression.
+
+
+## Inpatient imaging
+
+Realistic P5 surgical rounds can order a chest X-ray or CT abdomen/pelvis for an
+already admitted surgical patient. P5 is an existing inpatient prescriber; this
+adds no persona or clinical spec. The declared, uncited scenario is imaging on
+25% of inpatient rounds, with two-thirds chest X-ray and one-third CT for
+postoperative respiratory/abdominal concerns. An independent admission/day hash
+stream supplies these decisions. These are not observed-care rates.
+
+The existing service-order path gates orders until v2 (day 4), signs them through
+ordinary guards, and enters `imagingPriority` in v2/v3. Dataset case-mix mode
+uses the Synthetic Hospital inpatient split (61% stat), labeled
+synthetic-benchmark, 2026. `--case-mix legacy` omits dataset priority;
+`--workflows legacy` omits this new workflow entirely. Imaging is not added to
+the ward medication regimen, and P3 does not become an ordering prescriber.
+
+## Library default and frozen worlds
+
+`generateWorld`/`advanceDay` now default to realistic workflows, matching
+`world gen`: refills, inbox streams, MAR timing, scenario phases and inpatient
+imaging. `{workflows: "legacy"}` explicitly selects the earlier flows. Case-mix
+and world-clock defaults remain independent (`legacy` in the library); dataset
+notes remain a post-processing step. This change does not silently require a
+local donor fixture for library users. Presentation context represents W2 streams
+without observations as workflow messages, rather than empty laboratory reports.
+
+The local frozen library worlds 1/2 are regenerated with
+`pnpm --filter world exec tsx test/freeze-snapshots.ts`. They share seed 1 and ten
+days of the restored Synthea population and both use the current ward model.
+The preserved legacy world-1 library baseline uses its historical frozen ward seam. Complete states/schedules and a serialized
+library snapshot are written under gitignored `runs/world/1` and `2`.
+
+Before regeneration, preserve old release-era archives as `1-original` and
+`2-original`. The existing archive tests retain their explicit critical-result
+and release-vocabulary successor checks. Separately, the **pre-follow-up library
+outputs** were captured as `1-library-legacy/snapshot.json` and
+`2-library-legacy/snapshot.json` before changing the default; tests reproduce
+those bytes exactly using `{workflows: "legacy"}`. This distinguishes legacy
+library reproduction from the older release-era archives, which predate additive
+critical-result resources. All copies and regenerated snapshots remain untracked.

@@ -53,10 +53,20 @@ measurements preserve its layout choices and identify their source lineage.
 ## Current certified build and measurements
 
 The current certified app SHA-256 is
+`d37c1903270363ff6f7f828938479a0c2cfe5e34064e9e7b3b6cfd0935bec9f8`.
+The [2026-11-10 integration](../audits/w3b-merge-20261110.md) re-certifies all
+33 retained revision bindings and refreshes 200 measurements across 50 source
+shifts in its local `runs/core-10day` copy. Native and WASM strict replay verifies
+1,284 tasks and 72,636 events with zero mismatches, plus three preserved
+same-task controls. All fresh geometry binds this app hash; model calls are zero.
+The frozen programs, rule inputs, decisions and model responses remain
+byte-identical. The original shared recording remains historical at app hash
 `030fac6d782d07099213018114de92b4facd19952201e094b4c3890e7edfef60`.
-The MAR outcome display, notification-version handling and ADT board controls
-change the certified source boundary. All 33 retained revision bindings have
-passed re-certification, remeasurement and strict replay against this build.
+
+The generated Lean contract module participates in the app source hash, so the
+new authoring fields change that binding despite no painter edit. The rebuilt
+WASM and native binaries also receive fresh bindings; their exact hashes and
+verification commands are in the integration audit.
 
 Changes to the bound clinical sources require a new app hash and matching
 recording certificates, geometry measurements and strict replay evidence. The
@@ -82,8 +92,8 @@ settling waits. Batching popups and removing those waits cut a cold P1/v1 sample
 with identical verdicts, geometry and 8,046 measurement records. Measurements at
 earlier app hashes are kept in [docs/audits/](../audits).
 
-The retained recording has 33 current certificate bindings and 200 refreshed
-measurement outputs across 50 source shifts. Full re-certification took 209.29
+The earlier re-certification at app hash `030fac6d…` covered 33 bindings and 200
+measurement outputs across 50 source shifts. That re-certification took 209.29
 minutes, including a 107.37-minute batch gate. Saved and freshly regenerated
 native/WASM strict replay verified 1,284 tasks and
 72,636 events with zero mismatches, preserving three
@@ -94,9 +104,9 @@ in the pre-change binary; every other native field in the 150 saved day outputs
 is unchanged. Original enriched files are retained locally. Independently,
 all 150 pre-change versus paired-opt-out native outputs are byte-identical.
 
-The full template and persona audit pair ran once, sequentially, checking
+That earlier full template and persona audit pair ran once, sequentially, checking
 1,826 and 1,296 distinct trees with zero findings. The
-[current verified-build report](../audits/realism-wave2-verification-20261108.md)
+[earlier verified-build report](../audits/realism-wave2-verification-20261108.md)
 records commands, bindings, coverage, captures and timings. The
 [prior verification report](../audits/realism-wave1-verification-20261107.md)
 retains the earlier evidence and measurements.

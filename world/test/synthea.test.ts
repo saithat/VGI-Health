@@ -34,7 +34,7 @@ const root = resolve(__dirname, "../..");
 const noLean = spawnSync("lean", ["--version"], {encoding:"utf8"}).error !== undefined
   || !existsSync(join(root,"lean/.lake/build/lib/lean/Ehr.olean"));
 if(noLean && process.env.VGI_REQUIRE_LEAN_TESTS === "1")throw Error("Lean toolchain or build missing but VGI_REQUIRE_LEAN_TESTS=1");
-const reason = dataReason("fixtures/synthea", "runs/world/1", "runs/world/2");
+const reason = dataReason("fixtures/synthea", "runs/world/1-original", "runs/world/2-original");
 describe.skipIf(Boolean(reason))(`archived Synthea worlds${reason ? ` (${reason})` : ""}`, () => {
 let population: ReturnType<typeof loadPopulation>;
 let run: ReturnType<typeof generateWorld>;
@@ -42,11 +42,11 @@ let frozen: ReturnType<typeof generateWorld>;
 beforeAll(() => {
   population = loadPopulation(join(root, "fixtures/synthea/index.json"));
   run = generateWorld(1, 10, population.patients);
-  frozen = generateWorld(1, 10, population.patients, runFrozenWard);
+  frozen = generateWorld(1, 10, population.patients, runFrozenWard, {workflows:"legacy"});
 });
 
 it("keeps the frozen-ward seed-1 snapshot and below 20 MB", () => {
-  const dir = join(root, "runs/world/2");
+  const dir = join(root, "runs/world/2-original");
   const read = (file: string): unknown => JSON.parse(readFileSync(join(dir, file), "utf8"));
   const manifest = z.object({ seed: z.number(), days: z.number(), files: z.array(z.string()) }).parse(read("manifest.json"));
   expect(manifest.seed).toBe(1);
@@ -64,11 +64,11 @@ it("keeps the frozen-ward seed-1 snapshot and below 20 MB", () => {
 
 it("preserves world 1 state and random draws through the explicit service-release and critical-result successors", () => {
   for (const d of frozen.days) {
-    const legacy = JSON.parse(readFileSync(join(root, `runs/world/1/state-day-${d.state.day}.json`), "utf8"));
+    const legacy = JSON.parse(readFileSync(join(root, `runs/world/1-original/state-day-${d.state.day}.json`), "utf8"));
     legacy.context.scriptedEvents = legacy.context.scriptedEvents.map(historicalReleaseEventId);
     expect(legacy).toEqual(d.state);
     for (const p of PERSONAS) {
-      const original = DayScheduleSchema.parse(JSON.parse(readFileSync(join(root, `runs/world/1/day-${d.state.day}-${p}.json`), "utf8")));
+      const original = DayScheduleSchema.parse(JSON.parse(readFileSync(join(root, `runs/world/1-original/day-${d.state.day}-${p}.json`), "utf8")));
       for (const task of original.tasks) {
         DayScheduleSchema.parse({ ...original, tasks: [task] });
       }
@@ -130,7 +130,7 @@ describe("real Synthea population", () => {
 it.skipIf(noLean)("round-trips every Synthea schedule through Lean and checks all formulary reference fields", () => {
   const schedules = run.days.flatMap((d) => PERSONAS.map((p) => d.schedules[p]));
   // One lake process for the entire contract test. Build Lean before running this suite.
-  const result = spawnSync("sh", ["-c", "ulimit -v 8000000; export LEAN_NUM_THREADS=6 LEAN_STACK_SIZE_KB=65536; exec lake env lean -j6 --run ../world/test/lean/Contract.lean"], {
+  const result = spawnSync("sh", ["-c", "if [ -n \"$VGI_LEAN_SLOT\" ]; then \"$VGI_LEAN_SLOT\" acquire w3follow >&2; trap '\"$VGI_LEAN_SLOT\" release w3follow' EXIT; fi; ulimit -v 8000000; export LEAN_NUM_THREADS=4 LEAN_STACK_SIZE_KB=65536; lake env lean -j4 --run ../world/test/lean/Contract.lean"], {
     cwd: join(root, "lean"), input: schedules.map((s) => JSON.stringify(s)).join("\n") + "\n",
     encoding: "utf8", maxBuffer: 20 * 1024 * 1024, timeout: 60_000,
   });

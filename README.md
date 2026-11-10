@@ -1,4 +1,4 @@
-_README last reviewed against commit `cc2728ac` (2026-11-09)._
+_README last reviewed against commit `ff4e5eba` (2026-11-10)._
 
 # VGI Health
 
@@ -85,12 +85,13 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-Wave 3 is merged and verified ([audit](docs/audits/wave3-merge-20261109.md));
-the retained recording certificates below predate it and have not been re-issued.
+Wave 3 and its follow-ups are integrated and verified ([audit](docs/audits/w3b-merge-20261110.md)).
+The integration copy of the retained recording has current build bindings; its
+layouts, rule inputs and outcome scenarios remain frozen from before wave 3.
 
 | Evidence | Result and caveat |
 |---|---|
-| Retained recording verification (pre-wave-3) | All 33 retained revision bindings re-certified; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
+| Retained recording verification (frozen pre-wave-3 inputs) | All 33 retained revision bindings re-certified in the integration worktree; strict native/WASM replay checked 1,284 tasks and 72,636 events with zero mismatches. Re-certification preserves recorded layouts and source inputs; it adds no new outcome scenarios. [Build and screen evidence](docs/methods/screen-validation.md). |
 | Matched workload experiment | Blind even days across five clinicians: both successor arms complete 660/662 tasks; mean queue delay is 1.19 minutes with fixed-cost interruptions and 1.73 with typed real work. Both have two overdue doses and zero active overtime. These are fixed-layout offline runs with uncalibrated rates; the archived cohort differs. [Cohorts, endpoints and screenshots](docs/methods/workload-and-interruptions.md#local-measurement-cohorts). |
 | Wave-3 simulator smoke | Day 2: 158/158 tasks complete; mean queue 12.58 min versus 1.73 in the earlier cohort. On identical new tasks, length costs add 267.69 active min and 56 scrolls. Scenario assumptions, fixed layouts, different wave-2/wave-3 cohorts. Full template/persona browser audits: zero findings. [Verification and scope](docs/audits/wave3-sim-20261109.md). |
 | Information lookup experiment | 30/30 tasks complete in both arms. Lookup effort varies by role and route; memory carry is a proxy, not a clinical capacity measure. This small seed-7 sample does not estimate population effects or achievable summary savings. [Measurements and assumptions](docs/methods/information-needs.md). |
@@ -102,7 +103,9 @@ capabilities. The system uses synthetic patients and is not a deployable product
 
 ### Wave 3 (approved 2026-11-09)
 
-Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md). The separate pre-declared calibration fit (decisions 1, 2, 8) failed every full holdout gate; no profile is promoted. The [fit diagnosis](docs/audits/fit-diagnosis-20261110.md) traces the timing-window and capability mismatches and lists owner decisions for a future fit.
+Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [wave-3 audit](docs/audits/wave3-merge-20261109.md), [follow-up audit](docs/audits/w3b-merge-20261110.md).
+
+- Separate role profiles remain experimental: the pre-declared fit (decisions 1, 2, 8) failed every holdout gate ([methods](docs/methods/role-calibration.md)); the [fit diagnosis](docs/audits/fit-diagnosis-20261110.md) traces the timing-window and capability mismatches.
 
 - Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
 - Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
@@ -115,6 +118,9 @@ Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged 
 - Release gates prove retention of reachable field capabilities for the declared workload even when optional features are declined ([contract](docs/methods/workflow-phases.md#release-capabilities)).
 - Chart synthesis, note preparation and result follow-through have explicit scenario phases ([scope and remaining work](docs/methods/workflow-phases.md#scenario-scope); [verification](docs/audits/wave3-workflows-20261109.md)).
 - Synthetic Hospital supplies synthetic-benchmark case mix, imaging priority and note-section text ([method](docs/methods/synthetic-hospital.md)).
+- Dataset notes use section-level template/copy/free-text effort with verified older N18 origin shares and explicit scenario operator costs ([methods and matched comparison](docs/methods/note-authoring.md)).
+- P5 inpatient rounds include scenario imaging orders with Synthetic Hospital priority ([methods](docs/methods/workflow-phases.md#inpatient-imaging)).
+- Library generation defaults to realistic workflows; explicit legacy mode reproduces preserved library snapshots byte-for-byte ([methods](docs/methods/workflow-phases.md#library-default-and-frozen-worlds)).
 
 ## How to run
 
@@ -150,6 +156,18 @@ live model calls. [Model backends](docs/methods/model-backends.md) documents rea
 and replay configuration, context requirements and frozen-night comparisons.
 The [run-data contract](docs/methods/run-data.md) explains completed prefixes,
 lazy review evidence and safe local renames.
+
+`scripts/build-ehrheavy.py [--target MODULE]` builds isolated full-profile
+`EhrHeavy` modules serially with `-M10000`; the wave-3 closure passes 156 modules
+at 8.3 GiB peak. Weekly/manual/Lean-PR CI audits all 24 seed axioms. Seeds
+1/7/13/15/16/22 share the payload-domain proof; mutation replays remain separate.
+Full-catalog regressions retain preset defaults and supply eligible
+CURES/trusted-evidence fixtures; interruption-count tests select legacy
+fixed-cost mode. Seeds 2/4/5 use the refactor's shared automation-rejection helper.
+All 15 core persona/release projections remain byte-identical to the integration
+base `53afbbf4`. The seven-task retained-layout capability regression reads its
+preserved `2-original` workload; current canonical workload checks use the
+realistic library world.
 
 CI builds Lean and audits axioms; lints/typechecks app, agent, world and commit;
 runs unit tests, 201 canonical conformance scenarios, the 15-accepted/23-rejected
@@ -241,7 +259,9 @@ weakest parts.
 assumptions and public usability/workload evidence, including 2020+ cohort
 updates, explicit older-evidence retention, role-specific target settings and a
 statistical holdout acceptance rule without clinician review. It is a research
-plan; no fitted or clinically validated simulator is claimed. The source register
+plan; [role fitting](docs/methods/role-calibration.md) applies its frozen gate
+and leaves every profile experimental. No clinically validated simulator is
+claimed. The source register
 retains supersession links and a reproducible citation/recency verifier
 (`scripts/verify-workflow-sources.py --online`).
 

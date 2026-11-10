@@ -13,19 +13,11 @@ private def noticeReq : ReviewReq :=
     when := .orderClass "controlled-II-IV" }
 private theorem noticeReq_mem : noticeReq ∈ specV1.reviews := by decide +kernel
 
-private theorem noticeButton : (hiddenSigningNotice.compsOf noticeState.screen).any (fun c =>
-    c.kind == .button (.commit "signOrders") &&
-      compShown specV1 replayFacts noticeState (hiddenSigningNotice.compsOf noticeState.screen) c) = true := by
-  decide +kernel
-private theorem noticeNotMet :
-    reviewMet specV1 hiddenSigningNotice replayFacts noticeState noticeReq = false := by decide +kernel
-
-/-- Seed 22 hides the required controlled-prescription signing notice while
-leaving the signing button shown for a controlled order. -/
+/-- Seed 22 is rejected by the full-profile payload-domain obstruction.
+FullSeedTests independently checks its hidden signing-notice rule and replay. -/
 theorem bad22_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenSigningNotice :=
-  review_violation noticeEpisode none canonicalV1 rfl noticeState
-    (reachable_afterHuman noticeEpisode hiddenControlledPath noticeEpisode.start .start)
-    "signOrders" noticeButton noticeReq noticeReq_mem rfl rfl noticeNotMet
+  seed_payload_not_satisfies hiddenSigningNotice (by decide +kernel) (by decide +kernel)
 
 #print axioms bad22_not_satisfies
+#print axioms noticeReq_mem
 end Ehr.Check

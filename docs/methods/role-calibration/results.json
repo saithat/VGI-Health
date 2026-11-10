@@ -1,0 +1,566 @@
+{
+  "protocol": "wave3-fit-v1",
+  "predeclaration": "ba5655a2e0e3b17692ac8fcadff1f5295f879483",
+  "scriptFreeze": "574944a9",
+  "executionInputFreeze": "e5f1d976",
+  "nativeStudySHA256": "3c5dd54f3d013342403be1053ddbee0a7412070d716b30015ed8cd28a64b7c30",
+  "holdouts": [
+    {
+      "id": "U9-2",
+      "profile": "pcp",
+      "targetMeanSeconds": 77,
+      "targetSDSeconds": 46,
+      "simulated": {
+        "attempts": 10000,
+        "successes": 10000,
+        "completion": 1.0,
+        "meanSeconds": 616.57738,
+        "sdSeconds": 18.750286975450976,
+        "meanSESeconds": 0.18750286975450975,
+        "meanClicks": 23
+      },
+      "klmOnly": {
+        "attempts": 10000,
+        "successes": 10000,
+        "completion": 1.0,
+        "meanSeconds": 616.57486,
+        "sdSeconds": 18.750996879334103,
+        "meanSESeconds": 0.18750996879334103,
+        "meanClicks": 23
+      },
+      "uncalibrated": {
+        "attempts": 10000,
+        "successes": 10000,
+        "completion": 1.0,
+        "meanSeconds": 618.51103,
+        "sdSeconds": 19.29129194049931,
+        "meanSESeconds": 0.1929129194049931,
+        "meanClicks": 23.8794
+      },
+      "assessment": {
+        "targetMeanSeconds": 77,
+        "targetSDSeconds": 46,
+        "wilson95": [
+          0.7411670300055737,
+          1
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": true,
+          "monteCarloSE": true,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "Generic signing lacks source Save/Quit editor endpoint; compare as transfer only.",
+      "commonOfferedWorkVerified": true
+    },
+    {
+      "id": "U9-4",
+      "profile": "pcp",
+      "targetMeanSeconds": 78,
+      "targetSDSeconds": 83,
+      "simulated": {
+        "attempts": 10000,
+        "successes": 10000,
+        "completion": 1.0,
+        "meanSeconds": 549.1095700000001,
+        "sdSeconds": 17.54524907180285,
+        "meanSESeconds": 0.1754524907180285,
+        "meanClicks": 14
+      },
+      "klmOnly": {
+        "attempts": 10000,
+        "successes": 10000,
+        "completion": 1.0,
+        "meanSeconds": 549.10999,
+        "sdSeconds": 17.54716670878379,
+        "meanSESeconds": 0.1754716670878379,
+        "meanClicks": 14
+      },
+      "uncalibrated": {
+        "attempts": 10000,
+        "successes": 10000,
+        "completion": 1.0,
+        "meanSeconds": 551.1368200000001,
+        "sdSeconds": 18.05758333551839,
+        "meanSESeconds": 0.1805758333551839,
+        "meanClicks": 15.025
+      },
+      "assessment": {
+        "targetMeanSeconds": 78,
+        "targetSDSeconds": 83,
+        "wilson95": [
+          0.7411670300055737,
+          1
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": true,
+          "monteCarloSE": true,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "Generic ordering lacks source past-encounter Administrative/Procedure route; compare as transfer only.",
+      "commonOfferedWorkVerified": true
+    },
+    {
+      "id": "U3-2",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 25,
+      "targetSDSeconds": 7,
+      "simulated": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "klmOnly": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "uncalibrated": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "assessment": {
+        "targetMeanSeconds": 25,
+        "targetSDSeconds": 7,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "commonOfferedWorkVerified": true,
+      "nativeObstruction": "Source simvastatin has no native formulary dose units."
+    },
+    {
+      "id": "U3-3",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 29,
+      "targetSDSeconds": 14,
+      "simulated": null,
+      "klmOnly": null,
+      "uncalibrated": null,
+      "assessment": {
+        "targetMeanSeconds": 29,
+        "targetSDSeconds": 14,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "No existing-order edit reducer; do not substitute a new prescription.",
+      "commonOfferedWorkVerified": false
+    },
+    {
+      "id": "U3-4",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 29,
+      "targetSDSeconds": 14,
+      "simulated": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "klmOnly": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "uncalibrated": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "assessment": {
+        "targetMeanSeconds": 29,
+        "targetSDSeconds": 14,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "commonOfferedWorkVerified": true,
+      "nativeObstruction": "Frozen ED layout lacks orderKind/orderCode controls; drug-or-complete-service-order guard refuses signing."
+    },
+    {
+      "id": "U3-6",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 26,
+      "targetSDSeconds": 8,
+      "simulated": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "klmOnly": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "uncalibrated": {
+        "attempts": 10000,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "assessment": {
+        "targetMeanSeconds": 26,
+        "targetSDSeconds": 8,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "Transfer reconstruction retains additional hospital signing requirements and generic controls; source-native UI fidelity is not established.",
+      "commonOfferedWorkVerified": true,
+      "nativeObstruction": "Frozen ED layout lacks orderKind/orderCode controls; drug-or-complete-service-order guard refuses signing."
+    },
+    {
+      "id": "U3-8",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 42,
+      "targetSDSeconds": 14,
+      "simulated": null,
+      "klmOnly": null,
+      "uncalibrated": null,
+      "assessment": {
+        "targetMeanSeconds": 42,
+        "targetSDSeconds": 14,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "Bactrim alert developer-information endpoint is absent.",
+      "commonOfferedWorkVerified": false
+    },
+    {
+      "id": "U3-9",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 33,
+      "targetSDSeconds": 13,
+      "simulated": null,
+      "klmOnly": null,
+      "uncalibrated": null,
+      "assessment": {
+        "targetMeanSeconds": 33,
+        "targetSDSeconds": 13,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "Losartan interaction developer-information endpoint is absent.",
+      "commonOfferedWorkVerified": false
+    },
+    {
+      "id": "U3-10",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 19,
+      "targetSDSeconds": 6,
+      "simulated": null,
+      "klmOnly": null,
+      "uncalibrated": null,
+      "assessment": {
+        "targetMeanSeconds": 19,
+        "targetSDSeconds": 6,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "No problem-list addition reducer; do not substitute note signing.",
+      "commonOfferedWorkVerified": false
+    },
+    {
+      "id": "U3-12",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 14,
+      "targetSDSeconds": 5,
+      "simulated": null,
+      "klmOnly": null,
+      "uncalibrated": null,
+      "assessment": {
+        "targetMeanSeconds": 14,
+        "targetSDSeconds": 5,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "No allergy-list addition reducer; do not substitute allergy review.",
+      "commonOfferedWorkVerified": false
+    },
+    {
+      "id": "U3-13",
+      "profile": "ed-resident",
+      "targetMeanSeconds": 11,
+      "targetSDSeconds": 3,
+      "simulated": null,
+      "klmOnly": null,
+      "uncalibrated": null,
+      "assessment": {
+        "targetMeanSeconds": 11,
+        "targetSDSeconds": 3,
+        "wilson95": [
+          0.7224671969739421,
+          0.9999999999999999
+        ],
+        "checks": {
+          "mean": false,
+          "sd": false,
+          "completion": false,
+          "monteCarloSE": false,
+          "sourceMatched": false
+        },
+        "pass": false,
+        "path": "excluded: unknown absolute denominator or aggregation; U9-2 printed 5/8 retained"
+      },
+      "limitation": "No verbal pulse-abnormality interpretation outcome.",
+      "commonOfferedWorkVerified": false
+    }
+  ],
+  "profiles": {
+    "pcp": {
+      "status": "experimental",
+      "source": "N1",
+      "evidenceYear": 2023,
+      "model": {
+        "status": "experimental",
+        "profile": "pcp",
+        "source": "U8",
+        "evidenceYear": 2021,
+        "backtrackRate": 0,
+        "meanChoiceLatencyMs": 0,
+        "choiceLatencyCV": 0,
+        "navigationIdentified": false,
+        "reason": "Completion-only tie break; unknown path denominators; source-equivalence and shift endpoints not established."
+      },
+      "independentFamiliesWithMatchedSD": 0,
+      "shiftHoldouts": [
+        {
+          "id": "N1.totalEHR8",
+          "targetMeanMinutes": 391.3,
+          "targetSDMinutes": 149.1,
+          "simulated": null,
+          "pass_": false,
+          "reason": "No source-equivalent schedule normalization including unscheduled days."
+        },
+        {
+          "id": "N1.TOSH8",
+          "targetMeanMinutes": 84.3,
+          "targetSDMinutes": 58.8,
+          "simulated": null,
+          "pass_": false,
+          "reason": "Active overtime is not N1 outside-scheduled-hours EHR8."
+        }
+      ]
+    },
+    "ed-resident": {
+      "status": "experimental",
+      "source": "N4",
+      "evidenceYear": 2023,
+      "backtrackRate": 30,
+      "keyboardShare": 20,
+      "meanChoiceLatencyMs": 0,
+      "independentFamiliesWithMatchedSD": 0,
+      "reason": "N4 quartiles do not supply two independent matched task families; U3 is older transfer only."
+    },
+    "icu-rn-pump": {
+      "status": "experimental",
+      "source": "N5",
+      "evidenceYear": 2024,
+      "independentFamiliesWithMatchedSD": 0,
+      "checks": [
+        {
+          "id": "N5.other-interruption",
+          "targetMeanSeconds": 28,
+          "targetSDSeconds": 21.9,
+          "simulated": null,
+          "pass_": false
+        },
+        {
+          "id": "N5.pump-alert",
+          "targetMeanSeconds": 17.9,
+          "targetSDSeconds": 13.9,
+          "simulated": null,
+          "pass_": false
+        }
+      ],
+      "reason": "Native MAR is not IV-pump programming; interruption and alarm durations are not independent pump task families."
+    }
+  },
+  "development": [
+    {
+      "id": "U8-6",
+      "simulated": null,
+      "limitation": "Source drug cancellation, gentamicin/Lasix interaction detail and override reason are not fully represented."
+    },
+    {
+      "id": "U8-7",
+      "simulated": null,
+      "limitation": "No external C-CDA incorporation reducer."
+    },
+    {
+      "id": "U8-9",
+      "simulated": {
+        "attempts": 200,
+        "successes": 0,
+        "completion": 0.0,
+        "meanSeconds": null,
+        "sdSeconds": null,
+        "meanSESeconds": null,
+        "meanClicks": null
+      },
+      "limitation": "No discharge Med Rec/eRX pathway or transmitted-prescription acknowledgment."
+    }
+  ],
+  "macroMAEAvailableSeconds": {
+    "baseline": 505.342425,
+    "simulated": 505.343475,
+    "uncalibrated": 507.32392500000003
+  },
+  "allTimeHoldoutsPass": false,
+  "baselineComparisonPass": false,
+  "baselineComparisonReason": "All 11 comparable held-out times required; unsupported/unsuccessful tasks remain missing.",
+  "sourceHashes": {
+    "protocol.json": "621b27e80606aaf1170550ce9acac7e039e77ced240733bffa7028d123406e55",
+    "scripts.json": "78f16dc3015b01acfccdc6cd1ba720fd94e3a10570a1d832ec6fea35bc3251fe"
+  },
+  "historicalSensitivity": {
+    "id": "U1-21",
+    "status": "unsupported",
+    "reason": "Refill pharmacy-response endpoint unmatched; no sensitivity coefficient fitted."
+  },
+  "sensitivityOnly": [
+    "N8 Australian pharmacists, 2024; no US default"
+  ],
+  "scenarioOnly": [
+    "pediatrics",
+    "surgery",
+    "US pharmacy"
+  ],
+  "clinicianReview": false,
+  "rebasedEquivalentCommits": {
+    "predeclaration": "450271861865d5ad45b4e0547a02a3dfab18ab21",
+    "scriptFreeze": "586ac920c8f9aea80b60d6378d8e5ee9293c23e5",
+    "executionInputFreeze": "f81c5ac60c07015733cedf1a0cefe4fcc9ebcc3b"
+  }
+}

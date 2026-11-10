@@ -51,12 +51,16 @@ def typedLen : Value → Nat
 def activation (e : Event) (ops : List Op := []) : Nat :=
   match e with
   | .scroll _ => 0
-  | .enter _ _ => if ops.contains .scan then 0 else 1
+  | .enter _ _ => if ops.contains .scan then 0 else
+      max 1 ((ops.filter (· == .click)).length +
+        if (ops.find? (fun op => (device op).isSome)) == some .key then 1 else 0)
   | _ => 1
 
 def typedKeys (e : Event) (ops : List Op := []) : Nat :=
   match e with
-  | .enter _ v => if ops.contains .scan then 0 else typedLen v
+  | .enter _ v => if ops.contains .scan then 0 else if ops.isEmpty then typedLen v else
+      (ops.filter (· == .key)).length -
+        (if (ops.find? (fun op => (device op).isSome)) == some .key then 1 else 0)
   | .search q => q.length
   | _ => 0
 

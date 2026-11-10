@@ -15,12 +15,25 @@ def opioid : State := run (opioidPath)
 #guard (finish opioid "w1Sign" "signOrders").commits == ["signOrders"]
 /-- A program variant without the sign-screen report, for waiver/receipt tests. -/
 def exemptionProgram : Program := canonicalV1.updateScreen "w1Sign" fun s => s.dropComp "w1Sign.cures"
-/-- Enter an exemption while still in the composer, then return to sign. -/
-def withExemption : State := more (run (opioidPath) (p := exemptionProgram))
+/-- The administration exemption is supported by independent facility record
+facts; typing the category alone cannot establish eligibility. -/
+def exemptionFacts : Facts := { adult with record := adult.record ++
+  [("facilityKind", "general-acute-care"), ("administrationOnPremises", "true")] }
+def exemptionPath : List Event :=
   [.click "w1Sign.edit", .enter "w1Orders.curesExemptionReason" (.code "admin-in-facility"),
-   .click "w1Orders.toSign", .click "w1Verify.continue"] (p := exemptionProgram)
+   .click "w1Orders.toSign", .click "w1Verify.continue"]
+/-- Enter an eligible exemption while in the composer, then return to sign. -/
+def withExemption : State := more (run (opioidPath) (p := exemptionProgram) (f := exemptionFacts))
+  exemptionPath (p := exemptionProgram) (f := exemptionFacts)
 #guard (cap withExemption "curesExemptionReason").any (·.byHuman)
-#guard (finish withExemption "w1Sign" "signOrders" (p := exemptionProgram)).commits == ["signOrders"]
+#guard (finish withExemption "w1Sign" "signOrders" (p := exemptionProgram) (f := exemptionFacts)).commits == ["signOrders"]
+/-- The same human entry without facility evidence still cannot waive CURES. -/
+def unsupportedExemption : State := more (run (opioidPath) (p := exemptionProgram))
+  exemptionPath (p := exemptionProgram)
+#guard (cap unsupportedExemption "curesExemptionReason").any (·.byHuman)
+#guard (finish unsupportedExemption "w1Sign" "signOrders" (p := exemptionProgram)).commits == []
+#guard reason (one unsupportedExemption (.click "w1Sign.commit.signOrders") (p := exemptionProgram)).2 ==
+  "review required: curesReport must be shown or covered by a valid receipt (or a reason entered in curesExemptionReason)"
 /-- A human views the composer's CURES tab and creates a fresh receipt. -/
 def withCuresReceipt : State := more (run (opioidPath) (p := exemptionProgram))
   [.click "w1Sign.edit", .selectTab "w1Orders.orderInfo" 1,

@@ -10,13 +10,13 @@ open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 
 -- Only the source component's prefix is inspected. Persona and patch
 -- membership below is structural; unrelated macro bodies are never reduced.
-@[irreducible] private def consentSourceScreen := canonicalSource[33]?.getD default
-@[irreducible] private def consentComponent := consentSourceScreen.components[26]?.getD default
-private theorem consentSourcePresent : canonicalSource[33]?.isSome = true := by decide +kernel
+@[irreducible] private def consentSourceScreen := canonicalSource[36]?.getD default
+@[irreducible] private def consentComponent := consentSourceScreen.components[35]?.getD default
+private theorem consentSourcePresent : canonicalSource[36]?.isSome = true := by decide +kernel
 -- The blueprint folds this one expanded clinical screen. Keep the budget local.
-private theorem consentBinding : (consentSourceScreen.components[26]?).any (fun c =>
+private theorem consentBinding : (consentSourceScreen.components[35]?).any (fun c =>
     c.id == "w6PreOp.consentVerified" && c.kind == .field "consentVerified" (.fixed 0) .none) = true := by decide +kernel
-private theorem consentComponentPresent : consentSourceScreen.components[26]?.isSome = true :=
+private theorem consentComponentPresent : consentSourceScreen.components[35]?.isSome = true :=
   Option.isSome_of_any consentBinding
 private theorem consentComponentFacts : consentComponent.id = "w6PreOp.consentVerified" ∧
     consentComponent.kind = .field "consentVerified" (.fixed 0) .none := by
@@ -28,8 +28,8 @@ private theorem consentSpec : specV1.element? "consentVerified" = some consentVe
 private theorem consentSource : HasComponent canonicalV1 consentComponent := by
   apply canonical_keeps_plain_field consentComponent
     (blueprint_keeps_field canonicalSource consentSourceScreen consentComponent
-      (by unfold consentSourceScreen; exact getD_mem canonicalSource 33 consentSourcePresent) (by decide +kernel)
-      (by unfold consentComponent; exact getD_mem consentSourceScreen.components 26 consentComponentPresent) "consentVerified" (.fixed 0) .none
+      (by unfold consentSourceScreen; exact getD_mem canonicalSource 36 consentSourcePresent) (by decide +kernel)
+      (by unfold consentComponent; exact getD_mem consentSourceScreen.components 35 consentComponentPresent) "consentVerified" (.fixed 0) .none
       consentComponentKind (by decide +kernel) (by decide +kernel)
       (by decide +kernel) (by decide +kernel) (by decide +kernel))
     "consentVerified" (.fixed 0) .none consentComponentKind consentVerified consentSpec rfl rfl
@@ -73,11 +73,11 @@ theorem bad08_not_satisfies : ¬ Satisfies specV1 none canonicalV1 forgedConsent
     consentVerified consentSpec consentHuman h.2.2.2.2.1.1
 
 @[irreducible] private def quickSignSourceScreen := canonicalV1.screens[8]?.getD default
-@[irreducible] private def quickSignComponent := quickSignSourceScreen.components[52]?.getD default
+@[irreducible] private def quickSignComponent := quickSignSourceScreen.components[53]?.getD default
 private theorem quickSignSourcePresent : canonicalV1.screens[8]?.isSome = true := by decide +kernel
-private theorem quickSignBinding : (quickSignSourceScreen.components[52]?).any (fun c =>
+private theorem quickSignBinding : (quickSignSourceScreen.components[53]?).any (fun c =>
     c.id == "w1Sign.commit.signOrders" && c.kind == .button (.commit "signOrders")) = true := by decide +kernel
-private theorem quickSignComponentPresent : quickSignSourceScreen.components[52]?.isSome = true :=
+private theorem quickSignComponentPresent : quickSignSourceScreen.components[53]?.isSome = true :=
   Option.isSome_of_any quickSignBinding
 private theorem quickSignComponentFacts : quickSignComponent.id = "w1Sign.commit.signOrders" ∧
     quickSignComponent.kind = .button (.commit "signOrders") := by
@@ -88,7 +88,7 @@ private theorem quickSignComponentKind : quickSignComponent.kind = .button (.com
 private theorem quickSignSource : HasComponent canonicalV1 quickSignComponent :=
   ⟨quickSignSourceScreen,
     by unfold quickSignSourceScreen; exact getD_mem canonicalV1.screens 8 quickSignSourcePresent,
-    by unfold quickSignComponent; exact getD_mem quickSignSourceScreen.components 52 quickSignComponentPresent⟩
+    by unfold quickSignComponent; exact getD_mem quickSignSourceScreen.components 53 quickSignComponentPresent⟩
 private def quickSignMacro : Macro := {
   id := "badQuickAmox", label := "Quick sign amoxicillin"
   steps := [.setValue "w1Orders.drug" "amoxicillin", .setValue "w1Orders.dose" "1000",
@@ -128,4 +128,27 @@ theorem bad09_not_satisfies : ¬ Satisfies specV1 none canonicalV1 hiddenAllergy
 
 #print axioms bad08_not_satisfies
 #print axioms bad09_not_satisfies
+#print axioms consentSourcePresent
+#print axioms consentBinding
+#print axioms consentComponentPresent
+#print axioms consentComponentFacts
+#print axioms consentComponentId
+#print axioms consentComponentKind
+#print axioms consentSpec
+#print axioms consentSource
+#print axioms consentMacro_mem
+#print axioms consentMacro_step
+#print axioms consentHuman
+#print axioms consentComponentMember
+#print axioms quickSignSourcePresent
+#print axioms quickSignBinding
+#print axioms quickSignComponentPresent
+#print axioms quickSignComponentFacts
+#print axioms quickSignComponentId
+#print axioms quickSignComponentKind
+#print axioms quickSignSource
+#print axioms quickSignMacro_mem
+#print axioms quickSignMacro_step
+#print axioms quickSignComponentMember
+
 end Ehr.Check

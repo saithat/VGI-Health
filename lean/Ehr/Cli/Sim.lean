@@ -279,7 +279,7 @@ def command (mode : String) (args : List String) : IO UInt32 := do
     let fs ← match parseFlags args with
       | .ok fs => pure fs | .error e => throw (IO.userError e)
     for (flag, _) in fs do
-      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out", "--interruptions", "--interruption-profile", "--sim-model", "--text-cost"].contains flag then
+      if !["--spec", "--program", "--persona", "--schedule", "--task", "--world", "--fhir", "--seed", "--bound", "--space", "--policy", "--memory-in", "--memory-out", "--information-needs", "--clock-mode", "--carry-out", "--interruptions", "--interruption-profile", "--sim-model", "--text-cost", "--choice-latency-ms", "--arrival-seed"].contains flag then
         throw (IO.userError s!"unknown flag {flag}")
     let root ← findRoot 12 (← IO.currentDir)
     let sp ← loadSpec root (← required fs "--spec")
@@ -331,8 +331,16 @@ def command (mode : String) (args : List String) : IO UInt32 := do
       unless ["wave3", "legacy"].contains model do throw (IO.userError "--sim-model must be wave3 or legacy")
       let textCost := (fs.lookup "--text-cost").getD "length"
       unless ["length", "legacy"].contains textCost do throw (IO.userError "--text-cost must be length or legacy")
+      let choiceLatencyMs ← ioExcept (optionExcept
+        ((fs.lookup "--choice-latency-ms").getD "0").toNat? "--choice-latency-ms must be a natural number")
+      let arrivalSeed ← match fs.lookup "--arrival-seed" with
+        | none => pure none
+        | some s => do
+          let n ← ioExcept (optionExcept s.toNat? "--arrival-seed must be a natural number")
+          pure (some n)
       let interruptionConfig : Resumption.InterruptionConfig := {
         mode := interruptionMode, profile? := interruptionProfile, legacyModel := model == "legacy",
+        choiceLatencyMs, arrivalSeed? := arrivalSeed,
         lengthCosts := textCost == "length",
         chartDisplay := fun task => ((clinical.lookup task.id).map (·.2)).getD Render.Display.empty }
       let options ← readAs Bounded.Options (← required fs "--persona")

@@ -59,7 +59,7 @@ structure InterruptionRuntime where
 
 def initRuntime (seed : Nat) (task : Task) (role : Role) (patients : List String)
     (config : InterruptionConfig) : InterruptionRuntime :=
-  let offered := arrivals seed task role patients config
+  let offered := arrivals (config.arrivalSeed?.getD seed) task role patients config
   let setting := config.profile?.getD (profile role task.workflow)
   { config, arrivals := offered, metrics := {
     profile := match setting with

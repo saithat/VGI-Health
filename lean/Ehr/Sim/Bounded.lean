@@ -215,7 +215,7 @@ def act (ctx : Context) (params : PersonaParams) (task : Task) (r : Runner)
   let mut out := { r with episode := interruptionCheckpoint ctx task r.episode }
   let ctx := currentContext ctx out.episode
   let c? := (eventComp e).bind (shownComp? ctx.sp ctx.prog ctx.facts out.episode.state)
-  let (ops, rng) := actionOps ctx params out.episode.state e out.episode.rng
+  let (ops, rng) := actionOps ctx params out.episode.state e out.episode.rng (task.choices.noteTexts?.getD [])
   if let some c := c? then
     let p := placement ctx out.episode.state c
     if ops.contains .point then
@@ -236,7 +236,7 @@ def act (ctx : Context) (params : PersonaParams) (task : Task) (r : Runner)
     }
   }
   out := { out with
-    episode := emit ctx task out.episode e     (List.replicate due.length [.wait, .think] |>.flatten |>.append ops)
+    episode := emit ctx task (choiceLatency out.episode ops) e (List.replicate due.length [.wait, .think] |>.flatten |>.append ops)
   }
   return out
 /-- Search remembers explored local views, not the Cartesian product of

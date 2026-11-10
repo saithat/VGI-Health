@@ -6,7 +6,16 @@ namespace Ehr.Check
 open Ehr Ehr.Props Ehr.Canonical Ehr.Canonical.Bad Ehr.Specs.V1
 set_option maxRecDepth 16384
 
-comp_witness static12Witness, static12Member := passivePopup[1][22]
+@[irreducible] private def static12Screen : Screen := passivePopup.screens[1]?.getD default
+private theorem static12ScreenPresent : passivePopup.screens[1]?.isSome = true := by decide +kernel
+private theorem static12CompPresent : static12Screen.components[27]?.isSome = true := by decide +kernel
+@[irreducible] private def static12Witness : Screen × Component :=
+  (static12Screen, static12Screen.components[27]?.getD default)
+private theorem static12Member : static12Witness ∈ allComps passivePopup := by
+  unfold static12Witness
+  exact List.mem_flatMap.mpr ⟨static12Screen,
+    (by unfold static12Screen; exact getD_mem passivePopup.screens 1 static12ScreenPresent),
+    List.mem_map.mpr ⟨_, getD_mem static12Screen.components 27 static12CompPresent, rfl⟩⟩
 
 private theorem static12Kind : alertOf? static12Witness.2.kind = some ("careGapsInline", true) := by decide +kernel
 private theorem passiveLookup : specV1.alert? "careGapsInline" = some careGapsInlineAlert := by decide +kernel
@@ -18,5 +27,11 @@ theorem bad12_not_satisfies : ¬ Satisfies specV1 none canonicalV1 passivePopup 
     (by simp [passiveLookup]) (by decide)
 #print axioms bad12_not_satisfies
 
+
+#print axioms static12ScreenPresent
+#print axioms static12CompPresent
+#print axioms static12Member
+#print axioms static12Kind
+#print axioms passiveLookup
 
 end Ehr.Check
