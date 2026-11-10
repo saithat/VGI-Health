@@ -104,7 +104,7 @@ capabilities. The system uses synthetic patients and is not a deployable product
 
 Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md).
 
-- Role calibration has frozen splits, source-script transfer limits and a strict predeclared gate; fitting is pending ([protocol](docs/methods/role-calibration.md)).
+- Separate experimental role profiles have frozen splits, source-script transfer limits and an opt-in native fitting harness with a strict predeclared gate ([methods](docs/methods/role-calibration.md)).
 
 - Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
 - Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).

@@ -34,11 +34,25 @@
     "latencyAttemptsPerTask": 200,
     "latencyObjective": "Macro mean squared normalized mean error plus squared normalized SD error on U8-2/3/5 successful attempts. Ties choose smaller mean then CV. Nonnegative extra choice service, not motor/time multiplication.",
     "distribution": "Lognormal per-attempt choice latency from candidate mean/CV (scenario); no fabricated individual source subjects.",
-    "baseline": "Zero extra choice latency, zero detour, 80% keyboard share, same scripts and offered work; native KLM plus unchanged wave-3 reading and interruptions.",
-    "uncalibrated": "60 per-mille detour; zero extra choice latency; 80% keyboard share.",
+    "baseline": "Zero extra choice latency and zero detour, with role-specific keyboard share (PCP 80%; ED 20%); same scripts and offered work; native KLM plus unchanged wave-3 reading and interruptions.",
+    "uncalibrated": "Role-specific source persona detour/keyboard shares: PCP 60 per mille/80%; ED 30 per mille/20%. Zero extra choice latency.",
     "roleTransfer": "Fit U8 PCP candidate only. ED retains its independent uncalibrated profile; no PCP coefficients are borrowed. ICU pump profile has no equivalent native pump activity endpoint and stays experimental.",
     "holdoutExecution": "10000 attempts per executable held-out script per arm; unsupported scripts produce missing/fail, never synthetic substitute times.",
-    "monteCarloPolicy": "Preselect 10000; if SE exceeds gate, fail without rerunning/tuning. Pilot sample size not chosen from held-out results."
+    "monteCarloPolicy": "Preselect 10000; if SE exceeds gate, fail without rerunning/tuning. Pilot sample size not chosen from held-out results.",
+    "roleScenarioDefaults": {
+      "pcp": {
+        "keyboardShare": 80,
+        "backtrackRate": 60
+      },
+      "ed-resident": {
+        "keyboardShare": 20,
+        "backtrackRate": 30
+      },
+      "icu-rn-pump": {
+        "keyboardShare": 10,
+        "backtrackRate": 90
+      }
+    }
   },
   "scripts": [
     {

@@ -85,3 +85,44 @@ its own uncalibrated parameters, never PCP coefficients. ICU pump work lacks a
 matched native task endpoint. N1 normalization also includes unscheduled days;
 ordinary simulation overtime is not TOSH8. Such missing endpoints fail the
 promotion gate, without inventing a shift-duration conversion.
+
+## Native fitting harness
+
+`scripts/fit-role-profiles.py` runs the native `role-calibration` executable on
+the merged wave-3 model, with one fresh actor/task per attempt. The input freeze
+[`execution-inputs.json`](role-calibration/execution-inputs.json) pins the actual
+generated local input hashes. Programs/specs are release v2 with the chart
+already open. Required entries, confirmations, review receipts and alerts remain
+the actual interpreter requirements. The U8 unspecified ceftriaxone dose is a
+declared 1000 mg IV daily scenario. Source-native menu layouts are not recreated.
+Before the first fit, the script manifest was clarified to preserve role-specific
+source keyboard/detour settings (PCP 80%/60 per mille; ED 20%/30 per mille).
+The frozen split, gate and search grids did not change.
+
+`simulate --choice-latency-ms N --arrival-seed N` exposes the same opt-in timing
+and independent offered-work controls. Omitted latency is zero; omitted arrival
+seed retains the existing seed behavior. Both expert and bounded policies charge
+choice latency before interpreter guards evaluate elapsed time. Reading uses
+the unchanged wave-3 length costs. Common offered work continues through fixed
+exposure closure; successful-task timing stops at its final UI event, and full
+closure clocks remain reported separately. No clinician-error/assistance model
+is inferred from completion percentages.
+
+```sh
+export TMPDIR=/home/saithat/Projects/run-tmp CI=true LEAN_NUM_THREADS=4
+# Before each lake command acquire w3fit, and release it after completion.
+cd lean && lake build && lake build role-calibration
+cd ..
+python3 scripts/fit-role-profiles.py --prepare-only
+python3 scripts/fit-role-profiles.py
+python3 -m unittest discover -s scripts -p test_role_calibration.py -v
+pnpm --filter agent lint
+pnpm --filter agent typecheck
+pnpm --filter agent exec vitest run test/ehr-adapter.test.ts test/simulation-modes.test.ts
+```
+
+The default source root is `/home/saithat/Projects/VGI-Health` (read-only);
+fixture paths referenced by its world manifest must exist locally. All native
+input files and attempt JSONL stay below `runs/wave3-fit`. Existing frozen-model
+or acceptance output refuses an implicit rerun. Development is reported only
+after parameter freezing and never used to revise the model.
