@@ -102,7 +102,7 @@ capabilities. The system uses synthetic patients and is not a deployable product
 
 ### Wave 3 (approved 2026-11-09)
 
-Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md). Calibration fitting (decisions 1, 2, 8) is not started.
+Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md). The separate pre-declared calibration fit (decisions 1, 2, 8) failed every full holdout gate; no profile is promoted. The [fit diagnosis](docs/audits/fit-diagnosis-20261110.md) traces the timing-window and capability mismatches and lists owner decisions for a future fit.
 
 - Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
 - Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
