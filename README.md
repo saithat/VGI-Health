@@ -1,4 +1,4 @@
-_README last reviewed 2026-11-09 against `45711b0a` and the approved wave-3 workflow increment._
+_README last reviewed against commit `cc2728ac` (2026-11-09)._
 
 # VGI Health
 
