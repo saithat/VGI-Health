@@ -43,11 +43,29 @@ def clinicLandingLayout (owner : String) (screen : Screen) : Screen :=
           else [{ c with parent? := some "home.activityTabs" }]
         | _ => [c] }
 
+/-- Mandatory defaults are global program contracts in the release spec.
+A preset can remove the prescribing artifact that originally carried one; keep
+one declaration on its retained workspace instead of weakening defaultsOk.
+All three canonical releases inherit these v1 default declarations. -/
+def retainPresetDefaults (screens : List Screen) : List Screen :=
+  let missing := Specs.V1.specV1.elements.filter fun el =>
+    el.defaultValue?.isSome && !(screens.any fun s => s.components.any fun c =>
+      match c.kind with | .field e _ _ => e == el.id | _ => false)
+  if missing.isEmpty then screens else
+  match screens with
+  | [] => []
+  | first :: rest =>
+    let additions := missing.filterMap fun el =>
+      el.defaultValue?.map fun value =>
+        field first.id ("presetDefault." ++ el.id) el.id el.label (prefill := .default value)
+    { first with components := first.components ++ additions } :: rest
+
 /-- Apply the pre-set view before permissions, removing links to absent screens. -/
 def presetProgram (owner : String) (p : Program) : Program :=
   if !["P1", "P2", "P3", "P4", "P5"].contains owner then p else
   let screens := (p.screens.filter (presetScreen owner)).map fun sc =>
     if owner == "P5" then W6.workspaceView (W6.clinicView sc) else sc
+  let screens := retainPresetDefaults screens
   let host := if screens.any (fun s => s.workflow == "W6") then none else
     (screens.find? (fun s => s.components.any (fun c => c.kind == .button (.commit "signOrders")))).map (·.id)
   let screens := screens.map fun s => if host != some s.id then s else
@@ -107,5 +125,12 @@ def roleProjectionValid (sp : Spec) (p : Program) : Bool :=
 #guard personaRoles.all fun (id, role) => roleProjectionValid Specs.V2.specV2
   (forPersona Specs.V2.specV2 canonicalV2 id role)
 #guard personaRoles.all fun (id, role) => roleProjectionValid Specs.V3.specV3
+  (forPersona Specs.V3.specV3 canonicalV3 id role)
+-- A workflow projection must retain defaults required by the global contract.
+#guard personaRoles.all fun (id, role) => defaultsOk Specs.V1.specV1
+  (forPersona Specs.V1.specV1 canonicalV1 id role)
+#guard personaRoles.all fun (id, role) => defaultsOk Specs.V2.specV2
+  (forPersona Specs.V2.specV2 canonicalV2 id role)
+#guard personaRoles.all fun (id, role) => defaultsOk Specs.V3.specV3
   (forPersona Specs.V3.specV3 canonicalV3 id role)
 end Ehr.Canonical
