@@ -36,6 +36,11 @@ name = "EhrHeavy"
 name = "profile-goals"
 root = "Ehr.Tools.ProfileGoals"
 
+# Offline aggregate role-calibration attempts; never certifies or deploys layouts.
+[[lean_exe]]
+name = "role-calibration"
+root = "Ehr.Tools.RoleCalibration"
+
 [[lean_exe]]
 name = "completion-bench"
 root = "Ehr.Tools.CompletionBench"

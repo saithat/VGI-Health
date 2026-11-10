@@ -15,6 +15,11 @@ structure InterruptionConfig where
   legacyModel : Bool := false
   lengthCosts : Bool := true
   chartDisplay : Task → Render.Display := fun _ => Render.Display.empty
+  /-- Opt-in experimental choice latency, milliseconds per mental operator.
+  Zero retains the uncalibrated KLM policy; never a novice multiplier. -/
+  choiceLatencyMs : Nat := 0
+  /-- Optional independent absolute-time offered-work stream for paired fits. -/
+  arrivalSeed? : Option Nat := none
   /-- External scenario timeline at absolute service time; native snapshot runs
   use identity. Foreign-patient refreshes are refused by the service boundary. -/
   refreshFacts : Facts → Nat → Facts := fun facts _ => facts

@@ -1,4 +1,4 @@
-_README last reviewed against commit `cc2728ac` (2026-11-09)._
+_README last reviewed against commit `a907e5cb` (2026-11-10; third-lane integration)._
 
 # VGI Health
 
@@ -102,7 +102,9 @@ capabilities. The system uses synthetic patients and is not a deployable product
 
 ### Wave 3 (approved 2026-11-09)
 
-Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md). Calibration fitting (decisions 1, 2, 8) is not started.
+Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md).
+
+- Separate role profiles remain experimental under the frozen gate; native task fitting exposes source-script and chart-size transfer limits ([methods](docs/methods/role-calibration.md)).
 
 - Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
 - Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
@@ -253,7 +255,9 @@ weakest parts.
 assumptions and public usability/workload evidence, including 2020+ cohort
 updates, explicit older-evidence retention, role-specific target settings and a
 statistical holdout acceptance rule without clinician review. It is a research
-plan; no fitted or clinically validated simulator is claimed. The source register
+plan; [role fitting](docs/methods/role-calibration.md) applies its frozen gate
+and leaves every profile experimental. No clinically validated simulator is
+claimed. The source register
 retains supersession links and a reproducible citation/recency verifier
 (`scripts/verify-workflow-sources.py --online`).
 

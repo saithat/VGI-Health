@@ -169,6 +169,12 @@ def actionOps (ctx : Context) (params : PersonaParams) (s : State) (e : Event)
   | .search q => return ([.point, .click] ++ List.replicate q.length .key, seed)
   | _ => return ((if isGoalAction ctx s e then [.think] else []) ++ activate, seed)
 
+/-- Experimental additional choice service is paid before the guarded event.
+It neither replaces motor KLM time nor changes the clinical goal or guard. -/
+def choiceLatency (r : EpisodeResult) (ops : List Op) : EpisodeResult :=
+  { r with elapsedMs := r.elapsedMs +
+      r.resumption.config.choiceLatencyMs * (ops.filter (· == .think)).length }
+
 /-- Execute an event with elapsed KLM time applied before the event. This lets
 an interruption expire a receipt before a commit is attempted. -/
 def emit (ctx : Context) (task : Task) (r : EpisodeResult) (e : Event) (ops : List Op) : EpisodeResult :=
@@ -364,7 +370,7 @@ def lookupExpert (ctx : Context) (params : PersonaParams) (task : Task)
   let mut out := r
   for e in path do
     let (ops, rng) := actionOps ctx params out.state e out.rng (task.choices.noteTexts?.getD [])
-    out := emit ctx task { out with rng } e ops
+    out := emit ctx task (choiceLatency { out with rng } ops) e ops
   return readNeed ctx task out n
 
 /-- Early review creates a receipt once per information version, only while
@@ -440,7 +446,7 @@ def playLoop (ctx : Context) (params : PersonaParams) (task : Task) (lastEpisode
         interruptions := out.interruptions.filter (fun n => !due.contains n),
         actionIndex := out.actionIndex + if goalAction then 1 else 0 }
       let prev := out.state.screen
-      out := emit ctx task out e ops
+      out := emit ctx task (choiceLatency out ops) e ops
       let failed := match out.trace.getLast?.map (·.result) with
         | some (.blocked reason) => if goalAction && reason != "alert" then failures + 1 else failures
         | _ => failures
