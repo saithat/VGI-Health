@@ -7,10 +7,12 @@
  * - Server-side refusal fallback (`fallbacks: "default"`); the serving model is recorded.
  * - Streaming + finalMessage() (large outputs; avoids HTTP timeouts).
  * - API key from ANTHROPIC_API_KEY.
+ * - A 429 left after the SDK's retries throws UsageLimitError: the run pauses (resumable), never llm-error.
  */
 import Anthropic from '@anthropic-ai/sdk';
 import type { JsonLlm, JsonRequest, JsonResponse } from './types.js';
 import { runToolTurns } from '../tool-turns.js';
+import { UsageLimitError, apiUsageLimit } from '../usage-limit.js';
 
 export const DEFAULT_CLAUDE_MODEL = 'claude-opus-5-5';
 type Effort = 'low' | 'medium' | 'high' | 'xhigh' | 'max';
@@ -36,6 +38,15 @@ export class ClaudeLlm implements JsonLlm {
   }
 
   async complete(req: JsonRequest): Promise<JsonResponse> {
+    try { return await this.request(req); }
+    catch (error) {
+      const limit = error instanceof Anthropic.RateLimitError ? apiUsageLimit(error.status, error.message, error.headers) : null;
+      if (limit) throw new UsageLimitError(limit);
+      throw error;
+    }
+  }
+
+  private async request(req: JsonRequest): Promise<JsonResponse> {
     if(req.toolSession){
       const session=req.toolSession,messages:Anthropic.Beta.BetaMessageParam[]=[{role:'user',content:req.prompt}];
       const result=await runToolTurns(req,async results=>{
@@ -68,7 +79,7 @@ export class ClaudeLlm implements JsonLlm {
       message = await stream.finalMessage();
     } catch (error) {
       if (error instanceof Anthropic.AuthenticationError) throw new Error('claude backend: ANTHROPIC_API_KEY was rejected');
-      if (error instanceof Anthropic.RateLimitError) throw new Error(`claude backend: rate limited after retries (${error.message})`);
+      if (error instanceof Anthropic.RateLimitError) throw error;
       if (error instanceof Anthropic.BadRequestError) throw new Error(`claude backend: bad request (${error.message})`);
       if (error instanceof Anthropic.APIError) throw new Error(`claude backend: API error ${String(error.status)} (${error.message})`);
       throw error;

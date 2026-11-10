@@ -224,7 +224,7 @@ async function withEnv<T>(env: Record<string, string>, work: () => Promise<T>) {
 it('turns Claude Code auto-memory off in the sandboxed CLI (private settings and env) and keeps the audit strict', async () => {
   const { home, control, env } = await claudeHome();
   const spec = await withEnv(env, () => prepareLaunch({ harness: 'claude', model: null, reasoningEffort: 'high', serviceTier: 'default', maxTurns: 5 }, home, control, 0));
-  expect(JSON.parse(await readFile(path.join(home, '.claude/settings.json'), 'utf8'))).toEqual({ autoMemoryEnabled: false });
+  expect(JSON.parse(await readFile(path.join(home, '.claude/settings.json'), 'utf8'))).toEqual({ autoMemoryEnabled: false, bashOutputMaxChars: 128_000 });
   expect(spec.env).toMatchObject({ CLAUDE_CONFIG_DIR: '/home/agent/.claude', CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1' });
   expect(spec.args).toEqual(expect.arrayContaining(['--setting-sources', 'user', '--permission-mode', 'dontAsk']));
   expect(JSON.parse(await readFile(path.join(home, '.claude/.credentials.json'), 'utf8')).claudeAiOauth.refreshToken).toBeUndefined();
@@ -232,6 +232,14 @@ it('turns Claude Code auto-memory off in the sandboxed CLI (private settings and
   // A denied memory write still fails the audit.
   const memory = JSON.stringify({ type: 'assistant', message: { content: [{ type: 'tool_use', name: 'Write', input: { file_path: '/home/agent/.claude/projects/-work/memory/MEMORY.md', content: 'x' } }] } });
   expect(auditLaunch('claude', memory).status).toBe('fail');
+});
+it('raises the Bash output-spill threshold to the CLI ceiling in the private settings, and a spilled-file read still fails the audit', async () => {
+  const { home, control, env } = await claudeHome();
+  await withEnv(env, () => prepareLaunch({ harness: 'claude', model: null, reasoningEffort: 'high', serviceTier: 'default', maxTurns: 5, interpreter: 'node' }, home, control, 0));
+  // The key and its 4000–128000 clamp are from Claude Code 2.1.322's settings schema; the setting is read from user settings (--setting-sources user).
+  expect(JSON.parse(await readFile(path.join(home, '.claude/settings.json'), 'utf8'))).toMatchObject({ bashOutputMaxChars: 128_000 });
+  const spillRead = JSON.stringify({ type: 'assistant', message: { content: [{ type: 'tool_use', name: 'Grep', input: { pattern: 'x', path: '/home/agent/.claude/projects/-work/s/tool-results/b1.txt' } }] } });
+  expect(auditLaunch('claude', spillRead).status).toBe('fail');
 });
 it('defines H-claude+node as one extra workspace-scoped allowlist entry, a node shim and a README section; the default launch is unchanged', async () => {
   const { home, control, env } = await claudeHome();
