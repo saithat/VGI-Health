@@ -90,7 +90,9 @@ The two CLIs are configured inside that boundary as follows.
   own CLI refresh it with one trivial call. Auto-memory is off: the private
   home's `settings.json` sets `autoMemoryEnabled: false` and the launch sets
   `CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` (since the follow-ups below; the pilot and
-  full study above ran with it on, and every attempt was denied).
+  full study above ran with it on, and every attempt was denied). The same file
+  sets `bashOutputMaxChars: 128000`, so Bash output up to that size stays inline
+  (since the 2026-11-10 follow-ups below).
 
 ## Budget
 
@@ -335,8 +337,8 @@ launches of the 57 limit-hit samples and nothing else.
 If an H launch ends with such a refusal and without a successful submit, the
 sample throws `UsageLimitError`, an `InfrastructureExhaustedError`. It is not
 retried, gets no continuation launch, and `runNight` rethrows it, so no
-`llm-error` record is written. The Codex JSON backend (B, C, E and R) and R's
-sub-calls raise the same error. The run stops at the next sample boundary, and
+`llm-error` record is written. The Codex JSON backend (B, C, E and R), the direct
+`claude` SDK backend (since 2026-11-10, below) and R's sub-calls raise the same error. The run stops at the next sample boundary, and
 `manifest.json` gets `status: "paused"` and a `pause` object with the CLI, its
 message, the reset time when the CLI reports one, and the samples still
 pending. Running the same command again with `--resume` after the reset keeps
@@ -461,6 +463,79 @@ path to a `/work` node script, and Node's permission model refused the read
 (`ERR_ACCESS_DENIED`). Every attempt failed, and the audit stays strict, so
 those samples remain flagged.
 
+## Follow-ups (owner decisions, 2026-11-10)
+
+### Raised output-spill threshold
+
+Claude Code keeps a successful Bash command's output inline up to a character
+limit. Past it, the CLI saves the output to
+`/home/agent/.claude/projects/…/tool-results/` and returns a 2 KB preview and
+the path. The sandbox denies reading that path. In the H-claude+node pilot, 3
+of 7 samples were flagged because the agent tried to read such a file.
+
+The limit is the user setting `bashOutputMaxChars`. Its source is the settings
+schema compiled into the installed CLI (2.1.322,
+`~/.local/share/claude/versions/2.1.322`). The schema describes it as: "How
+many characters of a successful Bash or PowerShell command's output Claude
+receives inline (default 30000; values clamp to 4000-128000). Output past this
+is saved to a file and Claude receives a short preview plus the path. When set,
+this also replaces BASH_MAX_OUTPUT_LENGTH." In the same binary, the Bash tool's
+`maxResultSizeChars` getter returns the clamped setting, defaulting to 30000.
+The clamp bounds are the constants 4000 and 128000.
+
+The private `settings.json` now sets `bashOutputMaxChars: 128000`, the
+ceiling. It is read because launches use `--setting-sources user`. Nothing else
+changes:
+
+- The night CLI's own output limits are unchanged (`query --limit`, default
+  100 rows). Claude Code still caps inline output at 128,000 characters, about
+  32K tokens, so one command's context cost stays bounded.
+- The audit is unchanged. Any tool input naming `/home/agent` still fails the
+  launch.
+- A unit test checks the generated setting and that a spilled-file read still
+  fails the audit.
+
+Coverage: across every recorded H-claude transcript (the pilot, the
+H-claude+node pilot and the full study), 12 Bash outputs spilled. Eleven were
+35,954–49,796 characters and now stay inline. One was a 741,204-character
+`night render w3Orders`, which still spills. The full rendering is already in
+the workspace as `renders/w3Orders.json`.
+
+**Smoke.** One H-claude+node launch on night-02/P2
+(`runs/quality-BH-smoke-claudenode-spill-20261110`). It used the pilot's frozen
+inputs; every binding matched the H-claude pilot's. It ran under the browser
+lock and `MemoryMax=12G`. Result: validation accepted (8 clicks and 420 scrolls
+saved). The audit passed with no findings: no tool input named `/home/agent`
+and no output spilled. There was 1 denied call, against 4 for this decision in
+the pilot. The launch used 1.75M input tokens (1.67M cached), 10.5K output
+tokens, 42 turns, 9 night commands and 319 s. Egress went only to
+`api.anthropic.com`, and `claude-opus-5-5` served it. This sample ran no node
+scripts, and its largest Bash output was 14,796 characters. The smoke
+therefore shows no regression and a clean audit, but it never exceeded the old
+30,000 limit. The raised threshold itself is checked only by the unit test and
+the CLI source above.
+
+### No further node variant
+
+The owner declined a variant that would also allow `cd /work; …` compounds or
+`node -e`. H-claude+node stays as pre-declared, and no new variant was added.
+
+### Direct `claude` backend rate limits pause the run
+
+The SDK `claude` backend (`--backend claude`) retries a
+429 four times inside the Anthropic SDK. A `RateLimitError` that is still
+thrown after those retries now becomes `UsageLimitError` with `cli:
+"claude-api"`, on both the JSON path and the tool-session path. It no longer
+becomes `llm-error`. The reset time comes from `retry-after` (seconds or an
+HTTP date), or else the latest `anthropic-ratelimit-*-reset` header. From
+there it follows the CLI path: no outer retry, a `paused` manifest, and a
+`--resume` that reruns only the unfinished samples. Other API errors keep
+their meaning, including 529 overloaded. A test injects the SDK's own
+`RateLimitError` into the backend client. It checks that the request is made
+once and that exactly one attempt error is recorded with no response record.
+It also checks the tool-session path and that a 500 error is not treated as a
+usage limit.
+
 ## Commands
 
 ```sh
@@ -495,7 +570,7 @@ reuse check compares them. Data stays untracked under the worktree's `runs/`.
 
 - Replay re-verifies the recorded commands and the outcome, not the model's transcript (see above).
 - Claude Code's `dontAsk` allowlist denies interpreters; Codex's sandbox allows them. The two harnesses therefore get different shell freedom. The opt-in H-claude+node variant narrows the gap: it allows `node /work/<script>` only, not `-e` one-liners or compound `cd …;` commands.
-- Claude Code writes large tool outputs to files under its private home and sometimes tries to read them back. The rules deny that, and the strict audit flags it.
+- Claude Code writes Bash output longer than `bashOutputMaxChars` to a file under its private home and sometimes tries to read it back. The rules deny that, and the strict audit flags it. The threshold is now the CLI's ceiling, 128,000 characters; larger outputs (for example `night render w3Orders`, about 741,000) still spill.
 - The Codex credential copy includes its refresh token, as the existing Codex backend's does. A refresh inside the sandbox could rotate it.
 - The workspace inputs are 0444, but the agent may delete or replace them inside `/work`. Every check, estimate and submission is evaluated by the host against its own copy, so this can only mislead the agent itself.
 - Codex exec has no turn limit; wall time and the command quota bound it.
