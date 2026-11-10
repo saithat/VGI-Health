@@ -26,6 +26,10 @@ work. UI documentation remains the clinical completion proxy; note text is still
 a supplied scenario choice rather than a modeled clinical composition process.
 `klmDeciSec` measures active EHR/reading/communication/return effort and excludes
 bedside time. `clocks` also makes bedside time available without renaming it KLM.
+Guarded workflow protocol phases ([workflow phases](workflow-phases.md)) are
+excluded from `klmDeciSec` too; in `clocks` their active phase time is counted
+as clinical service and their response wait as passive wait, so the partition
+still sums to task duration (wave-3 merge decision).
 
 | New parameter | Value | Evidence classification |
 |---|---|---|

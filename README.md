@@ -44,11 +44,6 @@ project is not affiliated with any EHR vendor.
 |---|---|---|
 | ![Order composer](app/shots/final/P1-orders.png) | ![Track board](app/shots/final/P2-landing.png) | ![MAR](app/shots/final/P3-chart.png) |
 
-- Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
-- Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
-- Accepted handover transfers responsibility to actors with private receipts and layout memory. [Ownership](docs/methods/wave3-simulation.md#ownership-and-acceptance).
-- Role/activity interruption service and length-based note reading/scrolling retain explicit legacy opt-outs and historical native decoding; data comparisons expose the same controls. [Parameters](docs/methods/wave3-simulation.md#roleactivity-interruptions-and-opt-outs).
-
 ## Architecture
 
 The Lean `Spec` is the rulebook; a JSON `Program` describes screens, fields,
@@ -90,8 +85,8 @@ boundaries, directory map and detailed sequence.
 ## Headline results
 
 These are synthetic, local experiments, not observed clinician performance.
-Wave-3 source changes require re-certification at merge; retained certificates
-describe the earlier build.
+Wave 3 is merged and verified ([audit](docs/audits/wave3-merge-20261109.md));
+the retained recording certificates below predate it and have not been re-issued.
 
 | Evidence | Result and caveat |
 |---|---|
@@ -105,12 +100,21 @@ The [EHR scope inventory](docs/methods/ehr-scope.md) lists seven workflows, five
 personas and the simplified or absent departments, interfaces and production
 capabilities. The system uses synthetic patients and is not a deployable product.
 
+### Wave 3 (approved 2026-11-09)
+
+Status per decision: [wave-3 decisions](docs/design/wave3-decisions.md); merged verification: [audit](docs/audits/wave3-merge-20261109.md). Calibration fitting (decisions 1, 2, 8) is not started.
+
+- Separate UI, clinical, communication, waiting, queue and return clocks share one serial server. [Methods](docs/methods/wave3-simulation.md#separate-time-on-one-server).
+- Consecutive hospital days include night/weekend ED arrivals, next-day provider queues, boarding and merged queues. [World clock](docs/methods/wave3-simulation.md#continuous-world-and-ed-stages).
+- Accepted handover transfers responsibility to actors with private receipts and layout memory. [Ownership](docs/methods/wave3-simulation.md#ownership-and-acceptance).
+- Role/activity interruption service and length-based note reading/scrolling retain explicit legacy opt-outs and historical native decoding; data comparisons expose the same controls. [Parameters](docs/methods/wave3-simulation.md#roleactivity-interruptions-and-opt-outs).
 - Refills have claim/delegation, review, guarded approve/deny/change, pharmacy response and closure phases ([methods](docs/methods/workflow-phases.md)).
 - Compound alert scenarios cover inspection, cancellation, alternative orders and documented override through existing guards ([methods](docs/methods/workflow-phases.md#compound-alerts)).
 - MAR has CMS ±30/60/120-minute windows and separate administration/charting times; timing draws remain scenarios ([methods](docs/methods/workflow-phases.md#mar-timing)).
 - Five inbox streams use N1 mean inputs, explicit ownership and delegated support review ([methods](docs/methods/workflow-phases.md#inbox-streams)).
 - Release gates prove retention of reachable field capabilities for the declared workload even when optional features are declined ([contract](docs/methods/workflow-phases.md#release-capabilities)).
 - Chart synthesis, note preparation and result follow-through have explicit scenario phases ([scope and remaining work](docs/methods/workflow-phases.md#scenario-scope); [verification](docs/audits/wave3-workflows-20261109.md)).
+- Synthetic Hospital supplies synthetic-benchmark case mix, imaging priority and note-section text ([method](docs/methods/synthetic-hospital.md)).
 
 ## How to run
 
@@ -275,7 +279,7 @@ Each topic owns its detailed claims, caveats, citations and reproduction command
 | Architecture and trust boundaries | [Architecture](docs/architecture.md), [assurance](docs/assurance.md), [generated proof map](docs/proof-map.md) |
 | Setup, tests and CI | [Live validation](docs/methods/live-validation.md), [reproduction](docs/reproduction.md), [CI workflow](.github/workflows/ci.yml) |
 | Clinical scope and rules | [Workflow inventory](docs/methods/ehr-scope.md), [regulations](docs/regulations.md), [rule catalog](docs/rules/catalog.md) |
-| Simulation and calibration | [Bounded clinician](docs/methods/simulation.md), [workload/interruptions](docs/methods/workload-and-interruptions.md), [public-evidence calibration plan](docs/design/workflow-calibration.md) |
+| Simulation and calibration | [Bounded clinician](docs/methods/simulation.md), [workload/interruptions](docs/methods/workload-and-interruptions.md), [wave-3 clocks](docs/methods/wave3-simulation.md), [workflow phases](docs/methods/workflow-phases.md), [public-evidence calibration plan](docs/design/workflow-calibration.md) |
 | Clinical scenario policies | [Medication outcomes](docs/methods/medication-outcomes.md), [information needs](docs/methods/information-needs.md), [ADT](docs/methods/adt.md) |
 | Commits and completion | [Commit protocol](docs/methods/commit-protocol.md), [completion checker](docs/methods/completion-checker.md) |
 | Interface research | [UI library](docs/methods/ui-library.md), [tailoring sessions](docs/methods/tailoring-sessions.md), [screen certification](docs/methods/screen-validation.md) |
